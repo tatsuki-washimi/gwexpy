@@ -81,9 +81,9 @@ GWexpy を使いこなすための 2 つの重要な柱です。
 
 ## 複数チャンネルの解析例
 
-複数チャンネルの相関（CSD）を計算する例です。
+複数チャンネル間のクロススペクトル密度（CSD）を計算する最小例です。
 
-- 目的: 複数チャンネルをまとめて `TimeSeriesMatrix` に変換し、相互相関スペクトルを計算する
+- 目的: 2 チャンネルの `TimeSeries` からクロススペクトル密度を計算する
 - 入力: 2 チャンネルの `TimeSeriesDict` と `fftlength=1`
 - 出力: `csd` オブジェクトと CSD プロット
 
@@ -97,12 +97,12 @@ tsd = TimeSeriesDict({
     "L1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
 })
 
-# 行列に変換してクロススペクトル密度 (CSD) を計算
-csd = tsd.to_matrix().csd(fftlength=1)
+# 2 チャンネル間のクロススペクトル密度 (CSD) を計算
+csd = tsd["H1:STRAIN"].csd(tsd["L1:STRAIN"], fftlength=1)
 csd.plot().show()
 ```
 
-ここでは `TimeSeriesDict` を `TimeSeriesMatrix` に変換し、チャンネル間のクロススペクトル密度を `csd` として得ています。
+ここでは `TimeSeriesDict` から対象の 2 チャンネルを取り出し、チャンネル間のクロススペクトル密度を `csd` として得ています。
 
 ## 困ったときは
 

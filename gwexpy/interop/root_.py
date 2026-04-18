@@ -397,7 +397,8 @@ def from_root(
                 if m:
                     xunit = m.group(1)
 
-            return cls(
+            histogram_cls: Any = cls
+            return histogram_cls(
                 y,
                 edges,
                 unit=unit,

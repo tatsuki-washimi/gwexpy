@@ -81,9 +81,9 @@ The two pillars to mastering GWexpy.
 
 ## Multi-channel Analysis Example
 
-An example of calculating the cross-spectral density (CSD) between multiple channels.
+Minimal example for calculating cross-spectral density (CSD) between two channels.
 
-- Purpose: convert multiple channels into a `TimeSeriesMatrix` and compute cross-spectral density
+- Purpose: compute cross-spectral density from two `TimeSeries` channels
 - Input: a two-channel `TimeSeriesDict` and `fftlength=1`
 - Output: a `csd` object and a plotted CSD result
 
@@ -97,12 +97,12 @@ tsd = TimeSeriesDict({
     "L1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
 })
 
-# Convert to a matrix and calculate Cross Spectral Density (CSD)
-csd = tsd.to_matrix().csd(fftlength=1)
+# Calculate Cross Spectral Density (CSD) between the two channels
+csd = tsd["H1:STRAIN"].csd(tsd["L1:STRAIN"], fftlength=1)
 csd.plot().show()
 ```
 
-This example converts a `TimeSeriesDict` into a `TimeSeriesMatrix` and stores the resulting cross-spectral density in `csd`.
+This example selects the two channels from the `TimeSeriesDict` and stores the resulting cross-spectral density in `csd`.
 
 ## Need Help?
 
