@@ -1,6 +1,6 @@
 # gwexpy Agent Skills
 
-**総スキル数**: 38
+**総スキル数**: 39
 
 Agent Skills は AI エージェントに専門知識と実行能力を提供するオープンスタンダード形式のパッケージです。
 
@@ -15,6 +15,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `fix_errors`    | MyPy, Python 3.9 互換性, ノートブックエラー修正 | エラー発生時       |
 | `lint_check`    | Ruff, MyPy, 依存関係チェック                    | 品質チェック時     |
 | `gwexpy_conda_jobs` | conda gwexpy環境 + tmux で検証ジョブ実行     | pytest/ruff/mypy 実行前 |
+| `multi_agent_orchestration` | GM・Consultant・Worker の tmux 分散運用コーディネーター | 大量タスク並列処理時 |
 | `maintain_skills` | project内skillの統廃合とdescription整理        | skillライブラリ保守時 |
 ## Quick Routing
 
@@ -30,7 +31,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 
 ## Categories
 
-### ワークフロー管理 (5)
+### ワークフロー管理 (6)
 
 | スキル             | 説明                                                                               |
 | ------------------ | ---------------------------------------------------------------------------------- |
@@ -38,6 +39,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `gwexpy_conda_jobs` | conda の `gwexpy` 環境と `tmux` を使って `ruff` / `mypy` / `pytest` を標準実行する |
 | `handover_session` | AIモデル間や作業セッション間での円滑な引継ぎドキュメントを作成する                |
 | `maintain_skills`  | project内skillの統廃合、分割、description改善、README同期を行う                   |
+| `multi_agent_orchestration` | GM・Consultant・Workerをtmuxセッションへ分散させ、大量タスクを並列処理するコーディネーターガイド |
 | `prep_release`     | バージョン更新、CHANGELOG整備、パッケージビルド・公開など、リリース準備を行う     |
 
 ### 開発・コーディング (6)
