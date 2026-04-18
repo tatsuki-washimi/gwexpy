@@ -156,7 +156,15 @@ nitpick_ignore = []
 nitpick_ignore_regex = []
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "NOTEBOOK_POLICY.md",
+    "developers/**",
+    "repro/**",
+    "superpowers/plans/**",
+]
 if not notebook_build_enabled:
     exclude_patterns.append("**/*.ipynb")
 

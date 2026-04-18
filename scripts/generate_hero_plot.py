@@ -1,21 +1,27 @@
-"""Generate hero_plot.png for the GWexpy gateway landing page.
+"""Generate hero_plot.png style assets for the GWexpy gateway landing page.
 
-Output: docs/_static/images/hero_plot.png
+Default output: docs/_static/images/hero_plot.png
   - 800 x 450 px, PNG, white background
   - Shows FrequencySeriesMatrix matrix data plus a fitted channel response
 
-Usage:
-    python scripts/generate_hero_plot.py
+Phase 3 prototype usage:
+    python scripts/generate_hero_plot.py \
+        --output docs/_static/images/phase3/gateway_hero_scientific.png \
+        --width 1200 \
+        --height 675 \
+        --style scientific
 """
 
 from __future__ import annotations
 
 import io
+import json
 import pathlib
 import sys
 from collections.abc import Mapping
 from pathlib import Path
 
+import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -29,6 +35,31 @@ from gwexpy import FrequencySeriesMatrix  # noqa: E402
 OUTPUT = ROOT / "docs/_static/images/hero_plot.png"
 DPI = 100
 WIDTH_PX, HEIGHT_PX = 800, 450
+DEFAULT_STYLE = "default"
+
+STYLE_PRESETS: Mapping[str, Mapping[str, object]] = {
+    "default": {
+        "title": "FrequencySeriesMatrix + Channel Fit",
+        "cmap": "viridis",
+        "accent": "#d62728",
+        "line_alpha": 0.36,
+        "fit_alpha": 0.06,
+        "facecolor": "#ffffff",
+        "subtitle": "Synthetic multi-channel response with one highlighted fit",
+    },
+    "scientific": {
+        "title": "Frequency-Domain Matrix Response and Resonance Fit",
+        "cmap": "cividis",
+        "accent": "#0f6cbd",
+        "line_alpha": 0.3,
+        "fit_alpha": 0.08,
+        "facecolor": "#ffffff",
+        "subtitle": (
+            "Scientific/white prototype for the GWexpy gateway: "
+            "matrix structure, resonance tracking, and fit diagnostics"
+        ),
+    },
+}
 
 
 def resonant_background(
@@ -101,10 +132,25 @@ def build_frequencyseries_matrix(seed: int = 42) -> FrequencySeriesMatrix:
     )
 
 
-def build_hero_figure() -> tuple[plt.Figure, Mapping[str, float | bool]]:
+def _style_settings(style: str) -> Mapping[str, object]:
+    try:
+        return STYLE_PRESETS[style]
+    except KeyError as exc:
+        known = ", ".join(sorted(STYLE_PRESETS))
+        raise ValueError(f"Unknown style {style!r}. Expected one of: {known}") from exc
+
+
+def build_hero_figure(
+    *,
+    width_px: int = WIDTH_PX,
+    height_px: int = HEIGHT_PX,
+    dpi: int = DPI,
+    style: str = DEFAULT_STYLE,
+) -> tuple[plt.Figure, Mapping[str, float | bool | int | str]]:
     """Build the hero figure and return fit verification metadata."""
     gwexpy.register_all()
     fsm = build_frequencyseries_matrix()
+    settings = _style_settings(style)
 
     highlighted_index = 2
     series = fsm[highlighted_index, 0]
@@ -125,36 +171,50 @@ def build_hero_figure() -> tuple[plt.Figure, Mapping[str, float | bool]]:
     fig, (ax_matrix, ax_fit) = plt.subplots(
         2,
         1,
-        figsize=(WIDTH_PX / DPI, HEIGHT_PX / DPI),
-        dpi=DPI,
-        gridspec_kw={"height_ratios": [1.05, 1.4], "hspace": 0.18},
+        figsize=(width_px / dpi, height_px / dpi),
+        dpi=dpi,
+        gridspec_kw={"height_ratios": [1.0, 1.5], "hspace": 0.22},
     )
+    fig.patch.set_facecolor(str(settings["facecolor"]))
 
     matrix_data = np.log10(np.maximum(np.squeeze(fsm[:, 0, :].value, axis=1), 1.0e-12))
     heatmap = ax_matrix.imshow(
         matrix_data,
         aspect="auto",
-        cmap="viridis",
+        cmap=str(settings["cmap"]),
         origin="lower",
         extent=[series.frequencies.value[0], series.frequencies.value[-1], 0, fsm.shape[0]],
     )
+    ax_matrix.set_facecolor("#fbfcfe")
+    ax_fit.set_facecolor("#fbfcfe")
     ax_matrix.set_ylabel("Matrix Channel")
     ax_matrix.set_yticks(np.arange(fsm.shape[0]) + 0.5)
     ax_matrix.set_yticklabels(list(fsm.channel_names))
     ax_matrix.set_title(
-        "FrequencySeriesMatrix + Channel Fit",
-        fontsize=13,
+        str(settings["title"]),
+        fontsize=15 if style == "scientific" else 13,
         fontweight="bold",
         loc="left",
+    )
+    ax_matrix.text(
+        0.0,
+        1.06,
+        str(settings["subtitle"]),
+        transform=ax_matrix.transAxes,
+        fontsize=9.5 if style == "scientific" else 8.8,
+        color="#4e5f73",
+        va="bottom",
     )
     colorbar = fig.colorbar(heatmap, ax=ax_matrix, pad=0.01, fraction=0.04)
     colorbar.set_label("log10 amplitude", fontsize=9)
 
-    cmap = plt.get_cmap("viridis")
+    cmap = plt.get_cmap(str(settings["cmap"]))
     x_values = series.frequencies.value
     for idx, name in enumerate(fsm.channel_names):
         color = cmap(idx / max(fsm.shape[0] - 1, 1))
         alpha = 0.96 if idx == highlighted_index else 0.35
+        if idx != highlighted_index:
+            alpha = float(settings["line_alpha"])
         linewidth = 2.0 if idx == highlighted_index else 1.1
         ax_fit.semilogy(
             x_values,
@@ -169,49 +229,87 @@ def build_hero_figure() -> tuple[plt.Figure, Mapping[str, float | bool]]:
     ax_fit.semilogy(
         x_values,
         fit_curve,
-        color="#d62728",
-        linewidth=2.3,
+        color=str(settings["accent"]),
+        linewidth=2.5 if style == "scientific" else 2.3,
         label="Lorentzian-style fit",
     )
-    ax_fit.axvspan(80.0, 240.0, color="#d62728", alpha=0.06)
+    ax_fit.axvspan(80.0, 240.0, color=str(settings["accent"]), alpha=float(settings["fit_alpha"]))
+    if style == "scientific":
+        for freq in (60.0, 120.0, 180.0, 240.0):
+            ax_fit.axvline(freq, color="#d9e2ec", linewidth=0.8, zorder=0)
+        ax_matrix.text(
+            0.012,
+            0.12,
+            "Panel A  Matrix overview",
+            transform=ax_matrix.transAxes,
+            fontsize=8.6,
+            color="#394b59",
+            bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "#d8e1eb"},
+        )
+        ax_fit.text(
+            0.012,
+            0.9,
+            "Panel B  Highlighted resonance fit",
+            transform=ax_fit.transAxes,
+            fontsize=8.6,
+            color="#394b59",
+            bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "#d8e1eb"},
+        )
     ax_fit.set_xlim(8, 512)
     ax_fit.set_xlabel("Frequency [Hz]")
     ax_fit.set_ylabel("Amplitude [strain/√Hz]")
-    ax_fit.grid(True, which="both", alpha=0.2)
+    ax_fit.grid(True, which="both", alpha=0.22, color="#c8d3df")
     ax_fit.legend(loc="upper right", fontsize=8, framealpha=0.9)
     ax_fit.text(
         0.014,
         0.05,
         (
             f"Matrix.fit(): {hasattr(fsm, 'fit')}\n"
-            f"Selected series fit center: {float(fit_result.params['center_hz']):.1f} Hz\n"
-            f"Reduced χ²: {fit_result.reduced_chi2:.2f}"
+            f"Selected series: {fsm.channel_names[highlighted_index]}\n"
+            f"Center frequency: {float(fit_result.params['center_hz']):.1f} Hz\n"
+            f"Reduced chi-square: {fit_result.reduced_chi2:.2f}"
         ),
         transform=ax_fit.transAxes,
         fontsize=8.8,
-        bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "alpha": 0.92},
+        bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#d8e1eb", "alpha": 0.96},
     )
+    fig.subplots_adjust(top=0.92, bottom=0.11, left=0.08, right=0.96)
 
     metadata = {
         "frequencyseriesmatrix_has_fit": hasattr(fsm, "fit"),
         "fit_target_has_fit": hasattr(series, "fit"),
         "fit_center_hz": float(fit_result.params["center_hz"]),
         "fit_gamma_hz": float(fit_result.params["gamma_hz"]),
+        "channel_count": int(fsm.shape[0]),
+        "panel_count": 2,
+        "style": style,
     }
     return fig, metadata
 
 
-def generate_hero_plot(output: Path | str = OUTPUT) -> dict[str, float | bool | str]:
+def generate_hero_plot(
+    output: Path | str = OUTPUT,
+    *,
+    width_px: int = WIDTH_PX,
+    height_px: int = HEIGHT_PX,
+    dpi: int = DPI,
+    style: str = DEFAULT_STYLE,
+) -> dict[str, float | bool | int | str]:
     """Generate the hero image and return verification metadata."""
     output_path = Path(output)
-    fig, metadata = build_hero_figure()
+    fig, metadata = build_hero_figure(
+        width_px=width_px,
+        height_px=height_px,
+        dpi=dpi,
+        style=style,
+    )
     try:
         _save_rgb_figure(
             fig,
             output_path,
-            width_px=WIDTH_PX,
-            height_px=HEIGHT_PX,
-            dpi=DPI,
+            width_px=width_px,
+            height_px=height_px,
+            dpi=dpi,
         )
     finally:
         plt.close(fig)
@@ -219,15 +317,40 @@ def generate_hero_plot(output: Path | str = OUTPUT) -> dict[str, float | bool | 
     return {
         **metadata,
         "output": str(output_path),
-        "width_px": WIDTH_PX,
-        "height_px": HEIGHT_PX,
-        "dpi": DPI,
+        "width_px": width_px,
+        "height_px": height_px,
+        "dpi": dpi,
     }
 
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, default=OUTPUT)
+    parser.add_argument("--width", type=int, default=WIDTH_PX)
+    parser.add_argument("--height", type=int, default=HEIGHT_PX)
+    parser.add_argument("--dpi", type=int, default=DPI)
+    parser.add_argument("--style", choices=sorted(STYLE_PRESETS), default=DEFAULT_STYLE)
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print the generation report as JSON instead of a short text summary.",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
-    """Generate the default hero image and print a short report."""
-    report = generate_hero_plot()
+    """Generate the requested hero image and print a short report."""
+    args = _parse_args()
+    report = generate_hero_plot(
+        output=args.output,
+        width_px=args.width,
+        height_px=args.height,
+        dpi=args.dpi,
+        style=args.style,
+    )
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return
     print(
         "Saved hero plot:",
         report["output"],
@@ -238,6 +361,14 @@ def main() -> None:
         report["frequencyseriesmatrix_has_fit"],
         "| extracted FrequencySeries.fit() available:",
         report["fit_target_has_fit"],
+    )
+    print(
+        "Style:",
+        report["style"],
+        "| channels:",
+        report["channel_count"],
+        "| panels:",
+        report["panel_count"],
     )
 
 
