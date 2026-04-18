@@ -20,32 +20,32 @@
 
 | API種別 | 代表 API | 安定性 | GWpy との差分 | 詳細リンク |
 | --- | --- | --- | --- | --- |
-| 変換メソッド | `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | Stable | チャンネル集合を行列コンテナへ変換し、一括スペクトル解析や統計処理へ繋げられる | [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb), [TimeSeriesDict](../reference/TimeSeriesDict.md), [TimeSeriesMatrix](../reference/TimeSeriesMatrix.md) |
-| 変換メソッド | `FrequencySeriesDict.to_matrix()` -> `FrequencySeriesMatrix` | Stable | 周波数系列の集合を、ペア比較や一括解析向けのコンテナへ揃えられる | [FrequencySeriesDict](../reference/FrequencySeriesDict.md), [FrequencySeriesMatrix](../reference/FrequencySeriesMatrix.md) |
-| 変換メソッド | `SpectrogramDict.to_matrix()` / `SpectrogramList.to_matrix()` -> `SpectrogramMatrix` | Stable | 時間周波数データの集合を行列として扱い、まとめて後段へ渡せる | [SpectrogramDict](../reference/SpectrogramDict.md), [SpectrogramList](../reference/SpectrogramList.md), [SpectrogramMatrix](../reference/SpectrogramMatrix.md) |
+| 変換メソッド | `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | 安定 | チャンネル集合を行列コンテナへ変換し、一括スペクトル解析や統計処理へ繋げられる | [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb), [TimeSeriesDict](../reference/TimeSeriesDict.md), [TimeSeriesMatrix](../reference/TimeSeriesMatrix.md) |
+| 変換メソッド | `FrequencySeriesDict.to_matrix()` -> `FrequencySeriesMatrix` | 安定 | 周波数系列の集合を、ペア比較や一括解析向けのコンテナへ揃えられる | [FrequencySeriesDict](../reference/FrequencySeriesDict.md), [FrequencySeriesMatrix](../reference/FrequencySeriesMatrix.md) |
+| 変換メソッド | `SpectrogramDict.to_matrix()` / `SpectrogramList.to_matrix()` -> `SpectrogramMatrix` | 安定 | 時間周波数データの集合を行列として扱い、まとめて後段へ渡せる | [SpectrogramDict](../reference/SpectrogramDict.md), [SpectrogramList](../reference/SpectrogramList.md), [SpectrogramMatrix](../reference/SpectrogramMatrix.md) |
 
 ### 追加メソッド群
 
 | API種別 | 代表 API | 安定性 | GWpy との差分 | 詳細リンク |
 | --- | --- | --- | --- | --- |
-| インスタンスメソッド | `.find_peaks()` | Stable | NumPy 配列へ降ろして SciPy を直接呼ぶ代わりに、データオブジェクト上でピーク検出できる | [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb), [TimeSeries](../reference/TimeSeries.md), [FrequencySeries](../reference/FrequencySeries.md) |
-| インスタンスメソッド | `.fit()` | Stable | フィッティング処理を、データオブジェクトからそのまま開始できる | [フィッティング](tutorials/advanced_fitting.ipynb), [Fitting Reference](../reference/fitting.md) |
-| インスタンスメソッド | `.hht()` | Experimental | Hilbert-Huang Transform をオブジェクトメソッドとして呼べる | [HHT](tutorials/advanced_hht.ipynb), [TimeSeries](../reference/TimeSeries.md) |
-| インスタンスメソッド | `.arima()` | Experimental | 時系列モデル化と予測を、時系列オブジェクトのメソッドとして呼べる | [ARIMA](tutorials/advanced_arima.ipynb), [TimeSeries](../reference/TimeSeries.md) |
+| インスタンスメソッド | `.find_peaks()` | 安定 | NumPy 配列へ降ろして SciPy を直接呼ぶ代わりに、データオブジェクト上でピーク検出できる | [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb), [TimeSeries](../reference/TimeSeries.md), [FrequencySeries](../reference/FrequencySeries.md) |
+| インスタンスメソッド | `.fit()` | 安定 | フィッティング処理を、データオブジェクトからそのまま開始できる | [フィッティング](tutorials/advanced_fitting.ipynb), [Fitting Reference](../reference/fitting.md) |
+| インスタンスメソッド | `.hht()` | 実験的 | Hilbert-Huang Transform をオブジェクトメソッドとして呼べる | [HHT](tutorials/advanced_hht.ipynb), [TimeSeries](../reference/TimeSeries.md) |
+| インスタンスメソッド | `.arima()` | 実験的 | 時系列モデル化と予測を、時系列オブジェクトのメソッドとして呼べる | [ARIMA](tutorials/advanced_arima.ipynb), [TimeSeries](../reference/TimeSeries.md) |
 
 ### Field API
 
 | API種別 | 代表 API | 安定性 | GWpy との差分 | 詳細リンク |
 | --- | --- | --- | --- | --- |
-| クラス | `ScalarField` | Experimental | 時間 + 空間軸を持つ 4 次元フィールドを、メタデータ付きで保持できる | [Field API 入門](tutorials/field_scalar_intro.ipynb), [ScalarField](../reference/ScalarField.md) |
-| インスタンスメソッド | `ScalarField.fft_space()` | Experimental | 空間方向の変換を、Field オブジェクトの文脈のまま実行できる | [Field API 入門](tutorials/field_scalar_intro.ipynb), [ScalarField](../reference/ScalarField.md) |
-| コレクション | `FieldList` / `FieldDict` | Experimental | 複数の `ScalarField` をまとめて扱い、バッチ処理や整合性確認を揃えられる | [Field API 入門](tutorials/field_scalar_intro.ipynb), [FieldList](../reference/FieldList.md), [FieldDict](../reference/FieldDict.md) |
+| クラス | `ScalarField` | 実験的 | 時間 + 空間軸を持つ 4 次元フィールドを、メタデータ付きで保持できる | [Field API 入門](tutorials/field_scalar_intro.ipynb), [ScalarField](../reference/ScalarField.md) |
+| インスタンスメソッド | `ScalarField.fft_space()` | 実験的 | 空間方向の変換を、Field オブジェクトの文脈のまま実行できる | [Field API 入門](tutorials/field_scalar_intro.ipynb), [ScalarField](../reference/ScalarField.md) |
+| コレクション | `FieldList` / `FieldDict` | 実験的 | 複数の `ScalarField` をまとめて扱い、バッチ処理や整合性確認を揃えられる | [Field API 入門](tutorials/field_scalar_intro.ipynb), [FieldList](../reference/FieldList.md), [FieldDict](../reference/FieldDict.md) |
 
 ### 共有 / 互換性
 
 | API種別 | 代表 API / 挙動 | 安定性 | GWpy との差分 | 詳細リンク |
 | --- | --- | --- | --- | --- |
-| 挙動 | Transparent Pickle | Stable | 送信側が GWexpy でも、受信側に GWexpy がなく、GWpy があれば基本クラスとして復元できる | [GWpy ユーザー向け移行ガイド](gwexpy_for_gwpy_users_ja.md), [インストールガイド](installation.md) |
+| 挙動 | Transparent Pickle | 安定 | 送信側が GWexpy でも、受信側に GWexpy がなく、GWpy があれば基本クラスとして復元できる | [GWpy ユーザー向け移行ガイド](gwexpy_for_gwpy_users_ja.md), [インストールガイド](installation.md) |
 
 ## このページに載せていないもの
 

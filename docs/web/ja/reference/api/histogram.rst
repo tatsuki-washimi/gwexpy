@@ -1,7 +1,7 @@
 ヒストグラム (Histogram)
 ========================
 
-**安定性:** Stable
+**安定性:** 安定
 
 .. automodule:: gwexpy.histogram
 

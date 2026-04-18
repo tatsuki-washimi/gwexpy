@@ -2,7 +2,7 @@
 
 <!-- reference-summary:start -->
 
-**安定性:** Stable
+**安定性:** 安定
 
 ## 主な用途
 

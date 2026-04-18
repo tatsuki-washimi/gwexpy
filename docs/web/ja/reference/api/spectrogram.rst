@@ -4,7 +4,7 @@
 .. note::
    ページ種別: 二次 API カテゴリ
 
-**安定性:** Stable
+**安定性:** 安定
 
 .. currentmodule:: gwexpy.spectrogram
 

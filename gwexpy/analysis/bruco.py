@@ -1061,6 +1061,7 @@ class Bruco:
         excluded_channels : list of str, optional
             Channels to ignore before scanning, such as known self-couplings
             or calibration lines.
+
         """
         self.target = str(target_channel)
         self.aux_channels = [str(c) for c in aux_channels]

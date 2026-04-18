@@ -278,15 +278,13 @@ def register_timeseries_format(
             identifier_dict = _extension_identifier
 
     if identifier_dict is not None:
-        for registered_name in format_names:
-            io_registry.register_identifier(registered_name, TimeSeriesDict, identifier_dict)
+        io_registry.register_identifier(format_name, TimeSeriesDict, identifier_dict)
 
     # Use same identifier for TimeSeries unless explicitly provided
     if identifier_single is None:
         identifier_single = identifier_dict
 
     if identifier_single is not None:
-        for registered_name in format_names:
-            io_registry.register_identifier(registered_name, TimeSeries, identifier_single)
-            # TimeSeriesMatrix typically uses the same identifier
-            io_registry.register_identifier(registered_name, TimeSeriesMatrix, identifier_single)
+        io_registry.register_identifier(format_name, TimeSeries, identifier_single)
+        # TimeSeriesMatrix typically uses the same identifier
+        io_registry.register_identifier(format_name, TimeSeriesMatrix, identifier_single)

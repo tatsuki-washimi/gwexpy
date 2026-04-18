@@ -4,7 +4,7 @@
 .. note::
    ページ種別: 理論・概念の入口
 
-**安定性:** Stable
+**安定性:** 安定
 
 このページは、クラス名やモジュール名ではなく、概念や用途からリファレンスを探したい場合の入口です。
 
@@ -19,19 +19,19 @@
      - 安定性
      - 入口
    * - 理論と規約
-     - Stable
+     - 安定
      - :doc:`FFT_Conventions`, :doc:`../user_guide/prerequisites_and_conventions`
    * - スペクトル解析とフィッティング
-     - Stable
+     - 安定
      - :doc:`Spectral`, :doc:`fitting`, :doc:`../user_guide/tutorials/case_bootstrap_gls_fitting`
    * - 検証・監査ノート
-     - Stable
+     - 安定
      - :doc:`../user_guide/validated_algorithms`, :doc:`../user_guide/numerical_stability`
    * - ノイズ生成ヘルパ
-     - Stable
+     - 安定
      - :doc:`Noise`
    * - 互換・補助 API
-     - Stable
+     - 安定
      - :doc:`api/extra`
 
 概念別ガイド

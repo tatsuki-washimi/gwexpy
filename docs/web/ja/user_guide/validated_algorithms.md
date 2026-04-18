@@ -24,7 +24,7 @@ myst:
 
 `gwexpy` で使用されている主要な数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。
 
-**検索のヒント:** `validated algorithms`, `tolerance`, `FFT conventions`, `whitening`, `GLS`, `MCMC`, `VIF`
+**検索のヒント:** `validated algorithms`, `tolerance`, `FFT conventions`, `ホワイトニング`, `GLS`, `MCMC`, `VIF`
 
 ## このページの近道
 

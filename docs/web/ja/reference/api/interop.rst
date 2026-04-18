@@ -1,7 +1,7 @@
 外部連携 (Interoperability)
 ===========================
 
-**安定性:** Stable
+**安定性:** 安定
 
 .. automodule:: gwexpy.interop
 

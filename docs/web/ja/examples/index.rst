@@ -120,9 +120,9 @@ IV. ノイズハンティングと検出器診断
 - :doc:`ロックイン検出: 弱い AM/FM 構造の復元 <../user_guide/tutorials/case_lockin_detection>`
 - :doc:`ウィーナーフィルタ: コヒーレント雑音の差し引き <../user_guide/tutorials/case_wiener_filter>`
 - :doc:`カップリング解析: チャンネル間伝達経路の推定 <../user_guide/tutorials/case_coupling_analysis>`
-- :doc:`Bruco と ICA: ウィットネス選定から差し引きまで <../user_guide/tutorials/case_bruco_ica_denoising>`
-- :doc:`Bruco 応用: バイリニア結合と AM/FM の失敗モード <../user_guide/tutorials/case_bruco_advanced>`
-- :doc:`Bruco 失敗モード集: 偽相関・前処理不足・非線形見落とし <../user_guide/tutorials/case_bruco_failure_modes>`
+- :doc:`BruCo と ICA: ウィットネス選定から差し引きまで <../user_guide/tutorials/case_bruco_ica_denoising>`
+- :doc:`BruCo 応用: バイリニア結合と AM/FM の失敗モード <../user_guide/tutorials/case_bruco_advanced>`
+- :doc:`BruCo 失敗モード集: 偽相関・前処理不足・非線形見落とし <../user_guide/tutorials/case_bruco_failure_modes>`
 - :doc:`バイオリンモード解析: 共振モードの同定と追跡 <../user_guide/tutorials/case_violin_mode>`
 - :doc:`シューマン共鳴解析: 環境磁場モードの読み解き <../user_guide/tutorials/case_schumann_resonance>`
 - :doc:`グリッチ詳細解析: Q 変換と Omega スキャン <../user_guide/tutorials/case_glitch_analysis>`

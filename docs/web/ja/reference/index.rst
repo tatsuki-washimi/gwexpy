@@ -9,7 +9,7 @@
 .. note::
    ページ種別: リファレンス索引
 
-**安定性:** Stable
+**安定性:** 安定
 
 このページは GWexpy のリファレンス入口です。モジュール別に探すか、クラス名で引くか、概念別に探すかに応じて入口を選んでください。
 
@@ -42,13 +42,13 @@
      - 安定性
      - 用途
    * - :doc:`API リファレンス (API Reference) <api/index>`
-     - Stable
+     - 安定
      - サブシステム別にモジュールと公開関数をたどる
    * - :doc:`クラス索引 (Class Index) <classes>`
-     - Stable
+     - 安定
      - Python クラス名から個別ページを引く
    * - :doc:`トピック別参照 (Topics) <topics>`
-     - Stable
+     - 安定
      - 規約、理論、補助ページを概念別に探す
 
 .. _reference-ja-entry-cards:

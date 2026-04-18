@@ -109,7 +109,7 @@ VI. ノイズハンティングと特殊ツール
 -----------------------------------
 ノイズ源特定や診断タスクのための専用ツールについて説明します。
 
-- :doc:`Bruco: 基本 <advanced_bruco>` :bdg-primary:`上級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
+- :doc:`BruCo: 基本 <advanced_bruco>` :bdg-primary:`上級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 
 .. _tutorials-ja-segment-entry:
 

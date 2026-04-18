@@ -148,7 +148,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
          </div>
          <div>
            <dt>Analysis</dt>
-           <dd>Fitting, BrUCo, MCMC</dd>
+           <dd>Fitting, BruCo, MCMC</dd>
          </div>
          <div>
            <dt>Install</dt>
