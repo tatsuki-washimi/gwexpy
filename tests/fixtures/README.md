@@ -16,11 +16,10 @@ python tests/fixtures/generate_fixtures.py
 | カテゴリ | データ型 | フォーマット名 | 拡張子 | 生成元 | 主な検証テストファイル |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **時系列** | TimeSeries | `gwf` | `.gwf` | `gwpy` | `tests/timeseries/test_io_gwf_*.py` |
-| | | `hdf5` | `.h5` | `h5py` | `tests/timeseries/test_io_ndscope_hdf5.py` |
-| | | `ndscope` | `.h5` | `h5py` | `tests/timeseries/test_io_ndscope_hdf5.py` |
+| | | `ndscope-hdf5` (`ndscope_hdf5`, `ndscopehdf5`) | `.h5`, `.hdf5` | `h5py` | `tests/timeseries/test_io_ndscope_hdf5.py` |
 | | | `ats` | `.ats` | manual | `tests/io/test_ats_reader.py` |
 | | | `win` | `.win` | manual | `tests/io/test_win_reader.py` |
-| | | `zarr` | `.zarr` | `zarr` | `tests/interop/test_zarr.py` |
+| | | `zarr` | `.zarr` | `zarr` | `tests/io/test_zarr_reader.py`, `tests/interop/test_zarr.py` |
 | | | `netcdf4` | `.nc` | `netCDF4` | `tests/interop/test_netcdf4_direct.py` |
 | | | `tdms` | `.tdms` | `nptdms` | `tests/io/test_io_improvements.py` |
 | | | `wav` | `.wav` | `scipy` | `tests/io/test_wav_reader.py` |

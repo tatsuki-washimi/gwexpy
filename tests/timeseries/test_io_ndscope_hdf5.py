@@ -14,6 +14,7 @@ from gwexpy.timeseries.io.ndscope_hdf5 import (
 )
 
 SAMPLE_HDF5 = Path(__file__).parent.parent / "fixtures" / "data" / "ndscope.h5"
+_NDSCOPE_ACCEPTED_FORMATS = ("ndscope-hdf5", "ndscope_hdf5", "ndscopehdf5")
 
 # ---------------------------------------------------------------------------
 # Helpers to create synthetic ndscope HDF5 files
@@ -174,11 +175,33 @@ class TestRead:
         tsd = TimeSeriesDict.read(str(p), format="ndscope-hdf5")
         assert "K1:TEST-CHANNEL" in tsd
 
+    @pytest.mark.parametrize("fmt", _NDSCOPE_ACCEPTED_FORMATS)
+    def test_read_via_timeseriesdict_accepts_registered_aliases(self, tmp_path, fmt):
+        """Accepted ndscope aliases should resolve to the same reader behavior."""
+        p = tmp_path / f"{fmt}.hdf5"
+        _make_ndscope_raw(p)
+
+        tsd = TimeSeriesDict.read(str(p), format=fmt)
+
+        assert list(tsd.keys()) == ["K1:TEST-CHANNEL"]
+        np.testing.assert_allclose(tsd["K1:TEST-CHANNEL"].value, np.arange(256, dtype=np.float64))
+
     def test_read_via_timeseries(self, tmp_path):
         """Test that TimeSeries.read works with ndscope format."""
         p = tmp_path / "single.hdf5"
         _make_ndscope_raw(p)
         ts = TimeSeries.read(str(p), format="ndscope-hdf5")
+        assert ts.name == "K1:TEST-CHANNEL"
+        assert len(ts) == 256
+
+    @pytest.mark.parametrize("fmt", _NDSCOPE_ACCEPTED_FORMATS)
+    def test_read_via_timeseries_accepts_registered_aliases(self, tmp_path, fmt):
+        """Single-series reads should accept every registry alias exposed by Worker 1."""
+        p = tmp_path / f"single_{fmt}.hdf5"
+        _make_ndscope_raw(p)
+
+        ts = TimeSeries.read(str(p), format=fmt)
+
         assert ts.name == "K1:TEST-CHANNEL"
         assert len(ts) == 256
 
@@ -211,6 +234,24 @@ class TestWrite:
             assert float(grp.attrs["gps_start"]) == 1_000_000_000.0
             assert grp.attrs["unit"] == "m"
             np.testing.assert_allclose(grp["raw"][:], np.arange(100, dtype=np.float64))
+
+    @pytest.mark.parametrize("fmt", _NDSCOPE_ACCEPTED_FORMATS)
+    def test_write_accepts_registered_aliases(self, tmp_path, fmt):
+        """Writes should work through every accepted ndscope alias without new canonicals."""
+        p = tmp_path / f"out_{fmt}.hdf5"
+        ts = TimeSeries(
+            np.arange(16, dtype=np.float64),
+            sample_rate=8.0,
+            t0=1_000_000_000.0,
+            name="K1:WRITE-ALIAS",
+            unit="m",
+        )
+
+        TimeSeriesDict({"K1:WRITE-ALIAS": ts}).write(str(p), format=fmt)
+
+        reread = TimeSeriesDict.read(str(p), format="ndscope-hdf5")
+        assert list(reread.keys()) == ["K1:WRITE-ALIAS"]
+        np.testing.assert_allclose(reread["K1:WRITE-ALIAS"].value, np.arange(16, dtype=np.float64))
 
     def test_roundtrip(self, tmp_path):
         p = tmp_path / "roundtrip.hdf5"

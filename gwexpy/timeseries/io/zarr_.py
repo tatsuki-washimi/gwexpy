@@ -4,8 +4,9 @@ Convention
 ----------
 A Zarr store is a group where each array represents one channel.
 Per-array attributes ``sample_rate`` (Hz) and ``t0`` (GPS seconds) are
-used to reconstruct the time axis.  If ``sample_rate`` is absent the
-inverse of ``dt`` is tried; failing that, 1 Hz is assumed.
+used to reconstruct the time axis. If ``sample_rate`` is absent the
+inverse of ``dt`` is tried. If both are absent, reading fails with a
+clear error instead of silently assuming 1 Hz.
 
 Directory stores, zip stores, and any other backend supported by the
 ``zarr`` library can be used as *source* / *target*.
@@ -41,11 +42,74 @@ def _import_zarr():
 # -- Reader --------------------------------------------------------------------
 
 
+def _coerce_sample_rate_from_attrs_or_override(
+    attrs,
+    *,
+    channel_name,
+    sample_rate_override=None,
+    dt_override=None,
+) -> float:
+    """Resolve sample rate from metadata or explicit override.
+
+    The recovery path is intentionally explicit: callers may provide either
+    ``sample_rate_override`` or ``dt_override`` when reading legacy stores that
+    lack timing metadata, but never both.
+    """
+    if sample_rate_override is not None and dt_override is not None:
+        raise ValueError(
+            "Pass only one of sample_rate_override or dt_override when reading "
+            f"Zarr channel '{channel_name}'."
+        )
+
+    sr = attrs.get("sample_rate")
+    if sr is not None:
+        sample_rate = float(sr)
+        if sample_rate <= 0:
+            raise ValueError(
+                f"Zarr channel '{channel_name}' has invalid sample_rate={sr!r}. "
+                "Expected a positive value in Hz."
+            )
+        return sample_rate
+
+    dt_val = attrs.get("dt")
+    if dt_val is not None:
+        dt = float(dt_val)
+        if dt <= 0:
+            raise ValueError(
+                f"Zarr channel '{channel_name}' has invalid dt={dt_val!r}. "
+                "Expected a positive time spacing in seconds."
+            )
+        return 1.0 / dt
+
+    if sample_rate_override is not None:
+        sample_rate = float(sample_rate_override)
+        if sample_rate <= 0:
+            raise ValueError(
+                f"sample_rate_override must be positive; got {sample_rate_override!r}."
+            )
+        return sample_rate
+
+    if dt_override is not None:
+        dt = float(dt_override)
+        if dt <= 0:
+            raise ValueError(f"dt_override must be positive; got {dt_override!r}.")
+        return 1.0 / dt
+
+    raise ValueError(
+        f"Zarr channel '{channel_name}' is missing timing metadata. "
+        "Expected per-array 'sample_rate' (Hz) or 'dt' (seconds) attributes. "
+        "To read legacy data intentionally, add that metadata to the store or "
+        "pass sample_rate_override=... or dt_override=... to the Zarr reader."
+    )
+
+
 def read_timeseriesdict_zarr(
     source,
     *,
     channels=None,
     unit=None,
+    sample_rate_override=None,
+    dt_override=None,
     **kwargs,
 ) -> TimeSeriesDict:
     """Read a Zarr store into a TimeSeriesDict.
@@ -59,6 +123,14 @@ def read_timeseriesdict_zarr(
         are loaded.
     unit : str, optional
         Physical unit override applied to every channel.
+    sample_rate_override : float, optional
+        Explicit sample-rate recovery value in Hz for legacy stores that lack
+        per-array ``sample_rate`` and ``dt`` metadata. Mutually exclusive with
+        ``dt_override``.
+    dt_override : float, optional
+        Explicit sample-spacing recovery value in seconds for legacy stores
+        that lack per-array timing metadata. Mutually exclusive with
+        ``sample_rate_override``.
     **kwargs
         Additional keyword arguments forwarded to ``zarr.open_group``.
 
@@ -86,12 +158,12 @@ def read_timeseriesdict_zarr(
         attrs = dict(arr.attrs)
         t0 = float(attrs.get("t0", 0.0))
 
-        sr = attrs.get("sample_rate")
-        if sr is not None:
-            sample_rate = float(sr)
-        else:
-            dt_val = attrs.get("dt")
-            sample_rate = 1.0 / float(dt_val) if dt_val else 1.0
+        sample_rate = _coerce_sample_rate_from_attrs_or_override(
+            attrs,
+            channel_name=key,
+            sample_rate_override=sample_rate_override,
+            dt_override=dt_override,
+        )
 
         arr_unit = unit or attrs.get("unit") or attrs.get("units")
 
