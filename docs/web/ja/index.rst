@@ -203,6 +203,11 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 あなたに合ったガイド
 --------------------
 
+.. note::
+
+   `Tutorials` は 1 つずつ機能やクラスを学ぶ機能別の学習導線です。
+   `Case Studies` は 解析目的に沿って複数機能を組み合わせる目的別の実践導線です。
+
 .. grid:: 3
     :gutter: 3
     :class-container: grid-container
@@ -214,7 +219,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
         基礎から学びたい方向け
 
         * インストールガイド
-        * 基本チュートリアル
+        * 機能別チュートリアル
 
     .. grid-item-card:: 🔬 実験データ解析者向け
         :link: examples/index
@@ -222,7 +227,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 
         実践的な解析例を知りたい方向け
 
-        * 解析ケーススタディ
+        * 目的別ケーススタディ
         * 高度な信号処理
 
     .. grid-item-card:: 🔄 GWpy ユーザー向け
@@ -315,7 +320,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 Visual Examples
 ---------------
 
-このカード群は、正本であるケーススタディギャラリーの短い teaser です。
+このカード群は、正本である目的別ケーススタディギャラリーの短い teaser です。
 
 .. grid:: 3
     :gutter: 3
@@ -352,7 +357,7 @@ Visual Examples
     :color: secondary
     :expand:
 
-    正式なケーススタディギャラリーを見る
+    正式な目的別ケーススタディギャラリーを見る
 
 .. _hub-ja-reference-entry:
 
@@ -363,7 +368,7 @@ GWpy の基礎を学ぶ
 
 GWexpy は GWpy の上に構築されています。GWpy の基本操作は下記の公式ドキュメントを参照してください。
 
-`gwpy.github.io/docs/stable/ <https://gwpy.github.io/docs/stable/>`_
+`gwpy.readthedocs.io/en/stable/ <https://gwpy.readthedocs.io/en/stable/>`_
 
 ----
 

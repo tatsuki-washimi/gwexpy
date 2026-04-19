@@ -24,7 +24,7 @@
 
 .. note::
    高度・理論系の入口:
-   検証前提、規約、監査根拠付きの理論メモを確認したい場合は、まず :doc:`topics` を開き、その後 :doc:`../user_guide/validated_algorithms` に進んでください。
+   検証前提、規約、監査根拠付きの理論メモを確認したい場合は、まず :doc:`topics` を開き、その後 高度・理論向けの入口である :doc:`../user_guide/validated_algorithms` に進んでください。
 
 .. note::
    使い方の目安:
@@ -85,7 +85,7 @@
    リファレンスではなく用途別ガイドから入りたい場合は、総合 index ではなく次の個別ページを起点にしてください。
 
    - :doc:`../user_guide/scalarfield_slicing` for `ScalarField` のスライス設計と実例
-   - :doc:`../user_guide/validated_algorithms` for 高度な検証前提と監査ベースの理論メモ
+   - :doc:`../user_guide/validated_algorithms` for 高度・理論向けの検証前提と監査ベースのノート
    - :doc:`../user_guide/gwexpy_for_gwpy_users_ja` for GWpy からの移行ガイド
 
 .. seealso::

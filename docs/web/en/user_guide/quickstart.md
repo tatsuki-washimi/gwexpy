@@ -30,7 +30,7 @@ Get your first analysis plot with GWexpy as quickly as possible.
 
 ## Quick Install
 
-Since GWexpy is currently in development, please install it directly from GitHub:
+GWexpy is currently in development and is **not yet published on PyPI or Conda**, so install it directly from the GitHub source repository for now:
 
 - Purpose: install the current development build as quickly as possible
 - Input: Python 3.11+ with `pip`
@@ -39,6 +39,8 @@ Since GWexpy is currently in development, please install it directly from GitHub
 ```bash
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
+
+If you need a Conda-managed environment, GW binary dependencies such as NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the [Installation Guide](installation.md) instead of adding those packages ad hoc after this quick install.
 
 <a id="quick-demo"></a>
 
@@ -106,7 +108,7 @@ This example selects the two channels from the `TimeSeriesDict` and stores the r
 
 ## Need Help?
 
-If you encounter errors or plots do not appear, check the [Troubleshooting Guide](troubleshooting.md).
+If you encounter errors or plots do not appear, check the [Troubleshooting Guide](troubleshooting.md). If the problem is really an environment setup issue, return to the [Installation Guide](installation.md) for the Conda-first workflow.
 
 <a id="next-to-read"></a>
 <a id="next-steps"></a>
@@ -114,6 +116,7 @@ If you encounter errors or plots do not appear, check the [Troubleshooting Guide
 ## Next to Read
 
 * [Installation Guide](installation.md) - Setting up your environment.
+* [Troubleshooting Guide](troubleshooting.md) - Reverse-lookup fixes by symptom.
 * [Getting Started](getting_started.md) - Systematic learning roadmap.
 * [Prerequisites and Conventions](prerequisites_and_conventions.md) - Review FFT, GPS time, and compatibility assumptions first.
 * [Migration from GWpy](gwexpy_for_gwpy_users_en.md) - Difference guide for existing users.

@@ -26,7 +26,7 @@ myst:
 - `obj.write(..., format=...)`
 - ローカルファイル形式の採用判断そのもの
 
-ローカルファイルの読み書きは [ファイル I/O 対応フォーマットガイド](io_formats) を参照してください。
+ローカルファイルの `.read()` / `.write()` / `fetch()` 系の入口は [ファイル I/O 対応フォーマットガイド](io_formats) を参照してください。
 
 ## このページでわかること
 
@@ -52,11 +52,11 @@ myst:
 (interop-ja-how-to-read)=
 ## まず最初に: 読み方
 
-- **保存形式やコンテナに写したい**なら A を見てください。
+- **手元のオブジェクトを保存形式やコンテナに写したい**なら A を見てください。
 - **pandas / xarray / astropy / dask のような解析オブジェクトに写したい**なら B を見てください。
 - **PyTorch / TensorFlow / JAX / CuPy に渡したい**なら C を見てください。
 - **ROOT / ObsPy / LAL / PyCBC などの分野別ライブラリに接続したい**なら D を見てください。
-- **Field を xarray / NetCDF4 / Zarr に渡したい**場合は、I/O ではなく interop として扱います。
+- **Field を xarray / NetCDF4 / Zarr に `to_*()` / `from_*()` で渡したい**場合は、I/O ではなく interop として扱います。
 
 (interop-ja-status-labels)=
 ## 状態ラベル
