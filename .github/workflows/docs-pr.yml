@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 45
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash -leo pipefail {0}
     env:
       PYTHONFAULTHANDLER: "1"
       NBS_EXECUTE: never
@@ -37,15 +37,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          activate-environment: gwexpy
-          auto-activate: false
-          channels: conda-forge
-          conda-remove-defaults: "true"
-          miniforge-version: latest
-          python-version: "3.11"
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
 
       - name: Install system dependencies
         run: |
@@ -54,7 +53,6 @@ jobs:
 
       - name: Provision gwexpy docs environment
         run: |
-          conda env update -n gwexpy -f environment.yml
           python -m pip install --upgrade pip
           python -m pip install -e . --no-deps
           python -m pip install -r docs/requirements.txt

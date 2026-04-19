@@ -22,7 +22,7 @@ jobs:
         python-version: ["3.11", "3.12"]
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash -leo pipefail {0}
     env:
       PYTHONFAULTHANDLER: "1"
     steps:
@@ -31,19 +31,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          activate-environment: gwexpy
-          auto-activate: false
-          channels: conda-forge
-          conda-remove-defaults: "true"
-          miniforge-version: latest
-          python-version: ${{ matrix.python-version }}
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=${{ matrix.python-version }}
+          init-shell: bash
 
       - name: Provision gwexpy environment
         run: |
-          conda env update -n gwexpy -f environment.yml
           python -m pip install -e . --no-deps
 
       - name: Install extended test dependencies
@@ -64,26 +62,24 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash -leo pipefail {0}
     env:
       PYTHONFAULTHANDLER: "1"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          activate-environment: gwexpy
-          auto-activate: false
-          channels: conda-forge
-          conda-remove-defaults: "true"
-          miniforge-version: latest
-          python-version: "3.11"
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+            pip
+          init-shell: bash
 
       - name: Provision compatibility environment
         run: |
-          conda install -n gwexpy -y pip
           python -m pip install --upgrade pip
           python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
           python -m pip install pytest pytest-forked
@@ -105,26 +101,24 @@ jobs:
     timeout-minutes: 45
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash -leo pipefail {0}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          activate-environment: gwexpy
-          auto-activate: false
-          channels: conda-forge
-          conda-remove-defaults: "true"
-          miniforge-version: latest
-          python-version: "3.11"
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
 
       - name: Provision gwexpy environment
         run: |
-          conda env update -n gwexpy -f environment.yml
           python -m pip install papermill nbformat nbclient nbconvert
           python -m pip install -e ".[all]"
 
@@ -191,26 +185,24 @@ jobs:
         os: [macos-latest]
     defaults:
       run:
-        shell: bash -el {0}
+        shell: bash -leo pipefail {0}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          activate-environment: gwexpy
-          auto-activate: false
-          channels: conda-forge
-          conda-remove-defaults: "true"
-          miniforge-version: latest
-          python-version: "3.11"
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
 
       - name: Provision gwexpy environment
         run: |
-          conda env update -n gwexpy -f environment.yml
           python -m pip install -e . --no-deps
 
       - name: Run import smoke test
@@ -235,26 +227,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          activate-environment: gwexpy
-          auto-activate: false
-          channels: conda-forge
-          conda-remove-defaults: "true"
-          miniforge-version: latest
-          python-version: "3.11"
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: powershell
 
       - name: Provision gwexpy environment
         shell: pwsh
         run: |
-          conda env update -n gwexpy -f environment.yml
-          conda activate gwexpy
+          micromamba activate gwexpy
           python -m pip install -e . --no-deps
           python -c "import sys; print(sys.executable)"
 
       - name: Run import smoke test
         shell: pwsh
         run: |
-          conda activate gwexpy
+          micromamba activate gwexpy
           python -c "import gwexpy, numpy as np; from gwexpy import TimeSeries, FrequencySeries, Spectrogram; ts = TimeSeries(np.random.randn(100), sample_rate=1); fs = FrequencySeries(np.abs(np.random.randn(100)), df=1); sg = Spectrogram(np.random.randn(10, 10), dt=1, df=1); print(gwexpy.__version__, ts.duration, fs.f0, sg.shape)"
