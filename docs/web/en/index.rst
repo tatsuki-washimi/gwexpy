@@ -430,6 +430,7 @@ Suggested starting points
 
    user_guide/roadmap
    user_guide/troubleshooting
+   user_guide/verification_and_quality
    user_guide/citation
    user_guide/changelog
    user_guide/license
