@@ -203,6 +203,11 @@ v\ |release| · Python ≥ 3.9 · Last updated: |today|
 Find the right guide for you
 -----------------------------
 
+.. note::
+
+   `Tutorials` are feature-oriented learning paths that teach one class or capability at a time.
+   `Case Studies` are goal-oriented workflows that combine multiple features around one analysis task.
+
 .. grid:: 3
     :gutter: 3
     :class-container: grid-container
@@ -214,7 +219,7 @@ Find the right guide for you
         Learn the basics
 
         * Installation Guide
-        * Basic Tutorials
+        * Feature-oriented Tutorials
 
     .. grid-item-card:: 🔬 For Analysts
         :link: examples/index
@@ -222,7 +227,7 @@ Find the right guide for you
 
         Practical examples
 
-        * Case Studies
+        * Goal-oriented Case Studies
         * Advanced Signal Processing
 
     .. grid-item-card:: 🔄 For GWpy Users
@@ -315,7 +320,7 @@ Find by what you want to do
 Visual Examples
 ---------------
 
-These cards are a short preview of the canonical case-study gallery.
+These cards are a short preview of the canonical goal-oriented case-study gallery.
 
 .. grid:: 3
     :gutter: 3
@@ -352,7 +357,7 @@ These cards are a short preview of the canonical case-study gallery.
     :color: secondary
     :expand:
 
-    Browse the full case-study gallery
+    Browse the full goal-oriented case-study gallery
 
 .. _hub-en-reference-entry:
 
