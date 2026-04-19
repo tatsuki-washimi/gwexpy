@@ -11,9 +11,9 @@ myst:
 > **ページ種別:** ガイド
 
 gwexpy の利用者向け I/O ガイドです。
-このページでは、ユーザーが直接使う `.read()` / `.write()` / `fetch()` 系 API だけを扱います。
+このページでは、ユーザーが直接使う `.read()` / `.write()` / `fetch()` 系 API による読み書き・取得だけを扱います。
 
-`to_*()` / `from_*()` による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。必要な場合は [他ライブラリ連携チュートリアル](tutorials/intro_interop) や [Interop API リファレンス](../reference/api/interop) を参照してください。
+`to_*()` / `from_*()` による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。質問が「このオブジェクトを別ライブラリや別コンテナへどう変換するか」であれば、それは interop 側の話です。必要な場合は [他ライブラリ連携チュートリアル](tutorials/intro_interop) や [Interop API リファレンス](../reference/api/interop) を参照してください。
 
 ## このページでわかること
 
@@ -41,7 +41,7 @@ gwexpy の利用者向け I/O ガイドです。
 - **`format=` を明示する**のは、`.xml` のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。
 - **`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは **GBD** です。
 - **Read only / Write only に注意する**: 表の `○ / ×` は「読めるが書けない」「書けるが読めない」を意味します。
-- **Field を安全に保存したい**場合は、このページでは **HDF5** と **Pickle** を基準に考えてください。NetCDF4 / Zarr / ROOT object への橋渡しは interop 側の話です。
+- **Field を安全に保存したい**場合は、direct `.read()` / `.write()` 系 API の基準として **HDF5** と **Pickle** を考えてください。NetCDF4 / Zarr / ROOT object への橋渡しは interop 側の話です。
 
 ## セクション移動
 

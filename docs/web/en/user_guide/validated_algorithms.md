@@ -19,7 +19,7 @@ myst:
 :::{important}
 **Advanced validation/theory companion**
 
-This page intentionally stays under the user guide so readers can discover it from feature docs, but it is not an onboarding page. Treat it as an audit-oriented companion to the API reference, theory notes, and targeted tutorials. For first-use guidance, start with [Getting Started](getting_started.md), [Prerequisites and Conventions](prerequisites_and_conventions.md), or the linked tutorials for each method.
+This page intentionally stays under the user guide so readers can discover it from feature docs, but it is not an onboarding page. Treat it as the advanced/theory landing for audit-oriented reading across the API reference, theory notes, and targeted tutorials. For first-use guidance, start with [Getting Started](getting_started.md), [Prerequisites and Conventions](prerequisites_and_conventions.md), or the linked tutorials for each method.
 :::
 
 The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability.
