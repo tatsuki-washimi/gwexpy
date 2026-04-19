@@ -27,7 +27,7 @@ jobs:
       PYTHONFAULTHANDLER: "1"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -35,8 +35,9 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: gwexpy
-          auto-activate-base: false
+          auto-activate: false
           channels: conda-forge
+          conda-remove-defaults: "true"
           miniforge-version: latest
           python-version: ${{ matrix.python-version }}
 
@@ -68,14 +69,15 @@ jobs:
       PYTHONFAULTHANDLER: "1"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: gwexpy
-          auto-activate-base: false
+          auto-activate: false
           channels: conda-forge
+          conda-remove-defaults: "true"
           miniforge-version: latest
           python-version: "3.11"
 
@@ -106,7 +108,7 @@ jobs:
         shell: bash -el {0}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -114,8 +116,9 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: gwexpy
-          auto-activate-base: false
+          auto-activate: false
           channels: conda-forge
+          conda-remove-defaults: "true"
           miniforge-version: latest
           python-version: "3.11"
 
@@ -191,7 +194,7 @@ jobs:
         shell: bash -el {0}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -199,8 +202,9 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: gwexpy
-          auto-activate-base: false
+          auto-activate: false
           channels: conda-forge
+          conda-remove-defaults: "true"
           miniforge-version: latest
           python-version: "3.11"
 
@@ -227,7 +231,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -235,8 +239,9 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: gwexpy
-          auto-activate-base: false
+          auto-activate: false
           channels: conda-forge
+          conda-remove-defaults: "true"
           miniforge-version: latest
           python-version: "3.11"
 
