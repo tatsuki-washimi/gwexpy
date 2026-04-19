@@ -1,11 +1,12 @@
 # Test Fixtures
 
 このディレクトリには、`gwexpy` の I/O 機能を検証するためのテスト用データ、およびその生成スクリプトが含まれています。
-リポジトリの軽量化と再現性のため、バイナリデータはリポジトリに直接含めず、`generate_fixtures.py` によって動的に生成されます。
+生成可能なフィクスチャは git で正本管理せず、`generate_fixtures.py` によって再作成します。`pytest` 実行時も collection 前に同スクリプトを呼び出して、存在チェックに依存するテストが安定して動くようにしています。
 
 ## フィクスチャの生成
 
 以下のコマンドを実行することで、すべてのテスト用データを `data/` ディレクトリに生成できます。
+生成内容は deterministic になるよう固定 seed で揃えています。
 
 ```bash
 python tests/fixtures/generate_fixtures.py
