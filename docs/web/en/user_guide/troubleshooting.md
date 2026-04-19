@@ -2,16 +2,29 @@
 
 Common issues encountered when using GWexpy and their solutions.
 
+## Start Here
+
+Use this page as a reverse lookup by symptom:
+
+- Install worked for the minimal example, but you now need NDS2 / FrameLIB / other binary dependencies: go back to the [Installation Guide](installation.md#conda-environment-recommended--gw-analysis).
+- The first example from [Quickstart](quickstart.md) does not import or plot cleanly: check the matching issue below, then retry the quick example.
+- The environment feels mixed or broken after repeated `pip` and Conda changes: rebuild the dedicated Conda environment from the [Installation Guide](installation.md#conda-environment-recommended--gw-analysis).
+
 ## Installation Issues
 
 ### 1. Cannot install `nds2` / `framel`
 Binary libraries used in the `[gw]` extra cannot be installed via `pip`.
 
 **Solution:**
-Use Conda (Miniforge, etc.) to install the dependencies first.
+Use Conda (Miniforge, etc.) in a dedicated environment, then install GWexpy from source there.
 ```bash
+conda create -n gwexpy python=3.11
+conda activate gwexpy
 conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
+pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 ```
+
+See also: [Installation Guide](installation.md#conda-environment-recommended--gw-analysis)
 
 ### 2. Errors on Apple Silicon (M1/M2/M3) Mac
 Some GW analysis packages may be built for Intel (x86_64) and might not work out of the box.
@@ -30,6 +43,8 @@ Run the automated build script included in the repository.
 ```bash
 python scripts/install_minepy.py
 ```
+
+If this happened while expanding a minimal install, review the extras guidance in the [Installation Guide](installation.md#3-optional-dependencies-extras-details).
 
 ## Plotting & Visualization Issues
 
@@ -51,6 +66,8 @@ We recommend reinstalling `pygmt` via Conda.
 ```bash
 conda install -c conda-forge pygmt
 ```
+
+If you started from the smallest example in [Quickstart](quickstart.md), note that `pygmt` is optional and is not part of the minimal source install.
 
 ---
 

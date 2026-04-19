@@ -24,7 +24,7 @@ Use this page as the hub for navigating the GWexpy reference. Choose the entry p
 
 .. note::
    Advanced/theory landing:
-   For validation assumptions, conventions, and audit-backed theory notes, start with :doc:`topics` and then continue to :doc:`../user_guide/validated_algorithms`.
+   For validation assumptions, conventions, and audit-backed theory notes, start with :doc:`topics` and then continue to the advanced/theory landing at :doc:`../user_guide/validated_algorithms`.
 
 .. note::
    Example framing:
@@ -85,7 +85,7 @@ Use this page as the hub for navigating the GWexpy reference. Choose the entry p
    If you want task-oriented learning material rather than the reference, jump directly to the matching guide:
 
    - :doc:`../user_guide/scalarfield_slicing` for `ScalarField` slicing and field-style workflows
-   - :doc:`../user_guide/validated_algorithms` for advanced validation assumptions and audit-backed theory notes
+   - :doc:`../user_guide/validated_algorithms` for the advanced/theory landing on validation assumptions and audit-backed notes
    - :doc:`../user_guide/gwexpy_for_gwpy_users_en` for GWpy migration-oriented usage
 
 .. seealso::

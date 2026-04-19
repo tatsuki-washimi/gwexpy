@@ -45,7 +45,7 @@ The detailed generated API continues below on this page.
 <!-- reference-summary:end -->
 
 
-**Inherits from:** [`gwpy.spectrogram.Spectrogram`](https://gwpy.readthedocs.io/en/latest/api/gwpy.spectrogram.Spectrogram/)
+**Inherits from:** [`gwpy.spectrogram.Spectrogram`](https://gwpy.readthedocs.io/en/stable/reference/gwpy.spectrogram.Spectrogram/)
 
 Extended Spectrogram with gwexpy analysis and visualization helpers.
 
