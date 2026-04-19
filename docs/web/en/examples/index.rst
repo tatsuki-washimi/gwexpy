@@ -123,11 +123,9 @@ IV. Noise Hunting and Detector Diagnostics
 - :doc:`Coupling Analysis: estimating transfer paths between channels <../user_guide/tutorials/case_coupling_analysis>`
 - :doc:`Bruco and ICA Noise Reduction: witness selection to subtraction <../user_guide/tutorials/case_bruco_ica_denoising>`
 - :doc:`Bruco Advanced: bilinear coupling and AM/FM failure modes <../user_guide/tutorials/case_bruco_advanced>`
-- :doc:`Bruco Failure Modes: false coherence, preprocessing gaps, and missed nonlinearities <../user_guide/tutorials/case_bruco_failure_modes>`
 - :doc:`Violin Mode Analysis: fitting and tracking resonance families <../user_guide/tutorials/case_violin_mode>`
 - :doc:`Schumann Resonance Analysis <../user_guide/tutorials/case_schumann_resonance>`
 - :doc:`Glitch Analysis: Q-transform and Omega-scan <../user_guide/tutorials/case_glitch_analysis>`
-- :doc:`HHT Failure Modes: mode mixing, edge artifacts, and comparison traps <../user_guide/tutorials/case_hht_failure_modes>`
 
 .. note::
    For full API details (arguments, return values, class listings), see :doc:`../reference/index`.
@@ -163,8 +161,6 @@ IV. Noise Hunting and Detector Diagnostics
    ../user_guide/tutorials/case_coupling_analysis
    ../user_guide/tutorials/case_bruco_ica_denoising
    ../user_guide/tutorials/case_bruco_advanced
-   ../user_guide/tutorials/case_bruco_failure_modes
    ../user_guide/tutorials/case_violin_mode
    ../user_guide/tutorials/case_schumann_resonance
    ../user_guide/tutorials/case_glitch_analysis
-   ../user_guide/tutorials/case_hht_failure_modes

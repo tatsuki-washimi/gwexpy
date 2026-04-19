@@ -102,8 +102,6 @@ V. Data I/O & Interoperability
 Tutorials for file ingest, read/write workflows, and conversions with external libraries.
 
 - :doc:`Interoperability: Basics <intro_interop>` :bdg-primary:`Beginner` :bdg-secondary:`20 min` :bdg-info:`GWpy Users`
-- :doc:`Case Study: GBD Format I/O <case_gbd_format>` :bdg-primary:`Intermediate` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
-- :doc:`Case Study: Seismic Analysis with ObsPy <case_seismic_obspy>` :bdg-primary:`Intermediate` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
 
 VI. Noise Hunting & Specialized Tools
 -------------------------------------

@@ -102,8 +102,6 @@ V. データ I/O と相互運用
 ファイルの読み書き、外部ライブラリとの変換、観測データの取り込みを扱います。
 
 - :doc:`相互運用: 基本 <intro_interop>` :bdg-primary:`初級` :bdg-secondary:`20分` :bdg-info:`GWpyユーザー`
-- :doc:`ケーススタディ: GBD 形式 I/O <case_gbd_format>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
-- :doc:`ケーススタディ: ObsPy 連携による地震データ解析 <case_seismic_obspy>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 
 VI. ノイズハンティングと特殊ツール
 -----------------------------------

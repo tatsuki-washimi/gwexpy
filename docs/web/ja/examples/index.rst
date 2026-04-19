@@ -122,11 +122,9 @@ IV. ノイズハンティングと検出器診断
 - :doc:`カップリング解析: チャンネル間伝達経路の推定 <../user_guide/tutorials/case_coupling_analysis>`
 - :doc:`BruCo と ICA: ウィットネス選定から差し引きまで <../user_guide/tutorials/case_bruco_ica_denoising>`
 - :doc:`BruCo 応用: バイリニア結合と AM/FM の失敗モード <../user_guide/tutorials/case_bruco_advanced>`
-- :doc:`BruCo 失敗モード集: 偽相関・前処理不足・非線形見落とし <../user_guide/tutorials/case_bruco_failure_modes>`
 - :doc:`バイオリンモード解析: 共振モードの同定と追跡 <../user_guide/tutorials/case_violin_mode>`
 - :doc:`シューマン共鳴解析: 環境磁場モードの読み解き <../user_guide/tutorials/case_schumann_resonance>`
 - :doc:`グリッチ詳細解析: Q 変換と Omega スキャン <../user_guide/tutorials/case_glitch_analysis>`
-- :doc:`HHT 失敗モード集: モード混合・端点効果・比較の落とし穴 <../user_guide/tutorials/case_hht_failure_modes>`
 
 .. note::
    各 API の詳細（引数・戻り値・クラス一覧）は :doc:`../reference/index` を参照してください。
@@ -161,8 +159,6 @@ IV. ノイズハンティングと検出器診断
    ../user_guide/tutorials/case_coupling_analysis
    ../user_guide/tutorials/case_bruco_ica_denoising
    ../user_guide/tutorials/case_bruco_advanced
-   ../user_guide/tutorials/case_bruco_failure_modes
    ../user_guide/tutorials/case_violin_mode
    ../user_guide/tutorials/case_schumann_resonance
    ../user_guide/tutorials/case_glitch_analysis
-   ../user_guide/tutorials/case_hht_failure_modes
