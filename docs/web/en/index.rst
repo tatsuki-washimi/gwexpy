@@ -363,7 +363,7 @@ Learn the basics of GWpy
 
 GWexpy is built on top of GWpy. For GWpy fundamentals, see the official docs:
 
-`gwpy.github.io/docs/stable/ <https://gwpy.github.io/docs/stable/>`_
+`gwpy.readthedocs.io/en/stable/ <https://gwpy.readthedocs.io/en/stable/>`_
 
 ----
 
