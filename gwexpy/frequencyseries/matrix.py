@@ -119,6 +119,7 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
 
                 # Intelligent reshaping based on data shape
                 try:
+                    dshape: tuple[int, ...]
                     if data is None:
                         dshape = ()
                     else:
