@@ -270,6 +270,7 @@ The links below point to the audit scope, merged findings, and fix history used 
 
 - [Numerical Stability](numerical_stability.md) - Precision management
 - [Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared assumptions for time systems and FFT conventions
+- [Verification and Quality Signals](verification_and_quality.md) - Public notebook, I/O, and coverage evidence map
 - [Glossary](glossary.rst) - Glossary of algorithms
 - [Fields API](../reference/api/fields.rst)
 - [Time Series API](../reference/api/timeseries.rst)
