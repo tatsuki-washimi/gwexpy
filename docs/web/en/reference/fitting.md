@@ -11,6 +11,13 @@ The `gwexpy.fitting` module provides advanced fitting functionality using iminui
 - **MCMC**: Bayesian estimation using emcee
 - **Integrated Pipeline**: One-liner API for bootstrap → GLS → MCMC workflow
 
+## Validation Links
+
+- {ref}`MCMC / GLS likelihood validation <validated-en-mcmc-gls>` - Assumptions and evidence for Hermitian likelihood evaluation and GLS cost handling
+- {ref}`VIF / overlap correction validation <validated-en-vif>` - Related overlap-correction assumptions used in bootstrap-assisted spectral fitting
+- [Physics Models](../user_guide/physics_models.md) - Statistical interpretation for GLS and Bayesian fitting
+- [Bootstrap GLS Fitting](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb) - End-to-end case study that returns to this API
+
 ---
 
 ## Classes and Functions

@@ -63,6 +63,32 @@ def test_register_timeseries_format_auto_adapt(tmp_path):
     assert isinstance(tsm, TimeSeriesMatrix)
     assert tsm.channel_names == ["test"]
 
+
+def test_register_timeseries_format_aliases_do_not_duplicate_identifiers():
+    def mock_reader_dict(source, **kwargs):
+        tsd = TimeSeriesDict()
+        tsd["test"] = TimeSeries([1, 2, 3], t0=0, dt=1, name="test")
+        return tsd
+
+    register_timeseries_format(
+        "mock_alias_fmt",
+        aliases=("mock_alias_fmt_alt", "mockaliasfmt"),
+        reader_dict=mock_reader_dict,
+        extension="mockalias",
+    )
+
+    from gwpy.io.registry import default_registry as io_registry
+
+    assert io_registry.identify_format(
+        "read", TimeSeriesDict, "file.mockalias", None, (), {}
+    ) == ["mock_alias_fmt"]
+    assert io_registry.identify_format(
+        "read", TimeSeries, "file.mockalias", None, (), {}
+    ) == ["mock_alias_fmt"]
+    assert io_registry.identify_format(
+        "read", TimeSeriesMatrix, "file.mockalias", None, (), {}
+    ) == ["mock_alias_fmt"]
+
 def test_pathlib_support_ats(tmp_path):
     # Minimal ATS header
     import struct

@@ -27,12 +27,13 @@ arr_t = arr.swapaxes(0, 1)
 
 ## Related Theory
 
+- [Prerequisites and Conventions](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [TimeSeries Basics](../user_guide/tutorials/intro_timeseries.ipynb)
+- [Advanced Linear Algebra](../user_guide/tutorials/advanced_linear_algebra.md)
 
 ## API Reference
 
@@ -1243,6 +1244,5 @@ array([[-5.,  0.],
        [-3.,  4.],
        [-2.,  6.],
        [-1.,  8.]])
-
 
 

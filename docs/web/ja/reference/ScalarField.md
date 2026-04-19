@@ -2,7 +2,7 @@
 
 <!-- reference-summary:start -->
 
-**安定性:** Stable
+**安定性:** 安定
 
 ## 主な用途
 
@@ -28,13 +28,14 @@ field_f = field.fft_time()
 ## 関連理論
 
 - [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- {ref}`k-space 計算の検証 <validated-ja-k-space>` - `ScalarField.fft_space()` の前提条件と検証根拠
 - [FFT_Conventions](FFT_Conventions.md)
+- [前提条件と規約](../user_guide/prerequisites_and_conventions.md)
 
 ## 関連チュートリアル
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Field API Intro](../user_guide/tutorials/field_scalar_intro.ipynb)
+- [ScalarField Slicing](../user_guide/scalarfield_slicing.md)
 
 ## API リファレンス
 

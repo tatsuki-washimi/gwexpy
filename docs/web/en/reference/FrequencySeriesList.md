@@ -27,14 +27,16 @@ mat = lst.to_matrix()
 
 ## Related Theory
 
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
 
 ## Related Tutorials
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [FrequencySeries Tutorial](../user_guide/tutorials/intro_frequencyseries.ipynb)
+- [FrequencySeries Matrix Tutorial](../user_guide/tutorials/matrix_frequencyseries.ipynb)
+- [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb)
 
 ## API Reference
 
@@ -46,6 +48,25 @@ The detailed generated API continues below on this page.
 **Inherits from:** FrequencySeriesBaseList
 
 List of `FrequencySeries` objects.
+
+## Physical Context
+
+Use `FrequencySeriesList` when you have several spectra that should keep their per-series identity: repeated measurements, different sensors, or several processing branches of the same channel.
+
+- each entry can still carry its own metadata and channel name
+- batch methods are convenient, but the list does **not** guarantee identical units, `df`, or calibration state
+
+## Common Misreadings
+
+1. assuming every entry is frequency-aligned just because they live in one list
+2. overlaying spectra with different normalization or units and reading the result physically
+3. treating list order as provenance unless you set names or labels deliberately
+
+## Where to go next
+
+- per-spectrum interpretation: [FrequencySeries](FrequencySeries.md)
+- aligned batch analysis: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+- practical workflow: [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb)
 
 ## Methods
 

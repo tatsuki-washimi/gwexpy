@@ -27,12 +27,13 @@ sl = arr.plane(0, 0)
 
 ## Related Theory
 
+- [Prerequisites and Conventions](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Field API Intro](../user_guide/tutorials/field_scalar_intro.ipynb)
+- [ScalarField Signal Processing](../user_guide/tutorials/field_scalar_signal.md)
 
 ## API Reference
 

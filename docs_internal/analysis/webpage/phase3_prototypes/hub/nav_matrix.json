@@ -1,0 +1,97 @@
+{
+  "prototype_scope": "Phase 3 hub skeleton only. No live docs promotion.",
+  "gateway_links": {
+    "current_gateway_file": "docs_internal/analysis/webpage/phase3_prototypes/gateway/index.html",
+    "recommended_updates": {
+      "ja_hub": "../hub/index-ja.html",
+      "en_hub": "../hub/index-en.html"
+    }
+  },
+  "ja": {
+    "hub_file": "docs_internal/analysis/webpage/phase3_prototypes/hub/index-ja.html",
+    "verified_targets": [
+      {
+        "label": "Quickstart",
+        "source_path": "docs/web/ja/user_guide/quickstart.md",
+        "built_html_expected": "/ja/user_guide/quickstart.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "Getting Started",
+        "source_path": "docs/web/ja/user_guide/getting_started.md",
+        "built_html_expected": "/ja/user_guide/getting_started.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "Tutorial Index",
+        "source_path": "docs/web/ja/user_guide/tutorials/index.rst",
+        "built_html_expected": "/ja/user_guide/tutorials/index.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "Reference Hub",
+        "source_path": "docs/web/ja/reference/index.rst",
+        "built_html_expected": "/ja/reference/index.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "Reference API Index",
+        "source_path": "docs/web/ja/reference/api/index.rst",
+        "built_html_expected": "/ja/reference/api/index.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "GWpy Migration Guide",
+        "source_path": "docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md",
+        "built_html_expected": "/ja/user_guide/gwexpy_for_gwpy_users_ja.html",
+        "status": "verified_source"
+      }
+    ]
+  },
+  "en": {
+    "hub_file": "docs_internal/analysis/webpage/phase3_prototypes/hub/index-en.html",
+    "verified_targets": [
+      {
+        "label": "Quickstart",
+        "source_path": "docs/web/en/user_guide/quickstart.md",
+        "built_html_expected": "/en/user_guide/quickstart.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "Getting Started",
+        "source_path": "docs/web/en/user_guide/getting_started.md",
+        "built_html_expected": "/en/user_guide/getting_started.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "Tutorial Index",
+        "source_path": "docs/web/en/user_guide/tutorials/index.rst",
+        "built_html_expected": "/en/user_guide/tutorials/index.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "Reference Hub",
+        "source_path": "docs/web/en/reference/index.rst",
+        "built_html_expected": "/en/reference/index.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "Reference API Index",
+        "source_path": "docs/web/en/reference/api/index.rst",
+        "built_html_expected": "/en/reference/api/index.html",
+        "status": "verified_source"
+      },
+      {
+        "label": "GWpy Migration Guide",
+        "source_path": "docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md",
+        "built_html_expected": "/en/user_guide/gwexpy_for_gwpy_users_en.html",
+        "status": "verified_source"
+      }
+    ]
+  },
+  "notes": [
+    "Gateway prototype currently points both CTAs to ../README.md and should be rewired to the hub files above during Phase 3 promotion.",
+    "Hub cards intentionally link to source files in this prototype, because built HTML targets are not available inside the prototype directory.",
+    "The live docs index files already use several of these target routes; this matrix exists to make the Gateway-to-Hub-to-Reference path explicit."
+  ]
+}

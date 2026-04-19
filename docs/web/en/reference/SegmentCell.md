@@ -6,7 +6,7 @@
 
 ## What it is
 
-Use `SegmentCell` to store or manipulate time segments together with metadata needed for data-quality and analysis windows.
+Use `SegmentCell` for a single metadata-aware time interval, especially when it will live inside a `SegmentTable`.
 
 ## Representative Signatures
 
@@ -25,12 +25,13 @@ segment = SegmentCell(0, 10)
 
 ## Related Theory
 
+- [Prerequisites and Conventions](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [SegmentTable: Basics](../user_guide/tutorials/intro_segment_table.ipynb)
+- [Segment Analysis Case Study](../user_guide/tutorials/case_segment_analysis.ipynb)
 
 ## API Reference
 

@@ -61,6 +61,7 @@ class Transform:
     >>> filled = transform.fit_transform(ts)
     >>> filled.shape == ts.shape
     True
+
     """
 
     supports_inverse = False
@@ -111,6 +112,7 @@ class Pipeline:
     >>> standardized = pipeline.fit_transform(ts_matrix)
     >>> standardized.shape == ts_matrix.shape
     True
+
     """
 
     def __init__(self, steps: Sequence[tuple[str, Transform]]):

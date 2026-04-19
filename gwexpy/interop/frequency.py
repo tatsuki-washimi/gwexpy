@@ -100,11 +100,12 @@ def from_xarray_frequencyseries(
     freqs = da.coords[freq_coord].values
     u = unit or da.attrs.get("unit")
     ch = da.attrs.get("channel", None)
+    name = str(da.name) if da.name is not None else None
     return cls(
         vals,
         frequencies=freqs,
         unit=u,
-        name=da.name,
+        name=name,
         channel=ch,
         epoch=epoch or da.attrs.get("epoch"),
     )

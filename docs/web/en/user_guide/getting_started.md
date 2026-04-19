@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "Choose the right GWexpy onboarding path with quickstart, tutorial, GWpy migration, and learning-path links for the next steps in analysis."
+---
+
 # Getting Started
 
 We provide a **systematic learning path** for GWexpy users.
@@ -7,12 +13,21 @@ Choose the best starting point based on your background and goals.
 
 | Item | Details |
 | --- | --- |
+| **Page Role** | Guide |
 | **Target Audience** | Experimental data analysts, GWpy users, and anyone interested in signal processing with Python. |
 | **Prerequisites** | Basics of Python 3.11+, NumPy array manipulation, (Recommended) Matplotlib. |
+| **Use Cases** | Choose a learning path, find the GWpy migration entry point, or identify the shortest path to a working workflow |
 | **Time Required** | From 5 minutes (Quick Start) to 30 minutes (Basic Hands-on). |
 | **Goal** | Load data, visualize results, and perform basic frequency-domain analysis. |
+| **Search Keywords** | getting started, learning path, GWpy migration, tutorial entry point |
 
 If you want the shared assumptions and FFT/time conventions first, use [Prerequisites and Conventions](prerequisites_and_conventions.md) as the entry point.
+
+## On This Page
+
+- [Choose Your Path](#choose-your-path)
+- [Learning Path](#learning-path)
+- [Next Steps](#next-to-read)
 
 ## Choose Your Path
 
@@ -33,6 +48,8 @@ Learn the core data structures and GWexpy-specific matrix operations from scratc
 [Migration from GWpy](gwexpy_for_gwpy_users_en.md)
 
 For current GWpy users. Start with the migration recipes, then use the [GWpy Difference API Index](gwpy_added_api_index_en.md) when you need a difference-oriented lookup of added APIs.
+
+<a id="learning-path"></a>
 
 ## Learning Path
 
@@ -61,7 +78,10 @@ Refer to these guides based on your needs:
 
 Explore real-world analysis workflows in our [Case Studies Gallery](../examples/index.rst).
 
-## Next Steps
+<a id="next-to-read"></a>
+<a id="next-steps"></a>
+
+## Next to Read
 
 * [Case Studies Gallery](../examples/index.rst) - Visual examples and practical workflows.
 * [All Tutorials](tutorials/index.rst)

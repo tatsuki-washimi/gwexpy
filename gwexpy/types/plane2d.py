@@ -22,6 +22,7 @@ class Plane2D(FittingMixin, Array2D):
     >>> plane = Plane2D(np.ones((2, 3)), axis1_name="time", axis2_name="frequency")
     >>> plane.axis1.name, plane.axis2.name
     ('time', 'frequency')
+
     """
 
     # Do NOT add _axis1_name/_axis2_name to slots, as they duplicate Array2D slots or cause confusion.
@@ -46,6 +47,7 @@ class Plane2D(FittingMixin, Array2D):
             Semantic name for dimension 1.
         **kwargs
             Forwarded to :class:`gwexpy.types.Array2D`.
+
         """
         if "axis_names" in kwargs:
             axis1_name, axis2_name = kwargs.pop("axis_names")

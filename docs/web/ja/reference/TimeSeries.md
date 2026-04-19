@@ -2,7 +2,7 @@
 
 <!-- reference-summary:start -->
 
-**安定性:** Stable
+**安定性:** 安定
 
 ## 主な用途
 
@@ -28,14 +28,17 @@ psd = ts.psd(fftlength=1.0)
 ## 関連理論
 
 - [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- {ref}`トランジェント FFT の検証 <validated-ja-transient-fft>` - トランジェント FFT モードの振幅規約と前提条件
+- {ref}`ARIMA 予測時刻の検証 <validated-ja-arima-forecast>` - 予測延長時の GPS 時刻前提
+- {ref}`MCMC / GLS 尤度の検証 <validated-ja-mcmc-gls>` - 時系列データをフィットに渡す際の尤度前提
 - [FFT_Conventions](FFT_Conventions.md)
+- [前提条件と規約](../user_guide/prerequisites_and_conventions.md)
 
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Signal Extraction](../user_guide/tutorials/case_signal_extraction.ipynb)
+- [Advanced ARIMA](../user_guide/tutorials/advanced_arima.ipynb)
 
 ## API リファレンス
 
@@ -47,6 +50,47 @@ psd = ts.psd(fftlength=1.0)
 **継承元:** [`gwpy.timeseries.TimeSeries`](https://gwpy.readthedocs.io/en/latest/reference/gwpy.timeseries.TimeSeries/)
 
 すべての gwexpy 機能を備えた拡張 TimeSeries。
+
+## 物理コンテキスト
+
+`TimeSeries` は「単一チャネルの時間領域信号」を表します。重力波ひずみ `strain`、地面速度、電圧、制御誤差信号、マイク出力のように、**各サンプルが一つの時刻に対応する量**を保持する場合の入口です。
+
+- **時間軸の意味**: `t0`, `dt`, `sample_rate`, `times` は解析窓の物理時刻を決めます。特に `fetch()` / `fetch_open_data()` の戻り値は GPS 時刻を前提に後段のセグメント解析やイベント同期解析へ渡されます。
+- **単位の意味**: `unit` は単なる飾りではなく、フィルタ・微積分・フィッティング・外部変換時の解釈に効きます。`strain`、`m/s`、`V` などを明示しておくと、周波数領域へ変換した後の `1/Hz` 系の量とも整合を取りやすくなります。
+- **等間隔サンプリング前提**: `TimeSeries` は等間隔サンプル列を想定します。不規則サンプリングやイベント表は `SegmentTable` / table 系、複数チャネル同時解析は `TimeSeriesMatrix` / `TimeSeriesDict` を使う方が自然です。
+
+## 解析上の注意点
+
+### FFT・PSD に入る前
+
+`fft()`, `psd()`, `asd()`, `spectrogram()` は時間領域データを周波数領域へ写像します。このとき重要なのは、配列値そのものよりも「**窓長・オーバーラップ・窓関数・平均化単位**」です。
+
+- 定常雑音の代表量を見たいなら `psd()` / `asd()` を使う
+- 短いバーストや chirp を追いたいなら `spectrogram()` / `q_transform()` を使う
+- 振幅規約や transient mode の扱いは [FFT_Conventions](FFT_Conventions.md) と検証済みアルゴリズム側の根拠を参照する
+
+### 前処理の意味
+
+`detrend()`, `highpass()`, `whiten()`, `standardize()`, `impute()` は、単に見た目を整える操作ではなく、**どの物理成分を保持し、どの系統誤差を落とすか**を決める操作です。
+
+- `detrend()` / `highpass()` は低周波ドリフトを除きたいときに使う
+- `whiten()` は検出・時刻周波数可視化・相関解析の前に広帯域比較をしやすくする
+- `impute()` は欠損を埋めるが、埋めた区間を物理信号そのものとして解釈してはいけない
+
+### どこで誤読しやすいか
+
+1. サンプル値だけを見て `sample_rate` や `t0` を無視する
+2. 前処理後の系列を「元の物理量そのもの」とみなす
+3. `fft()` 結果の単位や振幅規約を確認せずに別手法と比較する
+4. 単一チャネル系列に多チャネル因果や空間構造の意味を持たせすぎる
+
+## どのページへ進むか
+
+- 時間領域から周波数領域への規約確認: [FFT_Conventions](FFT_Conventions.md)
+- 観測データ取得や direct I/O: [I/O Formats](../user_guide/io_formats.md)
+- GWpy からの移行観点: [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- 時間周波数解析の比較: [時間-周波数解析: 手法比較ガイド](../user_guide/tutorials/time_frequency_comparison.md)
+- ARIMA や予測系: [Advanced ARIMA](../user_guide/tutorials/advanced_arima.ipynb)
 
 ## 主な拡張機能 (Key Extensions)
 

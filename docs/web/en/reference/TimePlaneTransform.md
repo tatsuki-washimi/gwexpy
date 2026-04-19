@@ -6,7 +6,7 @@
 
 ## What it is
 
-Use `TimePlaneTransform` for 3D outputs where one axis is time and the remaining two axes define a 2D plane at each timestep.
+Use `TimePlaneTransform` for transform outputs with a distinguished time axis and a physically meaningful 2D plane at each timestep.
 
 ## Representative Signatures
 
@@ -33,8 +33,8 @@ plane = obj.at_time(0)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [TimeSeries Basics](../user_guide/tutorials/intro_timeseries.ipynb)
+- [Time-Frequency Analysis Comparison](../user_guide/tutorials/time_frequency_analysis_comparison.ipynb)
 
 ## API Reference
 
@@ -185,4 +185,3 @@ Physical unit of the data values.
 ### `value`
 
 The underlying data values as numpy array.
-

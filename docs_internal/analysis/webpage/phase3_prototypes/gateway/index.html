@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GWexpy Gateway Phase 3 Prototype</title>
+  <link rel="stylesheet" href="gateway.css">
+</head>
+<body>
+  <main class="gateway-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Scientific Python toolkit for gravitational-wave data analysis</p>
+        <h1>GWexpy</h1>
+        <p class="lede">
+          Extended data containers, fitting workflows, and signal-processing utilities for
+          researchers who need matrix-aware, unit-aware analysis without leaving Python.
+        </p>
+        <p class="lede lede-ja">
+          GWpy を拡張し、行列・フィールド・フィッティング・信号処理を一つの解析導線にまとめる
+          科学計算向けツールキット。
+        </p>
+        <div class="cta-row">
+          <a class="cta primary" href="../hub/index-ja.html">Start in Japanese</a>
+          <a class="cta secondary" href="../hub/index-en.html">Open English Docs</a>
+        </div>
+        <dl class="hero-metrics">
+          <div>
+            <dt>Containers</dt>
+            <dd>Matrix / Field / Series</dd>
+          </div>
+          <div>
+            <dt>Analysis</dt>
+            <dd>Fitting, BrUCo, MCMC</dd>
+          </div>
+          <div>
+            <dt>Install</dt>
+            <dd>Git checkout first</dd>
+          </div>
+        </dl>
+      </div>
+
+      <figure class="hero-figure">
+        <img
+          src="../../../../../docs/_static/images/phase3/gateway_hero_scientific.png"
+          alt="Scientific gateway hero plot showing matrix response and resonance fitting"
+        >
+        <figcaption>
+          FrequencySeriesMatrix overview plus a highlighted resonance fit for one extracted channel.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="feature-band">
+      <article class="feature-card">
+        <span class="feature-kicker">Field-native</span>
+        <h2>Operate on multidimensional scientific data</h2>
+        <p>ScalarField, VectorField, and TensorField keep axes and units explicit across transforms.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-kicker">Numerically guarded</span>
+        <h2>Keep unstable edges visible</h2>
+        <p>Safe log operations, finite-value checks, and regularized fits keep exploratory analysis defensible.</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-kicker">Workflow-ready</span>
+        <h2>Bridge inspection and modeling</h2>
+        <p>Move from matrix response data to fitting and diagnostics without retooling the data model.</p>
+      </article>
+    </section>
+
+    <section class="install-demo">
+      <div class="install-panel">
+        <p class="section-label">Quick install</p>
+        <pre><code>git clone https://github.com/tatsuki-washimi/gwexpy.git
+cd gwexpy
+pip install -e .</code></pre>
+      </div>
+      <div class="demo-panel">
+        <p class="section-label">Three-line demo</p>
+        <pre><code>from gwexpy.timeseries import FrequencySeriesMatrix
+fsmtx = FrequencySeriesMatrix.read("data.hdf5")
+fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

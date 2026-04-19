@@ -1,8 +1,35 @@
+---
+myst:
+  html_meta:
+    description: "GWexpy の前提条件、GPS 時刻、FFT 規約、GWpy 互換の考え方を、チュートリアルや API に入る前の共通入口として整理します。"
+---
+
 # 前提条件と規約
 
 このページは、GWexpy のガイドやチュートリアルを読む前に把握しておきたい**共通の前提条件**と**規約**の入口です。
 個別アルゴリズムの仮定や数式の詳細は各ページに残し、このページでは「どこを先に確認すべきか」を整理します。
 
+## このページでわかること
+
+以下の表は docs 全体の共有テーブル方針に合わせています。モバイルでは、ページ個別の調整ではなく横スクロール前提で読むのが基本です。
+
+| 項目 | 内容 |
+| --- | --- |
+| **ページ種別** | ガイド |
+| **対象読者** | チュートリアルや API を読む前に共通前提を整理したい利用者 |
+| **前提** | Python と NumPy の基礎、GWpy / GWexpy の区別をこれから把握する段階 |
+| **こんなときに読む** | GPS 時刻・FFT 規約・GWpy 互換の前提を先に確認したい |
+| **検索キーワード** | prerequisites, conventions, GPS 時刻, FFT, GWpy 互換, フィールド API |
+
+## このページの近道
+
+- [環境前提](#1-環境前提)
+- [データと時刻の前提](#2-データと時刻の前提)
+- [FFT とスペクトルの規約](#3-fft-とスペクトルの規約)
+- [GWpy 互換と GWexpy 拡張](#4-gwpy-互換と-gwexpy-拡張)
+- [どこから読むか](#5-どこから読むか)
+
+(prerequisites-environment-ja)=
 ## 1. 環境前提
 
 - 基本的な利用環境は **Python 3.11 以上** を前提にしています。
@@ -11,6 +38,7 @@
 
 まず全体の学習導線を把握したい場合は [はじめに](getting_started.md) から入るのが最短です。
 
+(prerequisites-data-and-time-ja)=
 ## 2. データと時刻の前提
 
 - GWexpy は `gwpy` 系の時系列・周波数系列コンテナとの互換性を重視しています。
@@ -20,6 +48,7 @@
 
 アルゴリズムごとの仮定まで確認したい場合は [検証済みアルゴリズム](validated_algorithms.md) を参照してください。
 
+(prerequisites-fft-and-spectral-conventions-ja)=
 ## 3. FFT とスペクトルの規約
 
 - GWexpy では、FFT の**正規化**、**片側/両側スペクトル**、**符号規約**を明示的に扱います。
@@ -28,14 +57,16 @@
 
 数式レベルの詳細は [FFT の仕様とコンベンション](../reference/FFT_Conventions.md) にまとめています。
 
+(prerequisites-gwpy-compatibility-ja)=
 ## 4. GWpy 互換と GWexpy 拡張
 
 - GWexpy は GWpy の上に構築されており、基本的なデータモデルと操作感を尊重しています。
-- 一方で、Matrix 系コンテナ、Field API、追加 I/O、解析ユーティリティなど GWpy にはない拡張があります。
+- 一方で、Matrix 系コンテナ、フィールド API、追加 I/O、解析ユーティリティなど GWpy にはない拡張があります。
 - 「GWpy と同じつもりで使ってよい部分」と「GWexpy 固有の追加要素」を分けて確認したい場合は、移行ガイドを見るのが早いです。
 
 GWpy からの移行観点は [GWpy からの移行](gwexpy_for_gwpy_users_ja.md) と [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) を参照してください。
 
+(prerequisites-reference-bridge-ja)=
 ## 5. どこから読むか
 
 - はじめて使う場合: [はじめに](getting_started.md)
@@ -44,7 +75,8 @@ GWpy からの移行観点は [GWpy からの移行](gwexpy_for_gwpy_users_ja.md
 - アルゴリズムごとの仮定や検証根拠を確認したい場合: [検証済みアルゴリズム](validated_algorithms.md)
 - 既存コードを GWpy から移行したい場合: [GWpy からの移行](gwexpy_for_gwpy_users_ja.md)
 
-## 関連ページ
+(prerequisites-next-to-read-ja)=
+## 次に読む
 
 - [インストールガイド](installation.md)
 - [はじめに](getting_started.md)

@@ -3,8 +3,15 @@ import shutil
 import sys
 import warnings
 from datetime import datetime
+from pathlib import Path
 
 from pygments.lexers.python import PythonLexer
+
+DOCS_DIR = Path(__file__).resolve().parent
+if str(DOCS_DIR) not in sys.path:
+    sys.path.insert(0, str(DOCS_DIR))
+
+from intersphinx_registry import build_intersphinx_mapping
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -46,6 +53,10 @@ def _env_flag(name: str) -> bool:
 
 def _has_pandoc() -> bool:
     return shutil.which("pandoc") is not None
+
+
+def _prefer_remote_intersphinx() -> bool:
+    return _env_flag("INTERSPHINX_USE_REMOTE")
 
 
 def _default_nbsphinx_execute() -> str:
@@ -145,7 +156,15 @@ nitpick_ignore = []
 nitpick_ignore_regex = []
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "NOTEBOOK_POLICY.md",
+    "developers/**",
+    "repro/**",
+    "superpowers/plans/**",
+]
 if not notebook_build_enabled:
     exclude_patterns.append("**/*.ipynb")
 
@@ -163,7 +182,6 @@ suppress_warnings = [
     "toc.not_included",
     "toc.not_readable",
     "nbsphinx.localfile",
-    "ref.intersphinx",
     "intersphinx.broken_domain",
 ]
 
@@ -258,14 +276,9 @@ try:  # pragma: no cover
 except Exception:
     pass
 
-intersphinx_mapping: dict[str, tuple[str, str | None]] = {
-    "python": ("https://docs.python.org/3", None),
-    "numpy": ("https://numpy.org/doc/stable", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy", None),
-    "astropy": ("https://docs.astropy.org/en/stable", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "gwpy": ("https://gwpy.readthedocs.io/en/stable/", "https://gwpy.readthedocs.io/en/stable/objects.inv"),
-}
+intersphinx_mapping = build_intersphinx_mapping(
+    prefer_remote=_prefer_remote_intersphinx()
+)
 
 nitpick_ignore = [
     ("py:class", "u.Quantity"),  # Sphinx sometimes misses the alias

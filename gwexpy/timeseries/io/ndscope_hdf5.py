@@ -11,10 +11,11 @@ in HDF5 files with a specific schema:
     │   ├── "min"  (Dataset, optional)
     │   └── "max"  (Dataset, optional)
 
-This module registers the ``"ndscope-hdf5"`` format so that
+This module registers the canonical ``"ndscope-hdf5"`` format so that
 ``TimeSeries.read()`` / ``TimeSeriesDict.read()`` can auto-detect and
 read these files, and ``.write(..., format="ndscope-hdf5")`` can produce
-ndscope-compatible output.
+ndscope-compatible output. Backward-compatible aliases are also registered
+through the shared registration helper.
 """
 from __future__ import annotations
 
@@ -265,6 +266,7 @@ def write_timeseriesdict_ndscope_hdf5(
 
 register_timeseries_format(
     "ndscope-hdf5",
+    aliases=("ndscope_hdf5", "ndscopehdf5"),
     reader_dict=read_timeseriesdict_ndscope_hdf5,
     writer_dict=write_timeseriesdict_ndscope_hdf5,
     magic_identifier=identify_ndscope_hdf5,

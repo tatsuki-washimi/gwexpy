@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "ScalarField のスライスで 4 次元構造を維持する理由、メタデータ保持の考え方、squeeze() を安全に使う条件を説明します。"
+---
+
 # スカラーフィールドのスライス操作ガイド (4次元を維持する理由)
 
 :::{note}
@@ -10,6 +16,25 @@
 
 `ScalarField` がインデクシング操作時に**4次元構造を常に維持する**挙動について説明します。これは NumPy や GWpy の標準的な挙動とは異なり、多次元物理データの整合性を保つための「不変条件」として設計されています。
 
+## このページでわかること
+
+以下の要約表は、共有 CSS の表スタイルに合わせてコンパクトに保っています。画面幅が狭い場合は、横スクロールしながら読むのが最も確実です。
+
+| 項目 | 内容 |
+| --- | --- |
+| **ページ種別** | ガイド |
+| **対象読者** | `ScalarField` のスライス結果に戸惑った利用者、フィールド API の軸メタデータ保持を理解したい利用者 |
+| **前提** | `ScalarField` の基本的な shape と `NumPy` のスライス挙動を知っていること |
+| **こんなときに読む** | `field[0]` が 4 次元のままなのが不思議、`squeeze()` を安全に使いたい、Shape mismatch の理由を知りたい |
+| **検索キーワード** | `ScalarField`, slicing, `squeeze`, 4 次元維持, shape mismatch, フィールド API |
+
+## このページの近道
+
+- [なぜ「4次元」を維持し続けるのか？](#なぜ4次元を維持し続けるのか)
+- [実践的な操作例](#実践的な操作例)
+- [よくある質問](#よくある質問-faq)
+
+(scalarfield-slicing-4d-persistence-ja)=
 ## なぜ「4次元」を維持し続けるのか？
 
 `ScalarField` は (時間, 周波数, x, y) の 4 つの軸を持つ物理的な「場」を表現します。NumPy のようにスライス時に次元を削減（Rank Loss）しない理由は、主に以下の **4つの柱** によります。
@@ -19,6 +44,7 @@
 3.  **ストリーム処理の安全性**: 関数間で受け渡しをする際、次元数が変動しないためプログラムの堅牢性が向上します。
 4.  **ブロードキャストの一貫性**: 常に 4D であるため、計算時の次元合わせ（reshape）の意図がコード上で明確になります。
 
+(scalarfield-slicing-comparison-diagram-ja)=
 ### NumPy vs GWexpy の挙動比較
 
 ![NumPy と GWexpy の 4次元維持の比較図](../../../_static/images/scalarfield_slicing_4d_persistence.png)
@@ -39,9 +65,14 @@
 
 ---
 
+(scalarfield-slicing-practical-examples-ja)=
 ## 実践的な操作例
 
 ### 1. スライシングの挙動
+
+- 目的: インデクシング後も軸メタデータが残ることを確認する
+- 入力: shape `(100, 50, 10, 10)` の `ScalarField`
+- 出力: 長さ 1 の軸を保った `snapshot` と `plane`
 
 ```python
 from gwexpy.fields import ScalarField
@@ -63,6 +94,10 @@ plane = field[:, :, :, 2]
 
 意図的に 1次元や 2次元として扱いたい場合（例：プロットや外部ライブラリへの入力）は、明示的に `.squeeze()` を呼び出します。
 
+- 目的: 最終出力段階でだけ次元を落とす
+- 入力: 空間点を切り出した `ScalarField`
+- 出力: 外部ライブラリに渡しやすい 1 次元配列
+
 ```python
 # 特定の空間点の時系列を取得してプロット
 point_ts = field[:, 2, 5, 5]      # (100, 1, 1, 1)
@@ -74,6 +109,10 @@ actual_ts = point_ts.squeeze(axis=(1, 2, 3))    # (100,) - これで TimeSeries 
 ### 3. ブロードキャスト演算の注意点
 
 `ScalarField` は常に 4次元であるため、NumPy 配列を加減算する場合は形状を合わせる必要があります。
+
+- 目的: ブロードキャスト時の shape mismatch を避ける
+- 入力: `ScalarField` と 1 次元補正係数
+- 出力: 意図が明示された `reshape(...)` 付き演算
 
 ```python
 # ❌ 悪い例: 1次元配列をそのまま足そうとする
@@ -88,6 +127,7 @@ field + calibration
 
 ---
 
+(scalarfield-slicing-faq-ja)=
 ## よくある質問 (FAQ)
 
 ### Q: 常に 4次元だと、1次元の計算時に不便ではありませんか？
@@ -96,8 +136,10 @@ field + calibration
 ### Q: `ScalarField[0, 0, 0, 0]` とスカラー抽出した場合は？
 **A:** インデックスがすべてスカラーの場合は、通常の Python スカラー値または NumPy スカラーが返されます。
 
-## 関連リンク
+(scalarfield-slicing-next-to-read-ja)=
+## 次に読む
 
 - [ScalarField 入門チュートリアル](tutorials/field_scalar_intro.ipynb)
-- [Field モジュール API リファレンス](../reference/api/fields.rst)
+- [フィールド API リファレンス](../reference/api/fields.rst)
 - [数値安定性](numerical_stability.md) - 4次元演算時の精度管理
+- [アーキテクチャとデータフロー](architecture.md) - フィールド API が設計上どこに位置づくかを把握する

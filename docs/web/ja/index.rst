@@ -1,11 +1,192 @@
 :orphan:
 
+.. meta::
+   :description: GWexpy ドキュメントの入口ページ。インストール、クイックスタート、チュートリアル、ケーススタディ、リファレンスへの導線をまとめています。
+
+.. _hub-ja-hero:
+
 GWexpy ドキュメント
 ==============================
 
 GWexpy は GWpy を拡張し、時系列および周波数系列データ解析のための新たなコンテナや数値計算ユーティリティを提供します。
 
 v\ |release| · Python ≥ 3.9 · 最終更新: |today|
+
+.. raw:: html
+
+   <style>
+   .gw-hub-hero {
+     display: grid;
+     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+     gap: 1.25rem;
+     margin: 1.5rem 0 2rem;
+     align-items: stretch;
+   }
+   .gw-hub-panel {
+     background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+     border: 1px solid #d7e3ef;
+     border-radius: 20px;
+     box-shadow: 0 16px 40px rgba(15, 42, 74, 0.08);
+   }
+   .gw-hub-copy {
+     padding: 1.5rem;
+   }
+   .gw-hub-eyebrow {
+     margin: 0 0 0.65rem;
+     color: #0f6cbd;
+     font-size: 0.78rem;
+     font-weight: 700;
+     letter-spacing: 0.08em;
+     text-transform: uppercase;
+   }
+   .gw-hub-title {
+     margin: 0;
+     font-size: 2.35rem;
+     line-height: 1.02;
+     letter-spacing: -0.03em;
+     color: #10243a;
+   }
+   .gw-hub-lede {
+     margin: 0.9rem 0 0;
+     color: #566779;
+     line-height: 1.8;
+   }
+   .gw-hub-meta {
+     display: grid;
+     grid-template-columns: repeat(3, minmax(0, 1fr));
+     gap: 0.75rem;
+     margin-top: 1.1rem;
+   }
+   .gw-hub-meta div {
+     padding: 0.85rem 0.9rem;
+     background: rgba(255,255,255,0.82);
+     border: 1px solid #d7e3ef;
+     border-radius: 14px;
+   }
+   .gw-hub-meta dt {
+     margin: 0;
+     color: #61758a;
+     font-size: 0.72rem;
+     font-weight: 700;
+     letter-spacing: 0.08em;
+     text-transform: uppercase;
+   }
+   .gw-hub-meta dd {
+     margin: 0.35rem 0 0;
+     color: #10243a;
+     font-size: 0.92rem;
+     font-weight: 700;
+   }
+   .gw-hub-figure {
+     padding: 1rem;
+   }
+   .gw-hub-figure img {
+     width: 100%;
+     height: auto;
+     display: block;
+     border-radius: 14px;
+     border: 1px solid #d7e3ef;
+     background: #fff;
+   }
+   .gw-hub-figure p {
+     margin: 0.75rem 0 0;
+     color: #5c6d80;
+     font-size: 0.88rem;
+     line-height: 1.65;
+   }
+   .gw-hub-duo {
+     display: grid;
+     grid-template-columns: repeat(2, minmax(0, 1fr));
+     gap: 1rem;
+     margin: 0 0 2rem;
+   }
+   .gw-hub-duo section {
+     padding: 1.15rem 1.2rem;
+   }
+   .gw-hub-duo p {
+     margin: 0 0 0.65rem;
+     color: #0f6cbd;
+     font-size: 0.76rem;
+     font-weight: 700;
+     letter-spacing: 0.08em;
+     text-transform: uppercase;
+   }
+   .gw-hub-duo pre {
+     margin: 0;
+     padding: 0.95rem 1rem;
+     border: 1px solid #d7e3ef;
+     border-radius: 14px;
+     background: #f8fbfe;
+     overflow-x: auto;
+   }
+   @media (max-width: 900px) {
+     .gw-hub-hero,
+     .gw-hub-duo {
+       grid-template-columns: 1fr;
+     }
+     .gw-hub-meta {
+       grid-template-columns: 1fr;
+     }
+   }
+   </style>
+
+.. raw:: html
+
+   <section class="gw-hub-hero">
+     <div class="gw-hub-panel gw-hub-copy">
+       <p class="gw-hub-eyebrow">Documentation Hub</p>
+       <h2 class="gw-hub-title">どう使うかを、解析導線から選ぶ</h2>
+       <p class="gw-hub-lede">
+         行列コンテナ、フィールド演算、フィッティング、信号処理を
+         目的別の入口にまとめたトップページです。まずはクイックスタートか、
+         下の 9 枚カードから解析タスクに近い入口を選んでください。
+       </p>
+       <dl class="gw-hub-meta">
+         <div>
+           <dt>Containers</dt>
+           <dd>Matrix / Field / Series</dd>
+         </div>
+         <div>
+           <dt>Analysis</dt>
+           <dd>Fitting, BruCo, MCMC</dd>
+         </div>
+         <div>
+           <dt>Install</dt>
+           <dd>Git checkout 推奨</dd>
+         </div>
+       </dl>
+     </div>
+     <figure class="gw-hub-panel gw-hub-figure">
+       <img src="/_static/images/phase3/gateway_hero_scientific.png" alt="FrequencySeriesMatrix と共振フィットの可視化">
+       <p>
+         FrequencySeriesMatrix の全体像と、抽出した 1 チャンネルに対する共振フィットを同時に表示。
+         GWexpy の Matrix 系コンテナと解析ワークフローを一画面で示します。
+       </p>
+     </figure>
+   </section>
+
+.. raw:: html
+
+   <section class="gw-hub-duo">
+     <section class="gw-hub-panel">
+       <p>Quick install</p>
+       <pre><code>git clone https://github.com/tatsuki-washimi/gwexpy.git
+   cd gwexpy
+   pip install -e .</code></pre>
+     </section>
+     <section class="gw-hub-panel">
+       <p>3-line demo</p>
+       <pre><code>from gwexpy.timeseries import FrequencySeriesMatrix
+   fsmtx = FrequencySeriesMatrix.read("data.hdf5")
+   fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
+     </section>
+   </section>
+
+.. note::
+
+   **ページ種別**: ドキュメント入口
+   **対象読者**: 初回利用者、GWpy ユーザー、解析ワークフローを探している利用者
+   **検索ヒント**: ``quickstart``, ``installation``, ``tutorials``, ``examples``, ``ScalarField``, ``TimeSeriesMatrix``
 
 .. button-ref:: user_guide/quickstart
     :ref-type: doc
@@ -14,6 +195,8 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
     :expand:
 
     🚀 クイックスタート（5分で基本を習得）
+
+.. _hub-ja-workflow-entry:
 
 ----
 
@@ -127,8 +310,12 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 
 ----
 
+.. _hub-ja-gallery-entry:
+
 Visual Examples
 ---------------
+
+このカード群は、正本であるケーススタディギャラリーの短い teaser です。
 
 .. grid:: 3
     :gutter: 3
@@ -136,7 +323,7 @@ Visual Examples
     .. grid-item-card::
         :img-top: /_static/images/case_noise_budget_thumb.png
         :img-alt: ノイズバジェット例のサムネイル
-        :link: user_guide/tutorials/advanced_bruco
+        :link: user_guide/tutorials/case_noise_budget
         :link-type: doc
         :text-align: center
 
@@ -160,6 +347,15 @@ Visual Examples
 
         アクティブダンピング
 
+.. button-ref:: examples/index
+    :ref-type: doc
+    :color: secondary
+    :expand:
+
+    正式なケーススタディギャラリーを見る
+
+.. _hub-ja-reference-entry:
+
 ----
 
 GWpy の基礎を学ぶ
@@ -168,6 +364,15 @@ GWpy の基礎を学ぶ
 GWexpy は GWpy の上に構築されています。GWpy の基本操作は下記の公式ドキュメントを参照してください。
 
 `gwpy.github.io/docs/stable/ <https://gwpy.github.io/docs/stable/>`_
+
+----
+
+最初に読むページの目安
+----------------------
+
+- 最短でコードを動かす: :doc:`user_guide/quickstart`
+- 学習順序を決める: :doc:`user_guide/getting_started`
+- GPS 時刻や FFT の前提を先に確認する: :doc:`user_guide/prerequisites_and_conventions`
 
 ----
 

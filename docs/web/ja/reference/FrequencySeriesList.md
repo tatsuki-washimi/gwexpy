@@ -2,7 +2,7 @@
 
 <!-- reference-summary:start -->
 
-**安定性:** Stable
+**安定性:** 安定
 
 ## 主な用途
 
@@ -27,14 +27,16 @@ mat = lst.to_matrix()
 
 ## 関連理論
 
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
 
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [FrequencySeries チュートリアル](../user_guide/tutorials/intro_frequencyseries.ipynb)
+- [FrequencySeries 行列チュートリアル](../user_guide/tutorials/matrix_frequencyseries.ipynb)
+- [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
 
 ## API リファレンス
 
@@ -46,6 +48,25 @@ mat = lst.to_matrix()
 **継承元:** FrequencySeriesBaseList
 
 `FrequencySeries` オブジェクトのリスト。
+
+## 物理コンテキスト
+
+`FrequencySeriesList` は、複数のスペクトルをまとめて処理したいが、各系列の独立した意味は残したい場合に使います。繰り返し測定、複数センサ、同一チャネルの別処理系などが典型例です。
+
+- 各要素は個別のメタデータやチャンネル名を保持できます
+- 一括メソッドは便利ですが、単位・`df`・較正状態の一致までは保証しません
+
+## よくある誤読
+
+1. 同じリストに入っているだけで全要素が周波数整列していると思い込む
+2. 単位や正規化の違うスペクトルを重ね描きしてそのまま物理解釈する
+3. 名前やラベルを付けずに、リスト順だけを provenance だとみなす
+
+## どのページへ進むか
+
+- 各スペクトルの解釈: [FrequencySeries](FrequencySeries.md)
+- 整列済み一括解析: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+- 実務ワークフロー: [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
 
 ## メソッド
 

@@ -1,7 +1,7 @@
 互換・補助 (Extra)
 ==================
 
-**安定性:** Stable
+**安定性:** 安定
 
 .. automodule:: gwexpy.fitting
    :no-index:

@@ -1,8 +1,13 @@
 ---
 orphan: true
+myst:
+  html_meta:
+    description: "GWexpy の interop ガイドです。保存表現、解析ライブラリ、ML 基盤、分野別ツールへの to_* / from_* 変換経路を整理します。"
 ---
 
 # Interop / 変換ガイド
+
+> **ページ種別:** ガイド
 
 このページは、`gwexpy` の **interop 専用ガイド** です。  
 ここでいう interop は、`to_*()` / `from_*()` を中心とした **変換・橋渡し** を指します。
@@ -23,6 +28,17 @@ orphan: true
 
 ローカルファイルの読み書きは [ファイル I/O 対応フォーマットガイド](io_formats) を参照してください。
 
+## このページでわかること
+
+| 項目 | 内容 |
+| --- | --- |
+| **対象読者** | `gwexpy` オブジェクトを外部ライブラリ、保存表現、別のデータモデルへ渡したい利用者や開発者 |
+| **前提** | `gwexpy` の主要オブジェクト、direct I/O と interop の違い、連携先ライブラリの基本 |
+| **こんなときに読む** | `to_*()` / `from_*()` の入口を選びたい、公開済みの変換と整理待ちの変換を見分けたい |
+| **検索キーワード** | interop, conversion, `to_*`, `from_*`, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch |
+
+**検索ヒント:** interop, conversion, `to_*`, `from_*`, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch
+
 ## セクション移動
 
 - [まず最初に: 読み方](#まず最初に-読み方)
@@ -33,6 +49,7 @@ orphan: true
 - [D. 物理・ドメイン特化ライブラリ](#d-物理ドメイン特化ライブラリ)
 - [優先的に見るべき対象](#優先的に見るべき対象)
 
+(interop-ja-how-to-read)=
 ## まず最初に: 読み方
 
 - **保存形式やコンテナに写したい**なら A を見てください。
@@ -41,6 +58,7 @@ orphan: true
 - **ROOT / ObsPy / LAL / PyCBC などの分野別ライブラリに接続したい**なら D を見てください。
 - **Field を xarray / NetCDF4 / Zarr に渡したい**場合は、I/O ではなく interop として扱います。
 
+(interop-ja-status-labels)=
 ## 状態ラベル
 
 - `公開済み`: 実装があり、`reference/api/interop` から到達できる
@@ -49,12 +67,17 @@ orphan: true
 - `対応中`: 専用の実装面または公開面の整理が未完
 - `対応予定`: 設計対象として明示するが、まだ実装がない
 
+(interop-ja-storage-conversion)=
 ## A. 保存形式・コンテナ変換
 
 ここでは、相手が **ファイル形式・保存表現・ストレージ表現** である変換を扱います。  
 「どの保存形式 / コンテナに写すか」を見る区分です。
 
-| 連携先 | 公開 API / 入口 | 状態 | 補足 | 詳細 |
+- 目的: 保存表現を相手にする object-level bridge の入口を見分ける
+- 入力: `gwexpy` オブジェクトと、保存先のコンテナやストレージ表現
+- 出力: `to_*()` / `from_*()` による変換結果や保存向けオブジェクト
+
+| 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
 | HDF5 | `to_hdf5()`, `from_hdf5()` | 公開済み | object-level 変換 | [API](../reference/api/gwexpy.interop.hdf5_.rst) |
 | JSON | `to_json()`, `from_json()` | 公開済み | JSON 文字列との相互変換 | [API](../reference/api/gwexpy.interop.json_.rst) |
@@ -63,12 +86,17 @@ orphan: true
 | Zarr | `to_zarr()`, `from_zarr()` | 公開済み | array/store bridge | [API](../reference/api/gwexpy.interop.zarr_.rst) |
 | NetCDF4 | `to_netcdf4()`, `from_netcdf4()` | 公開済み | object-level bridge | [API](../reference/api/gwexpy.interop.netcdf4_.rst) |
 
+(interop-ja-analysis-conversion)=
 ## B. 解析ライブラリ・オブジェクト変換
 
 ここでは、相手が **Python ライブラリのオブジェクトモデル** である変換を扱います。  
 保存形式そのものではなく、どの解析ライブラリのオブジェクトに写すかを見る区分です。
 
-| 連携先 | 公開 API / 入口 | 状態 | 補足 | 詳細 |
+- 目的: 解析ライブラリ向けの橋渡し先を選ぶ
+- 入力: `gwexpy` オブジェクト、または pandas / xarray / astropy などの外部オブジェクト
+- 出力: 解析ライブラリのオブジェクト、または `gwexpy` に戻したオブジェクト
+
+| 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
 | NumPy | 専用 `to_*()` / `from_*()` API なし | 実装済み（基盤対応） | 内部配列表現として広く利用 | — |
 | pandas | `to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, `from_pandas_dataframe()` | 公開済み | Series / DataFrame | [API](../reference/api/gwexpy.interop.pandas_.rst) |
@@ -78,24 +106,34 @@ orphan: true
 | astropy | `to_astropy_timeseries()`, `from_astropy_timeseries()` | 公開済み | `astropy.timeseries.TimeSeries` | [API](../reference/api/gwexpy.interop.astropy_.rst) |
 | dask | `to_dask()`, `from_dask()` | 公開済み | dask array bridge | [API](../reference/api/gwexpy.interop.dask_.rst) |
 
+(interop-ja-ml-conversion)=
 ## C. 機械学習・高速化・配列基盤
 
 ここでは、加速計算や ML ワークフローへの橋渡しを扱います。  
 配列型だけ移るのか、メタデータも戻せるのかを確認してください。
 
-| 連携先 | 公開 API / 入口 | 状態 | 補足 | 詳細 |
+- 目的: ML や GPU 配列への橋渡しで、何が保持されるかを見極める
+- 入力: `gwexpy` オブジェクトと、PyTorch / TensorFlow / JAX / CuPy などの連携先
+- 出力: Tensor や高速化配列、場合によっては `gwexpy` へ戻すための経路
+
+| 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
 | PyTorch | `to_torch()`, `from_torch()` | 実装済み（公開整理待ち） | Tensor 変換 | — |
 | TensorFlow | `to_tf()`, `from_tf()` | 実装済み（公開整理待ち） | Tensor 変換 | — |
 | JAX | `to_jax()`, `from_jax()` | 実装済み（公開整理待ち） | JAX array 変換 | — |
 | CuPy | `to_cupy()`, `from_cupy()` | 実装済み（公開整理待ち） | GPU array 変換 | — |
 
+(interop-ja-domain-conversion)=
 ## D. 物理・ドメイン特化ライブラリ
 
 ここでは、分野別ライブラリや専用オブジェクトとの接続を扱います。  
 完全往復か片方向変換か、公開整理待ちかどうかを区別して見てください。
 
-| 連携先 | 公開 API / 入口 | 状態 | 補足 | 詳細 |
+- 目的: 分野別ライブラリとの橋渡しを、直 I/O と混同せずに整理する
+- 入力: `gwexpy` オブジェクト、または ObsPy / ROOT / LAL / PyCBC などの外部オブジェクト
+- 出力: 連携先ライブラリのオブジェクト、import 結果、または限定的な往復変換
+
+| 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
 | ROOT | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | 実装済み（一部経路は対応中） | `TH1 -> non-Histogram` は未完 | [API](../reference/api/gwexpy.interop.root_.rst) |
 | ObsPy | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | 公開済み | seismic bridge | [API](../reference/api/gwexpy.interop.obspy_.rst) |
@@ -133,6 +171,7 @@ orphan: true
 | Exudyn | `from_exudyn_sensor()` | 実装済み（公開整理待ち） | import 中心 | — |
 | OpenSees | `from_opensees_recorder()` | 実装済み（公開整理待ち） | import 中心 | — |
 
+(interop-ja-priorities)=
 ## 優先的に見るべき対象
 
 公開面で先に理解すると効果が大きいのは次です。
@@ -149,3 +188,9 @@ orphan: true
 - [他ライブラリ連携チュートリアル](tutorials/intro_interop)
 - [Interop API リファレンス](../reference/api/interop)
 - [ファイル I/O 対応フォーマットガイド](io_formats)
+
+## 次に読む
+
+- [ファイル I/O 対応フォーマットガイド](io_formats) で `Class.read(..., format=...)` と `obj.write(...)` を確認する
+- [GPS 時刻ユーティリティ](time_utilities) で GPS 時刻やタイムゾーンの補助関数を確認する
+- [他ライブラリ連携チュートリアル](tutorials/intro_interop) で具体例を先に見る

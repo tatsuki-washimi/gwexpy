@@ -27,12 +27,13 @@ subset = fields.isel_all(axis0=slice(0, 4))
 
 ## Related Theory
 
+- [Prerequisites and Conventions](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Field API Intro](../user_guide/tutorials/field_scalar_intro.ipynb)
+- [Field Advanced Workflow](../user_guide/tutorials/field_advanced_workflow.ipynb)
 
 ## API Reference
 

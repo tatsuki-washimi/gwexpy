@@ -25,6 +25,7 @@ class TimePlaneTransform:
     (4, 8, 8)
     >>> transform.plane("time", 0).shape
     (8, 8)
+
     """
 
     def __init__(

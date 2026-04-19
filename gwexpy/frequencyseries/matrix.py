@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -119,8 +119,9 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
 
                 # Intelligent reshaping based on data shape
                 try:
-                    if hasattr(data, "shape"):
-                        dshape = data.shape
+                    dshape: tuple[int, ...]
+                    if data is None:
+                        dshape = ()
                     else:
                         dshape = np.shape(data)
 
@@ -141,4 +142,4 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
                     else:
                         kwargs["names"] = cn
         obj = super().__new__(cls, data, **kwargs)
-        return obj
+        return cast(FrequencySeriesMatrix, obj)
