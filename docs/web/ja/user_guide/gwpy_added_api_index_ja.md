@@ -11,7 +11,7 @@
 | --- | --- | --- | --- |
 | マルチチャネル | 複数チャンネルを一括処理したい | `to_matrix()`, `TimeSeriesMatrix`, `FrequencySeriesMatrix` | [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb) |
 | 追加メソッド群 | 外部関数呼び出しをデータオブジェクト側へ寄せたい | `.find_peaks()`, `.fit()`, `.hht()`, `.arima()` | [追加メソッド群](#追加メソッド群) |
-| Field API | 時空間データや 4 次元構造を扱いたい | `ScalarField`, `FieldList`, `FieldDict`, `fft_space()` | [Field API](#field-api) |
+| フィールド API | 時空間データや 4 次元構造を扱いたい | `ScalarField`, `FieldList`, `FieldDict`, `fft_space()` | [Field API](#field-api) |
 | 共有 / 互換性 | 結果共有や復元互換性を確認したい | Transparent Pickle | [共有-互換性](#共有--互換性) |
 
 ## 詳細一覧
@@ -29,7 +29,7 @@
 | API種別 | 代表 API | 安定性 | GWpy との差分 | 詳細リンク |
 | --- | --- | --- | --- | --- |
 | インスタンスメソッド | `.find_peaks()` | 安定 | NumPy 配列へ降ろして SciPy を直接呼ぶ代わりに、データオブジェクト上でピーク検出できる | [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb), [TimeSeries](../reference/TimeSeries.md), [FrequencySeries](../reference/FrequencySeries.md) |
-| インスタンスメソッド | `.fit()` | 安定 | フィッティング処理を、データオブジェクトからそのまま開始できる | [フィッティング](tutorials/advanced_fitting.ipynb), [Fitting Reference](../reference/fitting.md) |
+| インスタンスメソッド | `.fit()` | 安定 | フィッティング処理を、データオブジェクトからそのまま開始できる | [フィッティング](tutorials/advanced_fitting.ipynb), [フィッティング リファレンス](../reference/fitting.md) |
 | インスタンスメソッド | `.hht()` | 実験的 | Hilbert-Huang Transform をオブジェクトメソッドとして呼べる | [HHT](tutorials/advanced_hht.ipynb), [TimeSeries](../reference/TimeSeries.md) |
 | インスタンスメソッド | `.arima()` | 実験的 | 時系列モデル化と予測を、時系列オブジェクトのメソッドとして呼べる | [ARIMA](tutorials/advanced_arima.ipynb), [TimeSeries](../reference/TimeSeries.md) |
 
