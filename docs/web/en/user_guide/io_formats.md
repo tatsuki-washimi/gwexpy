@@ -11,9 +11,9 @@ myst:
 > **Page Role:** Guide
 
 This is the end-user I/O guide for `gwexpy`.
-This page only covers the public `.read()` / `.write()` / `fetch()` style APIs that users call directly.
+This page only covers the public `.read()` / `.write()` / `fetch()` style APIs that users call directly to read, write, or fetch data.
 
-It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. For those topics, see the [interop tutorial](tutorials/intro_interop) and the [interop API reference](../reference/api/interop).
+It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. If the question is "how do I convert this object into another library or container?", that belongs to interop instead. For those topics, see the [interop tutorial](tutorials/intro_interop) and the [interop API reference](../reference/api/interop).
 
 ## At a Glance
 
@@ -41,7 +41,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 - **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
 - **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
 - **Read-only / write-only matters**: `○ / ×` means a format can be read but not written.
-- If you need to preserve **Field** objects safely, this page treats **HDF5** and **Pickle** as the direct-I/O baseline. NetCDF4 / Zarr / ROOT object bridges belong to interop, not to this page.
+- If you need to preserve **Field** objects safely through direct `.read()` / `.write()` style APIs, this page treats **HDF5** and **Pickle** as the baseline. NetCDF4 / Zarr / ROOT object bridges belong to interop, not to this page.
 
 ## Jump Links
 
