@@ -45,7 +45,7 @@ The detailed generated API continues below on this page.
 <!-- reference-summary:end -->
 
 
-**Inherits from:** [`gwpy.frequencyseries.FrequencySeries`](https://gwpy.readthedocs.io/en/latest/api/gwpy.frequencyseries.FrequencySeries/)
+**Inherits from:** [`gwpy.frequencyseries.FrequencySeries`](https://gwpy.readthedocs.io/en/stable/reference/gwpy.frequencyseries.FrequencySeries/)
 
 Extended FrequencySeries with gwexpy analysis and interop features.
 
