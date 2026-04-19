@@ -1,0 +1,113 @@
+name: Docs Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "scripts/check_terms.py"
+      - "scripts/check_docs_sync.py"
+      - "scripts/run_quickstart_test.py"
+      - "docs/requirements.txt"
+      - "environment.yml"
+      - "pyproject.toml"
+      - ".github/workflows/docs-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  publish-pages:
+    name: Publish docs to gh-pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+      NBS_EXECUTE: never
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 pandoc
+
+      - name: Provision gwexpy docs environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . --no-deps
+          python -m pip install -r docs/requirements.txt
+          python -m pip install sphinx-intl papermill nbformat nbclient nbconvert
+
+      - name: Check terminology consistency
+        run: python scripts/check_terms.py
+
+      - name: Check JA/EN synchronization
+        run: python scripts/check_docs_sync.py
+
+      - name: Run quickstart tests
+        run: |
+          python scripts/run_quickstart_test.py --lang ja
+          python scripts/run_quickstart_test.py --lang en
+
+      - name: Build Sphinx HTML
+        id: build_docs
+        run: |
+          html_dir="${RUNNER_TEMP}/gwexpy-pages-html"
+          doctree_dir="${RUNNER_TEMP}/gwexpy-pages-doctrees"
+          sphinx-build -b html -d "${doctree_dir}" -D nbsphinx_execute=never docs "${html_dir}"
+          echo "html_dir=${html_dir}" >> "${GITHUB_OUTPUT}"
+
+      - name: Publish to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          publish_dir="${RUNNER_TEMP}/gwexpy-gh-pages"
+
+          git clone --branch gh-pages --depth 1 \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "${publish_dir}"
+
+          mkdir -p "${publish_dir}/docs"
+          rsync -a --delete "${{ steps.build_docs.outputs.html_dir }}/" "${publish_dir}/docs/"
+
+          cat > "${publish_dir}/index.html" <<'EOF'
+          <html><head><meta http-equiv="refresh" content="0; url=docs/index.html"></head><body>Redirecting to documentation...</body></html>
+          EOF
+          touch "${publish_dir}/.nojekyll"
+
+          cd "${publish_dir}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No gh-pages changes to publish"
+            exit 0
+          fi
+
+          git commit -m "deploy: ${GITHUB_SHA}"
+          git push origin gh-pages
