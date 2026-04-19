@@ -27,7 +27,7 @@ myst:
 - [Next to Read](#next-to-read)
 
 :::{note}
-GWexpy is currently in its **Development Version**. Since it is not yet officially published on PyPI or Conda, we recommend a source installation from GitHub. These commands will be fully operational after the official release.
+GWexpy is currently in its **Development Version** and is **not yet published on PyPI or Conda**. For now, install it from the GitHub source repository using the commands on this page.
 :::
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
@@ -50,6 +50,8 @@ For users who want to keep dependencies minimal and only use core containers lik
 - Purpose: verify import and core container usage with the smallest dependency set
 - Input: Python 3.11+ and `pip`
 - Output: a minimal GWexpy environment
+
+If you need NDS2, FrameLIB, `pygmt`, or other binary-heavy tools, skip this section and start with [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended--gw-analysis).
 
 ```bash
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
@@ -98,6 +100,7 @@ pip install -e ".[dev,all]"
 - If you see `No module named nds2`: install `python-nds2-client` in the active dedicated Conda environment.
 - If you see FrameLIB / `framecpp`-related errors: reinstall `python-framel` and `ldas-tools-framecpp` in the same environment.
 - If the environment has already been mixed with unrelated packages: recreating it with `conda create -n gwexpy python=3.11` is usually safer than trying to repair it in place.
+- If you installed from [Quickstart](quickstart.md) and later discover you need GW binary dependencies: return to [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended--gw-analysis) before adding more packages.
 
 ---
 
@@ -138,5 +141,6 @@ Python's `pickle` module has inherent security risks (Arbitrary Code Execution) 
 ## 6. Next to Read
 
 * [Quickstart](quickstart.md) - confirm import and plotting with the smallest possible example
+* [Troubleshooting](troubleshooting.md) - reverse-lookup common install, plotting, and binary dependency issues
 * [Getting Started](getting_started.md) - choose the right learning path after installation
 * [Prerequisites and Conventions](prerequisites_and_conventions.md) - review FFT, GPS time, and GWpy-compatibility assumptions
