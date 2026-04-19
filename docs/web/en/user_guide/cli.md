@@ -1,6 +1,8 @@
-# Command-Line Interface (CLI)
+# Command-Line Interface (CLI, Experimental)
 
 ## Overview
+
+**Status:** Experimental / prototype-stage interface
 
 The GWexpy CLI is currently a **minimal placeholder interface** and should be treated as a **prototype-stage feature**. At present, GWexpy is intended to be used primarily through the **Python API** for interactive analysis and scripting.
 

@@ -45,7 +45,7 @@ med = sgm.percentile(50, axis="time")
 <!-- reference-summary:end -->
 
 
-**継承元:** SpectrogramAnalysisMixin, SpectrogramInteropMixin, SignalAnalysisMixin, PhaseMethodsMixin, RegularityMixin, BaseSpectrogram ([`gwpy.spectrogram.Spectrogram`](https://gwpy.readthedocs.io/en/latest/api/gwpy.spectrogram.Spectrogram/))
+**継承元:** SpectrogramAnalysisMixin, SpectrogramInteropMixin, SignalAnalysisMixin, PhaseMethodsMixin, RegularityMixin, BaseSpectrogram ([`gwpy.spectrogram.Spectrogram`](https://gwpy.readthedocs.io/en/stable/reference/gwpy.spectrogram.Spectrogram/))
 
 追加の相互運用メソッドを備えた gwpy.spectrogram.Spectrogram の拡張。
 
