@@ -40,7 +40,7 @@ The detailed generated API continues below on this page.
 <!-- reference-summary:end -->
 
 
-**Inherits from:** [`gwpy.segments.Segment`](https://gwpy.readthedocs.io/en/latest/api/gwpy.segments.Segment/)
+**Inherits from:** [`gwpy.segments.Segment`](https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/)
 
 Represents a single time segment (start, end) with optional metadata.
 

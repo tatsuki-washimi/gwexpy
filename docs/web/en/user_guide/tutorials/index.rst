@@ -124,6 +124,8 @@ Table-based analysis for time segments.
    Theme-driven demonstrations live in :doc:`../../examples/index`.
    See the case studies section for workflows such as noise budgeting,
    transfer function measurement, ML preprocessing, and event-synchronized analysis.
+   For next steps after this page, see `ML Preprocessing Pipeline` and
+   `Bootstrap PSD and GLS Fitting` there.
 
 .. seealso::
    Next to read:

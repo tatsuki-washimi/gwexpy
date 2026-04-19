@@ -41,7 +41,7 @@
 - :doc:`../user_guide/prerequisites_and_conventions` では時刻系、FFT 規約、物理解釈の共通前提を確認できます。
 - :doc:`Spectral` では PSD、ASD、bootstrap 系推定の入口をまとめています。
 - :doc:`fitting` では最小二乗、GLS、MCMC 系のフィッティング API をまとめています。
-- :doc:`../user_guide/validated_algorithms` では監査根拠付きの前提条件と API 対応を確認できます。
+- :doc:`../user_guide/validated_algorithms` では、高度・理論向けの入口として、監査根拠付きの前提条件と API 対応を確認できます。
 - :doc:`../user_guide/numerical_stability` では適応ホワイトニングなどの安定化方針を確認できます。
 - :doc:`Noise` では合成ノイズや代理波形生成の入口をまとめています。
 

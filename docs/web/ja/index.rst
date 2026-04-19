@@ -363,7 +363,7 @@ GWpy の基礎を学ぶ
 
 GWexpy は GWpy の上に構築されています。GWpy の基本操作は下記の公式ドキュメントを参照してください。
 
-`gwpy.github.io/docs/stable/ <https://gwpy.github.io/docs/stable/>`_
+`gwpy.readthedocs.io/en/stable/ <https://gwpy.readthedocs.io/en/stable/>`_
 
 ----
 

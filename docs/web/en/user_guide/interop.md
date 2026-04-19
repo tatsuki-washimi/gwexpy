@@ -26,7 +26,7 @@ This page does not cover:
 - `obj.write(..., format=...)`
 - the choice of local file formats themselves
 
-For local file formats and direct I/O, see the [File I/O Supported Formats Guide](io_formats).
+For local file formats and direct `.read()` / `.write()` / `fetch()` paths, see the [File I/O Supported Formats Guide](io_formats).
 
 ## At a Glance
 
@@ -52,11 +52,11 @@ For local file formats and direct I/O, see the [File I/O Supported Formats Guide
 (interop-en-how-to-read)=
 ## How to Read This Page
 
-- If you want to convert to a **storage format or container**, start with A.
+- If you want to convert a live object to a **storage format or container**, start with A.
 - If you want to convert to **analysis objects** such as pandas, xarray, astropy, or dask, start with B.
 - If you want to hand data to **PyTorch, TensorFlow, JAX, or CuPy**, start with C.
 - If you want to connect to **ROOT, ObsPy, LAL, PyCBC**, or other domain-specific libraries, start with D.
-- If you want to move **Field** objects into xarray, NetCDF4, or Zarr workflows, treat that as interop, not as direct I/O.
+- If you want to move **Field** objects into xarray, NetCDF4, or Zarr workflows via `to_*()` / `from_*()`, treat that as interop, not as direct I/O.
 
 (interop-en-status-labels)=
 ## Status Labels

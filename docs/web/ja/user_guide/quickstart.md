@@ -30,7 +30,7 @@ GWexpy を使って、最初の解析図を最短で作成しましょう。
 
 ## クイックインストール (Quick Install)
 
-現在、開発版のため GitHub から直接インストールしてください：
+GWexpy は現在開発版で、**PyPI / Conda にはまだ公開されていない**ため、まずは GitHub のソースリポジトリから直接インストールしてください：
 
 - 目的: 開発版を最短でインストールする
 - 入力: Python 3.11 以上と `pip`
@@ -39,6 +39,8 @@ GWexpy を使って、最初の解析図を最短で作成しましょう。
 ```bash
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
+
+Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、`pygmt` などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda 前提手順から始めてください。
 
 <a id="quick-demo"></a>
 
@@ -106,7 +108,7 @@ csd.plot().show()
 
 ## 困ったときは
 
-実行時にエラーが発生したり、プロットが表示されない場合は、[トラブルシューティング](troubleshooting.md) を確認してください。
+実行時にエラーが発生したり、プロットが表示されない場合は、[トラブルシューティング](troubleshooting.md) を確認してください。原因が環境構築にある場合は、[インストールガイド](installation.md) の Conda 前提手順に戻るのが最短です。
 
 <a id="next-to-read"></a>
 <a id="next-steps"></a>
@@ -114,6 +116,7 @@ csd.plot().show()
 ## 次に読む
 
 * [インストールガイド](installation.md) - 環境の構築
+* [トラブルシューティング](troubleshooting.md) - 症状から解決策を逆引きする
 * [はじめに](getting_started.md) - 体系的な学習ロードマップ
 * [前提条件と規約](prerequisites_and_conventions.md) - GPS 時刻や FFT の前提を先に確認する
 * [GWpy からの移行](gwexpy_for_gwpy_users_ja.md) - 既存ユーザー向け差分ガイド
