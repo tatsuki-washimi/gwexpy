@@ -2,9 +2,9 @@
 
 ## Overview
 
-**Status:** Experimental / prototype-stage interface
+**Status:** Experimental
 
-GWexpy includes a **PyQt5-based GUI** for interactive data exploration and visualization. However, the GUI should currently be treated as a **prototype-stage / experimental interface**, not as a finalized end-user product. For reproducible and fully supported workflows, the **Python API** remains the primary interface.
+GWexpy includes a **PyQt5-based GUI** for interactive data exploration and visualization. However, the GUI should currently be treated as an **experimental, prototype-stage interface**, not as a finalized end-user product. For reproducible and fully supported workflows, the **Python API** remains the primary interface.
 
 ## Installation
 
