@@ -4,33 +4,99 @@
 <html class="writer-html5" lang="ja" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="GWexpy のチュートリアル一覧です。データ構造、解析ワークフロー、難易度、目的から notebook を選べます。" name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>チュートリアル &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/index.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="gwexpy TimeSeries 新機能チュートリアル" href="intro_timeseries.html" />
-    <link rel="prev" title="ファイル I/O 対応フォーマットガイド" href="../io_formats.html" /> 
+    <link rel="next" title="TimeSeries: 基本" href="intro_timeseries.html" />
+    <link rel="prev" title="GWpy 差分 API 一覧" href="../gwpy_added_api_index_ja.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../../en/user_guide/tutorials/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,41 +110,53 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">チュートリアル</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#i">I. 基本データ構造</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#iii-field-api">III. 高次元フィールド (Field API)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#iv">IV. 高度な信号処理</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#v">V. 特殊ツール</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#vi">VI. セグメント解析</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#v-i-o">V. データ I/O と相互運用</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vi">VI. ノイズハンティングと特殊ツール</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vii">VII. セグメント解析</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャと物理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
 </ul>
@@ -87,17 +165,17 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメント</a></li>
       <li class="breadcrumb-item active">チュートリアル</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/index.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -108,121 +186,144 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>チュートリアル<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+  <section id="tutorials-ja-entry">
+<span id="id1"></span><h1>チュートリアル<a class="headerlink" href="#tutorials-ja-entry" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ページ種別: ガイド索引</p>
+</div>
 <p><strong>GWexpy</strong> の使い方を、対話的な例題（Jupyter Notebook）を通して学びます。</p>
+<p><strong>対象読者:</strong> GWexpy をこれから学ぶ人、GWpy から移行する人、解析実務で手順を確認したい人。
+<strong>前提知識:</strong> GWexpy の実行環境があり、<a class="reference internal" href="../getting_started.html"><span class="doc">はじめに (Getting Started)</span></a> の基本事項を把握していること。
+<strong>このページの用途:</strong> データ構造、ワークフロー、難易度から適切なチュートリアルを選ぶこと。
+<strong>検索のヒント:</strong> notebook, Jupyter, チュートリアル一覧, 初学者向け, フィールド API, 信号処理, 相互運用</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>初めての方は <a class="reference internal" href="../getting_started.html"><span class="doc">はじめに (Getting Started)</span></a> から始めることを推奨します。</p>
 </div>
+<p>これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行したい場合は、対応する <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> をリポジトリ内の <code class="docutils literal notranslate"><span class="pre">docs/web/ja/user_guide/tutorials/</span></code> から取得してください。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行するには、各ページ右上の “Edit on GitHub” から <cite>.ipynb</cite> を取得できます。</p>
+<p>このページの見方:
+I-II は基礎、III は Field API による高次元フィールド、IV-VI は解析ワークフロー、VII はセグメント表ベースの解析をまとめています。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>命名規則: 日本語タイトルは「機能名: 実施タスク」で統一します。
+API 固有名詞のみ英語表記を残し、一般語は日本語を優先します。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>各項目には、難易度・所要時間の目安・主な対象読者を付けています。
+対象読者は <cite>初学者</cite>・<cite>GWpyユーザー</cite>・<cite>解析実務者</cite> の 3 分類で整理しています。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>Tutorials</cite> はクラスや機能ごとの使い方を学ぶための例です。
+複数機能を組み合わせたテーマ別の実演は、正本一覧である <a class="reference internal" href="../../examples/index.html"><span class="doc">ケーススタディ (Case Studies)</span></a> の <cite>Case Studies</cite> に集約しています。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>リファレンスへの橋渡し:
+チュートリアルの後で正確なクラス、メソッド、規約を確認したい場合は、まず <a class="reference internal" href="../../reference/index.html"><span class="doc">リファレンス (Reference)</span></a> に進み、必要に応じて <a class="reference internal" href="../../reference/api/index.html"><span class="doc">API リファレンス (API Reference)</span></a> または <a class="reference internal" href="../../reference/topics.html"><span class="doc">トピック別参照 (Topics)</span></a> を開いてください。</p>
 </div>
 <section id="i">
-<h2>I. 基本データ構造<a class="headerlink" href="#i" title="Link to this heading"></a></h2>
+<span id="tutorials-ja-core-entry"></span><h2>I. 基本データ構造<a class="headerlink" href="#i" title="Link to this heading"></a></h2>
 <p>基本的なデータコンテナと操作方法について説明します。</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">基本データ構造</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="intro_timeseries.html">gwexpy TimeSeries 新機能チュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries の新機能と高度な操作</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro_spectrogram.html">SpectrogramList と SpectrogramDict のチュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro_noise.html">ノイズ生成の基礎</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro_plotting.html">gwexpy Plotting Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro_mapplotting.html">チュートリアル: 全天マップと地理マップのプロット</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro_interop.html">GWExPy TimeSeries 相互運用性 (Interop) チュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro_histogram.html">ヒストグラム入門（gwexpy）</a></li>
+<ul class="simple">
+<li><p><a class="reference internal" href="intro_timeseries.html"><span class="doc">TimeSeries: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">15分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">初学者</span></p></li>
+<li><p><a class="reference internal" href="intro_frequencyseries.html"><span class="doc">FrequencySeries: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">15分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">初学者</span></p></li>
+<li><p><a class="reference internal" href="intro_spectrogram.html"><span class="doc">Spectrogram: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">15分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">初学者</span></p></li>
+<li><p><a class="reference internal" href="intro_noise.html"><span class="doc">ノイズ生成: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">15分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">初学者</span></p></li>
+<li><p><a class="reference internal" href="intro_plotting.html"><span class="doc">Plotting: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">15分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">初学者</span></p></li>
+<li><p><a class="reference internal" href="intro_mapplotting.html"><span class="doc">マッププロット: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">20分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">GWpyユーザー</span></p></li>
+<li><p><a class="reference internal" href="intro_histogram.html"><span class="doc">ヒストグラム: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">15分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">初学者</span></p></li>
 </ul>
-</div>
 </section>
 <section id="ii">
 <h2>II. 多チャンネル &amp; 行列コンテナ<a class="headerlink" href="#ii" title="Link to this heading"></a></h2>
 <p>Matrixクラスを使用して、複数のチャンネルを効率的に扱う方法を説明します。</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">行列コンテナ</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="matrix_timeseries.html">TimeSeriesMatrix チュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="matrix_frequencyseries.html">FrequencySeriesMatrix チュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="matrix_spectrogram.html">SpectrogramMatrix Tutorial</a></li>
+<ul class="simple">
+<li><p><a class="reference internal" href="matrix_timeseries.html"><span class="doc">TimeSeriesMatrix: 行列処理の基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">20分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">GWpyユーザー</span></p></li>
+<li><p><a class="reference internal" href="matrix_frequencyseries.html"><span class="doc">FrequencySeriesMatrix: 行列処理の基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">20分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">GWpyユーザー</span></p></li>
+<li><p><a class="reference internal" href="matrix_spectrogram.html"><span class="doc">SpectrogramMatrix: 行列処理の基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">20分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">GWpyユーザー</span></p></li>
 </ul>
-</div>
 </section>
 <section id="iii-field-api">
 <h2>III. 高次元フィールド (Field API)<a class="headerlink" href="#iii-field-api" title="Link to this heading"></a></h2>
 <p>4次元時空におけるスカラ場、ベクトル場、テンソル場を扱うための次世代 API について説明します。</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">フィールド API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="field_scalar_intro.html">ScalarField クラス入門</a></li>
-<li class="toctree-l1"><a class="reference internal" href="field_vector_intro.html">VectorField クラス入門</a></li>
-<li class="toctree-l1"><a class="reference internal" href="field_tensor_intro.html">TensorField クラス入門</a></li>
-<li class="toctree-l1"><a class="reference internal" href="field_scalar_signal.html">スカラーフィールド信号処理 (ScalarField Signal Processing)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="field_advanced_workflow.html">Field × 高度な解析ワークフロー</a></li>
+<ul class="simple">
+<li><p><a class="reference internal" href="field_scalar_intro.html"><span class="doc">Field API: ScalarField の基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="field_vector_intro.html"><span class="doc">Field API: VectorField の基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="field_tensor_intro.html"><span class="doc">Field API: TensorField の基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="field_scalar_signal.html"><span class="doc">Field API: ScalarField の信号処理</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="field_advanced_workflow.html"><span class="doc">Field API: 高度解析ワークフロー</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="field_advanced_integration.html"><span class="doc">Field API: 高度解析の統合</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
 </ul>
-</div>
 </section>
 <section id="iv">
 <h2>IV. 高度な信号処理<a class="headerlink" href="#iv" title="Link to this heading"></a></h2>
 <p>統計的分析や、高度な信号変換手法について説明します。</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">高度な解析</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="intro_fitting.html">スペクトルフィッティングの基礎</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_fitting.html">フィッティング &amp; スペクトル線解析</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_spectrogram_processing.html">スペクトログラム処理：正規化とクリーニング</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_bootstrap_gls_fitting.html">Bootstrap PSD &amp; GLS フィッティング</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_peak_detection.html">Peak Detection (ピーク検出)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_peak_tracking.html">ピーク/スペクトル線の時間追跡</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_hht.html">Hilbert-Huang Transform (HHT) 解析チュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="time_frequency_analysis_comparison.html">時間-周波数解析: インタラクティブ例</a></li>
-<li class="toctree-l1"><a class="reference internal" href="time_frequency_comparison.html">時間-周波数手法: 理論ガイド</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_arima.html">ARIMAモデルによる時系列予測</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_correlation.html">統計的相関機能</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_correlation.html#高度な統計解析-(Advanced-Statistics)">高度な統計解析 (Advanced Statistics)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ml_preprocessing_methods.html">ML前処理手法</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_ml_preprocessing.html">ML前処理パイプライン</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_linear_algebra.html">重力波解析のための線形代数</a></li>
-<li class="toctree-l1"><a class="reference internal" href="field_advanced_integration.html">Field API × 高度な解析統合</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rayleigh_gauch_tutorial.html">非ガウス雑音分析: Rayleigh &amp; GauCh</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_coupling.html">マルチチャンネル結合解析</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced_decomposition.html">固有モード・ブラインド信号源分解</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_seismic_obspy.html">地震波データ解析 (ObsPy 連携)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_gbd_format.html">GBD 形式の I/O (GRAPHTEC)</a></li>
+<ul class="simple">
+<li><p><a class="reference internal" href="intro_fitting.html"><span class="doc">フィッティング: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">20分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">GWpyユーザー</span></p></li>
+<li><p><a class="reference internal" href="advanced_fitting.html"><span class="doc">フィッティング: スペクトル線解析</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_spectrogram_processing.html"><span class="doc">スペクトログラム: 正規化とクリーニング</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_peak_detection.html"><span class="doc">ピーク検出: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_peak_tracking.html"><span class="doc">ピーク追跡: 時間変化の解析</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_hht.html"><span class="doc">HHT: 解析</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">上級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="time_frequency_analysis_comparison.html"><span class="doc">時間-周波数解析: インタラクティブ比較</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="time_frequency_comparison.html"><span class="doc">時間-周波数解析: 手法比較ガイド</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_control_discretization.html"><span class="doc">制御解析: 離散化の基礎</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_control_basics.html"><span class="doc">制御解析: 共振とフィードバックの基礎</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_control_modeling.html"><span class="doc">制御解析: 実測応答からのプラントモデリング</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_arima.html"><span class="doc">ARIMA: 時系列予測</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">上級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_correlation.html"><span class="doc">相関解析: 統計的手法</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="ml_preprocessing_methods.html"><span class="doc">ML 前処理: 個別手法</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_linear_algebra.html"><span class="doc">線形代数: 重力波解析への応用</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="rayleigh_gauch_tutorial.html"><span class="doc">非ガウス雑音解析: Rayleigh と Gaussian-Chi</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_coupling.html"><span class="doc">カップリング解析: マルチチャンネル結合</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">上級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="advanced_decomposition.html"><span class="doc">分解解析: PCA・ICA と固有モード</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">上級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
 </ul>
-</div>
 </section>
-<section id="v">
-<h2>V. 特殊ツール<a class="headerlink" href="#v" title="Link to this heading"></a></h2>
-<p>ノイズ源特定や診断タスクのための専用ツールについて説明します。</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">特殊ツール</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="advanced_bruco.html">Bruco (Brute force coherence) Pythonチュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_bruco_ica_denoising.html">Bruco + ICA エンドツーエンド ノイズ削減</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_bruco_advanced.html">Bruco 応用編：バイリニアカップリングと AM/FM 復調</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_violin_mode.html">バイオリンモード解析</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_schumann_resonance.html">シューマン共鳴解析</a></li>
+<section id="v-i-o">
+<h2>V. データ I/O と相互運用<a class="headerlink" href="#v-i-o" title="Link to this heading"></a></h2>
+<p>ファイルの読み書き、外部ライブラリとの変換、観測データの取り込みを扱います。</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="intro_interop.html"><span class="doc">相互運用: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">20分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">GWpyユーザー</span></p></li>
 </ul>
-</div>
 </section>
 <section id="vi">
-<h2>VI. セグメント解析<a class="headerlink" href="#vi" title="Link to this heading"></a></h2>
-<p>時間区間（セグメント）をベースとした表形式の解析手法について説明します。</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">セグメント解析</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="intro_segment_table.html">SegmentTable の基本</a></li>
-<li class="toctree-l1"><a class="reference internal" href="intro_table.html">セグメント解析パイプライン（応用）</a></li>
-<li class="toctree-l1"><a class="reference internal" href="segment_asd_pipeline.html">ASD 解析パイプライン</a></li>
-<li class="toctree-l1"><a class="reference internal" href="segment_visualization.html">可視化テクニック</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_segment_analysis.html">イベント同期ケーススタディ</a></li>
+<h2>VI. ノイズハンティングと特殊ツール<a class="headerlink" href="#vi" title="Link to this heading"></a></h2>
+<p>ノイズ源特定や診断タスクのための専用ツールについて説明します。</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="advanced_bruco.html"><span class="doc">BruCo: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">上級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">45分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
 </ul>
-</div>
+</section>
+<section id="vii">
+<span id="tutorials-ja-segment-entry"></span><h2>VII. セグメント解析<a class="headerlink" href="#vii" title="Link to this heading"></a></h2>
+<p>時間区間（セグメント）をベースとした表形式の解析手法について説明します。</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="intro_segment_table.html"><span class="doc">SegmentTable: 基本</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">15分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">初学者</span></p></li>
+<li><p><a class="reference internal" href="intro_table.html"><span class="doc">セグメント解析: 基本パイプライン</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">初級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">20分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">GWpyユーザー</span></p></li>
+<li><p><a class="reference internal" href="segment_asd_pipeline.html"><span class="doc">ASD 解析: パイプライン</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+<li><p><a class="reference internal" href="segment_visualization.html"><span class="doc">セグメント解析: 可視化</span></a> <span class="sd-sphinx-override sd-badge sd-bg-primary sd-bg-text-primary">中級</span> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">30分</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">解析実務者</span></p></li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>実践的なケーススタディと応用例は <a class="reference internal" href="../../examples/index.html"><span class="doc">ケーススタディ</span></a> に統合されています。
-ノイズバジェット解析、伝達関数計算、アクティブダンピングなどの実例集を参照してください。</p>
+<p>テーマ別の実演は <a class="reference internal" href="../../examples/index.html"><span class="doc">ケーススタディ (Case Studies)</span></a> を参照してください。
+ノイズバジェット解析、伝達関数計測、ML 前処理パイプライン、イベント同期解析などをまとめています。</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>次に読むページ:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../getting_started.html"><span class="doc">はじめに (Getting Started)</span></a> でユーザーガイドの導入を確認する</p></li>
+<li><p><a class="reference internal" href="../../reference/index.html"><span class="doc">リファレンス (Reference)</span></a> で API・クラス・トピック別の詳細を調べる</p></li>
+<li><p><a class="reference internal" href="../../reference/api/index.html"><span class="doc">API リファレンス (API Reference)</span></a> でカテゴリ別の API 入口を開く</p></li>
+<li><p><a class="reference internal" href="../../reference/topics.html"><span class="doc">トピック別参照 (Topics)</span></a> で高度・理論、規約、橋渡しページを確認する</p></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
 </div>
 </section>
 </section>
@@ -231,14 +332,16 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../io_formats.html" class="btn btn-neutral float-left" title="ファイル I/O 対応フォーマットガイド" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="intro_timeseries.html" class="btn btn-neutral float-right" title="gwexpy TimeSeries 新機能チュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../gwpy_added_api_index_ja.html" class="btn btn-neutral float-left" title="GWpy 差分 API 一覧" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intro_timeseries.html" class="btn btn-neutral float-right" title="TimeSeries: 基本" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -255,7 +358,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="../license.html">ライセンス / 免責</a> |
+        <a href="../roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

@@ -1,19 +1,35 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0a8284c1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "ecf5a8c4",
+   "id": "4558b8f4",
    "metadata": {},
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
     "# ケーススタディ: イベント同期解析\n",
     "\n",
-    "このチュートリアルでは、実務でのワークフローに即した例を紹介します。ログからのイベント抽出、時刻補正（模した例）、そしてイベントごとの解析・プロット生成までの一連の流れを `SegmentTable` で管理します。"
+    "このチュートリアルでは、実務でのワークフローに即した例を紹介します。ログからのイベント抽出、時刻補正（模した例）、そしてイベントごとの解析・プロット生成までの一連の流れを `SegmentTable` で管理します。\n",
+    "\n",
+    "このケーススタディでも、イベント窓は `gwpy.segments.Segment` で表し、gwexpy は `SegmentTable` による表管理と `apply()` ベースの一括処理を担当します。GWpy 基盤クラスと gwexpy 拡張の役割分担は [SegmentTable: 基本](intro_segment_table.ipynb) と同じです。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "7d095d1c",
+   "id": "d2710938",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:19.855589Z",
@@ -70,27 +86,33 @@
    ],
    "source": [
     "import warnings\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
-    "import pandas as pd\n",
-    "from gwpy.segments import Segment\n",
-    "from gwexpy.table import SegmentTable\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "# 1. イベントの同定をシミュレート\n",
-    "events_df = pd.DataFrame({\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
+    "\n",
+    "    import pandas as pd\n",
+    "    from gwpy.segments import Segment\n",
+    "    from gwexpy.table import SegmentTable\n",
+    "\n",
+    "    # 1. イベントの同定をシミュレート\n",
+    "    events_df = pd.DataFrame({\n",
     "    \"gps\": [1234567890.1, 1234567895.5, 1234567900.2],\n",
     "    \"snr\": [15, 8, 22]\n",
-    "})\n",
+    "    })\n",
     "\n",
-    "# 2. イベントから SegmentTable を作成\n",
-    "# 各 GPS 時刻の前後 2 秒間 (計4秒) をセグメントとする\n",
-    "segs = [Segment(t-2, t+2) for t in events_df[\"gps\"]]\n",
-    "st = SegmentTable.from_segments(segs, snr=events_df[\"snr\"])\n",
-    "st"
+    "    # 2. イベントから SegmentTable を作成\n",
+    "    # 各 GPS 時刻の前後 2 秒間 (計4秒) をセグメントとする\n",
+    "    segs = [Segment(t-2, t+2) for t in events_df[\"gps\"]]\n",
+    "    st = SegmentTable.from_segments(segs, snr=events_df[\"snr\"])\n",
+    "    st\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "b0cf81f9",
+   "id": "8ea9962f",
    "metadata": {},
    "source": [
     "## バッチプロット生成\n",
@@ -101,7 +123,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "87f5a71d",
+   "id": "e94f1b57",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:22.236704Z",
@@ -187,7 +209,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "68f55544",
+   "id": "a00a628b",
    "metadata": {},
    "source": [
     "## 結果の絞り込みと出力\n",
@@ -198,7 +220,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "858f74a4",
+   "id": "d733a12c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:22.244702Z",

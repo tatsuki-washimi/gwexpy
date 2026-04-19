@@ -9,25 +9,87 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/plot/plot.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -41,23 +103,25 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -88,19 +152,23 @@
 
 
 <div class="viewcode-block" id="plot_mmm">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.plot_mmm">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.plot_mmm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_mmm</span><span class="p">(</span><span class="n">median</span><span class="p">,</span> <span class="n">min_s</span><span class="p">,</span> <span class="n">max_s</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Plot Median, Min, and Max series with a filled area between Min and Max.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot Median, Min, and Max series with a filled area between Min and Max.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    median : Series</span>
+<span class="sd">        Median series to plot as the central line.</span>
 <span class="sd">    min_s : Series</span>
+<span class="sd">        Lower envelope series.</span>
 <span class="sd">    max_s : Series</span>
+<span class="sd">        Upper envelope series.</span>
 <span class="sd">    ax : Axes, optional</span>
+<span class="sd">        Target axes. Uses the current axes when omitted.</span>
 <span class="sd">    **kwargs</span>
 <span class="sd">        Passed to ax.plot for the median line.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
@@ -135,13 +203,51 @@
 
 
 <div class="viewcode-block" id="Plot">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.Plot">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.Plot">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Plot</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    An extension of :class:`gwpy.plot.Plot` that automatically handles</span>
-<span class="sd">    :class:`gwexpy.types.SeriesMatrix` arguments by expanding them into</span>
-<span class="sd">    individual :class:`gwpy.types.Series` objects, while preserving</span>
-<span class="sd">    matrix layout and metadata where possible.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;GWexpy-aware plotting facade for series, matrices, and spectrogram grids.</span>
+
+<span class="sd">    `Plot` keeps the familiar :class:`gwpy.plot.Plot` constructor while adding</span>
+<span class="sd">    conveniences needed by GWexpy collections:</span>
+
+<span class="sd">    - `SeriesMatrix` and `SpectrogramMatrix` inputs are expanded into per-axis</span>
+<span class="sd">      subplots automatically.</span>
+<span class="sd">    - Layout hints such as `separate`, `geometry`, and shared-axis labeling are</span>
+<span class="sd">      inferred from the input shape.</span>
+<span class="sd">    - Spectrogram plots can receive automatic colorbar management and adaptive</span>
+<span class="sd">      decimation for large overlays.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    *args</span>
+<span class="sd">        Series-like objects, matrices, lists, or dictionaries accepted by the</span>
+<span class="sd">        GWexpy plotting registry.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Standard `gwpy.plot.Plot` keyword arguments plus GWexpy-specific layout</span>
+<span class="sd">        helpers such as `separate`, `geometry`, `monitor`,</span>
+<span class="sd">        `decimate_threshold`, and `decimate_points`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Plot a matrix as aligned subplots:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwexpy.plot import Plot</span>
+<span class="sd">    &gt;&gt;&gt; fig = Plot(ts_matrix, separate=True, figsize=(10, 6))</span>
+<span class="sd">    &gt;&gt;&gt; len(fig.axes) &gt;= 1</span>
+<span class="sd">    True</span>
+
+<span class="sd">    Overlay summary curves with a shaded min/max envelope:</span>
+
+<span class="sd">    &gt;&gt;&gt; fig = Plot(median_series)</span>
+<span class="sd">    &gt;&gt;&gt; _ = fig.plot_mmm(median_series, min_series, max_series, alpha_fill=0.15)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    plot_mmm</span>
+<span class="sd">        Convenience helper for median/min/max overlays.</span>
+<span class="sd">    gwexpy.types.SeriesMatrix</span>
+<span class="sd">        Matrix container expanded automatically by this plot class.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Suppress _repr_html_ to prevent double plotting (repr + backend)</span>
@@ -291,7 +397,7 @@
         <span class="n">_manage_sharex_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout_kwargs</span><span class="p">,</span> <span class="n">candidate_xlabel</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Plot.plot_mmm">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.Plot.plot_mmm">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.Plot.plot_mmm">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_mmm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">min_s</span><span class="p">,</span> <span class="n">max_s</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot median line with a min/max envelope.</span>
 
@@ -317,6 +423,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        list</span>
 <span class="sd">            The list of Line2D objects returned by ``ax.plot``.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
@@ -324,7 +431,7 @@
 
 
 <div class="viewcode-block" id="Plot.show">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.Plot.show">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.Plot.show">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">close</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -358,6 +465,7 @@
 
 <span class="sd">        In script mode, ``plt.show()`` blocks by default until the window</span>
 <span class="sd">        is closed. Use ``block=False`` if you need to save after showing.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -376,6 +484,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        bytes or None</span>
 <span class="sd">            PNG image data, or None if the figure has been closed.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
 
@@ -391,19 +500,21 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_summary</span><span class="p">(</span><span class="n">sg_collection</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Plot a grid of Spectrograms and their percentile summaries side-by-side.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a grid of Spectrograms and their percentile summaries side-by-side.</span>
 
 <span class="sd">    Suitable for ASD, PSD, Coherence, and other spectrograms.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    sg_collection : SpectrogramList, SpectrogramDict, or SpectrogramMatrix</span>
+<span class="sd">        Collection of spectrograms to summarize.</span>
 <span class="sd">    fmin, fmax : float, optional</span>
-<span class="sd">        Frequency range.</span>
+<span class="sd">        Frequency range to crop before plotting.</span>
 <span class="sd">    title : str, optional</span>
+<span class="sd">        Figure title applied to the summary panel.</span>
 <span class="sd">    **kwargs</span>
 <span class="sd">        Passed to Plot constructor for global settings.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
@@ -592,7 +703,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

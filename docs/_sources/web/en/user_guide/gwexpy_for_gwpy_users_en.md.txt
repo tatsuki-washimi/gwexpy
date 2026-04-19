@@ -1,254 +1,307 @@
-# GWexpy Features (For GWpy Users)
+# Migration Guide for GWpy Users
 
-This document exhaustively lists the features extended and added to GWexpy on top of GWpy.
-The features included here become available simply by importing `gwexpy`.
+This page is the **entry point for moving from GWpy to GWexpy**.  
+It is not intended to be a full API catalog. The goal is to understand, quickly, what still works as-is and where the high-value differences start.
 
-## 1. Enhancements to Existing GWpy Classes (Minor)
+If you want a **difference-oriented index of added APIs**, see [GWpy Difference API Index](gwpy_added_api_index_en.md).  
+If you want the full API surface regardless of GWpy compatibility, use the [API Reference](../reference/index.rst).
 
-These are method additions and functional enhancements to base classes like `TimeSeries`, `FrequencySeries`, and `Spectrogram` for improved usability.
+## What to lock in first
 
-### Base Method Enhancements (TimeSeries / FrequencySeries / Spectrogram)
+- **Single-channel workflows are often still familiar.**
+  For `TimeSeries` / `FrequencySeries` / `Spectrogram`, many basic read, plot, and spectral-analysis paths can be tried first by swapping imports to `gwexpy`.
+- **The biggest shift is multi-channel processing.**
+  Instead of manually looping over `TimeSeriesDict`, you can convert it with `to_matrix()` and treat the channel set as a batch-analysis container.
+- **The Field API is a GWexpy-only extension.**
+  `ScalarField` and `FieldList` / `FieldDict` cover spatially indexed data and batch operations across multiple fields, which GWpy does not provide as a standard layer.
+- **Some external-library calls move onto the data object itself.**
+  Representative examples are `.find_peaks()`, `.fit()`, `.hht()`, and `.arima()`.
+- **Direct I/O and interop have their own guides.**
+  Treat [File I/O Supported Formats Guide](io_formats.md) as the source of truth for `read(..., format=...)` / `write(..., format=...)`, and [Interop / Conversion Guide](interop.md) as the source of truth for `to_*()` / `from_*()` conversions.
 
-- **Phase & Angle**:
-  - `.phase(unwrap=False)`: Calculate phase
-  - `.angle(unwrap=False)`: Alias for `.phase()`
-  - `.radian(unwrap=False)`: Phase in radians
-  - `.degree(unwrap=False)`: Phase in degrees
-  - Support for `np.unwrap`
-- **Resampling, Interpolation, & Editing**:
-  - `.interpolate(new_times, method='linear')`: Data interpolation
-  - `.resample(rate)`: Enhanced resampling using `scipy` or `obspy` (Lanczos) backend
-  - `.decimate(factor)`: Decimation
-  - `.tail(n)`: Extract the last `n` samples
-  - `.crop(start, end)`: (Supports flexible time specification via `gwexpy.time.to_gps`)
-  - `.append(other)`: Enhanced concatenation
-- **Preprocessing**:
-  - `.impute(method=...)`: Missing value imputation (linear interpolation, ffill, bfill). Can specify constraints like `max_gap`.
-  - `.standardize()`: Standardization (Z-score normalization)
-  - `.whiten(method='pca'|'zca')`: Whitening. Model can be retrieved with `return_model=True`.
-- **Peak Detection**:
-  - `.find_peaks(...)`: Detect peaks in the signal (wrapper for `scipy.signal.find_peaks`)
+## Where migration usually pays off first
 
-### GPS Time Utilities
+| Goal | First difference to check | Where to go next |
+| --- | --- | --- |
+| Analyse many channels together | `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | [Matrix Tutorial](tutorials/matrix_timeseries.ipynb) |
+| Work with spatially indexed data or multiple fields together | `ScalarField`, `FieldList`, `FieldDict` | [Field API Intro](tutorials/field_scalar_intro.ipynb), [GWpy Difference API Index](gwpy_added_api_index_en.md) |
+| Reduce direct SciPy / Statsmodels plumbing | added object-level APIs | [GWpy Difference API Index](gwpy_added_api_index_en.md) |
+| Move existing single-channel code quickly | swap imports first, then add difference APIs only where needed | [Quickstart](quickstart.md) |
+| Understand result-sharing behavior | Transparent Pickle compatibility | [GWpy Difference API Index](gwpy_added_api_index_en.md) |
 
-- Utility functions supporting vector operations and formatting of GPS times (available in `gwexpy.time`, `gwexpy.plot.gps`, etc.).
+## Recipe 1: Move manual `TimeSeriesDict` loops toward `TimeSeriesMatrix`
 
-### Plotting
+In GWpy-style code, pairwise comparisons or per-channel spectral logic often become explicit loops.  
+In GWexpy, `to_matrix()` is the main entry point for treating the whole channel set as a batch-analysis object.
 
-- **Datetime Axis**: Automatically formats the horizontal axis to datetime format during plotting.
-- **Batch Plotting**: Simultaneous plotting of a spectrogram and its time-averaged ASD via `Spectrogram.plot_summary()`, etc.
-- **Maps & Sky Maps**: Data plotting on maps using `gwexpy.plot.GeoMap` and `gwexpy.plot.SkyMap`.
-- **PairPlot**: Pair plotting (scatter matrix / correlation map) of multivariate data via `gwexpy.plot.PairPlot`.
+### GWpy style
 
-### Enhancements to Collection Classes (TimeSeriesList / TimeSeriesDict)
+```python
+from gwpy.timeseries import TimeSeriesDict
 
-Batch processing capabilities have been extended to GWpy's `TimeSeriesList` and `TimeSeriesDict`.
+tsd = TimeSeriesDict.read(cache, channels)
+reference = tsd["H1:STRAIN"]
 
-- Batch signal processing: `.fft_time_all()`, `.resample_all(rate)`, `.filter_all(*args)`
-- Batch slicing: `.sel_all(...)`, `.isel_all(...)`
-- Broadcasting of arithmetic operations
+csd = {}
+for name, ts in tsd.items():
+    if name == "H1:STRAIN":
+        continue
+    csd[name] = ts.csd(reference, fftlength=4)
+```
 
-## 2. Introduction of New Classes
+### GWexpy style
 
-New data structures for handling multi-channel data, matrix data, physical fields, etc.
+```python
+from gwexpy.timeseries import TimeSeriesDict
 
-### New Collections
+tsd = TimeSeriesDict.read(cache, channels)
+matrix = tsd.to_matrix()
 
-Collection classes for frequency and time-frequency data, which are not standard in GWpy. They serve the same role as `TimeSeriesList` and `TimeSeriesDict` do for `TimeSeries`.
+csm = matrix.csd(fftlength=4)
+csm.plot().show()
+```
 
-- `FrequencySeriesList`, `FrequencySeriesDict`
-- `SpectrogramList`, `SpectrogramDict`
+This difference matters when:
 
-### Matrices (SeriesMatrix)
+- you want fewer manual loops and more object-level batch operations
+- you want multi-channel analysis to stay in `TimeSeriesMatrix` / `FrequencySeriesMatrix`
 
-Multidimensional data structures that hold data as elements of a "matrix" (Row, Col, Axis...).
+Related pages:
 
-- `TimeSeriesMatrix`: (Rows, Cols, Time)
-- `FrequencySeriesMatrix`: (Rows, Cols, Frequency)
-- `SpectrogramMatrix`: (Rows, Cols, Time, Frequency)
+- [Matrix Tutorial](tutorials/matrix_timeseries.ipynb)
+- [GWpy Difference API Index](gwpy_added_api_index_en.md)
+- [TimeSeriesDict Reference](../reference/TimeSeriesDict.md)
+- [TimeSeriesMatrix Reference](../reference/TimeSeriesMatrix.md)
 
-**Features & Capabilities**:
+## Recipe 2: Pull external function calls back onto the data object
 
-- **Matrix Operations**: Element-wise matrix multiplication (`@`), inverse (`.inv()`), determinant (`.det()`), trace (`.trace()`), Schur complement (`.schur()`). Powerful for transfer function analysis of MIMO systems.
-- **Statistical Processing**: Batch computation of statistics across the entire sensor array via row/column-wise mean/variance operations (e.g., `.mean(axis)`, `.std(axis)`).
-- **Batch Processing**: Batch application of signal processing (filtering, resampling, whitening, etc.) to each element.
+In GWpy-based code, the natural pattern is often “extract arrays, then call SciPy or Statsmodels directly.”  
+In GWexpy, part of that workflow is exposed as methods on the data object itself.
 
-### Physical Fields (Fields)
+### GWpy style
 
-Classes to handle 4-dimensional physical fields (Time/Frequency + 3D Space/Wavenumber).
+```python
+import numpy as np
+from scipy.signal import find_peaks
+from gwpy.frequencyseries import FrequencySeries
 
-- `ScalarField` / `VectorField` / `TensorField`
+spec = FrequencySeries(...)
+peaks, props = find_peaks(np.asarray(spec.value), height=0.2)
+```
 
-**Features & Capabilities**:
+### GWexpy style
 
-- **Domain Management**: Manages the state of the Time/Frequency axis (`axis0`) and Space/Wavenumber axis (`space_domain`), supporting mutual transformations (`.fft_time`, `.fft_space`).
-- **Spatial Extraction**: Extract and interpolate time series data at arbitrary spatial coordinates via `.extract_points()`.
-- **Vector & Tensor Analysis**: Physical operations like dot product, cross product, divergence, curl, and coordinate transformations (e.g., Cartesian coordinate system).
-- **Simulation**: Generation of noise fields (isotropic noise, plane waves, etc.) in coordination with `gwexpy.noise.field`.
+```python
+from gwexpy.frequencyseries import FrequencySeries
 
-### Other
+spec = FrequencySeries(...)
+peaks, props = spec.find_peaks(threshold=0.2)
+```
 
-- `BifrequencyMap`: Map data with two frequency axes (e.g., STLTGram).
+The same direction applies to other added APIs in `gwexpy`, including:
 
-## 3. Advanced Analysis Methods (Single Channel)
+- `.fit()` for object-level fitting workflows
+- `.hht()` for Hilbert-Huang Transform analysis
+- `.arima()` for time-series modelling and forecasting
 
-### Noise Simulation (`gwexpy.noise`)
+Related pages:
 
-- `from_asd(asd, ...)`: Time series generation from ASD (Amplitude Spectral Density)
-- `colored_noise(psd, ...)`: Generation of colored noise
-- `field.simulate(...)`: Generation of noise fields
-- `pygwinc` integration: Utilize interferometer noise budget models via `gwexpy.noise.gwinc_`.
+- [GWpy Difference API Index](gwpy_added_api_index_en.md)
+- [Frequency Series Tutorial](tutorials/intro_frequencyseries.ipynb)
+- [Fitting](tutorials/advanced_fitting.ipynb)
+- [HHT](tutorials/advanced_hht.ipynb)
+- [ARIMA](tutorials/advanced_arima.ipynb)
 
-### Time Series Analysis (TimeSeries)
+## Recipe 3: Single-channel code often does not need a full rewrite
 
-- `.hilbert()`: Hilbert transform (Analytic signal)
-- `.envelope()`: Envelope (`abs(hilbert)`)
-- `.demodulate(f)`: Lock-in amplification & demodulation
-- `.arima(order, ...)`: AR/MA/ARMA/ARIMA model analysis (wrapper for `statsmodels`, `pmdarima`)
-- `.ar(p)`, `.ma(q)`, `.arma(p, q)`: Shortcuts for AR/MA/ARMA
-- `.hurst()`: Calculation of the Hurst exponent
-- `.skewness()`: Skewness
-- `.kurtosis()`: Kurtosis
+If you already know GWpy’s base classes, you do not need to redesign everything up front.  
+In many cases, the practical migration path is: change imports first, then adopt GWexpy-specific APIs only where they help.
 
-### Frequency Spectrum Analysis (FrequencySeries)
+### GWpy style
 
-- `.differentiate()`, `.integrate()`: Differentiation/Integration in the frequency domain
-- `.differentiate_time()`, `.integrate_time()`: Time differentiation/integration in the frequency domain (e.g., Displacement ↔ Velocity ↔ Acceleration conversions)
-- `.group_delay()`: Calculation of group delay
+```python
+from gwpy.timeseries import TimeSeries
 
-### Time-Frequency Analysis (Spectrogram / Special Transforms)
+ts = TimeSeries.read("data.gwf", "H1:STRAIN")
+asd = ts.asd(fftlength=4)
+asd.plot().show()
+```
 
-In addition to GWpy's spectrogram and Q-transform, various time-frequency analysis methods are provided.
+### GWexpy style
 
-- `hht()`: Hilbert-Huang Transform (HHT). IMF decomposition via EMD (Empirical Mode Decomposition) and instantaneous frequency analysis.
-- `stlt()`: Short-Time Laplace Transform (STLT). Analysis taking the damping constant $\sigma$ into account.
-- `cepstrum()`: Cepstrum analysis (quefrency).
-- `cwt()`: Continuous Wavelet Transform (wrapper for `pywt`).
+```python
+from gwexpy.timeseries import TimeSeries
 
-### Statistical Estimation & Fitting
+ts = TimeSeries.read("data.gwf", "H1:STRAIN")
+asd = ts.asd(fftlength=4)
+asd.plot().show()
+```
 
-- **Fitting (`gwexpy.fitting`)**:
-  - `FitResult`, `Model`: Chi-square fitting (real, complex) and MCMC analysis via iminuit.
-  - Methods like `.fit()` are also mixed into `TimeSeries` and `FrequencySeries`.
-- **Bootstrap**:
-  - `bootstrap_spectrogram`: Bootstrap estimation of spectrograms.
+Practical reading of this difference:
 
-## 4. Advanced Analysis Methods (Multi-Channel)
+- start by carrying over existing single-channel workflows
+- add GWexpy-only APIs later, where multi-channel or higher-level analysis benefits matter
 
-### Component Analysis (`gwexpy.timeseries.decomposition`)
+Related pages:
 
-- `PCA`: Principal Component Analysis
-- `ICA`: Independent Component Analysis
-- `ZCA`: Whitening (used as `.whiten(method='zca')`)
+- [Quickstart](quickstart.md)
+- [Tutorial Index](tutorials/index.rst)
+- [API Reference](../reference/index.rst)
 
-### Correlation & Statistical Analysis
+## Recipe 4: Group `ScalarField` objects with `FieldList` / `FieldDict`
 
-- **Correlation Metrics**:
-  - `dCor`: Distance Correlation
-  - `MIC`: Maximal Information Coefficient
-  - `Pearson`, `Kendall`: Standard correlation coefficients
-- **Bruco**:
-  - Noise source identification tool via multi-channel coherence search (`gwexpy.analysis.bruco`).
+Typical GWpy migration paths focus on series-like objects, and GWpy does not provide a standard container layer for field-like data with shared spatial metadata.
+In GWexpy, you can keep a single field in `ScalarField` and manage multiple related fields through `FieldList` / `FieldDict`.
 
-### System Analysis & Control
+### GWpy style
 
-- **MIMO / State Space Models**:
-  - `python-control` integration: Mutual conversion with control system design libraries via `TimeSeries.from_control(response)`, `to_control_frd`, etc.
-  - MIMO transfer function & time series analysis using matrix classes (`SeriesMatrix`).
-- **Noise Injection Test Analysis**:
-  - Experimental data analysis tools for estimating transfer functions and calculating coupling coefficients (`gwexpy.analysis.response`).
-- **Matrix Operations**:
-  - Basic operations like inverse (`.inv()`), determinant (`.det()`), trace (`.trace()`), and Schur complement (`.schur()`).
+```python
+import numpy as np
 
-## 5. Interoperability with External Tools
+field_a = np.random.randn(8, 3, 3, 3)
+field_b = np.random.randn(8, 3, 3, 3)
 
-Mutual conversion functionalities with external library objects (`.to_*()` / `.from_*()`).
+fields = {"before": field_a, "after": field_b}
 
-- **Deep Learning / Array Libraries**:
-  - `PyTorch` (`Tensor`, `Dataset`/`DataLoader`): `to_torch`, `to_torch_dataset`, etc.
-  - `TensorFlow` (`Tensor`): `to_tf`
-  - `JAX` (`Array`): `to_jax`
-  - `CuPy` (`ndarray`): `to_cupy`
-  - `Dask` (`dask.array`): `to_dask`
-  - `Zarr`: `to_zarr` / `from_zarr`
-- **Data Structures**:
-  - `pandas` (`Series`/`DataFrame`): `to_pandas`, `to_pandas_dataframe`
-  - `xarray` (`DataArray`): `to_xarray`
-  - `polars` (`Series`/`DataFrame`): `to_polars_series`
-  - `SQLite`, `JSON`: Lightweight save/load
-- **Domain Specific**:
-  - `Obspy` (Seismology): `Trace`, `Stream`
-  - `MNE` (EEG/MEG): `Raw`, `RawArray` (`to_mne`)
-  - `Neo` (Electrophysiology): `AnalogSignal` (`to_neo`)
-  - `Librosa` / `Pydub` (Audio): Audio data conversion
-  - `SimPEG` (Geophysics): `Data` object
-  - `python-control`: `FrequencyResponseData` (FRD), etc.
-  - `ROOT` (CERN): `TGraph`, `TH1D`, `TH2D`, `TMultiGraph`
-  - `Specutils`: `Spectrum1D` (`to_specutils`)
-  - `Pyspeckit`: `Spectrum` (`to_pyspeckit`)
-  - `Astropy`: `TimeSeries` (`to_astropy_timeseries`)
-  - `Quantities`: `Quantity` (`to_quantity`)
+# axis metadata and units must be tracked separately
+```
 
-### Data Format I/O Extensions
+### GWexpy style
 
-In addition to the formats natively supported by GWpy, the following are supported (or extended):
+```python
+import numpy as np
+from gwexpy.fields import ScalarField, FieldDict
 
-- `ATS` (Metronix MT data)
-- `GBD` (GRAPHTEC datalogger)
-  - Analog channels are converted from `count -> V` using the amp range (e.g., `20mV`) in the header.
-  - `Alarm` / `AlarmOut` / `Pulse*` / `Logic*` are handled as digital/status, values normalized to 0/1, and unit set to dimensionless.
-  - You can overwrite the channel names to be treated as digital by specifying `digital_channels=[...]` in `TimeSeriesDict.read(..., format="gbd")`.
-- `TDMS` (LabVIEW / NI)
-- `MiniSEED`, `SAC`, `GSE2` (Seismic data, Obspy integration)
-- `WIN` (Seismic data)
-  - Implemented decoding for 0.5-byte (4-bit difference) / 3-byte differences, taking into account known issues and caveats in ObsPy.
-  - Implementation in gwexpy: `gwexpy/timeseries/io/win.py` (handling lower nibble for 4-bit differences, skipping trailing nibble for odd differences, decoding signed 24-bit differences, etc.).
-- `DTTXML` (LIGO Diagnostic Test Tools)
-- `SDB` (Davis weather station data)
-- `Midas` (PSI/DAQ format)
-- `Parquet`, `Feather`, `Pickle` (pandas integration)
-- `WAV` (Audio, extended support)
-- `ROOT` file (.root)
+fields = FieldDict(
+    {
+        "before": ScalarField(np.random.randn(8, 3, 3, 3)),
+        "after": ScalarField(np.random.randn(8, 3, 3, 3)),
+    },
+    validate=True,
+)
 
-## Notes on Pickle / shelve
+fft_fields = fields.fft_space_all()
+```
 
-:::{admonition} warning
-:class: warning
+This difference matters when:
 
-Do not load untrusted data using `pickle` / `shelve`. Arbitrary code execution can occur during loading.
-:::
+- you want multiple fields to share unit/axis/domain checks instead of managing metadata by hand
+- you want spatial transforms or selections to stay at the collection level rather than writing field-by-field loops
 
-To prioritize portability, gwexpy's pickle implementation is designed to **return GWpy types when unpickled**
-(meaning data can be restored if gwpy is present, even without gwexpy on the reading side).
+Related pages:
+
+- [Field API Intro](tutorials/field_scalar_intro.ipynb)
+- [GWpy Difference API Index](gwpy_added_api_index_en.md)
+- [ScalarField Reference](../reference/ScalarField.md)
+- [FieldList Reference](../reference/FieldList.md)
+- [FieldDict Reference](../reference/FieldDict.md)
+
+## Recipe 5: Read Pickle sharing in terms of compatibility
+
+GWexpy is designed with result sharing in mind, including cases where the receiver does not have GWexpy installed.  
+The point here is not generic Pickle safety advice, but what a GWpy user can expect operationally.
+
+### GWpy style
 
 ```python
 import pickle
-import numpy as np
-from gwexpy.timeseries import TimeSeries
+from gwpy.timeseries import TimeSeries
 
-ts = TimeSeries(np.arange(10.0), sample_rate=1.0, t0=0, unit="m")
-obj = pickle.loads(pickle.dumps(ts))
-# obj is gwpy.timeseries.TimeSeries
+ts = TimeSeries(...)
+
+with open("result.pkl", "wb") as f:
+    pickle.dump(ts, f)
+
+# sharing assumes the receiving side can read the same object type
 ```
 
-Compatibility notes:
+### GWexpy style
 
-- `TimeSeries` / `FrequencySeries` / `Spectrogram` -> Restores as GWpy objects when unpickled
-- `TimeSeriesDict` / `TimeSeriesList` -> Restores as GWpy collections when unpickled
-- `FrequencySeriesDict/List` / `SpectrogramDict/List` -> Restores as Python built-in `dict` / `list` (containing GWpy objects) when unpickled
-- Unique gwexpy types like the `Matrix` and `Field` families are exempt from this portability contract
+```python
+import pickle
+from gwexpy.timeseries import TimeSeries
 
-What is preserved (best effort):
+ts = TimeSeries(...)
 
-- Numerical data (`.value`)
-- Axis information (`times` / `frequencies`)
-- Metadata generally handled by GWpy (`unit`, `name`, `channel`, `epoch`)
+with open("result.pkl", "wb") as f:
+    pickle.dump(ts, f)
 
-What is NOT preserved:
+# the receiving side can restore it as a GWpy base object even without GWexpy
+```
 
-- Internal attributes specific to gwexpy (e.g., `_gwex_*`) and behaviors added by gwexpy
+:::{important}
+Only load Pickle data from trusted sources.
+:::
 
-## 6. GUI Applications
+Related pages:
 
-- **pyaggui (`gwexpy.gui.pyaggui`)**:
-  - A PyQt5-based GUI application modeled after DTT diaggui (C++, ROOT).
+- [GWpy Difference API Index](gwpy_added_api_index_en.md)
+- [Installation Guide](installation.md)
+
+## Recipe 6: Bridge to python-control
+
+In GWpy-based code, using `control.bode()` or similar functions requires manually extracting a `FrequencySeries` value as a numpy array and passing it to `control.frd()`.  
+In GWexpy, `to_control_frd()` handles the conversion in one call, removing that boilerplate.
+
+### GWpy style
+
+```python
+import control
+import numpy as np
+from gwpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries.read("data.hdf5", "H1:STRAIN_ASD")
+
+# must manually extract numpy arrays before building the FRD object
+omega = 2 * np.pi * np.asarray(spec.frequencies.value)
+frd_sys = control.frd(np.asarray(spec.value), omega)
+
+# draw Bode plot
+control.bode(frd_sys)
+```
+
+### GWexpy style
+
+```python
+import control
+from gwexpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries.read("data.hdf5", "H1:STRAIN_ASD")
+
+# one-line conversion and round-trip
+frd_sys = spec.to_control_frd()                      # FrequencySeries → control.FrequencyResponseData
+control.bode(frd_sys)                                # pass directly to Bode / Nichols / Nyquist
+
+spec2 = FrequencySeries.from_control_frd(frd_sys)    # control.FRD → FrequencySeries
+```
+
+This difference matters when:
+
+- you want to treat an ASD / PSD spectrum directly as a control-system FRD model
+- you want to skip manual numpy extraction before passing data to `control.bode()` / `control.nichols()` / `control.nyquist()`
+- you want to restore a processed FRD back to a `FrequencySeries` and feed it into an existing plot or statistics pipeline
+- you want to convert each channel in a multi-channel spectrum with `FrequencySeriesDict.to_control_frd()`
+
+Related pages:
+
+- [Interop / Conversion Guide](interop.md)
+- [python-control API Reference](../reference/api/gwexpy.interop.control_.rst)
+- [Active Damping Tutorial](tutorials/case_active_damping.ipynb)
+- [Frequency Series Tutorial](tutorials/intro_frequencyseries.ipynb)
+
+## Treat direct I/O and external-library conversion as separate guides
+
+This page intentionally does not duplicate the I/O-format list or the external-library conversion list.  
+Use the dedicated guides below as the source of truth:
+
+- Direct I/O: [File I/O Supported Formats Guide](io_formats.md)
+- External-library conversion: [Interop / Conversion Guide](interop.md)
+
+## Next Steps
+
+- [GWpy Difference API Index](gwpy_added_api_index_en.md) - look up added APIs from a difference-oriented view
+- [Field API Intro](tutorials/field_scalar_intro.ipynb) - see how `ScalarField`, `FieldList`, and `FieldDict` fit together
+- [Tutorial Index](tutorials/index.rst) - move from migration recipes into worked examples
+- [File I/O Supported Formats Guide](io_formats.md) - check supported read/write formats
+- [Interop / Conversion Guide](interop.md) - check bridges to external libraries
+- [API Reference](../reference/index.rst) - inspect the full API surface

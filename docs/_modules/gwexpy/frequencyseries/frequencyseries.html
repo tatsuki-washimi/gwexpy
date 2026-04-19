@@ -9,25 +9,87 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/frequencyseries/frequencyseries.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -41,23 +103,25 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,13 +136,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gwexpy.frequencyseries.frequencyseries</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">gwexpy.frequencyseries</span>
-<span class="sd">----------------------</span>
+<span></span><span class="sd">&quot;&quot;&quot;gwexpy.frequencyseries.</span>
 
-<span class="sd">Extends gwpy.frequencyseries with matrix support and future extensibility.</span>
+<span class="sd">Representation of a frequency series.</span>
+
+<span class="sd">This module extends `gwpy.frequencyseries.FrequencySeries` with matrix support,</span>
+<span class="sd">enhanced signal analysis, fitting capabilities, and deep metadata propagation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
@@ -100,6 +164,9 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.types.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesType</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
         <span class="k">pass</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Channel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupportsToGps</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike1D</span><span class="p">,</span> <span class="n">UnitLike</span>
 
 <span class="c1"># Runtime fallback for SeriesType if not available from gwpy</span>
 <span class="k">try</span><span class="p">:</span>
@@ -109,6 +176,8 @@
 <div class="viewcode-block" id="SeriesType">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.SeriesType">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">SeriesType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>  <span class="c1"># type: ignore[no-redef]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enumeration of series types.&quot;&quot;&quot;</span>
+
         <span class="n">TIME</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
         <span class="n">FREQ</span> <span class="o">=</span> <span class="s2">&quot;freq&quot;</span></div>
 
@@ -129,21 +198,120 @@
     <span class="n">StatisticalMethodsMixin</span><span class="p">,</span>
     <span class="n">BaseFrequencySeries</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Light wrapper of gwpy&#39;s FrequencySeries for compatibility and future extension.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A data array holding some metadata to represent a frequency series.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new FrequencySeries instance.</span>
+<span class="sd">    `FrequencySeries` is the primary object used to represent frequency-domain</span>
+<span class="sd">    data in `gwexpy`. It extends the standard `gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">    by incorporating additional mixins for plotting, signal analysis,</span>
+<span class="sd">    regularity checks, numerical fitting, and statistical methods.</span>
 
-<span class="sd">        This override filters out noise-generation parameters (fmin, fmax, df)</span>
-<span class="sd">        that may be passed from gwexpy.noise functions but are not valid</span>
-<span class="sd">        arguments for the parent FrequencySeries constructor.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array-like</span>
+<span class="sd">        Input data array.</span>
+
+<span class="sd">    unit : `~astropy.units.Unit`, optional</span>
+<span class="sd">        Physical unit of these data.</span>
+
+<span class="sd">    f0 : `float`, `~astropy.units.Quantity`, optional, default: `0`</span>
+<span class="sd">        Starting frequency for these data.</span>
+
+<span class="sd">    df : `float`, `~astropy.units.Quantity`, optional, default: `1`</span>
+<span class="sd">        Frequency resolution for these data.</span>
+
+<span class="sd">    frequencies : `array-like`</span>
+<span class="sd">        The complete array of frequencies indexing the data.</span>
+<span class="sd">        This argument takes precedence over `f0` and `df` so should</span>
+<span class="sd">        be given in place of these if relevant, not alongside.</span>
+
+<span class="sd">    epoch : `~gwpy.time.LIGOTimeGPS`, `float`, `str`, optional</span>
+<span class="sd">        GPS epoch associated with these data,</span>
+<span class="sd">        any input parsable by `~gwpy.time.to_gps` is fine.</span>
+
+<span class="sd">    name : `str`, optional</span>
+<span class="sd">        Descriptive title for this array.</span>
+
+<span class="sd">    channel : `~gwpy.detector.Channel`, `str`, optional</span>
+<span class="sd">        Source data stream for these data.</span>
+
+<span class="sd">    dtype : `~numpy.dtype`, optional</span>
+<span class="sd">        Input data type.</span>
+
+<span class="sd">    copy : `bool`, optional, default: `False`</span>
+<span class="sd">        Choose to copy the input data to new memory.</span>
+
+<span class="sd">    subok : `bool`, optional, default: `True`</span>
+<span class="sd">        Allow passing of sub-classes by the array generator.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    In addition to the standard GWpy functionality, this class provides</span>
+<span class="sd">    advanced features such as frequency-domain differentiation/integration,</span>
+<span class="sd">    histogramming, and seamless interoperability with Polars, Pandas,</span>
+<span class="sd">    and ROOT (TGraph/TH1).</span>
+
+<span class="sd">    Key methods:</span>
+
+<span class="sd">    .. autosummary::</span>
+
+<span class="sd">       ~FrequencySeries.plot</span>
+<span class="sd">       ~FrequencySeries.ifft</span>
+<span class="sd">       ~FrequencySeries.zpk</span>
+<span class="sd">       ~FrequencySeries.differentiate</span>
+<span class="sd">       ~FrequencySeries.integrate</span>
+<span class="sd">       ~FrequencySeries.to_db</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.frequencyseries import FrequencySeries</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; data = np.ones(10)</span>
+<span class="sd">    &gt;&gt;&gt; fs = FrequencySeries(data, df=1.0, f0=0.0, unit=&#39;V/Hz&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; fs</span>
+<span class="sd">    &lt;FrequencySeries([1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],</span>
+<span class="sd">                     unit=Unit(&quot;V / Hz&quot;),</span>
+<span class="sd">                     f0=&lt;Quantity 0. Hz&gt;,</span>
+<span class="sd">                     df=&lt;Quantity 1. Hz&gt;,</span>
+<span class="sd">                     epoch=None,</span>
+<span class="sd">                     name=None,</span>
+<span class="sd">                     channel=None)&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">ArrayLike1D</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="n">UnitLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">f0</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">frequencies</span><span class="p">:</span> <span class="n">ArrayLike1D</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">epoch</span><span class="p">:</span> <span class="n">SupportsToGps</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channel</span><span class="p">:</span> <span class="n">Channel</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new FrequencySeries instance.</span>
+
+<span class="sd">        This override ensures compatibility with `gwexpy.noise` generation</span>
+<span class="sd">        functions by filtering out transient parameters (`fmin`, `fmax`)</span>
+<span class="sd">        that are not recognized by the parent `gwpy` constructor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Remove noise-generation parameters that shouldn&#39;t be passed to parent</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="s2">&quot;fmax&quot;</span><span class="p">]:</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">f0</span><span class="o">=</span><span class="n">f0</span><span class="p">,</span>
+            <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">epoch</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__array_finalize__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Propagate gwexpy-specific attributes through NumPy operations.</span>
@@ -157,6 +325,7 @@
 <span class="sd">        obj : object or None</span>
 <span class="sd">            The object from which this instance was created. None if called</span>
 <span class="sd">            from __new__.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__array_finalize__</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -168,6 +337,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__reduce_ex__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">SupportsIndex</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide pickle serialization support.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.pickle_compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">frequencyseries_reduce_args</span>
 
         <span class="k">return</span> <span class="n">frequencyseries_reduce_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -177,8 +347,7 @@
 <div class="viewcode-block" id="FrequencySeries.phase">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.phase">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the phase of this FrequencySeries.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the phase of this FrequencySeries.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -190,6 +359,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            The phase of the series, in radians.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">unwrap</span><span class="p">:</span>
@@ -210,8 +380,7 @@
 <div class="viewcode-block" id="FrequencySeries.angle">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.angle">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the phase angle of this FrequencySeries.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the phase angle of this FrequencySeries.</span>
 
 <span class="sd">        Alias for `phase(unwrap=unwrap)`.</span>
 
@@ -225,6 +394,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            The phase of the series, in radians.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="n">unwrap</span><span class="p">)</span></div>
 
@@ -232,8 +402,7 @@
 <div class="viewcode-block" id="FrequencySeries.histogram">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.histogram">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute a histogram of the values in this FrequencySeries.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute a histogram of the values in this FrequencySeries.</span>
 
 <span class="sd">        Useful for analyzing the distribution of spectral density levels.</span>
 
@@ -254,6 +423,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Histogram</span>
 <span class="sd">            A gwexpy.histogram.Histogram object.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.histogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Histogram</span>
 
@@ -290,8 +460,7 @@
 <div class="viewcode-block" id="FrequencySeries.degree">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.degree">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the phase of this FrequencySeries in degrees.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the phase of this FrequencySeries in degrees.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -302,6 +471,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            The phase of the series, in degrees.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="n">unwrap</span><span class="p">)</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -323,8 +493,7 @@
 <div class="viewcode-block" id="FrequencySeries.differentiate">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.differentiate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Differentiate the FrequencySeries in the frequency domain.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Differentiate the FrequencySeries in the frequency domain.</span>
 
 <span class="sd">        Multiplies by (i * 2 * pi * f)^order.</span>
 
@@ -337,6 +506,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            The differentiated series.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -377,8 +547,7 @@
 <div class="viewcode-block" id="FrequencySeries.integrate">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.integrate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">integrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Integrate the FrequencySeries in the frequency domain.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Integrate the FrequencySeries in the frequency domain.</span>
 
 <span class="sd">        Divides by (i * 2 * pi * f)^order.</span>
 
@@ -391,6 +560,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            The integrated series.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -437,8 +607,7 @@
 <div class="viewcode-block" id="FrequencySeries.to_db">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_db">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert this series to decibels.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert this series to decibels.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -452,6 +621,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            The series in dB.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
@@ -485,6 +655,7 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.filterba">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filterba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a [b, a] filter to this FrequencySeries.</span>
+
 <span class="sd">        Inherited from gwpy.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">filterba</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -527,8 +698,7 @@
         <span class="n">as_dataframe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">frequencies</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;frequency&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert this series to a polars.DataFrame or polars.Series.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert this series to a polars.DataFrame or polars.Series.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -543,6 +713,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        polars.DataFrame or polars.Series</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;polars&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">as_dataframe</span><span class="p">:</span>
@@ -564,8 +735,7 @@
         <span class="n">frequencies</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;frequency&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a FrequencySeries from a polars.DataFrame or polars.Series.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a FrequencySeries from a polars.DataFrame or polars.Series.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -579,6 +749,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pl</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;polars&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
@@ -595,9 +766,7 @@
 <div class="viewcode-block" id="FrequencySeries.to_tgraph">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_tgraph">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to ROOT TGraph or TGraphErrors.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to ROOT TGraph or TGraphErrors.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_tgraph</span>
 
         <span class="k">return</span> <span class="n">to_tgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">)</span></div>
@@ -606,9 +775,7 @@
 <div class="viewcode-block" id="FrequencySeries.to_th1d">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_th1d">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_th1d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to ROOT TH1D.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to ROOT TH1D.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_th1d</span>
 
         <span class="k">return</span> <span class="n">to_th1d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">)</span></div>
@@ -620,9 +787,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">from_root</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">],</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">return_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create FrequencySeries from ROOT TGraph or TH1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from ROOT TGraph or TH1.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_root</span>
 
         <span class="k">return</span> <span class="n">from_root</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">return_error</span><span class="o">=</span><span class="n">return_error</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -695,8 +860,7 @@
         <span class="n">pad_right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Inverse FFT returning a gwexpy TimeSeries, supporting transient round-trip.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inverse FFT returning a gwexpy TimeSeries, supporting transient round-trip.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -708,6 +872,9 @@
 <span class="sd">            Explicitly specify the length after restoration (takes priority).</span>
 <span class="sd">        pad_right, pad_left : int, optional</span>
 <span class="sd">            Specify padding lengths for transient mode to override defaults.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional arguments passed to parent ifft.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_regular</span><span class="p">(</span><span class="s2">&quot;ifft&quot;</span><span class="p">)</span>
         <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
@@ -790,8 +957,7 @@
 <div class="viewcode-block" id="FrequencySeries.idct">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.idct">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">idct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">norm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ortho&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute the Inverse Discrete Cosine Transform (IDCT).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the Inverse Discrete Cosine Transform (IDCT).</span>
 
 <span class="sd">        Reconstructs a time-domain signal from DCT coefficients.</span>
 
@@ -819,8 +985,11 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; fs = FrequencySeries(dct_coeffs, ...)</span>
-<span class="sd">        &gt;&gt;&gt; ts = fs.idct()</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.frequencyseries import FrequencySeries</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; fs = FrequencySeries(np.ones(10), df=1.0)</span>
+<span class="sd">        &gt;&gt;&gt; ts = fs.idct(n=10)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_regular</span><span class="p">(</span><span class="s2">&quot;idct&quot;</span><span class="p">)</span>
 
@@ -870,8 +1039,7 @@
 <div class="viewcode-block" id="FrequencySeries.differentiate_time">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.differentiate_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">differentiate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply time differentiation in frequency domain.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply time differentiation in frequency domain.</span>
 
 <span class="sd">        Multiplies by (2 * pi * i * f).</span>
 <span class="sd">        Converting Displacement -&gt; Velocity -&gt; Acceleration.</span>
@@ -879,6 +1047,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
         <span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f</span>
@@ -906,8 +1075,7 @@
 <div class="viewcode-block" id="FrequencySeries.integrate_time">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.integrate_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">integrate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply time integration in frequency domain.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply time integration in frequency domain.</span>
 
 <span class="sd">        Divides by (2 * pi * i * f).</span>
 <span class="sd">        Converting Acceleration -&gt; Velocity -&gt; Displacement.</span>
@@ -915,6 +1083,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
         <span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f</span>
@@ -951,8 +1120,7 @@
 <div class="viewcode-block" id="FrequencySeries.quadrature_sum">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.quadrature_sum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">quadrature_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute sqrt(self^2 + other^2) assuming checking independence.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute sqrt(self^2 + other^2) assuming checking independence.</span>
 
 <span class="sd">        Operates on magnitude. Phase information is lost (returns real).</span>
 
@@ -965,6 +1133,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            Magnitude combined series.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mag_self</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="n">mag_other</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -985,8 +1154,7 @@
 <div class="viewcode-block" id="FrequencySeries.group_delay">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.group_delay">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the group delay of the series.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the group delay of the series.</span>
 
 <span class="sd">        Group delay is defined as -d(phase)/d(omega), where omega = 2 * pi * f.</span>
 <span class="sd">        It represents the time delay of the envelope of a signal at a given frequency.</span>
@@ -995,6 +1163,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            A new FrequencySeries representing the group delay in seconds.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Gradient of unwrapped phase w.r.t frequency</span>
         <span class="n">orig_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
@@ -1020,8 +1189,7 @@
 <div class="viewcode-block" id="FrequencySeries.rebin">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.rebin">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Rebin the FrequencySeries to a new resolution.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rebin the FrequencySeries to a new resolution.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1032,6 +1200,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
 <span class="sd">            The rebinned series.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
             <span class="n">width</span> <span class="o">=</span> <span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
@@ -1125,6 +1294,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries or FrequencySeriesMatrix</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_finesse_frequency_response</span>
 
@@ -1160,6 +1330,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries or FrequencySeriesDict</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_finesse_noise</span>
 
@@ -1196,6 +1367,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries or FrequencySeriesDict</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pyspice_ac</span>
 
@@ -1227,6 +1399,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries or FrequencySeriesDict</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pyspice_noise</span>
 
@@ -1258,6 +1431,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries or FrequencySeriesDict</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pyspice_distortion</span>
 
@@ -1296,6 +1470,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries or FrequencySeriesMatrix</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_skrf_network</span>
 
@@ -1330,6 +1505,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        skrf.Network</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_skrf_network</span>
 
@@ -1349,8 +1525,7 @@
         <span class="n">requires_grad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to torch.Tensor.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to torch.Tensor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1366,6 +1541,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `torch.Tensor`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.torch_</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_torch</span>
 
@@ -1383,8 +1559,7 @@
         <span class="n">frequencies</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create FrequencySeries from torch.Tensor.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from torch.Tensor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1398,6 +1573,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `FrequencySeries`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Wrapper to adapt signature (from_torch calls cls(data, t0, dt) for TimeSeries)</span>
         <span class="c1"># We need a custom implementation for FrequencySeries or adapt from_torch logic.</span>
@@ -1411,12 +1587,12 @@
 <div class="viewcode-block" id="FrequencySeries.to_tensorflow">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_tensorflow">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_tensorflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to tensorflow.Tensor.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to tensorflow.Tensor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `tensorflow.Tensor`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.tensorflow_</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_tf</span>
 
@@ -1440,12 +1616,12 @@
 <div class="viewcode-block" id="FrequencySeries.to_jax">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_jax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_jax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to JAX array.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to JAX array.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `jax.Array`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.jax_</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_jax</span>
 
@@ -1471,12 +1647,12 @@
 <div class="viewcode-block" id="FrequencySeries.to_cupy">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_cupy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_cupy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to CuPy array.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to CuPy array.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `cupy.ndarray`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.cupy_</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_cupy</span>
 
@@ -1503,8 +1679,7 @@
 <div class="viewcode-block" id="FrequencySeries.to_quantities">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_quantities">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to quantities.Quantity (Elephant/Neo compatible).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to quantities.Quantity (Elephant/Neo compatible).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1514,6 +1689,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        quantities.Quantity</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_quantity</span>
 
@@ -1524,8 +1700,7 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_quantities">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_quantities</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">],</span> <span class="n">q</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create FrequencySeries from quantities.Quantity.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from quantities.Quantity.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1537,6 +1712,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_quantity</span>
 
@@ -1546,8 +1722,7 @@
 <div class="viewcode-block" id="FrequencySeries.to_mne">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_mne">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_mne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to MNE-Python object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to MNE-Python object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1557,6 +1732,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        mne.time_frequency.SpectrumArray</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_mne</span>
 
@@ -1567,8 +1743,7 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_mne">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_mne</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">],</span> <span class="n">spectrum</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create FrequencySeries from MNE-Python Spectrum object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from MNE-Python Spectrum object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1580,6 +1755,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries or FrequencySeriesDict</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_mne</span>
 
@@ -1589,12 +1765,17 @@
 <div class="viewcode-block" id="FrequencySeries.to_obspy">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_obspy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_obspy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to Obspy Trace.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to Obspy Trace.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional arguments passed to ObsPy Trace constructor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        obspy.Trace</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_obspy</span>
 
@@ -1605,8 +1786,7 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_obspy">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_obspy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create FrequencySeries from Obspy Trace.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from Obspy Trace.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1618,6 +1798,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_obspy</span>
 
@@ -1629,8 +1810,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_simpeg</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rx_type</span><span class="o">=</span><span class="s2">&quot;PointElectricField&quot;</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to SimPEG Data object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to SimPEG Data object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1640,10 +1820,13 @@
 <span class="sd">            Receiver class name. Default &quot;PointElectricField&quot;.</span>
 <span class="sd">        orientation : str, optional</span>
 <span class="sd">            Receiver orientation (&#39;x&#39;, &#39;y&#39;, &#39;z&#39;). Default &#39;x&#39;.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional arguments passed to SimPEG Data constructor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        simpeg.data.Data</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_simpeg</span>
 
@@ -1656,17 +1839,19 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_simpeg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_simpeg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create FrequencySeries from SimPEG Data object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from SimPEG Data object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        data_obj : simpeg.data.Data</span>
 <span class="sd">            Input SimPEG Data.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional arguments passed to SimPEG converter.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_simpeg</span>
 
@@ -1676,17 +1861,17 @@
 <div class="viewcode-block" id="FrequencySeries.to_specutils">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_specutils">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_specutils</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to specutils.Spectrum1D.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to specutils.Spectrum1D.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        **kwargs</span>
+<span class="sd">        **kwargs : Any</span>
 <span class="sd">            Arguments passed to Spectrum1D constructor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        specutils.Spectrum1D</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_specutils</span>
 
@@ -1697,17 +1882,19 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_specutils">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_specutils</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create FrequencySeries from specutils.Spectrum1D.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from specutils.Spectrum1D.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        spectrum : specutils.Spectrum1D</span>
 <span class="sd">            Input spectrum.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional arguments passed to constructor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_specutils</span>
 
@@ -1717,17 +1904,17 @@
 <div class="viewcode-block" id="FrequencySeries.to_pyspeckit">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_pyspeckit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pyspeckit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to pyspeckit.Spectrum.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to pyspeckit.Spectrum.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        **kwargs</span>
+<span class="sd">        **kwargs : Any</span>
 <span class="sd">            Arguments passed to pyspeckit.Spectrum constructor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pyspeckit.Spectrum</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_pyspeckit</span>
 
@@ -1738,17 +1925,19 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.from_pyspeckit">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_pyspeckit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create FrequencySeries from pyspeckit.Spectrum.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from pyspeckit.Spectrum.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        spectrum : pyspeckit.Spectrum</span>
 <span class="sd">            Input spectrum.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional arguments passed to constructor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        FrequencySeries</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pyspeckit</span>
 
@@ -1807,7 +1996,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

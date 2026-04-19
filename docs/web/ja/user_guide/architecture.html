@@ -4,35 +4,99 @@
 <html class="writer-html5" lang="ja" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="GWexpy のアーキテクチャ、コンテナ設計、データフロー、Field API と Matrix API の役割、次に辿る理論・リファレンス導線を説明します。" name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>アーキテクチャと物理 &mdash; GWexpy Documentation</title>
+  <title>アーキテクチャとデータフロー &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/architecture.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="リファレンス" href="../reference/index.html" />
-    <link rel="prev" title="検証済みアルゴリズム" href="validated_algorithms.html" /> 
+    <link rel="next" title="物理モデルと解析理論" href="physics_models.html" />
+    <link rel="prev" title="検証済みアルゴリズム" href="validated_algorithms.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../en/user_guide/architecture.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -46,40 +110,54 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">アーキテクチャと物理</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">物理フィールドとフーリエ空間</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">スペクトル解析と統計</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5">過渡応答・システム解析</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id7">ベイズ・フィッティングとモデリング</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id8">ノイズモデル</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">アーキテクチャとデータフロー</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">このページでわかること</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">このページの近道</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#architecture-how-to-read-ja">このページの読み方</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#architecture-design-philosophy-ja">データ構造の設計思想</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-flow-diagram-ja">データフロー図</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#architecture-core-analysis-components-ja">主要な解析コンポーネントの概念</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-documents-ja">関連ドキュメント</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#next-to-read-ja">次に読む</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
 </ul>
@@ -88,18 +166,18 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
-      <li class="breadcrumb-item active">アーキテクチャと物理</li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
+      <li class="breadcrumb-item active">アーキテクチャとデータフロー</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/architecture.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -110,79 +188,123 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>アーキテクチャと物理<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<p>このセクションでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> で実装されている独自のアルゴリズム、物理モデル、および数学ロジックについて詳説します。パッケージの解析ツールの背後にあるメカニズムを理解したい高度なユーザーおよび開発者向けのリファレンスとして機能します。</p>
+<h1>アーキテクチャとデータフロー<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p><strong>ページ種別:</strong> 設計ガイド</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の設計思想と、内部的なデータ処理の流れについて解説します。
+本パッケージは GWpy を拡張し、多チャネルの <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> 操作や 4次元の物理的な場を表すフィールドを扱いやすくすることを目指しています。</p>
+<p><strong>検索のヒント:</strong> <code class="docutils literal notranslate"><span class="pre">architecture</span></code>, <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">flow</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">flattening</span></code>, <code class="docutils literal notranslate"><span class="pre">フィールド</span> <span class="pre">API</span></code></p>
 <section id="id2">
-<h2>物理フィールドとフーリエ空間<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>このページでわかること<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>以下の要約表は共有 CSS の表スタイルに合わせています。小さい画面では、表を個別調整するより横スクロールで読む前提です。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>項目</p></th>
+<th class="head"><p>内容</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>ページ種別</strong></p></td>
+<td><p>設計ガイド</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>対象読者</strong></p></td>
+<td><p>コンテナ設計の考え方を知りたい利用者、内部データフローを把握したいコントリビュータ</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>前提</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> / <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の基本名を知っていること</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>こんなときに読む</strong></p></td>
+<td><p>Matrix 系やフィールド API がなぜこの形なのか知りたい、理論ページや API ページへ進む前に地図が欲しい</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>検索キーワード</strong></p></td>
+<td><p>architecture, data flow, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, flattening, フィールド API</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="id3">
-<h3>4次元フィールド操作<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、時間と3つの空間次元を表す4次元フィールド（例：<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>）のような多次元データの堅牢な操作を提供します。中核となる機能は、空間領域と波数（<span class="math notranslate nohighlight">\(k\)</span>）領域（逆空間）の間のシームレスな変換です。</p>
-<p><code class="docutils literal notranslate"><span class="pre">fft_space</span></code> および <code class="docutils literal notranslate"><span class="pre">ifft_space</span></code> メソッドは、多次元高速フーリエ変換（FFT）を使用してこれらの変換を処理します。重要なのは、パッケージが座標変換を正しく管理し、物理単位とグリッド間隔が <span class="math notranslate nohighlight">\(k\)</span> 空間に正確に変換されることを保証することです。</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 空間分解能 dx に基づいて角波数 k が計算されます</span>
-<span class="n">k_values</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">npts</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx_value</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>これにより、物理的な波長や空間周波数に依存するアプリケーションが、寸法的に正しくスケーリングされた出力を受け取ることが保証されます。</p>
-</section>
-</section>
-<section id="id4">
-<h2>スペクトル解析と統計<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<section id="asd">
-<h3>堅牢な ASD 推定 (ブートストラップ・スペクトログラム)<a class="headerlink" href="#asd" title="Link to this heading"></a></h3>
-<p>標準的な振幅スペクトル密度（ASD）の推定は、非定常ノイズの影響を受けやすい場合があります。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は <code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code> 関数を通じて、堅牢な推定アプローチを実装しています。</p>
-<p>このメソッドは、スペクトログラムの時間軸に沿ってブートストラップ再サンプリング（時間相関データには Moving Block Bootstrap を含む）を使用し、中央値 または 平均値 ASD とその信頼区間を推定します。</p>
-<p><strong>分散膨張係数 (Variance Inflation Factor; VIF)</strong>
-Welch法のようにオーバーラップしたデータセグメントから統計量を計算する場合、セグメント間に相関があるため、見かけの分散が人工的に小さくなります。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、オーバーラップに使用した窓関数の自己相関に基づいて、分散膨張係数 (VIF) を数学的に正しく適用します。</p>
-<div class="math notranslate nohighlight">
-\[
-\text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
-\]</div>
-<p>これにより、ブートストラップ法が返す信頼区間が、データの真の統計的不確実性を正確に反映するようになります。</p>
-</section>
-<section id="fft">
-<h3>トランジェント信号の FFT<a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
-<p>トランジェント信号（インジェクションや物理的なインパルスなど）を解析する場合、標準的な窓関数法を用いると信号の真の振幅がしばしば歪んでしまいます。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、過渡信号に最適化されたFFTメソッド <code class="docutils literal notranslate"><span class="pre">_fft_transient</span></code> を提供しています。時間構造を維持するための予測可能なパディング戦略を使用し、片側スペクトルの振幅を正確に保存します。</p>
-</section>
-<section id="bruco">
-<h3>高速コヒーレンスエンジン (BruCo)<a class="headerlink" href="#bruco" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code> は、単一のターゲット・チャネルと、数千にも及ぶ多数の補助チャネル間の Welch コヒーレンスを効率的に計算します。ターゲット信号の FFT と PSD を事前計算・キャッシュすることで無駄な再計算を省き、大規模なノイズ監査における「ブルートフォース・コヒーレンス（BruCo）」の速度を劇的に向上させます。</p>
-</section>
-</section>
-<section id="id5">
-<h2>過渡応答・システム解析<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<section id="id6">
-<h3>応答関数解析<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
-<p>このフレームワークには、注入された信号（例: スウェプトサインやステップサイン励起）に対するシステムの応答を解析するためのツールが含まれています。<code class="docutils literal notranslate"><span class="pre">detect_step_segments</span></code> 関数は、スペクトログラム内のインジェクション周波数を自動的に追跡し、励起が安定しているセグメントを特定します。</p>
-<p>結合関数（伝達関数の振幅）は、インジェクション中の信号パワーをバックグラウンドパワーと比較することで推定され、バックグラウンドノイズが意図せず伝達関数の推定値をインフレさせないようにします。</p>
-<div class="math notranslate nohighlight">
-\[
-\text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
-\]</div>
-</section>
-</section>
-<section id="id7">
-<h2>ベイズ・フィッティングとモデリング<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
-<section id="gls-mcmc">
-<h3>一般化最小二乗法 (GLS) と MCMC<a class="headerlink" href="#gls-mcmc" title="Link to this heading"></a></h3>
-<p>相関エラー（ノイズの共分散行列が既知の場合）を持つデータにモデルを適合させる場合、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は一般化最小二乗法 (GLS) ソルバーをサポートします。フィッティング・コアは <code class="docutils literal notranslate"><span class="pre">emcee</span></code> パッケージとネイティブに統合されており、マルコフ連鎖モンテカルロ (MCMC) パラメータ推定を実行できます。</p>
-<p>GLS の場合、対数尤度関数は完全な逆共分散行列 (<span class="math notranslate nohighlight">\(\Sigma^{-1}\)</span>) を利用し、不均一分散および相関エラーに対応します。</p>
-<div class="math notranslate nohighlight">
-\[
-\log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
-\]</div>
-<p>伝達関数のような複素数値データの場合、フレームワークはエルミート形式 <span class="math notranslate nohighlight">\(r^\dagger \Sigma^{-1} r\)</span> を利用し、振幅と位相の残差を両方とも正しく処理します。</p>
-</section>
-<section id="pca-ica">
-<h3>次元削減 (PCA/ICA)<a class="headerlink" href="#pca-ica" title="Link to this heading"></a></h3>
-<p>主成分分析 (PCA) と独立成分分析 (ICA) は、<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> のようなマルチチャネルのデータ表現に対して直接適用できます。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、内部的な次元数の変更（scikit-learn 用に 3D 構造 (チャネル <span class="math notranslate nohighlight">\(\times\)</span> 列 <span class="math notranslate nohighlight">\(\times\)</span> 時間) を 2D 特徴量行列に平坦化し、またそれらを再構築する処理）を管理しつつ、GPS タイムスタンプや物理単位などの重要なメタデータをすべて保存します。</p>
-</section>
-</section>
-<section id="id8">
-<h2>ノイズモデル<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> には、シミュレーションやテストに役立つ、特定の物理ノイズモデルのための組み込みジェネレーターが含まれています。</p>
+<h2>このページの近道<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><strong>シューマン共鳴 (Schumann Resonance)</strong>: 地球-電離層空洞のモードに対応する独立したローレンツプロファイルの和を用いて、地磁気バックグラウンドノイズをシミュレートします。</p></li>
-<li><p><strong>フォークト関数 (Voigt Profile)</strong>: 原子物理学や高Q値の力学系共振で一般的な、Faddeeva 関数を用いたガウシアン（ドップラー広がり）とローレンツィアン（衝突広がり）の特性を組み合わせたスペクトルピークを生成します。</p></li>
+<li><p>このページの読み方</p></li>
+<li><p>データ構造の設計思想</p></li>
+<li><p>データフロー図</p></li>
+<li><p>主要な解析コンポーネントの概念</p></li>
+<li><p>関連ドキュメント</p></li>
+</ul>
+</section>
+<section id="architecture-how-to-read-ja">
+<span id="id4"></span><h2>このページの読み方<a class="headerlink" href="#architecture-how-to-read-ja" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の内部表現や変換の考え方を掴みたい場合は、このページを先に読んでください。</p></li>
+<li><p>具体的なアルゴリズムの理論は <a class="reference internal" href="physics_models.html"><span class="std std-doc">物理モデルと解析理論</span></a> を参照してください。</p></li>
+<li><p>実装 API を確認したい場合は、各節末尾の API リンクから <a class="reference internal" href="../reference/api/matrix.html"><span class="std std-doc">matrix API</span></a>, <a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">fields API</span></a>, <a class="reference internal" href="../reference/api/fitting.html"><span class="std std-doc">fitting API</span></a> へ進んでください。</p></li>
+</ul>
+</section>
+<section id="architecture-design-philosophy-ja">
+<span id="id5"></span><h2>データ構造の設計思想<a class="headerlink" href="#architecture-design-philosophy-ja" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>1. 行列オブジェクトの平坦化フロー<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p><strong>目的:</strong> 行列系コンテナが解析向けにどのように整形され、メタデータをどう保つかを示す。
+<strong>入力:</strong> <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> や <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> のような多チャネル・行列型データ。
+<strong>出力:</strong> 計算に使いやすい 2 次元表現と、復元後も保たれるメタデータ。</p>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> や <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> は、内部で scikit-learn 等の機械学習ライブラリと親和性の高い形式への変換を自動で行います。
+通常、(チャネル数, 時間/周波数数, 行列の列数) のような 3 次元データを、メタデータを保持したまま一時的に 2 次元へ平坦化し、計算後に元の次元と GPS タイムスタンプを復元します。これにより、物理情報を失わずに高度なアルゴリズムを適用できます。</p>
+<p>API 入口: <a class="reference internal" href="../reference/api/matrix.html"><span class="std std-doc">matrix API</span></a>, <a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">timeseries API</span></a></p>
+</section>
+<section id="api">
+<h3>2. 4次元フィールド（フィールド API）モデル<a class="headerlink" href="#api" title="Link to this heading"></a></h3>
+<p><strong>目的:</strong> フィールド系コンテナがスライス後も軸情報を保つ理由を示す。
+<strong>入力:</strong> 時間・周波数・空間軸を持つ <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>。
+<strong>出力:</strong> 選択操作の後もグリッド情報と軸メタデータが揃ったフィールド。</p>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> は (Time, Frequency, x, y) の 4次元構造を基本単位とします。
+インデクシング操作において<strong>次元を削減しない</strong>（4次元を維持する）ことで、グリッド情報とデータの整合性を常に担保しています。</p>
+<p>API 入口: <a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">fields API</span></a>, <a class="reference internal" href="scalarfield_slicing.html"><span class="std std-doc">スライス操作ガイド</span></a></p>
+</section>
+</section>
+<section id="data-flow-diagram-ja">
+<span id="id7"></span><h2>データフロー図<a class="headerlink" href="#data-flow-diagram-ja" title="Link to this heading"></a></h2>
+<p>以下の静的図は、現在の docs ビルド環境でも確実に表示できる形で、GWexpy の主要コンテナが生データから解析 API に渡るまでの流れと、軸メタデータがどこで保たれるかをまとめたものです。</p>
+<figure class="align-default" id="id11">
+<a class="reference internal image-reference" href="../../../_images/architecture_data_flow.svg"><img alt="GWexpy のコンテナとメタデータ保持を示す静的データフロー図。" src="../../../_images/architecture_data_flow.svg" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">生配列や GWpy オブジェクトから、行列解析経路とフィールド解析経路を通って下流の出力へ進むまでの流れと、軸メタデータ保持の位置をまとめた図。</span><a class="headerlink" href="#id11" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>読み方の要点:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span> <span class="pre">-&gt;</span> <span class="pre">TimeSeriesMatrix</span> <span class="pre">-&gt;</span> <span class="pre">2次元特徴量へ平坦化</span></code> は、scikit-learn 系の 2 次元入力へ接続するための行列解析経路です。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span> <span class="pre">-&gt;</span> <span class="pre">フィールドのスライス</span> <span class="pre">/</span> <span class="pre">インデクシング</span> <span class="pre">-&gt;</span> <span class="pre">フィールド対応変換</span></code> は、時間・周波数・空間軸を揃えたまま扱うフィールド解析経路です。</p></li>
+<li><p>どちらの経路でもメタデータを保持するため、結果を単なる配列インデックスではなく物理座標に対応づけて解釈できます。</p></li>
+</ul>
+<hr class="docutils" />
+</section>
+<section id="architecture-core-analysis-components-ja">
+<span id="id8"></span><h2>主要な解析コンポーネントの概念<a class="headerlink" href="#architecture-core-analysis-components-ja" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、以下の主要コンポーネントを組み合わせて高度な解析パイプラインを構築します。個別のアルゴリズム詳細は <a class="reference internal" href="physics_models.html"><span class="std std-doc">物理モデルと解析理論</span></a> を参照してください。</p>
+<ul class="simple">
+<li><p><strong>多チャネル解析エンジン</strong>: 環境ノイズ分離のための ICA/PCA 実装。</p></li>
+<li><p><strong>高速相関計算基盤</strong>: 大規模観測データに対する高速コヒーレンス計算（BruCo）。</p></li>
+<li><p><strong>統計的推定・フィッティング</strong>: GLS や MCMC を用いた物理パラメータ推定。</p></li>
+</ul>
+</section>
+<section id="related-documents-ja">
+<span id="id9"></span><h2>関連ドキュメント<a class="headerlink" href="#related-documents-ja" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="physics_models.html"><span class="std std-doc">物理モデルと解析理論</span></a> — ここで触れたコンテナ設計の数理的背景</p></li>
+<li><p><a class="reference internal" href="validated_algorithms.html"><span class="std std-doc">検証済みアルゴリズム</span></a> — 設計上参照される数値経路の監査根拠</p></li>
+<li><p><a class="reference internal" href="scalarfield_slicing.html"><span class="std std-doc">4次元フィールドの操作詳細</span></a> — フィールド API が 4 次元を保つ理由</p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a> — 時刻系、FFT、互換性の共通前提</p></li>
+<li><p><a class="reference internal" href="../reference/api/matrix.html"><span class="std std-doc">Matrix API</span></a> — 行列系コンテナと平坦化の参照入口</p></li>
+<li><p><a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">Fields API</span></a> — フィールド変換とスライスの参照入口</p></li>
+</ul>
+</section>
+<section id="next-to-read-ja">
+<span id="id10"></span><h2>次に読む<a class="headerlink" href="#next-to-read-ja" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="physics_models.html"><span class="std std-doc">物理モデルと解析理論</span></a> — ICA/BruCo/MCMC などの解析理論・物理モデル詳細</p></li>
+<li><p><a class="reference internal" href="validated_algorithms.html"><span class="std std-doc">検証済みアルゴリズム</span></a> — 各数値アルゴリズムの信頼性検証</p></li>
+<li><p><a class="reference internal" href="scalarfield_slicing.html"><span class="std std-doc">4次元フィールドの操作詳細</span></a></p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a> — FFT・GPS 時刻・GWpy 互換の前提を整理する</p></li>
 </ul>
 </section>
 </section>
@@ -192,13 +314,15 @@ Welch法のようにオーバーラップしたデータセグメントから統
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="validated_algorithms.html" class="btn btn-neutral float-left" title="検証済みアルゴリズム" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../reference/index.html" class="btn btn-neutral float-right" title="リファレンス" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="physics_models.html" class="btn btn-neutral float-right" title="物理モデルと解析理論" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -215,7 +339,24 @@ Welch法のようにオーバーラップしたデータセグメントから統
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="license.html">ライセンス / 免責</a> |
+        <a href="roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

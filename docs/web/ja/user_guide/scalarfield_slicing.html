@@ -4,33 +4,99 @@
 <html class="writer-html5" lang="ja" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="ScalarField のスライスで 4 次元構造を維持する理由、メタデータ保持の考え方、squeeze() を安全に使う条件を説明します。" name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>スカラーフィールドのスライス操作ガイド &mdash; GWexpy Documentation</title>
+  <title>スカラーフィールドのスライス操作ガイド (4次元を維持する理由) &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/scalarfield_slicing.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="検証済みアルゴリズム" href="validated_algorithms.html" />
-    <link rel="prev" title="数値的安定性と精度" href="numerical_stability.html" /> 
+    <link rel="next" title="GWpy ユーザー向け移行ガイド" href="gwexpy_for_gwpy_users_ja.html" />
+    <link rel="prev" title="数値的安定性と精度" href="numerical_stability.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../en/user_guide/scalarfield_slicing.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,39 +110,52 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">スカラーフィールドのスライス操作ガイド</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#scalarfield4">ScalarFieldの4次元構造維持の挙動</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#faq">よくある質問（FAQ）</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">トラブルシューティング</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id8">関連リンク</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">このページでわかること</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">このページの近道</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scalarfield-slicing-4d-persistence-ja">なぜ「4次元」を維持し続けるのか？</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scalarfield-slicing-practical-examples-ja">実践的な操作例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#faq">よくある質問 (FAQ)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scalarfield-slicing-next-to-read-ja">次に読む</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html">アーキテクチャと物理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
 </ul>
@@ -85,18 +164,18 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
-      <li class="breadcrumb-item active">スカラーフィールドのスライス操作ガイド</li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
+      <li class="breadcrumb-item active">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/scalarfield_slicing.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -107,99 +186,180 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
-<h1>スカラーフィールドのスライス操作ガイド<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<p><strong>概要:</strong> このガイドでは、<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> がインデクシング操作時に4次元構造を維持する挙動について説明します。これはNumPyやGWpyの挙動とは異なります。この挙動を理解することは、ドメイン変換（時間/周波数、実空間/波数空間）やFFT操作を正しく行うために不可欠です。</p>
-<p><strong>対象読者:</strong> 多次元フィールドデータを扱う中級ユーザー</p>
-<p><strong>前提知識:</strong></p>
+<h1>スカラーフィールドのスライス操作ガイド (4次元を維持する理由)<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>このページを読むべき方</strong>:
+<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> を使用していて以下の疑問を感じた場合に参照してください。</p>
 <ul class="simple">
-<li><p>NumPy配列のインデクシングの基本</p></li>
-<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">ScalarField入門</span></a>の理解</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field[0]</span></code> としたのに 1次元配列にならず、4次元のままなのはなぜか？</p></li>
+<li><p>インデクシング操作時に <code class="docutils literal notranslate"><span class="pre">Shape</span> <span class="pre">Mismatch</span></code> エラーが発生するのはなぜか？</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> を使って良いタイミングと、使ってはいけないタイミングはいつか？</p></li>
 </ul>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>スライス操作後に予期しない形状になる問題に遭遇している場合は、FAQセクションで素早く答えを見つけられます。</p>
 </div>
-<section id="scalarfield4">
-<h2>ScalarFieldの4次元構造維持の挙動<a class="headerlink" href="#scalarfield4" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> は、インデクシング操作を行っても常に4次元構造を維持します。これはNumPy配列やGWpyの標準的な挙動とは異なります。</p>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> がインデクシング操作時に<strong>4次元構造を常に維持する</strong>挙動について説明します。これは NumPy や GWpy の標準的な挙動とは異なり、多次元物理データの整合性を保つための「不変条件」として設計されています。</p>
 <section id="id2">
-<h3>4次元構造の維持<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
-<p><strong>NumPy配列の場合</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(5, 5, 5)  # 次元が削減される</span>
-</pre></div>
-</div>
-<p><strong>ScalarFieldの場合</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)),</span> <span class="o">...</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(1, 5, 5, 5)  # 4次元を維持</span>
-</pre></div>
-</div>
-<p>この挙動により、以下のメリットがあります:</p>
-<ol class="arabic simple">
-<li><p><strong>軸メタデータの保持</strong>: <code class="docutils literal notranslate"><span class="pre">axis0_domain</span></code>, <code class="docutils literal notranslate"><span class="pre">space_domain</span></code> などが欠落しません</p></li>
-<li><p><strong>ブロードキャスト操作の一貫性</strong>: 常に4次元として扱えます</p></li>
-<li><p><strong>FFT操作の安全性</strong>: ドメイン情報を保持したままFFTを実行できます</p></li>
-</ol>
+<h2>このページでわかること<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>以下の要約表は、共有 CSS の表スタイルに合わせてコンパクトに保っています。画面幅が狭い場合は、横スクロールしながら読むのが最も確実です。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>項目</p></th>
+<th class="head"><p>内容</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>ページ種別</strong></p></td>
+<td><p>ガイド</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>対象読者</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> のスライス結果に戸惑った利用者、フィールド API の軸メタデータ保持を理解したい利用者</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>前提</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の基本的な shape と <code class="docutils literal notranslate"><span class="pre">NumPy</span></code> のスライス挙動を知っていること</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>こんなときに読む</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">field[0]</span></code> が 4 次元のままなのが不思議、<code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> を安全に使いたい、Shape mismatch の理由を知りたい</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>検索キーワード</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, slicing, <code class="docutils literal notranslate"><span class="pre">squeeze</span></code>, 4 次元維持, shape mismatch, フィールド API</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="id3">
-<h3>次元を削減したい場合<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
-<p>明示的に次元を削減するには、<code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> メソッドを使用します:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(5, 5, 5)  # 長さ1の軸が削除される</span>
+<h2>このページの近道<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>なぜ「4次元」を維持し続けるのか？</p></li>
+<li><p>実践的な操作例</p></li>
+<li><p>よくある質問</p></li>
+</ul>
+</section>
+<section id="scalarfield-slicing-4d-persistence-ja">
+<span id="id4"></span><h2>なぜ「4次元」を維持し続けるのか？<a class="headerlink" href="#scalarfield-slicing-4d-persistence-ja" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> は (時間, 周波数, x, y) の 4 つの軸を持つ物理的な「場」を表現します。NumPy のようにスライス時に次元を削減（Rank Loss）しない理由は、主に以下の <strong>4つの柱</strong> によります。</p>
+<ol class="arabic simple">
+<li><p><strong>ドメイン情報の保護</strong>: 次元を削ると、その軸に紐付いた <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">f0</span></code>, <code class="docutils literal notranslate"><span class="pre">dx</span></code> などのメタデータが消失し、元の物理空間へ戻れなくなります。</p></li>
+<li><p><strong>FFT/変換の整合性</strong>: 常に 4D であることで、どの断面に対しても即座に <code class="docutils literal notranslate"><span class="pre">fft()</span></code>, <code class="docutils literal notranslate"><span class="pre">ifft()</span></code>, <code class="docutils literal notranslate"><span class="pre">spatial_filter()</span></code> などの多次元演算が可能です。</p></li>
+<li><p><strong>ストリーム処理の安全性</strong>: 関数間で受け渡しをする際、次元数が変動しないためプログラムの堅牢性が向上します。</p></li>
+<li><p><strong>ブロードキャストの一貫性</strong>: 常に 4D であるため、計算時の次元合わせ（reshape）の意図がコード上で明確になります。</p></li>
+</ol>
+<section id="numpy-vs-gwexpy">
+<span id="scalarfield-slicing-comparison-diagram-ja"></span><h3>NumPy vs GWexpy の挙動比較<a class="headerlink" href="#numpy-vs-gwexpy" title="Link to this heading"></a></h3>
+<p><img alt="NumPy と GWexpy の 4次元維持の比較図" src="../../../_images/scalarfield_slicing_4d_persistence.png" /></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>操作例</p></th>
+<th class="head text-center"><p>結果の次元 (NumPy)</p></th>
+<th class="head text-center"><p>結果の次元 (Field)</p></th>
+<th class="head text-left"><p>物理的意味</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">field[5]</span></code></p></td>
+<td class="text-center"><p>3次元 (Rank Loss)</p></td>
+<td class="text-center"><p><strong>4次元 (1, F, X, Y)</strong></p></td>
+<td class="text-left"><p>特定の時刻の断面（メタデータ維持）</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">field[:,</span> <span class="pre">:,</span> <span class="pre">3,</span> <span class="pre">3]</span></code></p></td>
+<td class="text-center"><p>2次元 (Rank Loss)</p></td>
+<td class="text-center"><p><strong>4次元 (T, F, 1, 1)</strong></p></td>
+<td class="text-left"><p>特定の空間点の時系列（メタデータ維持）</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">field[10:20]</span></code></p></td>
+<td class="text-center"><p>4次元 (維持)</p></td>
+<td class="text-center"><p><strong>4次元 (10, F, X, Y)</strong></p></td>
+<td class="text-left"><p>時間区間の切り出し</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">.squeeze()</span></code> 使用時の重大な警告</strong>
+<code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> を呼び出して次元を削減すると、<strong>削減された軸に紐付くメタデータ（座標情報）は完全に失われます。</strong>
+一度は削ったデータから <code class="docutils literal notranslate"><span class="pre">field.fft()</span></code> などを実行しても、正しい物理軸を再構成できなくなるため、<code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> はプロットや CSV 保存などの「最終出力段階」でのみ使用することを強く推奨します。</p>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="scalarfield-slicing-practical-examples-ja">
+<span id="id5"></span><h2>実践的な操作例<a class="headerlink" href="#scalarfield-slicing-practical-examples-ja" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>1. スライシングの挙動<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>目的: インデクシング後も軸メタデータが残ることを確認する</p></li>
+<li><p>入力: shape <code class="docutils literal notranslate"><span class="pre">(100,</span> <span class="pre">50,</span> <span class="pre">10,</span> <span class="pre">10)</span></code> の <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code></p></li>
+<li><p>出力: 長さ 1 の軸を保った <code class="docutils literal notranslate"><span class="pre">snapshot</span></code> と <code class="docutils literal notranslate"><span class="pre">plane</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># (time, freq, x, y) = (100, 50, 10, 10)</span>
+<span class="n">field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span> <span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># 特定の時刻の断面を取得</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">50</span><span class="p">]</span>
+<span class="c1"># shape は (1, 50, 10, 10) となり、時間軸の情報が残ります。</span>
+
+<span class="c1"># 空間断面 (x-y 平面) を抽出</span>
+<span class="n">plane</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="c1"># shape は (100, 50, 10, 1) となり、y軸情報が維持されます。</span>
 </pre></div>
 </div>
 </section>
-<section id="id4">
-<h3>スライスの例<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 時間方向の特定の時刻を抽出</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snapshot</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>  <span class="c1"># shape: (1, 5, 5, 5)</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 空間的な断面を抽出</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plane</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># shape: (n_time, 5, 5, 1)</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># 特定の空間点の時系列</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">point_ts</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># shape: (n_time, 1, 1, 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># TimeSeries的に扱いたい場合はsqueeze</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">point_ts_1d</span> <span class="o">=</span> <span class="n">point_ts</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>  <span class="c1"># shape: (n_time,)</span>
+<section id="squeeze">
+<h3>2. 次元を削減したい場合 (<code class="docutils literal notranslate"><span class="pre">squeeze</span></code>)<a class="headerlink" href="#squeeze" title="Link to this heading"></a></h3>
+<p>意図的に 1次元や 2次元として扱いたい場合（例：プロットや外部ライブラリへの入力）は、明示的に <code class="docutils literal notranslate"><span class="pre">.squeeze()</span></code> を呼び出します。</p>
+<ul class="simple">
+<li><p>目的: 最終出力段階でだけ次元を落とす</p></li>
+<li><p>入力: 空間点を切り出した <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code></p></li>
+<li><p>出力: 外部ライブラリに渡しやすい 1 次元配列</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 特定の空間点の時系列を取得してプロット</span>
+<span class="n">point_ts</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>      <span class="c1"># (100, 1, 1, 1)</span>
+<span class="n">actual_ts</span> <span class="o">=</span> <span class="n">point_ts</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>    <span class="c1"># (100,) - これで TimeSeries 互換になります</span>
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">axis=</span></code> を明示すると、「どの 1 要素軸を落とすのか」がコード上で分かりやすくなり、意図しない次元削減を避けやすくなります。</p>
+</section>
+<section id="id7">
+<h3>3. ブロードキャスト演算の注意点<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> は常に 4次元であるため、NumPy 配列を加減算する場合は形状を合わせる必要があります。</p>
+<ul class="simple">
+<li><p>目的: ブロードキャスト時の shape mismatch を避ける</p></li>
+<li><p>入力: <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> と 1 次元補正係数</p></li>
+<li><p>出力: 意図が明示された <code class="docutils literal notranslate"><span class="pre">reshape(...)</span></code> 付き演算</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ❌ 悪い例: 1次元配列をそのまま足そうとする</span>
+<span class="n">field</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>  <span class="c1"># Shape mismatch</span>
+
+<span class="c1"># ✅ 良い例: 正しい次元に拡張する</span>
+<span class="n">calibration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 周波数軸にだけ 3 要素を持たせる</span>
+<span class="n">field</span> <span class="o">+</span> <span class="n">calibration</span>
+</pre></div>
+</div>
+<p>ここで <code class="docutils literal notranslate"><span class="pre">reshape(3,</span> <span class="pre">1,</span> <span class="pre">1,</span> <span class="pre">1)</span></code> としているのは、「3 要素の補正係数が周波数軸に対応し、時間・x・y 方向には同じ値を使う」ことを明示するためです。</p>
+<hr class="docutils" />
 </section>
 </section>
 <section id="faq">
-<h2>よくある質問（FAQ）<a class="headerlink" href="#faq" title="Link to this heading"></a></h2>
-<section id="id5">
-<h3>なぜ4次元を維持するのですか？<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
-<p>ScalarFieldは、軸ごとに異なるドメイン（時間/周波数、実空間/波数空間）を持つ物理量を表現します。次元を削減すると、これらのメタデータが失われ、FFT操作やドメイン変換が正しく動作しなくなります。</p>
+<span id="scalarfield-slicing-faq-ja"></span><h2>よくある質問 (FAQ)<a class="headerlink" href="#faq" title="Link to this heading"></a></h2>
+<section id="q-41">
+<h3>Q: 常に 4次元だと、1次元の計算時に不便ではありませんか？<a class="headerlink" href="#q-41" title="Link to this heading"></a></h3>
+<p><strong>A:</strong> <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> は空間・時間の広がりを持つデータを「場」として扱うためのクラスです。単一チャンネルの単純な時系列を扱う場合は、最初から <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスを使用することをお勧めします。</p>
 </section>
-<section id="numpy">
-<h3>NumPyライクな挙動が必要な場合は？<a class="headerlink" href="#numpy" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> メソッドを使用してください。これにより、長さ1の軸を削除し、NumPyライクな配列を取得できます。</p>
-</section>
-</section>
-<section id="id6">
-<h2>トラブルシューティング<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
-<section id="id7">
-<h3>ブロードキャスト操作が期待通り動作しない<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
-<p>ScalarFieldは常に4次元なので、他の配列との演算時には形状を合わせる必要があります。</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 誤り: 1次元配列との演算</span>
-<span class="n">field</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>  <span class="c1"># エラー</span>
-
-<span class="c1"># 正しい: 形状を合わせる</span>
-<span class="n">field</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
+<section id="q-scalarfield-0-0-0-0">
+<h3>Q: <code class="docutils literal notranslate"><span class="pre">ScalarField[0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0]</span></code> とスカラー抽出した場合は？<a class="headerlink" href="#q-scalarfield-0-0-0-0" title="Link to this heading"></a></h3>
+<p><strong>A:</strong> インデックスがすべてスカラーの場合は、通常の Python スカラー値または NumPy スカラーが返されます。</p>
 </section>
 </section>
-<section id="id8">
-<h2>関連リンク<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<section id="scalarfield-slicing-next-to-read-ja">
+<span id="id8"></span><h2>次に読む<a class="headerlink" href="#scalarfield-slicing-next-to-read-ja" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">field_scalar_intro</span></a> - ScalarField 入門チュートリアル</p></li>
-<li><p><a class="reference internal" href="../reference/ScalarField.html"><span class="std std-doc">ScalarField</span></a> - ScalarField API リファレンス</p></li>
-<li><p><a class="reference internal" href="../reference/FieldList.html"><span class="std std-doc">FieldList</span></a> - FieldList / FieldDict コレクション</p></li>
+<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">ScalarField 入門チュートリアル</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">フィールド API リファレンス</span></a></p></li>
+<li><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">数値安定性</span></a> - 4次元演算時の精度管理</p></li>
+<li><p><a class="reference internal" href="architecture.html"><span class="std std-doc">アーキテクチャとデータフロー</span></a> - フィールド API が設計上どこに位置づくかを把握する</p></li>
 </ul>
 </section>
 </section>
@@ -209,13 +369,15 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="numerical_stability.html" class="btn btn-neutral float-left" title="数値的安定性と精度" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="validated_algorithms.html" class="btn btn-neutral float-right" title="検証済みアルゴリズム" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwexpy_for_gwpy_users_ja.html" class="btn btn-neutral float-right" title="GWpy ユーザー向け移行ガイド" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -232,7 +394,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="license.html">ライセンス / 免責</a> |
+        <a href="roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

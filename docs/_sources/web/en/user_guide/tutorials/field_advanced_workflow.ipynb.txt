@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bf81d54b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "957affe3",
+   "id": "5eedcefa",
    "metadata": {},
    "source": [
-    "# Field × Advanced Analysis Workflow\n",
+    "# Field API: Advanced Analysis Workflow\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/field_advanced_workflow.ipynb)\n",
     "\n",
@@ -26,7 +38,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "4bc2e7ed",
+   "id": "38925b0d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:20:00.979603Z",
@@ -37,22 +49,27 @@
    },
    "outputs": [],
    "source": [
-    "# Suppress warnings\n",
     "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "import matplotlib.pyplot as plt\n",
-    "import numpy as np\n",
-    "from astropy import units as u\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "from gwexpy.fields import FieldList, ScalarField\n",
-    "from gwexpy.timeseries import TimeSeries\n",
+    "    # Suppress warnings\n",
     "\n",
-    "warnings.filterwarnings('ignore')"
+    "    import matplotlib.pyplot as plt\n",
+    "    import numpy as np\n",
+    "    from astropy import units as u\n",
+    "\n",
+    "    from gwexpy.fields import FieldList, ScalarField\n",
+    "    from gwexpy.timeseries import TimeSeries\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "48961b19",
+   "id": "f9d682ab",
    "metadata": {},
    "source": [
     "## Step 1: Create Synthetic Seismic Field\n",
@@ -63,7 +80,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "0ec852a4",
+   "id": "f970c9ad",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:20:03.187095Z",
@@ -145,7 +162,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3714e786",
+   "id": "10ea5518",
    "metadata": {},
    "source": [
     "## Step 2: Extract TimeSeries for Analysis\n",
@@ -156,7 +173,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "527b38df",
+   "id": "afb9b80d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:20:03.225778Z",
@@ -216,7 +233,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "bf1317e8",
+   "id": "02821dd3",
    "metadata": {},
    "source": [
     "## Step 3: Apply STLT to Detect Damping\n",
@@ -227,7 +244,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "baaba498",
+   "id": "5441df60",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:20:03.565090Z",
@@ -258,7 +275,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "41ec03f8",
+   "id": "2e3bf3bf",
    "metadata": {},
    "source": [
     "## Step 4: Batch Processing with FieldList\n",
@@ -269,7 +286,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "6226e962",
+   "id": "54668711",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:20:03.569703Z",
@@ -317,7 +334,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0a198eeb",
+   "id": "791d4aa5",
    "metadata": {},
    "source": [
     "## Step 5: Reconstruct Field from Processed Data\n",
@@ -328,7 +345,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "6f855ca2",
+   "id": "8c2242da",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:20:03.574987Z",
@@ -370,7 +387,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "9da256b6",
+   "id": "37f91b39",
    "metadata": {},
    "source": [
     "## Summary: Field × Advanced Analysis Best Practices\n",
@@ -423,5 +440,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

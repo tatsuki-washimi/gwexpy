@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Study: Failure-Prone Bruco Analysis Patterns &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=9fddb14a" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/case_bruco_failure_modes.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../ja/user_guide/tutorials/case_bruco_failure_modes.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメント</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Case Study: Failure-Prone Bruco Analysis Patterns</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_bruco_failure_modes.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="case-study-failure-prone-bruco-analysis-patterns">
+<h1>Case Study: Failure-Prone Bruco Analysis Patterns<a class="headerlink" href="#case-study-failure-prone-bruco-analysis-patterns" title="Link to this heading"></a></h1>
+<p>Bruco is effective for scanning large auxiliary-channel sets, but it is also easy to misuse: you can get a strong coherence ranking and still fail to identify the real coupling path. This case study complements :doc:<code class="docutils literal notranslate"><span class="pre">advanced_bruco</span></code> by focusing on recurrent failure modes that appear in detector characterization work.</p>
+<section id="what-this-case-study-covers">
+<h2>What this case study covers<a class="headerlink" href="#what-this-case-study-covers" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>missing nonlinear couplings when only linear channels are scanned</p></li>
+<li><p>ranking false positives caused by shared drift or low-frequency trends</p></li>
+<li><p>treating “high coherence” as proof of causality</p></li>
+<li><p>validating top-ranked channels before downstream subtraction</p></li>
+</ul>
+</section>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>for the basic API and minimal workflow, see :doc:<code class="docutils literal notranslate"><span class="pre">advanced_bruco</span></code></p></li>
+<li><p>for class details, see :doc:<code class="docutils literal notranslate"><span class="pre">../../reference/Bruco</span></code></p></li>
+</ul>
+</section>
+<section id="failure-mode-1-trusting-a-linear-bruco-scan-too-early">
+<h2>Failure Mode 1: Trusting a linear Bruco scan too early<a class="headerlink" href="#failure-mode-1-trusting-a-linear-bruco-scan-too-early" title="Link to this heading"></a></h2>
+<p><strong>Symptom</strong>: the expected witness channel does not appear near the top, while loosely related environmental channels do.<br />
+<strong>Typical cause</strong>: the true coupling path is bilinear or amplitude-modulated, but only raw auxiliary channels were provided.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bruco</span>
+
+<span class="n">bruco</span> <span class="o">=</span> <span class="n">Bruco</span><span class="p">(</span><span class="n">target_channel</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">aux_channels</span><span class="o">=</span><span class="n">aux_names</span><span class="p">)</span>
+<span class="n">linear_result</span> <span class="o">=</span> <span class="n">bruco</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">aux_data</span><span class="o">=</span><span class="n">aux_matrix</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">linear_result</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>If the ranking remains unstable, promote explicit hypotheses into virtual auxiliary channels rather than scanning only the original sensors.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">virtual_aux</span> <span class="o">=</span> <span class="n">aux_matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">virtual_aux</span><span class="p">[</span><span class="s2">&quot;ASC_X2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux_matrix</span><span class="p">[</span><span class="s2">&quot;ASC_X&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">virtual_aux</span><span class="p">[</span><span class="s2">&quot;PEM_ACC_TIMES_MIC&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux_matrix</span><span class="p">[</span><span class="s2">&quot;PEM_ACC&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">aux_matrix</span><span class="p">[</span><span class="s2">&quot;PEM_MIC&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Checks</strong>:</p>
+<ul class="simple">
+<li><p>does the top ranking change after virtual channels are added?</p></li>
+<li><p>do the candidate bands line up with the problematic ASD features?</p></li>
+<li><p>do the strongest channels cluster around one physical subsystem?</p></li>
+</ul>
+</section>
+<section id="failure-mode-2-ranking-drift-instead-of-coupling">
+<h2>Failure Mode 2: Ranking drift instead of coupling<a class="headerlink" href="#failure-mode-2-ranking-drift-instead-of-coupling" title="Link to this heading"></a></h2>
+<p><strong>Symptom</strong>: channels with large low-frequency trends always rise to the top.<br />
+<strong>Typical cause</strong>: coherence was computed before detrending or band-limiting, so shared drift is mistaken for a coupling path.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">preprocessed</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">aux_matrix</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">preprocessed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">detrend</span><span class="p">()</span><span class="o">.</span><span class="n">highpass</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
+
+<span class="n">target_clean</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">detrend</span><span class="p">()</span><span class="o">.</span><span class="n">highpass</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>What this prevents</strong>:</p>
+<ul class="simple">
+<li><p>promoting ground motion or temperature drift as the main culprit</p></li>
+<li><p>making commissioning decisions from a single ranking table</p></li>
+</ul>
+</section>
+<section id="failure-mode-3-treating-coherence-as-causality">
+<h2>Failure Mode 3: Treating coherence as causality<a class="headerlink" href="#failure-mode-3-treating-coherence-as-causality" title="Link to this heading"></a></h2>
+<p>Bruco measures how strongly the target and an auxiliary channel are related. It does not, by itself, prove a direct causal path. Two channels can rank highly because they share a third driver.</p>
+<p><strong>Minimum validation loop</strong>:</p>
+<ol class="arabic simple">
+<li><p>confirm that the band matches the actual problem band</p></li>
+<li><p>test whether a residual or subtraction step improves the target ASD</p></li>
+<li><p>check whether the candidate is consistent with the hardware layout</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">top</span> <span class="o">=</span> <span class="n">linear_result</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">candidate</span> <span class="o">=</span> <span class="n">virtual_aux</span><span class="p">[</span><span class="n">top</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]]</span>
+<span class="n">residual</span> <span class="o">=</span> <span class="n">target_clean</span> <span class="o">-</span> <span class="n">candidate</span> <span class="o">*</span> <span class="mf">0.1</span>
+</pre></div>
+</div>
+<p>The coefficient here is intentionally simplified. The important point is to test whether the top-ranked channel actually reduces the problematic structure once it is used downstream.</p>
+</section>
+<section id="recommended-workflow">
+<h2>Recommended workflow<a class="headerlink" href="#recommended-workflow" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>reproduce a baseline result from :doc:<code class="docutils literal notranslate"><span class="pre">advanced_bruco</span></code></p></li>
+<li><p>decide whether detrending, bandpass filtering, or whitening is required for the target band</p></li>
+<li><p>add virtual channels only when linear witnesses do not explain the feature</p></li>
+<li><p>validate top-ranked witnesses with residual ASD or subtraction tests</p></li>
+<li><p>cross-check the result against known control paths and sensor placement</p></li>
+</ol>
+</section>
+<section id="related-pages">
+<h2>Related pages<a class="headerlink" href="#related-pages" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>:doc:<code class="docutils literal notranslate"><span class="pre">advanced_bruco</span></code></p></li>
+<li><p>:doc:<code class="docutils literal notranslate"><span class="pre">case_bruco_advanced</span></code></p></li>
+<li><p>:doc:<code class="docutils literal notranslate"><span class="pre">case_bruco_ica_denoising</span></code></p></li>
+<li><p>:doc:<code class="docutils literal notranslate"><span class="pre">case_noise_budget</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../license.html">License / Disclaimer</a> |
+        <a href="../roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

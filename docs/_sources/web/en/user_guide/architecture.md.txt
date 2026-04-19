@@ -1,80 +1,110 @@
-# Architecture & Physics
+---
+myst:
+  html_meta:
+    description: "Understand GWexpy architecture, container design, data flow, field and matrix API roles, and where to continue into theory or reference pages."
+---
 
-This section details the custom algorithms, physical models, and mathematical logic implemented in `gwexpy`. It serves as a reference for advanced users and developers who wish to understand the underlying mechanics of the package's analytical tools.
+# Architecture and Data Flow
 
-## Physical Fields & Fourier Space
+**Page role:** Design guide
 
-### 4D Field Operations
+This section details the design philosophy of `gwexpy` and the internal data handling logic.
+`gwexpy` extends GWpy to provide intuitive multi-channel time-series matrix operations and 4D physical field handling.
 
-`gwexpy` provides robust handling of multi-dimensional data, specifically 4D fields representing time and 3D spatial dimensions (e.g., `ScalarField`). A core capability is the seamless transformation between the spatial domain and the wavenumber ($k$) domain (reciprocal space).
+**Search hints:** `architecture`, `data flow`, `TimeSeriesMatrix`, `ScalarField`, `flattening`, `Field API`
 
-The `fft_space` and `ifft_space` methods handle these transformations using multi-dimensional Fast Fourier Transforms (FFT). Crucially, the package correctly manages the coordinate transformations, ensuring that physical units and grid spacing are accurately translated into the $k$-space.
+## At a Glance
 
-```python
-# The angular wavenumber k is computed based on the spatial resolution dx:
-k_values = 2 * np.pi * np.fft.fftfreq(npts, d=abs(dx_value))
+The overview table below follows the shared docs table policy. On small screens, horizontal scrolling is preferred over page-local formatting changes.
+
+| Item | Details |
+| --- | --- |
+| **Page Role** | Design guide |
+| **Audience** | Users who want the mental model behind the containers, and contributors orienting themselves to internal data flow |
+| **Prerequisites** | Basic familiarity with `TimeSeries`, `TimeSeriesMatrix`, and `ScalarField` names |
+| **Use Cases** | Understand why Matrix and Field APIs look the way they do before diving into theory or API reference pages |
+| **Search Keywords** | architecture, data flow, `TimeSeriesMatrix`, `ScalarField`, flattening, Field API |
+
+## On This Page
+
+- [How to Read This Page](#how-to-read-this-page)
+- [Design Philosophy](#design-philosophy)
+- [Data Flow Diagram](#data-flow-diagram)
+- [Core Analysis Components](#core-analysis-components)
+- [Related Documents](#related-documents)
+
+(architecture-how-to-read)=
+## How to Read This Page
+
+- Read this page first if you want the mental model behind `gwexpy` container design and internal reshaping.
+- For the mathematical foundations of each algorithm, continue to [Physics Models and Analysis Theory](physics_models.md).
+- For concrete callable surfaces, follow the API entry links in each section to the [matrix API](../reference/api/matrix.rst), [fields API](../reference/api/fields.rst), and [fitting API](../reference/api/fitting.rst).
+
+(architecture-design-philosophy)=
+## Design Philosophy
+
+### 1. Matrix Object Flattening Flow
+**Goal:** Explain how matrix-like containers are reshaped for analysis while preserving metadata.
+**Input:** Multi-channel or matrix-like series data such as `TimeSeriesMatrix` and `FrequencySeriesMatrix`.
+**Output:** A 2D feature representation for computation, with metadata restored on the way back.
+
+Classes like `TimeSeriesMatrix` and `FrequencySeriesMatrix` handle automatic conversion to formats compatible with machine learning libraries like scikit-learn.
+Typically, 3D data (Channels $\times$ Samples $\times$ Columns) is temporarily flattened into a 2D feature matrix for computation, while metadata (GPS timestamps, units) is preserved and restored after processing.
+
+API entry: [matrix API](../reference/api/matrix.rst), [timeseries API](../reference/api/timeseries.rst)
+
+### 2. 4D Field API Model
+**Goal:** Explain why field containers keep all axes aligned during slicing and indexing.
+**Input:** A `ScalarField` with time, frequency, and spatial axes.
+**Output:** A field object whose grid and axis metadata remain synchronized after selection operations.
+
+`ScalarField` adopts a (Time, Frequency, x, y) 4D structure as its base unit.
+By **maintaining all 4 dimensions** during indexing operations, the package ensures that grid information and axis metadata remain perfectly synchronized with the data.
+
+API entry: [fields API](../reference/api/fields.rst), [Scalar Field Slicing Guide](scalarfield_slicing.md)
+
+(data-flow-diagram)=
+## Data Flow Diagram
+
+The static diagram below summarizes how the main GWexpy containers move from raw inputs to analysis APIs while keeping axis metadata available in the current docs build.
+
+```{figure} /_static/images/phase3/architecture_data_flow.svg
+:alt: Static data-flow diagram for GWexpy containers and metadata preservation.
+:width: 100%
+
+GWexpy data flow from raw arrays and GWpy objects through matrix and field analysis paths, with axis metadata preserved across reshaping and transforms.
 ```
 
-This guarantees that applications relying on physical wavelengths or spatial frequencies receive correctly scaled dimensional outputs.
+Reading notes:
 
-## Spectral Analysis and Statistics
+- `TimeSeriesDict -> TimeSeriesMatrix -> Flatten to 2D features` is the matrix-analysis path used when scikit-learn-style algorithms expect 2D inputs.
+- `ScalarField -> Field slicing / indexing -> Field-aware transforms` is the field-analysis path used when time, frequency, and spatial axes must stay aligned.
+- Metadata is preserved across both paths so derived outputs can still be interpreted in physical coordinates rather than raw array indices alone.
 
-### Robust ASD Estimation (Bootstrap Spectrogram)
+---
 
-Standard Amplitude Spectral Density (ASD) estimation can be sensitive to non-stationary noise. `gwexpy` implements a robust estimation method via the `bootstrap_spectrogram` function.
+(architecture-core-analysis-components)=
+## Core Analysis Components
 
-This method uses bootstrap resampling (including Moving Block Bootstrap for time-correlated data) across the time axis of a spectrogram to estimate the median or mean ASD along with confidence intervals.
+`gwexpy` builds advanced analysis pipelines by combining the following core components. For detailed mathematical and physical foundations, refer to [Physics Models and Analysis Theory](physics_models.md).
 
-**Variance Inflation Factor (VIF)**
-When calculating statistics from overlapping data segments (like in Welch's method), the segments are correlated, artificially reducing the apparent variance. `gwexpy` correctly applies a Variance Inflation Factor (VIF) based on the overlapping window's autocorrelation function.
+- **Multi-channel Analysis Engine**: Implementation of ICA/PCA for environmental noise isolation.
+- **Fast Correlation Framework**: Accelerated coherence calculations (Bruco) for large-scale observation data.
+- **Statistical Inference & Fitting**: Parameter estimation using GLS and MCMC.
 
-$$
-\text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
-$$
+(related-documents)=
+## Related Documents
 
-This ensures that the confidence intervals returned by the bootstrap method accurately reflect the true statistical uncertainty of the data.
+- [Physics Models and Analysis Theory](physics_models.md) — Mathematical context for the containers and transforms summarized here
+- [Validated Algorithms](validated_algorithms.md) — Audit-backed behavior for numerical paths referenced by this design guide
+- [Scalar Field Slicing Guide](scalarfield_slicing.md) — Why the Field API preserves 4D structure
+- [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared time, FFT, and compatibility assumptions
+- [Matrix API](../reference/api/matrix.rst) — Reference entry for container reshaping and matrix-style operations
+- [Fields API](../reference/api/fields.rst) — Reference entry for field-aware transforms and slicing
 
-### Transient Signal FFT
-
-For analyzing transient signals (like injections or physical impulses), standard windowing techniques often distort the signal's true amplitude. `gwexpy` provides `_fft_transient`, an FFT method optimized for transients. It uses predictable padding strategies to maintain the temporal structure and accurately preserves the amplitude in the one-sided spectrum.
-
-### Fast Coherence Engine (BruCo)
-
-The `FastCoherenceEngine` calculates Welch coherence between a single target channel and potentially thousands of auxiliary channels efficiently. By pre-calculating and caching the target signal's FFT and PSD, it avoids redundant computations, significantly speeding up large-scale noise audits (like the "Brute-force Coherence" tool).
-
-## Transient Response and System Analysis
-
-### Response Function Analysis
-
-The framework includes tools for analyzing a system's response to injected signals (e.g., stepped sine excitations). The `detect_step_segments` function automatically tracks the injection frequency in a spectrogram to identify stable segments of excitation.
-
-The coupling function (transfer function magnitude) is then estimated by comparing the signal power during the injection to the background power, ensuring that background noise does not artificially inflate the transfer function estimate.
-
-$$
-\text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
-$$
-
-## Bayesian Fitting & Modeling
-
-### Generalized Least Squares (GLS) and MCMC
-
-When fitting models to data with correlated errors (where the noise covariance matrix is known), `gwexpy` supports Generalized Least Squares (GLS) solving. The fitting core integrates natively with the `emcee` package to perform Markov Chain Monte Carlo (MCMC) parameter estimation.
-
-For GLS, the log-likelihood leverages the full inverse covariance matrix ($\Sigma^{-1}$), accommodating heteroscedastic and correlated errors.
-
-$$
-\log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
-$$
-
-For complex-valued data (common in transfer functions), the framework utilizes the Hermitian form $r^\dagger \Sigma^{-1} r$ to correctly process both magnitude and phase residuals.
-
-### Dimensionality Reduction (PCA/ICA)
-
-Principal Component Analysis (PCA) and Independent Component Analysis (ICA) can be applied directly to multi-channel data representations like `TimeSeriesMatrix`. `gwexpy` manages the underlying dimensionality changes (flattening the 3D structure (Channels $\times$ Columns $\times$ Time) into a 2D feature matrix for scikit-learn, and reconstructing it back) while preserving essential metadata like GPS timestamps and physical units.
-
-## Noise Models
-
-`gwexpy` includes built-in generators for specific physical noise models, useful for simulation and testing.
-
-- **Schumann Resonance**: Simulates the background geomagnetic noise using a sum of independent Lorentzian profiles corresponding to the Earth-ionosphere cavity modes.
-- **Voigt Profile**: Generates spectral peaks combining Gaussian (Doppler broadening) and Lorentzian (collision broadening) characteristics using the Faddeeva function, common in atomic physics and high-Q mechanical resonances.
+(next-to-read)=
+## Next to Read
+- [Physics Models and Analysis Theory](physics_models.md) — Detailed analysis theory and physics models (ICA/Bruco/MCMC)
+- [Validated Algorithms](validated_algorithms.md) — Validation reports for numerical algorithms
+- [Scalar Field Slicing Guide](scalarfield_slicing.md) — Details on 4D field operations
+- [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared FFT, GPS time, and compatibility assumptions

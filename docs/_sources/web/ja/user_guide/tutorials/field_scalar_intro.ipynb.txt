@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e7302c25",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "7fb27b941602401d91542211134fc71a",
+   "id": "5c640810",
    "metadata": {},
    "source": [
-    "# ScalarField クラス入門\n",
+    "# Field API: ScalarField の基本\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/field_scalar_intro.ipynb)\n",
     "\n",
@@ -19,12 +31,17 @@
     "- **軸1-3（空間軸）**: 実空間 ↔ K空間（波数空間）の変換\n",
     "- **4D構造の保持**: スライシングしても常に4次元を維持\n",
     "- **バッチ操作**: `FieldList` と `FieldDict` による複数フィールドの一括処理\n",
-    "- **信号処理**: PSD計算、周波数-空間マッピング、相互相関、コヒーレンスマップ\n"
+    "- **信号処理**: PSD計算、周波数-空間マッピング、相互相関、コヒーレンスマップ\n",
+    "\n",
+    "## 関連 API と理論\n",
+    "\n",
+    "- **関連 API**: [Fields API](../../reference/api/fields.rst), [ScalarField ガイド](../../reference/ScalarField.md)\n",
+    "- **関連理論**: [アーキテクチャとデータフロー](../architecture.md), [検証済みアルゴリズム](../validated_algorithms.md)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "acae54e37e7d407bbb7b55eff062a284",
+   "id": "c821106a",
    "metadata": {},
    "source": [
     "## セットアップ\n",
@@ -35,7 +52,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "9a63283cbaf04dbcab1f6479b197f3a8",
+   "id": "4c33f73e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:39.643627Z",
@@ -46,25 +63,29 @@
    },
    "outputs": [],
    "source": [
-    "# SWIGLAL\n",
     "import warnings\n",
-    "\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
     "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "import matplotlib.pyplot as plt\n",
-    "import numpy as np\n",
-    "from astropy import units as u\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "from gwexpy.fields import FieldDict, FieldList, ScalarField\n",
+    "    # SWIGLAL\n",
     "\n",
-    "# for Set\n",
-    "np.random.seed(42)"
+    "    import matplotlib.pyplot as plt\n",
+    "    import numpy as np\n",
+    "    from astropy import units as u\n",
+    "\n",
+    "    from gwexpy.fields import FieldDict, FieldList, ScalarField\n",
+    "\n",
+    "    # for Set\n",
+    "    np.random.seed(42)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "8dd0d8092fe74a7c96281538738b07e2",
+   "id": "4da6888c",
    "metadata": {},
    "source": [
     "## 1. ScalarField の初期化とメタデータ\n",
@@ -75,7 +96,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "72eea5119410473aa328ad9291626812",
+   "id": "0ee605bb",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:41.956469Z",
@@ -130,7 +151,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8edb47106e1a46a883d545849b8ab81b",
+   "id": "b5a6e37f",
    "metadata": {},
    "source": [
     "### メタデータの確認\n",
@@ -144,7 +165,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "10185d26023b46108eb7d9f57d49d2b3",
+   "id": "9e64a040",
    "metadata": {},
    "source": [
     "## 2. 4D構造を保持するスライシング\n",
@@ -156,7 +177,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "8763a12b2bbd4a93a75aff182afb95dc",
+   "id": "3d48adba",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:41.965212Z",
@@ -190,7 +211,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "7623eae2785240b9bd12b16a66d81610",
+   "id": "02663f94",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:41.969591Z",
@@ -219,7 +240,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7cdc8c89c7104fffa095e18ddfef8986",
+   "id": "e4e1a9a8",
    "metadata": {},
    "source": [
     "この挙動により、ScalarFieldオブジェクトの一貫性が保たれ、メタデータ（軸名やドメイン情報）が失われることがありません。\n"
@@ -227,7 +248,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b118ea5561624da68c537baed56e602f",
+   "id": "13b118a9",
    "metadata": {},
    "source": [
     "## 3. 時間-周波数変換（軸0のFFT）\n",
@@ -239,7 +260,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "938c804e27f84196a10c8828c723f798",
+   "id": "c86c65c9",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:41.973276Z",
@@ -292,7 +313,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "504fb2a444614c0babb325280ed9130a",
+   "id": "85e8d94e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:41.978521Z",
@@ -348,7 +369,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "59bbdb311c014d738909a11f9e486628",
+   "id": "7d15a128",
    "metadata": {},
    "source": [
     "### 逆FFT（周波数 → 時間）\n",
@@ -359,7 +380,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "b43b363d81ae4b689946ece5c682cd59",
+   "id": "2e84d698",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.263815Z",
@@ -414,7 +435,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8a65eabff63a45729fe45fb5ade58bdc",
+   "id": "eb61a2d7",
    "metadata": {},
    "source": [
     "## 4. 実空間-K空間変換（空間軸のFFT）\n",
@@ -426,7 +447,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "c3933fab20d04ec698c2621248eb3be0",
+   "id": "5c765ebf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.422356Z",
@@ -483,7 +504,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "4dd4641cc4064e0191573fe9c69df29b",
+   "id": "d1f1496d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.428800Z",
@@ -537,7 +558,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8309879909854d7188b41380fd92a7c3",
+   "id": "3342a581",
    "metadata": {},
    "source": [
     "### 波長の計算\n",
@@ -548,7 +569,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "3ed186c9a28b402fb0bc4494df01f08d",
+   "id": "b6bea922",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.545436Z",
@@ -579,7 +600,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cb1e1581032b452c9409d6c6813c49d1",
+   "id": "42027ca6",
    "metadata": {},
    "source": [
     "### 全空間軸のFFT\n",
@@ -590,7 +611,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "379cbbc1e968416e875cc15c1202d7eb",
+   "id": "25698629",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.550805Z",
@@ -626,7 +647,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "277c27b1587741f2af2001be3712ef0d",
+   "id": "1b26f9ad",
    "metadata": {},
    "source": [
     "## 5. FieldList と FieldDict によるバッチ操作\n",
@@ -636,7 +657,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "db7b79bc585a40fcaf58bf750017e135",
+   "id": "c9a3ee9a",
    "metadata": {},
    "source": [
     "### FieldList\n",
@@ -647,7 +668,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "916684f9a58a4a2aa5f864670399430d",
+   "id": "b171f015",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.556483Z",
@@ -693,7 +714,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "1671c31a24314836a5b85d7ef7fbf015",
+   "id": "4e0b407c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.562139Z",
@@ -725,7 +746,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "33b0902fd34d4ace834912fa1002cf8e",
+   "id": "1eeae292",
    "metadata": {},
    "source": [
     "### FieldDict\n",
@@ -736,7 +757,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "f6fa52606d8c4a75a9b52967216f8f3f",
+   "id": "90d42c07",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.567277Z",
@@ -767,7 +788,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "f5a1fa73e5044315a093ec459c9be902",
+   "id": "21555c72",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.570809Z",
@@ -797,7 +818,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cdf66aed5cc84ca1b48e60bad68798a8",
+   "id": "028e43a9",
    "metadata": {},
    "source": [
     "## 6. 信号処理と解析\n",
@@ -812,7 +833,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "28d3efd5258a48a79c179ea5c6759f01",
+   "id": "2abacc8b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.576014Z",
@@ -1125,7 +1146,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3f9bc0b9dd2c44919cc8dcca39b469f8",
+   "id": "b4849b43",
    "metadata": {},
    "source": [
     "### パワースペクトル密度 (PSD)\n",
@@ -1136,7 +1157,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "0e382214b5f147d187d36a2058b9c724",
+   "id": "04993507",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.585286Z",
@@ -1193,7 +1214,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5b09d5ef5b5e4bb6ab9b829b10b6a29f",
+   "id": "54b3c166",
    "metadata": {},
    "source": [
     "### 周波数-空間マッピング（近日公開）\n",
@@ -1213,7 +1234,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "a50416e276a0479cbe66534ed1713a40",
+   "id": "a50a680b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.948240Z",
@@ -1247,7 +1268,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "46a27a456b804aa2a380d5edf15a5daf",
+   "id": "58f267e7",
    "metadata": {},
    "source": [
     "### 相互相関と遅延推定\n",
@@ -1258,7 +1279,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "1944c39560714e6e80c856f20744a8e5",
+   "id": "8d78e392",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.951578Z",
@@ -1296,7 +1317,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d6ca27006b894b04b6fc8b79396e2797",
+   "id": "ed894105",
    "metadata": {},
    "source": [
     "傾きがV字型になっていることから、信号が x=1.0m から両側に伝搬していることがわかります。\n"
@@ -1304,7 +1325,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f61877af4e7f4313ad8234302950b331",
+   "id": "039cc200",
    "metadata": {},
    "source": [
     "### コヒーレンスマップ\n",
@@ -1315,7 +1336,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "84d5ab97d17b4c38ab41a2b065bbd0c0",
+   "id": "91d77e8d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.954789Z",
@@ -1349,18 +1370,23 @@
   },
   {
    "cell_type": "markdown",
-   "id": "35ffc1ce1c7b4df9ace1bc936b8b1dc2",
+   "id": "d136c6b6",
    "metadata": {},
    "source": [
     "## 6. 数値的不変量の検証\n",
     "\n",
-    "FFT変換の正確性を検証するため、往復変換（round-trip）が元のデータを再構成できることを確認します。\n"
+    "FFT変換の正確性を検証するため、往復変換（round-trip）が元のデータを再構成できることを確認します。\n",
+    "\n",
+    "## 次に見る項目\n",
+    "\n",
+    "- **関連 API**: [Fields API](../../reference/api/fields.rst), [ScalarField ガイド](../../reference/ScalarField.md)\n",
+    "- **関連理論**: [Scalar Field のスライス操作ガイド](../scalarfield_slicing.md), [検証済みアルゴリズム](../validated_algorithms.md)\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "76127f4a2f6a44fba749ea7800e59d51",
+   "id": "cde3c304",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:42.957837Z",

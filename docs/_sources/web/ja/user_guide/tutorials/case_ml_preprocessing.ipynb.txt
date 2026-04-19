@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a7ff6cbe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "e7af38a2",
+   "id": "26e0ebce",
    "metadata": {},
    "source": [
-    "# 機械学習前処理パイプライン\n",
+    "# ケーススタディ: ML 前処理パイプライン\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_ml_preprocessing.ipynb)\n",
     "\n",
@@ -15,13 +27,16 @@
     "- **バンドパスフィルタリング**: 複数周波数帯域に対応した Butterworth フィルタ\n",
     "- **標準化**: チャンネルごとの正規化（Z スコアまたはロバスト MAD ベース）\n",
     "\n",
-    "この前処理は、ディープラーニングに限らず、あらゆる機械学習モデル（DeepClean、Random Forest、XGBoost など）に適用できます。"
+    "この前処理は、ディープラーニングに限らず、あらゆる機械学習モデル（DeepClean、Random Forest、XGBoost など）に適用できます。\n",
+    "\n",
+    "- **関連 API**: [Preprocessing API](../../reference/api/preprocessing.rst), [Time Series API](../../reference/api/timeseries.rst)\n",
+    "- **関連理論**: [検証済みアルゴリズム](../validated_algorithms.md), [数値安定性](../numerical_stability.md)"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cell-warnings-suppression",
+   "id": "b5d326e8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:30.069107Z",
@@ -32,17 +47,21 @@
    },
    "outputs": [],
    "source": [
-    "# Suppress warnings for cleaner documentation output\n",
     "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "warnings.filterwarnings('ignore', 'Wswiglal-redir-stdio')\n",
-    "warnings.filterwarnings('ignore', category=UserWarning, module='gwpy.time')"
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
+    "\n",
+    "    # Suppress warnings for cleaner documentation output\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "938f1e68",
+   "id": "247d9f31",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:30.072961Z",
@@ -74,7 +93,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "4d054f4f",
+   "id": "dff63706",
    "metadata": {},
    "source": [
     "## 基本的な使い方\n",
@@ -85,7 +104,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "2abbdb8d",
+   "id": "df7394bd",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:32.270258Z",
@@ -140,7 +159,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "9c89fa98",
+   "id": "1b4a3720",
    "metadata": {},
    "source": [
     "### 前処理パイプライン\n",
@@ -154,7 +173,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "b0a4c8d0",
+   "id": "02e39bd6",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:32.282470Z",
@@ -193,7 +212,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "92ff754d",
+   "id": "74a89675",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:32.295137Z",
@@ -228,7 +247,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7aa40b14",
+   "id": "033d2115",
    "metadata": {},
    "source": [
     "## データ分割の可視化\n",
@@ -239,7 +258,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "2a8f9693",
+   "id": "f31d44d7",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:32.307454Z",
@@ -292,7 +311,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "db879deb",
+   "id": "fa4de47b",
    "metadata": {},
    "source": [
     "## フィルタリングと標準化の効果\n",
@@ -307,7 +326,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "19ee7c45",
+   "id": "496b567a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:32.908218Z",
@@ -362,7 +381,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6d7d14a8",
+   "id": "46173887",
    "metadata": {},
    "source": [
     "### 周波数領域解析"
@@ -371,7 +390,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "3fd9dbfd",
+   "id": "585b00e0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:33.416716Z",
@@ -413,7 +432,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "37f33c43",
+   "id": "58b42266",
    "metadata": {},
    "source": [
     "## PyTorch 連携\n",
@@ -424,7 +443,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "d53b8d67",
+   "id": "14ca2077",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:33.679628Z",
@@ -491,7 +510,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "36757dc0",
+   "id": "01b23c83",
    "metadata": {},
    "source": [
     "## 発展的な話題\n",
@@ -504,7 +523,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "f57df64a",
+   "id": "21160a4b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:34.637789Z",
@@ -578,7 +597,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1caf8007",
+   "id": "1680c417",
    "metadata": {},
    "source": [
     "### ロバスト標準化\n",
@@ -589,7 +608,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "95c08756",
+   "id": "5dfc70dd",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:34.870957Z",
@@ -665,7 +684,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f7dd6764",
+   "id": "9f0c9e53",
    "metadata": {},
    "source": [
     "## まとめ\n",
@@ -681,7 +700,10 @@
     "- ウィットネスチャンネル (X): 標準化のみ（フィルタリングなし）\n",
     "- ターゲットチャンネル (y): フィルタリング → 標準化\n",
     "\n",
-    "詳細は [API ドキュメント](../../reference/api/preprocessing.rst) を参照してください。"
+    "詳細は [API ドキュメント](../../reference/api/preprocessing.rst) を参照してください。\n",
+    "\n",
+    "- **関連 API**: [Preprocessing API](../../reference/api/preprocessing.rst), [Time Series API](../../reference/api/timeseries.rst)\n",
+    "- **関連理論**: [検証済みアルゴリズム](../validated_algorithms.md), [数値安定性](../numerical_stability.md)"
    ]
   }
  ],

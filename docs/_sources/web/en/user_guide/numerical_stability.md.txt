@@ -1,77 +1,138 @@
+---
+myst:
+  html_meta:
+    description: "Understand GWexpy numerical stability behavior, including whitening eps handling, safe log plotting, NaN and Inf failure modes, and when users should tune parameters."
+---
+
 # Numerical Stability and Precision
 
-`gwexpy` is designed to handle the extreme dynamic ranges often found in gravitational-wave data analysis. 
-Gravitational-wave strain signals are typically on the order of $10^{-21}$, while intermediate processing steps might involve values closer to unity.
+**Page role:** Guide
 
-To ensure scientific accuracy and prevent numerical artifacts (such as "Death Floats" or vanishing signals), `gwexpy` implements a robust numerical hardening strategy.
+:::{note}
+**Who should read this page?**
+Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to this detailed guide only if:
+- You see "holes" or "unusual colors" in your plots caused by `NaN` or `Inf`.
+- You are working with extremely small signals (below $10^{-23}$) or huge signals (above 1) simultaneously.
+- You want to deeply understand the numerical behavior of algorithms and tune parameters like `eps` or `tol`.
+:::
 
-## Key Features
+`gwexpy` is designed to handle data with an extremely wide dynamic range without numerical breakdown.
+
+**Search hints:** `numerical stability`, `NaN`, `Inf`, `whiten`, `eps`, `safe log`, `tol`
+
+## At a Glance
+
+| Item | Details |
+| --- | --- |
+| **Page Role** | Guide |
+| **Audience** | Users seeing `NaN` / `Inf` issues, or users working with extremely small and large amplitudes in the same workflow |
+| **Prerequisites** | Basic familiarity with FFTs, ASD/PSD plots, and whitening |
+| **Use Cases** | Diagnose broken plots, understand when to tune `eps` or `tol`, or review GWexpy's stabilization design |
+| **Search Keywords** | numerical stability, `NaN`, `Inf`, `whiten`, `eps`, safe log, `tol` |
+
+## On This Page
+
+- [TL;DR](#tldr)
+- [Impact of Stabilization (Before & After)](#impact-of-stabilization-before--after)
+- [Core Stabilization Methods and APIs](#core-stabilization-methods-and-apis)
+- [Detailed Explanations and Examples](#detailed-explanations-and-examples)
+- [Recommendations for Users](#recommendations-for-users)
+
+(numerical-stability-en-tldr)=
+## TL;DR
+
+- For normal analysis, start by trusting the default `gwexpy` settings.
+- Do not add manual offsets such as `+ 1e-20` before plotting unless you have a concrete reason.
+- Tune parameters only when you actually observe `NaN` / `Inf`, work with extreme amplitudes, or need algorithm-level validation.
+
+(numerical-stability-en-impact)=
+## Impact of Stabilization (Before & After)
+
+A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexpy`'s robust numerical stabilization algorithms.
+
+![Numerical stabilization comparison: Noisy visualization with NaN/Inf artifacts (Left) vs. Clean gravitational-wave signal (Right)](../../../_static/images/numerical_stability_comparison.png)
+
+| Item | Standard path | GWexpy path |
+| :--- | :--- | :--- |
+| **Zero Values** | `log10(0)` produces `-inf`, causing blank holes in plots | **Safe Log** automatically sets an optimal floor based on the max value |
+| **Micro-signals** | Rounded to zero by fixed `eps=1e-12`, causing signal loss | **Adaptive Whitening** (`eps="auto"`) maintains signal sensitivity |
+| **Failures** | `NaN` propagates, making the entire dataset uncomputable | Pre/Post-computation validation protects data integrity |
+
+---
+
+(numerical-stability-en-methods)=
+## Core Stabilization Methods and APIs
+
+| Method | Target API | Issues Resolved | Configuration Hint |
+| :--- | :--- | :--- | :--- |
+| **Adaptive Whitening** | `.whiten()` | Zero-division / Signal loss | `eps="auto"` is recommended |
+| **Safe Log** | `.plot()`, `.spectrogram()` | `-inf` holes in plots | Adjustable via `dynamic_range` |
+| **Internal Standardization** | `ica_fit()` | Non-convergence | Works regardless of input amplitude |
+| **Relative Tolerance** | Various | Early termination | Auto-scales `tol` based on variance |
+
+---
+
+(numerical-stability-en-examples)=
+## Detailed Explanations and Examples
 
 ### 1. Adaptive Whitening
 
-Standard whitening algorithms often use a fixed regularization parameter (`eps`) to prevent division by zero. If this parameter is too large (e.g., `1e-12`), it can swamp physically significant but numerically small signals (like $10^{-21}$ strain).
+**Goal:** Avoid signal loss caused by a fixed `eps`.
+**Input:** A `TimeSeries` containing very small amplitudes.
+**Output:** A whitened series with automatic scaling.
 
-#### Problem: Naive whitening can fail
+Standard whitening often uses a fixed normalization parameter (`eps`) to prevent division by zero. If this value is too large, micro-signals are lost.
+
+#### ❌ Bad Example: Fixed eps causing signal loss
+```python
+# A fixed eps of 1e-12 rounds a 1e-21 signal to zero
+whitened = data / (asd + 1e-12) 
+```
+
+#### ✅ Good Example: GWexpy's `eps="auto"`
+`gwexpy` dynamically scales `eps` relative to the data range and uses a `SAFE_FLOOR` (1e-50) for singularities.
 
 ```python
 from gwexpy.timeseries import TimeSeries
 import numpy as np
 
-# ❌ BAD: Manual whitening without proper regularization
 data = TimeSeries(np.random.randn(1000) * 1e-21, sample_rate=1024)
-asd = data.asd()
-whitened = data / asd  # Dangerous: can cause division by near-zero values
+whitened = data.whiten(eps="auto")  # Automatically applies appropriate scaling
 ```
 
-#### Solution: Use GWexpy's adaptive whitening
+### 2. Safe Logarithmic Scaling (Safe Log)
 
-`gwexpy` automatically adapts the regularization parameter to the scale of your data:
+**Goal:** Prevent `-inf` values and broken plots when zeros are present.
+**Input:** ASD/PSD-like data with zeros or very quiet regions.
+**Output:** A stable visualization with a dynamic floor.
 
-- **Auto-scaling `eps`**: The regularization floor is calculated relative to the variance of the input data.
-- **Safety Floor**: A minimum floor (`SAFE_FLOOR = 1e-50`) ensures that even extremely quiet data (or zero-padded regions) does not cause singularities.
+Prevents `-inf` values when visualizing spectrograms or PSDs containing zeros or quiet regions.
+
+#### ❌ Bad Example: Numerical errors via manual conversion
+```python
+asd_db = 10 * np.log10(asd)  # Zeros become -inf, breaking the plot
+```
+
+#### ✅ Good Example: Automatic dynamic floor
+`gwexpy` calculates a safe floor based on the maximum value in the data.
 
 ```python
-# ✅ GOOD: GWexpy's safe whitening
-data = TimeSeries(np.random.randn(1000) * 1e-21, sample_rate=1024)
-whitened = data.whiten(eps="auto")  # Automatically handles proper regularization
-```
-
-### 2. Robust Independent Component Analysis (ICA)
-ICA separation is performed in a numerically stable manner:
-- **Internal Standardization**: Data is standardized to unit variance internally before being passed to the FastICA algorithm, ensuring that convergence criteria are met regardless of the input amplitude.
-- **Relative Tolerance**: Convergence tolerances are defined relative to the data scale.
-
-### 3. Safe Logarithmic Scaling
-
-When visualizing data with large dynamic ranges (e.g., spectrograms, PSDs), converting to decibels (dB) can be problematic if the data contains zeros or very small values.
-
-#### Problem: Log-scale plots with artifacts
-
-```python
-# ❌ BAD: Manual log conversion can produce -inf values
 asd = data.asd()
-asd_db = 10 * np.log10(asd)  # Warning: can produce -inf for near-zero values
-plot = asd_db.plot()
+plot = asd.plot()  # Safe Log is applied internally for a clean visualization
 ```
 
-#### Solution: Use GWexpy's safe plotting
+---
 
-`gwexpy` uses a "Safe Log" approach:
+(numerical-stability-en-recommendations)=
+## Recommendations for Users
 
-- **Dynamic Floor**: A floor is dynamically calculated based on the maximum value in the data and a specified dynamic range (default 200 dB).
-- **No Artifacts**: This prevents `-inf` values and ensures that "silence" is rendered as the bottom of the color scale rather than as white holes or numerical errors.
+- **Avoid Manual Offsets**: Do not add arbitrary small values like `data + 1e-20` before plotting. `gwexpy` handles this internally.
+- **Trust the Defaults**: Default parameters for `whiten()` and `ica_fit()` are tuned for numerical safety.
+- **Check Warnings**: `gwexpy` issues informative warnings with suggested fixes for truly unstable operations.
 
-```python
-# ✅ GOOD: GWexpy handles log scaling safely
-asd = data.asd()
-plot = asd.plot()  # Automatically applies safe log scaling for visualization
-```
+## Next to Read
 
-### 4. Machine Precision Awareness
-Numerical constants used throughout the package (for variance floors, coherence denominators, etc.) are derived from the machine precision (`epsilon`) of the floating-point type being used (float32 vs float64), ensuring optimal precision without unnecessary overhead.
-
-## Best Practices for Users
-
-- **Avoid Manual Offsets**: You do not need to add arbitrary small numbers (e.g., `data + 1e-20`) before plotting or processing. `gwexpy` functions handle this internally.
-- **Trust Defaults**: The default parameters for functions like `whiten()` and `ica_fit()` are tuned for numerical safety. Use `eps="auto"` or `tol="auto"` whenever possible.
-- **Check Warnings**: If you attempt operations that are numerically unstable (e.g., whitening a constant zero channel), `gwexpy` will issue informative warnings or errors guiding you to a solution.
+- [Signal Processing API Reference](../reference/api/signal.rst)
+- [Validated Algorithms](validated_algorithms.md)
+- [Glossary](glossary.rst) — Definitions for `NaN/Inf propagation` and more
+- [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared FFT and numerical assumptions across the docs

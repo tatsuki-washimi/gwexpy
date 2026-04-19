@@ -1,11 +1,34 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fe420e74",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "e000a624",
+   "id": "case-active-damping-nav-ja",
    "metadata": {},
    "source": [
-    "# 6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)\n",
+    "**ケース導線:**\n",
+    "- 正本ギャラリーに戻る: [ケーススタディ一覧](../../examples/index.rst)\n",
+    "- 関連リファレンス: [リファレンス総合入口](../../reference/index.rst), [API: 行列コンテナ](../../reference/api/matrix.rst), [API: 周波数系列](../../reference/api/frequencyseries.rst)\n",
+    "- 前後の注目ワークフロー: [ノイズバジェット解析](case_noise_budget.ipynb), [伝達関数推定](case_transfer_function.ipynb)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6244f9d1",
+   "metadata": {},
+   "source": [
+    "# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_active_damping.ipynb)\n",
     "\n",
@@ -30,7 +53,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "208fbfc6",
+   "id": "2d636d4d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:23.247019Z",
@@ -41,6 +64,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import control\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
@@ -52,10 +79,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2184c68f",
+   "id": "b84f6724",
    "metadata": {},
    "source": [
-    "## 1. 6自由度アクティブ防振装置のシミュレーション (Plant Model)\n",
+    "# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 1. 6自由度アクティブ防振装置のシミュレーション (Plant Model)\n",
     "\n",
     "剛体の運動方程式 $M \\ddot{q} + C \\dot{q} + K q = F$ を定義します。\n",
     "ここでは垂直3自由度（$z, \\theta_x, \\theta_y$）に焦点を当てます。\n",
@@ -71,7 +98,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "858305d0",
+   "id": "d34224d2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:25.524408Z",
@@ -132,28 +159,28 @@
     }
    ],
    "source": [
-    "#\n",
-    "m = 100.0 # Mass [kg]\n",
-    "I_x = 20.0 # Moment of inertia [kg m^2]\n",
+    "# 減衰したい剛体モードは鉛直並進 1 自由度と傾き 2 自由度で、ここではその 3 モードだけを取り出します。\n",
+    "m = 100.0  # 質量 [kg]\n",
+    "I_x = 20.0  # x 軸回り慣性モーメント [kg m^2]\n",
     "I_y = 20.0\n",
     "\n",
-    "# ( Position = Position)\n",
-    "k_leg = 2000.0 # Spring constant [N/m]\n",
-    "c_leg = 0.20 # Damping coefficient [N s/m]\n",
+    "# ばね・ダンパは脚位置に付いているので、剛性と損失はまず脚座標系で与えます。\n",
+    "k_leg = 2000.0  # ばね定数 [N/m]\n",
+    "c_leg = 0.20  # 減衰係数 [N s/m]\n",
     "\n",
-    "# : R\n",
-    "R = 0.5 # [m]\n",
+    "# 幾何半径 R が、鉛直運動とピッチ/ロールの混ざり方を決めます。\n",
+    "R = 0.5  # [m]\n",
     "\n",
-    "# Set (deg -> rad)\n",
+    "# アクチュエータ配置とセンサ配置を別に置き、非 colocated 系の難しさを残します。\n",
     "deg2rad = np.pi / 180.0\n",
-    "# : Position\n",
+    "# アクチュエータは脚位置で力を加えます。\n",
     "angles_act = np.array([0, 120, 240]) * deg2rad\n",
-    "# :\n",
+    "# センサは脚の中間に置き、単純な対角制御だとモードが混ざる状況を作ります。\n",
     "angles_sen = np.array([60, 180, 300]) * deg2rad\n",
     "\n",
     "\n",
-    "# CoordinatesTransformMatrix CreateFunction\n",
-    "# p = T * q => [z_i] = [1, R*sin(th), -R*cos(th)] @ [z, tx, ty]\n",
+    "# 剛体モード座標と物理的な脚/センサ変位を結ぶ幾何行列を作ります。\n",
+    "# 各行は「1 個の脚やセンサの変位」が、並進 z と 2 つの回転からどう合成されるかを表します。\n",
     "def make_transform_matrix(angles, radius):\n",
     "    T = np.zeros((3, 3))\n",
     "    for i, ang in enumerate(angles):\n",
@@ -171,19 +198,19 @@
     "print(\"Sensor Transform Matrix T_sen:\")\n",
     "print(np.round(T_sen, 2))\n",
     "\n",
-    "# Space M, K, C Matrix\n",
+    "# 質量と慣性はモード座標で対角のままなので、剛体モードの物理的意味が保ちやすくなります。\n",
     "M_modal = np.diag([m, I_x, I_y])\n",
     "\n",
-    "# Space( Position) K, C\n",
+    "# 剛性と粘性はハードウェアが脚に付いているため、脚座標で定義します。\n",
     "K_phys = np.diag([k_leg, k_leg, k_leg])\n",
     "C_phys = np.diag([c_leg, c_leg, c_leg])\n",
     "\n",
-    "# Space Projection: K_modal = T_act.T * K_phys * T_act\n",
-    "# ( Position T_act )\n",
+    "# 剛性・減衰をモード座標へ射影し、並進と回転を別々の物理モードとして扱えるようにします。\n",
+    "# 復元力は脚位置で働くので、ここではセンサ配置ではなくアクチュエータ側の幾何を使います。\n",
     "K_modal = T_act.T @ K_phys @ T_act\n",
     "C_modal = T_act.T @ C_phys @ T_act\n",
     "\n",
-    "# State Space Create\n",
+    "# 開ループと閉ループの応答を同じプラントで比較できるよう、状態空間モデルを作ります。\n",
     "# x = [q, q_dot]^T\n",
     "A_sys = np.block(\n",
     "    [\n",
@@ -195,9 +222,9 @@
     "C_sys_modal = np.block([np.eye(3), np.zeros((3, 3))])\n",
     "D_sys = np.zeros((3, 3))\n",
     "\n",
-    "# Coordinates Transform\n",
-    "# Input: Actuator Forces u (at angles_act) -> Generalized Force Q = T_act.T * u\n",
-    "# Output: Sensor Displacements y (at angles_sen) -> y = T_sen * q\n",
+    "# 実機は脚力とセンサ変位でやり取りするため、モード座標と物理座標の往復が必要です。\n",
+    "# 入力: アクチュエータ力 u -> 一般化力 Q = T_act.T * u\n",
+    "# 出力: センサ変位 y = T_sen * q\n",
     "B_sys = B_sys_modal @ T_act.T\n",
     "C_sys = T_sen @ C_sys_modal\n",
     "\n",
@@ -209,15 +236,15 @@
     "    inputs=[\"ACT1\", \"ACT2\", \"ACT3\"],\n",
     "    outputs=[\"SEN1\", \"SEN2\", \"SEN3\"],\n",
     ")\n",
-    "print(sys)"
+    "print(sys)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "29a93451",
+   "id": "b6ba7b7f",
    "metadata": {},
    "source": [
-    "## 2. MIMO伝達関数の測定\n",
+    "# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 2. MIMO伝達関数の測定\n",
     "\n",
     "センサーとアクチュエータの位置が異なるため、対角成分（ACT1->SEN1）だけでなく、非対角成分にも強い応答が現れるはずです。\n"
    ]
@@ -225,7 +252,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "1d02f080",
+   "id": "288ad85d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:25.553523Z",
@@ -252,14 +279,14 @@
     "t = np.arange(0, duration, 1 / fs)\n",
     "n_samples = len(t)\n",
     "\n",
-    "# Signal: 3ch Noise\n",
+    "# 3 本のアクチュエータを広帯域に励振し、3 つの剛体モードとクロス結合をすべて見えるようにします。\n",
     "np.random.seed(0)\n",
     "u_data = np.random.normal(0, 1.0, (3, n_samples))\n",
     "\n",
-    "# time / durationResponse\n",
+    "# これは MIMO 同定実験に相当する時間応答で、後で伝達関数行列を推定します。\n",
     "time_response = control.forced_response(sys, T=t, U=u_data)\n",
     "\n",
-    "# gwexpy TimeSeriesDict\n",
+    "# 実測データと同じ API で扱えるように TimeSeriesDict に包みます。\n",
     "tsd_input = TimeSeriesDict(\n",
     "    {\n",
     "        f\"ACT{i + 1}\": TimeSeries(\n",
@@ -273,7 +300,7 @@
     "for i in range(3):\n",
     "    tsd_output[f\"SEN{i + 1}\"].name = f\"Sensor {i + 1}\"\n",
     "\n",
-    "# MIMO TF Calculate\n",
+    "# 3x3 の伝達関数行列を求め、各アクチュエータが各センサへどれだけ漏れ込むかを見ます。\n",
     "tfs = [\n",
     "    [\n",
     "        tsd_input[f\"ACT{j + 1}\"].transfer_function(\n",
@@ -282,7 +309,7 @@
     "        for j in range(3)\n",
     "    ]\n",
     "    for i in range(3)\n",
-    "]\n",
+    "        ]\n",
     "\n",
     "tf_matrix = FrequencySeriesMatrix(\n",
     "    [[tf.value for tf in row] for row in tfs], frequencies=tfs[0][0].frequencies\n",
@@ -291,20 +318,20 @@
     "tf_data = tf_matrix.value\n",
     "freqs = tf_matrix.frequencies\n",
     "\n",
-    "# plot\n",
+    "# 行列振幅を描くと、主共振だけでなくオフ対角のクロス結合も可視化できます。\n",
     "tf_matrix.abs().plot(figsize=(12, 10), xscale=\"log\", yscale=\"log\").suptitle(\n",
-    "    \"MIMO Transfer Function Matrix (Non-collocated)\\n\\n\"\n",
+    "    \"MIMO Transfer Function Matrix (Non-collocated)\\n\"\n",
     ")\n",
     "plt.tight_layout()\n",
-    "plt.show()"
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "dfebb212",
+   "id": "10533400",
    "metadata": {},
    "source": [
-    "## 3 & 4. モード制御系の設計 (Modal Control Design)\n",
+    "# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 3 & 4. モード制御系の設計 (Modal Control Design)\n",
     "\n",
     "アクチュエータとセンサーの位置が一致していないため、単純な分散制御（$F_i \\propto \\dot{y}_i$）では不安定になる恐れがあります。\n",
     "そこで、**座標変換行列を用いてセンサー信号からモード変位を推定し、モード空間でダンピングをかけた後、アクチュエータ推力に分配する** 手法を採ります。\n",
@@ -324,7 +351,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "5c71f165",
+   "id": "c4175b87",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:28.148086Z",
@@ -351,13 +378,13 @@
     }
    ],
    "source": [
-    "# --- 1. Sensing & Actuation Matrix ---\n",
-    "# Estimated TransformMatrix （ ）\n",
-    "# Sensing Matrix: y -> q\n",
+    "# --- 1. センサ/アクチュエータ変換: 生のセンサ空間ではなくモード空間で制御するための準備です。 ---\n",
+    "# 実務では同定結果から得る行列ですが、ここでは制御原理だけを見るため真値を使います。\n",
+    "# センサ出力は剛体モードの混合なので、まず幾何をほどいてモード座標へ戻します。\n",
     "S_sensing = np.linalg.inv(T_sen)\n",
     "\n",
-    "# Actuation Matrix: F_modal -> u\n",
-    "# F_modal = T_act.T * u => u = inv(T_act.T) * F_modal\n",
+    "# モードごとの必要力を、実機に送れる各アクチュエータ指令へ戻します。\n",
+    "# F_modal = T_act.T * u  =>  u = inv(T_act.T) * F_modal\n",
     "D_actuation = np.linalg.inv(T_act.T)\n",
     "\n",
     "print(\"Sensing Matrix (Sensor -> Mode):\")\n",
@@ -365,11 +392,10 @@
     "print(\"Actuation Matrix (Mode Force -> Actuator):\")\n",
     "print(np.round(D_actuation, 2))\n",
     "\n",
-    "# --- 2. Modal Damping Filter Design ---\n",
-    "# Mode DampingGain Set\n",
-    "# Mode(z) Mode(tx, ty) Gain 、\n",
-    "# Gain Filter 。\n",
-    "gain = 1000.0 # Modal Damping Gain\n",
+    "# --- 2. モード減衰フィルタ設計: センサ値そのものではなく、共振モードのエネルギーを狙って減衰をかけます。 ---\n",
+    "# ゲインはモード座標で決めることで、別モードを巻き込まずに各剛体共振を抑えられます。\n",
+    "# 並進と回転で最適ゲインは本来異なり得ますが、ここでは幾何変換の効果を見せるため同じフィルタを使います。\n",
+    "gain = 1000.0  # モード減衰ゲイン\n",
     "fc_l = 0.1\n",
     "fc_h = 20.0\n",
     "w_l = 2 * np.pi * fc_l\n",
@@ -378,47 +404,30 @@
     "s = control.tf(\"s\")\n",
     "K_filter = gain * s / ((1 + s / w_l) * (1 + s / w_h))\n",
     "\n",
-    "# Matrix (3Modeminutes)\n",
+    "# 対角なモード制御器にすれば、幾何をほどいた後は各モードを独立に減衰できます。\n",
     "K_modal_diag = []\n",
     "for _ in range(3):\n",
     "    K_modal_diag.append(control.ss(K_filter))\n",
     "\n",
-    "# control.append do 、 。\n",
-    "# State Space do 、\n",
-    "# python-control K_MIMO 。\n",
-    "\n",
-    "# K_modal_block: 3-input 3-output Diagonal System\n",
-    "# [ K_f 0 0 ]\n",
-    "# [ 0 K_f 0 ]\n",
-    "# [ 0 0 K_f ]\n",
+    "# control.append で 3 本の独立なモードフィルタをブロック対角に束ねます。\n",
+    "# 個別の状態空間を手で合成すると不要な結合を入れやすいので、python-control の積演算に任せます。\n",
     "K_modal_block = control.append(K_modal_diag[0], K_modal_diag[1], K_modal_diag[2])\n",
     "\n",
     "\n",
-    "# --- 3. MIMO Controller Construction ---\n",
-    "# K_MIMO = D_actuation * K_modal_block * S_sensing\n",
-    "# python-control ConstantMatrix SS\n",
-    "\n",
-    "# S_sensing (Static Gain) * y\n",
-    "# K_modal_block * (S_sensing * y)\n",
-    "# D_actuation * (K_modal_block * S_sensing * y)\n",
-    "\n",
-    "# Note: Matrix 。Control object 。\n",
-    "# Sys2 * Sys1 Out <--- Sys2 <--- Sys1 <--- In\n",
-    "# : u = D * K * S * y\n",
-    "# Code: K_mimo = D * K * S\n",
-    "# D, S numpy array。control.ss(D) Transform 。\n",
-    "\n",
+    "# --- 3. MIMO 制御器の再構成: モード空間で設計した減衰則を物理アクチュエータ指令へ戻します。 ---\n",
+    "# 行列積の順序を誤ると、センサとアクチュエータの対応が崩れて非物理なフィードバック経路になります。\n",
+    "# 流れは「センサ変位 -> モード座標 -> モード減衰則 -> アクチュエータ指令」です。\n",
     "K_mimo = D_actuation * K_modal_block * S_sensing\n",
     "\n",
-    "print(\"MIMO Controller States:\", K_mimo.nstates)"
+    "print(\"MIMO Controller States:\", K_mimo.nstates)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "8aa5d61d",
+   "id": "e02b24f3",
    "metadata": {},
    "source": [
-    "## 5 & 6. 閉ループ検証 (インパルス応答 & ASD)\n",
+    "# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 5 & 6. 閉ループ検証 (インパルス応答 & ASD)\n",
     "\n",
     "構築したモード制御系を用いて、閉ループシミュレーションを行います。\n",
     "アクチュエータ1へのインパルス外乱、および全軸への定常地面振動に対する応答を確認します。\n"
@@ -427,7 +436,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "d8e78d59",
+   "id": "27f7a73f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:11:28.157123Z",
@@ -459,12 +468,12 @@
     }
    ],
    "source": [
-    "#\n",
+    "# 閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。\n",
     "sys_cl = control.feedback(sys, K_mimo, sign=-1)\n",
     "\n",
-    "# --- Impulse Response ---\n",
+    "# --- インパルス応答では、局所的なキックに対するリンギングがどれだけ早く収まるかを比較します。 ---\n",
     "u_impulse = np.zeros((3, n_samples))\n",
-    "u_impulse[0, 100] = 100.0 * fs # Impulse on Actuator 1\n",
+    "u_impulse[0, 100] = 100.0 * fs  # アクチュエータ 1 にインパルスを加える\n",
     "\n",
     "resp_ol = control.forced_response(sys, T=t, U=u_impulse)\n",
     "resp_cl = control.forced_response(sys_cl, T=t, U=u_impulse)\n",
@@ -482,8 +491,8 @@
     "axes[0].set_title(\"Impulse Response Comparison (Impulse on ACT1)\")\n",
     "plt.show()\n",
     "\n",
-    "# --- ASD Comparison ---\n",
-    "# Ground Vibration Simulation\n",
+    "# --- ASD 比較では、外乱で駆動されたときに共振帯の変位がどれだけ下がるかを確認します。 ---\n",
+    "# 低周波の地面揺れに似た外乱を入れ、制御対象である剛体モードを現実的に励振します。\n",
     "np.random.seed(42)\n",
     "wn = np.random.normal(0, 1.0, (3, n_samples))\n",
     "b, a = signal.butter(1, 5.0, fs=fs, btype=\"low\")\n",
@@ -522,8 +531,7 @@
     "plt.tight_layout()\n",
     "plt.show()\n",
     "\n",
-    "# Position 、\n",
-    "# ModeCoordinatesTransform Damping 。"
+    "# センサ位置とアクチュエータ位置が一致しない系でも、モード座標へ変換してから制御すれば、幾何起因のクロス結合を直接相手にせずに剛体モードを減衰できます。\n"
    ]
   }
  ],
@@ -547,5 +555,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

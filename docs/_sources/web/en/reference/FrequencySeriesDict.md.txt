@@ -1,8 +1,75 @@
 # FrequencySeriesDict
 
+<!-- reference-summary:start -->
+
+**Stability:** Stable
+
+## What it is
+
+Use `FrequencySeriesDict` to manage multiple `FrequencySeries` objects as a labeled collection with batch operations and conversion helpers.
+
+## Representative Signatures
+
+```python
+FrequencySeriesDict(data: dict[str, FrequencySeries])
+FrequencySeriesDict.to_matrix()
+```
+
+## Minimal Example
+
+```python
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+import numpy as np
+
+dct = FrequencySeriesDict({
+    "A": FrequencySeries(np.ones(64), df=1.0),
+    "B": FrequencySeries(np.ones(64), df=1.0),
+})
+mat = dct.to_matrix()
+```
+
+## Related Theory
+
+- [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [FrequencySeries Tutorial](../user_guide/tutorials/intro_frequencyseries.ipynb)
+- [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb)
+- [Noise Budgeting](../user_guide/tutorials/case_noise_budget.ipynb)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** FrequencySeriesBaseDict
 
 Ordered mapping of `FrequencySeries` objects keyed by label.
+
+## Physical Context
+
+Use `FrequencySeriesDict` when the label itself matters physically: channel name, sensor location, configuration tag, or processing branch.
+
+- unlike a list, the key is part of the analysis record
+- this is useful for multi-sensor comparisons where losing the label would make the spectrum hard to interpret
+
+## Common Misreadings
+
+1. assuming dictionary keys imply identical calibration or alignment
+2. using sanitized file-output keys as though they were the original physical channel names
+3. comparing spectra by key only, without checking units and frequency spacing
+
+## Where to go next
+
+- per-spectrum interpretation: [FrequencySeries](FrequencySeries.md)
+- convert to aligned analysis grid: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+- practical workflows: [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb), [Noise Budgeting](../user_guide/tutorials/case_noise_budget.ipynb)
 
 ## Methods
 
@@ -376,10 +443,11 @@ HDF5 dataset names (for GWpy `path=`):
 - If multiple keys sanitize to the same name, a suffix like `__1` is added.
 - The original keys are stored in file attributes, and `gwexpy` restores them on read.
 
-.. warning::
-   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
-   arbitrary code on load.
+:::{warning}
+Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+arbitrary code on load.
 
+:::
 Pickle portability note: pickled gwexpy `FrequencySeriesDict` unpickles as a built-in
 `dict` of GWpy `FrequencySeries` (gwexpy not required on the loading side).
 

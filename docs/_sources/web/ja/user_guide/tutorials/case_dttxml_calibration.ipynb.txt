@@ -1,8 +1,20 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e2573541",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "md_035b2b78",
+   "id": "2e4976f9",
    "metadata": {},
    "source": [
     "# gwexpy で DTT XML ファイルを読み込む\n",
@@ -23,7 +35,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_032b12c1",
+   "id": "b3e14ef1",
    "metadata": {},
    "source": [
     "## セットアップ"
@@ -32,7 +44,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cd_013a2a7a",
+   "id": "13bef3d6",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:13.529413Z",
@@ -43,6 +55,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import numpy as np\n",
     "import matplotlib.pyplot as plt\n",
     "\n",
@@ -52,7 +68,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_04219fdb",
+   "id": "65791761",
    "metadata": {},
    "source": [
     "## 1. 合成 DTT XML ファイルの作成\n",
@@ -72,7 +88,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cd_0472fd0d",
+   "id": "de58ffad",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:15.821519Z",
@@ -151,13 +167,13 @@
     "    pathlib.Path(path).write_text(xml)\n",
     "    print(\"一時ファイルへ合成 DTT XML を書き込みました\")\n",
     "\n",
-    "xml_path = \"/tmp/kagra_sus_itmx.xml\"\n",
+    "xml_path = pathlib.Path(\"kagra_sus_itmx.xml\")\n",
     "make_synthetic_dttxml(xml_path)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "md_01ef63eb",
+   "id": "6bb953e0",
    "metadata": {},
    "source": [
     "## 2. チャネルの確認\n",
@@ -169,7 +185,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cd_02b32eba",
+   "id": "5818e339",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:15.831191Z",
@@ -197,7 +213,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_039b7769",
+   "id": "8c6f48ec",
    "metadata": {},
    "source": [
     "## 3. 測定量の読み込み\n",
@@ -220,7 +236,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cd_0507a07e",
+   "id": "6a2a4c47",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:15.839671Z",
@@ -259,7 +275,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_01f338df",
+   "id": "df41ac94",
    "metadata": {},
    "source": [
     "## 4. Bode プロット — 伝達関数の可視化\n",
@@ -270,7 +286,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cd_00b35503",
+   "id": "6018203e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:15.844229Z",
@@ -334,7 +350,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0361be53",
+   "id": "c4796ff8",
    "metadata": {},
    "source": [
     "## 5. コヒーレンス\n",
@@ -347,7 +363,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "cd_0171f7ad",
+   "id": "c6fe6a43",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:16.402748Z",
@@ -395,7 +411,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_04ccb38f",
+   "id": "979ab188",
    "metadata": {},
    "source": [
     "## 6. 共振モデルのフィッティング\n",
@@ -411,7 +427,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cd_02ade26c",
+   "id": "43a689f4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:16.588397Z",
@@ -468,7 +484,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "cd_0367e6f1",
+   "id": "475a9b64",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:17.093125Z",
@@ -523,7 +539,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_002218b8",
+   "id": "eaf87b81",
    "metadata": {},
    "source": [
     "## まとめ\n",

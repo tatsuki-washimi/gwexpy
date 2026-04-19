@@ -4,33 +4,99 @@
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Install GWexpy for Python 3.11+ with minimal, recommended, GW-analysis, or developer setups, including extras guidance and dependency troubleshooting." name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; GWexpy Documentation</title>
+  <title>Installation Guide &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Quickstart" href="quickstart.html" />
-    <link rel="prev" title="GWexpy Documentation" href="../index.html" /> 
+    <link rel="prev" title="GWexpy Documentation" href="../index.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../ja/user_guide/installation.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,60 +110,74 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#basic-install">Basic install</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#development-install">Development install</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#optional-extras">Optional extras</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Installation Guide</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#at-a-glance">At a Glance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#on-this-page">On This Page</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#installation-steps">1. Installation Steps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dependency-troubleshooting">2.1. Dependency Troubleshooting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#optional-dependencies-extras-details">3. Optional Dependencies (Extras) Details</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#os-specific-notes">4. OS-Specific Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#security-note-pickle">5. Security Note (Pickle)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#next-to-read">6. Next to Read</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
-      <li class="breadcrumb-item active">Installation</li>
+      <li class="breadcrumb-item active">Installation Guide</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/installation.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -107,84 +187,215 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
-<p>GWexpy requires Python 3.11+ and depends on GWpy, NumPy, SciPy, and Astropy.</p>
-<section id="basic-install">
-<h2>Basic install<a class="headerlink" href="#basic-install" title="Link to this heading"></a></h2>
-<p>GitHub is the recommended method for installation until the package is officially released on PyPI.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="installation-guide">
+<h1>Installation Guide<a class="headerlink" href="#installation-guide" title="Link to this heading"></a></h1>
+<section id="at-a-glance">
+<h2>At a Glance<a class="headerlink" href="#at-a-glance" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Item</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Page Role</strong></p></td>
+<td><p>Guide</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Audience</strong></p></td>
+<td><p>New users installing GWexpy, users choosing extras, and contributors setting up a local dev environment</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Prerequisites</strong></p></td>
+<td><p>Python 3.11+, basic <code class="docutils literal notranslate"><span class="pre">pip</span></code> usage, and basic Conda usage when you need GW binary dependencies</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Use Cases</strong></p></td>
+<td><p>Install the minimal stack, decide whether Conda is required, choose extras, or prepare a contributor setup</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Search Keywords</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">install</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span></code>, <code class="docutils literal notranslate"><span class="pre">conda</span></code>, extras, development version, NDS2, FrameLIB</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="on-this-page">
+<h2>On This Page<a class="headerlink" href="#on-this-page" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Install Commands</p></li>
+<li><p>Installation Steps</p></li>
+<li><p>Dependency Troubleshooting</p></li>
+<li><p>Optional Dependencies (Extras) Details</p></li>
+<li><p>OS-Specific Notes</p></li>
+<li><p>Security Note (Pickle)</p></li>
+<li><p><a class="reference internal" href="#next-to-read"><span class="std std-ref">Next to Read</span></a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GWexpy is currently in its <strong>Development Version</strong>. Since it is not yet officially published on PyPI or Conda, we recommend a source installation from GitHub. These commands will be fully operational after the official release.</p>
+</div>
+<p>GWexpy supports <strong>Python 3.11 or later</strong>. You can choose from several installation options (extras) depending on your analysis goals.</p>
+<p><a id="install-command"></a></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Goal</p></th>
+<th class="head"><p>Installation Command</p></th>
+<th class="head"><p>Features</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Minimal</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git</span></code></p></td>
+<td><p>Numerical containers and basic arithmetic. Minimal dependencies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Recommended</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[analysis,fitting,plotting]</span> <span class="pre">&#64;</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span></code></p></td>
+<td><p>Advanced statistics, curve fitting, and mapping features.</p></td>
+</tr>
+<tr class="row-even"><td><p>GW Analysis</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[gw,io]</span> <span class="pre">&#64;</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span></code></p></td>
+<td><p>Frame file support, NDS2 access, and official GW tools.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dev / Full</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[all]</span> <span class="pre">&#64;</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span></code></p></td>
+<td><p>Enables all optional features.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="installation-steps">
+<h2>1. Installation Steps<a class="headerlink" href="#installation-steps" title="Link to this heading"></a></h2>
+<section id="minimal">
+<h3>Minimal<a class="headerlink" href="#minimal" title="Link to this heading"></a></h3>
+<p>For users who want to keep dependencies minimal and only use core containers like <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>.</p>
+<ul class="simple">
+<li><p>Purpose: verify import and core container usage with the smallest dependency set</p></li>
+<li><p>Input: Python 3.11+ and <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
+<li><p>Output: a minimal GWexpy environment</p></li>
+</ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
 </pre></div>
 </div>
-<p><strong>Coming soon (PyPI &amp; Conda):</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># pip install gwexpy</span>
-<span class="c1"># conda install -c conda-forge gwexpy</span>
-</pre></div>
+</section>
+<section id="conda-environment-recommended-gw-analysis">
+<h3>Conda Environment (Recommended / GW Analysis)<a class="headerlink" href="#conda-environment-recommended-gw-analysis" title="Link to this heading"></a></h3>
+<p>For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you use Conda, avoid running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> directly in <code class="docutils literal notranslate"><span class="pre">base</span></code> or in a shared environment for unrelated work. Create a <strong>dedicated environment for GWexpy</strong> first, then install both the Conda-managed binary dependencies and the <code class="docutils literal notranslate"><span class="pre">pip</span></code> packages there. This keeps binary dependency resolution isolated and reduces the risk of breaking the environment.</p>
 </div>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p><strong>For Gravitational Wave Data Analysis (LIGO/Virgo/KAGRA, etc.)</strong></p>
-<p>Some dependencies in the <code class="docutils literal notranslate"><span class="pre">[gw]</span></code> extra, such as <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> and <code class="docutils literal notranslate"><span class="pre">python-framel</span></code>, are <strong>not available on PyPI</strong> due to complex system-level dependencies.
-To use these features, we strongly recommend installing them via <strong>Conda (Miniforge/Anaconda)</strong> first:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Install external dependencies</span>
+<ul class="simple">
+<li><p>Purpose: build a GW-ready environment with binary dependencies such as NDS2 and FrameLIB</p></li>
+<li><p>Input: a shell with Conda available</p></li>
+<li><p>Output: a dedicated <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> environment with <code class="docutils literal notranslate"><span class="pre">gw</span></code> extras enabled</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Create environment and resolve binary dependencies</span>
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>gwexpy<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11
+conda<span class="w"> </span>activate<span class="w"> </span>gwexpy
 conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-nds2-client<span class="w"> </span>python-framel<span class="w"> </span>ldas-tools-framecpp
 
-<span class="c1"># 2. Install GWexpy with extras</span>
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
+<span class="c1"># 2. Install GWexpy with analysis/fitting options</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
 </pre></div>
 </div>
-</div>
+<p>If you see <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">nds2</span></code> or FrameLIB-related import errors, re-run the <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">...</span></code> step inside that dedicated environment first. If you do not need NDS2 or FrameLIB, the minimal or recommended installation without the <code class="docutils literal notranslate"><span class="pre">gw</span></code> extras is usually sufficient.</p>
 </section>
-<section id="development-install">
-<h2>Development install<a class="headerlink" href="#development-install" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="optional-extras">
-<h2>Optional extras<a class="headerlink" href="#optional-extras" title="Link to this heading"></a></h2>
-<p>GWexpy exposes optional extras for domain-specific features:</p>
+<section id="developer-mode">
+<h3>Developer Mode<a class="headerlink" href="#developer-mode" title="Link to this heading"></a></h3>
+<p>For contributors who want to install from source and set up a testing environment. <strong>Conda is optional here.</strong> Use the Conda workflow above when you need to validate <code class="docutils literal notranslate"><span class="pre">gw</span></code>-related binary dependencies; otherwise, a standard virtual environment such as <code class="docutils literal notranslate"><span class="pre">venv</span></code> is fine for documentation work and general development.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.[gw]</span></code> for GW data analysis (nds2, frames, noise models)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[analysis]</span></code> for transforms and time-frequency tools (scikit-learn, statsmodels, ARIMA)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[fitting]</span></code> for advanced fitting (iminuit, emcee, corner)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[seismic]</span></code> for seismological analysis (obspy, mth5, mtpy)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[audio]</span></code> for audio processing (pydub, tinytag)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[control]</span></code> for control engineering (python-control)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[plotting]</span></code> for advanced plotting &amp; mapping (pygmt)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[io]</span></code> for additional I/O formats (nptdms)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[gui]</span></code> for the experimental Qt GUI (PyQt5, pyqtgraph)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.[all]</span></code> to install all optional dependencies</p></li>
+<li><p>Purpose: install from a local clone for editing and tests</p></li>
+<li><p>Input: Git plus a Python virtual environment</p></li>
+<li><p>Output: an editable install via <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span></code></p></li>
 </ul>
-<p>Combine extras as needed, for example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;.[gw,analysis,plotting]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/tatsuki-washimi/gwexpy.git
+<span class="nb">cd</span><span class="w"> </span>gwexpy
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,all]&quot;</span>
 </pre></div>
-</div>
-<p>You can also install extras directly from GitHub:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">[gw]</span></code> extra includes dependencies like <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> which are <strong>not available on PyPI</strong>.
-To use these features, you must install dependencies via <strong>Conda</strong> first:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-nds2-client<span class="w"> </span>python-framel<span class="w"> </span>ldas-tools-framecpp
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;.[gw]&quot;</span>
-</pre></div>
-</div>
-<p class="rubric" id="maximal-information-coefficient-mic">Maximal Information Coefficient (MIC)</p>
-<p>Calculation of MIC requires <code class="docutils literal notranslate"><span class="pre">minepy</span></code>. On Python 3.11+, standard installation via <code class="docutils literal notranslate"><span class="pre">pip</span></code> or <code class="docutils literal notranslate"><span class="pre">conda</span></code> may fail. We provide an automated build script in the repository:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/install_minepy.py
-</pre></div>
-</div>
 </div>
 </section>
-<section id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
-<p>Now that GWexpy is installed, learn the basics with:</p>
+</section>
+<section id="dependency-troubleshooting">
+<h2>2.1. Dependency Troubleshooting<a class="headerlink" href="#dependency-troubleshooting" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> - Generate and plot time series data</p></li>
-<li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> - Complete learning path</p></li>
+<li><p>If you see <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">nds2</span></code>: install <code class="docutils literal notranslate"><span class="pre">python-nds2-client</span></code> in the active dedicated Conda environment.</p></li>
+<li><p>If you see FrameLIB / <code class="docutils literal notranslate"><span class="pre">framecpp</span></code>-related errors: reinstall <code class="docutils literal notranslate"><span class="pre">python-framel</span></code> and <code class="docutils literal notranslate"><span class="pre">ldas-tools-framecpp</span></code> in the same environment.</p></li>
+<li><p>If the environment has already been mixed with unrelated packages: recreating it with <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">gwexpy</span> <span class="pre">python=3.11</span></code> is usually safer than trying to repair it in place.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="optional-dependencies-extras-details">
+<h2>3. Optional Dependencies (Extras) Details<a class="headerlink" href="#optional-dependencies-extras-details" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Extra Name</p></th>
+<th class="head"><p>Key Packages</p></th>
+<th class="head"><p>Primary Use Cases</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">analysis</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>, <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>, <code class="docutils literal notranslate"><span class="pre">pmdarima</span></code></p></td>
+<td><p>Noise cancellation, forecasting, and machine learning.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fitting</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">iminuit</span></code>, <code class="docutils literal notranslate"><span class="pre">emcee</span></code>, <code class="docutils literal notranslate"><span class="pre">corner</span></code></p></td>
+<td><p>Least-squares fitting and MCMC analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gw</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lalsuite</span></code>, <code class="docutils literal notranslate"><span class="pre">gwosc</span></code>, <code class="docutils literal notranslate"><span class="pre">gwinc</span></code>, <code class="docutils literal notranslate"><span class="pre">ligo.skymap</span></code></p></td>
+<td><p>Data discovery, sensitivity calculations, and sky mapping.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">io</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nptdms</span></code></p></td>
+<td><p>Reading LabVIEW TDMS formats.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plotting</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pygmt</span></code></p></td>
+<td><p>High-precision geographic mapping (GeoMap).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">audio</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pydub</span></code></p></td>
+<td><p>Audio export and processing.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">seismic</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code>, <code class="docutils literal notranslate"><span class="pre">mth5</span></code>, <code class="docutils literal notranslate"><span class="pre">mtpy</span></code></p></td>
+<td><p>Seismic and magnetotelluric data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">control</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">control</span></code> (python-control)</p></td>
+<td><p>Control systems and transfer functions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gui</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PyQt5</span></code>, <code class="docutils literal notranslate"><span class="pre">pyqtgraph</span></code></p></td>
+<td><p>Graphical interface (prototype stage).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="os-specific-notes">
+<h2>4. OS-Specific Notes<a class="headerlink" href="#os-specific-notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Linux</strong>: Ensure standard build tools (<code class="docutils literal notranslate"><span class="pre">build-essential</span></code>) are installed.</p></li>
+<li><p><strong>macOS (Apple Silicon)</strong>: Using the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> channel ensures most binaries run natively on M1/M2/M3.</p></li>
+<li><p><strong>Windows (WSL2)</strong>: We recommend installing GWexpy within a Linux environment on WSL2 rather than on Windows proper.</p></li>
+</ul>
+</section>
+<section id="security-note-pickle">
+<h2>5. Security Note (Pickle)<a class="headerlink" href="#security-note-pickle" title="Link to this heading"></a></h2>
+<p>To facilitate sharing analysis results, GWexpy supports saving and restoring objects via <code class="docutils literal notranslate"><span class="pre">Pickle</span></code>. This uses <strong>Transparent Pickle</strong> technology, allowing objects to be restored as base GWpy objects even if the recipient does not have GWexpy installed.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><strong>Never load Pickle files from untrusted sources.</strong>
+Python’s <code class="docutils literal notranslate"><span class="pre">pickle</span></code> module has inherent security risks (Arbitrary Code Execution) when loading data. Always exchange data through trusted channels or consider more secure serialization formats like <code class="docutils literal notranslate"><span class="pre">HDF5</span></code>.</p>
+</div>
+<p><a id="next-to-read"></a>
+<a id="next-steps"></a></p>
+</section>
+<section id="next-to-read">
+<h2>6. Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> - confirm import and plotting with the smallest possible example</p></li>
+<li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> - choose the right learning path after installation</p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">Prerequisites and Conventions</span></a> - review FFT, GPS time, and GWpy-compatibility assumptions</p></li>
 </ul>
 </section>
 </section>
@@ -200,7 +411,9 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -217,7 +430,24 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="license.html">License / Disclaimer</a> |
+        <a href="roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

@@ -1,11 +1,27 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fa75ab43",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "c74bd15a",
+   "id": "d6da72c9",
    "metadata": {},
    "source": [
-    "# GWExPy TimeSeries 相互運用性 (Interop) チュートリアル\n",
+    "# 相互運用: 基本\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_interop.ipynb)\n",
     "\n",
@@ -15,7 +31,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7c7f572b",
+   "id": "b46d9ff1",
    "metadata": {},
    "source": [
     "## 目次\n",
@@ -23,45 +39,45 @@
     "- 1. 汎用データ形式・データ基盤\n",
     "    - 1.1. NumPy [Original GWpy]\n",
     "    - 1.2. Pandas との連携 [Original GWpy]\n",
-    "    - 1.3. Polars [GWExPy New]\n",
+    "    - 1.3. Polars [GWexpy New]\n",
     "    - 1.4. Xarray との連携 [Original GWpy]\n",
-    "    - 1.5. Dask との連携 [GWExPy New]\n",
-    "    - 1.6. JSON / Python Dict (to_json) (to_json) [GWExPy New]\n",
+    "    - 1.5. Dask との連携 [GWexpy New]\n",
+    "    - 1.6. JSON / Python Dict (to_json) (to_json) [GWexpy New]\n",
     "- 2. データベース・ストレージ層\n",
     "    - 2.1. HDF5 [Original GWpy]\n",
-    "    - 2.2. SQLite [GWExPy New]\n",
-    "    - 2.3. Zarr [GWExPy New]\n",
-    "    - 2.4. netCDF4 [GWExPy New]\n",
+    "    - 2.2. SQLite [GWexpy New]\n",
+    "    - 2.3. Zarr [GWexpy New]\n",
+    "    - 2.4. netCDF4 [GWexpy New]\n",
     "- 3. 情報科学・機械学習・加速計算\n",
-    "    - 3.1. PyTorch との連携 [GWExPy New]\n",
-    "    - 3.2. CuPy (CUDA 加速) [GWExPy New]\n",
-    "    - 3.3. TensorFlow との連携 [GWExPy New]\n",
-    "    - 3.4. JAX との連携 [GWExPy New]\n",
+    "    - 3.1. PyTorch との連携 [GWexpy New]\n",
+    "    - 3.2. CuPy (CUDA 加速) [GWexpy New]\n",
+    "    - 3.3. TensorFlow との連携 [GWexpy New]\n",
+    "    - 3.4. JAX との連携 [GWexpy New]\n",
     "- 4. 天文学・重力波物理学\n",
     "    - 4.1. PyCBC / LAL [Original GWpy]\n",
     "    - 4.2. Astropy との連携 [Original GWpy]\n",
-    "    - 4.3. Specutils との連携 [GWExPy New]\n",
-    "    - 4.4. Pyspeckit との連携 [GWExPy New]\n",
+    "    - 4.3. Specutils との連携 [GWexpy New]\n",
+    "    - 4.4. Pyspeckit との連携 [GWexpy New]\n",
     "- 5. 素粒子物理学・高エネルギー物理\n",
-    "    - 5.1. CERN ROOT との連携 [GWExPy New]\n",
+    "    - 5.1. CERN ROOT との連携 [GWexpy New]\n",
     "    - 5.2. ROOT オブジェクトからの復元 (`from_root`)\n",
     "- 6. 地球物理学・地震学・電磁気学\n",
     "    - 6.1. ObsPy [Original GWpy]\n",
-    "    - 6.2. SimPEG との連携 [GWExPy New]\n",
-    "    - 6.3. MTH5 / MTpy [GWExPy New]\n",
+    "    - 6.2. SimPEG との連携 [GWexpy New]\n",
+    "    - 6.3. MTH5 / MTpy [GWexpy New]\n",
     "- 7. 音響・音声解析\n",
-    "    - 7.1. Librosa / Pydub [GWExPy New]\n",
+    "    - 7.1. Librosa / Pydub [GWexpy New]\n",
     "- 8. 医学・生体信号解析\n",
-    "    - 8.1. MNE-Python [GWExPy New]\n",
-    "    - 8.2. Elephant / quantities との連携 [GWExPy New]\n",
-    "    - 8.3. Neo [GWExPy New]\n",
+    "    - 8.1. MNE-Python [GWexpy New]\n",
+    "    - 8.2. Elephant / quantities との連携 [GWexpy New]\n",
+    "    - 8.3. Neo [GWexpy New]\n",
     "- 9. まとめ\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "6362a302",
+   "id": "19d866f4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:47.055230Z",
@@ -83,6 +99,10 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import os\n",
     "\n",
     "os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")"
@@ -91,7 +111,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "880d3572",
+   "id": "b9ef171e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:47.086503Z",
@@ -108,32 +128,32 @@
     }
    ],
    "source": [
-    "import logging\n",
-    "import logging\n",
     "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
-    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "    import logging\n",
+    "    import logging\n",
     "\n",
-    "logging.getLogger(\"mth5\").disabled = True\n",
-    "logging.getLogger(\"mt_metadata\").disabled = True\n",
+    "    logging.getLogger(\"mth5\").disabled = True\n",
+    "    logging.getLogger(\"mt_metadata\").disabled = True\n",
     "\n",
-    "import matplotlib.pyplot as plt\n",
-    "import numpy as np\n",
-    "from astropy import units as u\n",
-    "from gwpy.time import LIGOTimeGPS\n",
+    "    import matplotlib.pyplot as plt\n",
+    "    import numpy as np\n",
+    "    from astropy import units as u\n",
+    "    from gwpy.time import LIGOTimeGPS\n",
     "\n",
-    "from gwexpy.timeseries import TimeSeries\n",
+    "    from gwexpy.timeseries import TimeSeries\n",
     "\n",
-    "# Suppress MTH5 redundant warnings\n",
-    "logging.getLogger(\"mth5.groups.base\").setLevel(logging.ERROR)\n",
-    "logging.getLogger(\"mth5\").setLevel(logging.ERROR)"
+    "    # Suppress MTH5 redundant warnings\n",
+    "    logging.getLogger(\"mth5.groups.base\").setLevel(logging.ERROR)\n",
+    "    logging.getLogger(\"mth5\").setLevel(logging.ERROR)\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "3524b198",
+   "id": "25e8c11e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:49.327221Z",
@@ -187,7 +207,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0c890f94",
+   "id": "a09d4c10",
    "metadata": {},
    "source": [
     "## 1. 汎用データ形式・データ基盤\n"
@@ -195,7 +215,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e4086931",
+   "id": "af4cde82",
    "metadata": {},
    "source": [
     "### 1.1. NumPy <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -208,7 +228,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3f2d14a4",
+   "id": "c19286c9",
    "metadata": {},
    "source": [
     "### 1.2. Pandas との連携 <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -223,7 +243,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "0afc15cf",
+   "id": "fc3015e2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:56.595297Z",
@@ -292,9 +312,10 @@
     "    s_pd = ts.to_pandas(index=\"datetime\")\n",
     "    print(\"\\n--- Converted to Pandas Series ---\")\n",
     "    display(s_pd)\n",
-    "    s_pd.plot(title=\"Pandas Series\")\n",
+    "    fig, ax = plt.subplots()\n",
+    "    s_pd.plot(ax=ax, title=\"Pandas Series\")\n",
     "    plt.show()\n",
-    "    plt.close()\n",
+    "    plt.close(fig)\n",
     "\n",
     "    # Pandas Series from TimeSeries\n",
     "    ts_restored = TimeSeries.from_pandas(s_pd, unit=\"V\")\n",
@@ -304,15 +325,15 @@
     "    del s_pd, ts_restored\n",
     "\n",
     "except ImportError:\n",
-    "    print(\"Pandas is not installed.\")"
+    "    print(\"Pandas is not installed.\")\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "304e2775",
+   "id": "7eff2196",
    "metadata": {},
    "source": [
-    "### 1.3. Polars <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 1.3. Polars <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **Polars**: Polars は Rust で実装された高速な DataFrame ライブラリで、大規模データの高速処理に優れています。\n",
     "> 📚 [Polars Documentation](https://pola.rs/)\n",
@@ -323,7 +344,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cafa14e3",
+   "id": "a3b496e2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:58.698319Z",
@@ -407,7 +428,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "12729804",
+   "id": "93d9c1af",
    "metadata": {},
    "source": [
     "### 1.4. Xarray との連携 <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -421,7 +442,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "6acedb03",
+   "id": "87cbcd7c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:58.911579Z",
@@ -502,10 +523,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1863bceb",
+   "id": "f8e52cc1",
    "metadata": {},
    "source": [
-    "### 1.5. Dask との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 1.5. Dask との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **Dask**: Dask は並列計算のためのライブラリで、NumPy/Pandas を超える大規模データの処理を可能にします。\n",
     "> 📚 [Dask Documentation](https://www.dask.org/)\n"
@@ -514,7 +535,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "4c9a524e",
+   "id": "12ae6b11",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:59.161245Z",
@@ -562,10 +583,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "60a9c0fc",
+   "id": "dbcaf734",
    "metadata": {},
    "source": [
-    "### 1.6. JSON / Python Dict (to_json) <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 1.6. JSON / Python Dict (to_json) <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **JSON**: JSON (JavaScript Object Notation) は軽量なデータ交換フォーマットで、Python 標準ライブラリでサポートされています。\n",
     "> 📚 [JSON Documentation](https://docs.python.org/3/library/json.html)\n",
@@ -576,7 +597,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "89b0831b",
+   "id": "bdf0e303",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:59.233027Z",
@@ -667,7 +688,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "009dcaa8",
+   "id": "60c679c9",
    "metadata": {},
    "source": [
     "## 2. データベース・ストレージ層\n"
@@ -675,7 +696,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d14849c1",
+   "id": "abb2cb2f",
    "metadata": {},
    "source": [
     "### 2.1. HDF5 <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -689,7 +710,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "72bbd189",
+   "id": "081eb958",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:27:59.356192Z",
@@ -762,10 +783,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "88078c84",
+   "id": "79549009",
    "metadata": {},
    "source": [
-    "### 2.2. SQLite <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 2.2. SQLite <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **SQLite**: SQLite は軽量な組み込み型 SQL データベースエンジンで、Python 標準ライブラリに含まれています。\n",
     "> 📚 [SQLite Documentation](https://docs.python.org/3/library/sqlite3.html)\n",
@@ -776,7 +797,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "bcad0caa",
+   "id": "1d58f925",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:28:19.360411Z",
@@ -841,10 +862,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1b3e3020",
+   "id": "b6ee55f7",
    "metadata": {},
    "source": [
-    "### 2.3. Zarr <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 2.3. Zarr <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **Zarr**: Zarr はチャンク化・圧縮された多次元配列のためのストレージフォーマットで、クラウドストレージとの連携に優れています。\n",
     "> 📚 [Zarr Documentation](https://zarr.dev/)\n",
@@ -855,7 +876,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "9cf83148",
+   "id": "485015b3",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:28:42.470180Z",
@@ -939,10 +960,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e56e9dfe",
+   "id": "bbefe244",
    "metadata": {},
    "source": [
-    "### 2.4. netCDF4 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 2.4. netCDF4 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **netCDF4**: netCDF4 は気象・海洋・地球科学データの標準フォーマットで、自己記述的なデータ構造を持ちます。\n",
     "> 📚 [netCDF4 Documentation](https://unidata.github.io/netcdf4-python/)\n",
@@ -953,7 +974,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "69414c85",
+   "id": "212fbfb8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:11.468912Z",
@@ -1035,7 +1056,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "32d419c9",
+   "id": "c8ce7cbc",
    "metadata": {},
    "source": [
     "## 3. 情報科学・機械学習・加速計算\n"
@@ -1043,10 +1064,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5ab4c1e8",
+   "id": "bfc30a15",
    "metadata": {},
    "source": [
-    "### 3.1. PyTorch との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 3.1. PyTorch との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **PyTorch**: PyTorch は深層学習フレームワークで、動的計算グラフと GPU 加速をサポートします。\n",
     "> 📚 [PyTorch Documentation](https://pytorch.org/)\n",
@@ -1057,7 +1078,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "efd169b3",
+   "id": "df8c3cb0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:40.415980Z",
@@ -1110,10 +1131,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a8c23851",
+   "id": "7bc3c570",
    "metadata": {},
    "source": [
-    "### 3.2. CuPy (CUDA 加速) <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 3.2. CuPy (CUDA 加速) <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **CuPy**: CuPy は NumPy 互換の GPU 配列ライブラリで、NVIDIA CUDA を使用した高速計算を可能にします。\n",
     "> 📚 [CuPy Documentation](https://cupy.dev/)\n",
@@ -1124,7 +1145,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "72594c03",
+   "id": "7e86a76d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:41.412430Z",
@@ -1176,10 +1197,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "66afa7b5",
+   "id": "a04bc6df",
    "metadata": {},
    "source": [
-    "### 3.3. TensorFlow との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 3.3. TensorFlow との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **TensorFlow**: TensorFlow は Google が開発した機械学習プラットフォームで、大規模な本番環境での利用に優れています。\n",
     "> 📚 [TensorFlow Documentation](https://www.tensorflow.org/)\n"
@@ -1188,7 +1209,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "3b4c89c8",
+   "id": "983ffa8e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:41.416759Z",
@@ -1199,44 +1220,43 @@
    },
    "outputs": [],
    "source": [
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "    os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
-    "    warnings.filterwarnings(\n",
-    "        \"ignore\", category=UserWarning, module=r\"google\\.protobuf\\..*\"\n",
-    "    )\n",
-    "    warnings.filterwarnings(\n",
-    "        \"ignore\", category=UserWarning, message=r\"Protobuf gencode version.*\"\n",
-    "    )\n",
-    "    import tensorflow as tf\n",
+    "    try:\n",
+    "        import os\n",
     "\n",
-    "    _ = tf\n",
-    "    # TensorFlow Tensor Transform\n",
-    "    tf_tensor = ts.to_tensorflow()\n",
-    "    print(\"\\n--- Converted to TensorFlow Tensor ---\")\n",
-    "    print(f\"Tensor shape: {tf_tensor.shape}\")\n",
-    "    print(f\"Tensor dtype: {tf_tensor.dtype}\")\n",
+    "        os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
+    "        warnings.filterwarnings(\"ignore\", category=UserWarning, module=r\"google\\.protobuf\\..*\")\n",
+    "        warnings.filterwarnings(\"ignore\", category=UserWarning, message=r\"Protobuf gencode version.*\")\n",
+    "        import tensorflow as tf\n",
     "\n",
-    "    #\n",
-    "    ts_from_tensorflow = TimeSeries.from_tensorflow(\n",
-    "        tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit\n",
-    "    )\n",
-    "    print(\"Recovered from TF:\", ts_from_tensorflow)\n",
+    "        _ = tf\n",
+    "        # TensorFlow Tensor Transform\n",
+    "        tf_tensor = ts.to_tensorflow()\n",
+    "        print(\"\\n--- Converted to TensorFlow Tensor ---\")\n",
+    "        print(f\"Tensor shape: {tf_tensor.shape}\")\n",
+    "        print(f\"Tensor dtype: {tf_tensor.dtype}\")\n",
     "\n",
-    "    del tf_tensor, ts_from_tensorflow\n",
+    "        #\n",
+    "        ts_from_tensorflow = TimeSeries.from_tensorflow(\n",
+    "            tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit\n",
+    "        )\n",
+    "        print(\"Recovered from TF:\", ts_from_tensorflow)\n",
     "\n",
-    "except ImportError:\n",
-    "    pass"
+    "        del tf_tensor, ts_from_tensorflow\n",
+    "\n",
+    "    except ImportError:\n",
+    "        pass\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "0a5c0fe7",
+   "id": "8e23d755",
    "metadata": {},
    "source": [
-    "### 3.4. JAX との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 3.4. JAX との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **JAX**: JAX は Google が開発した高性能数値計算ライブラリで、自動微分と XLA コンパイルによる高速化が特徴です。\n",
     "> 📚 [JAX Documentation](https://jax.readthedocs.io/)\n"
@@ -1245,7 +1265,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "b1124e73",
+   "id": "f7c87f37",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:41.420669Z",
@@ -1298,7 +1318,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "da4a8887",
+   "id": "a91c390d",
    "metadata": {},
    "source": [
     "## 4. 天文学・重力波物理学\n"
@@ -1306,7 +1326,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1c03c3aa",
+   "id": "7b6007ba",
    "metadata": {},
    "source": [
     "### 4.1. PyCBC / LAL <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -1322,7 +1342,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f3d7aa4a",
+   "id": "d4ce6c01",
    "metadata": {},
    "source": [
     "### 4.2. Astropy との連携 <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -1336,7 +1356,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "aaa552ae",
+   "id": "d0ec5b67",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:41.813405Z",
@@ -1410,10 +1430,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d2001a81",
+   "id": "5e4cf04f",
    "metadata": {},
    "source": [
-    "### 4.3. Specutils との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 4.3. Specutils との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **specutils**: specutils は天文スペクトルデータの操作・解析のための Astropy 関連パッケージです。\n",
     "> 📚 [specutils Documentation](https://specutils.readthedocs.io/)\n",
@@ -1425,7 +1445,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "dcd45591",
+   "id": "9eaa9ea8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:41.964372Z",
@@ -1477,10 +1497,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a16e60e8",
+   "id": "3562ed52",
    "metadata": {},
    "source": [
-    "### 4.4. Pyspeckit との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 4.4. Pyspeckit との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **PySpecKit**: PySpecKit は電波天文学のスペクトル解析ツールキットで、スペクトル線のフィッティングなどをサポートします。\n",
     "> 📚 [PySpecKit Documentation](https://pyspeckit.readthedocs.io/)\n",
@@ -1491,7 +1511,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "41db83bb",
+   "id": "05798934",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:42.240945Z",
@@ -1541,7 +1561,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "984a70a0",
+   "id": "6fe3aa5c",
    "metadata": {},
    "source": [
     "## 5. 素粒子物理学・高エネルギー物理\n"
@@ -1549,10 +1569,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "05dc5da8",
+   "id": "4f20e58a",
    "metadata": {},
    "source": [
-    "### 5.1. CERN ROOT との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 5.1. CERN ROOT との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **ROOT**: ROOT は CERN が開発した高エネルギー物理学向けのデータ解析フレームワークです。\n",
     "> 📚 [ROOT Documentation](https://root.cern/)\n",
@@ -1567,7 +1587,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "cbaebe83",
+   "id": "375aa172",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:42.361562Z",
@@ -1624,7 +1644,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0bb2c48a",
+   "id": "8d0c231d",
    "metadata": {},
    "source": [
     "### 5.2. ROOT オブジェクトからの復元 (`from_root`)\n",
@@ -1638,7 +1658,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "1bff8e71",
+   "id": "554d64bf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:42.367397Z",
@@ -1672,7 +1692,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6200f141",
+   "id": "de596a23",
    "metadata": {},
    "source": [
     "## 6. 地球物理学・地震学・電磁気学\n"
@@ -1680,7 +1700,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cbdf4df0",
+   "id": "7658c264",
    "metadata": {},
    "source": [
     "### 6.1. ObsPy <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -1694,7 +1714,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "08bd538a",
+   "id": "05c8f587",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:42.370790Z",
@@ -1764,7 +1784,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "0a94003d",
+   "id": "ba390621",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:42.524117Z",
@@ -1798,10 +1818,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8fbb455a",
+   "id": "e8ce9c20",
    "metadata": {},
    "source": [
-    "### 6.2. SimPEG との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 6.2. SimPEG との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **SimPEG**: SimPEG は地球物理学的逆問題のシミュレーション・推定フレームワークです。\n",
     "> 📚 [SimPEG Documentation](https://simpeg.xyz/)\n",
@@ -1813,7 +1833,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "dc139bb4",
+   "id": "8793d130",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:42.528548Z",
@@ -1865,10 +1885,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d0ce99f4",
+   "id": "7b3a513a",
    "metadata": {},
    "source": [
-    "### 6.3. MTH5 / MTpy <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 6.3. MTH5 / MTpy <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **MTH5**: MTH5 は磁気地電流 (MT) データのための HDF5 ベースのデータフォーマットです。\n",
     "> 📚 [MTH5 Documentation](https://mth5.readthedocs.io/)\n",
@@ -1879,7 +1899,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "511a8b83",
+   "id": "b106929a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:29:42.611181Z",
@@ -2003,7 +2023,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ae258b75",
+   "id": "533483c9",
    "metadata": {},
    "source": [
     "## 7. 音響・音声解析\n"
@@ -2011,10 +2031,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "bdebe562",
+   "id": "b5e61041",
    "metadata": {},
    "source": [
-    "### 7.1. Librosa / Pydub <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 7.1. Librosa / Pydub <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **pydub**: pydub はオーディオファイルの操作（編集・変換・エフェクト）のためのシンプルなライブラリです。\n",
     "> 📚 [pydub Documentation](https://github.com/jiaaro/pydub)\n",
@@ -2028,7 +2048,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "aed3b838",
+   "id": "3052f496",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:30:04.957582Z",
@@ -2132,7 +2152,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "07597b64",
+   "id": "4c3c5125",
    "metadata": {},
    "source": [
     "## 8. 医学・生体信号解析\n"
@@ -2140,10 +2160,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "64f59617",
+   "id": "b0f8899d",
    "metadata": {},
    "source": [
-    "### 8.1. MNE-Python <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 8.1. MNE-Python <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **MNE**: MNE-Python は脳波 (EEG)・脳磁図 (MEG) データの解析ライブラリで、神経科学研究に広く使用されています。\n",
     "> 📚 [MNE Documentation](https://mne.tools/)\n",
@@ -2154,7 +2174,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "ab790ab0",
+   "id": "8fada4ff",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:30:05.059645Z",
@@ -2279,7 +2299,7 @@
   {
    "cell_type": "code",
    "execution_count": 28,
-   "id": "0b1ec15d",
+   "id": "b54482a4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:30:05.276362Z",
@@ -2333,10 +2353,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ce8049dd",
+   "id": "1a7c4131",
    "metadata": {},
    "source": [
-    "### 8.2. Elephant / quantities との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 8.2. Elephant / quantities との連携 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "`gwexpy` の `FrequencySeries` や `Spectrogram` は、`quantities.Quantity` オブジェクトと相互変換可能です。\n",
     "これは Elephant や Neo との連携に役立ちます。\n",
@@ -2347,7 +2367,7 @@
   {
    "cell_type": "code",
    "execution_count": 29,
-   "id": "6d9d0481",
+   "id": "710bfd80",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:30:05.281684Z",
@@ -2420,10 +2440,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f269ebec",
+   "id": "802e59c4",
    "metadata": {},
    "source": [
-    "### 8.3. Neo <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 8.3. Neo <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **Neo**: Neo は電気生理学データ（神経科学）のためのデータ構造ライブラリで、様々なフォーマットへの入出力をサポートします。\n",
     "> 📚 [Neo Documentation](https://neo.readthedocs.io/)\n",
@@ -2434,7 +2454,7 @@
   {
    "cell_type": "code",
    "execution_count": 30,
-   "id": "c485a040",
+   "id": "b8230dd2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:30:05.336542Z",
@@ -2636,7 +2656,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f80e659a",
+   "id": "5c527cf9",
    "metadata": {},
    "source": [
     "## 9. 音響・電磁シミュレーション連携（追加ライブラリ）\n",
@@ -2646,7 +2666,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e8353380",
+   "id": "8f29713f",
    "metadata": {},
    "source": [
     "### 9.1. Pyroomacoustics — 室内インパルス応答（RIR）\n",
@@ -2658,7 +2678,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "587be47b",
+   "id": "960887c4",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2685,7 +2705,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a94afbf8",
+   "id": "f0f15e00",
    "metadata": {},
    "source": [
     "### 9.2. OpenEMS — HDF5 電磁場ダンプ\n",
@@ -2697,7 +2717,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "98f420ee",
+   "id": "f7023b9a",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2733,7 +2753,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "bc224ecb",
+   "id": "f03ab220",
    "metadata": {},
    "source": [
     "### 9.3. Meshio — 非構造格子メッシュ → ScalarField\n",
@@ -2745,7 +2765,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "33302e31",
+   "id": "9eaf85f4",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2777,7 +2797,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2f464892",
+   "id": "2418ea35",
    "metadata": {},
    "source": [
     "### 9.4. マルチテーパースペクトル推定\n",
@@ -2790,7 +2810,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "3aee7207",
+   "id": "75573556",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2835,7 +2855,22 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e769cbdd",
+   "id": "7b31c2ea",
+   "metadata": {},
+   "source": [
+    "## よくある落とし穴と解釈上の注意\n",
+    "\n",
+    "- **すべての変換が可逆だと思い込むこと**: 多くの bridge は配列本体を渡せても、単位、`t0`、`dt`、チャネル名、軸ラベルまでは自動で完全保存されない場合があります。\n",
+    "- **direct I/O と interop を混同すること**: `to_*()` / `from_*()` はオブジェクト変換の説明であり、`Class.read(..., format=...)` や `obj.write(...)` と同じ保存保証を意味しません。\n",
+    "- **時刻情報やサンプルレートが曖昧なまま解釈すること**: 変換自体が成功しても、タイムゾーンやサンプリング情報が十分に運ばれていないと、整列や比較の解釈を誤ります。\n",
+    "- **規約を確認せずに数値だけ比較すること**: FFT 正規化、周波数刻み、軸順序、shape の約束はライブラリごとに異なることがあり、見た目が似ていても意味は一致しない場合があります。\n",
+    "- **一部対応を全面対応だと読むこと**: ここで動く例は、特定のクラスや経路での実例であり、すべての round-trip や補助属性まで保証するものではありません。\n",
+    "- **図が似ているだけで意味も同じだと判断すること**: プロットが近く見えても、単位、座標、インデックスの意味が変わっている可能性があります。図だけでなく metadata を確認してください。\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "42f4d81f",
    "metadata": {},
    "source": [
     "## 10. まとめ\n",
@@ -2864,5 +2899,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

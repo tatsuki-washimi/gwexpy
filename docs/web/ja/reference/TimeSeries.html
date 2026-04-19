@@ -5,32 +5,97 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TimeSeries &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/reference/TimeSeries.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="TimeSeriesDict" href="TimeSeriesDict.html" />
-    <link rel="prev" title="クラス索引 (Class Index)" href="classes.html" /> 
+    <link rel="prev" title="TimePlaneTransform" href="TimePlaneTransform.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../en/reference/TimeSeries.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,37 +109,49 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/architecture.html">アーキテクチャと物理</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="index.html">リファレンス</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="api/index.html">API リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">リファレンス (Reference)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="api/index.html">API リファレンス (API Reference)</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="classes.html">クラス索引 (Class Index)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="topics.html">トピック別参照 (Topics)</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
 </ul>
@@ -83,18 +160,18 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
-          <li class="breadcrumb-item"><a href="index.html">リファレンス</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
+          <li class="breadcrumb-item"><a href="index.html">リファレンス (Reference)</a></li>
           <li class="breadcrumb-item"><a href="classes.html">クラス索引 (Class Index)</a></li>
       <li class="breadcrumb-item active">TimeSeries</li>
       <li class="wy-breadcrumbs-aside">
@@ -108,12 +185,108 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="timeseries">
 <h1>TimeSeries<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h1>
-<p><strong>継承元:</strong> <code class="docutils literal notranslate"><span class="pre">gwpy.timeseries.TimeSeries</span></code></p>
+<!-- reference-summary:start -->
+<p><strong>安定性:</strong> 安定</p>
+<section id="id1">
+<h2>主な用途<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> は単一の等間隔サンプリング時系列を扱うための基本クラスで、GWexpy の信号処理・モデリング・相互運用拡張を含みます。</p>
+</section>
+<section id="id2">
+<h2>代表的なシグネチャ<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">TimeSeries</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>最小例<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+<span class="n">psd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>関連理論<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../user_guide/physics_models.html"><span class="std std-doc">Physics Models</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/validated_algorithms.html#validated-ja-transient-fft"><span class="std std-ref">トランジェント FFT の検証</span></a> - トランジェント FFT モードの振幅規約と前提条件</p></li>
+<li><p><a class="reference internal" href="../user_guide/validated_algorithms.html#validated-ja-arima-forecast"><span class="std std-ref">ARIMA 予測時刻の検証</span></a> - 予測延長時の GPS 時刻前提</p></li>
+<li><p><a class="reference internal" href="../user_guide/validated_algorithms.html#validated-ja-mcmc-gls"><span class="std std-ref">MCMC / GLS 尤度の検証</span></a> - 時系列データをフィットに渡す際の尤度前提</p></li>
+<li><p><a class="reference internal" href="FFT_Conventions.html"><span class="std std-doc">FFT_Conventions</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a></p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>関連チュートリアル<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html"><span class="std std-doc">GWpy Migration Guide</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_signal_extraction.html"><span class="std std-doc">Signal Extraction</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/advanced_arima.html"><span class="std std-doc">Advanced ARIMA</span></a></p></li>
+</ul>
+</section>
+<section id="api">
+<h2>API リファレンス<a class="headerlink" href="#api" title="Link to this heading"></a></h2>
+<p>詳細な生成済み API はこのページの下部に続きます。</p>
+<!-- reference-summary:end -->
+<p><strong>継承元:</strong> <a class="reference external" href="https://gwpy.readthedocs.io/en/latest/reference/gwpy.timeseries.TimeSeries/"><code class="docutils literal notranslate"><span class="pre">gwpy.timeseries.TimeSeries</span></code></a></p>
 <p>すべての gwexpy 機能を備えた拡張 TimeSeries。</p>
+</section>
+<section id="id6">
+<h2>物理コンテキスト<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> は「単一チャネルの時間領域信号」を表します。重力波ひずみ <code class="docutils literal notranslate"><span class="pre">strain</span></code>、地面速度、電圧、制御誤差信号、マイク出力のように、<strong>各サンプルが一つの時刻に対応する量</strong>を保持する場合の入口です。</p>
+<ul class="simple">
+<li><p><strong>時間軸の意味</strong>: <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">times</span></code> は解析窓の物理時刻を決めます。特に <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch_open_data()</span></code> の戻り値は GPS 時刻を前提に後段のセグメント解析やイベント同期解析へ渡されます。</p></li>
+<li><p><strong>単位の意味</strong>: <code class="docutils literal notranslate"><span class="pre">unit</span></code> は単なる飾りではなく、フィルタ・微積分・フィッティング・外部変換時の解釈に効きます。<code class="docutils literal notranslate"><span class="pre">strain</span></code>、<code class="docutils literal notranslate"><span class="pre">m/s</span></code>、<code class="docutils literal notranslate"><span class="pre">V</span></code> などを明示しておくと、周波数領域へ変換した後の <code class="docutils literal notranslate"><span class="pre">1/Hz</span></code> 系の量とも整合を取りやすくなります。</p></li>
+<li><p><strong>等間隔サンプリング前提</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> は等間隔サンプル列を想定します。不規則サンプリングやイベント表は <code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code> / table 系、複数チャネル同時解析は <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> を使う方が自然です。</p></li>
+</ul>
+</section>
+<section id="id7">
+<h2>解析上の注意点<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="fftpsd">
+<h3>FFT・PSD に入る前<a class="headerlink" href="#fftpsd" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">fft()</span></code>, <code class="docutils literal notranslate"><span class="pre">psd()</span></code>, <code class="docutils literal notranslate"><span class="pre">asd()</span></code>, <code class="docutils literal notranslate"><span class="pre">spectrogram()</span></code> は時間領域データを周波数領域へ写像します。このとき重要なのは、配列値そのものよりも「<strong>窓長・オーバーラップ・窓関数・平均化単位</strong>」です。</p>
+<ul class="simple">
+<li><p>定常雑音の代表量を見たいなら <code class="docutils literal notranslate"><span class="pre">psd()</span></code> / <code class="docutils literal notranslate"><span class="pre">asd()</span></code> を使う</p></li>
+<li><p>短いバーストや chirp を追いたいなら <code class="docutils literal notranslate"><span class="pre">spectrogram()</span></code> / <code class="docutils literal notranslate"><span class="pre">q_transform()</span></code> を使う</p></li>
+<li><p>振幅規約や transient mode の扱いは <a class="reference internal" href="FFT_Conventions.html"><span class="std std-doc">FFT_Conventions</span></a> と検証済みアルゴリズム側の根拠を参照する</p></li>
+</ul>
+</section>
+<section id="id8">
+<h3>前処理の意味<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">detrend()</span></code>, <code class="docutils literal notranslate"><span class="pre">highpass()</span></code>, <code class="docutils literal notranslate"><span class="pre">whiten()</span></code>, <code class="docutils literal notranslate"><span class="pre">standardize()</span></code>, <code class="docutils literal notranslate"><span class="pre">impute()</span></code> は、単に見た目を整える操作ではなく、<strong>どの物理成分を保持し、どの系統誤差を落とすか</strong>を決める操作です。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">detrend()</span></code> / <code class="docutils literal notranslate"><span class="pre">highpass()</span></code> は低周波ドリフトを除きたいときに使う</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">whiten()</span></code> は検出・時刻周波数可視化・相関解析の前に広帯域比較をしやすくする</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">impute()</span></code> は欠損を埋めるが、埋めた区間を物理信号そのものとして解釈してはいけない</p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>どこで誤読しやすいか<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>サンプル値だけを見て <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> や <code class="docutils literal notranslate"><span class="pre">t0</span></code> を無視する</p></li>
+<li><p>前処理後の系列を「元の物理量そのもの」とみなす</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fft()</span></code> 結果の単位や振幅規約を確認せずに別手法と比較する</p></li>
+<li><p>単一チャネル系列に多チャネル因果や空間構造の意味を持たせすぎる</p></li>
+</ol>
+</section>
+</section>
+<section id="id10">
+<h2>どのページへ進むか<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>時間領域から周波数領域への規約確認: <a class="reference internal" href="FFT_Conventions.html"><span class="std std-doc">FFT_Conventions</span></a></p></li>
+<li><p>観測データ取得や direct I/O: <a class="reference internal" href="../user_guide/io_formats.html"><span class="std std-doc">I/O Formats</span></a></p></li>
+<li><p>GWpy からの移行観点: <a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html"><span class="std std-doc">GWpy Migration Guide</span></a></p></li>
+<li><p>時間周波数解析の比較: <a class="reference internal" href="../user_guide/tutorials/time_frequency_comparison.html"><span class="std std-doc">時間-周波数解析: 手法比較ガイド</span></a></p></li>
+<li><p>ARIMA や予測系: <a class="reference internal" href="../user_guide/tutorials/advanced_arima.html"><span class="std std-doc">Advanced ARIMA</span></a></p></li>
+</ul>
+</section>
 <section id="key-extensions">
 <h2>主な拡張機能 (Key Extensions)<a class="headerlink" href="#key-extensions" title="Link to this heading"></a></h2>
-<section id="id1">
-<h3>統計と相関<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<section id="id11">
+<h3>統計と相関<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">correlation(other,</span> <span class="pre">method=&quot;pearson&quot;,</span> <span class="pre">...)</span></code></strong>
 他の TimeSeries との相関を計算します。
@@ -126,8 +299,8 @@ FastMI (FFTベース) 推定器を用いて相互情報量を計算します。<
 時系列間の因果関係（Granger Causality）を検定します。</p></li>
 </ul>
 </section>
-<section id="id2">
-<h3>信号処理<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<section id="id12">
+<h3>信号処理<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">hilbert()</span></code> / <code class="docutils literal notranslate"><span class="pre">envelope()</span></code></strong>
 解析信号とその振幅包絡線を計算します。</p></li>
@@ -137,8 +310,8 @@ FastMI (FFTベース) 推定器を用いて相互情報量を計算します。<
 ゼロパディングやウィンドウ管理のオプションを備えた拡張FFT。</p></li>
 </ul>
 </section>
-<section id="id3">
-<h3>モデリングと前処理<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="id13">
+<h3>モデリングと前処理<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">arima(order=(p,d,q))</span></code></strong>
 ARIMA 時系列モデルを適合します。</p></li>
@@ -149,8 +322,8 @@ ARIMA 時系列モデルを適合します。</p></li>
 </ul>
 </section>
 </section>
-<section id="id4">
-<h2>使用例<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id14">
+<h2>使用例<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch_open_data</span><span class="p">(</span><span class="s1">&#39;H1&#39;</span><span class="p">,</span> <span class="mi">1126259446</span><span class="p">,</span> <span class="mi">1126259478</span><span class="p">)</span>
 
@@ -171,8 +344,8 @@ ARIMA 時系列モデルを適合します。</p></li>
 <p>gwexpy の pickle は可搬性を優先しており、unpickle 時に <strong>GWpy 型</strong>を返す設計です
 （読み込み側に gwexpy が無くても、gwpy があれば復元できます）。</p>
 </section>
-<section id="id5">
-<h2>全メソッド一覧<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="id15">
+<h2>全メソッド一覧<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>カテゴリ</p></th>
@@ -204,14 +377,16 @@ ARIMA 時系列モデルを適合します。</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="classes.html" class="btn btn-neutral float-left" title="クラス索引 (Class Index)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="TimePlaneTransform.html" class="btn btn-neutral float-left" title="TimePlaneTransform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="TimeSeriesDict.html" class="btn btn-neutral float-right" title="TimeSeriesDict" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -228,7 +403,24 @@ ARIMA 時系列モデルを適合します。</p></li>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="../user_guide/license.html">ライセンス / 免責</a> |
+        <a href="../user_guide/roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

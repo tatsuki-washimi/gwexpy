@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "df524930",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "1fb5ca1c",
+   "id": "66811139",
    "metadata": {},
    "source": [
-    "# チュートリアル: 全天マップと地理マップのプロット\n",
+    "# マッププロット: 基本\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_mapplotting.ipynb)\n",
     "\n",
@@ -14,7 +26,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "34d32ad5",
+   "id": "38b22f61",
    "metadata": {},
    "source": [
     "## 1. SkyMap: 全天確率マップ\n",
@@ -25,7 +37,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "7c2a7b2e",
+   "id": "cf011c54",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:30:09.637711Z",
@@ -47,6 +59,10 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "\n",
@@ -80,7 +96,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cf51d147",
+   "id": "241bb594",
    "metadata": {},
    "source": [
     "## 2. GeoMap: Geographic Maps with PyGMT\n",
@@ -91,7 +107,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "76b397e9",
+   "id": "c8f99ba4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:30:13.066062Z",
@@ -117,10 +133,10 @@
     }
    ],
    "source": [
-    "from gwexpy.plot import GeoMap\n",
-    "\n",
     "# GeoMap Create with Robinson projection centered on 135E (Japan)\n",
     "try:\n",
+    "    from gwexpy.plot import GeoMap\n",
+    "\n",
     "    gmap = GeoMap(projection=\"Robinson\", center_lon=135)\n",
     "\n",
     "    # Add map features\n",
@@ -144,7 +160,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6a5b2c2a",
+   "id": "ad5ac1c7",
    "metadata": {},
    "source": [
     "## 3. 日本周辺のクローズアップ表示\n",
@@ -156,7 +172,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "6a896c10",
+   "id": "39d78289",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:30:13.690282Z",
@@ -208,7 +224,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "787b8bc3",
+   "id": "ccba4247",
    "metadata": {},
    "source": [
     "### よく使われる ISO 国コード (alpha-2)\n",
@@ -245,5 +261,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

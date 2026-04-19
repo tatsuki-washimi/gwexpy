@@ -9,25 +9,87 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/fields/scalar.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -41,23 +103,25 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -94,63 +158,76 @@
 <div class="viewcode-block" id="ScalarField">
 <a class="viewcode-back" href="../../../web/ja/reference/api/fields.html#gwexpy.fields.ScalarField">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ScalarField</span><span class="p">(</span><span class="n">FieldBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;4D Field with domain states and FFT operations.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A 4-dimensional scalar field with domain tracking.</span>
 
-<span class="sd">    This class extends :class:`Array4D` to represent physical fields that</span>
-<span class="sd">    can exist in different domains (time/frequency for axis 0, real/k-space</span>
-<span class="sd">    for spatial axes 1-3).</span>
-
-<span class="sd">    **Key feature**: All indexing operations return a ScalarField, maintaining</span>
-<span class="sd">    4D structure. Integer indices result in axes with length 1 rather than</span>
-<span class="sd">    being dropped.</span>
+<span class="sd">    `ScalarField` represents a physical field defined on a 4D grid</span>
+<span class="sd">    (typically 1 time and 3 spatial dimensions). It supports domain</span>
+<span class="sd">    transformations (Fourier transforms) while preserving coordinate</span>
+<span class="sd">    metadata and units.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    data : array-like</span>
 <span class="sd">        4-dimensional input data.</span>
-<span class="sd">    unit : `~astropy.units.Unit`, optional</span>
-<span class="sd">        Physical unit of the data.</span>
-<span class="sd">    axis0 : `~astropy.units.Quantity` or array-like, optional</span>
-<span class="sd">        Index values for axis 0 (time or frequency).</span>
-<span class="sd">    axis1 : `~astropy.units.Quantity` or array-like, optional</span>
-<span class="sd">        Index values for axis 1 (x or kx).</span>
-<span class="sd">    axis2 : `~astropy.units.Quantity` or array-like, optional</span>
-<span class="sd">        Index values for axis 2 (y or ky).</span>
-<span class="sd">    axis3 : `~astropy.units.Quantity` or array-like, optional</span>
-<span class="sd">        Index values for axis 3 (z or kz).</span>
-<span class="sd">    axis_names : iterable of str, optional</span>
-<span class="sd">        Names for each axis (length 4). Defaults based on domain.</span>
-<span class="sd">    axis0_domain : {&#39;time&#39;, &#39;frequency&#39;}, optional</span>
-<span class="sd">        Domain of axis 0. Default is &#39;time&#39;.</span>
-<span class="sd">    space_domain : {&#39;real&#39;, &#39;k&#39;} or dict, optional</span>
-<span class="sd">        Domain of spatial axes. If str, applies to all spatial axes.</span>
-<span class="sd">        If dict, maps axis names to domains. Default is &#39;real&#39;.</span>
-<span class="sd">    **kwargs</span>
-<span class="sd">        Additional keyword arguments passed to :class:`Array4D`.</span>
 
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    axis0_domain : str</span>
-<span class="sd">        Current domain of axis 0 (&#39;time&#39; or &#39;frequency&#39;).</span>
-<span class="sd">    space_domains : dict</span>
-<span class="sd">        Mapping of spatial axis names to their domains (&#39;real&#39; or &#39;k&#39;).</span>
+<span class="sd">    unit : `str`, `~astropy.units.Unit`, optional</span>
+<span class="sd">        Physical unit of the field values.</span>
+
+<span class="sd">    axis0 : array-like, optional</span>
+<span class="sd">        Coordinate values for axis 0 (Time or Frequency).</span>
+
+<span class="sd">    axis1, axis2, axis3 : array-like, optional</span>
+<span class="sd">        Coordinate values for spatial axes.</span>
+
+<span class="sd">    axis_names : iterable of str, optional</span>
+<span class="sd">        Names for each axis (length 4).</span>
+
+<span class="sd">    axis0_domain : {&#39;time&#39;, &#39;frequency&#39;}, optional</span>
+<span class="sd">        Initial domain of the first axis.</span>
+
+<span class="sd">    space_domain : {&#39;real&#39;, &#39;k&#39;} or dict, optional</span>
+<span class="sd">        Initial domain of the spatial axes.</span>
+
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments passed to `FieldBase`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A key feature of `ScalarField` is that slicing always returns a</span>
+<span class="sd">    4D `ScalarField`. Integer indices are automatically converted to</span>
+<span class="sd">    length-1 slices to prevent dimension loss.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; from astropy import units as u</span>
 <span class="sd">    &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
-<span class="sd">    &gt;&gt;&gt; data = np.random.randn(100, 32, 32, 32)</span>
-<span class="sd">    &gt;&gt;&gt; times = np.arange(100) * 0.01 * u.s</span>
-<span class="sd">    &gt;&gt;&gt; x = np.arange(32) * 1.0 * u.m</span>
-<span class="sd">    &gt;&gt;&gt; field = ScalarField(data, axis0=times, axis1=x, axis2=x, axis3=x,</span>
-<span class="sd">    ...                 axis_names=[&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; data = np.ones((2, 2, 2, 2))</span>
+<span class="sd">    &gt;&gt;&gt; sf = ScalarField(data, axis0=[0, 1], axis1=[0, 1],</span>
+<span class="sd">    ...                  axis2=[0, 1], axis3=[0, 1])</span>
+<span class="sd">    &gt;&gt;&gt; sf</span>
+<span class="sd">    &lt;ScalarField([[[[1., 1.],</span>
+<span class="sd">                    [1., 1.]],</span>
+<span class="sd">    ...</span>
+<span class="sd">                 axis0_domain=&#39;time&#39;,</span>
+<span class="sd">                 space_domains={&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;},</span>
+<span class="sd">                 axis0_offset=None)&gt;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_axis0_index</span><span class="p">:</span> <span class="n">IndexLike</span>
     <span class="n">_axis1_index</span><span class="p">:</span> <span class="n">IndexLike</span>
     <span class="n">_axis2_index</span><span class="p">:</span> <span class="n">IndexLike</span>
     <span class="n">_axis3_index</span><span class="p">:</span> <span class="n">IndexLike</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a compact repr with shape and domain information.&quot;&quot;&quot;</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">unit_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">unit_value</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;ScalarField(</span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">)@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">unit_value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get item, always returning ScalarField (4D maintained).</span>
@@ -265,7 +342,7 @@
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_isel_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_tuple</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal isel using ScalarField getitem logic.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply internal `isel` logic using ScalarField indexing semantics.&quot;&quot;&quot;</span>
         <span class="n">forced_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_4d_item</span><span class="p">(</span><span class="n">item_tuple</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem_scalarfield</span><span class="p">(</span><span class="n">forced_item</span><span class="p">)</span>
 
@@ -291,6 +368,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If axis length &lt; 2 or axis is not regularly spaced.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_index</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -310,34 +388,30 @@
 <div class="viewcode-block" id="ScalarField.fft_time">
 <a class="viewcode-back" href="../../../web/ja/reference/api/fields.html#gwexpy.fields.ScalarField.fft_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fft_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nfft</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute FFT along time axis (axis 0).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute FFT along the time axis (axis 0).</span>
 
-<span class="sd">        This method applies the same normalization as GWpy&#39;s</span>
-<span class="sd">        ``TimeSeries.fft()``: rfft / nfft, with DC-excluded bins</span>
-<span class="sd">        multiplied by 2 (except Nyquist bin for even nfft).</span>
+<span class="sd">        Transforms the field from &#39;time&#39; to &#39;frequency&#39; domain using</span>
+<span class="sd">        `scipy.fft.rfft`, applying GWpy-style half-sided normalization.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        nfft : int, optional</span>
-<span class="sd">            Length of the FFT. If None, uses the length of axis 0.</span>
+<span class="sd">            Length of the FFT. Defaults to the length of axis 0.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ScalarField</span>
-<span class="sd">            Transformed field with ``axis0_domain=&#39;frequency&#39;``.</span>
+<span class="sd">            A new field with `axis0_domain=&#39;frequency&#39;`.</span>
 
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            If ``axis0_domain`` is not &#39;time&#39;.</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            If time axis length &lt; 2 or is irregularly spaced.</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            If input data is complex-valued.</span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Normalizes by `1/nfft` and doubles non-DC/non-Nyquist bins to preserve</span>
+<span class="sd">        amplitude.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        gwpy.timeseries.TimeSeries.fft : The reference implementation.</span>
+<span class="sd">        gwpy.timeseries.TimeSeries.fft : The underlying transformation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axis0_domain</span> <span class="o">!=</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -435,6 +509,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        gwpy.frequencyseries.FrequencySeries.ifft : Reference implementation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axis0_domain</span> <span class="o">!=</span> <span class="s2">&quot;frequency&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -570,6 +645,7 @@
 <span class="sd">        .. [3] GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)</span>
 <span class="sd">        .. [4] Jackson, Classical Electrodynamics (3rd ed., 1998), §4.2:</span>
 <span class="sd">               Fourier transform sign conventions</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Default: all real-domain spatial axes</span>
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -717,6 +793,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If any specified axis is not in &#39;k&#39; domain.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Default: all k-domain spatial axes</span>
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -827,7 +904,7 @@
 <div class="viewcode-block" id="ScalarField.wavelength">
 <a class="viewcode-back" href="../../../web/ja/reference/api/fields.html#gwexpy.fields.ScalarField.wavelength">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute wavelength from wavenumber axis.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute wavelength from wavenumber axis.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -837,12 +914,13 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        `~astropy.units.Quantity`</span>
-<span class="sd">            Wavelength values (:math:`\\lambda = 2\\pi / |k|`). k=0 returns inf.</span>
+<span class="sd">            Wavelength values (:math:`\lambda = 2\pi / |k|`). k=0 returns inf.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If the axis is not in &#39;k&#39; domain.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ax_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis_names</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">)]</span>
         <span class="n">domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_space_domains</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ax_name</span><span class="p">)</span>
@@ -894,6 +972,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ScalarField</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pyroomacoustics_field</span>
 
@@ -929,6 +1008,7 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
 <span class="sd">        &gt;&gt;&gt; field = ScalarField.simulate(&#39;gaussian&#39;, shape=(100, 10, 10, 10))</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise</span><span class="w"> </span><span class="kn">import</span> <span class="n">field</span>
 
@@ -967,6 +1047,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        TimeSeriesList</span>
 <span class="sd">            List of time series, one per point.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axis0_domain</span> <span class="o">!=</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;extract_points requires axis0_domain=&#39;time&#39;&quot;</span><span class="p">)</span>
@@ -1067,6 +1148,7 @@
 <span class="sd">            (axis_index, values): Both are `~astropy.units.Quantity` arrays.</span>
 <span class="sd">            axis_index is the coordinate along the extraction axis,</span>
 <span class="sd">            values is the data values along that axis.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot._coord</span><span class="w"> </span><span class="kn">import</span> <span class="n">nearest_index</span><span class="p">,</span> <span class="n">slice_from_index</span>
 
@@ -1177,6 +1259,7 @@
 <span class="sd">        &gt;&gt;&gt; # Extract xy plane at a specific time and z</span>
 <span class="sd">        &gt;&gt;&gt; field_2d = field.slice_map2d(&#39;xy&#39;, at={&#39;t&#39;: 0.5 * u.s, &#39;z&#39;: 0.0 * u.m})</span>
 <span class="sd">        &gt;&gt;&gt; field_2d.plot_map2d()</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot._coord</span><span class="w"> </span><span class="kn">import</span> <span class="n">nearest_index</span><span class="p">,</span> <span class="n">slice_from_index</span>
 
@@ -1303,7 +1386,11 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; fig, ax = field.plot_map2d(&#39;xy&#39;, at={&#39;t&#39;: 0.5 * u.s, &#39;z&#39;: 0.0 * u.m})</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
+<span class="sd">        &gt;&gt;&gt; sf = ScalarField(np.ones((1, 10, 10, 1)))</span>
+<span class="sd">        &gt;&gt;&gt; fig, ax = sf.plot_map2d(&#39;xy&#39;, at={&#39;z&#39;: 0.0}) # doctest: +SKIP</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -1437,8 +1524,11 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; points = [(1.0 * u.m, 2.0 * u.m, 3.0 * u.m)]</span>
-<span class="sd">        &gt;&gt;&gt; fig, ax = field.plot_timeseries_points(points)</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
+<span class="sd">        &gt;&gt;&gt; sf = ScalarField(np.ones((1024, 1, 1, 1)))</span>
+<span class="sd">        &gt;&gt;&gt; psd = sf.compute_psd((0, 0, 0)) # doctest: +SKIP</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -1501,9 +1591,11 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; fig, ax = field.plot_profile(</span>
-<span class="sd">        ...     &#39;x&#39;, at={&#39;t&#39;: 0.5 * u.s, &#39;y&#39;: 0.0 * u.m, &#39;z&#39;: 0.0 * u.m}</span>
-<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
+<span class="sd">        &gt;&gt;&gt; sf = ScalarField(np.ones((2, 4, 4, 1)))</span>
+<span class="sd">        &gt;&gt;&gt; fig, ax = sf.plot_profile(&#39;x&#39;, at={&#39;t&#39;: 0.5 * u.s, &#39;y&#39;: 0.0 * u.m, &#39;z&#39;: 0.0 * u.m}) # doctest: +SKIP</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -1573,8 +1665,12 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; diff_field = field1.diff(field2)</span>
-<span class="sd">        &gt;&gt;&gt; ratio_field = field1.diff(field2, mode=&#39;ratio&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
+<span class="sd">        &gt;&gt;&gt; sf = ScalarField(np.ones((2, 2, 2, 2)))</span>
+<span class="sd">        &gt;&gt;&gt; sf # doctest: +ELLIPSIS</span>
+<span class="sd">        &lt;ScalarField(2, 2, 2, 2)@time, 1.0&gt;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
@@ -1642,8 +1738,13 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
 <span class="sd">        &gt;&gt;&gt; from astropy import units as u</span>
-<span class="sd">        &gt;&gt;&gt; zscore_field = field.zscore(baseline_t=(0 * u.s, 1 * u.s))</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
+<span class="sd">        &gt;&gt;&gt; sf = ScalarField(np.ones((100, 2, 2, 2)), axis0=np.arange(100)*u.s)</span>
+<span class="sd">        &gt;&gt;&gt; sf.zscore(baseline_t=(0 * u.s, 1 * u.s)) # doctest: +ELLIPSIS</span>
+<span class="sd">        &lt;ScalarField(100, 2, 2, 2)@time, ...&gt;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
@@ -1723,9 +1824,12 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
 <span class="sd">        &gt;&gt;&gt; from astropy import units as u</span>
-<span class="sd">        &gt;&gt;&gt; mean_map = field.time_stat_map(&#39;mean&#39;, t_range=(0 * u.s, 1 * u.s))</span>
-<span class="sd">        &gt;&gt;&gt; mean_map.plot_map2d(&#39;xy&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; sf = ScalarField(np.ones((100, 2, 2, 2)), axis0=np.arange(100)*u.s)</span>
+<span class="sd">        &gt;&gt;&gt; mean_map = sf.time_stat_map(&#39;mean&#39;, t_range=(0 * u.s, 1 * u.s))</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot._coord</span><span class="w"> </span><span class="kn">import</span> <span class="n">nearest_index</span>
 
@@ -1819,8 +1923,12 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
 <span class="sd">        &gt;&gt;&gt; from astropy import units as u</span>
-<span class="sd">        &gt;&gt;&gt; t, x, data = field.time_space_map(&#39;x&#39;, at={&#39;y&#39;: 0 * u.m, &#39;z&#39;: 0 * u.m})</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
+<span class="sd">        &gt;&gt;&gt; sf = ScalarField(np.ones((100, 10, 1, 1)))</span>
+<span class="sd">        &gt;&gt;&gt; t, x, data = sf.time_space_map(&#39;x&#39;, at={&#39;y&#39;: 0 * u.m, &#39;z&#39;: 0 * u.m})</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot._coord</span><span class="w"> </span><span class="kn">import</span> <span class="n">nearest_index</span><span class="p">,</span> <span class="n">select_value</span><span class="p">,</span> <span class="n">slice_from_index</span>
 
@@ -1929,7 +2037,12 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; fig, ax = field.plot_time_space_map(&#39;x&#39;, at={&#39;y&#39;: 0*u.m, &#39;z&#39;: 0*u.m})</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
+<span class="sd">        &gt;&gt;&gt; from astropy import units as u</span>
+<span class="sd">        &gt;&gt;&gt; sf = ScalarField(np.ones((100, 4, 1, 1)), axis1=np.arange(4)*u.m)</span>
+<span class="sd">        &gt;&gt;&gt; fig, ax = sf.plot_time_space_map(&#39;x&#39;) # doctest: +SKIP</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -2016,6 +2129,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        gwexpy.fields.signal.compute_psd : Full documentation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_psd</span>
 
@@ -2047,6 +2161,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        gwexpy.fields.signal.freq_space_map : Full documentation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">freq_space_map</span>
 
@@ -2069,6 +2184,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        ScalarField</span>
 <span class="sd">            Resampled field.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axis0_domain</span> <span class="o">!=</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;resample requires axis0_domain=&#39;time&#39;&quot;</span><span class="p">)</span>
@@ -2130,6 +2246,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        ScalarField</span>
 <span class="sd">            Filtered field.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axis0_domain</span> <span class="o">!=</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;filter requires axis0_domain=&#39;time&#39;&quot;</span><span class="p">)</span>
@@ -2226,6 +2343,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        gwexpy.fields.signal.compute_xcorr : Full documentation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_xcorr</span>
 
@@ -2259,6 +2377,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        gwexpy.fields.signal.time_delay_map : Full documentation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">time_delay_map</span>
 
@@ -2292,6 +2411,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        gwexpy.fields.signal.coherence_map : Full documentation.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">coherence_map</span>
 
@@ -2338,6 +2458,7 @@
 <span class="sd">        --------</span>
 <span class="sd">        gwexpy.fields.signal.spectral_density : Full documentation.</span>
 <span class="sd">        psd : Convenience alias for time-axis PSD.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">spectral_density</span>
 
@@ -2391,6 +2512,7 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        spectral_density : Generalized spectral density for any axis.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;point_or_region&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_psd</span>
@@ -2427,7 +2549,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

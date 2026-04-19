@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "42cfe1a7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "6fc7195a",
+   "id": "800b1094",
    "metadata": {},
    "source": [
-    "# Introduction to SegmentTable\n",
+    "# Segment Analysis: Basic Pipeline\n",
     "\n",
     "**Goal**: Learn how to use `SegmentTable` to manage time-keyed data analysis.\n",
     "\n",
@@ -14,7 +26,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6361c0b0",
+   "id": "31eb0cf2",
    "metadata": {},
    "source": [
     "## 1. Creating a SegmentTable\n",
@@ -25,7 +37,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "f50186f0",
+   "id": "c88dce94",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:24.100355Z",
@@ -129,12 +141,27 @@
     }
    ],
    "source": [
-    "from gwexpy.table import SegmentTable\n",
-    "import os\n",
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "# Relative path from tutorials directory to docs/_static/samples/\n",
-    "sample_csv = \"../../../../_static/samples/sample_segment_data.csv\"\n",
-    "st = SegmentTable.read(sample_csv)\n",
+    "from pathlib import Path\n",
+    "from gwexpy.table import SegmentTable\n",
+    "\n",
+    "# Resolve the sample path robustly for both repo-root and notebook-dir execution.\n",
+    "csv_candidates = []\n",
+    "for root in [Path.cwd(), *Path.cwd().parents]:\n",
+    "    csv_candidates.extend([\n",
+    "        root / \"docs\" / \"_static\" / \"samples\" / \"sample_segment_data.csv\",\n",
+    "        root / \"_static\" / \"samples\" / \"sample_segment_data.csv\",\n",
+    "    ])\n",
+    "\n",
+    "sample_csv = next((path for path in csv_candidates if path.exists()), None)\n",
+    "if sample_csv is None:\n",
+    "    tried = [str(path) for path in csv_candidates]\n",
+    "    raise FileNotFoundError(f\"Could not find sample_segment_data.csv. Tried: {tried}\")\n",
+    "\n",
+    "st = SegmentTable.read(str(sample_csv))\n",
     "\n",
     "print(st)\n",
     "st.display().head()"
@@ -142,7 +169,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8104913e",
+   "id": "12a00b9f",
    "metadata": {},
    "source": [
     "## 2. Visualizing Segments\n",
@@ -153,7 +180,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "64cb552c",
+   "id": "da320e81",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:26.543526Z",
@@ -185,7 +212,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2eead8df",
+   "id": "da43c8d4",
    "metadata": {},
    "source": [
     "## 3. Lazy Loading Payloads\n",
@@ -196,7 +223,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "ddb1f501",
+   "id": "c9a04b7a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:26.703763Z",
@@ -232,7 +259,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "217fb53a",
+   "id": "8a9ec454",
    "metadata": {},
    "source": [
     "## 4. Processing Rows\n",
@@ -243,7 +270,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "7fe8236d",
+   "id": "1dbddb9c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:26.709434Z",
@@ -355,7 +382,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3d2672db",
+   "id": "78505f6e",
    "metadata": {},
    "source": [
     "## 5. Quick Check (NBMAKE)"
@@ -364,7 +391,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "9d683702",
+   "id": "f2915ad1",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:26.721953Z",

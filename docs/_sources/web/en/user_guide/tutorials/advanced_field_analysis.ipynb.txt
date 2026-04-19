@@ -1,8 +1,20 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "608b952e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "md_04dd8d30",
+   "id": "c42ef7d8",
    "metadata": {},
    "source": [
     "# Multi-Dimensional Field Analysis: Beam Profiles and Spatial Statistics\n",
@@ -32,7 +44,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_05f04e20",
+   "id": "f4570a30",
    "metadata": {},
    "source": [
     "## Setup"
@@ -41,7 +53,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cd_05826fea",
+   "id": "b4cc6656",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:22.409985Z",
@@ -52,6 +64,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import numpy as np\n",
     "import matplotlib.pyplot as plt\n",
     "import astropy.units as u\n",
@@ -65,7 +81,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0537fa72",
+   "id": "36c9d0a9",
    "metadata": {},
    "source": [
     "## 1. Synthetic Beam Profile Data\n",
@@ -81,7 +97,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cd_009a6cc6",
+   "id": "67951c7d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:24.764480Z",
@@ -145,7 +161,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_017b1832",
+   "id": "5c9ee22a",
    "metadata": {},
    "source": [
     "## 2. Mean Beam Profile and Variance Map\n",
@@ -158,7 +174,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cd_02a5c566",
+   "id": "8c848f97",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:24.773911Z",
@@ -215,7 +231,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_04031694",
+   "id": "0e7f6765",
    "metadata": {},
    "source": [
     "## 3. Spatial PSD — Wavenumber Spectrum\n",
@@ -228,7 +244,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cd_056bd1f0",
+   "id": "ffabc587",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:25.092705Z",
@@ -303,7 +319,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_05094550",
+   "id": "7a23f22c",
    "metadata": {},
    "source": [
     "## 4. Wavefield Propagation and Time-Delay Map\n",
@@ -317,7 +333,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cd_053a90f1",
+   "id": "62cf8b63",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:25.523737Z",
@@ -415,7 +431,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0540b6b5",
+   "id": "c8fad039",
    "metadata": {},
    "source": [
     "## 5. Coherence Map\n",
@@ -429,7 +445,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "cd_04b1a403",
+   "id": "59cdf260",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:25.954201Z",
@@ -487,7 +503,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_028e3b20",
+   "id": "e7525c49",
    "metadata": {},
    "source": [
     "## 6. VectorField: Gradient and Norm\n",
@@ -500,7 +516,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cd_044edf89",
+   "id": "779023c7",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:26.314846Z",
@@ -568,7 +584,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_03ae11d2",
+   "id": "5946f6c6",
    "metadata": {},
    "source": [
     "## Summary\n",

@@ -1,8 +1,72 @@
 # FrequencySeriesList
 
+<!-- reference-summary:start -->
+
+**Stability:** Stable
+
+## What it is
+
+Use `FrequencySeriesList` to manage multiple `FrequencySeries` objects as a labeled collection with batch operations and conversion helpers.
+
+## Representative Signatures
+
+```python
+FrequencySeriesList(data: list[FrequencySeries])
+FrequencySeriesList.to_matrix()
+```
+
+## Minimal Example
+
+```python
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
+import numpy as np
+
+lst = FrequencySeriesList([FrequencySeries(np.ones(64), df=1.0)])
+mat = lst.to_matrix()
+```
+
+## Related Theory
+
+- [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [FrequencySeries Tutorial](../user_guide/tutorials/intro_frequencyseries.ipynb)
+- [FrequencySeries Matrix Tutorial](../user_guide/tutorials/matrix_frequencyseries.ipynb)
+- [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** FrequencySeriesBaseList
 
 List of `FrequencySeries` objects.
+
+## Physical Context
+
+Use `FrequencySeriesList` when you have several spectra that should keep their per-series identity: repeated measurements, different sensors, or several processing branches of the same channel.
+
+- each entry can still carry its own metadata and channel name
+- batch methods are convenient, but the list does **not** guarantee identical units, `df`, or calibration state
+
+## Common Misreadings
+
+1. assuming every entry is frequency-aligned just because they live in one list
+2. overlaying spectra with different normalization or units and reading the result physically
+3. treating list order as provenance unless you set names or labels deliberately
+
+## Where to go next
+
+- per-spectrum interpretation: [FrequencySeries](FrequencySeries.md)
+- aligned batch analysis: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+- practical workflow: [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb)
 
 ## Methods
 
@@ -343,10 +407,11 @@ fsl.write("out.h5", format="hdf5")               # GWpy-compatible (default)
 fsl.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
 ```
 
-.. warning::
-   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
-   arbitrary code on load.
+:::{warning}
+Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+arbitrary code on load.
 
+:::
 Pickle portability note: pickled gwexpy `FrequencySeriesList` unpickles as a built-in
 `list` of GWpy `FrequencySeries` (gwexpy not required on the loading side).
 

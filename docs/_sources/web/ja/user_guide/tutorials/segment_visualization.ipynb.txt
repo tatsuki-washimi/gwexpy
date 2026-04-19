@@ -1,19 +1,33 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d9e52730",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "963853c0",
+   "id": "f5d63442",
    "metadata": {},
    "source": [
-    "# 可視化テクニック深掘り\n",
+    "# セグメント解析: 可視化\n",
     "\n",
-    "`SegmentTable` は豊富な描画機能を提供します。特に `overlay_spectra()` は、複数セグメント間のスペクトルを美しく比較するために最適化されています。"
+    "`SegmentTable` は豊富な描画機能を提供します。特に `overlay_spectra()` は、複数セグメント間のスペクトルを美しく比較するために最適化されています。\n",
+    "\n",
+    "ここでも区間そのものは `gwpy.segments.Segment`、重ね描きするスペクトルは GWpy の `FrequencySeries` を使います。gwexpy はそれらの GWpy 基盤クラスを `SegmentTable` にまとめ、可視化や色分け、俯瞰レイアウトを表処理として追加しています。基礎関係は [SegmentTable: 基本](intro_segment_table.ipynb) を参照してください。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "bed32f83",
+   "id": "bba27b7b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:14:09.859336Z",
@@ -52,29 +66,35 @@
    ],
    "source": [
     "import warnings\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
-    "import numpy as np\n",
-    "from gwpy.segments import Segment\n",
-    "from gwexpy.table import SegmentTable\n",
-    "from gwpy.frequencyseries import FrequencySeries\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "def make_fs(i):\n",
-    "    f = np.linspace(1, 32, 256)\n",
-    "    data = (1.0/(f**1.5)) * (1.0 + i*0.1)\n",
-    "    return FrequencySeries(data, frequencies=f)\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "segs = [Segment(i*100, i*100+100) for i in range(10)]\n",
-    "st = SegmentTable.from_segments(segs, snr=np.random.uniform(5, 20, 10))\n",
-    "st.add_series_column(\"asd\", data=[make_fs(i) for i in range(10)], kind=\"frequencyseries\")\n",
+    "    import numpy as np\n",
+    "    from gwpy.segments import Segment\n",
+    "    from gwexpy.table import SegmentTable\n",
+    "    from gwpy.frequencyseries import FrequencySeries\n",
     "\n",
-    "# 1. 開始時間 (t0) でグラデーションをつけて重ね描き\n",
-    "plot = st.overlay_spectra(\"asd\", color_by=\"t0\")\n",
-    "plot"
+    "    def make_fs(i):\n",
+    "        f = np.linspace(1, 32, 256)\n",
+    "        data = (1.0/(f**1.5)) * (1.0 + i*0.1)\n",
+    "        return FrequencySeries(data, frequencies=f)\n",
+    "\n",
+    "    segs = [Segment(i*100, i*100+100) for i in range(10)]\n",
+    "    st = SegmentTable.from_segments(segs, snr=np.random.uniform(5, 20, 10))\n",
+    "    st.add_series_column(\"asd\", data=[make_fs(i) for i in range(10)], kind=\"frequencyseries\")\n",
+    "\n",
+    "    # 1. 開始時間 (t0) でグラデーションをつけて重ね描き\n",
+    "    plot = st.overlay_spectra(\"asd\", color_by=\"t0\")\n",
+    "    plot\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "d8320566",
+   "id": "ae4f4782",
    "metadata": {},
    "source": [
     "## メタデータ列による色付け\n",
@@ -85,7 +105,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "a3672718",
+   "id": "c9a05476",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:14:12.813491Z",
@@ -124,7 +144,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0ef64844",
+   "id": "ca3594ad",
    "metadata": {},
    "source": [
     "## 俯瞰レイアウト\n",
@@ -135,7 +155,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "9a675d8b",
+   "id": "8fb0d20a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:14:13.157144Z",

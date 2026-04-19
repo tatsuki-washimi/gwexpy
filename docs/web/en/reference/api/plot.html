@@ -5,32 +5,97 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plotting &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/api/plot.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="I/O" href="io.html" />
-    <link rel="prev" title="Detector Utilities" href="detector.html" /> 
+    <link rel="prev" title="Detector Utilities" href="detector.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../ja/reference/api/plot.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,53 +109,64 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">Installation Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../user_guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">API Reference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../classes.html">Class Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../topics.html">Reference Topics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gui.html">Graphical User Interface (GUI)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -109,6 +185,7 @@
              
   <section id="plotting">
 <h1>Plotting<a class="headerlink" href="#plotting" title="Link to this heading"></a></h1>
+<p><strong>Stability:</strong> Stable</p>
 <p>Matplotlib-based plotting extensions including GPS-aware axes, Bode plots,
 colorbars, and segment visualization.</p>
 <p>Plotting helpers.</p>
@@ -116,12 +193,52 @@ colorbars, and segment visualization.</p>
 (e.g. ligo.skymap) at import time because Sphinx autodoc imports <cite>gwexpy</cite>.</p>
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">Plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/plot.html#Plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></p>
-<p>An extension of <code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code> that automatically handles
-<code class="xref py py-class docutils literal notranslate"><span class="pre">gwexpy.types.SeriesMatrix</span></code> arguments by expanding them into
-individual <code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.types.Series</span></code> objects, while preserving
-matrix layout and metadata where possible.</p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">Plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/plot.html#Plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.Plot/#gwpy.plot.Plot" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a></p>
+<p>GWexpy-aware plotting facade for series, matrices, and spectrogram grids.</p>
+<p><cite>Plot</cite> keeps the familiar <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.Plot/#gwpy.plot.Plot" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code></a> constructor while adding
+conveniences needed by GWexpy collections:</p>
+<ul class="simple">
+<li><p><cite>SeriesMatrix</cite> and <cite>SpectrogramMatrix</cite> inputs are expanded into per-axis
+subplots automatically.</p></li>
+<li><p>Layout hints such as <cite>separate</cite>, <cite>geometry</cite>, and shared-axis labeling are
+inferred from the input shape.</p></li>
+<li><p>Spectrogram plots can receive automatic colorbar management and adaptive
+decimation for large overlays.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Series-like objects, matrices, lists, or dictionaries accepted by the
+GWexpy plotting registry.</p></li>
+<li><p><strong>**kwargs</strong> – Standard <cite>gwpy.plot.Plot</cite> keyword arguments plus GWexpy-specific layout
+helpers such as <cite>separate</cite>, <cite>geometry</cite>, <cite>monitor</cite>,
+<cite>decimate_threshold</cite>, and <cite>decimate_points</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Plot a matrix as aligned subplots:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts_matrix</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Overlay summary curves with a shaded min/max envelope:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">median_series</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">plot_mmm</span><span class="p">(</span><span class="n">median_series</span><span class="p">,</span> <span class="n">min_series</span><span class="p">,</span> <span class="n">max_series</span><span class="p">,</span> <span class="n">alpha_fill</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_mmm</span></code></dt><dd><p>Convenience helper for median/min/max overlays.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwexpy.types.SeriesMatrix</span></code></dt><dd><p>Matrix container expanded automatically by this plot class.</p>
+</dd>
+</dl>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">plot_mmm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">median</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/plot.html#Plot.plot_mmm"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -130,10 +247,10 @@ matrix layout and metadata where possible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>median</strong> (<em>gwpy.types.Series</em>) – Median series to plot as a line.</p></li>
-<li><p><strong>min_s</strong> (<em>gwpy.types.Series</em>) – Minimum series defining the lower envelope.</p></li>
-<li><p><strong>max_s</strong> (<em>gwpy.types.Series</em>) – Maximum series defining the upper envelope.</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Target axes. If omitted, uses the current axes of this Plot.</p></li>
+<li><p><strong>median</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.1)"><em>gwpy.types.Series</em></a>) – Median series to plot as a line.</p></li>
+<li><p><strong>min_s</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.1)"><em>gwpy.types.Series</em></a>) – Minimum series defining the lower envelope.</p></li>
+<li><p><strong>max_s</strong> (<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Series/#gwpy.types.Series" title="(in GWpy v4.0.1)"><em>gwpy.types.Series</em></a>) – Maximum series defining the upper envelope.</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)"><em>matplotlib.axes.Axes</em></a><em>, </em><em>optional</em>) – Target axes. If omitted, uses the current axes of this Plot.</p></li>
 <li><p><strong>**kwargs</strong> – <p>Passed to <code class="docutils literal notranslate"><span class="pre">ax.plot</span></code> for the median line. Additional keys supported:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">alpha_fill</span></code>: opacity for the filled envelope</p></li>
@@ -146,66 +263,23 @@ matrix layout and metadata where possible.</p>
 <dd class="field-even"><p>The list of Line2D objects returned by <code class="docutils literal notranslate"><span class="pre">ax.plot</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_filter=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_box=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_on=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_path=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout_pads=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facecolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figheight=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figwidth=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frameon=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_layout=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_engine=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouseover=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_effects=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picker=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_inches=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sketch_params=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight_layout=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder=&lt;UNSET&gt;</span></span></em><span class="sig-paren">)</span></dt>
-<dd><p>Set multiple properties at once.</p>
-<p>Supported properties are</p>
-<dl class="simple">
-<dt>Properties:</dt><dd><p>agg_filter: a filter function, which takes a (m, n, 3) float array and a dpi value, and returns a (m, n, 3) array and two offsets from the bottom left corner of the image
-alpha: float or None
-animated: bool
-canvas: FigureCanvas
-clip_box: <cite>~matplotlib.transforms.BboxBase</cite> or None
-clip_on: bool
-clip_path: Patch or (Path, Transform) or None
-constrained_layout: unknown
-constrained_layout_pads: unknown
-dpi: float
-edgecolor: <code class="code mpltype docutils literal notranslate"><span class="pre">color</span></code>
-facecolor: <code class="code mpltype docutils literal notranslate"><span class="pre">color</span></code>
-figheight: float
-figure: unknown
-figwidth: float
-frameon: bool
-gid: str
-in_layout: bool
-label: object
-layout_engine: {‘constrained’, ‘compressed’, ‘tight’, ‘none’, <cite>.LayoutEngine</cite>, None}
-linewidth: number
-mouseover: bool
-path_effects: list of <cite>.AbstractPathEffect</cite>
-picker: None or bool or float or callable
-rasterized: bool
-size_inches: (float, float) or float
-sketch_params: (scale: float, length: float, randomness: float)
-snap: bool or None
-tight_layout: unknown
-transform: <cite>~matplotlib.transforms.Transform</cite>
-url: str
-visible: bool
-zorder: float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">warn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/plot/plot.html#Plot.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">warn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/plot/plot.html#Plot.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Show the figure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>warn</strong> (<em>bool</em><em>, </em><em>optional</em>) – Unused, kept for API compatibility. Default is True.</p></li>
-<li><p><strong>close</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True (default), close the figure after showing to free
+<li><p><strong>warn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Unused, kept for API compatibility. Default is True.</p></li>
+<li><p><strong>close</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True (default), close the figure after showing to free
 resources and prevent double display in Jupyter.
 Set to False if you need to call savefig() after show().</p></li>
-<li><p><strong>block</strong> (<em>bool</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Whether to block execution until the figure window is closed.
+<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – Whether to block execution until the figure window is closed.
 If None (default), uses matplotlib’s default behavior.
 Set to False to continue execution immediately after showing,
 which allows savefig() to work in scripted workflows.</p></li>
@@ -228,6 +302,49 @@ is closed. Use <code class="docutils literal notranslate"><span class="pre">bloc
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout_pads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figheight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frameon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouseover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_effects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_inches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sketch_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Set multiple properties at once.</p>
+<p>Supported properties are</p>
+<dl class="simple">
+<dt>Properties:</dt><dd><p>agg_filter: a filter function, which takes a (m, n, 3) float array and a dpi value, and returns a (m, n, 3) array and two offsets from the bottom left corner of the image
+alpha: float or None
+animated: bool
+canvas: FigureCanvas
+clip_box: <cite>~matplotlib.transforms.BboxBase</cite> or None
+clip_on: bool
+clip_path: Patch or (Path, Transform) or None
+constrained_layout: unknown
+constrained_layout_pads: unknown
+dpi: float
+edgecolor: <code class="code mpltype docutils literal notranslate"><span class="pre">color</span></code>
+facecolor: <code class="code mpltype docutils literal notranslate"><span class="pre">color</span></code>
+figheight: float
+figure: unknown
+figwidth: float
+frameon: bool
+gid: str
+in_layout: bool
+label: object
+layout_engine: {‘constrained’, ‘compressed’, ‘tight’, ‘none’, <cite>.LayoutEngine</cite>, None}
+linewidth: number
+mouseover: bool
+path_effects: list of <cite>.AbstractPathEffect</cite>
+picker: None or bool or float or callable
+rasterized: bool
+size_inches: (float, float) or float
+sketch_params: (scale: float, length: float, randomness: float)
+snap: bool or None
+tight_layout: unknown
+transform: <cite>~matplotlib.transforms.Transform</cite>
+url: str
+visible: bool
+zorder: float</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -237,10 +354,10 @@ is closed. Use <code class="docutils literal notranslate"><span class="pre">bloc
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>median</strong> (<em>Series</em>)</p></li>
-<li><p><strong>min_s</strong> (<em>Series</em>)</p></li>
-<li><p><strong>max_s</strong> (<em>Series</em>)</p></li>
-<li><p><strong>ax</strong> (<em>Axes</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>median</strong> (<em>Series</em>) – Median series to plot as the central line.</p></li>
+<li><p><strong>min_s</strong> (<em>Series</em>) – Lower envelope series.</p></li>
+<li><p><strong>max_s</strong> (<em>Series</em>) – Upper envelope series.</p></li>
+<li><p><strong>ax</strong> (<em>Axes</em><em>, </em><em>optional</em>) – Target axes. Uses the current axes when omitted.</p></li>
 <li><p><strong>**kwargs</strong> – Passed to ax.plot for the median line.</p></li>
 </ul>
 </dd>
@@ -249,7 +366,7 @@ is closed. Use <code class="docutils literal notranslate"><span class="pre">bloc
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">SkyMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/skymap.html#SkyMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">SkyMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/skymap.html#SkyMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></p>
 <p>A Plot subclass for all‑sky maps.</p>
 <p>This class provides convenient methods to display HEALPix probability maps
@@ -262,23 +379,7 @@ is closed. Use <code class="docutils literal notranslate"><span class="pre">bloc
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>map_data</strong> (<em>array‑like</em>) – HEALPix map data (e.g., a <code class="docutils literal notranslate"><span class="pre">numpy</span></code> array of probabilities).</p></li>
-<li><p><strong>**kwargs</strong> (additional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">ligo.skymap.plot.imshow_hpx</span></code>.)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">add_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/skymap.html#SkyMap.add_heatmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Overlay a heatmap defined on sky coordinates.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ra</strong> (<em>array‑like</em><em> (</em><em>degrees</em><em>)</em>) – Grid of right‑ascension and declination values.</p></li>
-<li><p><strong>dec</strong> (<em>array‑like</em><em> (</em><em>degrees</em><em>)</em>) – Grid of right‑ascension and declination values.</p></li>
-<li><p><strong>values</strong> (<em>2‑D array</em>) – Data values corresponding to each (ra, dec) point.</p></li>
-<li><p><strong>**kwargs</strong> (additional arguments passed to <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code>.)</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">imshow_hpx</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -295,7 +396,7 @@ is closed. Use <code class="docutils literal notranslate"><span class="pre">bloc
 interpreted as degrees.</p></li>
 <li><p><strong>dec</strong> (array‑like or <code class="docutils literal notranslate"><span class="pre">Quantity</span></code>) – Right‑ascension and declination. If plain numbers are supplied they are
 interpreted as degrees.</p></li>
-<li><p><strong>label</strong> (<em>str</em><em>, </em><em>optional</em>) – Text label to place next to the marker.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Text label to place next to the marker.</p></li>
 <li><p><strong>**kwargs</strong> (additional arguments passed to the underlying Matplotlib <code class="docutils literal notranslate"><span class="pre">scatter</span></code>) – or <code class="docutils literal notranslate"><span class="pre">plot_coord</span></code> call.</p></li>
 </ul>
 </dd>
@@ -304,7 +405,23 @@ interpreted as degrees.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_filter=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_box=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_on=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_path=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout_pads=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facecolor=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figheight=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figwidth=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frameon=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_layout=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_engine=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouseover=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_effects=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picker=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_inches=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sketch_params=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight_layout=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible=&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder=&lt;UNSET&gt;</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-name descname"><span class="pre">add_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/skymap.html#SkyMap.add_heatmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Overlay a heatmap defined on sky coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra</strong> (<em>array‑like</em><em> (</em><em>degrees</em><em>)</em>) – Grid of right‑ascension and declination values.</p></li>
+<li><p><strong>dec</strong> (<em>array‑like</em><em> (</em><em>degrees</em><em>)</em>) – Grid of right‑ascension and declination values.</p></li>
+<li><p><strong>values</strong> (<em>2‑D array</em>) – Data values corresponding to each (ra, dec) point.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">pcolormesh</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained_layout_pads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figheight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frameon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouseover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_effects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_inches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sketch_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight_layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;UNSET&gt;</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Set multiple properties at once.</p>
 <p>Supported properties are</p>
 <dl class="simple">
@@ -349,29 +466,13 @@ zorder: float</p>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">GeoMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Robinson'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_lon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'15c'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">GeoMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Robinson'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_lon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'15c'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A PyGMT wrapper that provides a Cartopy-like interface.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">add_coastlines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'low'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap.add_coastlines"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Draw coastlines (Cartopy-like API).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">add_scale_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'500k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jBL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.5c/0.5c'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fancy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap.add_scale_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Add a scale bar to the map.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>width</strong> (<em>str</em><em>, </em><em>optional</em>) – Width of the scale bar (e.g., ‘500k’ for 500 km, ‘100k’ for 100 km).</p></li>
-<li><p><strong>position</strong> (<em>str</em><em>, </em><em>optional</em>) – Position anchor (e.g., ‘jBL’ for Bottom Left).</p></li>
-<li><p><strong>offset</strong> (<em>str</em><em>, </em><em>optional</em>) – Offset from the anchor (e.g., ‘0.5c/0.5c’).</p></li>
-<li><p><strong>fancy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, use a fancy scale bar.</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -394,14 +495,20 @@ zorder: float</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap.text"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Add text at (x, y).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">plot_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap.plot_detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Plot a gravitational wave detector by name (e.g., ‘K1’).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – Name of the detector.</p></li>
-<li><p><strong>label</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, plot a label above the marker.</p></li>
-<li><p><strong>label_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – Manual latitude offset for the label. If None, it’s calculated dynamically.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Name of the detector.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, plot a label above the marker.</p></li>
+<li><p><strong>label_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Manual latitude offset for the label. If None, it’s calculated dynamically.</p></li>
 <li><p><strong>**kwargs</strong> – Additional arguments for GeoMap.plot (e.g., color, markersize).</p></li>
 </ul>
 </dd>
@@ -410,8 +517,18 @@ zorder: float</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Save the plot.</p>
+<span class="sig-name descname"><span class="pre">add_scale_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'500k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jBL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.5c/0.5c'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fancy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap.add_scale_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Add a scale bar to the map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Width of the scale bar (e.g., ‘500k’ for 500 km, ‘100k’ for 100 km).</p></li>
+<li><p><strong>position</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Position anchor (e.g., ‘jBL’ for Bottom Left).</p></li>
+<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Offset from the anchor (e.g., ‘0.5c/0.5c’).</p></li>
+<li><p><strong>fancy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, use a fancy scale bar.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -422,27 +539,27 @@ zorder: float</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap.text"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Add text at (x, y).</p>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/geomap.html#GeoMap.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Save the plot.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">PairPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">corner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hist'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offdiag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hist2d'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/pairplot.html#PairPlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.plot.</span></span><span class="sig-name descname"><span class="pre">PairPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">corner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hist'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offdiag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hist2d'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/pairplot.html#PairPlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Pair plot for Series collections.</p>
 <p>Visualizes pairwise relationships between series in a collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>list</em><em>, </em><em>tuple</em><em>, </em><em>dict</em><em>, </em><em>TimeSeriesDict</em><em>, </em><em>TimeSeriesList</em><em>, </em><em>etc.</em>) – Collection of series to plot.</p></li>
-<li><p><strong>corner</strong> (<em>bool</em><em>, </em><em>default True</em>) – If True, show only lower triangle.</p></li>
-<li><p><strong>diag</strong> (<em>str</em><em>, </em><em>default 'hist'</em>) – Diagonal plot type: ‘hist’, ‘kde’.</p></li>
-<li><p><strong>offdiag</strong> (<em>str</em><em>, </em><em>default 'hist2d'</em>) – Off-diagonal plot type: ‘hist2d’, ‘scatter’.</p></li>
-<li><p><strong>bins</strong> (<em>int</em><em>, </em><em>default 50</em>) – Number of bins for histograms.</p></li>
-<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Figure size. Auto-calculated if None.</p></li>
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>TimeSeriesDict</em><em>, </em><em>TimeSeriesList</em><em>, </em><em>etc.</em>) – Collection of series to plot.</p></li>
+<li><p><strong>corner</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default True</em>) – If True, show only lower triangle.</p></li>
+<li><p><strong>diag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>default 'hist'</em>) – Diagonal plot type: ‘hist’, ‘kde’.</p></li>
+<li><p><strong>offdiag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>default 'hist2d'</em>) – Off-diagonal plot type: ‘hist2d’, ‘scatter’.</p></li>
+<li><p><strong>bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>default 50</em>) – Number of bins for histograms.</p></li>
+<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size. Auto-calculated if None.</p></li>
 <li><p><strong>**kwargs</strong> – Additional arguments.</p></li>
 </ul>
 </dd>
@@ -455,26 +572,26 @@ zorder: float</p>
 </div>
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em></dt>
-<dd><p>Return the axes array.</p>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">figure</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.10.8)"><span class="pre">Figure</span></a></span></dt>
+<dd><p>Return the matplotlib Figure.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">figure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Figure</span></em></dt>
-<dd><p>Return the matplotlib Figure.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">savefig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/pairplot.html#PairPlot.savefig"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Save the figure.</p>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">axes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></dt>
+<dd><p>Return the axes array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/pairplot.html#PairPlot.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Show the plot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">savefig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/plot/pairplot.html#PairPlot.savefig"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Save the figure.</p>
 </dd></dl>
 
 </dd></dl>
@@ -492,7 +609,9 @@ zorder: float</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -509,7 +628,24 @@ zorder: float</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

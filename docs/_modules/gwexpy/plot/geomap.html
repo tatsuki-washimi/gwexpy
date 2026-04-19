@@ -9,25 +9,87 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/plot/geomap.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -41,23 +103,25 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -73,7 +137,6 @@
              
   <h1>Source code for gwexpy.plot.geomap</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Geographic map plotting using PyGMT backend with Cartopy-like interface.&quot;&quot;&quot;</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -97,7 +160,7 @@
     <span class="n">HAS_PYGMT</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">_PYGMT_IMPORT_ERROR</span> <span class="o">=</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;pygmt import skipped via GWEXPY_SKIP_PYGMT&quot;</span><span class="p">)</span>
 
-<span class="c1"># 検出器座標データベース (簡易版)</span>
+<span class="c1"># Detector coordinate database (simplified version)</span>
 <span class="n">DETECTORS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;K1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">137.31</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">36.41</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;KAGRA&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;darkgreen&quot;</span><span class="p">},</span>
     <span class="s2">&quot;H1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">119.41</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">46.45</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;LIGO Hanford&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;darkred&quot;</span><span class="p">},</span>
@@ -106,7 +169,7 @@
     <span class="s2">&quot;G1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">9.80</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">52.24</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;GEO600&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;darkmagenta&quot;</span><span class="p">},</span>
 <span class="p">}</span>
 
-<span class="c1"># 投影法のマッピング (Friendly Name -&gt; GMT Code)</span>
+<span class="c1"># Projection mapping (Friendly Name -&gt; GMT Code)</span>
 <span class="n">PROJECTIONS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;Mercator&quot;</span><span class="p">:</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Robinson&quot;</span><span class="p">:</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span>
@@ -115,7 +178,7 @@
     <span class="s2">&quot;Equidistant&quot;</span><span class="p">:</span> <span class="s2">&quot;Q&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="c1"># マーカーのマッピング (Matplotlib -&gt; GMT)</span>
+<span class="c1"># Marker mapping (Matplotlib -&gt; GMT)</span>
 <span class="n">MARKERS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span>  <span class="c1"># circle</span>
     <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>  <span class="c1"># square</span>
@@ -128,13 +191,12 @@
 
 
 <div class="viewcode-block" id="GeoMap">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GeoMap</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A PyGMT wrapper that provides a Cartopy-like interface.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Robinson&quot;</span><span class="p">,</span> <span class="n">center_lon</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;15c&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize a new GeoMap.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a new GeoMap.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -148,6 +210,7 @@
 <span class="sd">            Additional arguments:</span>
 <span class="sd">            region: GMT region (default &#39;d&#39; for global).</span>
 <span class="sd">            frame: GMT frame (default &#39;afg&#39;).</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_PYGMT</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;pygmt is required for GeoMap. Install with: pip install pygmt&quot;</span>
@@ -158,10 +221,10 @@
         <span class="k">assert</span> <span class="n">pygmt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">pygmt</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
 
-        <span class="c1"># 投影法の設定</span>
+        <span class="c1"># Setup projection</span>
         <span class="n">proj_code</span> <span class="o">=</span> <span class="n">PROJECTIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">projection</span><span class="p">,</span> <span class="n">projection</span><span class="p">)</span>
 
-        <span class="c1"># GMTの投影指定を作成</span>
+        <span class="c1"># Create GMT projection string</span>
         <span class="c1"># region &#39;d&#39; is -180/180/-90/90</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;region&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)</span>
 
@@ -176,13 +239,13 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frame&quot;</span><span class="p">,</span> <span class="s2">&quot;ag&quot;</span><span class="p">)</span>  <span class="c1"># auto, grid</span>
 
-        <span class="c1"># ベースマップの初期化</span>
+        <span class="c1"># Initialize base map</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">basemap</span><span class="p">(</span>
             <span class="n">region</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="GeoMap.add_coastlines">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.add_coastlines">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.add_coastlines">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_coastlines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Draw coastlines (Cartopy-like API).&quot;&quot;&quot;</span>
         <span class="n">res_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;low&quot;</span><span class="p">:</span> <span class="s2">&quot;l&quot;</span><span class="p">,</span> <span class="s2">&quot;medium&quot;</span><span class="p">:</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">:</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;crude&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;full&quot;</span><span class="p">:</span> <span class="s2">&quot;f&quot;</span><span class="p">}</span>
@@ -193,21 +256,21 @@
 
 
 <div class="viewcode-block" id="GeoMap.fill_continents">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.fill_continents">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.fill_continents">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fill_continents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fill land colors.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">coast</span><span class="p">(</span><span class="n">land</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GeoMap.fill_oceans">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.fill_oceans">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.fill_oceans">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fill_oceans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fill water colors.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">coast</span><span class="p">(</span><span class="n">water</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GeoMap.plot">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.plot">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot points (Matplotlib-like API).&quot;&quot;&quot;</span>
         <span class="n">gmt_marker</span> <span class="o">=</span> <span class="n">MARKERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">)</span>
@@ -219,7 +282,7 @@
 
 
 <div class="viewcode-block" id="GeoMap.text">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.text">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.text">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add text at (x, y).&quot;&quot;&quot;</span>
         <span class="c1"># PyGMT text expects justify, font, etc.</span>
@@ -227,7 +290,7 @@
 
 
 <div class="viewcode-block" id="GeoMap.plot_detector">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.plot_detector">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.plot_detector">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label_offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a gravitational wave detector by name (e.g., &#39;K1&#39;).</span>
 
@@ -241,6 +304,7 @@
 <span class="sd">            Manual latitude offset for the label. If None, it&#39;s calculated dynamically.</span>
 <span class="sd">        **kwargs</span>
 <span class="sd">            Additional arguments for GeoMap.plot (e.g., color, markersize).</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DETECTORS</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown detector: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -281,7 +345,7 @@
 
 
 <div class="viewcode-block" id="GeoMap.add_scale_bar">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.add_scale_bar">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.add_scale_bar">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_scale_bar</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;500k&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;jBL&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="s2">&quot;0.5c/0.5c&quot;</span><span class="p">,</span> <span class="n">fancy</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
@@ -297,6 +361,7 @@
 <span class="sd">            Offset from the anchor (e.g., &#39;0.5c/0.5c&#39;).</span>
 <span class="sd">        fancy : bool, optional</span>
 <span class="sd">            If True, use a fancy scale bar.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">spec</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">+w</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">+o</span><span class="si">{</span><span class="n">offset</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">fancy</span><span class="p">:</span>
@@ -305,14 +370,14 @@
 
 
 <div class="viewcode-block" id="GeoMap.show">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.show">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.show">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Display the plot.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="GeoMap.save">
-<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.GeoMap.save">[docs]</a>
+<a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.GeoMap.save">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the plot.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -344,7 +409,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

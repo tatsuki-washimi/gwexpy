@@ -5,34 +5,97 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta property="article:modified_time" content="2026-04-17T22:17:38+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GWexpy 機能一覧 (GWpyユーザー向け) &mdash; GWexpy Documentation</title>
+  <title>GWpy ユーザー向け移行ガイド &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="ファイル I/O 対応フォーマットガイド" href="io_formats.html" />
-    <link rel="prev" title="はじめに (Getting Started)" href="getting_started.html" /> 
+    <link rel="next" title="GWpy 差分 API 一覧" href="gwpy_added_api_index_ja.html" />
+    <link rel="prev" title="スカラーフィールドのスライス操作ガイド (4次元を維持する理由)" href="scalarfield_slicing.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../en/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -46,42 +109,56 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">GWexpy 機能一覧 (GWpyユーザー向け)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwpy">1. GWpy既存クラスの機能拡張 (軽微なもの)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">2. 新規クラスの導入</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">3. 高度な解析メソッド (単チャンネル)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5">4. 高度な解析メソッド (多チャンネル)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#interop">5. 外部ツール連携 (Interop)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pickle-shelve">Pickle / shelve に関する注意</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gui">6. GUI アプリケーション</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html">アーキテクチャと物理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GWpy ユーザー向け移行ガイド</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">まず最初に押さえること</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">どこから書き換えると効果が大きいか</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timeseriesdict-timeseriesmatrix">差分レシピ 1: <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> の手ループを <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> に寄せる</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">差分レシピ 2: 外部関数呼び出しをオブジェクトメソッドへ寄せる</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">差分レシピ 3: 単一チャネルコードは大きく変えなくてよい</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scalarfield-fieldlist-fielddict">差分レシピ 4: <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> を <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> でまとめる</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pickle">差分レシピ 5: Pickle 共有時の互換性を見る</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#python-control">差分レシピ 6: python-control との橋渡し</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#i-o">I/O と外部ライブラリ連携は別ページを見る</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id15">次のステップ</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -90,18 +167,18 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
-      <li class="breadcrumb-item active">GWexpy 機能一覧 (GWpyユーザー向け)</li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
+      <li class="breadcrumb-item active">GWpy ユーザー向け移行ガイド</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -111,340 +188,338 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="gwexpy-gwpy">
-<h1>GWexpy 機能一覧 (GWpyユーザー向け)<a class="headerlink" href="#gwexpy-gwpy" title="Link to this heading"></a></h1>
-<p>本ドキュメントでは、GWexpy で GWpy に対して拡張・追加された機能を網羅的にリストアップします。
-ここに含まれる機能は、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> をインポートすることで利用可能になります。</p>
-<section id="gwpy">
-<h2>1. GWpy既存クラスの機能拡張 (軽微なもの)<a class="headerlink" href="#gwpy" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> 等の基本クラスに対する、利便性向上のためのメソッド追加や機能強化です。</p>
-<section id="timeseries-frequencyseries-spectrogram">
-<h3>基本メソッドの拡張 (TimeSeries / FrequencySeries / Spectrogram)<a class="headerlink" href="#timeseries-frequencyseries-spectrogram" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><strong>位相・角度</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">.phase(unwrap=False)</span></code>: 位相の計算</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.angle(unwrap=False)</span></code>: <code class="docutils literal notranslate"><span class="pre">.phase()</span></code> のエイリアス</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.radian(unwrap=False)</span></code>: ラジアン単位での位相</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.degree(unwrap=False)</span></code>: 度数法での位相</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">np.unwrap</span></code> のサポート</p></li>
-</ul>
-</li>
-<li><p><strong>リサンプリング・補間・編集</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">.interpolate(new_times,</span> <span class="pre">method='linear')</span></code>: データの補間</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.resample(rate)</span></code>: <code class="docutils literal notranslate"><span class="pre">scipy</span></code> または <code class="docutils literal notranslate"><span class="pre">obspy</span></code> (Lanczos) バックエンドを用いたリサンプリングの強化</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.decimate(factor)</span></code>: 間引き</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.tail(n)</span></code>: 末尾 <code class="docutils literal notranslate"><span class="pre">n</span></code> サンプルの抽出</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.crop(start,</span> <span class="pre">end)</span></code>: (<code class="docutils literal notranslate"><span class="pre">gwexpy.time.to_gps</span></code> による柔軟な時刻指定をサポート)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.append(other)</span></code>: 結合処理の強化</p></li>
-</ul>
-</li>
-<li><p><strong>前処理 (Preprocessing)</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">.impute(method=...)</span></code>: 欠損値補完 (線形補間, ffill, bfill)。<code class="docutils literal notranslate"><span class="pre">max_gap</span></code> 制約なども指定可能。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.standardize()</span></code>: 標準化 (Z-score normalization)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.whiten(method='pca'|'zca')</span></code>: 白色化 (Whitening)。<code class="docutils literal notranslate"><span class="pre">return_model=True</span></code> でモデルを取得可能。</p></li>
-</ul>
-</li>
-<li><p><strong>ピーク検出</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">.find_peaks(...)</span></code>: 信号内のピーク検出 (<code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> ラッパー)</p></li>
-</ul>
-</li>
-</ul>
-</section>
-<section id="gps-time">
-<h3>GPS Time 関連<a class="headerlink" href="#gps-time" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p>GPS時刻のベクトル演算やフォーマット変換をサポートするユーティリティ群 (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.gps</span></code> 等で利用可能)。</p></li>
-</ul>
-</section>
-<section id="plotting">
-<h3>描画関連 (Plotting)<a class="headerlink" href="#plotting" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><strong>日時軸</strong>: プロット時の横軸を自動的に日時 (datetime) 形式にフォーマットする機能。</p></li>
-<li><p><strong>一括描画</strong>: <code class="docutils literal notranslate"><span class="pre">Spectrogram.plot_summary()</span></code> などによる、スペクトログラムと時間平均ASDの同時プロット。</p></li>
-<li><p><strong>地図・全天図</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.GeoMap</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.SkyMap</span></code> による地図上へのデータプロット機能。</p></li>
-<li><p><strong>PairPlot</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.PairPlot</span></code> による多変量データのペアプロット（散布図行列/相関図）。</p></li>
-</ul>
-</section>
-<section id="timeserieslist-timeseriesdict">
-<h3>コレクションクラスの拡張 (TimeSeriesList / TimeSeriesDict)<a class="headerlink" href="#timeserieslist-timeseriesdict" title="Link to this heading"></a></h3>
-<p>GWpyに存在する <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> に対しても、一括処理機能を追加拡張しています。</p>
-<ul class="simple">
-<li><p>一括信号処理: <code class="docutils literal notranslate"><span class="pre">.fft_time_all()</span></code>, <code class="docutils literal notranslate"><span class="pre">.resample_all(rate)</span></code>, <code class="docutils literal notranslate"><span class="pre">.filter_all(*args)</span></code></p></li>
-<li><p>一括スライス: <code class="docutils literal notranslate"><span class="pre">.sel_all(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.isel_all(...)</span></code></p></li>
-<li><p>算術演算のブロードキャスト</p></li>
-</ul>
-</section>
-</section>
+  <section class="tex2jax_ignore mathjax_ignore" id="gwpy">
+<h1>GWpy ユーザー向け移行ガイド<a class="headerlink" href="#gwpy" title="Link to this heading"></a></h1>
+<p>このページは、<strong>GWpy から GWexpy へ移るときの入口</strong>です。<br />
+全 API を網羅するページではありません。まずは「何がそのまま動くか」と「どこから差分を使うと効果が大きいか」を短時間で掴むことを目的にしています。</p>
+<p>完全な API 一覧ではなく、<strong>GWpy との差分だけを引きたい</strong>場合は <a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a> を参照してください。<br />
+全 API の仕様を追いたい場合は <a class="reference internal" href="../reference/index.html"><span class="std std-doc">API リファレンス</span></a> を参照してください。</p>
 <section id="id1">
-<h2>2. 新規クラスの導入<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<p>多チャンネルデータ、行列データ、物理場などを扱うための新しいデータ構造です。</p>
-<section id="new-collections">
-<h3>新規コレクション (New Collections)<a class="headerlink" href="#new-collections" title="Link to this heading"></a></h3>
-<p>GWpyには標準実装されていない、周波数・時間周波数データのためのコレクションクラスです。GWpyの <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> に対する <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> の立ち位置になります。</p>
+<h2>まず最初に押さえること<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code>, <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code></p></li>
-</ul>
-</section>
-<section id="seriesmatrix">
-<h3>マトリックス (SeriesMatrix)<a class="headerlink" href="#seriesmatrix" title="Link to this heading"></a></h3>
-<p>データを「行列」の要素として持つ多次元データ構造です (Row, Col, Axis…)。</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>: (Rows, Cols, Time)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>: (Rows, Cols, Frequency)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code>: (Rows, Cols, Time, Frequency)</p></li>
-</ul>
-<p><strong>特徴・機能</strong>:</p>
-<ul class="simple">
-<li><p><strong>行列演算</strong>: 要素ごとの行列積 (<code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)、逆行列 (<code class="docutils literal notranslate"><span class="pre">.inv()</span></code>)、行列式 (<code class="docutils literal notranslate"><span class="pre">.det()</span></code>)、トレース (<code class="docutils literal notranslate"><span class="pre">.trace()</span></code>)、シュア補行列 (<code class="docutils literal notranslate"><span class="pre">.schur()</span></code>)。MIMOシステムの伝達関数解析などに強力。</p></li>
-<li><p><strong>統計処理</strong>: 行・列方向の平均・分散演算 (<code class="docutils literal notranslate"><span class="pre">.mean(axis)</span></code>, <code class="docutils literal notranslate"><span class="pre">.std(axis)</span></code> 等) により、センサーアレイ全体の統計量を一括計算。</p></li>
-<li><p><strong>バッチ処理</strong>: 各要素に対する信号処理（フィルタリング、リサンプリング、白色化など）の一括適用。</p></li>
-</ul>
-</section>
-<section id="fields">
-<h3>物理フィールド (Fields)<a class="headerlink" href="#fields" title="Link to this heading"></a></h3>
-<p>4次元 (時間/周波数 + 3次元空間/波数) の物理場を扱うクラスです。</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> / <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> / <code class="docutils literal notranslate"><span class="pre">TensorField</span></code></p></li>
-</ul>
-<p><strong>特徴・機能</strong>:</p>
-<ul class="simple">
-<li><p><strong>ドメイン管理</strong>: 時間/周波数軸 (<code class="docutils literal notranslate"><span class="pre">axis0</span></code>) と空間/波数軸 (<code class="docutils literal notranslate"><span class="pre">space_domain</span></code>) の状態を管理し、相互変換 (<code class="docutils literal notranslate"><span class="pre">.fft_time</span></code>, <code class="docutils literal notranslate"><span class="pre">.fft_space</span></code>) をサポート。</p></li>
-<li><p><strong>空間抽出</strong>: <code class="docutils literal notranslate"><span class="pre">.extract_points()</span></code> により任意の空間座標での時系列データを抽出・補間。</p></li>
-<li><p><strong>ベクトル・テンソル解析</strong>: 内積、外積、発散、回転などの物理演算と、座標変換（デカルト座標系など）。</p></li>
-<li><p><strong>シミュレーション</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.field</span></code> と連携したノイズ場の生成（等方性ノイズ、平面波など）。</p></li>
+<li><p><strong>単一チャネルの基本操作はかなりそのままです。</strong>
+<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> / <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> を使った読み込み、プロット、基本スペクトル解析は、まず import を <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> 側へ置き換えるだけで試せます。</p></li>
+<li><p><strong>差分が大きいのは多チャネル処理です。</strong>
+<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> を手作業でループする代わりに、<code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> で <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> へ変換して一括処理できます。</p></li>
+<li><p><strong>Field API は GWpy にはない拡張です。</strong>
+<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> と <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> は、空間軸を持つデータや複数 field の一括操作を扱うための GWexpy 固有レイヤです。</p></li>
+<li><p><strong>外部ライブラリ呼び出しをデータオブジェクト側へ寄せられます。</strong>
+代表例は <code class="docutils literal notranslate"><span class="pre">.find_peaks()</span></code>, <code class="docutils literal notranslate"><span class="pre">.fit()</span></code>, <code class="docutils literal notranslate"><span class="pre">.hht()</span></code>, <code class="docutils literal notranslate"><span class="pre">.arima()</span></code> です。</p></li>
+<li><p><strong>I/O と interop は別ガイドを見る前提です。</strong>
+直接 I/O は <a class="reference internal" href="io_formats.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a>、外部ライブラリ変換は <a class="reference internal" href="interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a> を正本とします。</p></li>
 </ul>
 </section>
 <section id="id2">
-<h3>その他<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<h2>どこから書き換えると効果が大きいか<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>目的</p></th>
+<th class="head"><p>まず見る差分</p></th>
+<th class="head"><p>深掘り先</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>複数チャンネルをまとめて解析したい</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.to_matrix()</span></code> → <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code></p></td>
+<td><p><a class="reference internal" href="tutorials/matrix_timeseries.html"><span class="std std-doc">Matrix チュートリアル</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>空間軸付きデータや複数 field をまとめて扱いたい</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">FieldList</span></code>, <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code></p></td>
+<td><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">Field API 入門</span></a>, <a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>SciPy / Statsmodels 呼び出しを整理したい</p></td>
+<td><p>オブジェクトメソッド化された追加 API</p></td>
+<td><p><a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>既存の単一チャネルコードを早く移したい</p></td>
+<td><p>import だけ差し替えてから必要箇所だけ差分 API を追加</p></td>
+<td><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">クイックスタート</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>結果共有の互換性を知りたい</p></td>
+<td><p>Transparent Pickle の挙動</p></td>
+<td><p><a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="timeseriesdict-timeseriesmatrix">
+<h2>差分レシピ 1: <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> の手ループを <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> に寄せる<a class="headerlink" href="#timeseriesdict-timeseriesmatrix" title="Link to this heading"></a></h2>
+<p>GWpy では、複数チャンネルの比較やペアごとのスペクトル計算を、自分でループして組み立てることが多くなります。<br />
+GWexpy では <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> を入口にして、チャンネル集合をそのまま一括解析の対象にできます。</p>
+<section id="gwpy-style">
+<h3>GWpy style<a class="headerlink" href="#gwpy-style" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+<span class="n">reference</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">]</span>
+
+<span class="n">csd</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tsd</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">csd</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="gwexpy-style">
+<h3>GWexpy style<a class="headerlink" href="#gwexpy-style" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+<span class="n">matrix</span> <span class="o">=</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
+
+<span class="n">csm</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">csm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>この差分が効く場面:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">BifrequencyMap</span></code>: 2つの周波数軸を持つマップデータ (STLTGram等)。</p></li>
+<li><p>ループを減らして、チャンネル集合をそのまま計算対象にしたいとき</p></li>
+<li><p>多チャネル解析を <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> へ揃えたいとき</p></li>
+</ul>
+<p>関連ページ:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/matrix_timeseries.html"><span class="std std-doc">Matrix チュートリアル</span></a></p></li>
+<li><p><a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/TimeSeriesDict.html"><span class="std std-doc">TimeSeriesDict リファレンス</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/TimeSeriesMatrix.html"><span class="std std-doc">TimeSeriesMatrix リファレンス</span></a></p></li>
 </ul>
 </section>
 </section>
 <section id="id3">
-<h2>3. 高度な解析メソッド (単チャンネル)<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<section id="gwexpy-noise">
-<h3>ノイズシミュレーション (<code class="docutils literal notranslate"><span class="pre">gwexpy.noise</span></code>)<a class="headerlink" href="#gwexpy-noise" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">from_asd(asd,</span> <span class="pre">...)</span></code>: ASD (振幅スペクトル密度) からの時系列生成</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">colored_noise(psd,</span> <span class="pre">...)</span></code>: 有色ノイズの生成</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">field.simulate(...)</span></code>: ノイズ場の生成</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pygwinc</span></code> 連携: <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.gwinc_</span></code> を通じた干渉計ノイズバジェットモデルの利用。</p></li>
-</ul>
-</section>
-<section id="timeseries">
-<h3>時系列解析 (TimeSeries)<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.hilbert()</span></code>: ヒルベルト変換（解析信号）</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.envelope()</span></code>: 包絡線 (<code class="docutils literal notranslate"><span class="pre">abs(hilbert)</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.demodulate(f)</span></code>: ロックインアンプ・復調</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.arima(order,</span> <span class="pre">...)</span></code>: AR/MA/ARMA/ARIMAモデル解析 (<code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>, <code class="docutils literal notranslate"><span class="pre">pmdarima</span></code> ラッパー)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.ar(p)</span></code>, <code class="docutils literal notranslate"><span class="pre">.ma(q)</span></code>, <code class="docutils literal notranslate"><span class="pre">.arma(p,</span> <span class="pre">q)</span></code>: AR/MA/ARMAのショートカット</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.hurst()</span></code>: ハースト指数の計算</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.skewness()</span></code>: 歪度 (Skewness)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.kurtosis()</span></code>: 尖度 (Kurtosis)</p></li>
-</ul>
-</section>
-<section id="frequencyseries">
-<h3>周波数スペクトル解析 (FrequencySeries)<a class="headerlink" href="#frequencyseries" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.differentiate()</span></code>, <code class="docutils literal notranslate"><span class="pre">.integrate()</span></code>: 周波数ドメインでの微分・積分</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.differentiate_time()</span></code>, <code class="docutils literal notranslate"><span class="pre">.integrate_time()</span></code>: 周波数ドメインでの時間微分・積分（Displacement ↔ Velocity ↔ Acceleration 変換等）</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.group_delay()</span></code>: 群遅延の計算</p></li>
-</ul>
-</section>
-<section id="spectrogram-special-transforms">
-<h3>時間周波数解析 (Spectrogram / Special Transforms)<a class="headerlink" href="#spectrogram-special-transforms" title="Link to this heading"></a></h3>
-<p>GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数解析手法を提供します。</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">hht()</span></code>: ヒルベルト・ファン変換 (HHT)。EMD (Empirical Mode Decomposition) によるIMF分解と瞬時周波数解析。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stlt()</span></code>: 短時間ラプラス変換 (Short-Time Laplace Transform)。減衰定数 <span class="math notranslate nohighlight">\(\sigma\)</span> を考慮した解析。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cepstrum()</span></code>: ケプストラム解析 (倒周波数)。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cwt()</span></code>: 連続ウェーブレット変換 (<code class="docutils literal notranslate"><span class="pre">pywt</span></code> ラッパー)。</p></li>
-</ul>
-</section>
+<h2>差分レシピ 2: 外部関数呼び出しをオブジェクトメソッドへ寄せる<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>GWpy ベースのコードでは、NumPy 配列へ取り出してから SciPy / Statsmodels を直接呼ぶ流れが自然です。<br />
+GWexpy では、その一部がデータオブジェクトのメソッドとしてまとまっています。</p>
 <section id="id4">
-<h3>統計的推定・フィッティング<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><strong>Fitting (<code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code>)</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">FitResult</span></code>, <code class="docutils literal notranslate"><span class="pre">Model</span></code>: iminuitによるchi-square Fitting (実数、複素数) とMCMC解析</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> にも <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> 等のメソッドがMixされています。</p></li>
-</ul>
-</li>
-<li><p><strong>Bootstrap</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code>: スペクトログラムのブートストラップ推定</p></li>
-</ul>
-</li>
-</ul>
-</section>
-</section>
-<section id="id5">
-<h2>4. 高度な解析メソッド (多チャンネル)<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<section id="gwexpy-timeseries-decomposition">
-<h3>成分分析 (<code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.decomposition</span></code>)<a class="headerlink" href="#gwexpy-timeseries-decomposition" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">PCA</span></code>: 主成分分析</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ICA</span></code>: 独立成分分析</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ZCA</span></code>: 白色化 (<code class="docutils literal notranslate"><span class="pre">.whiten(method='zca')</span></code> として利用)</p></li>
-</ul>
-</section>
-<section id="id6">
-<h3>相関・統計解析<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><strong>相関指標</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">dCor</span></code>: 距離相関 (Distance Correlation)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MIC</span></code>: 最大情報係数 (Maximal Information Coefficient)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Pearson</span></code>, <code class="docutils literal notranslate"><span class="pre">Kendall</span></code>: 基本的な相関係数</p></li>
-</ul>
-</li>
-<li><p><strong>Bruco</strong>:</p>
-<ul>
-<li><p>多チャンネルコヒーレンス探索によるノイズ源特定ツール (<code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.bruco</span></code>)</p></li>
-</ul>
-</li>
-</ul>
-</section>
-<section id="id7">
-<h3>システム解析・制御<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><strong>MIMO / 状態空間モデル</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">python-control</span></code> 連携: <code class="docutils literal notranslate"><span class="pre">TimeSeries.from_control(response)</span></code>, <code class="docutils literal notranslate"><span class="pre">to_control_frd</span></code> などによる制御系設計ライブラリとの相互変換。</p></li>
-<li><p>行列クラス (<code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code>) を用いたMIMO伝達関数・時系列解析</p></li>
-</ul>
-</li>
-<li><p><strong>雑音注入試験解析</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.response</span></code>: 伝達関数推定や結合係数算出のための実験データ解析ツール</p></li>
-</ul>
-</li>
-<li><p><strong>行列演算</strong>:</p>
-<ul>
-<li><p>逆行列 (<code class="docutils literal notranslate"><span class="pre">.inv()</span></code>)、行列式 (<code class="docutils literal notranslate"><span class="pre">.det()</span></code>)、トレース (<code class="docutils literal notranslate"><span class="pre">.trace()</span></code>)、シュア補行列 (<code class="docutils literal notranslate"><span class="pre">.schur()</span></code>) などの基本操作。</p></li>
-</ul>
-</li>
-</ul>
-</section>
-</section>
-<section id="interop">
-<h2>5. 外部ツール連携 (Interop)<a class="headerlink" href="#interop" title="Link to this heading"></a></h2>
-<p>外部ライブラリとのオブジェクト相互変換機能です (<code class="docutils literal notranslate"><span class="pre">.to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">.from_*()</span></code>)。</p>
-<ul class="simple">
-<li><p><strong>Deep Learning / Array Libraries</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">PyTorch</span></code> (<code class="docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>/<code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>): <code class="docutils literal notranslate"><span class="pre">to_torch</span></code>, <code class="docutils literal notranslate"><span class="pre">to_torch_dataset</span></code>等</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TensorFlow</span></code> (<code class="docutils literal notranslate"><span class="pre">Tensor</span></code>): <code class="docutils literal notranslate"><span class="pre">to_tf</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">JAX</span></code> (<code class="docutils literal notranslate"><span class="pre">Array</span></code>): <code class="docutils literal notranslate"><span class="pre">to_jax</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CuPy</span></code> (<code class="docutils literal notranslate"><span class="pre">ndarray</span></code>): <code class="docutils literal notranslate"><span class="pre">to_cupy</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Dask</span></code> (<code class="docutils literal notranslate"><span class="pre">dask.array</span></code>): <code class="docutils literal notranslate"><span class="pre">to_dask</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Zarr</span></code>: <code class="docutils literal notranslate"><span class="pre">to_zarr</span></code> / <code class="docutils literal notranslate"><span class="pre">from_zarr</span></code></p></li>
-</ul>
-</li>
-<li><p><strong>Data Structures</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> (<code class="docutils literal notranslate"><span class="pre">Series</span></code>/<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>): <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> (<code class="docutils literal notranslate"><span class="pre">DataArray</span></code>): <code class="docutils literal notranslate"><span class="pre">to_xarray</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">polars</span></code> (<code class="docutils literal notranslate"><span class="pre">Series</span></code>/<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>): <code class="docutils literal notranslate"><span class="pre">to_polars_series</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SQLite</span></code>, <code class="docutils literal notranslate"><span class="pre">JSON</span></code>: 軽量な保存・読み込み</p></li>
-</ul>
-</li>
-<li><p><strong>Domain Specific</strong>:</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">Obspy</span></code> (Seismology): <code class="docutils literal notranslate"><span class="pre">Trace</span></code>, <code class="docutils literal notranslate"><span class="pre">Stream</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MNE</span></code> (EEG/MEG): <code class="docutils literal notranslate"><span class="pre">Raw</span></code>, <code class="docutils literal notranslate"><span class="pre">RawArray</span></code> (<code class="docutils literal notranslate"><span class="pre">to_mne</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Neo</span></code> (Electrophysiology): <code class="docutils literal notranslate"><span class="pre">AnalogSignal</span></code> (<code class="docutils literal notranslate"><span class="pre">to_neo</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Librosa</span></code> / <code class="docutils literal notranslate"><span class="pre">Pydub</span></code> (Audio): 音声データ変換</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SimPEG</span></code> (Geophysics): <code class="docutils literal notranslate"><span class="pre">Data</span></code> オブジェクト</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">python-control</span></code>: <code class="docutils literal notranslate"><span class="pre">FrequencyResponseData</span></code> (FRD) 等</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code> (CERN): <code class="docutils literal notranslate"><span class="pre">TGraph</span></code>, <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>, <code class="docutils literal notranslate"><span class="pre">TH2D</span></code>, <code class="docutils literal notranslate"><span class="pre">TMultiGraph</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Specutils</span></code>: <code class="docutils literal notranslate"><span class="pre">Spectrum1D</span></code> (<code class="docutils literal notranslate"><span class="pre">to_specutils</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Pyspeckit</span></code>: <code class="docutils literal notranslate"><span class="pre">Spectrum</span></code> (<code class="docutils literal notranslate"><span class="pre">to_pyspeckit</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Astropy</span></code>: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (<code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Quantities</span></code>: <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> (<code class="docutils literal notranslate"><span class="pre">to_quantity</span></code>)</p></li>
-</ul>
-</li>
-</ul>
-<section id="i-o">
-<h3>データフォーマットI/O拡張<a class="headerlink" href="#i-o" title="Link to this heading"></a></h3>
-<p>GWpyが標準サポートする形式に加え、以下に対応（または拡張）しています。</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ATS</span></code> (Metronix MTデータ)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GBD</span></code> (GRAPHTEC データロガー)</p>
-<ul>
-<li><p>アナログCHはヘッダのアンプレンジ（例: <code class="docutils literal notranslate"><span class="pre">20mV</span></code> 等）を用いて <code class="docutils literal notranslate"><span class="pre">count</span> <span class="pre">-&gt;</span> <span class="pre">V</span></code> に換算します。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Alarm</span></code> / <code class="docutils literal notranslate"><span class="pre">AlarmOut</span></code> / <code class="docutils literal notranslate"><span class="pre">Pulse*</span></code> / <code class="docutils literal notranslate"><span class="pre">Logic*</span></code> はデジタル/ステータスとして扱い、値を 0/1 に正規化し unit を dimensionless にします。</p></li>
-<li><p>必要に応じて <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gbd&quot;,</span> <span class="pre">digital_channels=[...])</span></code> でデジタル扱いするチャンネル名を上書きできます。</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TDMS</span></code> (LabVIEW / NI)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MiniSEED</span></code>, <code class="docutils literal notranslate"><span class="pre">SAC</span></code>, <code class="docutils literal notranslate"><span class="pre">GSE2</span></code> (地震波データ, Obspy連携)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WIN</span></code> (地震波データ)</p>
-<ul>
-<li><p>0.5バイト（4bit差分）/ 3バイト差分の復号について、ObsPyの既知の不具合・注意点を踏まえた実装になっています。</p></li>
-<li><p>参考: 中川茂樹・加藤愛太郎「WINフォーマットデータをObsPyで読み込む新しいモジュール」(東京大学地震研究所技術研究報告 No.26, 2020)。</p></li>
-<li><p>gwexpyの実装: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code>（4bit差分の下位ニブル処理・奇数差分の末尾ニブルスキップ、24bit差分の符号付き復元など）。</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DTTXML</span></code> (LIGO Diagnostic Test Tools)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SDB</span></code> (気象計 Davis データ)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Midas</span></code> (PSI/DAQフォーマット)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Parquet</span></code>, <code class="docutils literal notranslate"><span class="pre">Feather</span></code>, <code class="docutils literal notranslate"><span class="pre">Pickle</span></code> (pandas連携)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WAV</span></code> (Audio, 拡張サポート)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code> file (.root)</p></li>
-</ul>
-</section>
-</section>
-<section id="pickle-shelve">
-<h2>Pickle / shelve に関する注意<a class="headerlink" href="#pickle-shelve" title="Link to this heading"></a></h2>
-<div class="warning admonition">
-<p class="admonition-title">warning</p>
-<p>信頼できないデータを <code class="docutils literal notranslate"><span class="pre">pickle</span></code> / <code class="docutils literal notranslate"><span class="pre">shelve</span></code> で読み込まないでください。ロード時に任意コード実行が起こり得ます。</p>
-</div>
-<p>gwexpy の pickle は、可搬性を優先して <strong>unpickle 時に GWpy 型を返す</strong>設計になっています
-（つまり、読み込み側に gwexpy が無くても gwpy があれば復元できます）。</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<h3>GWpy style<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_peaks</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
-<span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
-<span class="c1"># obj は gwpy.timeseries.TimeSeries</span>
+<span class="n">spec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">peaks</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">height</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>互換性メモ:</p>
+</section>
+<section id="id5">
+<h3>GWexpy style<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+<span class="n">spec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">peaks</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>同じ方向の差分として、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> では次のような API も追加されています。</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> / <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> -&gt; unpickle 時に GWpy オブジェクト</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> -&gt; unpickle 時に GWpy のコレクション</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict/List</span></code> / <code class="docutils literal notranslate"><span class="pre">SpectrogramDict/List</span></code> -&gt; unpickle 時に builtins の <code class="docutils literal notranslate"><span class="pre">dict</span></code> / <code class="docutils literal notranslate"><span class="pre">list</span></code>（中身はGWpyオブジェクト）</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Matrix</span></code> 系や <code class="docutils literal notranslate"><span class="pre">Field</span></code> 系など gwexpy 独自型は、この可搬性契約の対象外です</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.fit()</span></code> : データオブジェクトに対するフィッティング</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.hht()</span></code> : Hilbert-Huang Transform</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.arima()</span></code> : 時系列予測・モデル化</p></li>
 </ul>
-<p>保持されるもの（ベストエフォート）:</p>
+<p>関連ページ:</p>
 <ul class="simple">
-<li><p>数値データ（<code class="docutils literal notranslate"><span class="pre">.value</span></code>）</p></li>
-<li><p>軸情報（<code class="docutils literal notranslate"><span class="pre">times</span></code> / <code class="docutils literal notranslate"><span class="pre">frequencies</span></code>）</p></li>
-<li><p>GWpy側で一般的に扱えるメタデータ（<code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">channel</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>）</p></li>
-</ul>
-<p>保持されないもの:</p>
-<ul class="simple">
-<li><p>gwexpy独自の内部属性（例: <code class="docutils literal notranslate"><span class="pre">_gwex_*</span></code>）や、gwexpyで追加した振る舞い</p></li>
+<li><p><a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/intro_frequencyseries.html"><span class="std std-doc">周波数系列チュートリアル</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/advanced_fitting.html"><span class="std std-doc">フィッティング</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/advanced_hht.html"><span class="std std-doc">HHT</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/advanced_arima.html"><span class="std std-doc">ARIMA</span></a></p></li>
 </ul>
 </section>
-<section id="gui">
-<h2>6. GUI アプリケーション<a class="headerlink" href="#gui" title="Link to this heading"></a></h2>
+</section>
+<section id="id6">
+<h2>差分レシピ 3: 単一チャネルコードは大きく変えなくてよい<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>GWpy の基本クラスに慣れている場合、最初から全面的に書き換える必要はありません。<br />
+まずは import を <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> 側へ置き換え、必要になった箇所だけ差分 API を足す進め方が現実的です。</p>
+<section id="id7">
+<h3>GWpy style<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.gwf&quot;</span><span class="p">,</span> <span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">)</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3>GWexpy style<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.gwf&quot;</span><span class="p">,</span> <span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">)</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>実務上の見方:</p>
 <ul class="simple">
-<li><p><strong>pyaggui (<code class="docutils literal notranslate"><span class="pre">gwexpy.gui.pyaggui</span></code>)</strong>:</p>
-<ul>
-<li><p>DTT diaggui (C++, ROOT) を模したpyqt5ベースのGUIアプリケーション。</p></li>
+<li><p>まずは既存の単一チャネル処理をそのまま持ってくる</p></li>
+<li><p>多チャネル化や追加メソッドが必要になった地点で <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> 固有 API を使う</p></li>
 </ul>
-</li>
+<p>関連ページ:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">クイックスタート</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/index.html"><span class="std std-doc">チュートリアル一覧</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/index.html"><span class="std std-doc">API リファレンス</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="scalarfield-fieldlist-fielddict">
+<h2>差分レシピ 4: <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> を <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> でまとめる<a class="headerlink" href="#scalarfield-fieldlist-fielddict" title="Link to this heading"></a></h2>
+<p>GWpy の標準的な移行対象は <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> 系が中心で、空間軸を持つ field コンテナや、そのコレクションに対応する標準クラスはありません。
+GWexpy では、単一 field を <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> で保持し、複数の field を <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> で一括管理できます。</p>
+<section id="id9">
+<h3>GWpy style<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">field_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">field_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;before&quot;</span><span class="p">:</span> <span class="n">field_a</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">:</span> <span class="n">field_b</span><span class="p">}</span>
+
+<span class="c1"># 軸情報や単位の整合性は別途自前で管理する</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h3>GWexpy style<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span><span class="p">,</span> <span class="n">FieldDict</span>
+
+<span class="n">fields</span> <span class="o">=</span> <span class="n">FieldDict</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;before&quot;</span><span class="p">:</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+        <span class="s2">&quot;after&quot;</span><span class="p">:</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+    <span class="p">},</span>
+    <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">fft_fields</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">fft_space_all</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>この差分が効く場面:</p>
+<ul class="simple">
+<li><p>同じ軸・単位・ドメインを共有する複数の field をまとめて扱いたいとき</p></li>
+<li><p>空間方向の変換や切り出しを、field 単位のループではなくコレクション単位で揃えたいとき</p></li>
+</ul>
+<p>関連ページ:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">Field API 入門</span></a></p></li>
+<li><p><a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/ScalarField.html"><span class="std std-doc">ScalarField リファレンス</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/FieldList.html"><span class="std std-doc">FieldList リファレンス</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/FieldDict.html"><span class="std std-doc">FieldDict リファレンス</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="pickle">
+<h2>差分レシピ 5: Pickle 共有時の互換性を見る<a class="headerlink" href="#pickle" title="Link to this heading"></a></h2>
+<p>GWexpy は、解析結果の共有時に「受け取り側が GWexpy を入れていない」ケースも意識しています。<br />
+このページでは安全性の一般論ではなく、<strong>GWpy ユーザーが共有運用で何を期待できるか</strong>だけを押さえます。</p>
+<section id="id11">
+<h3>GWpy style<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;result.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># 受け取り側も、同じ型を読める環境を前提に共有する</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h3>GWexpy style<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;result.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># 受け取り側に GWexpy がなくても、GWpy があれば基本クラスとして復元できる</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Pickle は信頼できるデータだけをロードしてください。</p>
+</div>
+<p>関連ページ:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a></p></li>
+<li><p><a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="python-control">
+<h2>差分レシピ 6: python-control との橋渡し<a class="headerlink" href="#python-control" title="Link to this heading"></a></h2>
+<p>GWpy ベースのコードで <code class="docutils literal notranslate"><span class="pre">control.bode()</span></code> 等を使う場合、<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> の値を numpy 配列として手動で取り出し、<code class="docutils literal notranslate"><span class="pre">control.frd()</span></code> に渡す手順が必要です。<br />
+GWexpy では <code class="docutils literal notranslate"><span class="pre">to_control_frd()</span></code> が変換を一括して行うため、この手順を省けます。</p>
+<section id="id13">
+<h3>GWpy style<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+<span class="n">spec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;H1:STRAIN_ASD&quot;</span><span class="p">)</span>
+
+<span class="c1"># numpy 配列を手動で取り出してから FRD を構築する必要がある</span>
+<span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">frd_sys</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">frd</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">omega</span><span class="p">)</span>
+
+<span class="c1"># Bode プロットを描画</span>
+<span class="n">control</span><span class="o">.</span><span class="n">bode</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h3>GWexpy style<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+<span class="n">spec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;H1:STRAIN_ASD&quot;</span><span class="p">)</span>
+
+<span class="c1"># 1 行で FRD 変換・往復変換</span>
+<span class="n">frd_sys</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_control_frd</span><span class="p">()</span>                      <span class="c1"># FrequencySeries → control.FrequencyResponseData</span>
+<span class="n">control</span><span class="o">.</span><span class="n">bode</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)</span>                                <span class="c1"># Bode / Nichols / Nyquist にそのまま渡せる</span>
+
+<span class="n">spec2</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_control_frd</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)</span>    <span class="c1"># control.FRD → FrequencySeries に復元</span>
+</pre></div>
+</div>
+<p>この差分が効く場面:</p>
+<ul class="simple">
+<li><p>ASD / PSD スペクトルをそのまま制御系の FRD モデルとして扱いたいとき</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">control.bode()</span></code> / <code class="docutils literal notranslate"><span class="pre">control.nichols()</span></code> / <code class="docutils literal notranslate"><span class="pre">control.nyquist()</span></code> に渡す前の numpy 配列取り出し処理を省きたいとき</p></li>
+<li><p>解析結果の FRD を GWexpy の <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> に戻して既存のプロット・統計処理パイプラインに繋げたいとき</p></li>
+<li><p>多チャネルのスペクトルを <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict.to_control_frd()</span></code> でチャネルごとに FRD 化したいとき</p></li>
+</ul>
+<p>関連ページ:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/gwexpy.interop.control_.html"><span class="std std-doc">python-control API リファレンス</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/case_active_damping.html"><span class="std std-doc">アクティブダンピング チュートリアル</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/intro_frequencyseries.html"><span class="std std-doc">周波数系列チュートリアル</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="i-o">
+<h2>I/O と外部ライブラリ連携は別ページを見る<a class="headerlink" href="#i-o" title="Link to this heading"></a></h2>
+<p>このページでは、I/O 形式や外部ライブラリ連携の一覧を再掲しません。<br />
+それぞれ既に専用ページがあるため、移行時は次を正本として参照してください。</p>
+<ul class="simple">
+<li><p>直接 I/O: <a class="reference internal" href="io_formats.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a></p></li>
+<li><p>外部ライブラリ変換: <a class="reference internal" href="interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a></p></li>
+</ul>
+</section>
+<section id="id15">
+<h2>次のステップ<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a> - 追加 API を差分観点で引く</p></li>
+<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">Field API 入門</span></a> - <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> の使い分けを見る</p></li>
+<li><p><a class="reference internal" href="tutorials/index.html"><span class="std std-doc">チュートリアル一覧</span></a> - 差分レシピから実例へ進む</p></li>
+<li><p><a class="reference internal" href="io_formats.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a> - 読み書き形式を確認する</p></li>
+<li><p><a class="reference internal" href="interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a> - 外部ライブラリとの橋渡しを見る</p></li>
+<li><p><a class="reference internal" href="../reference/index.html"><span class="std std-doc">API リファレンス</span></a> - 全 API の仕様を確認する</p></li>
 </ul>
 </section>
 </section>
@@ -453,14 +528,16 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="getting_started.html" class="btn btn-neutral float-left" title="はじめに (Getting Started)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="io_formats.html" class="btn btn-neutral float-right" title="ファイル I/O 対応フォーマットガイド" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="scalarfield_slicing.html" class="btn btn-neutral float-left" title="スカラーフィールドのスライス操作ガイド (4次元を維持する理由)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwpy_added_api_index_ja.html" class="btn btn-neutral float-right" title="GWpy 差分 API 一覧" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-17 22:17:38.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -477,7 +554,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="license.html">ライセンス / 免責</a> |
+        <a href="roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

@@ -9,25 +9,87 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/timeseries/timeseries.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -41,23 +103,25 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,8 +136,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gwexpy.timeseries.timeseries</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">gwexpy.timeseries.timeseries - Extended TimeSeries class</span>
+<span></span><span class="sd">&quot;&quot;&quot;Extended TimeSeries class for gwexpy.</span>
 
 <span class="sd">This module provides the main TimeSeries class for gwexpy, which extends</span>
 <span class="sd">gwpy&#39;s TimeSeries with additional functionality.</span>
@@ -85,7 +148,6 @@
 
 <span class="sd">This module integrates all Mixins into a single TimeSeries class.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">SupportsIndex</span>
@@ -131,41 +193,98 @@
     <span class="n">PhaseMethodsMixin</span><span class="p">,</span>  <span class="c1"># Phase/Angle methods (radian, degree, phase, angle)</span>
     <span class="n">TimeSeriesCore</span><span class="p">,</span>  <span class="c1"># Core operations (tail, crop, append, find_peaks, RegularityMixin)</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Extended TimeSeries with all gwexpy functionality.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A data array holding some metadata to represent a time-series.</span>
 
-<span class="sd">    This class combines functionality from multiple modules:</span>
-<span class="sd">    - Core operations: is_regular, _check_regular, tail, crop, append, find_peaks</span>
-<span class="sd">    - Spectral transforms: fft, psd, cwt, laplace, etc.</span>
-<span class="sd">    - Signal processing: hilbert, mix_down, xcorr, etc.</span>
-<span class="sd">    - Analysis: impute, standardize, rolling_*, etc.</span>
-<span class="sd">    - Interoperability: to_pandas, to_torch, to_xarray, etc.</span>
+<span class="sd">    `TimeSeries` is the primary object used to represent time-domain</span>
+<span class="sd">    data in `gwexpy`. It extends the standard `gwpy.timeseries.TimeSeries`</span>
+<span class="sd">    by incorporating additional mixins for plotting, signal analysis,</span>
+<span class="sd">    regularity checks, numerical fitting, statistical methods, and</span>
+<span class="sd">    enhanced interoperability.</span>
 
-<span class="sd">    Inherits from gwpy.timeseries.TimeSeries for full compatibility.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : array-like</span>
+<span class="sd">        Input data array.</span>
+
+<span class="sd">    unit : `~astropy.units.Unit`, optional</span>
+<span class="sd">        Physical unit of these data.</span>
+
+<span class="sd">    t0 : `~gwpy.time.LIGOTimeGPS`, `float`, `str`, optional, default: `0`</span>
+<span class="sd">        GPS epoch associated with these data,</span>
+<span class="sd">        any input parsable by `~gwpy.time.to_gps` is fine.</span>
+
+<span class="sd">    dt : `float`, `~astropy.units.Quantity`, optional, default: `1`</span>
+<span class="sd">        Time resolution for these data.</span>
+
+<span class="sd">    sample_rate : `float`, `~astropy.units.Quantity`, optional, default: `1`</span>
+<span class="sd">        Sample rate for these data.</span>
+
+<span class="sd">    times : `array-like`</span>
+<span class="sd">        The complete array of times indexing the data.</span>
+<span class="sd">        This argument takes precedence over `t0` and `dt` so should</span>
+<span class="sd">        be given in place of these if relevant, not alongside.</span>
+
+<span class="sd">    name : `str`, optional</span>
+<span class="sd">        Descriptive title for this array.</span>
+
+<span class="sd">    channel : `~gwpy.detector.Channel`, `str`, optional</span>
+<span class="sd">        Source data stream for these data.</span>
+
+<span class="sd">    dtype : `~numpy.dtype`, optional</span>
+<span class="sd">        Input data type.</span>
+
+<span class="sd">    copy : `bool`, optional, default: `False`</span>
+<span class="sd">        Choose to copy the input data to new memory.</span>
+
+<span class="sd">    subok : `bool`, optional, default: `True`</span>
+<span class="sd">        Allow passing of sub-classes by the array generator.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    In addition to the standard GWpy functionality, this class provides</span>
+<span class="sd">    advanced features such as time-domain differentiation/integration,</span>
+<span class="sd">    rolling statistics, and seamless interoperability with PyTorch,</span>
+<span class="sd">    Xarray, and Polars.</span>
+
+<span class="sd">    Key methods:</span>
+
+<span class="sd">    .. autosummary::</span>
+
+<span class="sd">       ~TimeSeries.plot</span>
+<span class="sd">       ~TimeSeries.resample</span>
+<span class="sd">       ~TimeSeries.filter</span>
+<span class="sd">       ~TimeSeries.fft</span>
+<span class="sd">       ~TimeSeries.psd</span>
+<span class="sd">       ~TimeSeries.spectrogram</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.timeseries import TimeSeries</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([0.1, -1.2, 0.5])</span>
+<span class="sd">    &gt;&gt;&gt; ts = TimeSeries(data, sample_rate=1000, unit=&#39;V&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; ts</span>
+<span class="sd">    &lt;TimeSeries([ 0.1, -1.2,  0.5],</span>
+<span class="sd">                unit=Unit(&quot;V&quot;),</span>
+<span class="sd">                t0=&lt;Quantity 0. s&gt;,</span>
+<span class="sd">                dt=&lt;Quantity 0.001 s&gt;,</span>
+<span class="sd">                name=None,</span>
+<span class="sd">                channel=None)&gt;</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_meta_for_constructor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper for SignalAnalysisMixin to reconstruct object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reconstruct the object for SignalAnalysisMixin.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;t0&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span>
             <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new TimeSeries.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new TimeSeries.</span>
 
-<span class="sd">        This constructor extends the standard gwpy.timeseries.TimeSeries constructor</span>
-<span class="sd">        by adding support for automatic GPS time coercion for &#39;t0&#39; and &#39;epoch&#39; parameters.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        data : array_like</span>
-<span class="sd">            The data values for the series.</span>
-<span class="sd">        *args</span>
-<span class="sd">            Additional positional arguments passed to the parent constructor.</span>
-<span class="sd">        **kwargs</span>
-<span class="sd">            Additional keyword arguments passed to the parent constructor.</span>
+<span class="sd">        This constructor extends the standard `gwpy.timeseries.TimeSeries` constructor</span>
+<span class="sd">        by adding support for automatic GPS time coercion for `t0` and `epoch` parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_coerce_t0_gps</span>
 
@@ -218,8 +337,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__array_finalize__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Finalize the array after creation (slicing, view casting).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finalize the array after creation (slicing, view casting).</span>
 
 <span class="sd">        Ensures that attributes starting with `_gwex_` are propagated</span>
 <span class="sd">        from the parent object to the new view/instance.</span>
@@ -234,6 +352,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__reduce_ex__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">SupportsIndex</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide pickle serialization support.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.pickle_compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeseries_reduce_args</span>
 
         <span class="k">return</span> <span class="n">timeseries_reduce_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -250,8 +369,7 @@
         <span class="n">orientation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert to SimPEG Data object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to SimPEG Data object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -261,10 +379,13 @@
 <span class="sd">            Receiver class name. Default &quot;PointElectricField&quot;.</span>
 <span class="sd">        orientation : str, optional</span>
 <span class="sd">            Receiver orientation (&#39;x&#39;, &#39;y&#39;, &#39;z&#39;). Default &#39;x&#39;.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional arguments passed to SimPEG converter.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        simpeg.data.Data</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_simpeg</span>
 
@@ -277,17 +398,19 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.from_simpeg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_simpeg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create TimeSeries from SimPEG Data object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create TimeSeries from SimPEG Data object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        data_obj : simpeg.data.Data</span>
 <span class="sd">            Input SimPEG Data.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional arguments passed to constructor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        TimeSeries</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_simpeg</span>
 
@@ -298,8 +421,7 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.from_control">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_control</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create TimeSeries from python-control TimeResponseData.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create TimeSeries from python-control TimeResponseData.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -312,6 +434,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        TimeSeries or TimeSeriesDict</span>
 <span class="sd">            The converted time-domain data.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_control_response</span>
 
@@ -332,8 +455,7 @@
         <span class="n">auto</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fit an ARIMA or SARIMAX model to this TimeSeries.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit an ARIMA or SARIMAX model to this TimeSeries.</span>
 
 <span class="sd">        This method wraps `statsmodels.tsa.arima.model.ARIMA` (or SARIMAX).</span>
 <span class="sd">        If `auto=True`, it uses `pmdarima` to automatically find the best parameters.</span>
@@ -353,6 +475,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        ArimaResult</span>
 <span class="sd">            Object containing the fitted model, with methods .predict(), .forecast(), .plot().</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.arima</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_arima</span>
 
@@ -364,8 +487,8 @@
 <div class="viewcode-block" id="TimeSeries.ar">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.ar">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fit an AutoRegressive AR(p) model.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit an AutoRegressive AR(p) model.</span>
+
 <span class="sd">        Shortcut for .arima(order=(p, 0, 0)).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -374,8 +497,8 @@
 <div class="viewcode-block" id="TimeSeries.ma">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.ma">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">ma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fit a Moving Average MA(q) model.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit a Moving Average MA(q) model.</span>
+
 <span class="sd">        Shortcut for .arima(order=(0, 0, q)).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -384,8 +507,8 @@
 <div class="viewcode-block" id="TimeSeries.arma">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.arma">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">arma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fit an ARMA(p, q) model.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit an ARMA(p, q) model.</span>
+
 <span class="sd">        Shortcut for .arima(order=(p, 0, q)).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">q</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -420,7 +543,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

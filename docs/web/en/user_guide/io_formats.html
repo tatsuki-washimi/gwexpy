@@ -4,33 +4,99 @@
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Choose the right direct file or network I/O path in GWexpy, including supported formats, read/write limits, fetch routes, and when to set format= explicitly." name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File I/O Supported Formats Guide &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/io_formats.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Tutorials" href="tutorials/index.html" />
-    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+    <link rel="next" title="Reference" href="../reference/index.html" />
+    <link rel="prev" title="Glitch Analysis: Q-Transform and Omega-Scan" href="tutorials/case_glitch_analysis.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../ja/user_guide/io_formats.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,57 +110,75 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">File I/O Supported Formats Guide</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#supported-formats-overview">Supported Formats Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#format-details">Format Details</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#design-level-support-no-dedicated-implementation-in-gwexpy">Design-Level Support (No Dedicated Implementation in gwexpy)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#unimplemented-stub-formats">Unimplemented (Stub) Formats</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#basic-usage-of-read-write">Basic Usage of <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reference-source-implementation-files">Reference: Source Implementation Files</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">File I/O Supported Formats Guide</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#at-a-glance">At a Glance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#first-decision-rules">First: Decision Rules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jump-links">Jump Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quick-selection-table">Quick Selection Table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#basic-read-write-fetch-usage">Basic <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#supported-classes-at-a-glance">Supported Classes at a Glance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#a-gw-standards">A. GW Standards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b-seismic-and-geophysical-observation">B. Seismic and Geophysical Observation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-general-analysis-and-exchange">C. General Analysis and Exchange</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-loggers-and-instrument-formats">D. Loggers and Instrument Formats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#developer-notes">Developer Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-pages">Related Pages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#next-to-read">Next to Read</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#page-end-navigation">Page-End Navigation</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -109,998 +193,629 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="file-i-o-supported-formats-guide">
+  <p><a id="io-formats-en-top"></a></p>
+<section class="tex2jax_ignore mathjax_ignore" id="file-i-o-supported-formats-guide">
 <h1>File I/O Supported Formats Guide<a class="headerlink" href="#file-i-o-supported-formats-guide" title="Link to this heading"></a></h1>
-<p>A comprehensive guide to all file formats supported by gwexpy, including how to read and write each format.
-This page covers only the end-user API (<code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> class methods) and does not expose internal implementation details.</p>
-<section id="supported-formats-overview">
-<h2>Supported Formats Overview<a class="headerlink" href="#supported-formats-overview" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p><strong>Page Role:</strong> Guide</p>
+</div></blockquote>
+<p>This is the end-user I/O guide for <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>.
+This page only covers the public <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> style APIs that users call directly.</p>
+<p>It does <strong>not</strong> cover <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> conversions or object bridges to xarray, ROOT objects, or Zarr arrays. For those topics, see the <a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">interop tutorial</span></a> and the <a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">interop API reference</span></a>.</p>
+<section id="at-a-glance">
+<h2>At a Glance<a class="headerlink" href="#at-a-glance" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Format</p></th>
-<th class="head"><p>Extension</p></th>
-<th class="head text-center"><p>Read</p></th>
-<th class="head text-center"><p>Write</p></th>
-<th class="head"><p>Recommended Class / Method</p></th>
-<th class="head"><p>Dependencies</p></th>
-<th class="head"><p>Notes</p></th>
+<tr class="row-odd"><th class="head"><p>Item</p></th>
+<th class="head"><p>Details</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>GWF</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.gwf</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code></p></td>
-<td><p>— (gwpy built-in)</p></td>
-<td><p>gwpy standard format</p></td>
+<tr class="row-even"><td><p><strong>Audience</strong></p></td>
+<td><p>Users choosing a direct file or network I/O path for <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> objects</p></td>
 </tr>
-<tr class="row-odd"><td><p>HDF5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;hdf5&quot;)</span></code></p></td>
-<td><p>— (gwpy built-in)</p></td>
-<td><p>gwpy standard</p></td>
+<tr class="row-odd"><td><p><strong>Prerequisites</strong></p></td>
+<td><p>Basic familiarity with <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, file extensions, and the difference between direct I/O and interop conversion</p></td>
 </tr>
-<tr class="row-even"><td><p>LIGO_LW XML (DTTXML)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml.gz</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;dttxml&quot;)</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict.read(format=&quot;dttxml&quot;)</span></code></p></td>
-<td><p>—</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">products</span></code> argument required</p></td>
+<tr class="row-even"><td><p><strong>Use Cases</strong></p></td>
+<td><p>Pick a supported format, decide when to set <code class="docutils literal notranslate"><span class="pre">format=</span></code>, identify read/write limits, and avoid confusing direct I/O with object conversion</p></td>
 </tr>
-<tr class="row-odd"><td><p>CSV / TXT</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.txt</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;csv&quot;)</span></code></p></td>
-<td><p>— (gwpy built-in)</p></td>
-<td><p>ASCII format. Supports directory loading</p></td>
+<tr class="row-odd"><td><p><strong>Search Hints</strong></p></td>
+<td><p>file I/O, direct I/O, <code class="docutils literal notranslate"><span class="pre">read</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC</p></td>
 </tr>
-<tr class="row-even"><td><p>Pickle</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.pkl</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(format=&quot;pickle&quot;)</span></code></p></td>
-<td><p>—</p></td>
-<td><p>Python serialization</p></td>
+</tbody>
+</table>
+<p><strong>Search hints:</strong> file I/O, direct I/O, <code class="docutils literal notranslate"><span class="pre">read</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>Security Warning: Pickle Files</strong></p>
+<p><strong>Pickle</strong> (:term:<code class="docutils literal notranslate"><span class="pre">Pickle</span></code>) is convenient, but reading Pickle files from untrusted sources is dangerous. A malicious Pickle file can execute arbitrary code on your system.</p>
+<p>For data sharing and long-term storage, prefer structured formats such as <strong>HDF5</strong>, <strong>GWF</strong>, or <strong>Zarr</strong>.</p>
+</div>
+</section>
+<section id="first-decision-rules">
+<h2>First: Decision Rules<a class="headerlink" href="#first-decision-rules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>If you need a <strong>default GW storage format</strong>, start with <strong>HDF5</strong>. For existing seismic or geophysical assets, start with <strong>MiniSEED / SAC / WIN / ATS</strong>. For general interchange, start with <strong>CSV / NetCDF4 / Zarr</strong>. For logger- or device-specific data, start with <strong>GBD / TDMS / SDB / WAV / Audio</strong>. For <strong>MTH5</strong>, the current public direct-I/O story is only the single <strong><code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code></strong> path. A generic standalone <strong><code class="docutils literal notranslate"><span class="pre">format=&quot;mth5&quot;</span></code></strong> route is not published yet.</p></li>
+<li><p><strong>Auto-detect is fine</strong> when the extension uniquely selects one reader.</p></li>
+<li><p><strong>Set <code class="docutils literal notranslate"><span class="pre">format=</span></code> explicitly</strong> for ambiguous extensions such as <code class="docutils literal notranslate"><span class="pre">.xml</span></code>, for custom lab extensions, or whenever auto-detection is unclear.</p></li>
+<li><p><strong>Pass <code class="docutils literal notranslate"><span class="pre">timezone</span></code> explicitly</strong> when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, <strong>GBD</strong> is the main required case.</p></li>
+<li><p><strong>Read-only / write-only matters</strong>: <code class="docutils literal notranslate"><span class="pre">○</span> <span class="pre">/</span> <span class="pre">×</span></code> means a format can be read but not written.</p></li>
+<li><p>If you need to preserve <strong>Field</strong> objects safely, this page treats <strong>HDF5</strong> and <strong>Pickle</strong> as the direct-I/O baseline. NetCDF4 / Zarr / ROOT object bridges belong to interop, not to this page.</p></li>
+</ul>
+</section>
+<section id="jump-links">
+<h2>Jump Links<a class="headerlink" href="#jump-links" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a href="#io-formats-en-quick">Quick Selection Table</a></p></li>
+<li><p><a href="#io-formats-en-basic">Basic <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> Usage</a></p></li>
+<li><p><a href="#io-formats-en-a">A. GW Standards</a></p></li>
+<li><p><a href="#io-formats-en-b">B. Seismic and Geophysical Observation</a></p></li>
+<li><p><a href="#io-formats-en-c">C. General Analysis and Exchange</a></p></li>
+<li><p><a href="#io-formats-en-d">D. Loggers and Instrument Formats</a></p></li>
+<li><p><a href="#io-formats-en-dev">Developer Notes</a></p></li>
+</ul>
+<p><a id="io-formats-en-quick"></a></p>
+</section>
+<section id="quick-selection-table">
+<h2>Quick Selection Table<a class="headerlink" href="#quick-selection-table" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Group</p></th>
+<th class="head"><p>Start here when…</p></th>
+<th class="head"><p>First format</p></th>
+<th class="head"><p>Formats covered here</p></th>
 </tr>
-<tr class="row-odd"><td><p>WAV</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.wav</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.wav&quot;)</span></code></p></td>
-<td><p>scipy</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">t0</span></code> always 0 (no absolute time)</p></td>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>A. GW Standards</strong></p></td>
+<td><p>You want standard GW storage, exchange, or acquisition paths</p></td>
+<td><p><strong>HDF5</strong></p></td>
+<td><p>GWF, HDF5, ndscope-hdf5, DTTXML, NDS2, GWOSC</p></td>
 </tr>
-<tr class="row-even"><td><p>MiniSEED</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.mseed</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;miniseed&quot;)</span></code></p></td>
-<td><p>ObsPy</p></td>
-<td><p>Seismic waveform format</p></td>
+<tr class="row-odd"><td><p><strong>B. Seismic and Geophysical Observation</strong></p></td>
+<td><p>You need to read existing seismic or EM observation data</p></td>
+<td><p><strong>MiniSEED</strong></p></td>
+<td><p>MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here)</p></td>
 </tr>
-<tr class="row-odd"><td><p>SAC</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.sac</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;sac&quot;)</span></code></p></td>
-<td><p>ObsPy</p></td>
-<td><p>Seismic waveform format</p></td>
+<tr class="row-even"><td><p><strong>C. General Analysis and Exchange</strong></p></td>
+<td><p>You need general-purpose storage or external analysis exchange</p></td>
+<td><p><strong>CSV / TXT</strong> or <strong>Zarr</strong></p></td>
+<td><p>CSV / TXT, NetCDF4, Zarr, Pickle, ROOT</p></td>
 </tr>
-<tr class="row-even"><td><p>GSE2</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.gse2</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;gse2&quot;)</span></code></p></td>
-<td><p>ObsPy</p></td>
-<td><p>Seismic waveform format</p></td>
-</tr>
-<tr class="row-odd"><td><p>KNET</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.knet</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;knet&quot;)</span></code></p></td>
-<td><p>ObsPy</p></td>
-<td><p>K-NET strong motion records</p></td>
-</tr>
-<tr class="row-even"><td><p>GBD</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.gbd</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.gbd&quot;,</span> <span class="pre">timezone=...)</span></code></p></td>
-<td><p>—</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> required</p></td>
-</tr>
-<tr class="row-odd"><td><p>WIN / WIN32</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.win</span></code>, <code class="docutils literal notranslate"><span class="pre">.cnt</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;win&quot;)</span></code></p></td>
-<td><p>ObsPy</p></td>
-<td><p>NIED WIN format (improved parser)</p></td>
-</tr>
-<tr class="row-even"><td><p>MTH5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.h5</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(format=&quot;ats.mth5&quot;)</span></code></p></td>
-<td><p>mth5</p></td>
-<td><p>Magnetometer data (design-level support)</p></td>
-</tr>
-<tr class="row-odd"><td><p>ATS</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.ats</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.ats&quot;)</span></code></p></td>
-<td><p>—</p></td>
-<td><p>Metronix binary parser</p></td>
-</tr>
-<tr class="row-even"><td><p>ROOT</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.root</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">EventTable.read(format=&quot;root&quot;)</span></code></p></td>
-<td><p>— (via gwpy)</p></td>
-<td><p>CERN ROOT tables</p></td>
-</tr>
-<tr class="row-odd"><td><p>SQLite / SDB</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">.db</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.sdb&quot;)</span></code></p></td>
-<td><p>—</p></td>
-<td><p>WeeWX / Davis weather data</p></td>
-</tr>
-<tr class="row-even"><td><p>NetCDF4</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.nc</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;netcdf4&quot;)</span></code></p></td>
-<td><p>xarray, netcdf4</p></td>
-<td><p>Auto-detects time dimension</p></td>
-</tr>
-<tr class="row-odd"><td><p>Zarr</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.zarr</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;zarr&quot;)</span></code></p></td>
-<td><p>zarr</p></td>
-<td><p>Cloud-optimized chunked arrays</p></td>
-</tr>
-<tr class="row-even"><td><p>Audio (MP3, FLAC, etc.)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.mp3</span></code>, <code class="docutils literal notranslate"><span class="pre">.flac</span></code>, <code class="docutils literal notranslate"><span class="pre">.ogg</span></code>, <code class="docutils literal notranslate"><span class="pre">.m4a</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>Y</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.mp3&quot;)</span></code></p></td>
-<td><p>pydub (+ffmpeg)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">t0</span></code> always 0 (same as WAV)</p></td>
-</tr>
-<tr class="row-odd"><td><p>NDS2</p></td>
-<td><p>(network)</p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.fetch(...)</span></code></p></td>
-<td><p>nds2-client</p></td>
-<td><p>Network data server</p></td>
-</tr>
-<tr class="row-even"><td><p>TDMS</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.tdms</span></code></p></td>
-<td class="text-center"><p>Y</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.tdms&quot;)</span></code></p></td>
-<td><p>npTDMS</p></td>
-<td><p>National Instruments</p></td>
-</tr>
-<tr class="row-odd"><td><p>ORF</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.orf</span></code></p></td>
-<td class="text-center"><p>N</p></td>
-<td class="text-center"><p>N</p></td>
-<td><p>—</p></td>
-<td><p>—</p></td>
-<td><p>Not implemented (stub)</p></td>
+<tr class="row-odd"><td><p><strong>D. Loggers and Instrument Formats</strong></p></td>
+<td><p>You are working with device- or logger-specific time series</p></td>
+<td><p><strong>GBD</strong> or <strong>TDMS</strong></p></td>
+<td><p>GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A</p></td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<div><p><strong>Note</strong>: Formats marked “gwpy built-in” (GWF, HDF5, CSV/TXT, Pickle) are handled through gwpy’s built-in IO pathways. Since gwexpy extends gwpy, these are available out of the box.</p>
+<div><p><strong>Note</strong>: <code class="docutils literal notranslate"><span class="pre">NDS2</span></code> and <code class="docutils literal notranslate"><span class="pre">GWOSC</span></code> are not file formats. They are included in <strong>A. GW Standards</strong> because they are common GW data entry points. In the tables below, they are labeled as <code class="docutils literal notranslate"><span class="pre">network</span> <span class="pre">path</span></code>.</p>
 </div></blockquote>
+<p><a id="io-formats-en-basic"></a></p>
 </section>
-<hr class="docutils" />
-<section id="format-details">
-<h2>Format Details<a class="headerlink" href="#format-details" title="Link to this heading"></a></h2>
-<section id="gbd-graphtec-data-logger-gbd">
-<h3>GBD — GRAPHTEC Data Logger <code class="docutils literal notranslate"><span class="pre">.gbd</span></code><a class="headerlink" href="#gbd-graphtec-data-logger-gbd" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.gbd</span></code>
-<strong>Read/Write</strong>: Read Y / Write N
-<strong>Recommended API</strong>:</p>
+<section id="basic-read-write-fetch-usage">
+<h2>Basic <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> Usage<a class="headerlink" href="#basic-read-write-fetch-usage" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Purpose: show the baseline direct-I/O entry points before format-specific details</p></li>
+<li><p>Input: file paths, an explicit <code class="docutils literal notranslate"><span class="pre">format=</span></code> when needed, or a detector/network query</p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, or other direct-I/O return objects</p></li>
+</ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/logger.gbd&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> (str or tzinfo) — Logger’s local timezone (IANA name, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Asia/Tokyo&quot;</span></code> or UTC offset). <strong>Required</strong>. Omitting raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
-</ul>
-<p><strong>Key optional arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (iterable[str], optional) — List of channel names to load. Defaults to all channels.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">digital_channels</span></code> (iterable[str], optional) — Channel names to treat as digital. Defaults to auto-detecting <code class="docutils literal notranslate"><span class="pre">ALARM</span></code>, <code class="docutils literal notranslate"><span class="pre">ALARMOUT</span></code>, <code class="docutils literal notranslate"><span class="pre">PULSE*</span></code>, <code class="docutils literal notranslate"><span class="pre">LOGIC*</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str or Unit, optional) — Physical unit override. Default <code class="docutils literal notranslate"><span class="pre">'V'</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epoch</span></code> (float or datetime, optional) — Epoch (GPS seconds) override. Datetimes are converted to GPS.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pad</span></code> (float, optional) — Padding value. Default <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p></li>
-</ul>
-<p><strong>Dependencies</strong>: None (native implementation)</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Digital channels (<code class="docutils literal notranslate"><span class="pre">ALARM</span></code>, <code class="docutils literal notranslate"><span class="pre">PULSE*</span></code>, etc.) are binarized to 0/1.</p></li>
-<li><p>If the <code class="docutils literal notranslate"><span class="pre">HeaderSiz</span></code> field is missing from the header, a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised.</p></li>
-<li><p>Scale factors are automatically extracted from the AMP section.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/gbd.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="ats-metronix-ats">
-<h3>ATS — Metronix <code class="docutils literal notranslate"><span class="pre">.ats</span></code><a class="headerlink" href="#ats-metronix-ats" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.ats</span></code>
-<strong>Read/Write</strong>: Read Y / Write N
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.ats&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Reading via the mth5 library (for <code class="docutils literal notranslate"><span class="pre">.atss</span></code> files):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.atss&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ats.mth5&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>: None (metadata is automatically extracted from the binary header)</p>
-<p><strong>Dependencies</strong>:</p>
-<ul class="simple">
-<li><p>Standard reader: None (native binary parser)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> format: Requires the <code class="docutils literal notranslate"><span class="pre">mth5</span></code> library. Raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> if not installed.</p></li>
-</ul>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Supports ATS header versions 80/81. CEA/sliced headers (version 1080) are not supported (<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>).</p></li>
-<li><p>LSB values (mV/count) are automatically converted to Volts (V).</p></li>
-<li><p>Channel names are auto-generated from header info in the format <code class="docutils literal notranslate"><span class="pre">Metronix_{system}_{serial}_{type}_{sensor}_{serial}</span></code>.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> format requires mth5’s filename conventions. Use the default binary parser if file names do not conform.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/ats.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="sdb-weewx-davis-weather-station-sdb">
-<h3>SDB — WeeWX / Davis Weather Station <code class="docutils literal notranslate"><span class="pre">.sdb</span></code><a class="headerlink" href="#sdb-weewx-davis-weather-station-sdb" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code>
-<strong>Read/Write</strong>: Read Y / Write N
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/weewx.sdb&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">table</span></code> (str, optional) — Table name to read. Default <code class="docutils literal notranslate"><span class="pre">'archive'</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">columns</span></code> (list[str], optional) — Column names to read. Defaults to known weather columns (<code class="docutils literal notranslate"><span class="pre">barometer</span></code>, <code class="docutils literal notranslate"><span class="pre">outTemp</span></code>, <code class="docutils literal notranslate"><span class="pre">windSpeed</span></code>, etc.).</p></li>
-</ul>
-<p><strong>Dependencies</strong>: None (uses stdlib <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> + <code class="docutils literal notranslate"><span class="pre">pandas</span></code>)</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Automatic conversion from Imperial to SI units (e.g. degF to degC, inHg to hPa, mph to m/s, inch to mm).</p></li>
-<li><p>The table must have a <code class="docutils literal notranslate"><span class="pre">dateTime</span></code> column (UNIX timestamp).</p></li>
-<li><p>Sample rate is auto-estimated from the median <code class="docutils literal notranslate"><span class="pre">dateTime</span></code> interval.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/sdb.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="tdms-national-instruments-tdms">
-<h3>TDMS — National Instruments <code class="docutils literal notranslate"><span class="pre">.tdms</span></code><a class="headerlink" href="#tdms-national-instruments-tdms" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.tdms</span></code>
-<strong>Read/Write</strong>: Read Y / Write N
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.tdms&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (list[str], optional) — Channels to read. Channel names use the format <code class="docutils literal notranslate"><span class="pre">&quot;GroupName/ChannelName&quot;</span></code>. Defaults to all channels.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — Physical unit override.</p></li>
-</ul>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">npTDMS</span></code> — Raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> if not installed, with a message suggesting <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nptdms</span></code>.</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Channel names are stored in <code class="docutils literal notranslate"><span class="pre">&quot;GroupName/ChannelName&quot;</span></code> format.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">wf_increment</span></code> (sample interval) and <code class="docutils literal notranslate"><span class="pre">wf_start_time</span></code> (start time) are read from TDMS properties.</p></li>
-<li><p>Start times as <code class="docutils literal notranslate"><span class="pre">numpy.datetime64</span></code> or <code class="docutils literal notranslate"><span class="pre">datetime</span></code> are automatically converted to GPS time.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/tdms.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="wav-audio-file-wav">
-<h3>WAV — Audio File <code class="docutils literal notranslate"><span class="pre">.wav</span></code><a class="headerlink" href="#wav-audio-file-wav" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.wav</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/audio.wav&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>: None</p>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">scipy</span></code> (<code class="docutils literal notranslate"><span class="pre">scipy.io.wavfile</span></code>) — included in gwexpy’s recommended dependencies.</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">t0</span></code> is always set to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> (GPS seconds). WAV files do not carry absolute timestamps.</p></li>
-<li><p>Multi-channel files have channel names <code class="docutils literal notranslate"><span class="pre">channel_0</span></code>, <code class="docutils literal notranslate"><span class="pre">channel_1</span></code>, etc.</p></li>
-<li><p>Mono files are automatically loaded as a single channel.</p></li>
-<li><p>Writing uses the gwpy standard WAV writer pathway.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/wav.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="miniseed-seismic-waveform-mseed">
-<h3>MiniSEED — Seismic Waveform <code class="docutils literal notranslate"><span class="pre">.mseed</span></code><a class="headerlink" href="#miniseed-seismic-waveform-mseed" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.mseed</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="c1"># Read</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
-
-<span class="c1"># Write</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (list[str], optional) — Channels to read. Specify by trace ID (<code class="docutils literal notranslate"><span class="pre">NET.STA.LOC.CHA</span></code>) or channel code.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — Physical unit override.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epoch</span></code> (float or datetime, optional) — Epoch override.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> (str, optional) — Timezone specification.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pad</span></code> (float, optional) — Gap fill value. Default <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">gap</span></code> (str, optional) — Gap handling method. <code class="docutils literal notranslate"><span class="pre">&quot;pad&quot;</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code>.</p></li>
-</ul>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code> — Raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> if not installed, with a message suggesting <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">obspy</span></code>.</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Data is read via ObsPy’s <code class="docutils literal notranslate"><span class="pre">read()</span></code> function.</p></li>
-<li><p>Gaps are padded with <code class="docutils literal notranslate"><span class="pre">NaN</span></code> by default. Use <code class="docutils literal notranslate"><span class="pre">gap=&quot;raise&quot;</span></code> to raise an error instead.</p></li>
-<li><p>Automatic trace merging (<code class="docutils literal notranslate"><span class="pre">merge(method=1)</span></code>) is applied.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="sac-seismic-waveform-sac">
-<h3>SAC — Seismic Waveform <code class="docutils literal notranslate"><span class="pre">.sac</span></code><a class="headerlink" href="#sac-seismic-waveform-sac" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.sac</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.sac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sac&quot;</span><span class="p">)</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.sac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sac&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>: Same as MiniSEED (<code class="docutils literal notranslate"><span class="pre">channels</span></code>, <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, <code class="docutils literal notranslate"><span class="pre">timezone</span></code>, <code class="docutils literal notranslate"><span class="pre">pad</span></code>, <code class="docutils literal notranslate"><span class="pre">gap</span></code>).</p>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code></p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>SAC is typically one trace per file. Multi-trace writing behavior depends on ObsPy.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="gse2-seismic-waveform-gse2">
-<h3>GSE2 — Seismic Waveform <code class="docutils literal notranslate"><span class="pre">.gse2</span></code><a class="headerlink" href="#gse2-seismic-waveform-gse2" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.gse2</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.gse2&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gse2&quot;</span><span class="p">)</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.gse2&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gse2&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>: Same as MiniSEED (<code class="docutils literal notranslate"><span class="pre">channels</span></code>, <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, <code class="docutils literal notranslate"><span class="pre">timezone</span></code>, <code class="docutils literal notranslate"><span class="pre">pad</span></code>, <code class="docutils literal notranslate"><span class="pre">gap</span></code>).</p>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code></p>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="knet-k-net-strong-motion-records-knet">
-<h3>KNET — K-NET Strong Motion Records <code class="docutils literal notranslate"><span class="pre">.knet</span></code><a class="headerlink" href="#knet-k-net-strong-motion-records-knet" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.knet</span></code>
-<strong>Read/Write</strong>: Read Y / Write N
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.knet&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;knet&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>: Same as MiniSEED (<code class="docutils literal notranslate"><span class="pre">channels</span></code>, <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, <code class="docutils literal notranslate"><span class="pre">timezone</span></code>, <code class="docutils literal notranslate"><span class="pre">pad</span></code>, <code class="docutils literal notranslate"><span class="pre">gap</span></code>).</p>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code></p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Read-only. No writer is registered.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="win-win32-nied-win-format-win-cnt">
-<h3>WIN / WIN32 — NIED WIN Format <code class="docutils literal notranslate"><span class="pre">.win</span></code> / <code class="docutils literal notranslate"><span class="pre">.cnt</span></code><a class="headerlink" href="#win-win32-nied-win-format-win-cnt" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.win</span></code>, <code class="docutils literal notranslate"><span class="pre">.cnt</span></code>
-<strong>Read/Write</strong>: Read Y / Write N
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.win&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;win&quot;</span><span class="p">)</span>
-<span class="c1"># or</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.cnt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;win32&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">century</span></code> (str, optional) — Century part of the year. Default <code class="docutils literal notranslate"><span class="pre">&quot;20&quot;</span></code>.</p></li>
-</ul>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code> — If ObsPy is not installed, the reader is not registered and an <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> is raised.</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Uses gwexpy’s improved parser over ObsPy’s standard WIN reader, with the following fixes:</p>
-<ul>
-<li><p>0.5-byte (4-bit) delta decode: fixed lower nibble sign handling; skip unused nibble on odd delta counts.</p></li>
-<li><p>3-byte (24-bit) delta decode: fixed operator precedence and sign-preserving unpack/shift.</p></li>
-</ul>
-</li>
-<li><p>Gaps are merged with <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="dttxml-diag-dtt-xml-time-series-frequency-series">
-<h3>DTTXML — Diag DTT XML (Time Series &amp; Frequency Series)<a class="headerlink" href="#dttxml-diag-dtt-xml-time-series-frequency-series" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml.gz</span></code>
-<strong>Read/Write</strong>: Read Y / Write N
-<strong>Recommended API (time series)</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/dtt_output.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TS&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Recommended API (frequency series)</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
-
-<span class="n">fsd</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/dtt_output.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;PSD&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries.matrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
-
-<span class="n">fsm</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/dtt_output.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TF&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">products</span></code> (str) — Product type to extract. <strong>Required</strong>. Raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if omitted.</p>
-<ul>
-<li><p>Time series: <code class="docutils literal notranslate"><span class="pre">&quot;TS&quot;</span></code></p></li>
-<li><p>Frequency series: <code class="docutils literal notranslate"><span class="pre">&quot;PSD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ASD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;FFT&quot;</span></code></p></li>
-<li><p>Matrix: <code class="docutils literal notranslate"><span class="pre">&quot;TF&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;STF&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;CSD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;COH&quot;</span></code></p></li>
-</ul>
-</li>
-</ul>
-<p><strong>Key optional arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (iterable[str], optional) — List of channels to read.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — Physical unit override.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">epoch</span></code> (float or datetime, optional) — Epoch override.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> (str, optional) — Timezone specification.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">native</span></code> (bool, optional) — If <code class="docutils literal notranslate"><span class="pre">True</span></code>, uses gwexpy’s native XML parser. Recommended for complex TF data (subtype 6 phase loss fix). Default <code class="docutils literal notranslate"><span class="pre">False</span></code>. (FrequencySeriesDict / FrequencySeriesMatrix only)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rows</span></code>, <code class="docutils literal notranslate"><span class="pre">cols</span></code>, <code class="docutils literal notranslate"><span class="pre">pairs</span></code> — Matrix filtering (FrequencySeriesMatrix only).</p></li>
-</ul>
-<p><strong>Dependencies</strong>: None (native implementation)</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Supports both time-series and frequency-domain data. The output type is determined by the <code class="docutils literal notranslate"><span class="pre">products</span></code> value.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">.xml</span></code> extension is auto-identified (<code class="docutils literal notranslate"><span class="pre">format=&quot;dttxml&quot;</span></code> can be omitted).</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/dttxml.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/dttxml.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="gwf-gravitational-wave-frame-gwf">
-<h3>GWF — Gravitational Wave Frame <code class="docutils literal notranslate"><span class="pre">.gwf</span></code><a class="headerlink" href="#gwf-gravitational-wave-frame-gwf" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.gwf</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.gwf&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gwf&quot;</span><span class="p">)</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.gwf&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gwf&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None (follows gwpy standard arguments)</p>
-<p><strong>Dependencies</strong>: — (gwpy standard. Internally uses <code class="docutils literal notranslate"><span class="pre">python-ldas-tools-framecpp</span></code>, etc.)</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Handled through gwpy’s standard IO pathway. No custom reader/writer in gwexpy.</p></li>
-</ul>
-<p><strong>Implementation</strong>: gwpy standard (<code class="docutils literal notranslate"><span class="pre">gwpy/timeseries/io/gwf.py</span></code>)</p>
-</section>
-<hr class="docutils" />
-<section id="hdf5-general-scientific-data-h5-hdf5">
-<h3>HDF5 — General Scientific Data <code class="docutils literal notranslate"><span class="pre">.h5</span></code> / <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code><a class="headerlink" href="#hdf5-general-scientific-data-h5-hdf5" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">h5py</span></code> (included in gwexpy’s required dependencies)</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>gwexpy’s <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> has extended HDF5 loading logic.</p></li>
-<li><p>Supports automatic layout detection (<code class="docutils literal notranslate"><span class="pre">LAYOUT_DATASET</span></code> / <code class="docutils literal notranslate"><span class="pre">LAYOUT_GROUP</span></code>).</p></li>
-<li><p>Supports keymap and ordering restoration.</p></li>
-</ul>
-<p><strong>Implementation</strong>: gwpy standard (<code class="docutils literal notranslate"><span class="pre">gwpy/timeseries/io/hdf5.py</span></code>) + gwexpy extension (<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/collections.py</span></code>)</p>
-</section>
-<hr class="docutils" />
-<section id="csv-txt-ascii-text-csv-txt">
-<h3>CSV / TXT — ASCII Text <code class="docutils literal notranslate"><span class="pre">.csv</span></code> / <code class="docutils literal notranslate"><span class="pre">.txt</span></code><a class="headerlink" href="#csv-txt-ascii-text-csv-txt" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.txt</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="c1"># Single file</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.csv&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">)</span>
-
-<span class="c1"># Load all files from a directory</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data_dir/&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Dependencies</strong>: None (gwpy standard)</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>gwexpy supports loading all CSV/TXT files from a directory as a single <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>.</p></li>
-</ul>
-<p><strong>Implementation</strong>: gwpy standard (<code class="docutils literal notranslate"><span class="pre">gwpy/timeseries/io/ascii.py</span></code>) + gwexpy extension (<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/collections.py</span></code>)</p>
-</section>
-<hr class="docutils" />
-<section id="pickle-python-serialization-pkl">
-<h3>Pickle — Python Serialization <code class="docutils literal notranslate"><span class="pre">.pkl</span></code><a class="headerlink" href="#pickle-python-serialization-pkl" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.pkl</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.pkl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pickle&quot;</span><span class="p">)</span>
-<span class="n">ts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.pkl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pickle&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Dependencies</strong>: None</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Uses gwpy’s standard serialization pathway. Only use with files from trusted sources (standard pickle security considerations apply).</p></li>
-</ul>
-<p><strong>Implementation</strong>: gwpy standard</p>
-</section>
-<hr class="docutils" />
-<section id="root-cern-root-root">
-<h3>ROOT — CERN ROOT <code class="docutils literal notranslate"><span class="pre">.root</span></code><a class="headerlink" href="#root-cern-root-root" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.root</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventTable</span>
-
-<span class="n">table</span> <span class="o">=</span> <span class="n">EventTable</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.root&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Dependencies</strong>: — (via gwpy’s table/root pathway)</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>gwexpy’s <code class="docutils literal notranslate"><span class="pre">table/io/root.py</span></code> is a re-export of gwpy’s module of the same name.</p></li>
-<li><p>Primarily used for event table data.</p></li>
-</ul>
-<p><strong>Implementation</strong>: gwpy standard (<code class="docutils literal notranslate"><span class="pre">gwpy/table/io/root.py</span></code>) — via gwexpy: <code class="docutils literal notranslate"><span class="pre">gwexpy/table/io/root.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="nds2-network-data-server">
-<h3>NDS2 — Network Data Server<a class="headerlink" href="#nds2-network-data-server" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: None (network protocol)
-<strong>Read/Write</strong>: Read Y / Write N
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> (Python bindings)</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Network-based data retrieval, not file I/O.</p></li>
-<li><p>Uses gwpy’s standard <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> method.</p></li>
-</ul>
-<p><strong>Implementation</strong>: gwpy standard (<code class="docutils literal notranslate"><span class="pre">gwpy/timeseries/io/nds2.py</span></code>)</p>
-</section>
-<hr class="docutils" />
-<section id="audio-mp3-flac-ogg-m4a-via-pydub">
-<h3>Audio — MP3 / FLAC / OGG / M4A (via pydub)<a class="headerlink" href="#audio-mp3-flac-ogg-m4a-via-pydub" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.mp3</span></code>, <code class="docutils literal notranslate"><span class="pre">.flac</span></code>, <code class="docutils literal notranslate"><span class="pre">.ogg</span></code>, <code class="docutils literal notranslate"><span class="pre">.m4a</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="c1"># Read (auto-detected by extension)</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/audio.mp3&quot;</span><span class="p">)</span>
+<span class="c1"># Auto-detect from extension</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.mseed&quot;</span><span class="p">)</span>
 
 <span class="c1"># Explicit format</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/audio.dat&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;flac&quot;</span><span class="p">)</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.dat&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
 
-<span class="c1"># Write</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.flac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;flac&quot;</span><span class="p">)</span>
+<span class="c1"># Write out</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+
+<span class="c1"># Network path</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch_open_data</span><span class="p">(</span><span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="mi">1126259446</span><span class="p">,</span> <span class="mi">1126259478</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (iterable[str], optional) — Channel names to read (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;channel_0&quot;</span></code>).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — Physical unit override.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> uses the gwpy-style I/O registry.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.xml</span></code> is ambiguous, so <strong>use <code class="docutils literal notranslate"><span class="pre">format=&quot;dttxml&quot;</span></code> explicitly</strong> for DTTXML data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NDS2</span></code> and <code class="docutils literal notranslate"><span class="pre">GWOSC</span></code> are not file readers, so they use <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch_open_data()</span></code> instead of <code class="docutils literal notranslate"><span class="pre">.read()</span></code>.</p></li>
 </ul>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">pydub</span></code> — Raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> if not installed, with a message suggesting <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pydub</span></code>. MP3/M4A encoding also requires <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code> (<code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span> <span class="pre">ffmpeg</span></code> or equivalent). FLAC may work without ffmpeg.</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">t0</span></code> is always set to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> (GPS seconds). Audio files carry no absolute timestamps (same behavior as WAV).</p></li>
-<li><p>On read, sample values are normalized to the <code class="docutils literal notranslate"><span class="pre">[-1.0,</span> <span class="pre">1.0]</span></code> range.</p></li>
-<li><p>Multi-channel files use channel names <code class="docutils literal notranslate"><span class="pre">channel_0</span></code>, <code class="docutils literal notranslate"><span class="pre">channel_1</span></code>, etc.</p></li>
-<li><p>On write, data is rescaled to peak-normalized 16-bit PCM.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/audio.py</span></code></p>
 </section>
-<hr class="docutils" />
-<section id="netcdf4-scientific-data-nc-via-xarray">
-<h3>NetCDF4 — Scientific Data <code class="docutils literal notranslate"><span class="pre">.nc</span></code> (via xarray)<a class="headerlink" href="#netcdf4-scientific-data-nc-via-xarray" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.nc</span></code>
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.nc&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;netcdf4&quot;</span><span class="p">)</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.nc&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;netcdf4&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (list[str], optional) — Variable names to read. Defaults to all variables with a time dimension.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — Physical unit override. Defaults to the file’s <code class="docutils literal notranslate"><span class="pre">units</span></code> attribute.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">time_coord</span></code> (str, optional) — Name of the time coordinate. Auto-detected if omitted (looks for <code class="docutils literal notranslate"><span class="pre">&quot;time&quot;</span></code>).</p></li>
-</ul>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">xarray</span></code> + <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> — Raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> if not installed, with a message suggesting <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">xarray</span> <span class="pre">netcdf4</span></code>.</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>Only variables with a time dimension (<code class="docutils literal notranslate"><span class="pre">time</span></code>) are converted to <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>. Variables without a time dimension are skipped.</p></li>
-<li><p>Time coordinates are automatically converted from <code class="docutils literal notranslate"><span class="pre">datetime64</span></code> to GPS seconds.</p></li>
-<li><p>Multi-dimensional variables (time + spatial, etc.) are flattened along non-time dimensions, resulting in <code class="docutils literal notranslate"><span class="pre">varname_0</span></code>, <code class="docutils literal notranslate"><span class="pre">varname_1</span></code>, etc.</p></li>
-<li><p>On write, the <code class="docutils literal notranslate"><span class="pre">datetime64</span></code> time coordinate is reconstructed from <code class="docutils literal notranslate"><span class="pre">t0</span></code> and <code class="docutils literal notranslate"><span class="pre">dt</span></code>.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/netcdf4_.py</span></code></p>
-</section>
-<hr class="docutils" />
-<section id="zarr-cloud-optimized-chunked-arrays-zarr">
-<h3>Zarr — Cloud-Optimized Chunked Arrays <code class="docutils literal notranslate"><span class="pre">.zarr</span></code><a class="headerlink" href="#zarr-cloud-optimized-chunked-arrays-zarr" title="Link to this heading"></a></h3>
-<p><strong>Extension</strong>: <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> (directory store)
-<strong>Read/Write</strong>: Read Y / Write Y
-<strong>Recommended API</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.zarr&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;zarr&quot;</span><span class="p">)</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.zarr&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;zarr&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>Required arguments</strong>: None</p>
-<p><strong>Key optional arguments</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (list[str], optional) — Array names to read. Defaults to all arrays in the root group.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — Physical unit override.</p></li>
-</ul>
-<p><strong>Dependencies</strong>: <code class="docutils literal notranslate"><span class="pre">zarr</span></code> — Raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> if not installed, with a message suggesting <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">zarr</span></code>.</p>
-<p><strong>Notes</strong>:</p>
-<ul class="simple">
-<li><p>gwexpy Zarr convention: each array in the root group corresponds to one channel. Array <code class="docutils literal notranslate"><span class="pre">attrs</span></code> store <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> (Hz) and <code class="docutils literal notranslate"><span class="pre">t0</span></code> (GPS seconds).</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> is not set, the inverse of <code class="docutils literal notranslate"><span class="pre">dt</span></code> is used; if neither is present, defaults to 1 Hz. <code class="docutils literal notranslate"><span class="pre">t0</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p></li>
-<li><p>Supports all store types supported by the zarr library (directory stores, zip stores, etc.).</p></li>
-<li><p>On write, <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, and <code class="docutils literal notranslate"><span class="pre">unit</span></code> are saved as array attributes.</p></li>
-</ul>
-<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/zarr_.py</span></code></p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="design-level-support-no-dedicated-implementation-in-gwexpy">
-<h2>Design-Level Support (No Dedicated Implementation in gwexpy)<a class="headerlink" href="#design-level-support-no-dedicated-implementation-in-gwexpy" title="Link to this heading"></a></h2>
-<p>The following formats are listed in the design specification (<code class="docutils literal notranslate"><span class="pre">io_support.csv</span></code>) but do not have dedicated reader/writer implementations in the gwexpy repository at this time.</p>
+<section id="supported-classes-at-a-glance">
+<span id="io-formats-en-supported-classes"></span><h2>Supported Classes at a Glance<a class="headerlink" href="#supported-classes-at-a-glance" title="Link to this heading"></a></h2>
+<p>If the main question is whether a format is for a single channel or multiple channels, use this table first.</p>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Format</p></th>
-<th class="head"><p>Extension</p></th>
-<th class="head text-center"><p>Designed Read/Write</p></th>
+<tr class="row-odd"><th class="head"><p>Format / Family</p></th>
+<th class="head"><p>Single</p></th>
+<th class="head"><p>Multi</p></th>
+<th class="head"><p>Other classes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>GWF / MiniSEED / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
+<td><p>Baseline end-user direct I/O pattern</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>NetCDF4 / Zarr / GBD / TDMS</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code></p></td>
+<td><p>Includes matrix-style direct I/O</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>HDF5</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, and related classes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> and related collections</p></td>
+<td><p>Also covers <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">Histogram</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable</span></code>, and <code class="docutils literal notranslate"><span class="pre">Field</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ndscope-hdf5</strong></p></td>
+<td><p>-</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
+<td><p>ndscope-compatible schema</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>DTTXML</strong></p></td>
+<td><p>-</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
+<td><p>Requires <code class="docutils literal notranslate"><span class="pre">products</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>NDS2 / GWOSC</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p>-</p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch_open_data()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ATS.MTH5</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p>-</p></td>
+<td><p>Partial single-path support</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Pickle</strong></p></td>
+<td><p>Major classes broadly</p></td>
+<td><p>Major classes broadly</p></td>
+<td><p>Use only for trusted data</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ROOT</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EventTable</span></code></p></td>
+<td><p>-</p></td>
+<td><p>Direct I/O is limited to EventTable</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>If you are unsure, start by thinking in terms of <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> mainly matters for <code class="docutils literal notranslate"><span class="pre">NetCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">Zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">GBD</span></code>, and <code class="docutils literal notranslate"><span class="pre">TDMS</span></code>.</p></li>
+<li><p>If you need to preserve richer objects beyond Series classes, start with <strong>HDF5</strong> or <strong>Pickle</strong>.</p></li>
+</ul>
+<p><a id="io-formats-en-a"></a></p>
+</section>
+<section id="a-gw-standards">
+<h2>A. GW Standards<a class="headerlink" href="#a-gw-standards" title="Link to this heading"></a></h2>
+<p>These are the standard GW storage, exchange, and acquisition paths.
+If you are unsure, start with <strong>HDF5</strong>. Use <strong>GWF</strong> when you need external standard compatibility, and <strong>DTTXML</strong> for diagnostic tool output.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format / Path</p></th>
+<th class="head text-center"><p>R / W</p></th>
+<th class="head"><p>Main entry</p></th>
+<th class="head"><p>Best for</p></th>
 <th class="head"><p>Notes</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>MTH5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.h5</span></code></p></td>
-<td class="text-center"><p>Read Y / Write Y</p></td>
-<td><p>Via <code class="docutils literal notranslate"><span class="pre">mth5</span></code> library. Partially supported through <code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code></p></td>
+<tr class="row-even"><td><p><strong>GWF</strong> (<code class="docutils literal notranslate"><span class="pre">.gwf</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">.write()</span></code></p></td>
+<td><p>Standard LIGO/KAGRA frame exchange</p></td>
+<td><p>Standard format, via gwpy</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>HDF5</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code> on major classes</p></td>
+<td><p>Long-term storage with metadata</p></td>
+<td><p>Main direct-I/O option for Field objects</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ndscope-hdf5</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ndscope-hdf5&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;ndscope-hdf5&quot;)</span></code></p></td>
+<td><p>ndscope-compatible HDF5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> only. Backward-compatible aliases: <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>DTTXML</strong> (<code class="docutils literal notranslate"><span class="pre">.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml.gz</span></code>)</p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;dttxml&quot;,</span> <span class="pre">products=&quot;...&quot;)</span></code></p></td>
+<td><p>DTT outputs and diagnostics</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">products</span></code> is required</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>NDS2</strong></p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.fetch()</span></code></p></td>
+<td><p>Detector data server access</p></td>
+<td><p>Network path</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>GWOSC</strong></p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.fetch_open_data()</span></code></p></td>
+<td><p>Open data access</p></td>
+<td><p>Network path</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>Purpose: compare the main GW-oriented direct-I/O and network entry points</p></li>
+<li><p>Input: HDF5, GWF, DTTXML, or detector/open-data access parameters</p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, or fetched open data</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+<span class="n">frame</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.gwf&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gwf&quot;</span><span class="p">)</span>
+<span class="n">dtt</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;diag.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TS&quot;</span><span class="p">)</span>
+<span class="n">open_data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch_open_data</span><span class="p">(</span><span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="mi">1126259446</span><span class="p">,</span> <span class="mi">1126259478</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>HDF5</strong> is the safest general recommendation for structured GW data.</p></li>
+<li><p><strong>DTTXML</strong> changes behavior depending on <code class="docutils literal notranslate"><span class="pre">products</span></code>. For complex transfer functions, prefer <code class="docutils literal notranslate"><span class="pre">native=True</span></code> on the frequency-domain side.</p></li>
+<li><p><strong>NDS2 / GWOSC</strong> are shown inside group A, but explicitly marked as <code class="docutils literal notranslate"><span class="pre">network</span> <span class="pre">path</span></code> rather than file formats.</p></li>
+</ul>
+<p><a id="io-formats-en-b"></a></p>
+</section>
+<section id="b-seismic-and-geophysical-observation">
+<h2>B. Seismic and Geophysical Observation<a class="headerlink" href="#b-seismic-and-geophysical-observation" title="Link to this heading"></a></h2>
+<p>This group is for existing seismic and electromagnetic observation formats.
+In practice, <strong>MiniSEED</strong> is the easiest starting point when you need to place a format in context.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head text-center"><p>R / W</p></th>
+<th class="head"><p>Main entry</p></th>
+<th class="head"><p>Best for</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>MiniSEED</strong> (<code class="docutils literal notranslate"><span class="pre">.mseed</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;miniseed&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;miniseed&quot;)</span></code></p></td>
+<td><p>Standard seismic waveform exchange</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gap</span></code> controls gap handling</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>SAC</strong> (<code class="docutils literal notranslate"><span class="pre">.sac</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;sac&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;sac&quot;)</span></code></p></td>
+<td><p>Seismic waveform analysis</p></td>
+<td><p>Via ObsPy</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>GSE2</strong> (<code class="docutils literal notranslate"><span class="pre">.gse2</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gse2&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;gse2&quot;)</span></code></p></td>
+<td><p>Seismic waveform exchange</p></td>
+<td><p>Via ObsPy</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>K-NET</strong> (<code class="docutils literal notranslate"><span class="pre">.knet</span></code>)</p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;knet&quot;)</span></code></p></td>
+<td><p>Strong-motion records</p></td>
+<td><p>Read-only</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>WIN / WIN32</strong> (<code class="docutils literal notranslate"><span class="pre">.win</span></code>, <code class="docutils literal notranslate"><span class="pre">.cnt</span></code>)</p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;win&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;win32&quot;)</span></code></p></td>
+<td><p>Japanese WIN datasets</p></td>
+<td><p>Improved parser, read-only</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ATS</strong> (<code class="docutils literal notranslate"><span class="pre">.ats</span></code>)</p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;ats&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ats&quot;)</span></code></p></td>
+<td><p>Metronix observation data</p></td>
+<td><p>Native binary reader</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ATS.MTH5</strong> (<code class="docutils literal notranslate"><span class="pre">format=&quot;ats.mth5&quot;</span></code>)</p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;ats.mth5&quot;)</span></code></p></td>
+<td><p>Single MTH5-backed path</p></td>
+<td><p>Partial support</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>MTH5 standalone</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>)</p></td>
+<td class="text-center"><p>In progress</p></td>
+<td><p>Dedicated <code class="docutils literal notranslate"><span class="pre">format=&quot;mth5&quot;</span></code> not yet exposed</p></td>
+<td><p>Future general MTH5 direct I/O</p></td>
+<td><p><strong>Not currently a public direct-I/O format</strong>. The only direct path today is <code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>Purpose: compare common seismic and geophysical readers without overstating MTH5 support</p></li>
+<li><p>Input: existing waveform files such as MiniSEED, WIN/WIN32, or the limited <code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> path</p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> or <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> objects depending on the reader</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s2">&quot;pad&quot;</span><span class="p">)</span>
+<span class="n">win</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.cnt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;win32&quot;</span><span class="p">)</span>
+<span class="n">ats</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.atss&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ats.mth5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>MiniSEED</strong> pads gaps with <code class="docutils literal notranslate"><span class="pre">NaN</span></code> by default. Use <code class="docutils literal notranslate"><span class="pre">gap=&quot;raise&quot;</span></code> if you want failures instead.</p></li>
+<li><p><strong>K-NET</strong> and <strong>WIN / WIN32</strong> are intentionally read-only.</p></li>
+<li><p><strong>ATS.MTH5</strong> is the limited current direct path.</p></li>
+<li><p><strong>MTH5 standalone</strong> is still in design/publication cleanup. Read this as <strong>“<code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> has partial support”</strong>, not as <strong>“MTH5 direct I/O is generally complete.”</strong></p></li>
+</ul>
+<p><a id="io-formats-en-c"></a></p>
+</section>
+<section id="c-general-analysis-and-exchange">
+<h2>C. General Analysis and Exchange<a class="headerlink" href="#c-general-analysis-and-exchange" title="Link to this heading"></a></h2>
+<p>These formats are useful for analysis notebooks, interchange, and general storage.
+The key rule here is not to mix up “format choice” with “library conversion.”</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head text-center"><p>R / W</p></th>
+<th class="head"><p>Main entry</p></th>
+<th class="head"><p>Best for</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>CSV / TXT</strong> (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.txt</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">.write()</span></code></p></td>
+<td><p>Lightweight exchange and inspection</p></td>
+<td><p>Also supports directory bulk loading</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>NetCDF4</strong> (<code class="docutils literal notranslate"><span class="pre">.nc</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;netcdf4&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;netcdf4&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;netcdf4&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;netcdf4&quot;)</span></code></p></td>
+<td><p>Scientific storage for time-series-oriented data</p></td>
+<td><p>Direct I/O here is centered on TimeSeries classes</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Zarr</strong> (<code class="docutils literal notranslate"><span class="pre">.zarr</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code></p></td>
+<td><p>Chunked storage and parallel workflows</p></td>
+<td><p>Direct I/O here is centered on TimeSeries classes</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Pickle</strong> (<code class="docutils literal notranslate"><span class="pre">.pkl</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> on major classes</p></td>
+<td><p>Python object snapshots</p></td>
+<td><p>Only for trusted data</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ROOT</strong> (<code class="docutils literal notranslate"><span class="pre">.root</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EventTable.read(...,</span> <span class="pre">format=&quot;root&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable.write(...,</span> <span class="pre">format=&quot;root&quot;)</span></code></p></td>
+<td><p>EventTable I/O</p></td>
+<td><p>Direct I/O here is EventTable only</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>Purpose: show the general-purpose direct-I/O routes without mixing them with interop-only bridges</p></li>
+<li><p>Input: CSV, Zarr, ROOT, or other general exchange formats</p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>, or <code class="docutils literal notranslate"><span class="pre">EventTable</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventTable</span>
+
+<span class="n">ascii_data</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
+<span class="n">chunked</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.zarr&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;zarr&quot;</span><span class="p">)</span>
+<span class="n">events</span> <span class="o">=</span> <span class="n">EventTable</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;events.root&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>CSV / TXT</strong> remains useful for inspection and simple interchange.</p></li>
+<li><p><strong>NetCDF4 / Zarr</strong> are treated here only as <strong>direct TimeSeries-style I/O</strong>. Field/xarray bridges belong to interop.</p></li>
+<li><p><strong>Zarr</strong> direct I/O stores and restores timing metadata such as <code class="docutils literal notranslate"><span class="pre">t0</span></code> and <code class="docutils literal notranslate"><span class="pre">dt</span></code> in Zarr attributes. This page treats that metadata path as part of the current supported behavior.</p></li>
+<li><p><strong>ROOT</strong> object-level export/import belongs to interop. This page only covers EventTable direct I/O.</p></li>
+</ul>
+<p><a id="io-formats-en-d"></a></p>
+</section>
+<section id="d-loggers-and-instrument-formats">
+<h2>D. Loggers and Instrument Formats<a class="headerlink" href="#d-loggers-and-instrument-formats" title="Link to this heading"></a></h2>
+<p>This group is for logger and instrument-specific time-series formats.
+Time handling, units, and audio <code class="docutils literal notranslate"><span class="pre">t0</span></code> semantics are the main points to watch.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head text-center"><p>R / W</p></th>
+<th class="head"><p>Main entry</p></th>
+<th class="head"><p>Best for</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>GBD</strong> (<code class="docutils literal notranslate"><span class="pre">.gbd</span></code>)</p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code></p></td>
+<td><p>GRAPHTEC loggers</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> is required</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>TDMS</strong> (<code class="docutils literal notranslate"><span class="pre">.tdms</span></code>)</p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code></p></td>
+<td><p>National Instruments data</p></td>
+<td><p>Read-only</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>SDB / SQLite / SQLite3</strong> (<code class="docutils literal notranslate"><span class="pre">.sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code>)</p></td>
+<td class="text-center"><p>○ / ×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...)</span></code></p></td>
+<td><p>WeeWX and similar archives</p></td>
+<td><p>Same reader family</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>WAV</strong> (<code class="docutils literal notranslate"><span class="pre">.wav</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code></p></td>
+<td><p>Uncompressed audio</p></td>
+<td><p>Does not preserve absolute time</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>MP3 / FLAC / OGG / M4A</strong></p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;mp3&quot;</span> <span class="pre">/</span> <span class="pre">&quot;flac&quot;</span> <span class="pre">/</span> <span class="pre">&quot;ogg&quot;</span> <span class="pre">/</span> <span class="pre">&quot;m4a&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...)</span></code></p></td>
+<td><p>Compressed audio</p></td>
+<td><p>Uses <code class="docutils literal notranslate"><span class="pre">pydub</span></code>; some formats also need <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>Purpose: highlight logger-specific and audio-specific direct-I/O requirements</p></li>
+<li><p>Input: logger data, SQLite-family archives, or audio files</p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, or <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.gbd&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
+<span class="n">weather</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;archive.sqlite3&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sqlite3&quot;</span><span class="p">)</span>
+<span class="n">audio</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;sound.flac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;flac&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>GBD</strong> requires <code class="docutils literal notranslate"><span class="pre">timezone</span></code>.</p></li>
+<li><p><strong>SDB / SQLite / SQLite3</strong> should all be named explicitly in the public page so users do not need to infer aliases.</p></li>
+<li><p><strong>WAV / Audio</strong> do not preserve absolute timestamps. Reading with <code class="docutils literal notranslate"><span class="pre">t0=0.0</span></code> is a convenience convention, not a claim that the source had an absolute epoch.</p></li>
+</ul>
+<p><a id="io-formats-en-dev"></a></p>
+</section>
+<section id="developer-notes">
+<h2>Developer Notes<a class="headerlink" href="#developer-notes" title="Link to this heading"></a></h2>
+<p>Most users can skip this section.
+It exists mainly to collect not-yet-prominent implementations and placeholders in one place.</p>
+<section id="managed-in-design-but-not-prominent-in-the-public-page">
+<h3>Managed in design, but not prominent in the public page<a class="headerlink" href="#managed-in-design-but-not-prominent-in-the-public-page" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code></p></td>
+<td><p>Implemented, not yet prominent</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>-only HDF5 schema. Canonical name: <code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code>; backward-compatible aliases: <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SQLite</span></code>, <code class="docutils literal notranslate"><span class="pre">SQLite3</span></code></p></td>
+<td><p>Implemented, not yet prominent</p></td>
+<td><p>Aliases in the same family as <code class="docutils literal notranslate"><span class="pre">SDB</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ATS.MTH5</span></code></p></td>
+<td><p>Implemented with partial scope</p></td>
+<td><p>Current public direct path backed by MTH5</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MTH5</span> <span class="pre">standalone</span></code></p></td>
+<td><p>In progress</p></td>
+<td><p>Dedicated <code class="docutils literal notranslate"><span class="pre">format=&quot;mth5&quot;</span></code> is not exposed yet; not published as public direct I/O</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<hr class="docutils" />
-<section id="unimplemented-stub-formats">
-<h2>Unimplemented (Stub) Formats<a class="headerlink" href="#unimplemented-stub-formats" title="Link to this heading"></a></h2>
-<p>The following formats are registered as placeholders (stubs) in the IO registry. Calling <code class="docutils literal notranslate"><span class="pre">.read()</span></code> raises an <code class="docutils literal notranslate"><span class="pre">UnimplementedIOError</span></code> or <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>. These are reserved for future implementation pending specification or sample files.</p>
-<section id="time-series-stubs-gwexpy-timeseries-io-stubs-py">
-<h3>Time Series Stubs (<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/stubs.py</span></code>)<a class="headerlink" href="#time-series-stubs-gwexpy-timeseries-io-stubs-py" title="Link to this heading"></a></h3>
+<section id="unimplemented-formats-stubs">
+<h3>Unimplemented Formats (Stubs)<a class="headerlink" href="#unimplemented-formats-stubs" title="Link to this heading"></a></h3>
+<p>These entries exist as placeholders only. Calling <code class="docutils literal notranslate"><span class="pre">.read()</span></code> on them is expected to fail because they are not ready for end users yet.</p>
+<section id="timeseries-stubs">
+<h4>TimeSeries stubs<a class="headerlink" href="#timeseries-stubs" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Format Name</p></th>
-<th class="head"><p>Registered Classes</p></th>
-<th class="head"><p>Notes</p></th>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Status</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">orf</span></code></p></td>
-<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
-<td><p>ORF format</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mem</span></code></p></td>
-<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
-<td><p>MEM format</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wvf</span></code></p></td>
-<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
-<td><p>WVF format</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wdf</span></code></p></td>
-<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
-<td><p>WDF format</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">taffmat</span></code></p></td>
-<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
-<td><p>TAFFMAT format</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lsf</span></code></p></td>
-<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
-<td><p>LSF format</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">li</span></code></p></td>
-<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
-<td><p>LI format</p></td>
+<td><p>Planned</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="frequency-series-stubs-gwexpy-frequencyseries-io-stubs-py">
-<h3>Frequency Series Stubs (<code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/stubs.py</span></code>)<a class="headerlink" href="#frequency-series-stubs-gwexpy-frequencyseries-io-stubs-py" title="Link to this heading"></a></h3>
+<section id="frequencyseries-stubs">
+<h4>FrequencySeries stubs<a class="headerlink" href="#frequencyseries-stubs" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Format Name</p></th>
-<th class="head"><p>Registered Classes</p></th>
-<th class="head"><p>Notes</p></th>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Status</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">win</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Implemented for time series but not frequency domain</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">win32</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Same as above</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdb</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Implemented for time series but not frequency domain</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">orf</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Not implemented</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mem</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Not implemented</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wvf</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Not implemented</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wdf</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Not implemented</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">taffmat</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Not implemented</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lsf</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Not implemented</p></td>
+<td><p>Planned</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">li</span></code></p></td>
-<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
-<td><p>Not implemented</p></td>
+<td><p>Planned</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 </section>
-<hr class="docutils" />
-<section id="basic-usage-of-read-write">
-<h2>Basic Usage of <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code><a class="headerlink" href="#basic-usage-of-read-write" title="Link to this heading"></a></h2>
-<p>All gwexpy data classes use gwpy’s IO registry. Here is the basic usage pattern.</p>
-<section id="reading">
-<h3>Reading<a class="headerlink" href="#reading" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-
-<span class="c1"># Auto-detect format from extension</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/file.gbd&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
-
-<span class="c1"># Explicitly specify format</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/file.dat&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
-
-<span class="c1"># Read a single channel</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/file.gbd&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
 </section>
-<section id="writing">
-<h3>Writing<a class="headerlink" href="#writing" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Write to a supported format</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="frequency-series">
-<h3>Frequency Series<a class="headerlink" href="#frequency-series" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
-
-<span class="n">fsd</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/dtt.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;PSD&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="how-the-format-argument-works">
-<h3>How the <code class="docutils literal notranslate"><span class="pre">format</span></code> Argument Works<a class="headerlink" href="#how-the-format-argument-works" title="Link to this heading"></a></h3>
+<section id="related-pages">
+<h2>Related Pages<a class="headerlink" href="#related-pages" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><strong>Omitted</strong>: The format is auto-detected from the file extension using identifier functions registered via <code class="docutils literal notranslate"><span class="pre">io_registry.register_identifier(...)</span></code>.</p></li>
-<li><p><strong>Specified</strong>: The reader/writer registered for that format name is called directly.</p></li>
-<li><p><strong>When auto-detection fails</strong> (e.g. <code class="docutils literal notranslate"><span class="pre">.xml</span></code> is used by formats other than DTTXML): specify <code class="docutils literal notranslate"><span class="pre">format</span></code> explicitly.</p></li>
+<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">Interop tutorial</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API reference</span></a></p></li>
+<li><p><a class="reference internal" href="installation.html"><span class="doc std std-doc">Installation guide</span></a></p></li>
 </ul>
 </section>
+<section id="next-to-read">
+<h2>Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="interop.html"><span class="doc std std-doc">Interop / Conversion Guide</span></a> for <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> bridges and object-level conversion</p></li>
+<li><p><a class="reference internal" href="time_utilities.html"><span class="doc std std-doc">GPS Time Utility Functions</span></a> if your I/O workflow needs timezone or GPS-time handling</p></li>
+<li><p><a class="reference internal" href="installation.html"><span class="doc std std-doc">Installation guide</span></a> if you need optional dependencies before using a format backend</p></li>
+</ul>
 </section>
-<hr class="docutils" />
-<section id="reference-source-implementation-files">
-<h2>Reference: Source Implementation Files<a class="headerlink" href="#reference-source-implementation-files" title="Link to this heading"></a></h2>
-<p>Implementation files referenced in the creation of this document.</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Module Path</p></th>
-<th class="head"><p>Summary</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/__init__.py</span></code></p></td>
-<td><p>Time series IO module registration entry point</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/gbd.py</span></code></p></td>
-<td><p>GBD reader. <code class="docutils literal notranslate"><span class="pre">timezone</span></code> is required</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/ats.py</span></code></p></td>
-<td><p>ATS reader (binary parser). <code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> variant available</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/sdb.py</span></code></p></td>
-<td><p>SDB reader (WeeWX SQLite). Registered under <code class="docutils literal notranslate"><span class="pre">sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/tdms.py</span></code></p></td>
-<td><p>TDMS reader. Depends on <code class="docutils literal notranslate"><span class="pre">npTDMS</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/wav.py</span></code></p></td>
-<td><p>WAV reader. <code class="docutils literal notranslate"><span class="pre">scipy.io.wavfile</span></code> wrapper. <code class="docutils literal notranslate"><span class="pre">t0=0</span></code> fixed</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p></td>
-<td><p>MiniSEED / SAC / GSE2 / KNET reader/writer. Depends on ObsPy</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code></p></td>
-<td><p>WIN/WIN32 reader. Requires ObsPy. Improved 4bit/24bit delta decode</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/dttxml.py</span></code></p></td>
-<td><p>DTTXML time series reader. <code class="docutils literal notranslate"><span class="pre">products</span></code> is required</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/audio.py</span></code></p></td>
-<td><p>Audio reader/writer (MP3/FLAC/OGG/M4A). Depends on pydub. <code class="docutils literal notranslate"><span class="pre">t0=0</span></code> fixed</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/netcdf4_.py</span></code></p></td>
-<td><p>NetCDF4 reader/writer. Depends on xarray. Auto-detects time dimension</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/zarr_.py</span></code></p></td>
-<td><p>Zarr reader/writer. Depends on zarr. gwexpy store convention</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/stubs.py</span></code></p></td>
-<td><p>Time series stubs (<code class="docutils literal notranslate"><span class="pre">orf</span></code>, <code class="docutils literal notranslate"><span class="pre">mem</span></code>, <code class="docutils literal notranslate"><span class="pre">wvf</span></code>, <code class="docutils literal notranslate"><span class="pre">wdf</span></code>, <code class="docutils literal notranslate"><span class="pre">taffmat</span></code>, <code class="docutils literal notranslate"><span class="pre">lsf</span></code>, <code class="docutils literal notranslate"><span class="pre">li</span></code>)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/hdf5.py</span></code></p></td>
-<td><p>HDF5 IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/ascii.py</span></code></p></td>
-<td><p>ASCII IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/nds2.py</span></code></p></td>
-<td><p>NDS2 IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/cache.py</span></code></p></td>
-<td><p>Cache IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/losc.py</span></code></p></td>
-<td><p>GWOSC IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/core.py</span></code></p></td>
-<td><p>Core IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/__init__.py</span></code></p></td>
-<td><p>Frequency series IO module registration entry point</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/dttxml.py</span></code></p></td>
-<td><p>DTTXML frequency series reader. <code class="docutils literal notranslate"><span class="pre">products</span></code> required. <code class="docutils literal notranslate"><span class="pre">native</span></code> option available</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/stubs.py</span></code></p></td>
-<td><p>Frequency series stubs (<code class="docutils literal notranslate"><span class="pre">win</span></code>, <code class="docutils literal notranslate"><span class="pre">win32</span></code>, <code class="docutils literal notranslate"><span class="pre">sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">orf</span></code>, <code class="docutils literal notranslate"><span class="pre">mem</span></code>, <code class="docutils literal notranslate"><span class="pre">wvf</span></code>, <code class="docutils literal notranslate"><span class="pre">wdf</span></code>, <code class="docutils literal notranslate"><span class="pre">taffmat</span></code>, <code class="docutils literal notranslate"><span class="pre">lsf</span></code>, <code class="docutils literal notranslate"><span class="pre">li</span></code>)</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/hdf5.py</span></code></p></td>
-<td><p>HDF5 IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/ascii.py</span></code></p></td>
-<td><p>ASCII IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/ligolw.py</span></code></p></td>
-<td><p>LIGO_LW IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/table/io/root.py</span></code></p></td>
-<td><p>ROOT IO (gwpy re-export)</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/collections.py</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> extensions (HDF5 layout detection, directory loading)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docs/developers/design/design_data/io_support.csv</span></code></p></td>
-<td><p>Design data: supported format list</p></td>
-</tr>
-</tbody>
-</table>
+<section id="page-end-navigation">
+<h2>Page-End Navigation<a class="headerlink" href="#page-end-navigation" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a href="#io-formats-en-quick">Back to Quick Selection Table</a></p></li>
+<li><p><a href="#io-formats-en-basic">Back to Basic Usage</a></p></li>
+<li><p><a href="#io-formats-en-top">Back to Top</a></p></li>
+</ul>
 </section>
 </section>
 
@@ -1108,14 +823,16 @@ This page covers only the end-user API (<code class="docutils literal notranslat
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="tutorials/index.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorials/case_glitch_analysis.html" class="btn btn-neutral float-left" title="Glitch Analysis: Q-Transform and Omega-Scan" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reference/index.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -1132,7 +849,24 @@ This page covers only the end-user API (<code class="docutils literal notranslat
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="license.html">License / Disclaimer</a> |
+        <a href="roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

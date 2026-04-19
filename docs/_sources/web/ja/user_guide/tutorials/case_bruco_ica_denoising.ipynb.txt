@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fbcd52d6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "859f196a",
+   "id": "8e3bcb37",
    "metadata": {},
    "source": [
-    "# Bruco + ICA エンドツーエンド ノイズ削減\n",
+    "# ケーススタディ: Bruco と ICA によるノイズ削減\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_ica_denoising.ipynb)\n",
     "\n",
@@ -16,6 +28,7 @@
     "3. **ノイズ差し引き** — DARM からノイズ寄与を除去し、ASD を比較\n",
     "\n",
     "これは O4b コミッショニング（DARM 116 Hz ライン調査など）で使われたワークフローを再現しています。\n",
+    "物理的な狙いは、「どのセンサに線が見えるか」から一歩進んで、「どの潜在ノイズ源なら DARM から差し引いても他の構造を壊さないか」を判断することです。\n",
     "\n",
     "> **前提知識**：\n",
     "> - [Bruco チュートリアル](advanced_bruco.ipynb) — Bruco の基礎\n",
@@ -24,7 +37,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e364b24b",
+   "id": "f8192c77",
    "metadata": {},
    "source": [
     "## セットアップ"
@@ -33,7 +46,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "868d7157",
+   "id": "33d98037",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:48.094078Z",
@@ -44,19 +57,26 @@
    },
    "outputs": [],
    "source": [
-    "import warnings\nwarnings.filterwarnings(\"ignore\", category=UserWarning, module=\"sklearn\")\n",
-    "# ruff: noqa: I001\n",
-    "import matplotlib.pyplot as plt\n",
-    "import numpy as np\n",
-    "from astropy import units as u\n",
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "from gwexpy.analysis import Bruco\n",
-    "from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix\n"
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
+    "\n",
+    "    # ruff: noqa: I001\n",
+    "    import matplotlib.pyplot as plt\n",
+    "    import numpy as np\n",
+    "    from astropy import units as u\n",
+    "\n",
+    "    from gwexpy.analysis import Bruco\n",
+    "    from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "d6269c4a",
+   "id": "539630c0",
    "metadata": {},
    "source": [
     "## 1. モックデータの生成\n",
@@ -72,7 +92,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "81f04947",
+   "id": "c6ec4793",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:50.974747Z",
@@ -128,7 +148,7 @@
     "        dt=1 / fs, unit=u.dimensionless_unscaled, name=name, t0=0,\n",
     "    )\n",
     "    for name, (a_line, a_noise) in aux_configs.items()\n",
-    "})\n",
+    "        })\n",
     "\n",
     "print(f\"DARM   サンプルレート: {target.sample_rate}\")\n",
     "print(f\"補助チャンネル: {list(aux_dict.keys())}\")\n"
@@ -137,7 +157,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "af125b4c",
+   "id": "0bd172e1",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.008159Z",
@@ -180,19 +200,21 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6dad7092",
+   "id": "e6213270",
    "metadata": {},
    "source": [
     "## 2. Bruco: 相関補助チャンネルの特定\n",
     "\n",
     "`Bruco.compute()` は全補助チャンネルをスキャンし、各周波数ビンで上位 *N* 件の最相関チャンネルを返します。\n",
-    "これがパイプラインの **第 1 ステージ** です：DARM と同じノイズを観測しているセンサーを特定します。\n"
+    "これがパイプラインの **第 1 ステージ** です：DARM と同じノイズを観測しているセンサーを特定します。\n",
+    "\n",
+    "> **よくある誤り**: 使える補助チャンネルをすべて ICA に投入すること。ここでの Bruco は、116 Hz 汚染を本当に共有していそうなチャンネルへ絞るための物理フィルタです。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "5181d205",
+   "id": "50ea41c4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.618503Z",
@@ -229,7 +251,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "ee399ea4",
+   "id": "6e84a019",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.750854Z",
@@ -393,7 +415,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "ccb1cb69",
+   "id": "54dc2652",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.767116Z",
@@ -425,7 +447,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "dafdf5f8",
+   "id": "359e3032",
    "metadata": {},
    "source": [
     "## 3. ICA: ノイズ源の分離\n",
@@ -438,21 +460,25 @@
     "```\n",
     "X = S · A^T   （X: 観測チャンネル、S: 独立成分）\n",
     "```\n",
-    "この行列を使って DARM からノイズ成分の寄与を差し引けます。\n"
+    "この行列を使って DARM からノイズ成分の寄与を差し引けます。\n",
+    "\n",
+    "> **注意したい失敗モード**: ICA 成分は物理的重要度順には並ばず、符号やスケールも任意です。どの成分が狙いの 116 Hz ラインに対応するかは、ASD と各チャンネルへの荷重を必ず見てから判断してください。\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "note_case_bruco_ica_denoising_ja",
+   "id": "6fcac1a5",
    "metadata": {},
    "source": [
-    "> **注意 — ICA の収束**: データによっては FastICA がデフォルトのイテレーション数内で収束しない場合があります。`ConvergenceWarning` が表示された場合は、ICA パラメータの `max_iter` や `tol` の調整を検討してください。完全に収束しなくても結果が利用できる場合があります。"
+    "> **注意 — ICA の収束**: データによっては FastICA がデフォルトのイテレーション数内で収束しない場合があります。`ConvergenceWarning` が表示された場合は、ICA パラメータの `max_iter` や `tol` の調整を検討してください。完全に収束しなくても結果が利用できる場合があります。\n",
+    ">\n",
+    "> もう一つの典型的な失敗は rank deficiency です。ほぼ同一のウィットネスばかりを入れると分解が不安定になり、差し引き係数を信頼しにくくなります。完全に冗長ではないが情報量のある少数チャンネルを選んでください。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "19e594d9",
+   "id": "8891e315",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.990159Z",
@@ -489,7 +515,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "4e57f17b",
+   "id": "176a7073",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.995776Z",
@@ -554,7 +580,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "4e18f433",
+   "id": "dab2b5ff",
    "metadata": {},
    "source": [
     "## 4. ノイズ差し引きと ASD 比較\n",
@@ -564,13 +590,15 @@
     "\n",
     "```\n",
     "DARM_clean = DARM - Σ_k  A[0, k] · S_k(t)     （ノイズ成分 k の和）\n",
-    "```\n"
+    "```\n",
+    "\n",
+    "> **よくある誤り**: 非ガウスっぽく見える ICA 成分を全部引くこと。スペクトル形状とウィットネス荷重が狙っている結合機構に一致する成分だけを選ばないと、ライン以外の検出器構造まで削ってしまう危険があります。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "e26d1c0e",
+   "id": "059a11a8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:52.615143Z",
@@ -620,7 +648,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "81824ad6",
+   "id": "5101dc08",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:52.693890Z",
@@ -674,7 +702,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "74730951",
+   "id": "df051d79",
    "metadata": {},
    "source": [
     "## まとめ\n",
@@ -690,6 +718,7 @@
     "- **Bruco** が数千チャンネルを効率的に絞り込み、重要な少数チャンネルを特定します。\n",
     "- **ICA** はコヒーレンスを超えて、複数センサーが共通ノイズを共有する場合でも *独立* な寄与を分離します。\n",
     "- 混合行列 `A` が、時間領域フィルタリングなしに直接差し引き式を与えます。\n",
+    "- 安定した subtraction は、ICA ソルバそのものよりもウィットネス選定と成分同定に強く依存します。\n",
     "\n",
     "### 次のステップ\n",
     "\n",
@@ -719,5 +748,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 2
+ "nbformat_minor": 5
 }

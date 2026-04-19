@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c0486855",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "cell-0",
+   "id": "53cb7a10",
    "metadata": {},
    "source": [
-    "# Coupling Function Analysis Tutorial\n",
+    "# Coupling Analysis: Multi-Channel Coupling\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_coupling.ipynb)\n",
     "\n",
@@ -25,12 +37,12 @@
     "\n",
     "**Legacy migration note:**  \n",
     "If your legacy code manually computed PSDs, divided them, and applied custom thresholds via scipy, this workflow replaces all of that.  \n",
-    "See [API_MAPPING.md](../../../../../docs_internal/references/SampleCodes_GWpy/API_MAPPING.md) for the before/after migration guide."
+    "See API_MAPPING.md for the before/after migration guide."
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "note_advanced_coupling_en",
+   "id": "0fb025df",
    "metadata": {},
    "source": [
     "> **Note — SigmaThreshold statistical validity**: When the number of averaged segments `n_avg` is below 10, the Gaussian approximation of the χ²(2K) distribution becomes less accurate. A `UserWarning` will be raised in this case. Consider using `PercentileThreshold` for short data segments."
@@ -39,7 +51,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cell-1",
+   "id": "b62b32cb",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:28.129081Z",
@@ -50,6 +62,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "from astropy import units as u\n",
@@ -65,7 +81,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-2",
+   "id": "6192d583",
    "metadata": {},
    "source": [
     "## 1. Prepare Synthetic Injection / Background Data\n",
@@ -80,7 +96,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cell-3",
+   "id": "29bd2c85",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:30.519045Z",
@@ -157,7 +173,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-4",
+   "id": "8897eee5",
    "metadata": {},
    "source": [
     "## 2. Run Coupling Function Analysis\n",
@@ -168,7 +184,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cell-5",
+   "id": "48d6b245",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:30.528487Z",
@@ -204,7 +220,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-6",
+   "id": "3c495111",
    "metadata": {},
    "source": [
     "## 3. Inspect Results\n",
@@ -215,7 +231,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cell-7",
+   "id": "fd7d7242",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:30.606919Z",
@@ -265,7 +281,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cell-8",
+   "id": "72f257df",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:30.980818Z",
@@ -294,7 +310,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "cell-9",
+   "id": "b7212124",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:31.907961Z",
@@ -331,9 +347,11 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-10",
+   "id": "13c414d8",
    "metadata": {},
    "source": [
+    "import warnings\n",
+    "\n",
     "## 4. Threshold Strategies\n",
     "\n",
     "gwexpy provides three built-in threshold strategies:\n",
@@ -348,7 +366,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cell-11",
+   "id": "c89af457",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:32.123572Z",
@@ -378,48 +396,12 @@
     }
    ],
    "source": [
-    "import warnings\n",
-    "\n",
-    "# Compare threshold strategies\n",
-    "n_avg = T / 4.0  # approximate averaging count for 4-second FFT\n",
-    "\n",
-    "strategies = {\n",
-    "    \"Ratio×10/2\":   (RatioThreshold(10.0), RatioThreshold(2.0)),\n",
-    "    \"Sigma 3σ\":      (SigmaThreshold(3.0),  SigmaThreshold(2.0)),\n",
-    "}\n",
-    "\n",
-    "fig, ax = plt.subplots(figsize=(8, 4))\n",
-    "\n",
-    "for label, (thr_w, thr_t) in strategies.items():\n",
-    "    with warnings.catch_warnings():\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"SigmaThreshold: n_avg\")\n",
-    "        res = cfa.compute(\n",
-    "        data_inj=data_inj,\n",
-    "        data_bkg=data_bkg,\n",
-    "        fftlength=4.0,\n",
-    "        overlap=0.5,\n",
-    "        witness=\"ACC:FLOOR_X\",\n",
-    "        threshold_witness=thr_w,\n",
-    "        threshold_target=thr_t,\n",
-    "    )\n",
-    "    cf = res[\"GW:DARM\"].cf\n",
-    "    valid = ~np.isnan(cf.value)\n",
-    "    ax.plot(cf.frequencies.value[valid], cf.value[valid], marker=\".\", label=label)\n",
-    "\n",
-    "ax.axhline(cf_true1, color=\"gray\", linestyle=\"--\", label=f\"True CF={cf_true1}\")\n",
-    "ax.set_xscale(\"log\")\n",
-    "ax.set_yscale(\"log\")\n",
-    "ax.set_xlim(5, 100)\n",
-    "ax.set_xlabel(\"Frequency [Hz]\")\n",
-    "ax.set_ylabel(\"Coupling Function\")\n",
-    "ax.set_title(\"Threshold Strategy Comparison\")\n",
-    "ax.legend()\n",
-    "plt.tight_layout()"
+    "import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter('ignore')\n\n    # Compare threshold strategies\n    n_avg = T / 4.0  # approximate averaging count for 4-second FFT\n\n    strategies = {\n    \"Ratio×10/2\":   (RatioThreshold(10.0), RatioThreshold(2.0)),\n    \"Sigma 3σ\":      (SigmaThreshold(3.0),  SigmaThreshold(2.0)),\n    }\n\n    fig, ax = plt.subplots(figsize=(8, 4))\n\n    for label, (thr_w, thr_t) in strategies.items():\n        res = cfa.compute(\n        data_inj=data_inj,\n        data_bkg=data_bkg,\n        fftlength=4.0,\n        overlap=0.5,\n        witness=\"ACC:FLOOR_X\",\n        threshold_witness=thr_w,\n        threshold_target=thr_t,\n        )\n        cf = res[\"GW:DARM\"].cf\n        valid = ~np.isnan(cf.value)\n        ax.plot(cf.frequencies.value[valid], cf.value[valid], marker=\".\", label=label)\n\n        ax.axhline(cf_true1, color=\"gray\", linestyle=\"--\", label=f\"True CF={cf_true1}\")\n        ax.set_xscale(\"log\")\n        ax.set_yscale(\"log\")\n        ax.set_xlim(5, 100)\n        ax.set_xlabel(\"Frequency [Hz]\")\n        ax.set_ylabel(\"Coupling Function\")\n        ax.set_title(\"Threshold Strategy Comparison\")\n        ax.legend()\n        plt.tight_layout()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "cell-12",
+   "id": "40608e2f",
    "metadata": {},
    "source": [
     "## 5. Frequency Range Restriction\n",
@@ -430,7 +412,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "cell-13",
+   "id": "7e7c3a59",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:32.412340Z",
@@ -476,7 +458,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-14",
+   "id": "ab128185",
    "metadata": {},
    "source": [
     "## 6. Upper Limits\n",
@@ -489,7 +471,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "cell-15",
+   "id": "b968a736",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:08:32.756623Z",
@@ -531,7 +513,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-16",
+   "id": "5ab8a848",
    "metadata": {},
    "source": [
     "## Summary\n",

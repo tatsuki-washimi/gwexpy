@@ -1,0 +1,1456 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.fitting.core &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/fitting/core.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../fitting.html">gwexpy.fitting</a></li>
+      <li class="breadcrumb-item active">gwexpy.fitting.core</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.fitting.core</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">iminuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Minuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">iminuit.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">describe</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_triangular</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">_exc</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+        <span class="s2">&quot;scipy is required for gwexpy.fitting. Install with: pip install scipy&quot;</span>
+    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">_exc</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_model</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.numerics.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SAFE_FLOOR_STRAIN</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">SAFE_FLOOR_STRAIN</span> <span class="o">=</span> <span class="mf">1e-50</span>  <span class="c1"># floor below GW strain power scale (~1e-42)</span>
+
+<span class="c1"># Relative jitter for MCMC initialization around best-fit parameters.</span>
+<span class="n">RELATIVE_JITTER</span> <span class="o">=</span> <span class="mf">1e-4</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ParameterValue</span><span class="p">(</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Representation of a fit parameter value, supporting .value and .error attributes.</span>
+
+<span class="sd">    Inherits from float for backward compatibility with numeric operations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a float-like parameter wrapper with optional error metadata.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="Fitter">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.Fitter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Fitter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap `fit_series` in a small stateful helper class.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+<div class="viewcode-block" id="Fitter.fit">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.Fitter.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FitResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the provided series to the model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">fit_series</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># Optional imports for MCMC</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">corner</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">emcee</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">emcee</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">corner</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ComplexLeastSquares</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Least Squares cost function for complex-valued data.</span>
+
+<span class="sd">    Minimizes the sum of squared residuals for both Real and Imaginary parts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">errordef</span> <span class="o">=</span> <span class="n">Minuit</span><span class="o">.</span><span class="n">LEAST_SQUARES</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>  <span class="c1"># Complex data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">dy</span>  <span class="c1"># Error (assumed isotropic for real/imag unless specified otherwise)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+        <span class="c1"># Determine parameters from model (skipping &#39;x&#39;)</span>
+        <span class="c1"># describe returns a list of parameter names</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">describe</span><span class="p">(</span><span class="n">model</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">params</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the complex least-squares cost for the given parameters.&quot;&quot;&quot;</span>
+        <span class="c1"># Calculate model prediction</span>
+        <span class="n">ym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># Calculate residuals for Real and Imag parts</span>
+        <span class="n">res_real</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">real</span> <span class="o">-</span> <span class="n">ym</span><span class="o">.</span><span class="n">real</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
+        <span class="n">res_imag</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">imag</span> <span class="o">-</span> <span class="n">ym</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
+
+        <span class="c1"># Sum of squared residuals</span>
+        <span class="n">chi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">res_real</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">res_imag</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">chi2</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ndata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the effective number of real-valued data points.&quot;&quot;&quot;</span>
+        <span class="c1"># Effectively 2 * len(x) data points</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RealLeastSquares</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Least Squares cost function for real-valued data.</span>
+
+<span class="sd">    This is a small, dependency-light replacement for `iminuit.cost.LeastSquares`</span>
+<span class="sd">    to avoid optional JIT/caching side effects in some environments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">errordef</span> <span class="o">=</span> <span class="n">Minuit</span><span class="o">.</span><span class="n">LEAST_SQUARES</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="n">describe</span><span class="p">(</span><span class="n">model</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">params</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the real-valued least-squares cost for the given parameters.&quot;&quot;&quot;</span>
+        <span class="n">ym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">ym</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">res</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ndata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of data points used by the fit.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FitResult">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.FitResult">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FitResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store fit outputs, metadata, and plotting helpers for a completed fit.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">minuit_obj</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">dy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cost_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">x_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">y_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">x_kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">x_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">y_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dy_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">x_fit_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cov_inv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cov</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">x_unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span> <span class="o">=</span> <span class="n">minuit_obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span> <span class="o">=</span> <span class="n">x_unit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">cost_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_label</span> <span class="o">=</span> <span class="n">x_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_label</span> <span class="o">=</span> <span class="n">y_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_kind</span> <span class="o">=</span> <span class="n">x_kind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_data</span> <span class="o">=</span> <span class="n">x_data</span> <span class="k">if</span> <span class="n">x_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_data</span> <span class="o">=</span> <span class="n">y_data</span> <span class="k">if</span> <span class="n">y_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dy_data</span> <span class="o">=</span> <span class="n">dy_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_fit_range</span> <span class="o">=</span> <span class="n">x_fit_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cov_inv</span> <span class="o">=</span> <span class="n">cov_inv</span>  <span class="c1"># Inverse covariance matrix for GLS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cov</span> <span class="o">=</span> <span class="n">cov</span>  <span class="c1"># Original covariance matrix (for stability/logdet)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcmc_labels</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_dy</span> <span class="o">=</span> <span class="n">dy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fitted model function.</span>
+
+<span class="sd">        Can be called as model(x) to use best-fit parameters,</span>
+<span class="sd">        or as ``model(x, **params)`` to use specific parameters.</span>
+<span class="sd">        Returns a Quantity with units if the original data had units.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">bound_model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="c1"># Use best fit parameters</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+            <span class="c1"># Handle X unit conversion if x is a Quantity/Series</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">x_val</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_unit</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">UnitConversionError</span><span class="p">):</span>
+                    <span class="c1"># Fallback if conversion fails</span>
+                    <span class="n">x_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">(</span><span class="n">x_val</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># Unit propagation: apply the Y-unit stored in FitResult</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">res</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="c1"># Fallback for unrecognized units (e.g., &#39;rtHz&#39;)</span>
+                    <span class="k">return</span> <span class="n">res</span>
+            <span class="k">return</span> <span class="n">res</span>
+
+        <span class="k">return</span> <span class="n">bound_model</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Best fit parameters (dict of ParameterValue).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">ParameterValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">parameters</span>
+        <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parameter errors (dict).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">parameters</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chi2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chi-square value (valid only for LeastSquares-like costs).&quot;&quot;&quot;</span>
+        <span class="c1"># Both LeastSquares and ComplexLeastSquares return chi2 as fval</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">fval</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ndof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of degrees of freedom.&quot;&quot;&quot;</span>
+        <span class="n">n_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">):</span>
+            <span class="c1"># For complex data, we have Real and Imag parts, so effectively 2 * N data points</span>
+            <span class="n">n_data</span> <span class="o">*=</span> <span class="mi">2</span>
+        <span class="n">n_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">nfit</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_data</span> <span class="o">-</span> <span class="n">n_params</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduced_chi2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reduced Chi-square value.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chi2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndof</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndof</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delegate to Minuit&#39;s pretty printer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Jupyter notebook integration.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FitResult.plot">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.FitResult.plot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot data and best-fit curve.</span>
+
+<span class="sd">        For complex data, delegates to bode_plot().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_complex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_complex</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bode_plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="n">num_points</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">show_errorbar</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_errorbar&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_errorbar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">show_errorbar</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_errorbars&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_dy</span><span class="p">)</span>
+
+        <span class="n">xscale</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;xscale&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">x_range</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;x_range&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Real Plot</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+        <span class="c1"># Prefer GWpy&#39;s time scaling for TimeSeries fits (GPS-aware)</span>
+        <span class="k">if</span> <span class="n">xscale</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_kind</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span> <span class="ow">and</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">gwpy.plot.gps</span>  <span class="c1"># noqa: F401  (registers GPS scales)</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;auto-gps&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">xscale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="n">xscale</span><span class="p">)</span>
+
+        <span class="n">fit_zorder</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;zorder&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">data_zorder</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">fit_zorder</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">err_zorder</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data_zorder</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Plot Data</span>
+        <span class="n">x_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_data</span><span class="p">)</span>
+        <span class="n">y_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">y_data</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="n">x_data</span> <span class="o">=</span> <span class="n">x_data</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">y_data</span> <span class="o">=</span> <span class="n">y_data</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="c1"># Error bars: if we have full dy, use it; otherwise, fall back to fit-range dy only</span>
+        <span class="k">if</span> <span class="n">show_errorbar</span><span class="p">:</span>
+            <span class="n">dy_full</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy_data</span>
+            <span class="k">if</span> <span class="n">dy_full</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dy_full</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dy</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">y_data</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dy</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span> <span class="k">else</span> <span class="n">dy</span>
+
+                <span class="n">yerr</span> <span class="o">=</span> <span class="n">dy</span>
+                <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+                    <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">y_data</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-12</span><span class="p">))</span>
+                    <span class="n">yerr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">lower</span><span class="p">,</span> <span class="n">dy</span><span class="p">])</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
+                    <span class="n">x_data</span><span class="p">,</span>
+                    <span class="n">y_data</span><span class="p">,</span>
+                    <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                    <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;_nolegend_&quot;</span><span class="p">,</span>
+                    <span class="n">zorder</span><span class="o">=</span><span class="n">err_zorder</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">y_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+                <span class="n">dy_fit_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+                    <span class="n">fit_mask</span> <span class="o">=</span> <span class="n">y_fit</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                    <span class="n">x_fit</span> <span class="o">=</span> <span class="n">x_fit</span><span class="p">[</span><span class="n">fit_mask</span><span class="p">]</span>
+                    <span class="n">y_fit</span> <span class="o">=</span> <span class="n">y_fit</span><span class="p">[</span><span class="n">fit_mask</span><span class="p">]</span>
+                    <span class="n">dy_fit_arr</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">dy_fit_arr</span><span class="p">[</span><span class="n">fit_mask</span><span class="p">]</span> <span class="k">if</span> <span class="n">dy_fit_arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">()</span> <span class="k">else</span> <span class="n">dy_fit_arr</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">dy_fit_arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+                    <span class="n">dy_fit_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">y_fit</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dy_fit_arr</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+                <span class="n">yerr</span> <span class="o">=</span> <span class="n">dy_fit_arr</span>
+                <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+                    <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">dy_fit_arr</span><span class="p">,</span> <span class="n">y_fit</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-12</span><span class="p">))</span>
+                    <span class="n">yerr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">lower</span><span class="p">,</span> <span class="n">dy_fit_arr</span><span class="p">])</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
+                    <span class="n">x_fit</span><span class="p">,</span>
+                    <span class="n">y_fit</span><span class="p">,</span>
+                    <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                    <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;_nolegend_&quot;</span><span class="p">,</span>
+                    <span class="n">zorder</span><span class="o">=</span><span class="n">err_zorder</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">x_data</span><span class="p">,</span>
+            <span class="n">y_data</span><span class="p">,</span>
+            <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="n">data_zorder</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Plot Model (Fit) in front of points</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_fit_range</span>
+        <span class="k">if</span> <span class="n">x_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x_range</span>
+            <span class="n">x_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">),</span> <span class="n">num_points</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="n">num_points</span><span class="p">)</span>
+        <span class="n">y_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">y_plot</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;Fit&quot;</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># If we&#39;re using a GWpy GPS scale, let GWpy format the X label</span>
+        <span class="c1"># during draw() (it uses the epoch + unit). Do not override here.</span>
+        <span class="n">uses_gps_x</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot.gps</span><span class="w"> </span><span class="kn">import</span> <span class="n">GPS_SCALES</span>
+
+            <span class="n">uses_gps_x</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xscale</span><span class="p">()</span> <span class="ow">in</span> <span class="n">GPS_SCALES</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">uses_gps_x</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_label</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">uses_gps_x</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_label</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_label</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_label</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span></div>
+
+
+<div class="viewcode-block" id="FitResult.bode_plot">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.FitResult.bode_plot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bode_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Bode plot (Magnitude and Phase) for the fit result.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :doc:`Tutorial: Transfer Function &lt;../../../user_guide/tutorials/case_transfer_function&gt;`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">show_errorbar</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_errorbar&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_errorbar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">show_errorbar</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_errorbars&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_dy</span><span class="p">)</span>
+        <span class="n">x_range</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;x_range&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax_mag</span><span class="p">,</span> <span class="n">ax_phase</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">ax_mag</span><span class="p">,</span> <span class="n">ax_phase</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;For bode_plot, &#39;ax&#39; must be a list/tuple of 2 axes (mag, phase), or None.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="n">fit_zorder</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;zorder&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">data_zorder</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">fit_zorder</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">err_zorder</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data_zorder</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># --- Magnitude ---</span>
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Data: use only positive x for log scale, and set natural x-range</span>
+        <span class="n">x_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_data</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">x_all</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+            <span class="n">x_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_all</span><span class="p">[</span><span class="n">pos</span><span class="p">]))</span>
+            <span class="n">x_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x_all</span><span class="p">[</span><span class="n">pos</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="mf">1e-1</span><span class="p">,</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="n">x_min</span> <span class="o">==</span> <span class="n">x_max</span><span class="p">:</span>
+            <span class="n">x_min</span> <span class="o">=</span> <span class="n">x_min</span> <span class="o">/</span> <span class="mi">10</span> <span class="k">if</span> <span class="n">x_min</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1e-1</span>
+            <span class="n">x_max</span> <span class="o">=</span> <span class="n">x_max</span> <span class="o">*</span> <span class="mi">10</span> <span class="k">if</span> <span class="n">x_max</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="n">x_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_fit_range</span>
+        <span class="k">if</span> <span class="n">x_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x_range</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)),</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">))</span>
+            <span class="n">x0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x_min</span><span class="p">)</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">x0</span> <span class="o">=</span> <span class="n">x_min</span>
+            <span class="n">x_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x1</span><span class="p">),</span> <span class="n">num_points</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">pos_fit</span> <span class="o">=</span> <span class="n">x_fit</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pos_fit</span><span class="p">):</span>
+                <span class="n">xf0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_fit</span><span class="p">[</span><span class="n">pos_fit</span><span class="p">]))</span>
+                <span class="n">xf1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x_fit</span><span class="p">[</span><span class="n">pos_fit</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xf0</span><span class="p">,</span> <span class="n">xf1</span> <span class="o">=</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span>
+            <span class="n">x_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">xf0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">xf1</span><span class="p">),</span> <span class="n">num_points</span><span class="p">)</span>
+
+        <span class="n">ym_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Data (Second)</span>
+        <span class="n">mag_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_data</span><span class="p">)</span>
+        <span class="n">x_data</span> <span class="o">=</span> <span class="n">x_all</span>
+        <span class="n">mag_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mag_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ax_mag</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">mag_data</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_data</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">x_data</span> <span class="o">=</span> <span class="n">x_data</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">mag_data</span> <span class="o">=</span> <span class="n">mag_data</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="c1"># Error bars behind points/fit (and log-safe)</span>
+        <span class="k">if</span> <span class="n">show_errorbar</span><span class="p">:</span>
+            <span class="n">dy_full</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy_data</span>
+            <span class="k">if</span> <span class="n">dy_full</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dy_full</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dy</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">mag_data</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dy</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="k">if</span> <span class="n">ax_mag</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span> <span class="k">else</span> <span class="n">dy</span>
+
+                <span class="n">yerr</span> <span class="o">=</span> <span class="n">dy</span>
+                <span class="k">if</span> <span class="n">ax_mag</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+                    <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">mag_data</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-12</span><span class="p">))</span>
+                    <span class="n">yerr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">lower</span><span class="p">,</span> <span class="n">dy</span><span class="p">])</span>
+
+                <span class="n">ax_mag</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
+                    <span class="n">x_data</span><span class="p">,</span>
+                    <span class="n">mag_data</span><span class="p">,</span>
+                    <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                    <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;_nolegend_&quot;</span><span class="p">,</span>
+                    <span class="n">zorder</span><span class="o">=</span><span class="n">err_zorder</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Fit-range errorbars only</span>
+                <span class="n">x_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">mag_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+                <span class="n">dy_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ax_mag</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+                    <span class="n">fit_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">mag_fit</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x_fit</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">x_fit</span> <span class="o">=</span> <span class="n">x_fit</span><span class="p">[</span><span class="n">fit_mask</span><span class="p">]</span>
+                    <span class="n">mag_fit</span> <span class="o">=</span> <span class="n">mag_fit</span><span class="p">[</span><span class="n">fit_mask</span><span class="p">]</span>
+                    <span class="n">dy_fit</span> <span class="o">=</span> <span class="n">dy_fit</span><span class="p">[</span><span class="n">fit_mask</span><span class="p">]</span> <span class="k">if</span> <span class="n">dy_fit</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">()</span> <span class="k">else</span> <span class="n">dy_fit</span>
+
+                <span class="k">if</span> <span class="n">dy_fit</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+                    <span class="n">dy_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">mag_fit</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dy_fit</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+                <span class="n">yerr</span> <span class="o">=</span> <span class="n">dy_fit</span>
+                <span class="k">if</span> <span class="n">ax_mag</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;log&quot;</span><span class="p">:</span>
+                    <span class="n">lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">dy_fit</span><span class="p">,</span> <span class="n">mag_fit</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-12</span><span class="p">))</span>
+                    <span class="n">yerr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">lower</span><span class="p">,</span> <span class="n">dy_fit</span><span class="p">])</span>
+
+                <span class="n">ax_mag</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
+                    <span class="n">x_fit</span><span class="p">,</span>
+                    <span class="n">mag_fit</span><span class="p">,</span>
+                    <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span>
+                    <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                    <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;_nolegend_&quot;</span><span class="p">,</span>
+                    <span class="n">zorder</span><span class="o">=</span><span class="n">err_zorder</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">x_data</span><span class="p">,</span>
+            <span class="n">mag_data</span><span class="p">,</span>
+            <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="n">data_zorder</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Fit curve in front of points</span>
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ym_plot</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fit&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Magnitude&quot;</span><span class="p">)</span>
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+        <span class="c1"># --- Phase ---</span>
+        <span class="c1"># Model (First)</span>
+        <span class="n">ax_phase</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax_phase</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">ym_plot</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Fit&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Data (Second)</span>
+        <span class="n">phase_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_data</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Degrees</span>
+        <span class="n">x_phase</span> <span class="o">=</span> <span class="n">x_all</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="k">else</span> <span class="n">x_all</span>
+        <span class="n">phase_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phase_data</span><span class="p">)</span>
+        <span class="n">phase_data</span> <span class="o">=</span> <span class="n">phase_data</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="k">else</span> <span class="n">phase_data</span>
+        <span class="n">ax_phase</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">x_phase</span><span class="p">,</span> <span class="n">phase_data</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="n">data_zorder</span>
+        <span class="p">)</span>
+
+        <span class="n">ax_phase</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_label</span><span class="p">:</span>
+            <span class="n">ax_phase</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_label</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax_phase</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency / Time&quot;</span><span class="p">)</span>
+
+        <span class="n">ax_phase</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+        <span class="n">ax_phase</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">ax_mag</span><span class="p">,</span> <span class="n">ax_phase</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FitResult.run_mcmc">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.FitResult.run_mcmc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_mcmc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_walkers</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span> <span class="n">burn_in</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run MCMC using emcee starting from the best-fit parameters.</span>
+
+<span class="sd">        This method supports both standard least squares and GLS (Generalized</span>
+<span class="sd">        Least Squares) error structures. If `cov_inv` is available, the log</span>
+<span class="sd">        probability is computed using the full covariance structure.</span>
+
+<span class="sd">        For complex-valued data (e.g., Transfer Functions), the cost function</span>
+<span class="sd">        is computed using the magnitude of residuals or the Hermitian form</span>
+<span class="sd">        in the case of GLS, ensuring correct handling of real and imaginary parts.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_walkers : int, optional</span>
+<span class="sd">            Number of MCMC walkers. Default is 32.</span>
+<span class="sd">        n_steps : int, optional</span>
+<span class="sd">            Number of MCMC steps per walker. Default is 3000.</span>
+<span class="sd">        burn_in : int, optional</span>
+<span class="sd">            Number of initial steps to discard. Default is 500.</span>
+<span class="sd">        progress : bool, optional</span>
+<span class="sd">            Whether to show progress bar. Default is True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sampler : emcee.EnsembleSampler</span>
+<span class="sd">            The emcee sampler object containing the full chain.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        **Fixed Covariance Assumption**</span>
+
+<span class="sd">        This implementation assumes that the covariance matrix Σ (via ``cov_inv``)</span>
+<span class="sd">        is **fixed** (parameter-independent). Under this assumption, the log</span>
+<span class="sd">        determinant term log|Σ| is constant and can be omitted from the log</span>
+<span class="sd">        likelihood:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}</span>
+
+<span class="sd">        If Σ depends on the model parameters θ, the full log likelihood including</span>
+<span class="sd">        the log|Σ| term must be used:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r</span>
+<span class="sd">            - \frac{1}{2} \log|\Sigma| - \frac{N}{2}\log 2\pi</span>
+
+<span class="sd">        This assumption has been validated through unit tests and independent technical review.</span>
+<span class="sd">        All models agreed that the current implementation is correct for</span>
+<span class="sd">        fixed-covariance use cases.</span>
+
+<span class="sd">        **Complex Residuals**</span>
+
+<span class="sd">        For complex-valued data, the Hermitian form ``r.conj() @ cov_inv @ r``</span>
+<span class="sd">        is used, which assumes a circular complex Gaussian distribution</span>
+<span class="sd">        (i.e., real and imaginary parts have equal variance and are uncorrelated).</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        .. [1] Rasmussen &amp; Williams, Gaussian Processes for Machine Learning</span>
+<span class="sd">               (2006), Ch. 2.2</span>
+<span class="sd">        .. [2] Gelman et al., Bayesian Data Analysis (3rd ed., 2013), §14.2</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">emcee</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;Please install &#39;emcee&#39; and &#39;corner&#39; to use MCMC features.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 1. Parameter Information Extraction</span>
+        <span class="c1"># Filter out fixed parameters for MCMC</span>
+        <span class="n">float_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">parameters</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">fixed</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span>
+        <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">float_params</span><span class="p">)</span>
+
+        <span class="c1"># Dictionary of fixed parameters</span>
+        <span class="n">fixed_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">p</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">parameters</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">fixed</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Cache values for log_prob closure</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+        <span class="n">cov_inv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cov_inv</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cov</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
+        <span class="n">all_param_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="n">limits_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">p</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">limits</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">parameters</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">limits</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">!=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Validate fixed covariance assumption</span>
+        <span class="k">if</span> <span class="n">cov_inv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cov_inv</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Parameter-dependent covariance matrices are not yet supported in run_mcmc.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Precompute Cholesky factor if covariance is available for better stability</span>
+        <span class="n">cov_cho</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">cov</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Ensure it&#39;s a positive definite matrix</span>
+                <span class="n">cov_cho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Covariance matrix is not positive definite, falling back to pinv.&quot;</span>
+                <span class="p">)</span>
+                <span class="n">cov_cho</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Log Probability Function</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+            <span class="c1"># theta: array of float values for float_params</span>
+
+            <span class="c1"># Construct full parameter dictionary</span>
+            <span class="n">current_params</span> <span class="o">=</span> <span class="n">fixed_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">float_params</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+                <span class="n">current_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+                <span class="c1"># Check limits defined in minuit</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">limits_dict</span><span class="p">:</span>
+                    <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">limits_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="n">vmin</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                    <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">vmax</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Get model prediction</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">current_params</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">all_param_names</span><span class="p">]</span>
+                <span class="n">ym</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">ym</span>
+
+                <span class="c1"># Compute log probability based on error structure</span>
+                <span class="k">if</span> <span class="n">cov_cho</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># GLS: use Cholesky factor for better numerical stability</span>
+                    <span class="c1"># r.T @ inv(cov) @ r == ||inv(L) @ r||^2</span>
+
+                    <span class="c1"># solve L @ w = r</span>
+                    <span class="n">w</span> <span class="o">=</span> <span class="n">solve_triangular</span><span class="p">(</span><span class="n">cov_cho</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">chi2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">cov_inv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># GLS fallback: use full inverse covariance structure</span>
+                    <span class="c1"># Handle complex residuals by taking real part of Hermitian form</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span> <span class="o">@</span> <span class="n">cov_inv</span> <span class="o">@</span> <span class="n">r</span>
+                    <span class="c1"># Ensure we aren&#39;t discarding meaningful imaginary parts (should be ~0 for Hermitian form)</span>
+                    <span class="n">chi2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Standard: use diagonal errors</span>
+                    <span class="c1"># Use np.abs() to handle complex residuals (TransferFunction) correctly</span>
+                    <span class="n">chi2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">dy</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+                <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">chi2</span>
+
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ZeroDivisionError</span><span class="p">):</span>
+                <span class="c1"># Expected numerical errors</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="c1"># Unexpected errors - log full context but keep the walker alive</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error in MCMC log_prob&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+
+        <span class="c1"># Initial state: small ball around minuit result</span>
+        <span class="n">p0_float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">float_params</span><span class="p">])</span>
+        <span class="c1"># Use hessian errors for initialization spread, or small value if fixed/zero</span>
+        <span class="n">stds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">errors</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="k">else</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="n">RELATIVE_JITTER</span><span class="p">,</span> <span class="n">SAFE_FLOOR_STRAIN</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">float_params</span><span class="p">,</span> <span class="n">p0_float</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">p0_float</span> <span class="o">+</span> <span class="n">stds</span> <span class="o">*</span> <span class="mf">1e-1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_walkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+
+        <span class="c1"># Run emcee</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="n">emcee</span><span class="o">.</span><span class="n">EnsembleSampler</span><span class="p">(</span><span class="n">n_walkers</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">log_prob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="n">progress</span><span class="p">)</span>
+
+        <span class="c1"># Save flattened samples (discarding burn-in)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">(</span><span class="n">discard</span><span class="o">=</span><span class="n">burn_in</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mcmc_labels</span> <span class="o">=</span> <span class="n">float_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_burn_in</span> <span class="o">=</span> <span class="n">burn_in</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parameter_intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get parameter confidence intervals from MCMC samples.</span>
+
+<span class="sd">        Returns 16th, 50th, and 84th percentiles for each parameter,</span>
+<span class="sd">        corresponding to median and ±1σ bounds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Dictionary mapping parameter names to (lower, median, upper) tuples.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If run_mcmc() has not been called.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Run .run_mcmc() first.&quot;</span><span class="p">)</span>
+
+        <span class="n">intervals</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcmc_labels</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="n">samples_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="n">q16</span><span class="p">,</span> <span class="n">q50</span><span class="p">,</span> <span class="n">q84</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">samples_i</span><span class="p">,</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">84</span><span class="p">])</span>
+            <span class="n">intervals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">q16</span><span class="p">,</span> <span class="n">q50</span><span class="p">,</span> <span class="n">q84</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">intervals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mcmc_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the full MCMC chain (not flattened, not discarded).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            Shape (n_steps, n_walkers, n_params). Returns None if MCMC not run.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FitResult.plot_corner">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.FitResult.plot_corner">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_corner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_titles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quantiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot corner plot of MCMC samples.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        show_titles : bool, optional</span>
+<span class="sd">            Whether to show parameter value titles. Default is True.</span>
+<span class="sd">        quantiles : list, optional</span>
+<span class="sd">            Quantiles for title display. Default is [0.16, 0.5, 0.84].</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional arguments passed to corner.corner().</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        figure : matplotlib.figure.Figure</span>
+<span class="sd">            The corner plot figure.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">corner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please install &#39;corner&#39; to use plot_corner.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Run .run_mcmc() first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Set defaults</span>
+        <span class="k">if</span> <span class="n">quantiles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">quantiles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">]</span>
+
+        <span class="c1"># Show BestFit truth lines</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcmc_labels</span><span class="p">:</span>
+            <span class="n">truths</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcmc_labels</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;truths&quot;</span><span class="p">,</span> <span class="n">truths</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;labels&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcmc_labels</span><span class="p">)</span>
+
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;show_titles&quot;</span><span class="p">,</span> <span class="n">show_titles</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;quantiles&quot;</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;title_kwargs&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;fontsize&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">corner</span><span class="o">.</span><span class="n">corner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Add annotation if GLS was used</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cov_inv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="mf">0.95</span><span class="p">,</span>
+                <span class="mf">0.95</span><span class="p">,</span>
+                <span class="s2">&quot;GLS fit&quot;</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">style</span><span class="o">=</span><span class="s2">&quot;italic&quot;</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">transFigure</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="FitResult.plot_fit_band">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.FitResult.plot_fit_band">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_fit_band</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the fit with uncertainty band from MCMC samples.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ax : matplotlib.axes.Axes, optional</span>
+<span class="sd">            Axes to plot on. If None, creates new figure.</span>
+<span class="sd">        num_points : int, optional</span>
+<span class="sd">            Number of points for model curve. Default is 200.</span>
+<span class="sd">        n_samples : int, optional</span>
+<span class="sd">            Number of MCMC samples to use for band. Default is 100.</span>
+<span class="sd">        alpha : float, optional</span>
+<span class="sd">            Alpha transparency for uncertainty band. Default is 0.3.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional arguments passed to ax.fill_between().</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ax : matplotlib.axes.Axes</span>
+<span class="sd">            The axes with the plot.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Run .run_mcmc() first.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+        <span class="c1"># Generate x values for plotting</span>
+        <span class="n">x_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="n">num_points</span><span class="p">)</span>
+
+        <span class="c1"># Get random subset of samples</span>
+        <span class="n">n_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">n_total</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_total</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Fixed parameters</span>
+        <span class="n">fixed_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">p</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">parameters</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">fixed</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="n">all_param_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minuit</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+
+        <span class="c1"># Compute model curves for samples</span>
+        <span class="n">y_samples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mcmc_labels</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">current_params</span> <span class="o">=</span> <span class="n">fixed_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+                <span class="n">current_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">current_params</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">all_param_names</span><span class="p">]</span>
+            <span class="n">y_samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">))</span>
+
+        <span class="n">y_samples_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_samples</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">y_samples_arr</span><span class="p">):</span>
+            <span class="c1"># For complex data, we usually want to plot the magnitude band</span>
+            <span class="n">y_samples_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_samples_arr</span><span class="p">)</span>
+
+        <span class="c1"># Compute percentiles</span>
+        <span class="n">y_lower</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_samples_arr</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">y_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">y_samples_arr</span><span class="p">,</span> <span class="mi">84</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Plot data</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">yerr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_dy</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Data&quot;</span><span class="p">,</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Plot best fit</span>
+        <span class="n">y_best</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">y_best</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Best fit&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="c1"># Plot uncertainty band</span>
+        <span class="n">band_color</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+            <span class="n">x_plot</span><span class="p">,</span>
+            <span class="n">y_lower</span><span class="p">,</span>
+            <span class="n">y_upper</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">band_color</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;68</span><span class="si">% c</span><span class="s2">redible&quot;</span><span class="p">,</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_label</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_label</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_label</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_label</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">ax</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="fit_series">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.fitting.fit_series">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_series</span><span class="p">(</span>
+    <span class="n">series</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">x_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cov</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cost_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">p0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">limits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fixed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit a Series object using iminuit.</span>
+
+<span class="sd">    Supports real and complex valued Series (simultaneous Re/Im fit).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    series : Series</span>
+<span class="sd">        Data series to fit.</span>
+<span class="sd">    model : callable or str</span>
+<span class="sd">        Model function or name (e.g., &quot;gaussian&quot;, &quot;power_law&quot;).</span>
+<span class="sd">    x_range : tuple, optional</span>
+<span class="sd">        (x_min, x_max) to crop data before fitting.</span>
+<span class="sd">    sigma : array-like or scalar, optional</span>
+<span class="sd">        Per-point error estimates. Ignored if `cov` or `cost_function` is provided.</span>
+<span class="sd">    cov : BifrequencyMap or 2D ndarray, optional</span>
+<span class="sd">        Covariance matrix for Generalized Least Squares (GLS) fitting.</span>
+<span class="sd">        If provided, overrides `sigma` and uses GLS χ² minimization.</span>
+<span class="sd">        Ignored if `cost_function` is provided.</span>
+<span class="sd">    cost_function : callable, optional</span>
+<span class="sd">        User-defined cost function for Minuit. If provided, takes priority over</span>
+<span class="sd">        `sigma`, `cov`, and automatic cost function selection.</span>
+<span class="sd">        Must be callable with signature `cost_function(*params) -&gt; float`.</span>
+<span class="sd">        Should have `errordef` attribute (default: 1.0 for least squares).</span>
+<span class="sd">        Parameter names are extracted via `iminuit.util.describe()`.</span>
+<span class="sd">    p0 : dict or list, optional</span>
+<span class="sd">        Initial parameter values.</span>
+<span class="sd">    limits : dict, optional</span>
+<span class="sd">        Parameter limits, e.g., {&quot;A&quot;: (0, 100)}.</span>
+<span class="sd">    fixed : list, optional</span>
+<span class="sd">        List of parameter names to fix during fit.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional arguments passed to Minuit.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FitResult</span>
+<span class="sd">        Object containing fit results, parameters, and plotting methods.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 0. Resolve model</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+
+    <span class="c1"># 1. Prepare data (Crop &amp; Unit Stripping)</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">x_range</span><span class="p">)</span> <span class="k">if</span> <span class="n">x_range</span> <span class="k">else</span> <span class="n">series</span>
+
+    <span class="c1"># Get x-axis</span>
+    <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+    <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span>
+
+    <span class="c1"># full-range data for plotting</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;frequencies&quot;</span><span class="p">):</span>
+        <span class="n">x_full</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;times&quot;</span><span class="p">):</span>
+        <span class="n">x_full</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x_full</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">y_full</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;frequencies&quot;</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Frequency&quot;</span>
+        <span class="n">x_kind</span> <span class="o">=</span> <span class="s2">&quot;frequency&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;xunit&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">xunit</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;dimensionless&quot;</span><span class="p">:</span>
+            <span class="n">x_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">xunit</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;times&quot;</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Time&quot;</span>
+        <span class="n">x_kind</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;xunit&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">xunit</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;dimensionless&quot;</span><span class="p">:</span>
+            <span class="n">x_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">xunit</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;xunit&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">xunit</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;dimensionless&quot;</span><span class="p">:</span>
+            <span class="n">x_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">xunit</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="n">x_kind</span> <span class="o">=</span> <span class="s2">&quot;index&quot;</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="c1"># Determine y-label</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;dimensionless&quot;</span><span class="p">:</span>
+        <span class="n">y_label_unit</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y_label_unit</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="n">y_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">y_label_unit</span><span class="p">:</span>
+            <span class="n">y_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">y_label_unit</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">elif</span> <span class="n">y_label_unit</span><span class="p">:</span>
+        <span class="n">y_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Amplitude </span><span class="si">{</span><span class="n">y_label_unit</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Handle errors / uncertainty</span>
+    <span class="n">original_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">sigma_full_for_plot</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">sigma</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Unweighted least squares (cost function internally uses 1.0)</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="n">sigma_for_result</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># If sigma is a scalar, broadcast it</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">sigma</span><span class="p">):</span>
+            <span class="n">sigma_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">sigma_val</span><span class="p">)</span>
+            <span class="n">sigma_full_for_plot</span> <span class="o">=</span> <span class="n">sigma_val</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sigma_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+            <span class="n">sigma_full_for_plot</span> <span class="o">=</span> <span class="n">sigma_arr</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigma_arr</span><span class="p">)</span> <span class="o">==</span> <span class="n">original_len</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigma_arr</span><span class="p">)</span> <span class="o">==</span> <span class="n">original_len</span> <span class="ow">and</span> <span class="n">x_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Crop sigma by x range using the full x array</span>
+                <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x_range</span>
+                <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span> <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;=</span> <span class="n">x1</span> <span class="k">else</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
+                <span class="n">idx0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">x_full</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">))</span>
+                <span class="n">idx1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">x_full</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">))</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">sigma_arr</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">sigma_arr</span>
+
+        <span class="c1"># Final length check</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sigma length mismatch: got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span><span class="si">}</span><span class="s2">, expected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sigma_for_result</span> <span class="o">=</span> <span class="n">dy</span>
+
+    <span class="n">is_complex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># 2. Cost Function</span>
+    <span class="c1"># Priority: cost_function &gt; cov &gt; sigma &gt; default</span>
+    <span class="n">cov_inv_for_result</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Will be set if GLS is used</span>
+    <span class="n">cov_for_result</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">cost_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># User-provided cost function takes highest priority</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">cost_function</span>
+        <span class="c1"># Try to extract cov_inv from cost function if it&#39;s a GLS</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="s2">&quot;cov_inv&quot;</span><span class="p">):</span>
+            <span class="n">cov_inv_for_result</span> <span class="o">=</span> <span class="n">cost_function</span><span class="o">.</span><span class="n">cov_inv</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cost_function</span><span class="p">,</span> <span class="s2">&quot;cov&quot;</span><span class="p">):</span>
+            <span class="n">cov_for_result</span> <span class="o">=</span> <span class="n">cost_function</span><span class="o">.</span><span class="n">cov</span>
+    <span class="k">elif</span> <span class="n">cov</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># GLS mode: use covariance matrix</span>
+        <span class="k">if</span> <span class="n">is_complex</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;GLS fitting is not yet supported for complex data. &quot;</span>
+                <span class="s2">&quot;Please use sigma instead.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.gls</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeneralizedLeastSquares</span>
+
+        <span class="c1"># Handle BifrequencyMap or 2D ndarray</span>
+        <span class="n">cov_arr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">cov_inv</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Check if cov is a BifrequencyMap (duck typing to avoid import issues)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="s2">&quot;inverse&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="s2">&quot;crop&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+            <span class="c1"># BifrequencyMap: Crop if x_range is provided</span>
+            <span class="k">if</span> <span class="n">x_range</span><span class="p">:</span>
+                <span class="n">cov</span> <span class="o">=</span> <span class="n">cov</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">x_range</span><span class="p">)</span>
+            <span class="c1"># BifrequencyMap: get inverse and extract value</span>
+            <span class="n">inv_map</span> <span class="o">=</span> <span class="n">cov</span><span class="o">.</span><span class="n">inverse</span><span class="p">()</span>
+            <span class="n">cov_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">inv_map</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">cov_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cov</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Assume 2D ndarray covariance</span>
+            <span class="n">cov_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cov_arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cov must be a 2D array, got </span><span class="si">{</span><span class="n">cov_arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+            <span class="n">cov_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">cov_arr</span><span class="p">)</span>
+
+        <span class="n">cov_for_result</span> <span class="o">=</span> <span class="n">cov_arr</span>
+        <span class="n">cov_inv_for_result</span> <span class="o">=</span> <span class="n">cov_inv</span>
+
+        <span class="c1"># Check dimension matches</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cov_inv</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Covariance matrix shape </span><span class="si">{</span><span class="n">cov_arr</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> does not match &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;data length </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">. Expected (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Generate dy from diagonal of covariance for plotting error bars</span>
+        <span class="n">diag_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">cov_arr</span><span class="p">)</span>
+        <span class="c1"># Handle potential negative values from numerical issues</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">diag_cov</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">sigma_for_result</span> <span class="o">=</span> <span class="n">dy</span>
+        <span class="n">sigma_full_for_plot</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Full-range sigma not available for GLS yet</span>
+
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">GeneralizedLeastSquares</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cov_inv</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">cov</span><span class="o">=</span><span class="n">cov_arr</span><span class="p">)</span>
+        <span class="n">cov_inv_for_result</span> <span class="o">=</span> <span class="n">cov_inv</span>  <span class="c1"># Save for MCMC</span>
+    <span class="k">elif</span> <span class="n">is_complex</span><span class="p">:</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">ComplexLeastSquares</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">RealLeastSquares</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+
+    <span class="c1"># 3. Minuit initialization</span>
+    <span class="c1"># Get parameter names from the cost function (which got them from model)</span>
+    <span class="n">param_names</span> <span class="o">=</span> <span class="n">describe</span><span class="p">(</span><span class="n">cost</span><span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+    <span class="n">init_params</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Handle list/tuple p0 by mapping positional args to parameter names</span>
+    <span class="k">if</span> <span class="n">p0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="c1"># Optionally check lengths</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_names</span><span class="p">):</span>
+                <span class="n">init_params</span><span class="p">[</span><span class="n">param_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+        <span class="c1"># If already set by list/tuple, skip</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">init_params</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">p0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">p0</span><span class="p">:</span>
+            <span class="n">init_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">p0</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">name</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span>
+            <span class="ow">and</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">empty</span>
+        <span class="p">):</span>
+            <span class="n">init_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">default</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Fallback for parameters without p0 or default</span>
+            <span class="n">init_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">Minuit</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="o">**</span><span class="n">init_params</span><span class="p">)</span>
+
+    <span class="c1"># 4. Applying Limits / Fixes</span>
+    <span class="k">if</span> <span class="n">limits</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span> <span class="ow">in</span> <span class="n">limits</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">limits</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">fixed</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">fixed</span><span class="p">:</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">fixed</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># 5. Execution</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">migrad</span><span class="p">()</span>
+    <span class="c1"># Only compute Hesse if there are free parameters</span>
+    <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">nfit</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">hesse</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">FitResult</span><span class="p">(</span>
+        <span class="n">m</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">dy</span><span class="o">=</span><span class="n">sigma_for_result</span><span class="p">,</span>
+        <span class="n">cost_func</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
+        <span class="n">x_label</span><span class="o">=</span><span class="n">x_label</span><span class="p">,</span>
+        <span class="n">y_label</span><span class="o">=</span><span class="n">y_label</span><span class="p">,</span>
+        <span class="n">x_kind</span><span class="o">=</span><span class="n">x_kind</span><span class="p">,</span>
+        <span class="n">x_data</span><span class="o">=</span><span class="n">x_full</span><span class="p">,</span>
+        <span class="n">y_data</span><span class="o">=</span><span class="n">y_full</span><span class="p">,</span>
+        <span class="n">dy_data</span><span class="o">=</span><span class="n">sigma_full_for_plot</span><span class="p">,</span>
+        <span class="n">x_fit_range</span><span class="o">=</span><span class="n">x_range</span><span class="p">,</span>
+        <span class="n">cov_inv</span><span class="o">=</span><span class="n">cov_inv_for_result</span><span class="p">,</span>
+        <span class="n">cov</span><span class="o">=</span><span class="n">cov_for_result</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">x_unit</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;xunit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

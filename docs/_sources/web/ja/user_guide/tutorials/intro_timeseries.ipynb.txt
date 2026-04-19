@@ -1,11 +1,27 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d2cae3e8",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "9df31e2c",
+   "id": "c5312f74",
    "metadata": {},
    "source": [
-    "# gwexpy TimeSeries 新機能チュートリアル\n",
+    "# TimeSeries: 基本\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb)\n",
     "\n",
@@ -26,7 +42,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f8e8084e",
+   "id": "c2524f11",
    "metadata": {},
    "source": [
     "## 1. 環境セットアップ\n",
@@ -37,7 +53,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "657365d8",
+   "id": "7a69e8cd",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:38.731090Z",
@@ -48,6 +64,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "from astropy import units as u\n",
@@ -56,20 +76,20 @@
     "from gwexpy.plot import Plot\n",
     "from gwexpy.timeseries import TimeSeries\n",
     "\n",
-    "# SampleData Generate (100Hz done5seconds Data)\n",
+    "# 後段の解析で物理的な違いを追えるように、定常線に近いチャンネルと周波数が流れるチャンネルを用意します。\n",
     "fs = 100\n",
     "duration = 5.0\n",
     "# Restore 't' for compatibility with downstream cells if they use it\n",
     "t = np.arange(0, duration, 1 / fs)\n",
     "\n",
-    "# Sensor 1: 10Hz Sine wave + Noise\n",
+    "# Sensor 1 は安定した 10 Hz 線と計測雑音を重ねた基準チャンネルとして扱い、復調や相関確認の参照にします。\n",
     "s1 = sine(duration=duration, sample_rate=fs, frequency=10, amplitude=1.0)\n",
     "n1 = gaussian(duration=duration, sample_rate=fs, std=0.2)\n",
     "ts1 = s1 + n1\n",
     "ts1.name = \"Sensor 1\"\n",
     "ts1.override_unit(\"V\")\n",
     "\n",
-    "# Sensor 2: Signal (Frequency time / duration : 5Hz -> 25Hz) + Function Width\n",
+    "# Sensor 2 は周波数が掃引しつつ包絡が成長する非定常線を模擬し、Hilbert 系の指標で追うべき物理変化を与えます。\n",
     "s2 = chirp(duration=duration, sample_rate=fs, f0=5, f1=25, t1=duration)\n",
     "env = exponential(\n",
     "    duration=duration, sample_rate=fs, tau=2.0, decay=False, amplitude=0.2\n",
@@ -81,7 +101,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "16258dce",
+   "id": "fd98423a",
    "metadata": {},
    "source": [
     "## 2. 信号処理と復調\n",
@@ -91,7 +111,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "43374893",
+   "id": "bdcb7c76",
    "metadata": {},
    "source": [
     "### ヒルベルト変換と包絡線\n",
@@ -101,7 +121,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "f6110a12",
+   "id": "c7fbc94b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:40.952376Z",
@@ -123,9 +143,9 @@
     }
    ],
    "source": [
-    "# minutes Signal (Analytic Signal) Calculate\n",
+    "# 解析信号を作ることで、正負周波数の打ち消しを避けながら振幅と位相を分けて扱います。\n",
     "ts_analytic = ts2.hilbert()\n",
-    "# (Envelope) Calculate\n",
+    "# 包絡線は搬送波を取り除いた後に残るゆっくりした振幅変動を表します。\n",
     "ts_env = ts2.envelope()\n",
     "\n",
     "plot = Plot(ts2, ts_env, figsize=(10, 4))\n",
@@ -142,7 +162,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "75b35ad5",
+   "id": "167a652f",
    "metadata": {},
    "source": [
     "### 瞬時位相と瞬時周波数\n",
@@ -152,7 +172,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "ce1ff129",
+   "id": "a71ea2bf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:35:46.736121Z",
@@ -174,11 +194,11 @@
     }
    ],
    "source": [
-    "# Phase (unwrap=True Phase )\n",
+    "# 位相を unwrap して 2π ジャンプを除くと、チャープの連続的な位相蓄積として解釈できます。\n",
     "phase_rad = ts2.instantaneous_phase(unwrap=True)\n",
     "phase_deg = ts2.instantaneous_phase(deg=True, unwrap=True)\n",
     "\n",
-    "# Frequency\n",
+    "# 位相の傾きを瞬時周波数に変換し、時間とともに動く線周波数を追跡します。\n",
     "freq = ts2.instantaneous_frequency()\n",
     "\n",
     "plot = Plot(phase_rad, freq, separate=True, sharex=True, figsize=(10, 6))\n",
@@ -192,7 +212,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e073b1e7",
+   "id": "0c739a99",
    "metadata": {},
    "source": [
     "### 混合と復調 (Mix-down, Baseband, Lock-in)\n",
@@ -202,7 +222,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "77d16ae2",
+   "id": "7177b2cb",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:36:00.775634Z",
@@ -248,13 +268,13 @@
     }
    ],
    "source": [
-    "# 1. mix_down: Frequency f0 ( Signal )\n",
+    "# 1. 10 Hz 線を baseband へ落とし、ゆっくりした振幅・位相変動だけを読みやすくします。\n",
     "ts_mixed = ts1.mix_down(f0=10)\n",
     "\n",
-    "# 2. baseband: demodulation + lowpass + resampling BatchRun\n",
+    "# 2. baseband は復調後に低域だけを残して間引くので、搬送波そのものではなく包絡の時間変化に注目できます。\n",
     "ts_base = ts1.baseband(f0=10, lowpass=5, output_rate=20)\n",
     "\n",
-    "# 3. lock_in: (Amplitude Phase )\n",
+    "# 3. lock-in は位相を合わせた参照波で平均することで、広帯域雑音を抑えながら 10 Hz 成分だけを抽出します。\n",
     "amp, ph = ts1.lock_in(f0=10, stride=0.1) # 0.1seconds Mean\n",
     "res_complex = ts1.lock_in(f0=10, stride=0.1, output=\"complex\") # Complex number\n",
     "\n",
@@ -275,7 +295,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a20cdab0",
+   "id": "f4f54ec2",
    "metadata": {},
    "source": [
     "## 3. スペクトル解析と相関\n",
@@ -285,7 +305,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2d3d44bb",
+   "id": "a1ed4c22",
    "metadata": {},
    "source": [
     "### 拡張された FFT\n",
@@ -295,7 +315,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "a5b00d02",
+   "id": "0b54e15e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:36:57.879090Z",
@@ -317,11 +337,11 @@
     }
    ],
    "source": [
-    "# FFT (GWpy )\n",
+    "# 標準 FFT は記録全体をほぼ定常とみなせる場合の基準スペクトル比較に向いています。\n",
     "fs_gwpy = ts1.fft()\n",
     "\n",
-    "# Transient Mode:\n",
-    "# pad_left/right 。nfft_mode=\"next_fast_len\" Calculate Length 。\n",
+    "# transient mode は短い応答や端点効果が効く場合に使い、端のリーケージで振幅を見誤るのを防ぎます。\n",
+    "# pad_left/pad_right でイベント前後に余白を持たせ、nfft_mode=\"next_fast_len\" でその保護を高速な FFT 長に合わせます。\n",
     "fs_trans = ts1.fft(\n",
     "    mode=\"transient\", pad_left=0.5, pad_right=0.5, nfft_mode=\"next_fast_len\"\n",
     ")\n",
@@ -333,12 +353,12 @@
     "ax.get_lines()[1].set_alpha(0.7)\n",
     "ax.legend()\n",
     "ax.set_title(\"Comparison of FFT modes\")\n",
-    "plt.show()"
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "e37d7bdf",
+   "id": "23900d5e",
    "metadata": {},
    "source": [
     "### 伝達関数 (Transfer Function) と相互相関 (xcorr)\n",
@@ -348,7 +368,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "ff7e1526",
+   "id": "80126cf4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:36:58.099630Z",
@@ -370,13 +390,13 @@
     }
    ],
    "source": [
-    "# Transfer Function Calculate (Sensor 1 do Chirp Signal Transfer Function)\n",
+    "# 伝達関数を見て、Sensor 1 がチャープ信号のどの周波数成分を線形に説明できるかを確かめます。\n",
     "tf_welch = ts2.transfer_function(ts1, fftlength=1)\n",
     "tf_fft = ts2.transfer_function(\n",
     "    ts1, mode=\"transient\"\n",
     ") # FFTRatio ( Response )\n",
     "\n",
-    "# CrossCorrelation (xcorr)\n",
+    "# 相互相関は 2 チャンネルの時間ずれを確かめる最初の sanity check で、witness として使えるかの判断材料になります。\n",
     "corr = ts1.xcorr(ts2, maxlag=0.5, normalize=\"coeff\")\n",
     "\n",
     "plot = Plot(figsize=(10, 6))\n",
@@ -396,7 +416,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b66518fe",
+   "id": "56a8ed49",
    "metadata": {},
    "source": [
     "### STLT (Short-Time Laplace Transform)\n",
@@ -411,7 +431,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "0d23aba4",
+   "id": "44d01cd4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:36:58.432141Z",
@@ -467,7 +487,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "57ff9636",
+   "id": "8ddefbd8",
    "metadata": {},
    "source": [
     "## 4. Hilbert-Huang Transform (HHT)\n",
@@ -478,7 +498,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "2452efc9",
+   "id": "3b9fff41",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:36:58.439404Z",
@@ -554,12 +574,12 @@
     "except ImportError:\n",
     "    print(\"EMD-signal not installed. Skipping HHT demo.\")\n",
     "except Exception as e:\n",
-    "    print(f\"HHT Error: {e}\")"
+    "    print(f\"HHT Error: {e}\")\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "8b6fb1ef",
+   "id": "1e3d9101",
    "metadata": {},
    "source": [
     "## 5. 統計・前処理\n",
@@ -570,7 +590,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "587c1c70",
+   "id": "69328f9b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:38:57.169157Z",
@@ -617,7 +637,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8615d16e",
+   "id": "95d10306",
    "metadata": {},
    "source": [
     "### ピーク検出 (Find Peaks)\n",
@@ -627,7 +647,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "07481bea",
+   "id": "c54d2191",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:39:26.164973Z",
@@ -693,7 +713,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "fe908c3e",
+   "id": "bbb3b144",
    "metadata": {},
    "source": [
     "### ARIMAモデルとハースト指数\n",
@@ -703,7 +723,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "1cd8c48e",
+   "id": "483c26b0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:39:55.191289Z",
@@ -789,12 +809,12 @@
     "    ax.legend()\n",
     "    plt.show()\n",
     "except Exception as e:\n",
-    "    print(f\"Hurst skipping: {e}\")"
+    "    print(f\"Hurst skipping: {e}\")\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "327838db",
+   "id": "5b98de4d",
    "metadata": {},
    "source": [
     "### ローリング統計量 (Rolling Statistics)\n",
@@ -804,7 +824,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "3c1e5685",
+   "id": "2ff5ed34",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:40:18.728755Z",
@@ -856,7 +876,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e252a82d",
+   "id": "366d0960",
    "metadata": {},
    "source": [
     "## 6. リサンプリングと再インデックス\n",
@@ -867,7 +887,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "df8aa172",
+   "id": "735dfc81",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:40:24.621954Z",
@@ -908,7 +928,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "618e15a5",
+   "id": "e88e1960",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:40:48.200634Z",
@@ -957,7 +977,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e5ee397f",
+   "id": "bbe4ec39",
    "metadata": {},
    "source": [
     "## 7. 関数によるフィッティング\n",
@@ -968,7 +988,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "807b433f",
+   "id": "bf38dfee",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:40:48.348680Z",
@@ -1049,7 +1069,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8db4edaf",
+   "id": "8e88fca9",
    "metadata": {},
    "source": [
     "## 8. 相互運用性\n",
@@ -1060,7 +1080,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "0d7eddb1",
+   "id": "c0a4a56f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:41:11.091564Z",
@@ -1145,13 +1165,13 @@
     "    print(\"Xarray interop OK\")\n",
     "    print(xr)\n",
     "except ImportError:\n",
-    "    pass"
+    "    pass\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "77da0dee",
+   "id": "70fe1dc1",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:41:16.527866Z",
@@ -1192,7 +1212,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "396dd1c6",
+   "id": "e4609c6f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:41:16.533093Z",
@@ -1298,13 +1318,13 @@
     "    print(f\"Torch interop OK (Shape: {t_torch.shape})\")\n",
     "    display(t_torch)\n",
     "except ImportError:\n",
-    "    pass"
+    "    pass\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "a8b6ba79",
+   "id": "5becad1a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:41:17.547220Z",
@@ -1335,13 +1355,13 @@
     "    print(\"TensorFlow interop OK\")\n",
     "    display(t_tf)\n",
     "except ImportError:\n",
-    "    pass"
+    "    pass\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "47936e3f",
+   "id": "4cd75136",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:41:17.551149Z",
@@ -1385,12 +1405,12 @@
     "    print(f\"ObsPy interop OK: {tr.id}\")\n",
     "    display(tr)\n",
     "except ImportError:\n",
-    "    pass"
+    "    pass\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "f53d1ca7",
+   "id": "9a988ffd",
    "metadata": {},
    "source": [
     "## まとめ\n",
@@ -1430,5 +1450,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

@@ -1,19 +1,49 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c09373a8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "8588da4a",
+   "id": "c268e45d",
+   "metadata": {},
+   "source": [
+    "# SegmentTable: 基本\n",
+    "\n",
+    ":::{tip}\n",
+    "可視化、GravitySpyとの連携、高度な操作を含むより包括的なガイドについては、[テーブル / セグメント ユーザーガイド](intro_table.ipynb)を参照してください。\n",
+    ":::\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d686d571",
    "metadata": {},
    "source": [
     "# SegmentTable の基本\n",
     "\n",
-    "このチュートリアルでは、**GWexpy** におけるセグメント（時間区間）ベースの解析コンテナである `SegmentTable` を紹介します。通常の `EventTable` とは異なり、`SegmentTable` は区間のメタデータだけでなく、対応するペイロード（TimeSeries や ASD など）を遅延ロード（Lazy loading）形式で保持することに特化しています。"
+    "このチュートリアルでは、**GWexpy** におけるセグメント（時間区間）ベースの解析コンテナである `SegmentTable` を紹介します。通常の `EventTable` とは異なり、`SegmentTable` は区間のメタデータだけでなく、対応するペイロード（TimeSeries や ASD など）を遅延ロード（Lazy loading）形式で保持することに特化しています。\n",
+    "\n",
+    "## GWpy 基盤クラスと gwexpy 拡張\n",
+    "\n",
+    "セグメント解析の土台は GWpy にあります。各行の区間は `gwpy.segments.Segment` をそのまま使い、ペイロード列には GWpy の `TimeSeries` や `FrequencySeries` をそのまま載せられます。\n",
+    "\n",
+    "そのうえで gwexpy は、`gwpy.table.Table` を拡張した `SegmentTable` と、遅延ロード可能な `SegmentCell` を提供し、`apply()` / `map()` / `crop()` / `asd()` のような表ベースの一括処理を追加しています。つまり、GWpy の基本型を保ったまま、複数セグメントをまとめて処理するワークフローを gwexpy が補強する構成です。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "18cb685b",
+   "id": "f4a5717f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:56.429286Z",
@@ -70,20 +100,26 @@
    ],
    "source": [
     "import warnings\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
-    "import numpy as np\n",
-    "from gwpy.segments import Segment\n",
-    "from gwexpy.table import SegmentTable\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "# 1. セグメントの作成\n",
-    "segs = [Segment(0, 4), Segment(4, 8), Segment(8, 12)]\n",
-    "st = SegmentTable.from_segments(segs, label=[\"A\", \"B\", \"C\"])\n",
-    "st"
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
+    "\n",
+    "    import numpy as np\n",
+    "    from gwpy.segments import Segment\n",
+    "    from gwexpy.table import SegmentTable\n",
+    "\n",
+    "    # 1. セグメントの作成\n",
+    "    segs = [Segment(0, 4), Segment(4, 8), Segment(8, 12)]\n",
+    "    st = SegmentTable.from_segments(segs, label=[\"A\", \"B\", \"C\"])\n",
+    "    st\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "8dc3febb",
+   "id": "df80c100",
    "metadata": {},
    "source": [
     "## SegmentCell による遅延ロード\n",
@@ -94,7 +130,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "0d663e04",
+   "id": "34147480",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:58.773536Z",
@@ -162,7 +198,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "9fd40e02",
+   "id": "3f89d5f9",
    "metadata": {},
    "source": [
     "## 行単位の処理\n",
@@ -173,7 +209,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "7a40a14a",
+   "id": "eae87052",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:58.779336Z",
@@ -261,7 +297,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "acba4d35",
+   "id": "dfb9746f",
    "metadata": {},
    "source": [
     "## 明示的ロードとデータ変換\n",
@@ -272,7 +308,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "b6804920",
+   "id": "d358b3c1",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:58.794259Z",

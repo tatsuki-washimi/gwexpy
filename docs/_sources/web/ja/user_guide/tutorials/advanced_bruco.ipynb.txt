@@ -1,15 +1,32 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "399b74fc",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "a09dfca5",
+   "id": "be1e9ce2",
    "metadata": {},
    "source": [
-    "# Bruco (Brute force coherence) Pythonチュートリアル\n",
+    "# Bruco: 基本\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_bruco.ipynb)\n",
     "\n",
     "Brucoは**「総当たりコヒーレンス（Brute force coherence）」**を計算するためのツールです。重力波検出器（LIGOやVirgo）の主チャンネル（ターゲット）と、多数の補助チャンネルとの間のコヒーレンスを計算し、ノイズ源を特定することを目的としています。\n",
+    "物理的な狙いは、単に相関ランキングを作ることではなく、特定の周波数帯の DARM 過剰パワーを説明できる補助チャンネル候補を見つけ、実際に対処可能な結合経路へ結び付けることです。\n",
     "\n",
     "#### 並列処理によるコヒーレンス計算\n",
     "\n",
@@ -40,12 +57,14 @@
     "対話的な解析・柔軟なデータ操作・高度な仮説検証を一通り実演します。\n",
     "\n",
     "- 実データは使わず、`gwpy` / `numpy` で生成した擬似データを利用します。\n",
-    "- CLIでは難しい「非線形結合」や「変調」の仮説検証を、Python APIで高速に試します。\n"
+    "- CLIでは難しい「非線形結合」や「変調」の仮説検証を、Python APIで高速に試します。\n",
+    "\n",
+    "> **よくある誤解**: コヒーレンスが高いだけで因果関係が証明されたと考えること。Bruco は候補を絞るための道具であり、因果の証明ではありません。実際に対策へ進む前に、そのチャンネルが物理的に DARM の上流にあるか、共通ドライバではないか、窓関数や前処理や区間選択を変えても特徴が残るかを確認してください。\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "f75f2f41",
+   "id": "100b27e9",
    "metadata": {},
    "source": [
     "## セットアップとモックデータ生成\n",
@@ -57,7 +76,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "90f06775",
+   "id": "27e1c2e2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:46.114489Z",
@@ -68,28 +87,34 @@
    },
    "outputs": [],
    "source": [
-    "# ruff: noqa: I001\n",
     "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "warnings.filterwarnings(\"ignore\")\n",
-    "from astropy import units as u\n",
-    "import matplotlib.pyplot as plt\n",
-    "import numpy as np\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "from gwexpy.analysis import Bruco\n",
-    "from gwexpy.analysis.bruco import FastCoherenceEngine\n",
-    "from gwexpy.astro import inspiral_range\n",
-    "from gwexpy.frequencyseries import FrequencySeriesDict\n",
-    "from gwexpy.noise.asd import from_pygwinc\n",
-    "from gwexpy.noise.wave import from_asd\n",
-    "from gwexpy.plot import Plot\n",
-    "from gwexpy.timeseries import TimeSeries, TimeSeriesDict"
+    "    # ruff: noqa: I001\n",
+    "\n",
+    "    from astropy import units as u\n",
+    "    import matplotlib.pyplot as plt\n",
+    "    import numpy as np\n",
+    "\n",
+    "    from gwexpy.analysis import Bruco\n",
+    "    from gwexpy.analysis.bruco import FastCoherenceEngine\n",
+    "    from gwexpy.astro import inspiral_range\n",
+    "    from gwexpy.frequencyseries import FrequencySeriesDict\n",
+    "    from gwexpy.noise.asd import from_pygwinc\n",
+    "    from gwexpy.noise.wave import from_asd\n",
+    "    from gwexpy.plot import Plot\n",
+    "    from gwexpy.timeseries import TimeSeries, TimeSeriesDict\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "6080ab61",
+   "id": "06756f77",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:48.542192Z",
@@ -190,7 +215,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "450807bf",
+   "id": "f9caafc6",
    "metadata": {},
    "source": [
     "## Section 1: 基本的なBruco解析の実行 (Jupyter上での再現)\n",
@@ -202,7 +227,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "0b4679aa",
+   "id": "04c5f8ef",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:52.104231Z",
@@ -234,7 +259,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "432fd91b",
+   "id": "4aa5a7d0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:52.175602Z",
@@ -435,7 +460,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "194c84eb",
+   "id": "c49dc855",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:52.190620Z",
@@ -479,7 +504,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "2be1f351",
+   "id": "56e365a5",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:52.653075Z",
@@ -507,19 +532,28 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e1cb7afe",
+   "id": "80fa33fd",
    "metadata": {},
    "source": [
     "## Section 2: 高度な前処理と仮説検証 (Deep Dive: Nonlinear & Bilinear)\n",
     "\n",
     "**何をするか**: 既存の線形相関だけでは説明できないノイズを想定し、非線形結合（2乗）や変調（積）を仮説として検定します。  \n",
-    "**なぜ重要か**: `FastCoherenceEngine` を使うと、ターゲットのFFTを再計算せずに仮想チャンネルを高速に試せます。\n"
+    "**なぜ重要か**: `FastCoherenceEngine` を使うと、ターゲットのFFTを再計算せずに仮想チャンネルを高速に試せます。\n",
+    "\n",
+    "**物理的意図**: こうした仮想チャンネルは `fast × slow` のような結合モデルを表し、高周波キャリアが低周波のアライメント変動・制御揺らぎ・環境ドリフトで変調される状況を検証します。\n",
+    "\n",
+    "> **失敗しやすい点**: 高域通過や帯域通過で成分分離をせずに広帯域チャンネル同士をそのまま掛けると、積が無関係な低周波パワーに支配され、得られたコヒーレンスの解釈が難しくなります。\n",
+    ">\n",
+    "> **仮想ウィットネスを信じる前の確認**:\n",
+    "> - 合成方法がもっともらしい結合機構に対応しているか\n",
+    "> - 変調帯域が物理的に意味のある狭さになっているか\n",
+    "> - 回復したコヒーレンスが、実際にサイドバンドやライン揺らぎがある帯域に局在しているか\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "e4c37d35",
+   "id": "82624394",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:53.128838Z",
@@ -540,7 +574,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "2cae4f18",
+   "id": "f914b50d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:53.133505Z",
@@ -563,7 +597,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "20c4eacb",
+   "id": "9d084f46",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:53.162542Z",
@@ -600,19 +634,21 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d88893e0",
+   "id": "e8e98bb0",
    "metadata": {},
    "source": [
     "## Section 3: 下流解析への接続 (Actionable Outcome)\n",
     "\n",
     "**何をするか**: もっとも寄与が大きいノイズ仮説を用いて残差スペクトルを推定し、BNS Rangeの改善量を見積もります。  \n",
-    "**なぜ重要か**: Bruco結果を“見つけて終わり”にせず、感度改善やノイズ除去ワークフローにつなげられます。\n"
+    "**なぜ重要か**: Bruco結果を“見つけて終わり”にせず、感度改善やノイズ除去ワークフローにつなげられます。\n",
+    "\n",
+    "> **よくある失敗**: 投影した残差を、そのまま実際の差し引き結果だと見なすこと。投影はウィットネスが代表性を持ち条件も良いと仮定した見積もりです。ウィットネスが汚染されていたり遅延していたり、結合が断続的だったりすると、改善量は楽観的に見積もられます。ここは本格的な subtraction を始める前のスクリーニング段階として扱ってください。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "0fee4511",
+   "id": "aa5c1149",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:53.354603Z",
@@ -685,7 +721,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "62b4c5b3",
+   "id": "3ecb5b46",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:54.042302Z",
@@ -750,7 +786,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "7ba26399",
+   "id": "36e77f11",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:54.527214Z",
@@ -831,5 +867,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

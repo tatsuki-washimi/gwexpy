@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "10966371",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "d275f5ff",
+   "id": "ec65ebe9",
    "metadata": {},
    "source": [
-    "# Advanced Bruco: Bilinear Coupling and AM/FM Demodulation\n",
+    "# Bruco: Bilinear Coupling and AM/FM Demodulation\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_bruco_advanced.ipynb)\n",
     "\n",
@@ -19,6 +31,8 @@
     "2. **Hilbert AM/FM demodulation** — extract the instantaneous amplitude / frequency of a\n",
     "   spectral line and correlate these slowly-varying envelopes with environmental sensors.\n",
     "\n",
+    "The physical question in both cases is the same: which slow environmental or control variable is modulating a higher-frequency feature seen in DARM, and how should we encode that hypothesis so Bruco can test it.\n",
+    "\n",
     "> **Prerequisites**:\n",
     "> - [Noise Hunting with Bruco](advanced_bruco.ipynb)\n",
     "> - [Bruco + ICA End-to-End Denoising](case_bruco_ica_denoising.ipynb)\n"
@@ -26,7 +40,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b67b4aab",
+   "id": "2f7a7786",
    "metadata": {},
    "source": [
     "## Setup"
@@ -35,7 +49,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "dfc0f1ec",
+   "id": "f67d2f8b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:01.362680Z",
@@ -46,6 +60,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "# ruff: noqa: I001\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
@@ -58,7 +76,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "afab8ada",
+   "id": "6404239a",
    "metadata": {},
    "source": [
     "## 1. Mock Data Generation\n",
@@ -71,13 +89,15 @@
     "| **AM line** | `DARM += A(t) · sin(2π·30Hz·t)` where A(t) ∝ slow_env | 30 Hz line whose amplitude fluctuates |\n",
     "\n",
     "A linear Bruco scan will **not** detect bilinear coupling because the witness channels\n",
-    "are individually incoherent with DARM — only their *product* is.\n"
+    "are individually incoherent with DARM — only their *product* is.\n",
+    "\n",
+    "> **Common mistake**: concluding that \"no coherence\" means \"no coupling\" after only the baseline scan. For bilinear problems, the failure of the linear witness is the expected diagnostic, not a negative result.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "71b57957",
+   "id": "c5cf90f2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:03.701431Z",
@@ -180,7 +200,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "e9b9ff5d",
+   "id": "f19c8d0e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:03.718166Z",
@@ -221,7 +241,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e657d399",
+   "id": "fc4bb467",
    "metadata": {},
    "source": [
     "## 2. Linear Bruco Scan (Baseline)\n",
@@ -233,7 +253,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "435d3a6d",
+   "id": "29beab76",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:04.139146Z",
@@ -301,7 +321,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6a2ca01f",
+   "id": "1581c1a8",
    "metadata": {},
    "source": [
     "## 3. Bilinear Coupling Detection\n",
@@ -317,13 +337,15 @@
     "This synthetic channel mimics the product nonlinearity inside the interferometer.\n",
     "If DARM contains `fast × slow`, the bilinear witness will be highly coherent with it.\n",
     "\n",
-    "We then pass this extended channel set back to `Bruco.compute()`.\n"
+    "We then pass this extended channel set back to `Bruco.compute()`.\n",
+    "\n",
+    "> **Failure-prone pattern**: using an overly broad slow-band or leaving DC trends in the fast witness. Both choices smear the product witness and often create impressive-looking but non-local coherence. Keep the slow witness tied to the modulation band you expect physically.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "d86570b6",
+   "id": "f904c276",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:04.620378Z",
@@ -405,7 +427,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "c53b5535",
+   "id": "073229fa",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:05.024371Z",
@@ -470,7 +492,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3bde7405",
+   "id": "0ebd46cf",
    "metadata": {},
    "source": [
     "## 4. Hilbert AM/FM Demodulation\n",
@@ -489,13 +511,15 @@
     "```\n",
     "\n",
     "We then correlate `inst_amp` and `inst_freq` with slow auxiliary channels to identify\n",
-    "what is driving the amplitude / frequency modulation.\n"
+    "what is driving the amplitude / frequency modulation.\n",
+    "\n",
+    "> **Common mistake**: correlating the raw carrier ASD with the slow witness and stopping there. AM/FM problems usually live in the envelope or instantaneous-frequency channel, not in the carrier bin itself.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "0a9ae8e6",
+   "id": "f3515861",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:05.540097Z",
@@ -565,7 +589,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "89cd9c66",
+   "id": "0cf45ab0",
    "metadata": {},
    "source": [
     "## 5. AM/FM Coherence with Slow Witnesses\n",
@@ -573,13 +597,15 @@
     "The Hilbert envelope (`inst_amp`) and instantaneous frequency (`inst_freq`)\n",
     "have their own ASD in the modulation frequency range (0 – 5 Hz here).\n",
     "We compute coherence of these signals with slow environmental witnesses to\n",
-    "identify the modulation source.\n"
+    "identify the modulation source.\n",
+    "\n",
+    "> **Failure mode to watch for**: if the band-pass around the carrier is too wide, neighbouring lines leak into the analytic signal; if it is too narrow, the demodulated envelope is artificially suppressed. Tune the carrier window to isolate one physical line family.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "25aacaea",
+   "id": "836dcfc6",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:05.919452Z",
@@ -672,7 +698,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7dc06c7e",
+   "id": "b412c0b5",
    "metadata": {},
    "source": [
     "## Summary\n",
@@ -693,6 +719,7 @@
     "  (low frequency), enabling coherence searches in the modulation band.\n",
     "- Both patterns require only `TimeSeries` arithmetic (`*`, `.highpass()`, `.bandpass()`)\n",
     "  plus `Bruco.compute()` — no additional gwexpy modules.\n",
+    "- Failure of the baseline linear scan is itself useful evidence when the expected physics is multiplicative or slowly modulated.\n",
     "\n",
     "### Next steps\n",
     "\n",
@@ -705,7 +732,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "a444b6cb",
+   "id": "6d471f50",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:06.618073Z",

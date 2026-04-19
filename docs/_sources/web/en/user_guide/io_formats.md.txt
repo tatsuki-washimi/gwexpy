@@ -1,732 +1,316 @@
+---
+myst:
+  html_meta:
+    description: "Choose the right direct file or network I/O path in GWexpy, including supported formats, read/write limits, fetch routes, and when to set format= explicitly."
+---
+
+<a id="io-formats-en-top"></a>
+
 # File I/O Supported Formats Guide
 
-A comprehensive guide to all file formats supported by gwexpy, including how to read and write each format.
-This page covers only the end-user API (`.read()` / `.write()` class methods) and does not expose internal implementation details.
+> **Page Role:** Guide
 
-## Supported Formats Overview
+This is the end-user I/O guide for `gwexpy`.
+This page only covers the public `.read()` / `.write()` / `fetch()` style APIs that users call directly.
 
-| Format | Extension | Read | Write | Recommended Class / Method | Dependencies | Notes |
-|---|---|:---:|:---:|---|---|---|
-| GWF | `.gwf` | Y | Y | `TimeSeriesDict.read()` / `.write()` | — (gwpy built-in) | gwpy standard format |
-| HDF5 | `.h5`, `.hdf5` | Y | Y | `TimeSeriesDict.read(format="hdf5")` | — (gwpy built-in) | gwpy standard |
-| LIGO_LW XML (DTTXML) | `.xml`, `.xml.gz` | Y | N | `TimeSeriesDict.read(format="dttxml")` / `FrequencySeriesDict.read(format="dttxml")` | — | `products` argument required |
-| CSV / TXT | `.csv`, `.txt` | Y | Y | `TimeSeriesDict.read(format="csv")` | — (gwpy built-in) | ASCII format. Supports directory loading |
-| Pickle | `.pkl` | Y | Y | `TimeSeries.read(format="pickle")` | — | Python serialization |
-| WAV | `.wav` | Y | Y | `TimeSeriesDict.read("file.wav")` | scipy | `t0` always 0 (no absolute time) |
-| MiniSEED | `.mseed` | Y | Y | `TimeSeriesDict.read(format="miniseed")` | ObsPy | Seismic waveform format |
-| SAC | `.sac` | Y | Y | `TimeSeriesDict.read(format="sac")` | ObsPy | Seismic waveform format |
-| GSE2 | `.gse2` | Y | Y | `TimeSeriesDict.read(format="gse2")` | ObsPy | Seismic waveform format |
-| KNET | `.knet` | Y | N | `TimeSeriesDict.read(format="knet")` | ObsPy | K-NET strong motion records |
-| GBD | `.gbd` | Y | N | `TimeSeriesDict.read("file.gbd", timezone=...)` | — | `timezone` required |
-| WIN / WIN32 | `.win`, `.cnt` | Y | N | `TimeSeriesDict.read(format="win")` | ObsPy | NIED WIN format (improved parser) |
-| MTH5 | `.h5` | Y | Y | `TimeSeries.read(format="ats.mth5")` | mth5 | Magnetometer data (design-level support) |
-| ATS | `.ats` | Y | N | `TimeSeriesDict.read("file.ats")` | — | Metronix binary parser |
-| ROOT | `.root` | Y | Y | `EventTable.read(format="root")` | — (via gwpy) | CERN ROOT tables |
-| SQLite / SDB | `.sdb`, `.sqlite`, `.db` | Y | N | `TimeSeriesDict.read("file.sdb")` | — | WeeWX / Davis weather data |
-| NetCDF4 | `.nc` | Y | Y | `TimeSeriesDict.read(format="netcdf4")` | xarray, netcdf4 | Auto-detects time dimension |
-| Zarr | `.zarr` | Y | Y | `TimeSeriesDict.read(format="zarr")` | zarr | Cloud-optimized chunked arrays |
-| Audio (MP3, FLAC, etc.) | `.mp3`, `.flac`, `.ogg`, `.m4a` | Y | Y | `TimeSeriesDict.read("file.mp3")` | pydub (+ffmpeg) | `t0` always 0 (same as WAV) |
-| NDS2 | (network) | Y | N | `TimeSeries.fetch(...)` | nds2-client | Network data server |
-| TDMS | `.tdms` | Y | N | `TimeSeriesDict.read("file.tdms")` | npTDMS | National Instruments |
-| ORF | `.orf` | N | N | — | — | Not implemented (stub) |
+It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. For those topics, see the [interop tutorial](tutorials/intro_interop) and the [interop API reference](../reference/api/interop).
 
-> **Note**: Formats marked "gwpy built-in" (GWF, HDF5, CSV/TXT, Pickle) are handled through gwpy's built-in IO pathways. Since gwexpy extends gwpy, these are available out of the box.
+## At a Glance
 
----
+| Item | Details |
+| --- | --- |
+| **Audience** | Users choosing a direct file or network I/O path for `gwexpy` objects |
+| **Prerequisites** | Basic familiarity with `TimeSeries` / `TimeSeriesDict`, file extensions, and the difference between direct I/O and interop conversion |
+| **Use Cases** | Pick a supported format, decide when to set `format=`, identify read/write limits, and avoid confusing direct I/O with object conversion |
+| **Search Hints** | file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC |
 
-## Format Details
+**Search hints:** file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC
 
-### GBD — GRAPHTEC Data Logger `.gbd`
+:::{warning}
+**Security Warning: Pickle Files**
 
-**Extension**: `.gbd`
-**Read/Write**: Read Y / Write N
-**Recommended API**:
+**Pickle** (:term:`Pickle`) is convenient, but reading Pickle files from untrusted sources is dangerous. A malicious Pickle file can execute arbitrary code on your system.
+
+For data sharing and long-term storage, prefer structured formats such as **HDF5**, **GWF**, or **Zarr**.
+:::
+
+## First: Decision Rules
+
+- If you need a **default GW storage format**, start with **HDF5**. For existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / Audio**. For **MTH5**, the current public direct-I/O story is only the single **`ats.mth5`** path. A generic standalone **`format="mth5"`** route is not published yet.
+- **Auto-detect is fine** when the extension uniquely selects one reader.
+- **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
+- **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
+- **Read-only / write-only matters**: `○ / ×` means a format can be read but not written.
+- If you need to preserve **Field** objects safely, this page treats **HDF5** and **Pickle** as the direct-I/O baseline. NetCDF4 / Zarr / ROOT object bridges belong to interop, not to this page.
+
+## Jump Links
+
+- <a href="#io-formats-en-quick">Quick Selection Table</a>
+- <a href="#io-formats-en-basic">Basic `.read()` / `.write()` / `fetch()` Usage</a>
+- <a href="#io-formats-en-a">A. GW Standards</a>
+- <a href="#io-formats-en-b">B. Seismic and Geophysical Observation</a>
+- <a href="#io-formats-en-c">C. General Analysis and Exchange</a>
+- <a href="#io-formats-en-d">D. Loggers and Instrument Formats</a>
+- <a href="#io-formats-en-dev">Developer Notes</a>
+
+<a id="io-formats-en-quick"></a>
+
+## Quick Selection Table
+
+| Group | Start here when... | First format | Formats covered here |
+|---|---|---|---|
+| **A. GW Standards** | You want standard GW storage, exchange, or acquisition paths | **HDF5** | GWF, HDF5, ndscope-hdf5, DTTXML, NDS2, GWOSC |
+| **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here) |
+| **C. General Analysis and Exchange** | You need general-purpose storage or external analysis exchange | **CSV / TXT** or **Zarr** | CSV / TXT, NetCDF4, Zarr, Pickle, ROOT |
+| **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
+
+> **Note**: `NDS2` and `GWOSC` are not file formats. They are included in **A. GW Standards** because they are common GW data entry points. In the tables below, they are labeled as `network path`.
+
+<a id="io-formats-en-basic"></a>
+
+## Basic `.read()` / `.write()` / `fetch()` Usage
+
+- Purpose: show the baseline direct-I/O entry points before format-specific details
+- Input: file paths, an explicit `format=` when needed, or a detector/network query
+- Output: `TimeSeries`, `TimeSeriesDict`, or other direct-I/O return objects
+
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/logger.gbd", timezone="Asia/Tokyo")
-```
-
-**Required arguments**:
-- `timezone` (str or tzinfo) — Logger's local timezone (IANA name, e.g. `"Asia/Tokyo"` or UTC offset). **Required**. Omitting raises `ValueError`.
-
-**Key optional arguments**:
-- `channels` (iterable[str], optional) — List of channel names to load. Defaults to all channels.
-- `digital_channels` (iterable[str], optional) — Channel names to treat as digital. Defaults to auto-detecting `ALARM`, `ALARMOUT`, `PULSE*`, `LOGIC*`.
-- `unit` (str or Unit, optional) — Physical unit override. Default `'V'`.
-- `epoch` (float or datetime, optional) — Epoch (GPS seconds) override. Datetimes are converted to GPS.
-- `pad` (float, optional) — Padding value. Default `NaN`.
-
-**Dependencies**: None (native implementation)
-
-**Notes**:
-- Digital channels (`ALARM`, `PULSE*`, etc.) are binarized to 0/1.
-- If the `HeaderSiz` field is missing from the header, a `ValueError` is raised.
-- Scale factors are automatically extracted from the AMP section.
-
-**Implementation**: `gwexpy/timeseries/io/gbd.py`
-
----
-
-### ATS — Metronix `.ats`
-
-**Extension**: `.ats`
-**Read/Write**: Read Y / Write N
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.ats")
-```
-
-Reading via the mth5 library (for `.atss` files):
-```python
 from gwexpy.timeseries import TimeSeries
 
-ts = TimeSeries.read("path/to/data.atss", format="ats.mth5")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**: None (metadata is automatically extracted from the binary header)
-
-**Dependencies**:
-- Standard reader: None (native binary parser)
-- `ats.mth5` format: Requires the `mth5` library. Raises `ImportError` if not installed.
-
-**Notes**:
-- Supports ATS header versions 80/81. CEA/sliced headers (version 1080) are not supported (`NotImplementedError`).
-- LSB values (mV/count) are automatically converted to Volts (V).
-- Channel names are auto-generated from header info in the format `Metronix_{system}_{serial}_{type}_{sensor}_{serial}`.
-- The `ats.mth5` format requires mth5's filename conventions. Use the default binary parser if file names do not conform.
-
-**Implementation**: `gwexpy/timeseries/io/ats.py`
-
----
-
-### SDB — WeeWX / Davis Weather Station `.sdb`
-
-**Extension**: `.sdb`, `.sqlite`, `.sqlite3`
-**Read/Write**: Read Y / Write N
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/weewx.sdb")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**:
-- `table` (str, optional) — Table name to read. Default `'archive'`.
-- `columns` (list[str], optional) — Column names to read. Defaults to known weather columns (`barometer`, `outTemp`, `windSpeed`, etc.).
-
-**Dependencies**: None (uses stdlib `sqlite3` + `pandas`)
-
-**Notes**:
-- Automatic conversion from Imperial to SI units (e.g. degF to degC, inHg to hPa, mph to m/s, inch to mm).
-- The table must have a `dateTime` column (UNIX timestamp).
-- Sample rate is auto-estimated from the median `dateTime` interval.
-
-**Implementation**: `gwexpy/timeseries/io/sdb.py`
-
----
-
-### TDMS — National Instruments `.tdms`
-
-**Extension**: `.tdms`
-**Read/Write**: Read Y / Write N
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.tdms")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**:
-- `channels` (list[str], optional) — Channels to read. Channel names use the format `"GroupName/ChannelName"`. Defaults to all channels.
-- `unit` (str, optional) — Physical unit override.
-
-**Dependencies**: `npTDMS` — Raises `ImportError` if not installed, with a message suggesting `pip install nptdms`.
-
-**Notes**:
-- Channel names are stored in `"GroupName/ChannelName"` format.
-- `wf_increment` (sample interval) and `wf_start_time` (start time) are read from TDMS properties.
-- Start times as `numpy.datetime64` or `datetime` are automatically converted to GPS time.
-
-**Implementation**: `gwexpy/timeseries/io/tdms.py`
-
----
-
-### WAV — Audio File `.wav`
-
-**Extension**: `.wav`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/audio.wav")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**: None
-
-**Dependencies**: `scipy` (`scipy.io.wavfile`) — included in gwexpy's recommended dependencies.
-
-**Notes**:
-- `t0` is always set to `0.0` (GPS seconds). WAV files do not carry absolute timestamps.
-- Multi-channel files have channel names `channel_0`, `channel_1`, etc.
-- Mono files are automatically loaded as a single channel.
-- Writing uses the gwpy standard WAV writer pathway.
-
-**Implementation**: `gwexpy/timeseries/io/wav.py`
-
----
-
-### MiniSEED — Seismic Waveform `.mseed`
-
-**Extension**: `.mseed`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-# Read
-tsd = TimeSeriesDict.read("path/to/data.mseed", format="miniseed")
-
-# Write
-tsd.write("output.mseed", format="miniseed")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**:
-- `channels` (list[str], optional) — Channels to read. Specify by trace ID (`NET.STA.LOC.CHA`) or channel code.
-- `unit` (str, optional) — Physical unit override.
-- `epoch` (float or datetime, optional) — Epoch override.
-- `timezone` (str, optional) — Timezone specification.
-- `pad` (float, optional) — Gap fill value. Default `NaN`.
-- `gap` (str, optional) — Gap handling method. `"pad"` (default) or `"raise"`.
-
-**Dependencies**: `ObsPy` — Raises `ImportError` if not installed, with a message suggesting `pip install obspy`.
-
-**Notes**:
-- Data is read via ObsPy's `read()` function.
-- Gaps are padded with `NaN` by default. Use `gap="raise"` to raise an error instead.
-- Automatic trace merging (`merge(method=1)`) is applied.
-
-**Implementation**: `gwexpy/timeseries/io/seismic.py`
-
----
-
-### SAC — Seismic Waveform `.sac`
-
-**Extension**: `.sac`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.sac", format="sac")
-tsd.write("output.sac", format="sac")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**: Same as MiniSEED (`channels`, `unit`, `epoch`, `timezone`, `pad`, `gap`).
-
-**Dependencies**: `ObsPy`
-
-**Notes**:
-- SAC is typically one trace per file. Multi-trace writing behavior depends on ObsPy.
-
-**Implementation**: `gwexpy/timeseries/io/seismic.py`
-
----
-
-### GSE2 — Seismic Waveform `.gse2`
-
-**Extension**: `.gse2`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.gse2", format="gse2")
-tsd.write("output.gse2", format="gse2")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**: Same as MiniSEED (`channels`, `unit`, `epoch`, `timezone`, `pad`, `gap`).
-
-**Dependencies**: `ObsPy`
-
-**Implementation**: `gwexpy/timeseries/io/seismic.py`
-
----
-
-### KNET — K-NET Strong Motion Records `.knet`
-
-**Extension**: `.knet`
-**Read/Write**: Read Y / Write N
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.knet", format="knet")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**: Same as MiniSEED (`channels`, `unit`, `epoch`, `timezone`, `pad`, `gap`).
-
-**Dependencies**: `ObsPy`
-
-**Notes**:
-- Read-only. No writer is registered.
-
-**Implementation**: `gwexpy/timeseries/io/seismic.py`
-
----
-
-### WIN / WIN32 — NIED WIN Format `.win` / `.cnt`
-
-**Extension**: `.win`, `.cnt`
-**Read/Write**: Read Y / Write N
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.win", format="win")
-# or
-tsd = TimeSeriesDict.read("path/to/data.cnt", format="win32")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**:
-- `century` (str, optional) — Century part of the year. Default `"20"`.
-
-**Dependencies**: `ObsPy` — If ObsPy is not installed, the reader is not registered and an `ImportError` is raised.
-
-**Notes**:
-- Uses gwexpy's improved parser over ObsPy's standard WIN reader, with the following fixes:
-  - 0.5-byte (4-bit) delta decode: fixed lower nibble sign handling; skip unused nibble on odd delta counts.
-  - 3-byte (24-bit) delta decode: fixed operator precedence and sign-preserving unpack/shift.
-- Gaps are merged with `NaN`.
-
-**Implementation**: `gwexpy/timeseries/io/win.py`
-
----
-
-### DTTXML — Diag DTT XML (Time Series & Frequency Series)
-
-**Extension**: `.xml`, `.xml.gz`
-**Read/Write**: Read Y / Write N
-**Recommended API (time series)**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/dtt_output.xml", format="dttxml", products="TS")
-```
-
-**Recommended API (frequency series)**:
-```python
-from gwexpy.frequencyseries.collections import FrequencySeriesDict
-
-fsd = FrequencySeriesDict.read("path/to/dtt_output.xml", format="dttxml", products="PSD")
-```
-
-```python
-from gwexpy.frequencyseries.matrix import FrequencySeriesMatrix
-
-fsm = FrequencySeriesMatrix.read("path/to/dtt_output.xml", format="dttxml", products="TF")
-```
-
-**Required arguments**:
-- `products` (str) — Product type to extract. **Required**. Raises `ValueError` if omitted.
-  - Time series: `"TS"`
-  - Frequency series: `"PSD"`, `"ASD"`, `"FFT"`
-  - Matrix: `"TF"`, `"STF"`, `"CSD"`, `"COH"`
-
-**Key optional arguments**:
-- `channels` (iterable[str], optional) — List of channels to read.
-- `unit` (str, optional) — Physical unit override.
-- `epoch` (float or datetime, optional) — Epoch override.
-- `timezone` (str, optional) — Timezone specification.
-- `native` (bool, optional) — If `True`, uses gwexpy's native XML parser. Recommended for complex TF data (subtype 6 phase loss fix). Default `False`. (FrequencySeriesDict / FrequencySeriesMatrix only)
-- `rows`, `cols`, `pairs` — Matrix filtering (FrequencySeriesMatrix only).
-
-**Dependencies**: None (native implementation)
-
-**Notes**:
-- Supports both time-series and frequency-domain data. The output type is determined by the `products` value.
-- The `.xml` extension is auto-identified (`format="dttxml"` can be omitted).
-
-**Implementation**: `gwexpy/timeseries/io/dttxml.py`, `gwexpy/frequencyseries/io/dttxml.py`
-
----
-
-### GWF — Gravitational Wave Frame `.gwf`
-
-**Extension**: `.gwf`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.gwf", format="gwf")
-tsd.write("output.gwf", format="gwf")
-```
-
-**Required arguments**: None (follows gwpy standard arguments)
-
-**Dependencies**: — (gwpy standard. Internally uses `python-ldas-tools-framecpp`, etc.)
-
-**Notes**:
-- Handled through gwpy's standard IO pathway. No custom reader/writer in gwexpy.
-
-**Implementation**: gwpy standard (`gwpy/timeseries/io/gwf.py`)
-
----
-
-### HDF5 — General Scientific Data `.h5` / `.hdf5`
-
-**Extension**: `.h5`, `.hdf5`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.h5", format="hdf5")
-tsd.write("output.h5", format="hdf5")
-```
-
-**Required arguments**: None
-
-**Dependencies**: `h5py` (included in gwexpy's required dependencies)
-
-**Notes**:
-- gwexpy's `TimeSeriesDict.read()` has extended HDF5 loading logic.
-- Supports automatic layout detection (`LAYOUT_DATASET` / `LAYOUT_GROUP`).
-- Supports keymap and ordering restoration.
-
-**Implementation**: gwpy standard (`gwpy/timeseries/io/hdf5.py`) + gwexpy extension (`gwexpy/timeseries/collections.py`)
-
----
-
-### CSV / TXT — ASCII Text `.csv` / `.txt`
-
-**Extension**: `.csv`, `.txt`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-# Single file
-tsd = TimeSeriesDict.read("path/to/data.csv", format="csv")
-
-# Load all files from a directory
-tsd = TimeSeriesDict.read("path/to/data_dir/")
-```
-
-**Required arguments**: None
-
-**Dependencies**: None (gwpy standard)
-
-**Notes**:
-- gwexpy supports loading all CSV/TXT files from a directory as a single `TimeSeriesDict`.
-
-**Implementation**: gwpy standard (`gwpy/timeseries/io/ascii.py`) + gwexpy extension (`gwexpy/timeseries/collections.py`)
-
----
-
-### Pickle — Python Serialization `.pkl`
-
-**Extension**: `.pkl`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries import TimeSeries
-
-ts = TimeSeries.read("path/to/data.pkl", format="pickle")
-ts.write("output.pkl", format="pickle")
-```
-
-**Required arguments**: None
-
-**Dependencies**: None
-
-**Notes**:
-- Uses gwpy's standard serialization pathway. Only use with files from trusted sources (standard pickle security considerations apply).
-
-**Implementation**: gwpy standard
-
----
-
-### ROOT — CERN ROOT `.root`
-
-**Extension**: `.root`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.table import EventTable
-
-table = EventTable.read("path/to/data.root", format="root")
-```
-
-**Dependencies**: — (via gwpy's table/root pathway)
-
-**Notes**:
-- gwexpy's `table/io/root.py` is a re-export of gwpy's module of the same name.
-- Primarily used for event table data.
-
-**Implementation**: gwpy standard (`gwpy/table/io/root.py`) — via gwexpy: `gwexpy/table/io/root.py`
-
----
-
-### NDS2 — Network Data Server
-
-**Extension**: None (network protocol)
-**Read/Write**: Read Y / Write N
-**Recommended API**:
-```python
-from gwexpy.timeseries import TimeSeries
-
-ts = TimeSeries.fetch("channel_name", start, end)
-```
-
-**Dependencies**: `nds2-client` (Python bindings)
-
-**Notes**:
-- Network-based data retrieval, not file I/O.
-- Uses gwpy's standard `fetch()` method.
-
-**Implementation**: gwpy standard (`gwpy/timeseries/io/nds2.py`)
-
----
-
-### Audio — MP3 / FLAC / OGG / M4A (via pydub)
-
-**Extension**: `.mp3`, `.flac`, `.ogg`, `.m4a`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-# Read (auto-detected by extension)
-tsd = TimeSeriesDict.read("path/to/audio.mp3")
+# Auto-detect from extension
+tsd = TimeSeriesDict.read("path/to/data.mseed")
 
 # Explicit format
-tsd = TimeSeriesDict.read("path/to/audio.dat", format="flac")
+tsd = TimeSeriesDict.read("path/to/data.dat", format="miniseed")
 
-# Write
-tsd.write("output.flac", format="flac")
+# Write out
+tsd.write("output.h5", format="hdf5")
+
+# Network path
+ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 ```
 
-**Required arguments**: None
+- `.read()` / `.write()` uses the gwpy-style I/O registry.
+- `.xml` is ambiguous, so **use `format="dttxml"` explicitly** for DTTXML data.
+- `NDS2` and `GWOSC` are not file readers, so they use `fetch()` / `fetch_open_data()` instead of `.read()`.
 
-**Key optional arguments**:
-- `channels` (iterable[str], optional) — Channel names to read (e.g. `"channel_0"`).
-- `unit` (str, optional) — Physical unit override.
+(io-formats-en-supported-classes)=
+## Supported Classes at a Glance
 
-**Dependencies**: `pydub` — Raises `ImportError` if not installed, with a message suggesting `pip install pydub`. MP3/M4A encoding also requires `ffmpeg` (`apt install ffmpeg` or equivalent). FLAC may work without ffmpeg.
+If the main question is whether a format is for a single channel or multiple channels, use this table first.
 
-**Notes**:
-- `t0` is always set to `0.0` (GPS seconds). Audio files carry no absolute timestamps (same behavior as WAV).
-- On read, sample values are normalized to the `[-1.0, 1.0]` range.
-- Multi-channel files use channel names `channel_0`, `channel_1`, etc.
-- On write, data is rescaled to peak-normalized 16-bit PCM.
+| Format / Family | Single | Multi | Other classes |
+|---|---|---|---|
+| **GWF / MiniSEED / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
+| **NetCDF4 / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
+| **HDF5** | `TimeSeries`, `FrequencySeries`, and related classes | `TimeSeriesDict` and related collections | Also covers `Spectrogram`, `Histogram`, `EventTable`, and `Field` |
+| **ndscope-hdf5** | - | `TimeSeriesDict` | ndscope-compatible schema |
+| **DTTXML** | - | `TimeSeriesDict` | Requires `products` |
+| **NDS2 / GWOSC** | `TimeSeries` | - | Use `fetch()` / `fetch_open_data()` |
+| **ATS.MTH5** | `TimeSeries` | - | Partial single-path support |
+| **Pickle** | Major classes broadly | Major classes broadly | Use only for trusted data |
+| **ROOT** | `EventTable` | - | Direct I/O is limited to EventTable |
 
-**Implementation**: `gwexpy/timeseries/io/audio.py`
+- If you are unsure, start by thinking in terms of `TimeSeries` and `TimeSeriesDict`.
+- `TimeSeriesMatrix` mainly matters for `NetCDF4`, `Zarr`, `GBD`, and `TDMS`.
+- If you need to preserve richer objects beyond Series classes, start with **HDF5** or **Pickle**.
 
----
+<a id="io-formats-en-a"></a>
 
-### NetCDF4 — Scientific Data `.nc` (via xarray)
+## A. GW Standards
 
-**Extension**: `.nc`
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
+These are the standard GW storage, exchange, and acquisition paths.
+If you are unsure, start with **HDF5**. Use **GWF** when you need external standard compatibility, and **DTTXML** for diagnostic tool output.
 
-tsd = TimeSeriesDict.read("path/to/data.nc", format="netcdf4")
-tsd.write("output.nc", format="netcdf4")
-```
+| Format / Path | R / W | Main entry | Best for | Notes |
+|---|:---:|---|---|---|
+| **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Standard LIGO/KAGRA frame exchange | Standard format, via gwpy |
+| **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `.read(..., format="hdf5")`, `.write(..., format="hdf5")` on major classes | Long-term storage with metadata | Main direct-I/O option for Field objects |
+| **ndscope-hdf5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Backward-compatible aliases: `ndscope_hdf5`, `ndscopehdf5` |
+| **DTTXML** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="dttxml", products="...")` | DTT outputs and diagnostics | `products` is required |
+| **NDS2** | ○ / × | `TimeSeries.fetch()` | Detector data server access | Network path |
+| **GWOSC** | ○ / × | `TimeSeries.fetch_open_data()` | Open data access | Network path |
 
-**Required arguments**: None
-
-**Key optional arguments**:
-- `channels` (list[str], optional) — Variable names to read. Defaults to all variables with a time dimension.
-- `unit` (str, optional) — Physical unit override. Defaults to the file's `units` attribute.
-- `time_coord` (str, optional) — Name of the time coordinate. Auto-detected if omitted (looks for `"time"`).
-
-**Dependencies**: `xarray` + `netcdf4` — Raises `ImportError` if not installed, with a message suggesting `pip install xarray netcdf4`.
-
-**Notes**:
-- Only variables with a time dimension (`time`) are converted to `TimeSeries`. Variables without a time dimension are skipped.
-- Time coordinates are automatically converted from `datetime64` to GPS seconds.
-- Multi-dimensional variables (time + spatial, etc.) are flattened along non-time dimensions, resulting in `varname_0`, `varname_1`, etc.
-- On write, the `datetime64` time coordinate is reconstructed from `t0` and `dt`.
-
-**Implementation**: `gwexpy/timeseries/io/netcdf4_.py`
-
----
-
-### Zarr — Cloud-Optimized Chunked Arrays `.zarr`
-
-**Extension**: `.zarr` (directory store)
-**Read/Write**: Read Y / Write Y
-**Recommended API**:
-```python
-from gwexpy.timeseries.collections import TimeSeriesDict
-
-tsd = TimeSeriesDict.read("path/to/data.zarr", format="zarr")
-tsd.write("output.zarr", format="zarr")
-```
-
-**Required arguments**: None
-
-**Key optional arguments**:
-- `channels` (list[str], optional) — Array names to read. Defaults to all arrays in the root group.
-- `unit` (str, optional) — Physical unit override.
-
-**Dependencies**: `zarr` — Raises `ImportError` if not installed, with a message suggesting `pip install zarr`.
-
-**Notes**:
-- gwexpy Zarr convention: each array in the root group corresponds to one channel. Array `attrs` store `sample_rate` (Hz) and `t0` (GPS seconds).
-- If `sample_rate` is not set, the inverse of `dt` is used; if neither is present, defaults to 1 Hz. `t0` defaults to `0.0`.
-- Supports all store types supported by the zarr library (directory stores, zip stores, etc.).
-- On write, `sample_rate`, `t0`, `dt`, and `unit` are saved as array attributes.
-
-**Implementation**: `gwexpy/timeseries/io/zarr_.py`
-
----
-
-## Design-Level Support (No Dedicated Implementation in gwexpy)
-
-The following formats are listed in the design specification (`io_support.csv`) but do not have dedicated reader/writer implementations in the gwexpy repository at this time.
-
-| Format | Extension | Designed Read/Write | Notes |
-|---|---|:---:|---|
-| MTH5 | `.h5` | Read Y / Write Y | Via `mth5` library. Partially supported through `ats.mth5` |
-
----
-
-## Unimplemented (Stub) Formats
-
-The following formats are registered as placeholders (stubs) in the IO registry. Calling `.read()` raises an `UnimplementedIOError` or `NotImplementedError`. These are reserved for future implementation pending specification or sample files.
-
-### Time Series Stubs (`gwexpy/timeseries/io/stubs.py`)
-
-| Format Name | Registered Classes | Notes |
-|---|---|---|
-| `orf` | TimeSeries, TimeSeriesDict, TimeSeriesMatrix | ORF format |
-| `mem` | TimeSeries, TimeSeriesDict, TimeSeriesMatrix | MEM format |
-| `wvf` | TimeSeries, TimeSeriesDict, TimeSeriesMatrix | WVF format |
-| `wdf` | TimeSeries, TimeSeriesDict, TimeSeriesMatrix | WDF format |
-| `taffmat` | TimeSeries, TimeSeriesDict, TimeSeriesMatrix | TAFFMAT format |
-| `lsf` | TimeSeries, TimeSeriesDict, TimeSeriesMatrix | LSF format |
-| `li` | TimeSeries, TimeSeriesDict, TimeSeriesMatrix | LI format |
-
-### Frequency Series Stubs (`gwexpy/frequencyseries/io/stubs.py`)
-
-| Format Name | Registered Classes | Notes |
-|---|---|---|
-| `win` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Implemented for time series but not frequency domain |
-| `win32` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Same as above |
-| `sdb` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Implemented for time series but not frequency domain |
-| `orf` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Not implemented |
-| `mem` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Not implemented |
-| `wvf` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Not implemented |
-| `wdf` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Not implemented |
-| `taffmat` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Not implemented |
-| `lsf` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Not implemented |
-| `li` | FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix | Not implemented |
-
----
-
-## Basic Usage of `.read()` / `.write()`
-
-All gwexpy data classes use gwpy's IO registry. Here is the basic usage pattern.
-
-### Reading
+- Purpose: compare the main GW-oriented direct-I/O and network entry points
+- Input: HDF5, GWF, DTTXML, or detector/open-data access parameters
+- Output: `TimeSeries`, `TimeSeriesDict`, or fetched open data
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
-# Auto-detect format from extension
-tsd = TimeSeriesDict.read("path/to/file.gbd", timezone="Asia/Tokyo")
-
-# Explicitly specify format
-tsd = TimeSeriesDict.read("path/to/file.dat", format="miniseed")
-
-# Read a single channel
-ts = TimeSeries.read("path/to/file.gbd", timezone="Asia/Tokyo")
+tsd = TimeSeriesDict.read("data.h5", format="hdf5")
+frame = TimeSeriesDict.read("data.gwf", format="gwf")
+dtt = TimeSeriesDict.read("diag.xml", format="dttxml", products="TS")
+open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 ```
 
-### Writing
+- **HDF5** is the safest general recommendation for structured GW data.
+- **DTTXML** changes behavior depending on `products`. For complex transfer functions, prefer `native=True` on the frequency-domain side.
+- **NDS2 / GWOSC** are shown inside group A, but explicitly marked as `network path` rather than file formats.
+
+<a id="io-formats-en-b"></a>
+
+## B. Seismic and Geophysical Observation
+
+This group is for existing seismic and electromagnetic observation formats.
+In practice, **MiniSEED** is the easiest starting point when you need to place a format in context.
+
+| Format | R / W | Main entry | Best for | Notes |
+|---|:---:|---|---|---|
+| **MiniSEED** (`.mseed`) | ○ / ○ | `TimeSeriesDict.read(..., format="miniseed")`, `.write(..., format="miniseed")` | Standard seismic waveform exchange | `gap` controls gap handling |
+| **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | Seismic waveform analysis | Via ObsPy |
+| **GSE2** (`.gse2`) | ○ / ○ | `TimeSeriesDict.read(..., format="gse2")`, `.write(..., format="gse2")` | Seismic waveform exchange | Via ObsPy |
+| **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | Strong-motion records | Read-only |
+| **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
+| **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
+| **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Partial support |
+| **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
+
+- Purpose: compare common seismic and geophysical readers without overstating MTH5 support
+- Input: existing waveform files such as MiniSEED, WIN/WIN32, or the limited `ats.mth5` path
+- Output: `TimeSeries` or `TimeSeriesDict` objects depending on the reader
 
 ```python
-# Write to a supported format
-tsd.write("output.mseed", format="miniseed")
-tsd.write("output.h5", format="hdf5")
+from gwexpy.timeseries.collections import TimeSeriesDict
+from gwexpy.timeseries import TimeSeries
+
+tsd = TimeSeriesDict.read("data.mseed", format="miniseed", gap="pad")
+win = TimeSeriesDict.read("data.cnt", format="win32")
+ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
 
-### Frequency Series
+- **MiniSEED** pads gaps with `NaN` by default. Use `gap="raise"` if you want failures instead.
+- **K-NET** and **WIN / WIN32** are intentionally read-only.
+- **ATS.MTH5** is the limited current direct path.
+- **MTH5 standalone** is still in design/publication cleanup. Read this as **"`ats.mth5` has partial support"**, not as **"MTH5 direct I/O is generally complete."**
+
+<a id="io-formats-en-c"></a>
+
+## C. General Analysis and Exchange
+
+These formats are useful for analysis notebooks, interchange, and general storage.
+The key rule here is not to mix up “format choice” with “library conversion.”
+
+| Format | R / W | Main entry | Best for | Notes |
+|---|:---:|---|---|---|
+| **CSV / TXT** (`.csv`, `.txt`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Lightweight exchange and inspection | Also supports directory bulk loading |
+| **NetCDF4** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="netcdf4")`, `TimeSeriesDict.read(..., format="netcdf4")`, `TimeSeriesMatrix.read(..., format="netcdf4")`, `.write(..., format="netcdf4")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes |
+| **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | Chunked storage and parallel workflows | Direct I/O here is centered on TimeSeries classes |
+| **Pickle** (`.pkl`) | ○ / ○ | `.read()` / `.write()` on major classes | Python object snapshots | Only for trusted data |
+| **ROOT** (`.root`) | ○ / ○ | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | EventTable I/O | Direct I/O here is EventTable only |
+
+- Purpose: show the general-purpose direct-I/O routes without mixing them with interop-only bridges
+- Input: CSV, Zarr, ROOT, or other general exchange formats
+- Output: `TimeSeriesDict`, `TimeSeriesMatrix`, or `EventTable`
 
 ```python
-from gwexpy.frequencyseries.collections import FrequencySeriesDict
-from gwexpy.frequencyseries.frequencyseries import FrequencySeries
+from gwexpy.timeseries.collections import TimeSeriesDict
+from gwexpy.table import EventTable
 
-fsd = FrequencySeriesDict.read("path/to/dtt.xml", format="dttxml", products="PSD")
+ascii_data = TimeSeriesDict.read("data.csv")
+chunked = TimeSeriesDict.read("data.zarr", format="zarr")
+events = EventTable.read("events.root", format="root")
 ```
 
-### How the `format` Argument Works
+- **CSV / TXT** remains useful for inspection and simple interchange.
+- **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop.
+- **Zarr** direct I/O stores and restores timing metadata such as `t0` and `dt` in Zarr attributes. This page treats that metadata path as part of the current supported behavior.
+- **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O.
 
-- **Omitted**: The format is auto-detected from the file extension using identifier functions registered via `io_registry.register_identifier(...)`.
-- **Specified**: The reader/writer registered for that format name is called directly.
-- **When auto-detection fails** (e.g. `.xml` is used by formats other than DTTXML): specify `format` explicitly.
+<a id="io-formats-en-d"></a>
 
----
+## D. Loggers and Instrument Formats
 
-## Reference: Source Implementation Files
+This group is for logger and instrument-specific time-series formats.
+Time handling, units, and audio `t0` semantics are the main points to watch.
 
-Implementation files referenced in the creation of this document.
+| Format | R / W | Main entry | Best for | Notes |
+|---|:---:|---|---|---|
+| **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd")`, `TimeSeriesDict.read(..., format="gbd")`, `TimeSeriesMatrix.read(..., format="gbd")` | GRAPHTEC loggers | `timezone` is required |
+| **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")`, `TimeSeriesMatrix.read(..., format="tdms")` | National Instruments data | Read-only |
+| **SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`) | ○ / × | `TimeSeries.read(..., format="sdb" / "sqlite" / "sqlite3")`, `TimeSeriesDict.read(...)` | WeeWX and similar archives | Same reader family |
+| **WAV** (`.wav`) | ○ / ○ | `TimeSeries.read(..., format="wav")`, `TimeSeriesDict.read(..., format="wav")`, `.write(..., format="wav")` | Uncompressed audio | Does not preserve absolute time |
+| **MP3 / FLAC / OGG / M4A** | ○ / ○ | `TimeSeries.read(..., format="mp3" / "flac" / "ogg" / "m4a")`, `.write(...)` | Compressed audio | Uses `pydub`; some formats also need `ffmpeg` |
 
-| Module Path | Summary |
+- Purpose: highlight logger-specific and audio-specific direct-I/O requirements
+- Input: logger data, SQLite-family archives, or audio files
+- Output: `TimeSeries`, `TimeSeriesDict`, or `TimeSeriesMatrix`
+
+```python
+from gwexpy.timeseries.collections import TimeSeriesDict
+
+logger = TimeSeriesDict.read("data.gbd", timezone="Asia/Tokyo")
+weather = TimeSeriesDict.read("archive.sqlite3", format="sqlite3")
+audio = TimeSeriesDict.read("sound.flac", format="flac")
+```
+
+- **GBD** requires `timezone`.
+- **SDB / SQLite / SQLite3** should all be named explicitly in the public page so users do not need to infer aliases.
+- **WAV / Audio** do not preserve absolute timestamps. Reading with `t0=0.0` is a convenience convention, not a claim that the source had an absolute epoch.
+
+<a id="io-formats-en-dev"></a>
+
+## Developer Notes
+
+Most users can skip this section.
+It exists mainly to collect not-yet-prominent implementations and placeholders in one place.
+
+### Managed in design, but not prominent in the public page
+
+| Format | Status | Notes |
+|---|---|---|
+| `ndscope-hdf5` | Implemented, not yet prominent | `TimeSeriesDict`-only HDF5 schema. Canonical name: `ndscope-hdf5`; backward-compatible aliases: `ndscope_hdf5`, `ndscopehdf5` |
+| `SQLite`, `SQLite3` | Implemented, not yet prominent | Aliases in the same family as `SDB` |
+| `ATS.MTH5` | Implemented with partial scope | Current public direct path backed by MTH5 |
+| `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet; not published as public direct I/O |
+
+### Unimplemented Formats (Stubs)
+
+These entries exist as placeholders only. Calling `.read()` on them is expected to fail because they are not ready for end users yet.
+
+#### TimeSeries stubs
+
+| Format | Status |
 |---|---|
-| `gwexpy/timeseries/io/__init__.py` | Time series IO module registration entry point |
-| `gwexpy/timeseries/io/gbd.py` | GBD reader. `timezone` is required |
-| `gwexpy/timeseries/io/ats.py` | ATS reader (binary parser). `ats.mth5` variant available |
-| `gwexpy/timeseries/io/sdb.py` | SDB reader (WeeWX SQLite). Registered under `sdb`, `sqlite`, `sqlite3` |
-| `gwexpy/timeseries/io/tdms.py` | TDMS reader. Depends on `npTDMS` |
-| `gwexpy/timeseries/io/wav.py` | WAV reader. `scipy.io.wavfile` wrapper. `t0=0` fixed |
-| `gwexpy/timeseries/io/seismic.py` | MiniSEED / SAC / GSE2 / KNET reader/writer. Depends on ObsPy |
-| `gwexpy/timeseries/io/win.py` | WIN/WIN32 reader. Requires ObsPy. Improved 4bit/24bit delta decode |
-| `gwexpy/timeseries/io/dttxml.py` | DTTXML time series reader. `products` is required |
-| `gwexpy/timeseries/io/audio.py` | Audio reader/writer (MP3/FLAC/OGG/M4A). Depends on pydub. `t0=0` fixed |
-| `gwexpy/timeseries/io/netcdf4_.py` | NetCDF4 reader/writer. Depends on xarray. Auto-detects time dimension |
-| `gwexpy/timeseries/io/zarr_.py` | Zarr reader/writer. Depends on zarr. gwexpy store convention |
-| `gwexpy/timeseries/io/stubs.py` | Time series stubs (`orf`, `mem`, `wvf`, `wdf`, `taffmat`, `lsf`, `li`) |
-| `gwexpy/timeseries/io/hdf5.py` | HDF5 IO (gwpy re-export) |
-| `gwexpy/timeseries/io/ascii.py` | ASCII IO (gwpy re-export) |
-| `gwexpy/timeseries/io/nds2.py` | NDS2 IO (gwpy re-export) |
-| `gwexpy/timeseries/io/cache.py` | Cache IO (gwpy re-export) |
-| `gwexpy/timeseries/io/losc.py` | GWOSC IO (gwpy re-export) |
-| `gwexpy/timeseries/io/core.py` | Core IO (gwpy re-export) |
-| `gwexpy/frequencyseries/io/__init__.py` | Frequency series IO module registration entry point |
-| `gwexpy/frequencyseries/io/dttxml.py` | DTTXML frequency series reader. `products` required. `native` option available |
-| `gwexpy/frequencyseries/io/stubs.py` | Frequency series stubs (`win`, `win32`, `sdb`, `orf`, `mem`, `wvf`, `wdf`, `taffmat`, `lsf`, `li`) |
-| `gwexpy/frequencyseries/io/hdf5.py` | HDF5 IO (gwpy re-export) |
-| `gwexpy/frequencyseries/io/ascii.py` | ASCII IO (gwpy re-export) |
-| `gwexpy/frequencyseries/io/ligolw.py` | LIGO_LW IO (gwpy re-export) |
-| `gwexpy/table/io/root.py` | ROOT IO (gwpy re-export) |
-| `gwexpy/timeseries/collections.py` | `TimeSeriesDict.read()` extensions (HDF5 layout detection, directory loading) |
-| `docs/developers/design/design_data/io_support.csv` | Design data: supported format list |
+| `orf` | Planned |
+| `mem` | Planned |
+| `wvf` | Planned |
+| `wdf` | Planned |
+| `taffmat` | Planned |
+| `lsf` | Planned |
+| `li` | Planned |
+
+#### FrequencySeries stubs
+
+| Format | Status |
+|---|---|
+| `win` | Planned |
+| `win32` | Planned |
+| `sdb` | Planned |
+| `orf` | Planned |
+| `mem` | Planned |
+| `wvf` | Planned |
+| `wdf` | Planned |
+| `taffmat` | Planned |
+| `lsf` | Planned |
+| `li` | Planned |
+
+## Related Pages
+
+- [Interop tutorial](tutorials/intro_interop)
+- [Interop API reference](../reference/api/interop)
+- [Installation guide](installation)
+
+## Next to Read
+
+- [Interop / Conversion Guide](interop) for `to_*()` / `from_*()` bridges and object-level conversion
+- [GPS Time Utility Functions](time_utilities) if your I/O workflow needs timezone or GPS-time handling
+- [Installation guide](installation) if you need optional dependencies before using a format backend
+
+## Page-End Navigation
+
+- <a href="#io-formats-en-quick">Back to Quick Selection Table</a>
+- <a href="#io-formats-en-basic">Back to Basic Usage</a>
+- <a href="#io-formats-en-top">Back to Top</a>

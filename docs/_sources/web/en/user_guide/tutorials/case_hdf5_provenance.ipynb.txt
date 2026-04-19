@@ -1,8 +1,20 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b3332be3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "md_00a5236e",
+   "id": "522f77d1",
    "metadata": {},
    "source": [
     "# Reproducible Metadata Management with HDF5\n",
@@ -30,7 +42,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_03816536",
+   "id": "f88afe47",
    "metadata": {},
    "source": [
     "## Setup"
@@ -39,7 +51,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cd_00197f90",
+   "id": "fd7d5c1d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:12.690805Z",
@@ -50,6 +62,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import datetime\n",
     "import json\n",
     "import os\n",
@@ -67,7 +83,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_04f51229",
+   "id": "b773f6bc",
    "metadata": {},
    "source": [
     "## 1. Synthetic Data\n",
@@ -79,7 +95,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cd_03cb8ec0",
+   "id": "bf90ba19",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:15.444954Z",
@@ -120,7 +136,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0473c038",
+   "id": "b308dc8e",
    "metadata": {},
    "source": [
     "## 2. Writing to HDF5 with Provenance Metadata\n",
@@ -136,7 +152,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "cd_02cc7648",
+   "id": "1d61122a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:15.468993Z",
@@ -166,7 +182,8 @@
     "    \"freq_range\": [10.0, 2000.0],\n",
     "}\n",
     "\n",
-    "hdf5_path = tempfile.mktemp(suffix=\".h5\")\n",
+    "fd, hdf5_path = tempfile.mkstemp(suffix=\".h5\")\n",
+    "os.close(fd)\n",
     "\n",
     "with h5py.File(hdf5_path, \"w\") as f:\n",
     "    # --- Raw TimeSeries ---\n",
@@ -188,7 +205,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_03b3ee56",
+   "id": "55ca56d8",
    "metadata": {},
    "source": [
     "## 3. Storing Derived Products with Full Lineage\n",
@@ -200,7 +217,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cd_00391d08",
+   "id": "e7371e4c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:15.498728Z",
@@ -266,7 +283,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0452cfe3",
+   "id": "1e56b068",
    "metadata": {},
    "source": [
     "## 4. Reading Back and Verifying Provenance\n",
@@ -278,7 +295,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cd_01d4724d",
+   "id": "85649ed2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:15.594862Z",
@@ -347,7 +364,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0295f08c",
+   "id": "31d672e0",
    "metadata": {},
    "source": [
     "## 5. Provenance-Aware Pipeline Helper\n",
@@ -359,7 +376,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "cd_007eb03a",
+   "id": "ea3941d2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:15.604072Z",
@@ -419,7 +436,8 @@
     "        yield f, save_ts, save_array\n",
     "\n",
     "# --- Use the helper ---\n",
-    "pipeline_path = tempfile.mktemp(suffix=\"_pipeline.h5\")\n",
+    "fd, pipeline_path = tempfile.mkstemp(suffix=\"_pipeline.h5\")\n",
+    "os.close(fd)\n",
     "run_params = {\"fftlength\": 8.0, \"overlap\": 0.75, \"method\": \"median\", \"run_id\": \"R001\"}\n",
     "\n",
     "with provenance_file(pipeline_path, run_params) as (f, save_ts, save_array):\n",
@@ -440,7 +458,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_04e87dbf",
+   "id": "6c2da88d",
    "metadata": {},
    "source": [
     "## 6. Visualise the Stored ASD (Reproducibility Check)\n",
@@ -451,7 +469,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cd_00ba9226",
+   "id": "85d5a128",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:10:15.677052Z",
@@ -505,7 +523,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_03e1fafb",
+   "id": "f1a5f7e9",
    "metadata": {},
    "source": [
     "## Summary\n",

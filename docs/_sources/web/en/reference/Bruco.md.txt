@@ -1,10 +1,52 @@
-# Bruco (Brute force coherence)
+# Bruco
+
+<!-- reference-summary:start -->
+
+**Stability:** Stable
+
+## What it is
+
+Use `Bruco` to scan a target channel against many auxiliary channels, rank coherence peaks, and estimate projected noise contributions.
+
+## Representative Signatures
+
+```python
+Bruco(target_channel, aux_channels, excluded_channels=None)
+Bruco.compute(start=None, duration=None, fftlength=2.0, overlap=1.0, ...)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.analysis import Bruco
+
+bruco = Bruco("H1:TARGET", ["H1:AUX1", "H1:AUX2"])
+result = bruco.compute(start=0, duration=64, fftlength=4.0, overlap=2.0)
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
 
 `Bruco` computes **brute force coherence** between a target channel (e.g., a gravitational-wave channel) and a large number of auxiliary channels to identify noise sources.
 For a given frequency band and time segment, it ranks auxiliary channels by coherence with the target and estimates their noise contribution (Noise Projection).
 
-The original Bruco implementation is available at:
-- https://github.com/mikelovskij/bruco
+The original BruCo implementation is available at:
+- https://github.com/mikelovskij/BruCo
 
 
 ## Key Features
@@ -24,7 +66,7 @@ The original Bruco implementation is available at:
 Create a `Bruco` instance by specifying the target channel and a list of auxiliary channels to scan.
 
 ```python
-from gwexpy.analysis.bruco import Bruco
+from gwexpy.analysis import Bruco
 
 # Target channel name
 target = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
@@ -132,7 +174,7 @@ result = bruco.compute(
 
 ### 3. Viewing and Saving Results
 
-`compute()` returns a `BrucoResult` object. Use this object to visualize results and create reports.
+`compute()` returns a `BruCoResult` object. Use this object to visualize results and create reports.
 
 #### Step 3.1: Plotting Coherence
 Displays the channels with the highest coherence at each frequency, color-coded.
@@ -163,8 +205,8 @@ fig_proj_psd.show()
 Creates a directory and outputs an HTML report summarizing the results.
 
 ```python
-# Output to 'bruco_report' directory
-result.generate_report(output_dir="bruco_report")
+# Output to 'BruCo_report' directory
+result.generate_report(output_dir="BruCo_report")
 ```
 
 ---
@@ -178,7 +220,7 @@ result.generate_report(output_dir="bruco_report")
 
 ### Top-N Update Block Size
 
-`BrucoResult` Top-N updates process channels in blocks.
+`BruCoResult` Top-N updates process channels in blocks.
 The block size is determined in the following order:
 
 1. `block_size` argument (`int` or `"auto"`)
@@ -207,10 +249,10 @@ export GWEXPY_BRUCO_BLOCK_BYTES=41760000
 
 ### Benchmark
 
-Run a simple benchmark of `update_batch` with `scripts/bruco_bench.py`:
+Run a simple benchmark of `update_batch` with `scripts/BruCo_bench.py`:
 
 ```bash
-python scripts/bruco_bench.py --n-bins 20000 --n-channels 300 --top-n 5 --block-size auto
+python scripts/BruCo_bench.py --n-bins 20000 --n-channels 300 --top-n 5 --block-size auto
 ```
 
 Reference values (environment-dependent):
@@ -230,7 +272,7 @@ block_size_resolved=414
 - `aux_channels`: List of auxiliary channel names for comparison.
 - `excluded_channels`: List of channel names to exclude from analysis.
 
-**`compute(self, start=None, duration=None, fftlength=2.0, overlap=1.0, nproc=4, batch_size=100, top_n=5, block_size=None, ...) -> BrucoResult`**
+**`compute(self, start=None, duration=None, fftlength=2.0, overlap=1.0, nproc=4, batch_size=100, top_n=5, block_size=None, ...) -> BruCoResult`**
 - `start`: GPS start time. Can be omitted if inferable from data (`target_data` or `aux_data` dict).
 - `duration`: Length of analysis data (seconds). Can be omitted if inferable.
 - `fftlength`: FFT length for spectral computation (seconds).
@@ -243,7 +285,7 @@ block_size_resolved=414
 - `aux_data`: (`TimeSeriesDict` or `Iterable`) Pre-fetched auxiliary channel data.
 - `preprocess_batch`: (`Callable`) Callback function for batch preprocessing.
 
-### `BrucoResult`
+### `BruCoResult`
 
 **`plot_coherence(self, asd=True, coherence_threshold=0.0, channels=None, ranks=None)`**
 - Plots the coherence spectrum.
@@ -262,5 +304,5 @@ block_size_resolved=414
 - `asd=True`: Display as ASD (Amplitude Spectral Density). `False` for PSD.
 - `coherence_threshold`: Masks contributions at frequencies with coherence below this value as `NaN` (appears as gaps in the plot).
 
-**`generate_report(self, output_dir="bruco_report", asd=True)`**
+**`generate_report(self, output_dir="BruCo_report", asd=True)`**
 - Generates a report (HTML, PNG, CSV) in the specified directory.

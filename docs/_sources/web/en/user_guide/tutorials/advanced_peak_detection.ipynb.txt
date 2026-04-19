@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7814436e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "cell-0",
+   "id": "a4f05e7f",
    "metadata": {},
    "source": [
-    "# Peak Detection\n",
+    "# Peak Detection: Basics\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_peak_detection.ipynb)\n",
     "\n",
@@ -19,7 +31,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cell-1",
+   "id": "c6a81618",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:40.446135Z",
@@ -30,6 +42,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "from astropy import units as u\n",
@@ -39,7 +55,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-2",
+   "id": "6aa538db",
    "metadata": {},
    "source": [
     "## 1. Peak Detection in FrequencySeries"
@@ -48,7 +64,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cell-3",
+   "id": "cc16c84b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:42.925937Z",
@@ -99,7 +115,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-4",
+   "id": "8db74ec0",
    "metadata": {},
    "source": [
     "## 2. Constraints Using Physical Units (Distance & Width)"
@@ -108,7 +124,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cell-5",
+   "id": "47cbce60",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:43.215550Z",
@@ -154,7 +170,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-6",
+   "id": "0f60b1dc",
    "metadata": {},
    "source": [
     "## 3. Peak Detection in TimeSeries"
@@ -163,7 +179,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cell-7",
+   "id": "fb3fcfcc",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:43.345681Z",

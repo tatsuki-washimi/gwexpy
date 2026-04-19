@@ -4,35 +4,102 @@
 <html class="writer-html5" lang="ja" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="GWexpy の検証済みアルゴリズムについて、数値許容誤差、前提条件、監査根拠、理論・API・チュートリアルへの導線を整理します。" name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>検証済みアルゴリズム &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/validated_algorithms.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="アーキテクチャと物理" href="architecture.html" />
-    <link rel="prev" title="スカラーフィールドのスライス操作ガイド" href="scalarfield_slicing.html" /> 
+    <link rel="next" title="アーキテクチャとデータフロー" href="architecture.html" />
+    <link rel="prev" title="ノイズ生成 (Noise)" href="../reference/Noise.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../en/user_guide/validated_algorithms.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -46,47 +113,56 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">検証済みアルゴリズム</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#k-space">k-space計算</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#fft">振幅スペクトル（トランジェントFFT）</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#vif">VIF（分散膨張率）</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arima">予測タイムスタンプ（ARIMA）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">このページの近道</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validation-precision">検証の基準と計算精度 (Validation &amp; Precision)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#objective-evidence">客観的証拠 (Objective Evidence)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#source-references">参照元一覧 (Source References)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validated-algorithms-summary-table-ja">検証済みアルゴリズム要約表</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validated-algorithms-how-to-read-ja">読み方ガイド</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validated-algorithms-detail-sections-ja">各アルゴリズムの詳細と仮定</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audit-trail">監査証跡 (Audit Trail)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validated-algorithms-related-documents-ja">検証向け関連ドキュメント</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validated-algorithms-next-to-read-ja">次に読む</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">前提条件と規約</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#mcmc">MCMC固定共分散前提</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#vs">角波数 vs サイクル波数</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">降順軸の符号規約</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">ブートストラップにおけるVIF適用</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5">ブートストラップの定常性前提</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">検証について</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html">アーキテクチャと物理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
 </ul>
@@ -95,17 +171,17 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
       <li class="breadcrumb-item active">検証済みアルゴリズム</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/validated_algorithms.md" class="fa fa-github"> Edit on GitHub</a>
@@ -118,167 +194,368 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>検証済みアルゴリズム<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<p>以下のアルゴリズムは、厳密な独立レビューと確立された参考文献との相互検証（2026-02-01）により妥当性が確認されました。
-このページでは、検証済み実装とその参考文献を記載しています。</p>
-<section id="k-space">
-<h2>k-space計算<a class="headerlink" href="#k-space" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
-<p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
-<p>角波数の計算は物理学の標準定義に従っています：</p>
-<div class="math notranslate nohighlight">
-\[
-k = 2\pi \cdot \text{fftfreq}(n, d)
-\]</div>
-<p>これは <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span> を満たし、以下と一致しています：</p>
+<p><strong>ページ種別:</strong> 高度ガイド / 理論補助
+<strong>バッジ:</strong> <code class="docutils literal notranslate"><span class="pre">Advanced</span></code> <code class="docutils literal notranslate"><span class="pre">Theory</span> <span class="pre">companion</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>このページを読むべき方</strong>:</p>
 <ul class="simple">
-<li><p>Press et al., <em>Numerical Recipes</em> (3rd ed., 2007), §12.3.2</p></li>
-<li><p>NumPy <code class="docutils literal notranslate"><span class="pre">fftfreq</span></code> ドキュメント</p></li>
-<li><p>GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)</p></li>
+<li><p>解析手法の数学的・物理学的な妥当性を確認したい研究者</p></li>
+<li><p>外部ライブラリ（SciPy, LALSuite 等）と GWexpy の数値的な計算誤差を知りたい開発者</p></li>
+<li><p>使用するアルゴリズムが前提としているデータ特性（定常性、ガウス性など）を確認したい方</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">2π</span></code> 係数は正しく適用され、単位は <code class="docutils literal notranslate"><span class="pre">1/dx_unit</span></code> (rad/length) として
-適切に設定されています。</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>高度な検証・理論ページです</strong></p>
+<p>このページは機能紹介の文書から辿りやすいよう user guide 配下に残していますが、入門ページではありません。API リファレンス、理論ノート、個別チュートリアルを監査目線でつなぐ補助ページとして扱ってください。初見の方は <a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a>、<a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a>、または各手法に対応する個別チュートリアルから読むのを推奨します。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> で使用されている主要な数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。</p>
+<p><strong>検索のヒント:</strong> <code class="docutils literal notranslate"><span class="pre">validated</span> <span class="pre">algorithms</span></code>, <code class="docutils literal notranslate"><span class="pre">tolerance</span></code>, <code class="docutils literal notranslate"><span class="pre">FFT</span> <span class="pre">conventions</span></code>, <code class="docutils literal notranslate"><span class="pre">ホワイトニング</span></code>, <code class="docutils literal notranslate"><span class="pre">GLS</span></code>, <code class="docutils literal notranslate"><span class="pre">MCMC</span></code>, <code class="docutils literal notranslate"><span class="pre">VIF</span></code></p>
+<section id="id2">
+<h2>このページの近道<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>検証の基準と計算精度</p></li>
+<li><p>客観的証拠</p></li>
+<li><p>参照元一覧</p></li>
+<li><p>検証済みアルゴリズム要約表</p></li>
+<li><p>読み方ガイド</p></li>
+<li><p>各アルゴリズムの詳細と仮定</p></li>
+<li><p>監査証跡</p></li>
+<li><p>関連ドキュメント</p></li>
+</ul>
+</section>
+<section id="validation-precision">
+<span id="validated-algorithms-validation-criteria-ja"></span><h2>検証の基準と計算精度 (Validation &amp; Precision)<a class="headerlink" href="#validation-precision" title="Link to this heading"></a></h2>
+<p>「検証済み」と表記されるアルゴリズムは、以下の基準に基づき、指定の精度（Tolerance）を達成しています。</p>
+<ul class="simple">
+<li><p><strong>一致率 (Tolerance)</strong>: <span class="math notranslate nohighlight">\(10^{-12}\)</span> (相対誤差) を原則的なパス基準としています。これは倍精度浮動小数点演算において、丸め誤差以外の有意なロジック差異がないことを示します。</p></li>
+<li><p><strong>物理的不変性 (Invariance)</strong>: スケール変換（データの 1000 倍など）をしても結果が整合する「Scale Invariance」を全アルゴリズムで検証しています。</p></li>
+</ul>
+</section>
+<section id="objective-evidence">
+<span id="validated-ja-objective-evidence"></span><h2>客観的証拠 (Objective Evidence)<a class="headerlink" href="#objective-evidence" title="Link to this heading"></a></h2>
+<p>このページの要約は、直接参照できるリポジトリ内の検証資料に基づいています。</p>
+<p>この証拠表は監査導線を 1 ページにまとめるため、列数を多めに保っています。モバイルでは共有 CSS に合わせた横スクロール前提で読むのが自然です。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>証拠の種類</p></th>
+<th class="head text-left"><p>資料</p></th>
+<th class="head text-left"><p>何を示すか</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>監査スコープ</p></td>
+<td class="text-left"><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md">ALGORITHM_CONTEXT</a></p></td>
+<td class="text-left"><p>どのアルゴリズムを、どの観点で点検したか</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>統合結果</p></td>
+<td class="text-left"><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md">merged_validation_report</a></p></td>
+<td class="text-left"><p>独立監査の統合所見、重大度、合意度</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>修正履歴</p></td>
+<td class="text-left"><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md">algorithm_fix_report_20260201</a></p></td>
+<td class="text-left"><p>指摘後に何を修正したか</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Field 系の物理レビュー</p></td>
+<td class="text-left"><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md">scalarfield_physics_review_20260120</a></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の FFT と軸整合性に関するレビュー</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="source-references">
+<span id="validated-ja-source-references"></span><h2>参照元一覧 (Source References)<a class="headerlink" href="#source-references" title="Link to this heading"></a></h2>
+<p>各アルゴリズム節では、文献・内部資料の参照をこの一覧のキーに寄せて、出典管理をこのページで一元化します。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>キー</p></th>
+<th class="head text-left"><p>資料</p></th>
+<th class="head text-left"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S1</span></code></p></td>
+<td class="text-left"><p>Press et al., <em>Numerical Recipes</em> (3rd ed., 2007), §12.3.2</p></td>
+<td class="text-left"><p>k-space 計算と FFT 軸解釈</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S2</span></code></p></td>
+<td class="text-left"><p>Percival, D.B. &amp; Walden, A.T., <em>Spectral Analysis for Physical Applications</em> (1993), Eq.(56)</p></td>
+<td class="text-left"><p>Welch オーバーラップ / VIF 補正</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S3</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a></p></td>
+<td class="text-left"><p>時刻系と FFT 規約に関する共通前提</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S4</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">数値安定性</span></a></p></td>
+<td class="text-left"><p>ホワイトニングの安定化指針</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">S5</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-ja-objective-evidence"><span class="std std-ref">客観的証拠</span></a> と後述の Audit Trail</p></td>
+<td class="text-left"><p>transient FFT と複素 GLS / MCMC 挙動の実装根拠</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="validated-algorithms-summary-table-ja">
+<span id="id3"></span><h2>検証済みアルゴリズム要約表<a class="headerlink" href="#validated-algorithms-summary-table-ja" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>アルゴリズム</p></th>
+<th class="head text-left"><p>主対象 API</p></th>
+<th class="head text-left"><p>API ページ</p></th>
+<th class="head text-left"><p>証拠</p></th>
+<th class="head text-left"><p>関連チュートリアル</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>k-space 計算</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ScalarField.fft_space()</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">Fields API</span></a> / <a class="reference internal" href="../reference/ScalarField.html"><span class="std std-doc">ScalarField</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-ja-objective-evidence"><span class="std std-ref">客観的証拠</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">Field 入門</span></a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>Transient FFT</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.fft(mode=&quot;transient&quot;)</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">Time Series API</span></a> / <a class="reference internal" href="../reference/TimeSeries.html"><span class="std std-doc">TimeSeries</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-ja-objective-evidence"><span class="std std-ref">客観的証拠</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="tutorials/case_signal_extraction.html"><span class="std std-doc">Signal Extraction</span></a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>VIF 補正</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">calculate_correlation_factor()</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="../reference/api/spectral.html"><span class="std std-doc">Spectral API</span></a> / <a class="reference internal" href="../reference/Spectral.html"><span class="std std-doc">Spectral</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-ja-objective-evidence"><span class="std std-ref">客観的証拠</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="tutorials/case_bootstrap_gls_fitting.html"><span class="std std-doc">Bootstrap 用</span></a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>予測時刻計算</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ArimaResult.forecast()</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">Time Series API</span></a> / <a class="reference internal" href="../reference/TimeSeries.html"><span class="std std-doc">TimeSeries</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-ja-objective-evidence"><span class="std std-ref">客観的証拠</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="tutorials/advanced_arima.html"><span class="std std-doc">Advanced ARIMA</span></a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>MCMC / GLS 尤度</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">fit_series()</span></code> / <code class="docutils literal notranslate"><span class="pre">GeneralizedLeastSquares</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="../reference/api/fitting.html"><span class="std std-doc">Fitting API</span></a> / <a class="reference internal" href="../reference/fitting.html"><span class="std std-doc">gwexpy.fitting</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-ja-objective-evidence"><span class="std std-ref">客観的証拠</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="tutorials/case_bootstrap_gls_fitting.html"><span class="std std-doc">Bootstrap 用</span></a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>適応ホワイトニング</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">whiten()</span></code> / <code class="docutils literal notranslate"><span class="pre">WhiteningModel</span></code></p></td>
+<td class="text-left"><p><a class="reference internal" href="../reference/api/preprocessing.html"><span class="std std-doc">Preprocessing API</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-ja-objective-evidence"><span class="std std-ref">客観的証拠</span></a></p></td>
+<td class="text-left"><p><a class="reference internal" href="tutorials/case_ml_preprocessing.html"><span class="std std-doc">ML Preprocessing 事例</span></a></p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+</section>
+<section id="validated-algorithms-how-to-read-ja">
+<span id="id4"></span><h2>読み方ガイド<a class="headerlink" href="#validated-algorithms-how-to-read-ja" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>共通の前提条件、時刻系、FFT 規約を先に整理したい場合は <a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a> を入口にしてください。</p></li>
+<li><p>監査メモより先に手を動かしたい場合は、要約表にある個別チュートリアルから該当手法だけ読むのが最短です。</p></li>
+<li><p>実装側の API を先に確認したい場合は <a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">Fields API</span></a>, <a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">Time Series API</span></a>, <a class="reference internal" href="../reference/api/spectral.html"><span class="std std-doc">Spectral API</span></a>, <a class="reference internal" href="../reference/api/fitting.html"><span class="std std-doc">Fitting API</span></a>, <a class="reference internal" href="../reference/api/preprocessing.html"><span class="std std-doc">Preprocessing API</span></a> を参照してください。</p></li>
+<li><p>検証の背景や監査メモまで追いたい場合は、後述の <a class="reference internal" href="#validated-ja-objective-evidence"><span class="std std-ref">客観的証拠</span></a>、<a class="reference internal" href="#validated-ja-source-references"><span class="std std-ref">参照元一覧</span></a>、Audit Trail を参照してください。</p></li>
+</ul>
+</section>
+<section id="validated-algorithms-detail-sections-ja">
+<span id="id5"></span><h2>各アルゴリズムの詳細と仮定<a class="headerlink" href="#validated-algorithms-detail-sections-ja" title="Link to this heading"></a></h2>
+<section id="k-space">
+<span id="validated-ja-k-space"></span><h3>1. k-space 計算<a class="headerlink" href="#k-space" title="Link to this heading"></a></h3>
+<p><strong>対象</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
+<p>角波数の計算は、物理学の標準定義 <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span> に従っています。</p>
+<p><strong>前提条件・仮定</strong>:</p>
+<ul class="simple">
+<li><p>空間座標 (<span class="math notranslate nohighlight">\(x, y\)</span>) が**等間隔（Uniform Grid）**であること。</p></li>
+<li><p>非等間隔グリッドの場合は、事前に補間を行わない限り正しい波数軸は得られません。</p></li>
+</ul>
+<p><strong>参照元</strong>: <a class="reference internal" href="#validated-ja-source-references"><span class="std std-ref">S1</span></a></p>
+<p><strong>関連チュートリアル</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">Field 入門</span></a></p></li>
+</ul>
+<p><strong>関連 API</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">Fields API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/ScalarField.html"><span class="std std-doc">ScalarField</span></a></p></li>
+</ul>
+<p><strong>関連理論</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a></p></li>
+<li><p><a class="reference internal" href="architecture.html"><span class="std std-doc">アーキテクチャとデータフロー</span></a></p></li>
+</ul>
+<hr class="docutils" />
 </section>
 <section id="fft">
-<h2>振幅スペクトル（トランジェントFFT）<a class="headerlink" href="#fft" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p>
-<p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
-<p>トランジェントFFTは密度スペクトルではなく、<strong>振幅スペクトル</strong> を返します：</p>
-<div class="math notranslate nohighlight">
-\[
-\text{amplitude} = \text{rfft}(x) / N
-\]</div>
-<p>DCとナイキスト周波数を除く片側成分は2倍されます。</p>
-<p>この規約により、正弦波のピーク振幅を直接読み取ることができます。
-<code class="docutils literal notranslate"><span class="pre">dt</span></code> を掛けるべきという提案は密度スペクトル (V/√Hz) に適用されるもので、
-用途が異なります。</p>
-<p><strong>参考文献</strong>:</p>
+<span id="validated-ja-transient-fft"></span><h3>2. 振幅スペクトル（トランジェントFFT）<a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
+<p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p>
+<p>密度スペクトル（PSD）ではなく、時間領域の<strong>ピーク振幅</strong>を直接読み取れる振幅規約を採用しています。</p>
+<p><strong>前提条件・仮定</strong>:</p>
 <ul class="simple">
-<li><p>Oppenheim &amp; Schafer, <em>Discrete-Time Signal Processing</em> (3rd ed., 2010), §8.6.2</p></li>
-<li><p>SciPy <code class="docutils literal notranslate"><span class="pre">rfft</span></code> ドキュメント</p></li>
+<li><p>入力信号に窓関数が適用されていないこと（矩形窓を前提）。</p></li>
+<li><p>窓関数適用済みのデータに対しては、別途コヒーレント・ゲインによる補正が必要です。</p></li>
 </ul>
+<p><strong>参照元</strong>: <a class="reference internal" href="#validated-ja-source-references"><span class="std std-ref">S5</span></a></p>
+<p><strong>関連チュートリアル</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/case_signal_extraction.html"><span class="std std-doc">Signal Extraction チュートリアル</span></a></p></li>
+</ul>
+<p><strong>関連 API</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">Time Series API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/TimeSeries.html"><span class="std std-doc">TimeSeries</span></a></p></li>
+</ul>
+<p><strong>関連理論</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a></p></li>
+<li><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">数値安定性</span></a></p></li>
+</ul>
+<hr class="docutils" />
 </section>
 <section id="vif">
-<h2>VIF（分散膨張率）<a class="headerlink" href="#vif" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.calculate_correlation_factor()</span></code></p>
-<p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
-<p>VIF計算式はPercival &amp; Walden (1993) に準拠しています：</p>
-<div class="math notranslate nohighlight">
-\[
-\text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
-\]</div>
-<p><strong>重要</strong>: これは多重共線性診断に使用される回帰VIF (1/(1-R²)) とは異なります。
-名称の衝突が混乱を招きましたが、スペクトル解析においては実装は正しいです。</p>
-<p><strong>参考文献</strong>:</p>
+<span id="validated-ja-vif"></span><h3>3. VIF (分散膨張係数)<a class="headerlink" href="#vif" title="Link to this heading"></a></h3>
+<p><strong>対象</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.calculate_correlation_factor()</span></code></p>
+<p>Welch 法等におけるセグメント間のオーバーラップによる有効サンプル数の減少を補正します。</p>
+<p>ここでの VIF は回帰分析の Variance Inflation Factor をそのまま指すのではなく、<strong>オーバーラップ窓による分散膨張補正をコード上で <code class="docutils literal notranslate"><span class="pre">calculate_correlation_factor()</span></code> として実装したもの</strong>です。理論名と関数名が異なるのは、API では「相関補正係数を計算する」役割を明示するためです。</p>
+<p><strong>前提条件・仮定</strong>:</p>
 <ul class="simple">
-<li><p>Percival, D.B. &amp; Walden, A.T., <em>Spectral Analysis for Physical Applications</em>
-(1993), Ch. 7.3.2, Eq.(56)</p></li>
-<li><p>Bendat, J.S. &amp; Piersol, A.G., <em>Random Data</em> (4th ed., 2010)</p></li>
+<li><p>データが<strong>弱定常 (Weakly Stationary)</strong> であること。</p></li>
+<li><p>非定常なグリッチやステップ応答が含まれる場合、VIF は分散を過小または過大評価する可能性があります。</p></li>
 </ul>
+<p><strong>参照元</strong>: <a class="reference internal" href="#validated-ja-source-references"><span class="std std-ref">S2</span></a></p>
+<p><strong>関連チュートリアル</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/case_bootstrap_gls_fitting.html"><span class="std std-doc">Bootstrap GLS fitting 事例</span></a></p></li>
+</ul>
+<p><strong>関連 API</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/api/spectral.html"><span class="std std-doc">Spectral API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/Spectral.html"><span class="std std-doc">Spectral</span></a></p></li>
+</ul>
+<p><strong>関連理論</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a></p></li>
+</ul>
+<hr class="docutils" />
 </section>
 <section id="arima">
-<h2>予測タイムスタンプ（ARIMA）<a class="headerlink" href="#arima" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.timeseries.arima.ArimaResult.forecast()</span></code></p>
-<p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
-<p>予測開始時刻は以下のように計算されます：</p>
-<div class="math notranslate nohighlight">
-\[
-t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
-\]</div>
-<p>これは等間隔・ギャップなしのデータを前提としています。
-GPS時刻はTAI連続秒数を使用するLIGO/GWpy規約に従っています。</p>
-<p>UTC時刻系で時々指摘されるうるう秒の懸念は、重力波データ解析で使用される
-GPS/TAI時刻系には該当しません。</p>
-<p><strong>参考文献</strong>:</p>
+<span id="validated-ja-arima-forecast"></span><h3>4. 予測タイムスタンプ (ARIMA)<a class="headerlink" href="#arima" title="Link to this heading"></a></h3>
+<p><strong>対象</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.timeseries.arima.ArimaResult.forecast()</span></code></p>
+<p>GPS 時刻系における連続性を保証するため、LIGO 規約に従った歩進計算を行います。</p>
+<p>代表的な更新式は <code class="docutils literal notranslate"><span class="pre">forecast_t0</span> <span class="pre">=</span> <span class="pre">t0</span> <span class="pre">+</span> <span class="pre">n_obs</span> <span class="pre">*</span> <span class="pre">dt</span></code> です。ここで、</p>
 <ul class="simple">
-<li><p>GWpy TimeSeries.epoch ドキュメント</p></li>
-<li><p>LIGO GPS時刻規約 (LIGO-T980044)</p></li>
-<li><p>Box, G.E.P. &amp; Jenkins, G.M., <em>Time Series Analysis</em> (1976), Ch. 4</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">t0</span></code>: 元データ系列の開始 GPS 時刻</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_obs</span></code>: 学習に使った観測点数</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: サンプル間隔（秒）</p></li>
+</ul>
+<p>を表します。</p>
+<p><strong>前提条件・仮定</strong>:</p>
+<ul class="simple">
+<li><p>時刻系は <strong>GPS 時刻（閏秒なし）</strong> であること。</p></li>
+<li><p>UTC 等の閏秒が存在する時刻系でそのまま使用すると、将来予測時に 1 秒のズレが生じます。</p></li>
+</ul>
+<p><strong>参照元</strong>: <a class="reference internal" href="#validated-ja-source-references"><span class="std std-ref">S3</span></a></p>
+<p><strong>関連チュートリアル</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/advanced_arima.html"><span class="std std-doc">Advanced ARIMA チュートリアル</span></a></p></li>
+</ul>
+<p><strong>関連 API</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">Time Series API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/TimeSeries.html"><span class="std std-doc">TimeSeries</span></a></p></li>
+</ul>
+<p><strong>関連理論</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a></p></li>
 </ul>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="id2">
-<h1>前提条件と規約<a class="headerlink" href="#id2" title="Link to this heading"></a></h1>
-<p>以下のセクションでは、これらのアルゴリズムを使用する際に
-ユーザーが認識すべき重要な前提条件と規約を説明します。</p>
-<section id="mcmc">
-<h2>MCMC固定共分散前提<a class="headerlink" href="#mcmc" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fitting.FitResult.run_mcmc()</span></code></p>
-<p><strong>前提</strong>: 共分散行列 Σ は <strong>パラメータ非依存（固定）</strong> であること。</p>
-<p>この前提の下では、対数行列式項 <code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> は定数であり、
-対数尤度から正しく省略できます：</p>
-<div class="math notranslate nohighlight">
-\[
-\log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}
-\]</div>
-<p>Σ がモデルパラメータ θ に依存する場合は、<code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> を含む
-完全な対数尤度を使用する必要があり、実装の修正が必要です。</p>
-<p><strong>複素データ</strong>: 複素数値データの場合、エルミート形式
-<code class="docutils literal notranslate"><span class="pre">r.conj()</span> <span class="pre">&#64;</span> <span class="pre">cov_inv</span> <span class="pre">&#64;</span> <span class="pre">r</span></code> は <strong>円形複素ガウス</strong> 分布
-（実部と虚部が等分散で無相関）を仮定しています。</p>
-<p><strong>参考文献</strong>:</p>
+<section id="mcmc-gls">
+<span id="validated-ja-mcmc-gls"></span><h3>5. MCMC / GLS 尤度<a class="headerlink" href="#mcmc-gls" title="Link to this heading"></a></h3>
+<p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">run_mcmc</span></code>, <code class="docutils literal notranslate"><span class="pre">GLS</span></code></p>
+<p>MCMC の対数尤度計算では、複素残差に対してもエルミート形式 <code class="docutils literal notranslate"><span class="pre">r.conj()</span> <span class="pre">&#64;</span> <span class="pre">cov_inv</span> <span class="pre">&#64;</span> <span class="pre">r</span></code> の実部を用いる実装を前提にしています。つまり、<strong>複素データを API にそのまま渡した場合でも、内部では複素共役を考慮した二次形式で評価</strong>されます。</p>
+<p><strong>前提条件・仮定</strong>:</p>
 <ul class="simple">
-<li><p>Rasmussen &amp; Williams, <em>Gaussian Processes for Machine Learning</em> (2006), Ch. 2.2</p></li>
-<li><p>Gelman et al., <em>Bayesian Data Analysis</em> (3rd ed., 2013), §14.2</p></li>
+<li><p>共分散行列 <code class="docutils literal notranslate"><span class="pre">cov_inv</span></code> がエルミート正定値に近いこと。</p></li>
+<li><p>複素残差は circular complex Gaussian に準じた扱いを想定しており、単純に実部だけへ切り捨てる挙動ではありません。</p></li>
+</ul>
+<p><strong>参照元</strong>: <a class="reference internal" href="#validated-ja-source-references"><span class="std std-ref">S5</span></a></p>
+<p><strong>関連チュートリアル</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/case_bootstrap_gls_fitting.html"><span class="std std-doc">Bootstrap GLS fitting 事例</span></a></p></li>
+</ul>
+<p><strong>関連 API</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">Time Series API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/fitting.html"><span class="std std-doc">Fitting API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/fitting.html"><span class="std std-doc">gwexpy.fitting</span></a></p></li>
+</ul>
+<p><strong>関連理論</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a></p></li>
+<li><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">数値安定性</span></a></p></li>
+</ul>
+<hr class="docutils" />
+</section>
+<section id="validated-ja-adaptive-whitening">
+<span id="id6"></span><h3>6. 適応ホワイトニング<a class="headerlink" href="#validated-ja-adaptive-whitening" title="Link to this heading"></a></h3>
+<p><strong>対象</strong>: <code class="docutils literal notranslate"><span class="pre">whiten()</span></code>, <code class="docutils literal notranslate"><span class="pre">WhiteningModel</span></code>, <code class="docutils literal notranslate"><span class="pre">.whiten(eps=&quot;auto&quot;)</span></code></p>
+<p>適応ホワイトニングでは、自動的に決まる安定化パラメータを用いて、非常に小さい PSD ビンや局所的な数値アンダーフローがあっても正規化が破綻しにくいようにしています。</p>
+<p><strong>前提条件・仮定</strong>:</p>
+<ul class="simple">
+<li><p>ホワイトニングに用いる FFT セグメントの範囲では、データが局所的に準定常とみなせること。</p></li>
+<li><p>適応 <code class="docutils literal notranslate"><span class="pre">eps</span></code> は小さい分母を安定化するためのものであり、明らかに非定常なバーストや不適切な窓長設定まで補償するものではありません。</p></li>
+</ul>
+<p><strong>参照元</strong>: <a class="reference internal" href="#validated-ja-source-references"><span class="std std-ref">S4</span></a></p>
+<p><strong>関連チュートリアル</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/case_ml_preprocessing.html"><span class="std std-doc">ML Preprocessing 事例</span></a></p></li>
+</ul>
+<p><strong>関連 API</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/api/preprocessing.html"><span class="std std-doc">Preprocessing API</span></a></p></li>
+</ul>
+<p><strong>関連理論</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">数値安定性</span></a></p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a></p></li>
+</ul>
+<hr class="docutils" />
+</section>
+</section>
+<section id="audit-trail">
+<span id="validated-algorithms-audit-trail-ja"></span><h2>監査証跡 (Audit Trail)<a class="headerlink" href="#audit-trail" title="Link to this heading"></a></h2>
+<p>以下のリンクは、このページの要約を支える監査スコープ・統合所見・修正履歴を指しています。</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md">ALGORITHM_CONTEXT</a> - 検証対象アルゴリズムの全体像</p></li>
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md">merged_validation_report</a> - 独立監査を統合した重大度・合意度の一覧</p></li>
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/check_claude_antigravity.md">check_claude_antigravity</a> - VIF / GLS / <code class="docutils literal notranslate"><span class="pre">_fft_transient</span></code> の監査メモ</p></li>
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md">algorithm_fix_report_20260201</a> - ARIMA や MCMC 周辺の修正履歴</p></li>
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md">scalarfield_physics_review_20260120</a> - <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の FFT と軸整合性に関する物理レビュー</p></li>
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/archive/reports/report_scalarfield_physics_verification_20260122_222000.md">report_scalarfield_physics_verification_20260122_222000</a> - Field FFT 挙動の追検証メモ</p></li>
 </ul>
 </section>
-<section id="vs">
-<h2>角波数 vs サイクル波数<a class="headerlink" href="#vs" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
-<p><strong>規約</strong>: <code class="docutils literal notranslate"><span class="pre">k</span></code> 軸は <strong>角波数</strong> [rad/length] を返します。
-サイクル波数 [1/length] ではありません。</p>
+<section id="validated-algorithms-related-documents-ja">
+<span id="id7"></span><h2>検証向け関連ドキュメント<a class="headerlink" href="#validated-algorithms-related-documents-ja" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>角波数: <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span></p></li>
-<li><p>サイクル波数: <span class="math notranslate nohighlight">\(\nu = 1 / \lambda\)</span></p></li>
-<li><p>変換: <span class="math notranslate nohighlight">\(\nu = k / (2\pi)\)</span></p></li>
+<li><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">数値安定性</span></a> - 数値安定性（精度管理）</p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a> - 時刻系と FFT 規約の共通前提</p></li>
+<li><p><a class="reference internal" href="glossary.html"><span class="std std-doc">用語集</span></a> - アルゴリズム用語集</p></li>
+<li><p><a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">Fields API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">Time Series API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/spectral.html"><span class="std std-doc">Spectral API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/fitting.html"><span class="std std-doc">Fitting API</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/preprocessing.html"><span class="std std-doc">Preprocessing API</span></a></p></li>
 </ul>
 </section>
-<section id="id3">
-<h2>降順軸の符号規約<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
-<p><strong>規約</strong>: 空間軸が降順 (dx &lt; 0) の場合、k軸は位相因子規約
-<span class="math notranslate nohighlight">\(e^{+ikx}\)</span> との物理的整合性を保つために <strong>符号反転</strong> されます。</p>
-<p>これにより、データ格納順序に関係なく、正の <code class="docutils literal notranslate"><span class="pre">k</span></code> が
-正のx方向に伝播する波に対応することが保証されます。</p>
-<p><strong>参考文献</strong>: Jackson, <em>Classical Electrodynamics</em> (3rd ed., 1998), §4.2</p>
-</section>
-<section id="id4">
-<h2>ブートストラップにおけるVIF適用<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.bootstrap_spectrogram()</span></code></p>
-<p><strong>条件付き動作</strong>:</p>
+<section id="validated-algorithms-next-to-read-ja">
+<span id="id8"></span><h2>次に読む<a class="headerlink" href="#validated-algorithms-next-to-read-ja" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><strong>標準ブートストラップ</strong> (<code class="docutils literal notranslate"><span class="pre">block_size=None</span></code>): Welchオーバーラップ相関を
-補正するためにVIF補正が適用されます。</p></li>
-<li><p><strong>ブロックブートストラップ</strong> (<code class="docutils literal notranslate"><span class="pre">block_size</span></code> 指定): 二重補正を防ぐため
-VIF補正は <strong>無効化</strong> (factor=1.0) されます。</p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a> - このページの前提になる時刻系と FFT 規約を整理する</p></li>
+<li><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">数値安定性</span></a> - 適応ホワイトニングなど安定化の挙動を補う</p></li>
+<li><p><a class="reference internal" href="architecture.html"><span class="std std-doc">アーキテクチャとデータフロー</span></a> - 検証対象 API がどの設計の上にあるかを確認する</p></li>
+<li><p><a class="reference internal" href="tutorials/index.html"><span class="std std-doc">チュートリアル一覧</span></a> - 実際の利用例から該当手法を追う</p></li>
 </ul>
-<p>これにより、ブロック構造と解析的VIFの両方が同時に適用された場合の
-分散推定の過大評価を防止します。</p>
-</section>
-<section id="id5">
-<h2>ブートストラップの定常性前提<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<p><strong>関数</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.bootstrap_spectrogram()</span></code></p>
-<p><strong>前提</strong>: 入力データは <strong>定常過程</strong> であること。</p>
-<p>Moving Block Bootstrap は、データの統計的性質が時間とともに
-変化しないことを仮定しています。非定常データ（グリッチ、トランジェント、
-ドリフトするノイズフロア）では、信頼区間が偏る可能性があります。</p>
-<p><strong>推奨</strong> <code class="docutils literal notranslate"><span class="pre">block_size</span></code>: 時間相関のあるスペクトログラムでは、
-少なくともストライド長（セグメント間隔）以上を設定してください。
-floatまたはQuantityで秒単位で指定します。</p>
-<p><strong>参考文献</strong>:</p>
-<ul class="simple">
-<li><p>Künsch, H.R., “The jackknife and the bootstrap for general stationary
-observations”, Ann. Statist. 17(3), 1989</p></li>
-<li><p>Politis, D.N. &amp; Romano, J.P., “The stationary bootstrap”,
-J. Amer. Statist. Assoc. 89(428), 1994</p></li>
-</ul>
-</section>
-<section id="id6">
-<h2>検証について<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
-<p>このページに記載されているすべてのアルゴリズムは、ユニットテスト、既存文献との
-比較検証、および独立した技術レビューにより検証されています。実装は確立された
-参考文献と照合され、正確性が確認されています。</p>
-<p>詳細な検証レポートと技術的な検証データについては、開発者向けドキュメントを
-参照してください。</p>
 </section>
 </section>
 
@@ -286,14 +563,16 @@ J. Amer. Statist. Assoc. 89(428), 1994</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="scalarfield_slicing.html" class="btn btn-neutral float-left" title="スカラーフィールドのスライス操作ガイド" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="architecture.html" class="btn btn-neutral float-right" title="アーキテクチャと物理" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../reference/Noise.html" class="btn btn-neutral float-left" title="ノイズ生成 (Noise)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="architecture.html" class="btn btn-neutral float-right" title="アーキテクチャとデータフロー" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -310,7 +589,24 @@ J. Amer. Statist. Assoc. 89(428), 1994</p></li>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="license.html">ライセンス / 免責</a> |
+        <a href="roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

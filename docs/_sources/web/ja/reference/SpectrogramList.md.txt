@@ -1,14 +1,79 @@
 # SpectrogramList
 
+<!-- reference-summary:start -->
+
+**安定性:** 安定
+
+## 主な用途
+
+`SpectrogramList` は複数の `Spectrogram` をチャンネル情報付きでまとめて扱うために使います。
+
+## 代表的なシグネチャ
+
+```python
+SpectrogramList(data: list[Spectrogram])
+SpectrogramList.to_matrix()
+```
+
+## 最小例
+
+```python
+from gwexpy.spectrogram import Spectrogram, SpectrogramList
+import numpy as np
+
+lst = SpectrogramList([Spectrogram(np.ones((8, 16)), dt=1.0, df=1.0)])
+mat = lst.to_matrix()
+```
+
+## 関連理論
+
+- [FFT_Conventions](FFT_Conventions.md)
+- [Spectrogram](Spectrogram.md)
+- [SpectrogramMatrix](SpectrogramMatrix.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Spectrogram チュートリアル](../user_guide/tutorials/intro_spectrogram.ipynb)
+- [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb)
+- [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** PhaseMethodsMixin, UserList
 
 Spectrogram オブジェクトのリスト。
 参考: TimeSeriesList に似ていますが、2D Spectrogram 用です。
 
-.. note::
-   Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
-   ディープコピーを避けるため、可能な限り `inplace=True` を使用してください。
+## 物理コンテキスト
 
+`SpectrogramList` は、複数の時間周波数マップを別々の意味を保ったまま一括処理したいときに使います。繰り返し観測、複数センサ、同一イベントの別前処理などが典型です。
+
+- 各要素は別々の provenance を持ったままバッチ描画できます
+- コンテナ自体は色スケール、正規化、ビン幅の一致を保証しません
+
+## よくある誤読
+
+1. スケールや単位を揃えずに明るさだけで要素間比較する
+2. 同じリストに入っているだけで `dt`/`df` が一致していると思い込む
+3. 積み重ね表示を見て、メタデータ確認なしに整列済みだと判断する
+
+## どのページへ進むか
+
+- 各マップの解釈: [Spectrogram](Spectrogram.md)
+- 整列済みコレクション解析: [SpectrogramMatrix](SpectrogramMatrix.md)
+- 実務ワークフロー: [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb), [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+
+:::{note}
+Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
+ディープコピーを避けるため、可能な限り `inplace=True` を使用してください。
+
+:::
 ## メソッド
 
 ### `__init__`

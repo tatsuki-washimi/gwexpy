@@ -1,8 +1,31 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "14bd7014",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "cell-0",
+   "id": "case-active-damping-nav-en",
+   "metadata": {},
+   "source": [
+    "**Case navigation:**\n",
+    "- Back to the canonical gallery: [Case Studies](../../examples/index.rst)\n",
+    "- Related reference surfaces: [Reference Index](../../reference/index.rst), [API: Matrix Containers](../../reference/api/matrix.rst), [API: Frequency Series](../../reference/api/frequencyseries.rst)\n",
+    "- Neighboring featured workflows: [Noise Budgeting](case_noise_budget.ipynb), [Transfer Function Measurement](case_transfer_function.ipynb)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1f86451f",
    "metadata": {},
    "source": [
     "# Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)\n",
@@ -30,7 +53,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cell-1",
+   "id": "0b272282",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:30.039747Z",
@@ -41,6 +64,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import control\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
@@ -52,7 +79,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-2",
+   "id": "f4482cd3",
    "metadata": {},
    "source": [
     "## 1. Simulation of 6-DOF Active Vibration Isolation System (Plant Model)\n",
@@ -71,7 +98,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cell-3",
+   "id": "3954f515",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:32.398662Z",
@@ -132,28 +159,28 @@
     }
    ],
    "source": [
-    "# Physical parameters\n",
+    "# Physical parameters for the rigid-body modes we want to damp: one vertical translation and two tilts.\n",
     "m = 100.0  # mass [kg]\n",
     "I_x = 20.0  # moment of inertia [kg m^2]\n",
     "I_y = 20.0\n",
     "\n",
-    "# Support spring and damper (actuator position = leg position)\n",
+    "# Springs and dampers act at the leg locations, so their stiffness and loss enter through actuator-space geometry.\n",
     "k_leg = 2000.0  # spring constant [N/m]\n",
     "c_leg = 0.20  # damping coefficient [N s/m]\n",
     "\n",
-    "# Geometry: radius R\n",
+    "# Geometry sets how vertical motion mixes into pitch/roll; that lever arm is what creates modal cross-coupling.\n",
     "R = 0.5  # [m]\n",
     "\n",
-    "# Angle settings (deg -> rad)\n",
+    "# Define actuator and sensor placement separately so we can study the non-collocated case.\n",
     "deg2rad = np.pi / 180.0\n",
-    "# Actuators: leg positions\n",
+    "# Actuators push at the support legs.\n",
     "angles_act = np.array([0, 120, 240]) * deg2rad\n",
-    "# Sensors: between legs\n",
+    "# Sensors are intentionally offset from the actuators, which is why a naive diagonal controller would mix modes.\n",
     "angles_sen = np.array([60, 180, 300]) * deg2rad\n",
     "\n",
     "\n",
-    "# Function to create coordinate transformation matrix\n",
-    "# p = T * q  =>  [z_i] = [1, R*sin(th), -R*cos(th)] @ [z, tx, ty]\n",
+    "# Build the geometry matrix that maps rigid-body modal coordinates into physical sensor/actuator displacements.\n",
+    "# Each row says how one leg/sensor displacement is produced by vertical motion plus pitch/roll about the platform center.\n",
     "def make_transform_matrix(angles, radius):\n",
     "    T = np.zeros((3, 3))\n",
     "    for i, ang in enumerate(angles):\n",
@@ -171,19 +198,19 @@
     "print(\"Sensor Transform Matrix T_sen:\")\n",
     "print(np.round(T_sen, 2))\n",
     "\n",
-    "# M, K, C matrices in modal space\n",
+    "# Mass/inertia stay diagonal in modal coordinates, which makes the physical rigid-body modes easy to interpret.\n",
     "M_modal = np.diag([m, I_x, I_y])\n",
     "\n",
-    "# K, C in physical space (leg position)\n",
+    "# Stiffness and damping start in leg space because that is where the hardware is attached.\n",
     "K_phys = np.diag([k_leg, k_leg, k_leg])\n",
     "C_phys = np.diag([c_leg, c_leg, c_leg])\n",
     "\n",
-    "# Project to modal space: K_modal = T_act.T * K_phys * T_act\n",
-    "# (Spring and damper are at leg positions, so use T_act)\n",
+    "# Project stiffness/damping into modal space so translation and rotations can be controlled as separate physical modes.\n",
+    "# Use the actuator geometry here because the restoring forces are applied at the legs, not at the sensor locations.\n",
     "K_modal = T_act.T @ K_phys @ T_act\n",
     "C_modal = T_act.T @ C_phys @ T_act\n",
     "\n",
-    "# Create state-space model\n",
+    "# Build the plant in state space so open-loop and closed-loop motion can be compared with the same model.\n",
     "# x = [q, q_dot]^T\n",
     "A_sys = np.block(\n",
     "    [\n",
@@ -195,9 +222,9 @@
     "C_sys_modal = np.block([np.eye(3), np.zeros((3, 3))])\n",
     "D_sys = np.zeros((3, 3))\n",
     "\n",
-    "# Convert input/output to physical coordinates\n",
-    "# Input: Actuator Forces u (at angles_act) -> Generalized Force Q = T_act.T * u\n",
-    "# Output: Sensor Displacements y (at angles_sen) -> y = T_sen * q\n",
+    "# Convert between modal and physical coordinates because hardware talks in leg forces and sensor displacements, not pure modes.\n",
+    "# Input: Actuator forces u at leg locations -> generalized modal force Q = T_act.T * u\n",
+    "# Output: Sensor displacements y at sensor locations -> y = T_sen * q\n",
     "B_sys = B_sys_modal @ T_act.T\n",
     "C_sys = T_sen @ C_sys_modal\n",
     "\n",
@@ -209,12 +236,12 @@
     "    inputs=[\"ACT1\", \"ACT2\", \"ACT3\"],\n",
     "    outputs=[\"SEN1\", \"SEN2\", \"SEN3\"],\n",
     ")\n",
-    "print(sys)"
+    "print(sys)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "cell-4",
+   "id": "dafb62ae",
    "metadata": {},
    "source": [
     "## 2. MIMO Transfer Function Measurement\n",
@@ -225,7 +252,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cell-5",
+   "id": "7e027d0d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:32.408878Z",
@@ -252,14 +279,14 @@
     "t = np.arange(0, duration, 1 / fs)\n",
     "n_samples = len(t)\n",
     "\n",
-    "# Input signal: 3ch white noise\n",
+    "# Drive all three actuators with broadband excitation so every mode is visible in the measured MIMO transfer matrix.\n",
     "np.random.seed(0)\n",
     "u_data = np.random.normal(0, 1.0, (3, n_samples))\n",
     "\n",
-    "# Time response\n",
+    "# Simulate the plant response to that broadband drive, mimicking a system-identification experiment.\n",
     "time_response = control.forced_response(sys, T=t, U=u_data)\n",
     "\n",
-    "# gwexpy TimeSeriesDict\n",
+    "# Wrap channels as TimeSeriesDict so transfer estimation uses the same workflow as measured detector data.\n",
     "tsd_input = TimeSeriesDict(\n",
     "    {\n",
     "        f\"ACT{i + 1}\": TimeSeries(\n",
@@ -273,7 +300,7 @@
     "for i in range(3):\n",
     "    tsd_output[f\"SEN{i + 1}\"].name = f\"Sensor {i + 1}\"\n",
     "\n",
-    "# MIMO TF calculation\n",
+    "# Estimate the full 3x3 transfer matrix to reveal how each actuator leaks into every sensor in the non-collocated layout.\n",
     "tfs = [\n",
     "    [\n",
     "        tsd_input[f\"ACT{j + 1}\"].transfer_function(\n",
@@ -282,7 +309,7 @@
     "        for j in range(3)\n",
     "    ]\n",
     "    for i in range(3)\n",
-    "]\n",
+    "        ]\n",
     "\n",
     "tf_matrix = FrequencySeriesMatrix(\n",
     "    [[tf.value for tf in row] for row in tfs], frequencies=tfs[0][0].frequencies\n",
@@ -291,17 +318,17 @@
     "tf_data = tf_matrix.value\n",
     "freqs = tf_matrix.frequencies\n",
     "\n",
-    "# plot\n",
+    "# Plot the matrix magnitude to see both the dominant resonant paths and the off-diagonal cross-couplings that modal control must suppress.\n",
     "tf_matrix.abs().plot(figsize=(12, 10), xscale=\"log\", yscale=\"log\").suptitle(\n",
-    "    \"MIMO Transfer Function Matrix (Non-collocated)\\n\\n\"\n",
+    "    \"MIMO Transfer Function Matrix (Non-collocated)\\n\"\n",
     ")\n",
     "plt.tight_layout()\n",
-    "plt.show()"
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "cell-6",
+   "id": "d78227cd",
    "metadata": {},
    "source": [
     "## 3 & 4. Modal Control Design\n",
@@ -324,7 +351,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cell-7",
+   "id": "485c818a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:35.021497Z",
@@ -351,12 +378,12 @@
     }
    ],
    "source": [
-    "# --- 1. Preparation of Sensing & Actuation Matrices ---\n",
-    "# Prepare transformation matrices based on the estimated model (here we use the true values)\n",
-    "# Sensing Matrix: y -> q\n",
+    "# --- 1. Prepare sensing/actuation transforms so the controller works in modal coordinates instead of raw sensor space. ---\n",
+    "# In practice these come from an identified plant; here we use the true geometry to isolate the control concept.\n",
+    "# Sensor signals are mixed estimates of the rigid-body modes, so invert that geometry first.\n",
     "S_sensing = np.linalg.inv(T_sen)\n",
     "\n",
-    "# Actuation Matrix: F_modal -> u\n",
+    "# Modal forces must be mapped back to physical actuator commands before the hardware can realize them.\n",
     "# F_modal = T_act.T * u  =>  u = inv(T_act.T) * F_modal\n",
     "D_actuation = np.linalg.inv(T_act.T)\n",
     "\n",
@@ -365,11 +392,11 @@
     "print(\"Actuation Matrix (Mode Force -> Actuator):\")\n",
     "print(np.round(D_actuation, 2))\n",
     "\n",
-    "# --- 2. Modal Damping Filter Design ---\n",
-    "# Set damping gain for each mode\n",
-    "# It is possible to use different gains for translation mode (z) and rotation modes (tx, ty),\n",
-    "# but for simplicity, we use the same gain and filter for all modes.\n",
-    "gain = 1000.0  # Modal Damping Gain\n",
+    "# --- 2. Design a modal damping filter that targets resonance energy instead of raw sensor motion. ---\n",
+    "# Gains are chosen in modal coordinates so each rigid-body resonance can be damped without feeding back the wrong combination of sensors.\n",
+    "# Translation and tilt could need different gains because their masses/inertias differ,\n",
+    "# but this example keeps them equal to highlight the geometry rather than controller tuning.\n",
+    "gain = 1000.0  # Modal damping gain\n",
     "fc_l = 0.1\n",
     "fc_h = 20.0\n",
     "w_l = 2 * np.pi * fc_l\n",
@@ -378,44 +405,28 @@
     "s = control.tf(\"s\")\n",
     "K_filter = gain * s / ((1 + s / w_l) * (1 + s / w_h))\n",
     "\n",
-    "# Create diagonal matrix (for 3 modes)\n",
+    "# A diagonal modal controller means each mode is damped independently once the geometry has been unmixed.\n",
     "K_modal_diag = []\n",
     "for _ in range(3):\n",
     "    K_modal_diag.append(control.ss(K_filter))\n",
     "\n",
-    "# control.append performs diagonal block combination, but care is needed as the number of inputs/outputs changes.\n",
-    "# Rather than manually combining state-space models,\n",
-    "# we construct K_MIMO using python-control's calculation capabilities.\n",
-    "\n",
-    "# K_modal_block: 3-input 3-output Diagonal System\n",
-    "#  [ K_f  0    0   ]\n",
-    "#  [ 0    K_f  0   ]\n",
-    "#  [ 0    0    K_f ]\n",
+    "# control.append builds the three independent modal filters into one block-diagonal system.\n",
+    "# Keeping the blocks separate avoids accidentally re-introducing artificial cross-coupling in the controller model.\n",
+    "# python-control then handles the series products needed to move back into actuator space.\n",
     "K_modal_block = control.append(K_modal_diag[0], K_modal_diag[1], K_modal_diag[2])\n",
     "\n",
     "\n",
-    "# --- 3. MIMO Controller Construction ---\n",
-    "# K_MIMO = D_actuation * K_modal_block * S_sensing\n",
-    "# In python-control, the product of constant matrices and SS can be written directly\n",
-    "\n",
-    "# S_sensing (Static Gain) * y\n",
-    "# K_modal_block * (S_sensing * y)\n",
-    "# D_actuation * (K_modal_block * S_sensing * y)\n",
-    "\n",
-    "# Note: Pay attention to the order of matrix multiplication. Multiplication of Control objects is series connection.\n",
-    "# Sys2 * Sys1 is Out <--- Sys2 <--- Sys1 <--- In\n",
-    "# Formula: u = D * K * S * y\n",
-    "# Code: K_mimo = D * K * S\n",
-    "# However, D and S are numpy arrays. Conversion to control.ss(D) etc. is needed.\n",
-    "\n",
+    "# --- 3. Reassemble the controller in physical coordinates so the hardware sees actuator commands but the feedback law still damps modal motion. ---\n",
+    "# Multiplication order matters because a mistaken order would mix sensors and actuators incorrectly, creating non-physical feedback paths.\n",
+    "# The intended flow is measured sensor motion -> modal coordinates -> modal damping law -> actuator commands.\n",
     "K_mimo = D_actuation * K_modal_block * S_sensing\n",
     "\n",
-    "print(\"MIMO Controller States:\", K_mimo.nstates)"
+    "print(\"MIMO Controller States:\", K_mimo.nstates)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "cell-8",
+   "id": "a6b4cbaf",
    "metadata": {},
    "source": [
     "## 5 & 6. Closed-Loop Verification (Impulse Response & ASD)\n",
@@ -427,7 +438,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cell-9",
+   "id": "1aa44508",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:25:35.031079Z",
@@ -459,12 +470,12 @@
     }
    ],
    "source": [
-    "# Closed-loop system\n",
+    "# Close the loop and compare it with open loop to see whether modal damping reduces the resonant motion.\n",
     "sys_cl = control.feedback(sys, K_mimo, sign=-1)\n",
     "\n",
-    "# --- Impulse Response ---\n",
+    "# --- Impulse response shows how quickly a localized actuator kick rings down with and without modal damping. ---\n",
     "u_impulse = np.zeros((3, n_samples))\n",
-    "u_impulse[0, 100] = 100.0 * fs  # Impulse on Actuator 1\n",
+    "u_impulse[0, 100] = 100.0 * fs  # Impulse on actuator 1\n",
     "\n",
     "resp_ol = control.forced_response(sys, T=t, U=u_impulse)\n",
     "resp_cl = control.forced_response(sys_cl, T=t, U=u_impulse)\n",
@@ -482,8 +493,8 @@
     "axes[0].set_title(\"Impulse Response Comparison (Impulse on ACT1)\")\n",
     "plt.show()\n",
     "\n",
-    "# --- ASD Comparison ---\n",
-    "# Ground Vibration Simulation\n",
+    "# --- ASD comparison asks whether the controller lowers the disturbance-driven motion across the resonance band. ---\n",
+    "# Use low-frequency ground-like disturbance so the rigid-body resonance is excited in the same band the controller is meant to suppress.\n",
     "np.random.seed(42)\n",
     "wn = np.random.normal(0, 1.0, (3, n_samples))\n",
     "b, a = signal.butter(1, 5.0, fs=fs, btype=\"low\")\n",
@@ -522,8 +533,7 @@
     "plt.tight_layout()\n",
     "plt.show()\n",
     "\n",
-    "# Even when sensor and actuator positions are different,\n",
-    "# effective damping is achieved through appropriate modal coordinate transformation."
+    "# Even with non-collocated sensors and actuators, the modal transforms let us damp the physical rigid-body modes instead of fighting geometry-induced cross-coupling directly in sensor space.\n"
    ]
   }
  ],

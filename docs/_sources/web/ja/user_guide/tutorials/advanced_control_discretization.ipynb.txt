@@ -1,0 +1,184 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\"\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# 制御解析: 離散化の基礎\n",
+    "\n",
+    "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/advanced_control_discretization.ipynb)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "この notebook は legacy の制御理論例を公開 docs 用に整理したものです。ここで見たいのは `c2d()` の使い方そのものではなく、**連続時間プラントがデジタル実装でどう見え方を変えるか** です。\n",
+    "\n",
+    "**Zero-Order Hold (ZOH)** は DAC が指令をサンプル間で保持するという物理モデルに対応し、**Tustin** は周波数応答の形を比較的よく保ちます。どちらを使うかで時間応答と位相余裕の見え方が変わります。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "import control\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from control.matlab import bode, c2d, step, tf\n",
+    "\n",
+    "from gwexpy import FrequencySeries, TimeSeries\n",
+    "\n",
+    "# 一次遅れ系を使うと、離散化による位相・ゲインの違いが物理的に解釈しやすくなります。\n",
+    "P = tf([0, 1], [0.5, 1])\n",
+    "print(P)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 1. プラントを離散化する\n",
+    "\n",
+    "サンプリングは「指令を保持する」という近似と、「周波数軸を写像する」という近似を同時に導入します。制御系ではこの 2 つを混同しないことが重要です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "ts = 0.2  # サンプリング周期 [s]\n",
+    "\n",
+    "# ZOH は DAC が各サンプル値をそのまま保持するので、時間領域のアクチュエータ入力をよく表します。\n",
+    "Pd_zoh = c2d(P, ts, method=\"zoh\")\n",
+    "\n",
+    "# Tustin は連続系の周波数応答を比較的均等に保つため、クロスオーバー近傍の loop shape 検討で便利です。\n",
+    "Pd_tustin = c2d(P, ts, method=\"tustin\")\n",
+    "\n",
+    "print(\"ZOH:\")\n",
+    "print(Pd_zoh)\n",
+    "print(\"Tustin:\")\n",
+    "print(Pd_tustin)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 2. 周波数応答を比べる\n",
+    "\n",
+    "制御的に重要なのは、位相とゲインが連続系からどこでずれ始めるかです。とくに位相誤差は安定余裕を直接変えます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "omega = np.logspace(-2, 2, 100)\n",
+    "mag_c, phase_c, w_c = bode(P, omega, plot=False)\n",
+    "mag_z, phase_z, w_z = bode(Pd_zoh, omega, plot=False)\n",
+    "mag_t, phase_t, w_t = bode(Pd_tustin, omega, plot=False)\n",
+    "\n",
+    "fs_mag_c = FrequencySeries(20 * np.log10(mag_c), frequencies=w_c, unit=\"dB\", name=\"Continuous\")\n",
+    "fs_mag_z = FrequencySeries(20 * np.log10(mag_z), frequencies=w_z, unit=\"dB\", name=\"ZOH\")\n",
+    "fs_mag_t = FrequencySeries(20 * np.log10(mag_t), frequencies=w_t, unit=\"dB\", name=\"Tustin\")\n",
+    "\n",
+    "fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)\n",
+    "fs_mag_c.plot(ax=ax1, label=\"Continuous\")\n",
+    "fs_mag_z.plot(ax=ax1, label=\"ZOH\", linestyle=\"--\")\n",
+    "fs_mag_t.plot(ax=ax1, label=\"Tustin\", linestyle=\":\")\n",
+    "ax1.set_xscale(\"log\")\n",
+    "ax1.set_ylabel(\"Magnitude [dB]\")\n",
+    "ax1.legend()\n",
+    "ax1.grid(which=\"both\", alpha=0.5)\n",
+    "\n",
+    "ax2.semilogx(w_c, np.rad2deg(phase_c), label=\"Continuous\")\n",
+    "ax2.semilogx(w_z, np.rad2deg(phase_z), label=\"ZOH\", linestyle=\"--\")\n",
+    "ax2.semilogx(w_t, np.rad2deg(phase_t), label=\"Tustin\", linestyle=\":\")\n",
+    "ax2.set_ylabel(\"Phase [deg]\")\n",
+    "ax2.set_xlabel(\"Frequency [rad/s]\")\n",
+    "ax2.legend()\n",
+    "ax2.grid(which=\"both\", alpha=0.5)\n",
+    "plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 3. 時間応答を比べる\n",
+    "\n",
+    "時間領域では ZOH が「保持された指令」を自然に再現し、Tustin は loop shape には有利でも保持入力の忠実度は別問題であることが見えてきます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "T_end = 3\n",
+    "Tc = np.arange(0, T_end, 0.01)\n",
+    "Td = np.arange(0, T_end, ts)\n",
+    "\n",
+    "yc, tc = step(P, Tc)\n",
+    "yd_z, td_z = step(Pd_zoh, Td)\n",
+    "yd_t, td_t = step(Pd_tustin, Td)\n",
+    "\n",
+    "ts_c = TimeSeries(yc, times=tc, unit=\"V\", name=\"Continuous\")\n",
+    "ts_z = TimeSeries(yd_z, times=td_z, unit=\"V\", name=\"ZOH\")\n",
+    "ts_t = TimeSeries(yd_t, times=td_t, unit=\"V\", name=\"Tustin\")\n",
+    "\n",
+    "plot = ts_c.plot(label=\"Continuous\", title=\"Step Response Comparison\")\n",
+    "ax = plot.gca()\n",
+    "ts_z.plot(ax=ax, label=\"ZOH\", marker=\"o\", linestyle=\"None\")\n",
+    "ts_t.plot(ax=ax, label=\"Tustin\", marker=\"x\", linestyle=\"None\")\n",
+    "ax.legend()\n",
+    "ax.grid(True)\n",
+    "plt.show()\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

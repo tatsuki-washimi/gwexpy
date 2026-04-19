@@ -1,8 +1,75 @@
 # FrequencySeriesDict
 
+<!-- reference-summary:start -->
+
+**安定性:** 安定
+
+## 主な用途
+
+`FrequencySeriesDict` は複数の `FrequencySeries` をラベル付きで保持し、一括処理や変換を行うために使います。
+
+## 代表的なシグネチャ
+
+```python
+FrequencySeriesDict(data: dict[str, FrequencySeries])
+FrequencySeriesDict.to_matrix()
+```
+
+## 最小例
+
+```python
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+import numpy as np
+
+dct = FrequencySeriesDict({
+    "A": FrequencySeries(np.ones(64), df=1.0),
+    "B": FrequencySeries(np.ones(64), df=1.0),
+})
+mat = dct.to_matrix()
+```
+
+## 関連理論
+
+- [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [FrequencySeries チュートリアル](../user_guide/tutorials/intro_frequencyseries.ipynb)
+- [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
+- [ノイズバジェット解析](../user_guide/tutorials/case_noise_budget.ipynb)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** FrequencySeriesBaseDict
 
 ラベルをキーとする `FrequencySeries` オブジェクトの順序付きマッピング。
+
+## 物理コンテキスト
+
+`FrequencySeriesDict` は、ラベルそのものが物理的な識別子である場合に向いています。チャンネル名、センサ位置、構成タグ、処理分岐などをキーとして保持したいときに使います。
+
+- list と違ってキー自体が解析記録の一部になります
+- ラベルを失うと比較の意味が薄れる多センサ解析で有用です
+
+## よくある誤読
+
+1. キーが違うだけで較正や整列条件まで違うと勝手に思い込む
+2. 出力時にサニタイズされたキーを元の物理チャンネル名だとみなす
+3. キーだけで比較し、単位や周波数間隔を確認しない
+
+## どのページへ進むか
+
+- 各スペクトルの解釈: [FrequencySeries](FrequencySeries.md)
+- 整列済み解析グリッドへの変換: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+- 実務ワークフロー: [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb), [ノイズバジェット解析](../user_guide/tutorials/case_noise_budget.ipynb)
 
 ## メソッド
 

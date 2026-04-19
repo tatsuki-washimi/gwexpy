@@ -1,11 +1,27 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9fbe9c49",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "e856ab96",
+   "id": "50c636f6",
    "metadata": {},
    "source": [
-    "# gwexpy Plotting Introduction\n",
+    "# Plotting: 基本\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_plotting.ipynb)\n",
     "\n",
@@ -16,7 +32,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "1458c04f",
+   "id": "91567927",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:42:22.512184Z",
@@ -27,6 +43,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "from astropy import units as u\n",
@@ -45,7 +65,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "230c2f02",
+   "id": "b19d86b3",
    "metadata": {},
    "source": [
     "## 1. TimeSeriesMatrix Plotting\n",
@@ -60,7 +80,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "40810b6e",
+   "id": "454e664a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:42:24.806180Z",
@@ -104,7 +124,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b5e5189e",
+   "id": "e27c5ce1",
    "metadata": {},
    "source": [
     "## 2. FrequencySeriesMatrix Plotting\n",
@@ -119,7 +139,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "2a83b5fb",
+   "id": "b7d13d43",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:43:21.761136Z",
@@ -168,7 +188,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "69a5039a",
+   "id": "395d09aa",
    "metadata": {},
    "source": [
     "## 3. FrequencySeriesList Plotting (参考)\n",
@@ -180,7 +200,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "6734acbd",
+   "id": "cea1b231",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:43:22.534028Z",
@@ -214,7 +234,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cbb46795",
+   "id": "370887c0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:43:22.713578Z",
@@ -245,7 +265,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "9aea7c36",
+   "id": "be31bbea",
    "metadata": {},
    "source": [
     "## 4. SpectrogramList Plotting\n",
@@ -257,7 +277,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "da9ff7dc",
+   "id": "c3d4f8ee",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:43:22.830744Z",
@@ -304,7 +324,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "23c87522",
+   "id": "968e2a07",
    "metadata": {},
    "source": [
     "## 4. Adaptive Plotting Optimization (Decimation)\n",
@@ -318,7 +338,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "763cb614",
+   "id": "3391800d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:44:19.912009Z",
@@ -371,7 +391,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0408f787",
+   "id": "a664f688",
    "metadata": {},
    "source": [
     "### コレクション・行列への適用とパラメータ指定\n",
@@ -382,7 +402,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "e4150783",
+   "id": "7879f2f6",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:44:42.979710Z",
@@ -423,7 +443,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1313a093",
+   "id": "11c99669",
    "metadata": {},
    "source": [
     "## 5. Spectrogram Summary Plotting\n",
@@ -438,7 +458,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "587106c5",
+   "id": "325ecb8d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:44:47.203487Z",
@@ -479,7 +499,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2a493475",
+   "id": "8d38c432",
    "metadata": {},
    "source": [
     "## 6. PairPlot Example\n",
@@ -495,7 +515,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "e431a185",
+   "id": "2a69f424",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T12:45:27.096551Z",
@@ -564,5 +584,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

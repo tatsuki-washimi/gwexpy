@@ -1,8 +1,35 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ed2304f5",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "4a69d876",
+   "id": "case-transfer-function-nav-ja",
+   "metadata": {},
+   "source": [
+    "**ケース導線:**\n",
+    "- 正本ギャラリーに戻る: [ケーススタディ一覧](../../examples/index.rst)\n",
+    "- 関連リファレンス: [リファレンス総合入口](../../reference/index.rst), [API: 周波数系列](../../reference/api/frequencyseries.rst), [トピック別参照](../../reference/topics.rst)\n",
+    "- 前後の注目ワークフロー: [ノイズバジェット解析](case_noise_budget.ipynb), [アクティブダンピング](case_active_damping.ipynb)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "93b42af4",
    "metadata": {},
    "source": [
     "# チュートリアル: 伝達関数の測定\n",
@@ -25,7 +52,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "16345581",
+   "id": "c9ca941e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:13.771705Z",
@@ -36,6 +63,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "from scipy import signal\n",
@@ -46,7 +77,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "efaa8a80",
+   "id": "24eeaeb8",
    "metadata": {},
    "source": [
     "## 1. 実験データの生成（シミュレーション）\n",
@@ -64,7 +95,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "a8b993c8",
+   "id": "4a704d7e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:16.160086Z",
@@ -94,44 +125,43 @@
     }
    ],
    "source": [
-    "# --- Set ---\n",
-    "fs = 2048.0 # Sample Rate [Hz]\n",
-    "duration = 60.0 # time / duration [s]\n",
-    "f0_true = 300.0 # ResonanceFrequency [Hz]\n",
-    "Q_true = 50.0 # Q\n",
+    "# --- 設定: 共振周波数と Q を持つ 2 次系を用意し、測定からモード物理量を回収できるか確認します。 ---\n",
+    "fs = 2048.0  # サンプルレート [Hz]\n",
+    "duration = 60.0  # 記録長 [s]\n",
+    "f0_true = 300.0  # 真の共振周波数 [Hz]\n",
+    "Q_true = 50.0  # 真の Q 値\n",
     "\n",
-    "# --- time / durationAxis Signal ---\n",
+    "# --- 時間軸と入力信号: 広帯域入力でプラント全体を一度に励振し、共振を測定可能にします。 ---\n",
     "t = np.linspace(0, duration, int(duration * fs), endpoint=False)\n",
-    "input_data = np.random.normal(0, 1, size=len(t)) # Color\n",
+    "input_data = np.random.normal(0, 1, size=len(t))  # 白色に近い励振で特定周波数だけに偏らず応答を測ります。\n",
     "\n",
-    "# --- (scipy.signal ) ---\n",
-    "# Transfer Function H(s) = w0^2 / (s^2 + (w0/Q)s + w0^2)\n",
+    "# --- 物理系シミュレーション: 懸架系やアクチュエータに現れる 1 本の機械共振を模擬します。 ---\n",
+    "# H(s) の f0 はモード周波数、Q は減衰の弱さを表すので、後でこの 2 つを回収できるかが測定の要点です。\n",
     "w0 = 2 * np.pi * f0_true\n",
     "num = [w0**2]\n",
     "den = [1, w0 / Q_true, w0**2]\n",
     "system = signal.TransferFunction(num, den)\n",
     "\n",
-    "# time / durationResponse Calculate (lsim)\n",
-    "# Time steps for simulation\n",
+    "# 有限長の広帯域励振に対する応答を作り、実測と同じ条件で伝達関数推定を行います。\n",
     "_, output_clean, _ = signal.lsim(system, U=input_data, T=t)\n",
     "\n",
-    "# --- Noise ---\n",
-    "# Noise（ Noise ）\n",
+    "# --- 計測雑音を加える: コヒーレンスで「どこまで測定を信じてよいか」を判定できるようにします。 ---\n",
+    "# ここではセンサ読み出し雑音を仮定し、応答が小さい帯域ほど推定が不安定になる状況を再現します。\n",
     "measurement_noise = np.random.normal(0, 0.1, size=len(t))\n",
     "output_data = output_clean + measurement_noise\n",
     "\n",
-    "# --- gwexpy TimeSeries Create ---\n",
+    "# --- gwexpy TimeSeries に包んで、実測チャンネルと同じ API で解析できる形にします。 ---\n",
     "ts_input = TimeSeries(input_data, t0=0, sample_rate=fs, name=\"Input\", unit=\"V\")\n",
     "ts_output = TimeSeries(output_data, t0=0, sample_rate=fs, name=\"Output\", unit=\"V\")\n",
     "\n",
     "print(\"Input data shape:\", ts_input.shape)\n",
     "print(\"Output data shape:\", ts_output.shape)\n",
-    "Plot(ts_input, ts_output, separate=True);"
+    "Plot(ts_input, ts_output, separate=True);\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "323cfa22",
+   "id": "b2e2041b",
    "metadata": {},
    "source": [
     "## 2. 伝達関数の推定\n",
@@ -146,7 +176,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "b58269cb",
+   "id": "3fc4be10",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:42.109661Z",
@@ -168,26 +198,26 @@
     }
    ],
    "source": [
-    "# FFTSet: Mean Data Length\n",
-    "fftlength = 2.0 # 2seconds FFT Mean\n",
+    "# FFT 長は 2 秒平均とし、ランダム雑音を抑えつつ 300 Hz 付近の共振を十分に分解します。\n",
+    "fftlength = 2.0  # 2 秒ごとに FFT して平均\n",
     "\n",
-    "# Transfer Function Calculate (Output / Input)\n",
+    "# Output/Input からプラント応答を求め、どの周波数でどれだけ増幅・位相回転するかを見ます。\n",
     "tf = ts_input.transfer_function(ts_output, fftlength=fftlength)\n",
     "\n",
-    "# Coherence Calculate\n",
+    "# コヒーレンスは信頼度指標で、低い帯域では雑音優勢のため TF を鵜呑みにしないようにします。\n",
     "coh = ts_input.coherence(ts_output, fftlength=fftlength) ** 0.5\n",
     "\n",
-    "# --- Plot ( & Coherence) ---\n",
+    "# --- ボード線図とコヒーレンスを並べ、物理的な応答と推定の信頼性を同時に確認します。 ---\n",
     "fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)\n",
     "\n",
-    "# Amplitude (Magnitude)\n",
+    "# 振幅\n",
     "ax = axes[0]\n",
     "ax.loglog(tf.abs(), label=\"Measured TF\")\n",
     "ax.set_ylabel(\"Gain [V/V]\")\n",
     "ax.set_title(\"Bode Plot: Magnitude\")\n",
     "ax.grid(True, which=\"both\", alpha=0.5)\n",
     "\n",
-    "# Phase (Phase)\n",
+    "# 位相\n",
     "ax = axes[1]\n",
     "ax.plot(tf.degree(), label=\"Measured Phase\")\n",
     "ax.set_ylabel(\"Phase [deg]\")\n",
@@ -195,7 +225,7 @@
     "ax.set_yticks(np.arange(-180, 181, 90))\n",
     "ax.grid(True, which=\"both\", alpha=0.5)\n",
     "\n",
-    "# Coherence (Coherence)\n",
+    "# コヒーレンス\n",
     "ax = axes[2]\n",
     "ax.plot(coh, color=\"green\", label=\"Coherence\")\n",
     "ax.set_ylabel(\"Coherence\")\n",
@@ -205,12 +235,12 @@
     "ax.grid(True, which=\"both\", alpha=0.5)\n",
     "\n",
     "plt.tight_layout()\n",
-    "plt.show()"
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "538ac3df",
+   "id": "5806afab",
    "metadata": {},
    "source": [
     "## 3. モデルフィッティング\n",
@@ -225,7 +255,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "c53d0bfa",
+   "id": "af280c55",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:42.746950Z",
@@ -269,36 +299,36 @@
     }
    ],
    "source": [
-    "# --- Function Define ---\n",
+    "# --- フィット用モデル: パラメータがそのままモード物理量に対応する共振器モデルを定義します。 ---\n",
     "def resonator_model(f, amp, f0, Q):\n",
-    "    # f: FrequencyArray\n",
-    "    # : amp(Gain), f0(ResonanceFrequency), Q(Q )\n",
+    "    # f: 測定した周波数軸 [Hz]。\n",
+    "    # amp は計測系のゲイン、f0 は共振周波数、Q はどれだけ鋭い共振かを決める減衰指標です。\n",
     "\n",
-    "    # Calculate (Complex number)\n",
+    "    # 振幅だけでなく位相回転も使うため、複素応答のままモデル化します。\n",
     "    numerator = amp * (f0**2)\n",
     "    denominator = (f0**2) - (f**2) + 1j * (f * f0 / Q)\n",
     "    return numerator / denominator\n",
     "\n",
     "\n",
-    "# --- Run ---\n",
-    "# Data 、\n",
-    "# Resonance (100Hz ~ 500Hz) Data 。\n",
+    "# --- フィット実行: 共振が支配的な帯域だけに絞ってモード物理量を推定します。 ---\n",
+    "# 全帯域を 1 本の 2 次モデルで説明しようとすると、共振外の構造に引っ張られて推定が崩れるため、\n",
+    "# 100-500 Hz の共振支配帯域だけを切り出します。\n",
     "tf_crop = tf.crop(100, 500)\n",
     "\n",
-    "# Estimated ( Peak )\n",
-    "# f0=300 、\n",
+    "# 初期値は観測されたピーク近傍に置き、物理的な共振から外れた局所解を避けます。\n",
+    "# ここでは見えているピークが 300 Hz 付近なので、その近傍を初期値にします。\n",
     "p0 = {\"amp\": 1.0, \"f0\": 300.0, \"Q\": 10.0}\n",
     "\n",
-    "# Run\n",
-    "# FrequencySeries .fit() method Complex numberData\n",
+    "# 複素伝達関数をこの帯域でフィットします。\n",
+    "# FrequencySeries.fit() は実部・虚部を同時に使うので、減衰推定に必要な位相情報を失いません。\n",
     "result = tf_crop.fit(resonator_model, p0=p0)\n",
     "\n",
-    "print(result)"
+    "print(result)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "dc3a7b76",
+   "id": "1bf4d6df",
    "metadata": {},
    "source": [
     "## 4. 結果の確認\n",
@@ -310,7 +340,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "038869ac",
+   "id": "a233c919",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:03:42.764031Z",
@@ -342,16 +372,16 @@
     }
    ],
    "source": [
-    "# --- Result Display ---\n",
+    "# --- 推定結果を真値と比較し、測定からモード物理量を回収できたか確認します。 ---\n",
     "print(\"--- Estimated Parameters ---\")\n",
     "print(f\"Resonance Frequency (f0): {result.params['f0']:.4f} Hz (True: {f0_true})\")\n",
     "print(f\"Quality Factor (Q): {result.params['Q']:.4f} (True: {Q_true})\")\n",
     "print(f\"Gain (Amp): {result.params['amp']:.4f}\")\n",
     "\n",
-    "# --- Plot ---\n",
-    "# result.plot() Complex number 、Amplitude Phase 2 Axes\n",
+    "# --- フィット結果を描き、ピーク高さと位相回転の両方を再現できているか確認します。 ---\n",
+    "# 複素応答なので result.plot() は振幅と位相の 2 軸を返し、両方が一致して初めてモデルが妥当と言えます。\n",
     "axes = result.plot()\n",
-    "plt.show()"
+    "plt.show()\n"
    ]
   }
  ],
@@ -375,5 +405,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

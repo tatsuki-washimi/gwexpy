@@ -1,230 +1,307 @@
-# GWexpy 機能一覧 (GWpyユーザー向け)
+# GWpy ユーザー向け移行ガイド
 
-本ドキュメントでは、GWexpy で GWpy に対して拡張・追加された機能を網羅的にリストアップします。
-ここに含まれる機能は、`gwexpy` をインポートすることで利用可能になります。
+このページは、**GWpy から GWexpy へ移るときの入口**です。  
+全 API を網羅するページではありません。まずは「何がそのまま動くか」と「どこから差分を使うと効果が大きいか」を短時間で掴むことを目的にしています。
 
-## 1. GWpy既存クラスの機能拡張 (軽微なもの)
+完全な API 一覧ではなく、**GWpy との差分だけを引きたい**場合は [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) を参照してください。  
+全 API の仕様を追いたい場合は [API リファレンス](../reference/index.rst) を参照してください。
 
-`TimeSeries`, `FrequencySeries`, `Spectrogram` 等の基本クラスに対する、利便性向上のためのメソッド追加や機能強化です。
+## まず最初に押さえること
 
-### 基本メソッドの拡張 (TimeSeries / FrequencySeries / Spectrogram)
-*   **位相・角度**:
-    *   `.phase(unwrap=False)`: 位相の計算
-    *   `.angle(unwrap=False)`: `.phase()` のエイリアス
-    *   `.radian(unwrap=False)`: ラジアン単位での位相
-    *   `.degree(unwrap=False)`: 度数法での位相
-    *   `np.unwrap` のサポート
-*   **リサンプリング・補間・編集**:
-    *   `.interpolate(new_times, method='linear')`: データの補間
-    *   `.resample(rate)`: `scipy` または `obspy` (Lanczos) バックエンドを用いたリサンプリングの強化
-    *   `.decimate(factor)`: 間引き
-    *   `.tail(n)`: 末尾 `n` サンプルの抽出
-    *   `.crop(start, end)`: (`gwexpy.time.to_gps` による柔軟な時刻指定をサポート)
-    *   `.append(other)`: 結合処理の強化
-*   **前処理 (Preprocessing)**:
-    *   `.impute(method=...)`: 欠損値補完 (線形補間, ffill, bfill)。`max_gap` 制約なども指定可能。
-    *   `.standardize()`: 標準化 (Z-score normalization)
-    *   `.whiten(method='pca'|'zca')`: 白色化 (Whitening)。`return_model=True` でモデルを取得可能。
-*   **ピーク検出**:
-    *   `.find_peaks(...)`: 信号内のピーク検出 (`scipy.signal.find_peaks` ラッパー)
+- **単一チャネルの基本操作はかなりそのままです。**
+  `TimeSeries` / `FrequencySeries` / `Spectrogram` を使った読み込み、プロット、基本スペクトル解析は、まず import を `gwexpy` 側へ置き換えるだけで試せます。
+- **差分が大きいのは多チャネル処理です。**
+  `TimeSeriesDict` を手作業でループする代わりに、`to_matrix()` で `TimeSeriesMatrix` へ変換して一括処理できます。
+- **Field API は GWpy にはない拡張です。**
+  `ScalarField` と `FieldList` / `FieldDict` は、空間軸を持つデータや複数 field の一括操作を扱うための GWexpy 固有レイヤです。
+- **外部ライブラリ呼び出しをデータオブジェクト側へ寄せられます。**
+  代表例は `.find_peaks()`, `.fit()`, `.hht()`, `.arima()` です。
+- **I/O と interop は別ガイドを見る前提です。**
+  直接 I/O は [ファイル I/O 対応フォーマットガイド](io_formats.md)、外部ライブラリ変換は [Interop / 変換ガイド](interop.md) を正本とします。
 
-### GPS Time 関連
-*   GPS時刻のベクトル演算やフォーマット変換をサポートするユーティリティ群 (`gwexpy.time`, `gwexpy.plot.gps` 等で利用可能)。
+## どこから書き換えると効果が大きいか
 
-### 描画関連 (Plotting)
-*   **日時軸**: プロット時の横軸を自動的に日時 (datetime) 形式にフォーマットする機能。
-*   **一括描画**: `Spectrogram.plot_summary()` などによる、スペクトログラムと時間平均ASDの同時プロット。
-*   **地図・全天図**: `gwexpy.plot.GeoMap`, `gwexpy.plot.SkyMap` による地図上へのデータプロット機能。
-*   **PairPlot**: `gwexpy.plot.PairPlot` による多変量データのペアプロット（散布図行列/相関図）。
+| 目的 | まず見る差分 | 深掘り先 |
+| --- | --- | --- |
+| 複数チャンネルをまとめて解析したい | `TimeSeriesDict.to_matrix()` → `TimeSeriesMatrix` | [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb) |
+| 空間軸付きデータや複数 field をまとめて扱いたい | `ScalarField`, `FieldList`, `FieldDict` | [Field API 入門](tutorials/field_scalar_intro.ipynb), [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
+| SciPy / Statsmodels 呼び出しを整理したい | オブジェクトメソッド化された追加 API | [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
+| 既存の単一チャネルコードを早く移したい | import だけ差し替えてから必要箇所だけ差分 API を追加 | [クイックスタート](quickstart.md) |
+| 結果共有の互換性を知りたい | Transparent Pickle の挙動 | [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
 
-### コレクションクラスの拡張 (TimeSeriesList / TimeSeriesDict)
-GWpyに存在する `TimeSeriesList`, `TimeSeriesDict` に対しても、一括処理機能を追加拡張しています。
-*   一括信号処理: `.fft_time_all()`, `.resample_all(rate)`, `.filter_all(*args)`
-*   一括スライス: `.sel_all(...)`, `.isel_all(...)`
-*   算術演算のブロードキャスト
+## 差分レシピ 1: `TimeSeriesDict` の手ループを `TimeSeriesMatrix` に寄せる
 
-## 2. 新規クラスの導入
+GWpy では、複数チャンネルの比較やペアごとのスペクトル計算を、自分でループして組み立てることが多くなります。  
+GWexpy では `to_matrix()` を入口にして、チャンネル集合をそのまま一括解析の対象にできます。
 
-多チャンネルデータ、行列データ、物理場などを扱うための新しいデータ構造です。
+### GWpy style
 
-### 新規コレクション (New Collections)
-GWpyには標準実装されていない、周波数・時間周波数データのためのコレクションクラスです。GWpyの `TimeSeries` に対する `TimeSeriesList`, `TimeSeriesDict` の立ち位置になります。
-*   `FrequencySeriesList`, `FrequencySeriesDict`
-*   `SpectrogramList`, `SpectrogramDict`
+```python
+from gwpy.timeseries import TimeSeriesDict
 
-### マトリックス (SeriesMatrix)
-データを「行列」の要素として持つ多次元データ構造です (Row, Col, Axis...)。
-*   `TimeSeriesMatrix`: (Rows, Cols, Time)
-*   `FrequencySeriesMatrix`: (Rows, Cols, Frequency)
-*   `SpectrogramMatrix`: (Rows, Cols, Time, Frequency)
+tsd = TimeSeriesDict.read(cache, channels)
+reference = tsd["H1:STRAIN"]
 
-**特徴・機能**:
-*   **行列演算**: 要素ごとの行列積 (`@`)、逆行列 (`.inv()`)、行列式 (`.det()`)、トレース (`.trace()`)、シュア補行列 (`.schur()`)。MIMOシステムの伝達関数解析などに強力。
-*   **統計処理**: 行・列方向の平均・分散演算 (`.mean(axis)`, `.std(axis)` 等) により、センサーアレイ全体の統計量を一括計算。
-*   **バッチ処理**: 各要素に対する信号処理（フィルタリング、リサンプリング、白色化など）の一括適用。
+csd = {}
+for name, ts in tsd.items():
+    if name == "H1:STRAIN":
+        continue
+    csd[name] = ts.csd(reference, fftlength=4)
+```
 
-### 物理フィールド (Fields)
-4次元 (時間/周波数 + 3次元空間/波数) の物理場を扱うクラスです。
-*   `ScalarField` / `VectorField` / `TensorField`
+### GWexpy style
 
-**特徴・機能**:
-*   **ドメイン管理**: 時間/周波数軸 (`axis0`) と空間/波数軸 (`space_domain`) の状態を管理し、相互変換 (`.fft_time`, `.fft_space`) をサポート。
-*   **空間抽出**: `.extract_points()` により任意の空間座標での時系列データを抽出・補間。
-*   **ベクトル・テンソル解析**: 内積、外積、発散、回転などの物理演算と、座標変換（デカルト座標系など）。
-*   **シミュレーション**: `gwexpy.noise.field` と連携したノイズ場の生成（等方性ノイズ、平面波など）。
+```python
+from gwexpy.timeseries import TimeSeriesDict
 
-### その他
-*   `BifrequencyMap`: 2つの周波数軸を持つマップデータ (STLTGram等)。
+tsd = TimeSeriesDict.read(cache, channels)
+matrix = tsd.to_matrix()
 
-## 3. 高度な解析メソッド (単チャンネル)
+csm = matrix.csd(fftlength=4)
+csm.plot().show()
+```
 
-### ノイズシミュレーション (`gwexpy.noise`)
-*   `from_asd(asd, ...)`: ASD (振幅スペクトル密度) からの時系列生成
-*   `colored_noise(psd, ...)`: 有色ノイズの生成
-*   `field.simulate(...)`: ノイズ場の生成
-*   `pygwinc` 連携: `gwexpy.noise.gwinc_` を通じた干渉計ノイズバジェットモデルの利用。
+この差分が効く場面:
 
-### 時系列解析 (TimeSeries)
-*   `.hilbert()`: ヒルベルト変換（解析信号）
-*   `.envelope()`: 包絡線 (`abs(hilbert)`)
-*   `.demodulate(f)`: ロックインアンプ・復調
-*   `.arima(order, ...)`: AR/MA/ARMA/ARIMAモデル解析 (`statsmodels`, `pmdarima` ラッパー)
-*   `.ar(p)`, `.ma(q)`, `.arma(p, q)`: AR/MA/ARMAのショートカット
-*   `.hurst()`: ハースト指数の計算
-*   `.skewness()`: 歪度 (Skewness)
-*   `.kurtosis()`: 尖度 (Kurtosis)
+- ループを減らして、チャンネル集合をそのまま計算対象にしたいとき
+- 多チャネル解析を `TimeSeriesMatrix` / `FrequencySeriesMatrix` へ揃えたいとき
 
-### 周波数スペクトル解析 (FrequencySeries)
-*   `.differentiate()`, `.integrate()`: 周波数ドメインでの微分・積分
-*   `.differentiate_time()`, `.integrate_time()`: 周波数ドメインでの時間微分・積分（Displacement ↔ Velocity ↔ Acceleration 変換等）
-*   `.group_delay()`: 群遅延の計算
+関連ページ:
 
-### 時間周波数解析 (Spectrogram / Special Transforms)
-GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数解析手法を提供します。
-*   `hht()`: ヒルベルト・ファン変換 (HHT)。EMD (Empirical Mode Decomposition) によるIMF分解と瞬時周波数解析。
-*   `stlt()`: 短時間ラプラス変換 (Short-Time Laplace Transform)。減衰定数 $\sigma$ を考慮した解析。
-*   `cepstrum()`: ケプストラム解析 (倒周波数)。
-*   `cwt()`: 連続ウェーブレット変換 (`pywt` ラッパー)。
+- [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb)
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
+- [TimeSeriesDict リファレンス](../reference/TimeSeriesDict.md)
+- [TimeSeriesMatrix リファレンス](../reference/TimeSeriesMatrix.md)
 
-### 統計的推定・フィッティング
-*   **Fitting (`gwexpy.fitting`)**:
-    *   `FitResult`, `Model`: iminuitによるchi-square Fitting (実数、複素数) とMCMC解析
-    *   `TimeSeries`, `FrequencySeries` にも `.fit()` 等のメソッドがMixされています。
-*   **Bootstrap**:
-    *   `bootstrap_spectrogram`: スペクトログラムのブートストラップ推定
+## 差分レシピ 2: 外部関数呼び出しをオブジェクトメソッドへ寄せる
 
-## 4. 高度な解析メソッド (多チャンネル)
+GWpy ベースのコードでは、NumPy 配列へ取り出してから SciPy / Statsmodels を直接呼ぶ流れが自然です。  
+GWexpy では、その一部がデータオブジェクトのメソッドとしてまとまっています。
 
-### 成分分析 (`gwexpy.timeseries.decomposition`)
-*   `PCA`: 主成分分析
-*   `ICA`: 独立成分分析
-*   `ZCA`: 白色化 (`.whiten(method='zca')` として利用)
+### GWpy style
 
-### 相関・統計解析
-*   **相関指標**:
-    *   `dCor`: 距離相関 (Distance Correlation)
-    *   `MIC`: 最大情報係数 (Maximal Information Coefficient)
-    *   `Pearson`, `Kendall`: 基本的な相関係数
-*   **Bruco**:
-    *   多チャンネルコヒーレンス探索によるノイズ源特定ツール (`gwexpy.analysis.bruco`)
+```python
+import numpy as np
+from scipy.signal import find_peaks
+from gwpy.frequencyseries import FrequencySeries
 
-### システム解析・制御
-*   **MIMO / 状態空間モデル**:
-    *   `python-control` 連携: `TimeSeries.from_control(response)`, `to_control_frd` などによる制御系設計ライブラリとの相互変換。
-    *   行列クラス (`SeriesMatrix`) を用いたMIMO伝達関数・時系列解析
-*   **雑音注入試験解析**:
-    *   `gwexpy.analysis.response`: 伝達関数推定や結合係数算出のための実験データ解析ツール
-*   **行列演算**:
-    *   逆行列 (`.inv()`)、行列式 (`.det()`)、トレース (`.trace()`)、シュア補行列 (`.schur()`) などの基本操作。
+spec = FrequencySeries(...)
+peaks, props = find_peaks(np.asarray(spec.value), height=0.2)
+```
 
-## 5. 外部ツール連携 (Interop)
+### GWexpy style
 
-外部ライブラリとのオブジェクト相互変換機能です (`.to_*()` / `.from_*()`)。
+```python
+from gwexpy.frequencyseries import FrequencySeries
 
-*   **Deep Learning / Array Libraries**:
-    *   `PyTorch` (`Tensor`, `Dataset`/`DataLoader`): `to_torch`, `to_torch_dataset`等
-    *   `TensorFlow` (`Tensor`): `to_tf`
-    *   `JAX` (`Array`): `to_jax`
-    *   `CuPy` (`ndarray`): `to_cupy`
-    *   `Dask` (`dask.array`): `to_dask`
-    *   `Zarr`: `to_zarr` / `from_zarr`
-*   **Data Structures**:
-    *   `pandas` (`Series`/`DataFrame`): `to_pandas`, `to_pandas_dataframe`
-    *   `xarray` (`DataArray`): `to_xarray`
-    *   `polars` (`Series`/`DataFrame`): `to_polars_series`
-    *   `SQLite`, `JSON`: 軽量な保存・読み込み
-*   **Domain Specific**:
-    *   `Obspy` (Seismology): `Trace`, `Stream`
-    *   `MNE` (EEG/MEG): `Raw`, `RawArray` (`to_mne`)
-    *   `Neo` (Electrophysiology): `AnalogSignal` (`to_neo`)
-    *   `Librosa` / `Pydub` (Audio): 音声データ変換
-    *   `SimPEG` (Geophysics): `Data` オブジェクト
-    *   `python-control`: `FrequencyResponseData` (FRD) 等
-    *   `ROOT` (CERN): `TGraph`, `TH1D`, `TH2D`, `TMultiGraph`
-    *   `Specutils`: `Spectrum1D` (`to_specutils`)
-    *   `Pyspeckit`: `Spectrum` (`to_pyspeckit`)
-    *   `Astropy`: `TimeSeries` (`to_astropy_timeseries`)
-    *   `Quantities`: `Quantity` (`to_quantity`)
+spec = FrequencySeries(...)
+peaks, props = spec.find_peaks(threshold=0.2)
+```
 
-### データフォーマットI/O拡張
-GWpyが標準サポートする形式に加え、以下に対応（または拡張）しています。
-*   `ATS` (Metronix MTデータ)
-*   `GBD` (GRAPHTEC データロガー)
-    *   アナログCHはヘッダのアンプレンジ（例: `20mV` 等）を用いて `count -> V` に換算します。
-    *   `Alarm` / `AlarmOut` / `Pulse*` / `Logic*` はデジタル/ステータスとして扱い、値を 0/1 に正規化し unit を dimensionless にします。
-    *   必要に応じて `TimeSeriesDict.read(..., format="gbd", digital_channels=[...])` でデジタル扱いするチャンネル名を上書きできます。
-*   `TDMS` (LabVIEW / NI)
-*   `MiniSEED`, `SAC`, `GSE2` (地震波データ, Obspy連携)
-*   `WIN` (地震波データ)
-    *   0.5バイト（4bit差分）/ 3バイト差分の復号について、ObsPyの既知の不具合・注意点を踏まえた実装になっています。
-    *   参考: 中川茂樹・加藤愛太郎「WINフォーマットデータをObsPyで読み込む新しいモジュール」(東京大学地震研究所技術研究報告 No.26, 2020)。
-    *   gwexpyの実装: `gwexpy/timeseries/io/win.py`（4bit差分の下位ニブル処理・奇数差分の末尾ニブルスキップ、24bit差分の符号付き復元など）。
-*   `DTTXML` (LIGO Diagnostic Test Tools)
-*   `SDB` (気象計 Davis データ)
-*   `Midas` (PSI/DAQフォーマット)
-*   `Parquet`, `Feather`, `Pickle` (pandas連携)
-*   `WAV` (Audio, 拡張サポート)
-*   `ROOT` file (.root)
+同じ方向の差分として、`gwexpy` では次のような API も追加されています。
 
-## Pickle / shelve に関する注意
+- `.fit()` : データオブジェクトに対するフィッティング
+- `.hht()` : Hilbert-Huang Transform
+- `.arima()` : 時系列予測・モデル化
 
-:::{admonition} warning
-:class: warning
+関連ページ:
 
-信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
-:::
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
+- [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb)
+- [フィッティング](tutorials/advanced_fitting.ipynb)
+- [HHT](tutorials/advanced_hht.ipynb)
+- [ARIMA](tutorials/advanced_arima.ipynb)
 
-gwexpy の pickle は、可搬性を優先して **unpickle 時に GWpy 型を返す**設計になっています
-（つまり、読み込み側に gwexpy が無くても gwpy があれば復元できます）。
+## 差分レシピ 3: 単一チャネルコードは大きく変えなくてよい
+
+GWpy の基本クラスに慣れている場合、最初から全面的に書き換える必要はありません。  
+まずは import を `gwexpy` 側へ置き換え、必要になった箇所だけ差分 API を足す進め方が現実的です。
+
+### GWpy style
+
+```python
+from gwpy.timeseries import TimeSeries
+
+ts = TimeSeries.read("data.gwf", "H1:STRAIN")
+asd = ts.asd(fftlength=4)
+asd.plot().show()
+```
+
+### GWexpy style
+
+```python
+from gwexpy.timeseries import TimeSeries
+
+ts = TimeSeries.read("data.gwf", "H1:STRAIN")
+asd = ts.asd(fftlength=4)
+asd.plot().show()
+```
+
+実務上の見方:
+
+- まずは既存の単一チャネル処理をそのまま持ってくる
+- 多チャネル化や追加メソッドが必要になった地点で `gwexpy` 固有 API を使う
+
+関連ページ:
+
+- [クイックスタート](quickstart.md)
+- [チュートリアル一覧](tutorials/index.rst)
+- [API リファレンス](../reference/index.rst)
+
+## 差分レシピ 4: `ScalarField` を `FieldList` / `FieldDict` でまとめる
+
+GWpy の標準的な移行対象は `TimeSeries` 系が中心で、空間軸を持つ field コンテナや、そのコレクションに対応する標準クラスはありません。
+GWexpy では、単一 field を `ScalarField` で保持し、複数の field を `FieldList` / `FieldDict` で一括管理できます。
+
+### GWpy style
+
+```python
+import numpy as np
+
+field_a = np.random.randn(8, 3, 3, 3)
+field_b = np.random.randn(8, 3, 3, 3)
+
+fields = {"before": field_a, "after": field_b}
+
+# 軸情報や単位の整合性は別途自前で管理する
+```
+
+### GWexpy style
+
+```python
+import numpy as np
+from gwexpy.fields import ScalarField, FieldDict
+
+fields = FieldDict(
+    {
+        "before": ScalarField(np.random.randn(8, 3, 3, 3)),
+        "after": ScalarField(np.random.randn(8, 3, 3, 3)),
+    },
+    validate=True,
+)
+
+fft_fields = fields.fft_space_all()
+```
+
+この差分が効く場面:
+
+- 同じ軸・単位・ドメインを共有する複数の field をまとめて扱いたいとき
+- 空間方向の変換や切り出しを、field 単位のループではなくコレクション単位で揃えたいとき
+
+関連ページ:
+
+- [Field API 入門](tutorials/field_scalar_intro.ipynb)
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
+- [ScalarField リファレンス](../reference/ScalarField.md)
+- [FieldList リファレンス](../reference/FieldList.md)
+- [FieldDict リファレンス](../reference/FieldDict.md)
+
+## 差分レシピ 5: Pickle 共有時の互換性を見る
+
+GWexpy は、解析結果の共有時に「受け取り側が GWexpy を入れていない」ケースも意識しています。  
+このページでは安全性の一般論ではなく、**GWpy ユーザーが共有運用で何を期待できるか**だけを押さえます。
+
+### GWpy style
 
 ```python
 import pickle
-import numpy as np
-from gwexpy.timeseries import TimeSeries
+from gwpy.timeseries import TimeSeries
 
-ts = TimeSeries(np.arange(10.0), sample_rate=1.0, t0=0, unit="m")
-obj = pickle.loads(pickle.dumps(ts))
-# obj は gwpy.timeseries.TimeSeries
+ts = TimeSeries(...)
+
+with open("result.pkl", "wb") as f:
+    pickle.dump(ts, f)
+
+# 受け取り側も、同じ型を読める環境を前提に共有する
 ```
 
-互換性メモ:
+### GWexpy style
 
-- `TimeSeries` / `FrequencySeries` / `Spectrogram` -> unpickle 時に GWpy オブジェクト
-- `TimeSeriesDict` / `TimeSeriesList` -> unpickle 時に GWpy のコレクション
-- `FrequencySeriesDict/List` / `SpectrogramDict/List` -> unpickle 時に builtins の `dict` / `list`（中身はGWpyオブジェクト）
-- `Matrix` 系や `Field` 系など gwexpy 独自型は、この可搬性契約の対象外です
+```python
+import pickle
+from gwexpy.timeseries import TimeSeries
 
-保持されるもの（ベストエフォート）:
+ts = TimeSeries(...)
 
-- 数値データ（`.value`）
-- 軸情報（`times` / `frequencies`）
-- GWpy側で一般的に扱えるメタデータ（`unit`, `name`, `channel`, `epoch`）
+with open("result.pkl", "wb") as f:
+    pickle.dump(ts, f)
 
-保持されないもの:
+# 受け取り側に GWexpy がなくても、GWpy があれば基本クラスとして復元できる
+```
 
-- gwexpy独自の内部属性（例: `_gwex_*`）や、gwexpyで追加した振る舞い
+:::{important}
+Pickle は信頼できるデータだけをロードしてください。
+:::
 
-## 6. GUI アプリケーション
+関連ページ:
 
-*   **pyaggui (`gwexpy.gui.pyaggui`)**:
-    *   DTT diaggui (C++, ROOT) を模したpyqt5ベースのGUIアプリケーション。
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
+- [インストールガイド](installation.md)
+
+## 差分レシピ 6: python-control との橋渡し
+
+GWpy ベースのコードで `control.bode()` 等を使う場合、`FrequencySeries` の値を numpy 配列として手動で取り出し、`control.frd()` に渡す手順が必要です。  
+GWexpy では `to_control_frd()` が変換を一括して行うため、この手順を省けます。
+
+### GWpy style
+
+```python
+import control
+import numpy as np
+from gwpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries.read("data.hdf5", "H1:STRAIN_ASD")
+
+# numpy 配列を手動で取り出してから FRD を構築する必要がある
+omega = 2 * np.pi * np.asarray(spec.frequencies.value)
+frd_sys = control.frd(np.asarray(spec.value), omega)
+
+# Bode プロットを描画
+control.bode(frd_sys)
+```
+
+### GWexpy style
+
+```python
+import control
+from gwexpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries.read("data.hdf5", "H1:STRAIN_ASD")
+
+# 1 行で FRD 変換・往復変換
+frd_sys = spec.to_control_frd()                      # FrequencySeries → control.FrequencyResponseData
+control.bode(frd_sys)                                # Bode / Nichols / Nyquist にそのまま渡せる
+
+spec2 = FrequencySeries.from_control_frd(frd_sys)    # control.FRD → FrequencySeries に復元
+```
+
+この差分が効く場面:
+
+- ASD / PSD スペクトルをそのまま制御系の FRD モデルとして扱いたいとき
+- `control.bode()` / `control.nichols()` / `control.nyquist()` に渡す前の numpy 配列取り出し処理を省きたいとき
+- 解析結果の FRD を GWexpy の `FrequencySeries` に戻して既存のプロット・統計処理パイプラインに繋げたいとき
+- 多チャネルのスペクトルを `FrequencySeriesDict.to_control_frd()` でチャネルごとに FRD 化したいとき
+
+関連ページ:
+
+- [Interop / 変換ガイド](interop.md)
+- [python-control API リファレンス](../reference/api/gwexpy.interop.control_.rst)
+- [アクティブダンピング チュートリアル](tutorials/case_active_damping.ipynb)
+- [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb)
+
+## I/O と外部ライブラリ連携は別ページを見る
+
+このページでは、I/O 形式や外部ライブラリ連携の一覧を再掲しません。  
+それぞれ既に専用ページがあるため、移行時は次を正本として参照してください。
+
+- 直接 I/O: [ファイル I/O 対応フォーマットガイド](io_formats.md)
+- 外部ライブラリ変換: [Interop / 変換ガイド](interop.md)
+
+## 次のステップ
+
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) - 追加 API を差分観点で引く
+- [Field API 入門](tutorials/field_scalar_intro.ipynb) - `ScalarField` / `FieldList` / `FieldDict` の使い分けを見る
+- [チュートリアル一覧](tutorials/index.rst) - 差分レシピから実例へ進む
+- [ファイル I/O 対応フォーマットガイド](io_formats.md) - 読み書き形式を確認する
+- [Interop / 変換ガイド](interop.md) - 外部ライブラリとの橋渡しを見る
+- [API リファレンス](../reference/index.rst) - 全 API の仕様を確認する

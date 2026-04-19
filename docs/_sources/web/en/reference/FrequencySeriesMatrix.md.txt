@@ -1,11 +1,75 @@
 # FrequencySeriesMatrix
 
+<!-- reference-summary:start -->
+
+**Stability:** Stable
+
+## What it is
+
+Use `FrequencySeriesMatrix` for aligned multi-channel spectra that should be processed together as one matrix.
+
+## Representative Signatures
+
+```python
+FrequencySeriesMatrix(data, frequencies=None, df=None, f0=None, ...)
+FrequencySeriesMatrix.to_dict()
+```
+
+## Minimal Example
+
+```python
+from gwexpy.frequencyseries import FrequencySeriesMatrix
+import numpy as np
+
+mat = FrequencySeriesMatrix(np.ones((2, 2, 64)), df=1.0)
+out = mat.to_dict()
+```
+
+## Related Theory
+
+- [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [SeriesMatrix](SeriesMatrix.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [FrequencySeries Matrix Tutorial](../user_guide/tutorials/matrix_frequencyseries.ipynb)
+- [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb)
+- [Advanced Fitting](../user_guide/tutorials/advanced_fitting.ipynb)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** FrequencySeriesMatrixCoreMixin, FrequencySeriesMatrixAnalysisMixin, SeriesMatrix
 
 
 Matrix container for multiple FrequencySeries objects.
 
 Inherits from SeriesMatrix and returns FrequencySeries instances when indexed.
+
+## Physical Context
+
+Use `FrequencySeriesMatrix` when multiple spectra are already aligned on one frequency axis and should be processed as one object: sensor arrays, response matrices, coherence-like channel grids, or repeated spectra arranged by configuration.
+
+- matrix operations assume shared sampling on the frequency axis
+- this is the right container when relationships between channels matter as much as the spectra themselves
+
+## Common Misreadings
+
+1. treating an unaligned stack of spectra as a valid matrix input
+2. forgetting that matrix-level filtering or inversion is only meaningful when the entries share a common physical frequency grid
+3. interpreting linear-algebra outputs without checking conditioning and units
+
+## Where to go next
+
+- per-element interpretation: [FrequencySeries](FrequencySeries.md)
+- container conversions: [FrequencySeriesList](FrequencySeriesList.md), [FrequencySeriesDict](FrequencySeriesDict.md)
+- aligned workflow: [FrequencySeries Matrix Tutorial](../user_guide/tutorials/matrix_frequencyseries.ipynb)
 
 
 ## Methods
@@ -763,4 +827,3 @@ Full extent of the sample axis as a tuple (start, end).
 ### `xunit`
 
 _No documentation available._
-

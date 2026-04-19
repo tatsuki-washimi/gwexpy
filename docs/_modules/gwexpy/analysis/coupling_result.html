@@ -9,25 +9,87 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/analysis/coupling_result.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -41,23 +103,25 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -72,10 +136,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for gwexpy.analysis.coupling_result</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">CouplingResult: result container for a single Witness -&gt; Target pair.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
+<span></span><span class="sd">&quot;&quot;&quot;CouplingResult: result container for a single Witness -&gt; Target pair.&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
@@ -99,8 +160,45 @@
 <div class="viewcode-block" id="CouplingResult">
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Result object for a SINGLE Witness -&gt; Target pair.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Result object for a SINGLE Witness -&gt; Target pair.</span>
+
+<span class="sd">    This object stores all Amplitude Spectral Densities (ASDs), the resulting</span>
+<span class="sd">    Coupling Function (CF), and metadata needed to reproduce and visualize the</span>
+<span class="sd">    injection analysis for a given witness-target pair.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cf : FrequencySeries</span>
+<span class="sd">        The measured Coupling Function (CF) magnitude spectrum.</span>
+<span class="sd">    cf_ul : FrequencySeries or None</span>
+<span class="sd">        The upper limit of the Coupling Function magnitude, if applicable.</span>
+<span class="sd">    psd_witness_inj : FrequencySeries</span>
+<span class="sd">        The Power Spectral Density (PSD) of the witness channel during injection.</span>
+<span class="sd">    psd_witness_bkg : FrequencySeries</span>
+<span class="sd">        The background PSD of the witness channel.</span>
+<span class="sd">    psd_target_inj : FrequencySeries</span>
+<span class="sd">        The PSD of the target channel during injection.</span>
+<span class="sd">    psd_target_bkg : FrequencySeries</span>
+<span class="sd">        The background PSD of the target channel.</span>
+<span class="sd">    valid_mask : numpy.ndarray</span>
+<span class="sd">        Boolean array indicating where the CF measurement is considered valid.</span>
+<span class="sd">    witness_name : str</span>
+<span class="sd">        Name of the witness channel.</span>
+<span class="sd">    target_name : str</span>
+<span class="sd">        Name of the target channel.</span>
+<span class="sd">    ts_witness_bkg : TimeSeries or None</span>
+<span class="sd">        The original background TimeSeries for the witness channel.</span>
+<span class="sd">    ts_target_bkg : TimeSeries or None</span>
+<span class="sd">        The original background TimeSeries for the target channel.</span>
+<span class="sd">    ts_witness_inj : TimeSeries or None</span>
+<span class="sd">        The original injection TimeSeries for the witness channel.</span>
+<span class="sd">    ts_target_inj : TimeSeries or None</span>
+<span class="sd">        The original injection TimeSeries for the target channel.</span>
+<span class="sd">    fftlength : float or None</span>
+<span class="sd">        The FFT length (in seconds) used to compute the spectra.</span>
+<span class="sd">    overlap : float or None</span>
+<span class="sd">        The overlap duration (in seconds) used to compute the spectra.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -139,6 +237,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IndexLike</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the frequency axis of the coupling function result.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span>
 
 <div class="viewcode-block" id="CouplingResult.plot_cf">
@@ -150,7 +249,6 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plot</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the Coupling Function and its Upper Limit.&quot;&quot;&quot;</span>
-
         <span class="c1"># Crop data if xlim provided</span>
         <span class="n">cf_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span>
         <span class="n">cf_ul_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf_ul</span>
@@ -208,9 +306,7 @@
         <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
         <span class="n">xlim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plot</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a diagnostic plot showing ASDs and the resulting CF.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a diagnostic plot showing ASDs and the resulting CF.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
 
         <span class="c1"># Helper to crop series safely</span>
@@ -428,10 +524,10 @@
     <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_significance_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        有意度 (ASD_inj - ASD_bkg) / ASD_bkg を計算して返す。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate and return significance: (ASD_inj - ASD_bkg) / ASD_bkg.</span>
 
-<span class="sd">        背景 ASD をゼロ除算から防護するため epsilon ガードを適用する。</span>
+<span class="sd">        Apply epsilon guard to protect against division by zero for</span>
+<span class="sd">        background ASD.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">asd_inj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_inj</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
         <span class="n">asd_bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
@@ -441,12 +537,12 @@
 <div class="viewcode-block" id="CouplingResult.spectral_stats">
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.spectral_stats">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">spectral_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectralStats</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        背景 ASD の簡易統計情報を返す。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return summary statistical information for background ASD.</span>
 
-<span class="sd">        現時点では CouplingResult が保持する背景/注入 PSD から、</span>
-<span class="sd">        背景 ASD を mean、注入との差分絶対値を sigma として構成する。</span>
-<span class="sd">        sigma はゼロ除算を避けるため epsilon で下限を設ける。</span>
+<span class="sd">        Currently, it constructs the statistics from the background/injection</span>
+<span class="sd">        PSDs stored in the CouplingResult, using background ASD as mean and</span>
+<span class="sd">        the absolute difference from injection as sigma. Sigma has an epsilon</span>
+<span class="sd">        lower bound to avoid division by zero.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralStats</span>
@@ -473,10 +569,9 @@
 <div class="viewcode-block" id="CouplingResult.to_csv">
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.to_csv">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        結合係数を CSV 形式で保存する。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save coupling factors to a CSV file.</span>
 
-<span class="sd">        列: frequency, cf, cf_ul, significance, inj_asd, bkg_asd</span>
+<span class="sd">        Columns: frequency, cf, cf_ul, significance, inj_asd, bkg_asd</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span>
         <span class="n">cf_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">value</span>
@@ -496,11 +591,10 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.from_csv">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CouplingResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        CSV ファイルから CouplingResult を復元する（ラウンドトリップ用）。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore a CouplingResult from a CSV file (for round-tripping).</span>
 
-<span class="sd">        to_csv() で書き出したファイルのみ対応。cf / cf_ul / ASD のみ復元し、</span>
-<span class="sd">        その他フィールドは最小限のダミーで補完する。</span>
+<span class="sd">        Only supports files exported by to_csv(). Restores cf, cf_ul, and ASDs;</span>
+<span class="sd">        other fields are filled with minimal dummy values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
@@ -545,16 +639,15 @@
 <div class="viewcode-block" id="CouplingResult.to_txt">
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.to_txt">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_txt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        結合係数を NInjA.py 互換テキスト形式で保存する。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save coupling factors in NInjA.py-compatible text format.</span>
 
-<span class="sd">        フォーマット::</span>
+<span class="sd">        Format::</span>
 
 <span class="sd">            # frequency(Hz) coupling_factor uncertainty significance</span>
 <span class="sd">            1.0 0.123 0.045 2.73</span>
 <span class="sd">            ...</span>
 
-<span class="sd">        uncertainty は cf_ul - cf（cf_ul がない場合は NaN）。</span>
+<span class="sd">        The uncertainty is calculated as cf_ul - cf (NaN if cf_ul is missing).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span>
         <span class="n">cf_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">value</span>
@@ -581,21 +674,23 @@
         <span class="n">freq_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        有意度スペクトラムプロット（(ASD_inj - ASD_bkg) / ASD_bkg vs 周波数）。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the significance spectrum ((ASD_inj - ASD_bkg) / ASD_bkg vs. frequency).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        threshold : float</span>
-<span class="sd">            閾値水平線の値（デフォルト 3.0）。0 以下の場合は描画しない。</span>
+<span class="sd">            Value for the horizontal threshold line (default: 3.0). If &lt;= 0,</span>
+<span class="sd">            no line is drawn.</span>
 <span class="sd">        freq_min, freq_max : float, optional</span>
-<span class="sd">            表示する周波数範囲 [Hz]。</span>
-<span class="sd">        figsize : tuple</span>
-<span class="sd">            Figure サイズ。</span>
+<span class="sd">            Frequency range to display [Hz].</span>
+<span class="sd">        figsize : tuple of float, optional</span>
+<span class="sd">            Figure size.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        matplotlib.figure.Figure</span>
+<span class="sd">            The resulting figure instance.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -648,25 +743,26 @@
         <span class="n">vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        ASD スペクトログラム + パーセンタイルオーバーレイ（2 列レイアウト）。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot ASD spectrogram with percentile overlays (2-column layout).</span>
 
-<span class="sd">        左パネル: 注入時 ASD spectrogram, 右パネル: 背景時 ASD spectrogram。</span>
-<span class="sd">        両者に 50%, 90%, 99% パーセンタイルラインを重ねる。</span>
+<span class="sd">        The layout shows the injection ASD spectrogram in the left panel and</span>
+<span class="sd">        the background ASD spectrogram in the right panel. Both are overlaid</span>
+<span class="sd">        with 50th, 90th, and 99th percentile lines.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        freq_min, freq_max : float, optional</span>
-<span class="sd">            表示する周波数範囲 [Hz]。</span>
+<span class="sd">            Frequency range to display [Hz].</span>
 <span class="sd">        vmin, vmax : float, optional</span>
-<span class="sd">            カラーバースケール。None の場合は自動設定。</span>
-<span class="sd">        figsize : tuple</span>
-<span class="sd">            Figure サイズ。</span>
+<span class="sd">            Colorbar scale limits. Automatic if None.</span>
+<span class="sd">        figsize : tuple of float, optional</span>
+<span class="sd">            Figure size.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            `ts_witness_inj` または `ts_witness_bkg` が None の場合。</span>
+<span class="sd">            If `ts_witness_inj` or `ts_witness_bkg` is None.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogNorm</span>
@@ -733,8 +829,8 @@
             <span class="p">)</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="n">asd_unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 
-            <span class="c1"># 各周波数ビンの時刻方向パーセンタイルを周波数軸に沿った輪郭として描画</span>
-            <span class="c1"># twin x 軸で ASD スケールのパーセンタイルプロファイルを重ねる</span>
+            <span class="c1"># Draw time-direction percentiles for each frequency bin as contours</span>
+            <span class="c1"># along the frequency axis using a twin X-axis.</span>
             <span class="n">ax_twin</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twiny</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">pct</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">99</span><span class="p">):</span>
                 <span class="n">pct_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pct</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># shape: (n_freqs,)</span>
@@ -776,45 +872,46 @@
         <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        RMS 時系列プロット（帯域制限付き）。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot rolling RMS time-series (band-limited).</span>
 
-<span class="sd">        Witness / Target チャンネルのローリング RMS を時間軸に表示する。</span>
-<span class="sd">        `show_windows=True` の場合、背景区間（グレー）と注入区間（赤）を</span>
-<span class="sd">        `axvspan` で色分けして重ねる。</span>
+<span class="sd">        Displays the rolling RMS for witness and target channels over time.</span>
+<span class="sd">        If show_windows=True, background (grey) and injection (red) intervals</span>
+<span class="sd">        are shaded using axvspan.</span>
 
-<span class="sd">        RMS の定義（PSD を周波数積分してルート）::</span>
+<span class="sd">        RMS definition (root frequency-integral of PSD)::</span>
 
 <span class="sd">            RMS(t) = sqrt( trapz(PSD(t, f), f) )  for f in [fmin, fmax]</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        fmin : float, optional</span>
-<span class="sd">            RMS を計算する下限周波数 [Hz]。None の場合は 0 Hz。</span>
+<span class="sd">            Lower frequency limit for RMS calculation [Hz]. Defaults to 0 Hz.</span>
 <span class="sd">        fmax : float, optional</span>
-<span class="sd">            RMS を計算する上限周波数 [Hz]。None の場合は Nyquist 周波数。</span>
+<span class="sd">            Upper frequency limit for RMS calculation [Hz]. Defaults to Nyquist.</span>
 <span class="sd">        fftlength : float, optional</span>
-<span class="sd">            Spectrogram の FFT 長 [s]。None の場合は self.fftlength を使用。</span>
+<span class="sd">            FFT length for the spectrogram [s]. Uses self.fftlength if None.</span>
 <span class="sd">        overlap : float, optional</span>
-<span class="sd">            Spectrogram のオーバーラップ [秒]。None の場合は self.overlap を使用。</span>
+<span class="sd">            Overlap for the spectrogram [s]. Uses self.overlap if None.</span>
 <span class="sd">        channels : {&quot;witness&quot;, &quot;target&quot;, &quot;both&quot;}</span>
-<span class="sd">            プロットするチャンネル。&quot;both&quot; の場合は 2 パネル構成。</span>
+<span class="sd">            Which channels to plot. &quot;both&quot; creates a 2-panel layout.</span>
 <span class="sd">        show_windows : bool</span>
-<span class="sd">            背景・注入区間を axvspan で色分けする場合 True（デフォルト）。</span>
-<span class="sd">        figsize : tuple</span>
-<span class="sd">            Figure サイズ。</span>
+<span class="sd">            If True, shades background and injection intervals using axvspan (default: True).</span>
+<span class="sd">        figsize : tuple of float, optional</span>
+<span class="sd">            Figure size.</span>
 <span class="sd">        **kwargs</span>
-<span class="sd">            matplotlib の plot() に渡す追加キーワード引数。</span>
+<span class="sd">            Additional keyword arguments for matplotlib&#39;s plot().</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        matplotlib.figure.Figure</span>
+<span class="sd">            The created figure.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            `channels` に応じた TimeSeries が None の場合。</span>
-<span class="sd">            `channels` の値が不正な場合。</span>
+<span class="sd">            If the required TimeSeries for the selected channels is None,</span>
+<span class="sd">            or if the &#39;channels&#39; argument is invalid.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -832,7 +929,7 @@
                 <span class="s2">&quot;Pass fftlength= or set it when constructing CouplingResult.&quot;</span>
             <span class="p">)</span>
 
-        <span class="c1"># チャンネル選択と検証</span>
+        <span class="c1"># Channel selection and validation</span>
         <span class="n">ts_pairs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># (label, ts_bkg, ts_inj)</span>
         <span class="k">if</span> <span class="n">channels</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;witness&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -862,7 +959,7 @@
 
             <span class="n">unit_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ts_bkg</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
 
-            <span class="c1"># RMS カーブの描画</span>
+            <span class="c1"># Draw RMS curves</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
                 <span class="n">rms_bkg</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                 <span class="n">rms_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -880,7 +977,7 @@
                 <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="c1"># 期間色分け (axvspan)</span>
+            <span class="c1"># Interval shading (axvspan)</span>
             <span class="k">if</span> <span class="n">show_windows</span><span class="p">:</span>
                 <span class="n">t0_bkg</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_bkg</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="n">t1_bkg</span> <span class="o">=</span> <span class="n">t0_bkg</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_bkg</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -914,22 +1011,22 @@
         <span class="n">snrmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
         <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        SNR スペクトログラム（中央値正規化: (ASD_inj - median_bkg) / median_bkg）。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot SNR spectrogram ((ASD_inj - median_bkg) / median_bkg).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        freq_min, freq_max : float, optional</span>
-<span class="sd">            表示する周波数範囲 [Hz]。</span>
+<span class="sd">            Frequency range to display [Hz].</span>
 <span class="sd">        snrmax : float</span>
-<span class="sd">            カラーバー上限（clamp 値）。デフォルト 100。</span>
-<span class="sd">        figsize : tuple</span>
-<span class="sd">            Figure サイズ。</span>
+<span class="sd">            Colorbar maximum limit (clamp value). Defaults to 100.0.</span>
+<span class="sd">        figsize : tuple of float, optional</span>
+<span class="sd">            Figure size.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            `ts_witness_inj` または `ts_witness_bkg` が None の場合。</span>
+<span class="sd">            If `ts_witness_inj` or `ts_witness_bkg` is None.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -1003,11 +1100,10 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.from_txt">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_txt</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CouplingResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TXT ファイルから CouplingResult を復元する（ラウンドトリップ用）。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore a CouplingResult from a plain-text NInjA compatible file.</span>
 
-<span class="sd">        to_txt() で書き出したファイルのみ対応。cf と cf_ul のみ復元し、</span>
-<span class="sd">        その他フィールドは最小限のダミーで補完する。</span>
+<span class="sd">        Only supports files exported by to_txt(). Restores cf and cf_ul;</span>
+<span class="sd">        other fields are filled with minimal dummy values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
@@ -1065,15 +1161,17 @@
 <div class="viewcode-block" id="CouplingResultCollection">
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResultCollection">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingResultCollection</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    複数の CouplingResult を管理するコンテナ。</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Container for managing multiple CouplingResult objects.</span>
 
-<span class="sd">    使用例::</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.analysis.coupling_result import CouplingResultCollection</span>
+<span class="sd">    &gt;&gt;&gt; results = CouplingResultCollection()</span>
+<span class="sd">    &gt;&gt;&gt; isinstance(results, dict)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; # results[&#39;WIT-TGT&#39;] = coupling_result_1</span>
+<span class="sd">    &gt;&gt;&gt; # results.to_summary_csv(&quot;summary.csv&quot;)</span>
 
-<span class="sd">        results = CouplingResultCollection()</span>
-<span class="sd">        results[&#39;WIT-TGT&#39;] = coupling_result_1</span>
-<span class="sd">        results[&#39;WIT-TGT2&#39;] = coupling_result_2</span>
-<span class="sd">        results.to_summary_csv(&quot;summary.csv&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1082,10 +1180,9 @@
 <div class="viewcode-block" id="CouplingResultCollection.to_summary_csv">
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResultCollection.to_summary_csv">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_summary_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        全結果を単一 CSV に集約して保存する。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export all results to a single summary CSV file.</span>
 
-<span class="sd">        列: channel_pair, frequency, cf, cf_ul, significance, inj_asd, bkg_asd</span>
+<span class="sd">        Columns: channel_pair, frequency, cf, cf_ul, significance, inj_asd, bkg_asd</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
             <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
@@ -1118,12 +1215,22 @@
         <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
         <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        複数の結合係数を重ねたプロット。</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a comparison of multiple coupling factors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        freq_min, freq_max : float, optional</span>
+<span class="sd">            Frequency range to display [Hz].</span>
+<span class="sd">        threshold : float</span>
+<span class="sd">            Value for the horizontal threshold line (default: 3.0).</span>
+<span class="sd">        figsize : tuple of float, optional</span>
+<span class="sd">            Figure size.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        matplotlib.figure.Figure</span>
+<span class="sd">            The created figure instance.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -1138,7 +1245,7 @@
                 <span class="n">cf</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">cf</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
 
-        <span class="c1"># 閾値ラインを水平線として描画</span>
+        <span class="c1"># Draw threshold line</span>
         <span class="k">if</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;threshold=</span><span class="si">{</span><span class="n">threshold</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1169,29 +1276,30 @@
     <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    TimeSeries から帯域制限 RMS 時系列を計算して返す。</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the band-limited RMS time series from a TimeSeries.</span>
 
-<span class="sd">    Spectrogram（PSD: unit^2/Hz）を `stride=fftlength` で作成し、</span>
-<span class="sd">    各時間ビンの PSD を [fmin, fmax] の範囲で台形則積分してルートを取る::</span>
+<span class="sd">    A spectrogram is generated with `stride=fftlength`. Each time bin&#39;s PSD</span>
+<span class="sd">    is integrated over the [fmin, fmax] range using the trapezoidal rule,</span>
+<span class="sd">    and the square root is taken::</span>
 
 <span class="sd">        RMS(t) = sqrt( trapz(PSD(t, f), f) )  for f in [fmin, fmax]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ts : gwpy.timeseries.TimeSeries</span>
-<span class="sd">        入力 TimeSeries。</span>
+<span class="sd">    ts : TimeSeries</span>
+<span class="sd">        Input time series.</span>
 <span class="sd">    fftlength : float</span>
-<span class="sd">        Spectrogram の FFT 長 [s]（= 時間ビン幅）。</span>
+<span class="sd">        FFT length [s] for the spectrogram (equal to step size).</span>
 <span class="sd">    overlap : float</span>
-<span class="sd">        Spectrogram のオーバーラップ [秒]。</span>
+<span class="sd">        Overlap [s] for the spectrogram.</span>
 <span class="sd">    fmin, fmax : float or None</span>
-<span class="sd">        積分する周波数帯域 [Hz]。None の場合は全帯域。</span>
+<span class="sd">        Frequency band [Hz] to integrate. If None, the entire band is used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    gwpy.timeseries.TimeSeries</span>
-<span class="sd">        RMS 時系列（入力 ts と同じ単位）。</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        The resulting RMS time series with the same units as the input.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span> <span class="k">as</span> <span class="n">GWpyTimeSeries</span>
 
@@ -1211,11 +1319,12 @@
     <span class="n">freqs</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># ndarray [Hz]</span>
     <span class="n">psd_matrix</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">value</span>          <span class="c1"># ndarray (n_times, n_freqs) [unit^2/Hz]</span>
 
-    <span class="c1"># 各時間ビンで周波数方向に台形則積分 → band_power [unit^2]</span>
-    <span class="c1"># np.trapezoid は NumPy 2.0+、np.trapz は NumPy 1.x 互換</span>
+    <span class="c1"># Integrate across frequency for each time bin (trapezoidal rule).</span>
+    <span class="c1"># np.trapezoid for NumPy 2.0+, np.trapz for NumPy 1.x compatibility.</span>
     <span class="n">_trapz</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">np</span><span class="p">,</span> <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">np</span><span class="p">,</span> <span class="s2">&quot;trapz&quot;</span><span class="p">)</span>
     <span class="n">band_power</span> <span class="o">=</span> <span class="n">_trapz</span><span class="p">(</span><span class="n">psd_matrix</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="c1"># 数値誤差で生じた微小な負値は 0 に丸めるが、NaN はそのまま伝播させる。</span>
+
+    <span class="c1"># Round tiny negative values to zero; propagate NaNs.</span>
     <span class="n">band_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">band_power</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">band_power</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
     <span class="n">rms_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">band_power</span><span class="p">)</span>
 
@@ -1253,7 +1362,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

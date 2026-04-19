@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ee58a3ab",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "e4ccfd69",
+   "id": "0f5a559a",
    "metadata": {},
    "source": [
-    "# Noise Model Guide\n",
+    "# Noise Generation: Basics\n",
     "\n",
     "**Goal**: Learn how to generate, manipulate, and model noise in gravitational-wave data using **GWexpy**.\n",
     "\n",
@@ -16,7 +28,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f4f1bf49",
+   "id": "5a880e4a",
    "metadata": {},
    "source": [
     "## 1. Generating ASD (Amplitude Spectral Density)\n",
@@ -27,7 +39,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "efa9375d",
+   "id": "15287765",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:24.112826Z",
@@ -49,6 +61,10 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import numpy as np\n",
     "import matplotlib.pyplot as plt\n",
     "from gwexpy.noise import asd\n",
@@ -70,7 +86,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7c4e9fc0",
+   "id": "b8ecc42b",
    "metadata": {},
    "source": [
     "## 2. Generating Time-domain Noise\n",
@@ -81,7 +97,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "fc2e0805",
+   "id": "2f2dbe6d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:26.998008Z",
@@ -118,7 +134,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6505e6c5",
+   "id": "bd720dfc",
    "metadata": {},
    "source": [
     "## 3. Spectral Lines and Masking\n",
@@ -129,7 +145,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "7d134a25",
+   "id": "1320765e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:29.539140Z",
@@ -165,7 +181,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b3a88c86",
+   "id": "3bc375d0",
    "metadata": {},
    "source": [
     "## 4. Non-Gaussian Noise (Glitches)\n",
@@ -176,7 +192,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "feaca2ff",
+   "id": "4a42f263",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:29.715144Z",
@@ -215,7 +231,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8359b769",
+   "id": "ce6c178b",
    "metadata": {},
    "source": [
     "## 5. Case Study: Simple Noise Budget\n",
@@ -226,7 +242,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "a661ffee",
+   "id": "a534a444",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:30.015073Z",
@@ -264,7 +280,22 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b263f22d",
+   "id": "4af7d682",
+   "metadata": {},
+   "source": [
+    "## Common Mistakes and Failure Modes\n",
+    "\n",
+    "- **Assuming the ASD slope alone validates the time-domain realization**: a generated noise series can match the target trend on average while still differing in finite-length variance, line structure, or transient content.\n",
+    "- **Reading synthetic components as independent just because they were generated separately**: when you combine seismic, thermal, and shot-noise-like terms, the total curve is a modeling construction, not evidence that real detector subsystems are separable that way.\n",
+    "- **Confusing line amplitude with line width or quality factor**: for narrow spectral features, changing `Q` or `gamma` affects interpretation differently from changing overall amplitude.\n",
+    "- **Over-interpreting glitches as realistic populations**: the non-Gaussian examples illustrate shapes and workflow behavior, not a calibrated model of real glitch rates or detector environments.\n",
+    "- **Comparing curves without checking units and reference frequencies**: a visually reasonable power law can still be mis-parameterized if `amplitude`, `exponent`, or `f_ref` are interpreted inconsistently.\n",
+    "- **Treating a simple noise budget as a validated instrument budget**: the case study shows how to combine terms numerically, but it is not a substitute for validated coupling measurements or full uncertainty accounting.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "de9db83d",
    "metadata": {},
    "source": [
     "## 6. Exercises\n",
@@ -275,7 +306,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e1cd0acf",
+   "id": "3a0149cf",
    "metadata": {},
    "source": [
     "## 7. Quick Check Cell (NBMAKE)\n",
@@ -286,7 +317,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "bc8157bc",
+   "id": "abd5d092",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:30.250027Z",

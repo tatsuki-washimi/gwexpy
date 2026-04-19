@@ -1,5 +1,47 @@
 # FFT Specifications and Conventions
 
+<!-- reference-summary:start -->
+
+**Stability:** Stable
+
+## What it is
+
+Use this page as the quick reference for Fourier normalization, axis conventions, and the APIs that follow those conventions.
+
+## Representative Signatures
+
+```python
+TimeSeries.fft(fftlength=None, overlap=0, window="hann", ...)
+ScalarField.fft_time(nfft=None)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.timeseries import TimeSeries
+
+# Use this page together with TimeSeries.fft / FrequencySeries.ifft / ScalarField.fft_time
+# when you need the exact normalization and axis conventions.
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 This document details the mathematical conventions, normalization, and sign definitions used for Fast Fourier Transforms (FFT) in `gwexpy`.
 
 ## 1. Temporal FFT (`fft_time`)

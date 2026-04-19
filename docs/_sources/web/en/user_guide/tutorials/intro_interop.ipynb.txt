@@ -1,11 +1,27 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6c98e894",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "2b3dc60a",
+   "id": "ee2c7f5d",
    "metadata": {},
    "source": [
-    "# GWExPy TimeSeries Interoperability Tutorial\n",
+    "# Interoperability: Basics\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_interop.ipynb)\n",
     "\n",
@@ -15,7 +31,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "90a10268",
+   "id": "41ddb9bb",
    "metadata": {},
    "source": [
     "## Table of Contents\n",
@@ -23,45 +39,45 @@
     "- 1. General Data Formats & Data Infrastructure\n",
     "    - 1.1. NumPy [Original GWpy]\n",
     "    - 1.2. Pandas Integration [Original GWpy]\n",
-    "    - 1.3. Polars [GWExPy New]\n",
+    "    - 1.3. Polars [GWexpy New]\n",
     "    - 1.4. Xarray Integration [Original GWpy]\n",
-    "    - 1.5. Dask Integration [GWExPy New]\n",
-    "    - 1.6. JSON / Python Dict (to_json) [GWExPy New]\n",
+    "    - 1.5. Dask Integration [GWexpy New]\n",
+    "    - 1.6. JSON / Python Dict (to_json) [GWexpy New]\n",
     "- 2. Database & Storage Layer\n",
     "    - 2.1. HDF5 [Original GWpy]\n",
-    "    - 2.2. SQLite [GWExPy New]\n",
-    "    - 2.3. Zarr [GWExPy New]\n",
-    "    - 2.4. netCDF4 [GWExPy New]\n",
+    "    - 2.2. SQLite [GWexpy New]\n",
+    "    - 2.3. Zarr [GWexpy New]\n",
+    "    - 2.4. netCDF4 [GWexpy New]\n",
     "- 3. Computer Science, Machine Learning & Accelerated Computing\n",
-    "    - 3.1. PyTorch Integration [GWExPy New]\n",
-    "    - 3.2. CuPy (CUDA Acceleration) [GWExPy New]\n",
-    "    - 3.3. TensorFlow Integration [GWExPy New]\n",
-    "    - 3.4. JAX Integration [GWExPy New]\n",
+    "    - 3.1. PyTorch Integration [GWexpy New]\n",
+    "    - 3.2. CuPy (CUDA Acceleration) [GWexpy New]\n",
+    "    - 3.3. TensorFlow Integration [GWexpy New]\n",
+    "    - 3.4. JAX Integration [GWexpy New]\n",
     "- 4. Astronomy & Gravitational Wave Physics\n",
     "    - 4.1. PyCBC / LAL [Original GWpy]\n",
     "    - 4.2. Astropy Integration [Original GWpy]\n",
-    "    - 4.3. Specutils Integration [GWExPy New]\n",
-    "    - 4.4. Pyspeckit Integration [GWExPy New]\n",
+    "    - 4.3. Specutils Integration [GWexpy New]\n",
+    "    - 4.4. Pyspeckit Integration [GWexpy New]\n",
     "- 5. Particle Physics & High Energy Physics\n",
-    "    - 5.1. CERN ROOT Integration [GWExPy New]\n",
+    "    - 5.1. CERN ROOT Integration [GWexpy New]\n",
     "    - 5.2. Recovering from ROOT Objects (`from_root`)\n",
     "- 6. Geophysics, Seismology & Electromagnetics\n",
     "    - 6.1. ObsPy [Original GWpy]\n",
-    "    - 6.2. SimPEG Integration [GWExPy New]\n",
-    "    - 6.3. MTH5 / MTpy [GWExPy New]\n",
+    "    - 6.2. SimPEG Integration [GWexpy New]\n",
+    "    - 6.3. MTH5 / MTpy [GWexpy New]\n",
     "- 7. Acoustics & Audio Analysis\n",
-    "    - 7.1. Librosa / Pydub [GWExPy New]\n",
+    "    - 7.1. Librosa / Pydub [GWexpy New]\n",
     "- 8. Medical & Biosignal Analysis\n",
-    "    - 8.1. MNE-Python [GWExPy New]\n",
-    "    - 8.2. Elephant / quantities Integration [GWExPy New]\n",
-    "    - 8.3. Neo [GWExPy New]\n",
+    "    - 8.1. MNE-Python [GWexpy New]\n",
+    "    - 8.2. Elephant / quantities Integration [GWexpy New]\n",
+    "    - 8.3. Neo [GWexpy New]\n",
     "- 9. Summary"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "faf4fa02",
+   "id": "9a353151",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:40:54.799860Z",
@@ -83,6 +99,10 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import os\n",
     "\n",
     "os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")"
@@ -91,7 +111,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "6c8c3105",
+   "id": "e2790855",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:40:54.829076Z",
@@ -109,22 +129,21 @@
    ],
    "source": [
     "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "import matplotlib.pyplot as plt\n",
-    "import numpy as np\n",
-    "from astropy import units as u\n",
-    "from gwpy.time import LIGOTimeGPS\n",
+    "    import matplotlib.pyplot as plt\n",
+    "    import numpy as np\n",
+    "    from astropy import units as u\n",
+    "    from gwpy.time import LIGOTimeGPS\n",
     "\n",
-    "from gwexpy.timeseries import TimeSeries\n",
-    "\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
-    "warnings.filterwarnings(\"ignore\", category=UserWarning)"
+    "    from gwexpy.timeseries import TimeSeries\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "f5a1621c",
+   "id": "34e593be",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:40:57.141532Z",
@@ -178,7 +197,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "895767e4",
+   "id": "973cf884",
    "metadata": {},
    "source": [
     "## 1. General Data Formats & Data Infrastructure"
@@ -186,7 +205,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b43c4fed",
+   "id": "7015072c",
    "metadata": {},
    "source": [
     "### 1.1. NumPy <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -199,7 +218,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "895f5ac3",
+   "id": "a471f8b9",
    "metadata": {},
    "source": [
     "### 1.2. Pandas Integration <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -214,7 +233,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "db5e39d1",
+   "id": "c209c936",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:41:16.381951Z",
@@ -283,9 +302,10 @@
     "    s_pd = ts.to_pandas(index=\"datetime\")\n",
     "    print(\"\\n--- Converted to Pandas Series ---\")\n",
     "    display(s_pd)\n",
-    "    s_pd.plot(title=\"Pandas Series\")\n",
+    "    fig, ax = plt.subplots()\n",
+    "    s_pd.plot(ax=ax, title=\"Pandas Series\")\n",
     "    plt.show()\n",
-    "    plt.close()\n",
+    "    plt.close(fig)\n",
     "\n",
     "    # Restore TimeSeries from Pandas Series\n",
     "    ts_restored = TimeSeries.from_pandas(s_pd, unit=\"V\")\n",
@@ -295,15 +315,15 @@
     "    del s_pd, ts_restored\n",
     "\n",
     "except ImportError:\n",
-    "    print(\"Pandas is not installed.\")"
+    "    print(\"Pandas is not installed.\")\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "29aea3f8",
+   "id": "b35de39f",
    "metadata": {},
    "source": [
-    "### 1.3. Polars <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 1.3. Polars <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **Polars**: Polars is a high-performance DataFrame library implemented in Rust, excelling at large-scale data processing.\n",
     "> 📚 [Polars Documentation](https://pola.rs/)\n",
@@ -314,7 +334,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "6186d40b",
+   "id": "67159997",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:41:23.818052Z",
@@ -398,7 +418,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0e0e42a2",
+   "id": "952a6698",
    "metadata": {},
    "source": [
     "### 1.4. Xarray Integration <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -412,7 +432,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "c7267cd9",
+   "id": "3d0cd56f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:41:24.029966Z",
@@ -493,10 +513,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0ba969d9",
+   "id": "69d6421e",
    "metadata": {},
    "source": [
-    "### 1.5. Dask Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 1.5. Dask Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **Dask**: Dask is a library for parallel computing that enables processing of large-scale data beyond NumPy/Pandas.\n",
     "> 📚 [Dask Documentation](https://www.dask.org/)"
@@ -505,7 +525,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "784f84e6",
+   "id": "dc4ef9d8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:41:24.314192Z",
@@ -553,10 +573,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a46d6828",
+   "id": "196cf7d2",
    "metadata": {},
    "source": [
-    "### 1.6. JSON / Python Dict (to_json) <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 1.6. JSON / Python Dict (to_json) <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **JSON**: JSON (JavaScript Object Notation) is a lightweight data exchange format supported by the Python standard library.\n",
     "> 📚 [JSON Documentation](https://docs.python.org/3/library/json.html)\n",
@@ -567,7 +587,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "12f89c56",
+   "id": "3c8ea54f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:41:24.386484Z",
@@ -658,7 +678,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f3b4fb58",
+   "id": "9cedac28",
    "metadata": {},
    "source": [
     "## 2. Database & Storage Layer"
@@ -666,7 +686,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "107e15f5",
+   "id": "f973fc4f",
    "metadata": {},
    "source": [
     "### 2.1. HDF5 <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -680,7 +700,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "48f41a25",
+   "id": "1dcb1196",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:41:24.515633Z",
@@ -753,10 +773,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "991ed113",
+   "id": "9cdbb7c8",
    "metadata": {},
    "source": [
-    "### 2.2. SQLite <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 2.2. SQLite <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **SQLite**: SQLite is a lightweight embedded SQL database engine included in the Python standard library.\n",
     "> 📚 [SQLite Documentation](https://docs.python.org/3/library/sqlite3.html)\n",
@@ -767,7 +787,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "e11501d7",
+   "id": "2e64b5eb",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:41:47.068135Z",
@@ -832,10 +852,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "63457527",
+   "id": "9dee4540",
    "metadata": {},
    "source": [
-    "### 2.3. Zarr <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 2.3. Zarr <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **Zarr**: Zarr is a storage format for chunked, compressed multidimensional arrays with excellent cloud storage integration.\n",
     "> 📚 [Zarr Documentation](https://zarr.dev/)\n",
@@ -846,7 +866,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "03852ed8",
+   "id": "6d875559",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:42:15.152529Z",
@@ -930,10 +950,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "54bb88e6",
+   "id": "d5051efc",
    "metadata": {},
    "source": [
-    "### 2.4. netCDF4 <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 2.4. netCDF4 <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **netCDF4**: netCDF4 is a standard format for meteorological, oceanographic, and earth science data with self-describing data structures.\n",
     "> 📚 [netCDF4 Documentation](https://unidata.github.io/netcdf4-python/)\n",
@@ -944,7 +964,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "8fd7b7fa",
+   "id": "e9fd0555",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:42:41.695761Z",
@@ -1026,7 +1046,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e1c19675",
+   "id": "01d91a71",
    "metadata": {},
    "source": [
     "## 3. Computer Science, Machine Learning & Accelerated Computing"
@@ -1034,10 +1054,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "745b29e6",
+   "id": "5f991e7d",
    "metadata": {},
    "source": [
-    "### 3.1. PyTorch Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 3.1. PyTorch Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **PyTorch**: PyTorch is a deep learning framework supporting dynamic computation graphs and GPU acceleration.\n",
     "> 📚 [PyTorch Documentation](https://pytorch.org/)\n",
@@ -1048,7 +1068,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "2c59c63b",
+   "id": "427bab9f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:04.353070Z",
@@ -1101,10 +1121,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "434abe3a",
+   "id": "934136d2",
    "metadata": {},
    "source": [
-    "### 3.2. CuPy (CUDA Acceleration) <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 3.2. CuPy (CUDA Acceleration) <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **CuPy**: CuPy is a NumPy-compatible GPU array library that enables high-speed computation using NVIDIA CUDA.\n",
     "> 📚 [CuPy Documentation](https://cupy.dev/)\n",
@@ -1115,7 +1135,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "6424956b",
+   "id": "2dee2297",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:05.343660Z",
@@ -1167,10 +1187,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "52087581",
+   "id": "cb9ca2ff",
    "metadata": {},
    "source": [
-    "### 3.3. TensorFlow Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 3.3. TensorFlow Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **TensorFlow**: TensorFlow is a machine learning platform developed by Google, excelling at large-scale production environments.\n",
     "> 📚 [TensorFlow Documentation](https://www.tensorflow.org/)"
@@ -1179,7 +1199,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "1a69dd83",
+   "id": "11971ad5",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:05.348088Z",
@@ -1190,44 +1210,43 @@
    },
    "outputs": [],
    "source": [
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "    os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
-    "    warnings.filterwarnings(\n",
-    "        \"ignore\", category=UserWarning, module=r\"google\\.protobuf\\..*\"\n",
-    "    )\n",
-    "    warnings.filterwarnings(\n",
-    "        \"ignore\", category=UserWarning, message=r\"Protobuf gencode version.*\"\n",
-    "    )\n",
-    "    import tensorflow as tf\n",
+    "    try:\n",
+    "        import os\n",
     "\n",
-    "    _ = tf\n",
-    "    # Convert to TensorFlow Tensor\n",
-    "    tf_tensor = ts.to_tensorflow()\n",
-    "    print(\"\\n--- Converted to TensorFlow Tensor ---\")\n",
-    "    print(f\"Tensor shape: {tf_tensor.shape}\")\n",
-    "    print(f\"Tensor dtype: {tf_tensor.dtype}\")\n",
+    "        os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
+    "        warnings.filterwarnings(\"ignore\", category=UserWarning, module=r\"google\\.protobuf\\..*\")\n",
+    "        warnings.filterwarnings(\"ignore\", category=UserWarning, message=r\"Protobuf gencode version.*\")\n",
+    "        import tensorflow as tf\n",
     "\n",
-    "    # Restore\n",
-    "    ts_from_tensorflow = TimeSeries.from_tensorflow(\n",
-    "        tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit\n",
-    "    )\n",
-    "    print(\"Recovered from TF:\", ts_from_tensorflow)\n",
+    "        _ = tf\n",
+    "        # Convert to TensorFlow Tensor\n",
+    "        tf_tensor = ts.to_tensorflow()\n",
+    "        print(\"\\n--- Converted to TensorFlow Tensor ---\")\n",
+    "        print(f\"Tensor shape: {tf_tensor.shape}\")\n",
+    "        print(f\"Tensor dtype: {tf_tensor.dtype}\")\n",
     "\n",
-    "    del tf_tensor, ts_from_tensorflow\n",
+    "        # Restore\n",
+    "        ts_from_tensorflow = TimeSeries.from_tensorflow(\n",
+    "            tf_tensor, t0=ts.t0, dt=ts.dt, unit=ts.unit\n",
+    "        )\n",
+    "        print(\"Recovered from TF:\", ts_from_tensorflow)\n",
     "\n",
-    "except ImportError:\n",
-    "    pass"
+    "        del tf_tensor, ts_from_tensorflow\n",
+    "\n",
+    "    except ImportError:\n",
+    "        pass\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "e6b7deac",
+   "id": "255af6d9",
    "metadata": {},
    "source": [
-    "### 3.4. JAX Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 3.4. JAX Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **JAX**: JAX is a high-performance numerical computing library developed by Google, featuring automatic differentiation and XLA compilation for acceleration.\n",
     "> 📚 [JAX Documentation](https://jax.readthedocs.io/)"
@@ -1236,7 +1255,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "af563e69",
+   "id": "4682b796",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:05.352437Z",
@@ -1289,7 +1308,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2cbbd49d",
+   "id": "7b70e0f0",
    "metadata": {},
    "source": [
     "## 4. Astronomy & Gravitational Wave Physics"
@@ -1297,7 +1316,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3bdb0b9b",
+   "id": "0d38d2a8",
    "metadata": {},
    "source": [
     "### 4.1. PyCBC / LAL <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -1313,7 +1332,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7175331b",
+   "id": "bf1b89a1",
    "metadata": {},
    "source": [
     "### 4.2. Astropy Integration <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -1327,7 +1346,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "f14bd112",
+   "id": "14f0921a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:05.742996Z",
@@ -1401,10 +1420,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2852fd8c",
+   "id": "5a491418",
    "metadata": {},
    "source": [
-    "### 4.3. Specutils Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 4.3. Specutils Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **specutils**: specutils is an Astropy-affiliated package for manipulating and analyzing astronomical spectral data.\n",
     "> 📚 [specutils Documentation](https://specutils.readthedocs.io/)\n",
@@ -1416,7 +1435,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "dfd50e0b",
+   "id": "7ec71cbf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:05.888866Z",
@@ -1468,10 +1487,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d9cf36ba",
+   "id": "d8613ad9",
    "metadata": {},
    "source": [
-    "### 4.4. Pyspeckit Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 4.4. Pyspeckit Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **PySpecKit**: PySpecKit is a spectral analysis toolkit for radio astronomy, supporting spectral line fitting and more.\n",
     "> 📚 [PySpecKit Documentation](https://pyspeckit.readthedocs.io/)\n",
@@ -1482,7 +1501,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "0632f5d9",
+   "id": "393adea3",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:06.164048Z",
@@ -1532,7 +1551,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "01f30c94",
+   "id": "caeaab49",
    "metadata": {},
    "source": [
     "## 5. Particle Physics & High Energy Physics"
@@ -1540,10 +1559,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "adbacfab",
+   "id": "0c74fd6e",
    "metadata": {},
    "source": [
-    "### 5.1. CERN ROOT Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 5.1. CERN ROOT Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **ROOT**: ROOT is a data analysis framework for high-energy physics developed by CERN.\n",
     "> 📚 [ROOT Documentation](https://root.cern/)\n",
@@ -1558,7 +1577,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "aaf6f031",
+   "id": "a596ecc0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:06.285289Z",
@@ -1615,7 +1634,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "73f39867",
+   "id": "48a4c172",
    "metadata": {},
    "source": [
     "### 5.2. Recovering from ROOT Objects (`from_root`)\n",
@@ -1629,7 +1648,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "aa6069a0",
+   "id": "7a0aa7e2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:06.291023Z",
@@ -1663,7 +1682,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5588e2ce",
+   "id": "243c8c9f",
    "metadata": {},
    "source": [
     "## 6. Geophysics, Seismology & Electromagnetics"
@@ -1671,7 +1690,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7b8d7db1",
+   "id": "3aac65c2",
    "metadata": {},
    "source": [
     "### 6.1. ObsPy <span style=\"color: #3498db; font-weight: bold;\">[Original GWpy]</span>\n",
@@ -1685,7 +1704,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "7b44cde2",
+   "id": "cea45d29",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:06.294832Z",
@@ -1755,7 +1774,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "b35dbcc3",
+   "id": "cfe9dc3f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:06.440622Z",
@@ -1789,10 +1808,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "76f79e0c",
+   "id": "5f51c135",
    "metadata": {},
    "source": [
-    "### 6.2. SimPEG Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 6.2. SimPEG Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **SimPEG**: SimPEG is a simulation and estimation framework for geophysical inverse problems.\n",
     "> 📚 [SimPEG Documentation](https://simpeg.xyz/)\n",
@@ -1804,7 +1823,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "6dc3b396",
+   "id": "7d420b7a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:06.444974Z",
@@ -1856,10 +1875,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a813e7b5",
+   "id": "bfb6fa8a",
    "metadata": {},
    "source": [
-    "### 6.3. MTH5 / MTpy <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 6.3. MTH5 / MTpy <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **MTH5**: MTH5 is an HDF5-based data format for magnetotelluric (MT) data.\n",
     "> 📚 [MTH5 Documentation](https://mth5.readthedocs.io/)\n",
@@ -1870,7 +1889,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "282e5e7e",
+   "id": "e330da4b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:06.527968Z",
@@ -1985,7 +2004,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "c5d1fb36",
+   "id": "3c5b5cd8",
    "metadata": {},
    "source": [
     "## 7. Acoustics & Audio Analysis"
@@ -1993,10 +2012,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "673c1470",
+   "id": "9eddb184",
    "metadata": {},
    "source": [
-    "### 7.1. Librosa / Pydub <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 7.1. Librosa / Pydub <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **pydub**: pydub is a simple library for audio file manipulation (editing, conversion, effects).\n",
     "> 📚 [pydub Documentation](https://github.com/jiaaro/pydub)\n",
@@ -2010,7 +2029,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "7e220c2d",
+   "id": "c441786e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:25.947880Z",
@@ -2105,7 +2124,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b68b742a",
+   "id": "d514b41f",
    "metadata": {},
    "source": [
     "## 8. Medical & Biosignal Analysis"
@@ -2113,10 +2132,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "93e0e78f",
+   "id": "3c2ad956",
    "metadata": {},
    "source": [
-    "### 8.1. MNE-Python <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 8.1. MNE-Python <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **MNE**: MNE-Python is a library for analyzing EEG and MEG data, widely used in neuroscience research.\n",
     "> 📚 [MNE Documentation](https://mne.tools/)\n",
@@ -2127,7 +2146,7 @@
   {
    "cell_type": "code",
    "execution_count": 27,
-   "id": "5c07ae35",
+   "id": "bab467bf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:26.043685Z",
@@ -2243,7 +2262,7 @@
   {
    "cell_type": "code",
    "execution_count": 28,
-   "id": "86df681c",
+   "id": "d72b37ce",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:26.256363Z",
@@ -2297,10 +2316,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "aea771ff",
+   "id": "576e35ca",
    "metadata": {},
    "source": [
-    "### 8.2. Elephant / quantities Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 8.2. Elephant / quantities Integration <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "`gwexpy`'s `FrequencySeries` and `Spectrogram` can interconvert with `quantities.Quantity` objects.\n",
     "This is useful for integration with Elephant and Neo.\n",
@@ -2311,7 +2330,7 @@
   {
    "cell_type": "code",
    "execution_count": 29,
-   "id": "337667fd",
+   "id": "2d53dd84",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:26.261679Z",
@@ -2384,10 +2403,10 @@
   },
   {
    "cell_type": "markdown",
-   "id": "fb12b00d",
+   "id": "bf03ea03",
    "metadata": {},
    "source": [
-    "### 8.3. Neo <span style=\"color: #2ecc71; font-weight: bold;\">[GWExPy New]</span>\n",
+    "### 8.3. Neo <span style=\"color: #2ecc71; font-weight: bold;\">[GWexpy New]</span>\n",
     "\n",
     "> **Neo**: Neo is a data structure library for electrophysiology data (neuroscience), supporting input/output to various formats.\n",
     "> 📚 [Neo Documentation](https://neo.readthedocs.io/)\n",
@@ -2398,7 +2417,7 @@
   {
    "cell_type": "code",
    "execution_count": 30,
-   "id": "c97f4301",
+   "id": "bee74fbf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:43:26.314391Z",
@@ -2600,7 +2619,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "17ae7876",
+   "id": "1e22e0b5",
    "metadata": {},
    "source": [
     "## 9. Acoustics & Simulation (Extra Libraries)\n",
@@ -2610,7 +2629,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8fba309a",
+   "id": "143bd9a2",
    "metadata": {},
    "source": [
     "### 9.1. Pyroomacoustics — Room Impulse Response\n",
@@ -2622,7 +2641,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "e4c43bbc",
+   "id": "4c4124e0",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2653,7 +2672,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "487c07cf",
+   "id": "4a06fa3d",
    "metadata": {},
    "source": [
     "### 9.2. OpenEMS — HDF5 Electromagnetic Field Dump\n",
@@ -2664,7 +2683,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "628d6ba8",
+   "id": "394e264f",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2700,7 +2719,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "26385491",
+   "id": "effc05f4",
    "metadata": {},
    "source": [
     "### 9.3. Meshio — Unstructured Mesh → ScalarField\n",
@@ -2711,7 +2730,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "6f9c9d94",
+   "id": "454703d3",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2743,7 +2762,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "470e5f95",
+   "id": "6ece35e6",
    "metadata": {},
    "source": [
     "### 9.4. Multitaper Spectral Estimation\n",
@@ -2755,7 +2774,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "7f9403de",
+   "id": "e40290ad",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -2800,7 +2819,22 @@
   },
   {
    "cell_type": "markdown",
-   "id": "16266185",
+   "id": "8d4a5f11",
+   "metadata": {},
+   "source": [
+    "## Common Mistakes and Interpretation Pitfalls\n",
+    "\n",
+    "- **Assuming every conversion is lossless**: many bridges preserve only the array payload unless you explicitly reattach metadata such as units, `t0`, `dt`, channel names, or axis labels.\n",
+    "- **Confusing direct I/O with interop**: `to_*()` / `from_*()` helpers describe object conversion, not necessarily the same guarantees as `Class.read(..., format=...)` and `obj.write(...)`.\n",
+    "- **Treating timezone-free or sample-rate-free data as fully specified**: if the target container or library does not carry timing metadata clearly, a successful conversion can still produce misleading plots or alignments.\n",
+    "- **Comparing objects after conversion without checking conventions**: frequency spacing, FFT normalization, axis order, and shape conventions can differ across libraries even when the numbers look plausible.\n",
+    "- **Reading partial support as full workflow support**: some examples here demonstrate a working bridge for a narrow object path, not a guarantee that every class, round-trip, or auxiliary attribute is covered.\n",
+    "- **Interpreting visual agreement as semantic agreement**: two plots can look similar while units, indexing, or coordinate meaning have changed. Always inspect metadata, not just the figure."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c6a7d07c",
    "metadata": {},
    "source": [
     "## 10. Summary\n",
@@ -2829,5 +2863,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 2
+ "nbformat_minor": 5
 }

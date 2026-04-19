@@ -1,19 +1,33 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6471418a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "4facc5c2",
+   "id": "112371fe",
    "metadata": {},
    "source": [
-    "# ASD Analysis Pipeline\n",
+    "# ASD Analysis: Pipeline\n",
     "\n",
-    "This tutorial demonstrates how to use `SegmentTable` for a batch ASD analysis pipeline. We will crop data for each segment, compute ASDs, and visualize the variation."
+    "This tutorial demonstrates how to use `SegmentTable` for a batch ASD analysis pipeline. We will crop data for each segment, compute ASDs, and visualize the variation.\n",
+    "\n",
+    "The segment windows are still `gwpy.segments.Segment`, and the waveform payload in each row is a GWpy `TimeSeries`. gwexpy extends that GWpy base-class setup by placing the rows in `SegmentTable` and applying `crop()` and `asd()` across the whole table at once. For the core relationship between GWpy base classes and gwexpy extensions, see [SegmentTable: Basics](intro_segment_table.ipynb).\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "b577104f",
+   "id": "0582901c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:33.361584Z",
@@ -75,24 +89,30 @@
    ],
    "source": [
     "import warnings\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
-    "import numpy as np\n",
-    "from gwpy.segments import Segment\n",
-    "from gwexpy.table import SegmentTable\n",
-    "from gwpy.timeseries import TimeSeries\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "def get_synthetic_data(t0):\n",
-    "    return TimeSeries(np.random.randn(1024), sample_rate=64, t0=t0)\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "segs = [Segment(i*16, i*16+16) for i in range(4)]\n",
-    "st = SegmentTable.from_segments(segs)\n",
-    "st.add_series_column(\"raw\", data=[get_synthetic_data(seg[0]) for seg in segs], kind=\"timeseries\")\n",
-    "st"
+    "    import numpy as np\n",
+    "    from gwpy.segments import Segment\n",
+    "    from gwexpy.table import SegmentTable\n",
+    "    from gwpy.timeseries import TimeSeries\n",
+    "\n",
+    "    def get_synthetic_data(t0):\n",
+    "        return TimeSeries(np.random.randn(1024), sample_rate=64, t0=t0)\n",
+    "\n",
+    "    segs = [Segment(i*16, i*16+16) for i in range(4)]\n",
+    "    st = SegmentTable.from_segments(segs)\n",
+    "    st.add_series_column(\"raw\", data=[get_synthetic_data(seg[0]) for seg in segs], kind=\"timeseries\")\n",
+    "    st\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "a69f2f53",
+   "id": "d63958e1",
    "metadata": {},
    "source": [
     "## Crop and ASD\n",
@@ -103,7 +123,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "af418074",
+   "id": "47993ba5",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:35.728817Z",
@@ -197,16 +217,16 @@
     }
    ],
    "source": [
-    "# Crop to each segment span\n",
+    "# Cut the data to each segment span so every ASD is computed from intervals that share the same operating state.\n",
     "st_cropped = st.crop(\"raw\", out_col=\"cropped\")\n",
-    "# Calculate ASD for each segment\n",
+    "# Estimate ASD per segment to compare stationary noise floors without smearing glitches or state changes across the whole run.\n",
     "st_asd = st_cropped.asd(\"cropped\", out_col=\"asd\", fftlength=2.0)\n",
-    "st_asd.display()"
+    "st_asd.display()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "6140b648",
+   "id": "90435ebb",
    "metadata": {},
    "source": [
     "## Multi-channel Summary\n",
@@ -217,7 +237,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "c49aa519",
+   "id": "6bc3f0a4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:35.806627Z",
@@ -310,10 +330,10 @@
    ],
    "source": [
     "def calc_rms(fs):\n",
-    "    return np.sqrt(np.sum(fs.value**2)) # Simplified\n",
+    "    return np.sqrt(np.sum(fs.value**2))  # Simplified band-integrated amplitude proxy for comparing segment-to-segment loudness.\n",
     "\n",
     "st_asd.map(\"asd\", calc_rms, out_col=\"band_rms\", inplace=True)\n",
-    "st_asd.display()"
+    "st_asd.display()\n"
    ]
   }
  ],

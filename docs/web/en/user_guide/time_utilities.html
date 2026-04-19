@@ -4,33 +4,99 @@
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Use GWexpy time helpers safely for GPS and UTC conversion, including to_gps, from_gps, tconvert, LIGOTimeGPS, vectorized inputs, and timezone edge cases." name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Time Utilities (gwexpy.time) &mdash; GWexpy Documentation</title>
+  <title>GPS Time Utility Functions (gwexpy.time) &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/time_utilities.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Numerical Stability and Precision" href="numerical_stability.html" />
-    <link rel="prev" title="GWexpy Features (For GWpy Users)" href="gwexpy_for_gwpy_users_en.html" /> 
+    <link rel="prev" title="Interop / Conversion Guide" href="interop.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../ja/user_guide/time_utilities.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,62 +110,77 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#to-gps-convert-to-gps-seconds"><code class="docutils literal notranslate"><span class="pre">to_gps</span></code> — Convert to GPS seconds</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#from-gps-convert-gps-seconds-to-datetime"><code class="docutils literal notranslate"><span class="pre">from_gps</span></code> — Convert GPS seconds to datetime</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tconvert-auto-detecting-conversion"><code class="docutils literal notranslate"><span class="pre">tconvert</span></code> — Auto-detecting conversion</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ligotimegps-high-precision-gps-time"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> — High-precision GPS time</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#integration-with-timeseries">Integration with TimeSeries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#see-also">See Also</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#at-a-glance">At a Glance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#on-this-page">On This Page</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quick-guide-important-considerations-faq">Quick Guide: Important Considerations (FAQ)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#function-selection-quick-reference">Function Selection Quick Reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#basic-examples">Basic Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#to-gps-datetime-gps-seconds"><code class="docutils literal notranslate"><span class="pre">to_gps</span></code> — DateTime → GPS Seconds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#from-gps-gps-seconds-datetime"><code class="docutils literal notranslate"><span class="pre">from_gps</span></code> — GPS Seconds → DateTime</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tconvert-automatic-conversion"><code class="docutils literal notranslate"><span class="pre">tconvert</span></code> — Automatic Conversion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ligotimegps-high-precision-gps-time"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> — High-Precision GPS Time</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timeseries-integration">TimeSeries Integration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#next-to-read">Next to Read</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
-      <li class="breadcrumb-item active">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</li>
+      <li class="breadcrumb-item active">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/time_utilities.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -109,23 +190,225 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="time-utilities-gwexpy-time">
-<h1>Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)<a class="headerlink" href="#time-utilities-gwexpy-time" title="Link to this heading"></a></h1>
-<p>GWexpy extends GWpy’s time utilities with support for vectorized operations and
-a wider range of input types — including pandas, NumPy, and Astropy objects —
-in addition to the scalar string/datetime inputs supported by GWpy.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="gps-time-utility-functions-gwexpy-time">
+<h1>GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)<a class="headerlink" href="#gps-time-utility-functions-gwexpy-time" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> extends GWpy’s time utilities to support vector operations on pandas Series, NumPy ndarrays, and Astropy Time objects, in addition to standard string/datetime scalars.</p>
+<section id="at-a-glance">
+<h2>At a Glance<a class="headerlink" href="#at-a-glance" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Item</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Page Role</strong></p></td>
+<td><p>Guide</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Audience</strong></p></td>
+<td><p>Users who need safe GPS/UTC conversion and contributors looking for the public <code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code> entry points</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Prerequisites</strong></p></td>
+<td><p>Basic familiarity with Python <code class="docutils literal notranslate"><span class="pre">datetime</span></code>, timezones, and the use of GPS time in GW workflows</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Use Cases</strong></p></td>
+<td><p>Choose between <code class="docutils literal notranslate"><span class="pre">to_gps</span></code>, <code class="docutils literal notranslate"><span class="pre">from_gps</span></code>, and <code class="docutils literal notranslate"><span class="pre">tconvert</span></code>, or avoid leap-second and timezone pitfalls</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Search Keywords</strong></p></td>
+<td><p>GPS time, <code class="docutils literal notranslate"><span class="pre">to_gps</span></code>, <code class="docutils literal notranslate"><span class="pre">from_gps</span></code>, <code class="docutils literal notranslate"><span class="pre">tconvert</span></code>, <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code>, leap second, timezone</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Search hints:</strong> GPS time, <code class="docutils literal notranslate"><span class="pre">to_gps</span></code>, <code class="docutils literal notranslate"><span class="pre">from_gps</span></code>, <code class="docutils literal notranslate"><span class="pre">tconvert</span></code>, <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code>, leap second, timezone</p>
+</section>
+<section id="on-this-page">
+<h2>On This Page<a class="headerlink" href="#on-this-page" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#quick-guide-important-considerations-faq"><span class="std std-ref">Quick Guide: Important Considerations</span></a></p></li>
+<li><p><a class="reference internal" href="#function-selection-quick-reference"><span class="std std-ref">Function Selection Quick Reference</span></a></p></li>
+<li><p><a class="reference internal" href="#basic-examples"><span class="std std-ref">Basic Examples</span></a></p></li>
+<li><p>to_gps</p></li>
+<li><p>from_gps</p></li>
+<li><p>tconvert</p></li>
+<li><p>LIGOTimeGPS</p></li>
+<li><p><a class="reference internal" href="#timeseries-integration"><span class="std std-ref">TimeSeries Integration</span></a></p></li>
+</ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span><span class="p">,</span> <span class="n">from_gps</span><span class="p">,</span> <span class="n">tconvert</span><span class="p">,</span> <span class="n">LIGOTimeGPS</span>
 </pre></div>
 </div>
+</section>
+<section id="quick-guide-important-considerations-faq">
+<span id="time-utils-en-faq"></span><h2>Quick Guide: Important Considerations (FAQ)<a class="headerlink" href="#quick-guide-important-considerations-faq" title="Link to this heading"></a></h2>
+<p>It is important to understand these fundamental behaviors before performing conversions.</p>
+<section id="handling-leap-seconds">
+<h3>Handling Leap Seconds<a class="headerlink" href="#handling-leap-seconds" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>GPS Time</strong>: Continuous seconds starting from 1980-01-06 00:00:00 UTC. It does not include leap seconds.</p></li>
+<li><p><strong>Conversion</strong>: When converting to/from UTC, <code class="docutils literal notranslate"><span class="pre">astropy.time</span></code>’s IERS leap second tables are automatically applied.</p></li>
+<li><p><strong>Note</strong>: For future dates or very recent leap seconds, you may need to update <code class="docutils literal notranslate"><span class="pre">astropy</span></code> data or use the latest IERS table.</p></li>
+</ul>
+</section>
+<section id="strings-without-timezones">
+<h3>Strings Without Timezones<a class="headerlink" href="#strings-without-timezones" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Strings like <code class="docutils literal notranslate"><span class="pre">&quot;2015-09-14</span> <span class="pre">09:50:45&quot;</span></code> without a timezone are treated as <strong>UTC by default</strong> in <code class="docutils literal notranslate"><span class="pre">to_gps</span></code> and <code class="docutils literal notranslate"><span class="pre">tconvert</span></code>.</p></li>
+<li><p>For reliable local time conversion, always include the timezone name (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;Asia/Tokyo&quot;</span></code>) or provide a timezone-aware <code class="docutils literal notranslate"><span class="pre">datetime</span></code> object.</p></li>
+</ul>
+</section>
+<section id="common-failure-modes">
+<h3>Common Failure Modes<a class="headerlink" href="#common-failure-modes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Strings that cannot be parsed as datetimes, such as <code class="docutils literal notranslate"><span class="pre">to_gps(&quot;not-a-time&quot;)</span></code> or <code class="docutils literal notranslate"><span class="pre">tconvert(&quot;not-a-time&quot;)</span></code>, fail with <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
+<li><p>Inputs that cannot be converted to numeric GPS seconds, such as <code class="docutils literal notranslate"><span class="pre">from_gps(&quot;abc&quot;)</span></code>, fail with <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
+<li><p>Unsupported keyword arguments such as <code class="docutils literal notranslate"><span class="pre">to_gps(...,</span> <span class="pre">timezone=&quot;Asia/Tokyo&quot;)</span></code> raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> in the current implementation. Pass the timezone in the string itself or use a timezone-aware <code class="docutils literal notranslate"><span class="pre">datetime</span></code>.</p></li>
+<li><p>Naive <code class="docutils literal notranslate"><span class="pre">datetime</span></code> inputs are treated as UTC. If you mean a local civil time, use a timezone-aware <code class="docutils literal notranslate"><span class="pre">datetime</span></code>.</p></li>
+<li><p>For DST boundaries or other ambiguous local civil times, this page does not guarantee automatic resolution. Prefer explicit UTC offsets or timezone-aware <code class="docutils literal notranslate"><span class="pre">datetime</span></code> objects for boundary cases.</p></li>
+</ul>
+</section>
+</section>
+<section id="function-selection-quick-reference">
+<h2>Function Selection Quick Reference<a class="headerlink" href="#function-selection-quick-reference" title="Link to this heading"></a></h2>
+<p>Choose the most appropriate function for your goal.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Goal</p></th>
+<th class="head text-left"><p>Use</p></th>
+<th class="head text-left"><p>Input types</p></th>
+<th class="head text-left"><p>Output</p></th>
+<th class="head text-left"><p>Key args</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>DateTime → GPS</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">to_gps</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">Time</span></code>, <code class="docutils literal notranslate"><span class="pre">Series</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> / <code class="docutils literal notranslate"><span class="pre">f8</span> <span class="pre">ndarray</span></code></p></td>
+<td class="text-left"><p>—</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>GPS → DateTime</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">from_gps</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code>, <code class="docutils literal notranslate"><span class="pre">ndarray</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">datetime</span></code> / <code class="docutils literal notranslate"><span class="pre">astropy.time.Time</span></code></p></td>
+<td class="text-left"><p>—</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>Convenience (Auto)</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">tconvert</span></code></p></td>
+<td class="text-left"><p>All above + <code class="docutils literal notranslate"><span class="pre">&quot;now&quot;</span></code></p></td>
+<td class="text-left"><p>Context-dependent (Scalar pref.)</p></td>
+<td class="text-left"><p>—</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>High-Precision Object</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">seconds</span></code>, <code class="docutils literal notranslate"><span class="pre">nanoseconds</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> (integer s+ns)</p></td>
+<td class="text-left"><p>—</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <hr class="docutils" />
-<section id="to-gps-convert-to-gps-seconds">
-<h2><code class="docutils literal notranslate"><span class="pre">to_gps</span></code> — Convert to GPS seconds<a class="headerlink" href="#to-gps-convert-to-gps-seconds" title="Link to this heading"></a></h2>
-<p>Converts a wide variety of time representations to GPS seconds.</p>
-<section id="strings-and-datetime-objects">
-<h3>Strings and datetime objects<a class="headerlink" href="#strings-and-datetime-objects" title="Link to this heading"></a></h3>
+<section id="basic-examples">
+<h2>Basic Examples<a class="headerlink" href="#basic-examples" title="Link to this heading"></a></h2>
+<section id="simple-conversion">
+<h3>1. Simple Conversion<a class="headerlink" href="#simple-conversion" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Purpose: verify round-trip conversion between a datetime string and GPS seconds</p></li>
+<li><p>Input: one UTC string and one GPS scalar</p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code>, <code class="docutils literal notranslate"><span class="pre">datetime</span></code>, and <code class="docutils literal notranslate"><span class="pre">tconvert</span></code> return values</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span><span class="p">,</span> <span class="n">from_gps</span><span class="p">,</span> <span class="n">tconvert</span>
+
+<span class="c1"># Convert date string to GPS seconds (default UTC)</span>
+<span class="n">gps</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45&quot;</span><span class="p">)</span>
+<span class="c1"># → 1126259462.391</span>
+
+<span class="c1"># Convert GPS seconds back to datetime object</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">from_gps</span><span class="p">(</span><span class="mf">1126259462.391</span><span class="p">)</span>
+<span class="c1"># → datetime.datetime(2015, 9, 14, 9, 50, 45, ...)</span>
+
+<span class="c1"># Automatic type detection via tconvert</span>
+<span class="n">tconvert</span><span class="p">(</span><span class="s2">&quot;now&quot;</span><span class="p">)</span>     <span class="c1"># Current GPS time</span>
+<span class="n">tconvert</span><span class="p">(</span><span class="mi">1126259462</span><span class="p">)</span> <span class="c1"># Formatted string (&quot;September 14 2015, ...&quot;)</span>
+</pre></div>
+</div>
+</section>
+<section id="vectorized-operations">
+<h3>2. Vectorized Operations<a class="headerlink" href="#vectorized-operations" title="Link to this heading"></a></h3>
+<p>Passing lists or NumPy arrays will invoke optimized batch conversions.</p>
+<ul class="simple">
+<li><p>Purpose: convert multiple timestamps in one call</p></li>
+<li><p>Input: a list of datetime strings or a NumPy array of GPS seconds</p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="docutils literal notranslate"><span class="pre">astropy.time.Time</span></code> array</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Convert lists or arrays in bulk</span>
+<span class="n">gps_list</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">([</span><span class="s2">&quot;2015-09-14 09:50:00&quot;</span><span class="p">,</span> <span class="s2">&quot;2015-09-14 09:51:00&quot;</span><span class="p">])</span>
+<span class="c1"># → array([1126259417., 1126259477.])</span>
+
+<span class="c1"># Convert numeric arrays back to Astropy Time objects</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">from_gps</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1126259400</span><span class="p">,</span> <span class="mi">1126259410</span><span class="p">))</span>
+<span class="c1"># → &lt;Time object: scale=&#39;utc&#39; format=&#39;gps&#39; value=[1.1262594e+09 ...]&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="timezones-leap-seconds">
+<h3>3. Timezones &amp; Leap Seconds<a class="headerlink" href="#timezones-leap-seconds" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Purpose: show the difference between timezone-free input and timezone-aware input</p></li>
+<li><p>Input: strings or <code class="docutils literal notranslate"><span class="pre">datetime</span></code> objects</p></li>
+<li><p>Output: GPS-second conversions with explicit interpretation</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use explicit timezone strings (recommended)</span>
+<span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2024-01-01 09:00:00 JST&quot;</span><span class="p">)</span> 
+
+<span class="c1"># Be careful: inputs without timezones are treated as UTC</span>
+<span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2024-01-01 09:00:00&quot;</span><span class="p">)</span> <span class="c1"># UTC 09:00:00</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Naive datetime is treated as UTC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="n">to_gps</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># For local civil time, use a timezone-aware datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">zoneinfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZoneInfo</span>
+<span class="n">to_gps</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">ZoneInfo</span><span class="p">(</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</section>
+<section id="invalid-input-examples">
+<h3>4. Invalid Input Examples<a class="headerlink" href="#invalid-input-examples" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Purpose: identify representative <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> and <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> cases before wiring this into a workflow</p></li>
+<li><p>Input: unparsable strings, non-numeric GPS input, unsupported keyword arguments</p></li>
+<li><p>Output: failure-mode examples</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># String cannot be parsed as a datetime</span>
+<span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;not-a-time&quot;</span><span class="p">)</span>  <span class="c1"># -&gt; ValueError</span>
+
+<span class="c1"># GPS input is not numeric</span>
+<span class="n">from_gps</span><span class="p">(</span><span class="s2">&quot;abc&quot;</span><span class="p">)</span>       <span class="c1"># -&gt; ValueError</span>
+
+<span class="c1"># Unsupported keyword argument</span>
+<span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2024-01-01 09:00:00&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>  <span class="c1"># -&gt; TypeError</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="to-gps-datetime-gps-seconds">
+<span id="time-utils-en-to-gps"></span><h2><code class="docutils literal notranslate"><span class="pre">to_gps</span></code> — DateTime → GPS Seconds<a class="headerlink" href="#to-gps-datetime-gps-seconds" title="Link to this heading"></a></h2>
+<p><strong>Signature</strong>: <code class="docutils literal notranslate"><span class="pre">to_gps(t,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p>Converts various time representations into GPS seconds. It performs efficient vectorized operations on lists, arrays, and Series in addition to individual scalars.</p>
+<section id="working-with-strings-and-datetime-objects">
+<h3>Working with Strings and DateTime Objects<a class="headerlink" href="#working-with-strings-and-datetime-objects" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Purpose: convert a scalar datetime-like value into GPS seconds</p></li>
+<li><p>Input: a string or <code class="docutils literal notranslate"><span class="pre">datetime</span></code></p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> or equivalent scalar GPS representation</p></li>
+</ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
 
-<span class="c1"># ISO 8601 string (UTC assumed if no timezone given)</span>
+<span class="c1"># ISO 8601 string (assumed UTC if no timezone is specified)</span>
 <span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45 UTC&quot;</span><span class="p">)</span>
 <span class="c1"># → LIGOTimeGPS(1126259462, 391000000)</span>
 
@@ -135,115 +418,96 @@ in addition to the scalar string/datetime inputs supported by GWpy.</p>
 </pre></div>
 </div>
 </section>
-<section id="astropy-time">
-<h3>Astropy Time<a class="headerlink" href="#astropy-time" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
-
-<span class="n">t</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="s2">&quot;2015-09-14T09:50:45&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;isot&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;utc&quot;</span><span class="p">)</span>
-<span class="n">to_gps</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-<span class="c1"># → 1126259462.391</span>
-</pre></div>
-</div>
-</section>
-<section id="pandas-series-datetimeindex-vectorized">
-<h3>pandas Series / DatetimeIndex (vectorized)<a class="headerlink" href="#pandas-series-datetimeindex-vectorized" title="Link to this heading"></a></h3>
+<section id="working-with-pandas-vectorized">
+<h3>Working with pandas (Vectorized)<a class="headerlink" href="#working-with-pandas-vectorized" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Purpose: convert multiple timestamps in one call</p></li>
+<li><p>Input: a pandas <code class="docutils literal notranslate"><span class="pre">Series</span></code></p></li>
+<li><p>Output: a NumPy array of GPS seconds</p></li>
+</ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
 
 <span class="n">dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">([</span><span class="s2">&quot;2015-09-14&quot;</span><span class="p">,</span> <span class="s2">&quot;2015-09-15&quot;</span><span class="p">,</span> <span class="s2">&quot;2015-09-16&quot;</span><span class="p">]))</span>
 <span class="n">gps_array</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
 <span class="c1"># → numpy array([1126224017., 1126310417., 1126396817.])</span>
 </pre></div>
 </div>
-</section>
-<section id="numpy-datetime64-arrays-vectorized">
-<h3>NumPy datetime64 arrays (vectorized)<a class="headerlink" href="#numpy-datetime64-arrays-vectorized" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="n">dt64</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;2015-09-14T09:50:45&quot;</span><span class="p">,</span> <span class="s2">&quot;2015-09-14T09:51:00&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;datetime64[ns]&quot;</span><span class="p">)</span>
-<span class="n">to_gps</span><span class="p">(</span><span class="n">dt64</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
 <hr class="docutils" />
-<section id="from-gps-convert-gps-seconds-to-datetime">
-<h2><code class="docutils literal notranslate"><span class="pre">from_gps</span></code> — Convert GPS seconds to datetime<a class="headerlink" href="#from-gps-convert-gps-seconds-to-datetime" title="Link to this heading"></a></h2>
-<p>Converts GPS seconds back to human-readable time. Scalar inputs return a
-<code class="docutils literal notranslate"><span class="pre">datetime</span></code>, while array inputs return an <code class="docutils literal notranslate"><span class="pre">astropy.time.Time</span></code> array.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_gps</span>
-
-<span class="c1"># Scalar → datetime</span>
-<span class="n">from_gps</span><span class="p">(</span><span class="mi">1126259462</span><span class="p">)</span>
+</section>
+</section>
+<section id="from-gps-gps-seconds-datetime">
+<span id="time-utils-en-from-gps"></span><h2><code class="docutils literal notranslate"><span class="pre">from_gps</span></code> — GPS Seconds → DateTime<a class="headerlink" href="#from-gps-gps-seconds-datetime" title="Link to this heading"></a></h2>
+<p><strong>Signature</strong>: <code class="docutils literal notranslate"><span class="pre">from_gps(t,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p>Converts GPS seconds into human-readable formats. Scalar inputs return <code class="docutils literal notranslate"><span class="pre">datetime</span></code> objects, while array inputs return <code class="docutils literal notranslate"><span class="pre">astropy.time.Time</span></code> objects.</p>
+<ul class="simple">
+<li><p>Scalar input such as <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, or <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code>: returns <code class="docutils literal notranslate"><span class="pre">datetime.datetime</span></code></p></li>
+<li><p>Vector input such as a list, NumPy array, or pandas object: returns <code class="docutils literal notranslate"><span class="pre">astropy.time.Time</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">from_gps</span><span class="p">(</span><span class="mi">1126259462</span><span class="p">)</span>
 <span class="c1"># → datetime.datetime(2015, 9, 14, 9, 50, 45, tzinfo=...)</span>
-
-<span class="c1"># List → astropy Time array</span>
-<span class="n">from_gps</span><span class="p">([</span><span class="mi">1126259462</span><span class="p">,</span> <span class="mi">1126259472</span><span class="p">,</span> <span class="mi">1126259482</span><span class="p">])</span>
 </pre></div>
 </div>
-</section>
 <hr class="docutils" />
-<section id="tconvert-auto-detecting-conversion">
-<h2><code class="docutils literal notranslate"><span class="pre">tconvert</span></code> — Auto-detecting conversion<a class="headerlink" href="#tconvert-auto-detecting-conversion" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">tconvert</span></code> inspects the input type and dispatches to <code class="docutils literal notranslate"><span class="pre">to_gps</span></code> or <code class="docutils literal notranslate"><span class="pre">from_gps</span></code>
-automatically. This mirrors the behavior of the GWpy <code class="docutils literal notranslate"><span class="pre">tconvert</span></code> but adds
-array support.</p>
+</section>
+<section id="tconvert-automatic-conversion">
+<span id="time-utils-en-tconvert"></span><h2><code class="docutils literal notranslate"><span class="pre">tconvert</span></code> — Automatic Conversion<a class="headerlink" href="#tconvert-automatic-conversion" title="Link to this heading"></a></h2>
+<p><strong>Signature</strong>: <code class="docutils literal notranslate"><span class="pre">tconvert(t=None,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p>Automatically detects the input type and dispatches to <code class="docutils literal notranslate"><span class="pre">to_gps</span></code> or <code class="docutils literal notranslate"><span class="pre">from_gps</span></code>.</p>
+<ul class="simple">
+<li><p>Purpose: use one convenience function when the input type may vary</p></li>
+<li><p>Input: a datetime-like value, a GPS value, or <code class="docutils literal notranslate"><span class="pre">&quot;now&quot;</span></code></p></li>
+<li><p>Output: GPS seconds or a formatted UTC-side representation depending on input type</p></li>
+</ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">tconvert</span>
 
-<span class="c1"># String / datetime → GPS seconds</span>
-<span class="n">tconvert</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45 UTC&quot;</span><span class="p">)</span>
-<span class="c1"># → 1126259462</span>
-
-<span class="c1"># GPS seconds → formatted UTC string</span>
-<span class="n">tconvert</span><span class="p">(</span><span class="mi">1126259462</span><span class="p">)</span>
-<span class="c1"># → &quot;September 14 2015, 09:50:45 UTC&quot;</span>
-
-<span class="c1"># Current time as GPS seconds</span>
-<span class="n">tconvert</span><span class="p">(</span><span class="s2">&quot;now&quot;</span><span class="p">)</span>
+<span class="n">tconvert</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45 UTC&quot;</span><span class="p">)</span> <span class="c1"># → 1126259462</span>
+<span class="n">tconvert</span><span class="p">(</span><span class="s2">&quot;now&quot;</span><span class="p">)</span>                     <span class="c1"># Current time as GPS</span>
 </pre></div>
 </div>
-</section>
 <hr class="docutils" />
+</section>
 <section id="ligotimegps-high-precision-gps-time">
-<h2><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> — High-precision GPS time<a class="headerlink" href="#ligotimegps-high-precision-gps-time" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> stores GPS time with nanosecond precision (integer seconds +
-integer nanoseconds). It is the standard representation used by LIGO data
-access libraries.</p>
+<span id="time-utils-en-ligotimegps"></span><h2><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> — High-Precision GPS Time<a class="headerlink" href="#ligotimegps-high-precision-gps-time" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> stores GPS time with nanosecond precision (integer seconds + integer nanoseconds).</p>
+<ul class="simple">
+<li><p>Purpose: preserve integer-second and nanosecond precision explicitly</p></li>
+<li><p>Input: integer seconds and optional nanoseconds</p></li>
+<li><p>Output: a <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> object</p></li>
+</ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIGOTimeGPS</span>
 
-<span class="n">t</span> <span class="o">=</span> <span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mi">1126259462</span><span class="p">,</span> <span class="mi">391000000</span><span class="p">)</span>   <span class="c1"># GW150914 merger time</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">gpsSeconds</span><span class="p">)</span>      <span class="c1"># 1126259462</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">gpsNanoSeconds</span><span class="p">)</span>  <span class="c1"># 391000000</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>          <span class="c1"># 1126259462.391</span>
-
-<span class="c1"># Arithmetic</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>    <span class="c1"># LIGOTimeGPS(1126259472, 391000000)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>     <span class="c1"># LIGOTimeGPS(1126259457, 391000000)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mi">1126259462</span><span class="p">,</span> <span class="mi">391000000</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
 <hr class="docutils" />
-<section id="integration-with-timeseries">
-<h2>Integration with TimeSeries<a class="headerlink" href="#integration-with-timeseries" title="Link to this heading"></a></h2>
-<p>Many GWexpy methods accept time specifications directly as strings, datetime
-objects, or GPS numbers — <code class="docutils literal notranslate"><span class="pre">gwexpy.time.to_gps</span></code> is called internally.</p>
+</section>
+<section id="timeseries-integration">
+<span id="time-utils-en-timeseries"></span><h2>TimeSeries Integration<a class="headerlink" href="#timeseries-integration" title="Link to this heading"></a></h2>
+<p>Many methods in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> accept time specifications in any format supported by <code class="docutils literal notranslate"><span class="pre">to_gps()</span></code>.</p>
+<ul class="simple">
+<li><p>Purpose: show where the time helpers surface in everyday <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> workflows</p></li>
+<li><p>Input: time strings, datetimes, or GPS-style values accepted by <code class="docutils literal notranslate"><span class="pre">to_gps()</span></code></p></li>
+<li><p>Output: fetched or cropped <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects</p></li>
+</ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gwexpy</span>
 
 <span class="n">ts</span> <span class="o">=</span> <span class="n">gwexpy</span><span class="o">.</span><span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;H1:GDS-CALIB_STRAIN&quot;</span><span class="p">,</span>
                              <span class="s2">&quot;2015-09-14 09:50:40&quot;</span><span class="p">,</span>
                              <span class="s2">&quot;2015-09-14 09:51:00&quot;</span><span class="p">)</span>
 
-<span class="c1"># .crop() accepts any format supported by to_gps()</span>
+<span class="c1"># .crop() accepts strings, datetimes, etc.</span>
 <span class="n">segment</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:44&quot;</span><span class="p">,</span> <span class="s2">&quot;2015-09-14 09:50:50&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <hr class="docutils" />
-<section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<section id="next-to-read">
+<h2>Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../reference/api/time.html"><span class="doc">Time (gwexpy.time)</span></a> — Full API reference for <code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code></p></li>
-<li><p><a class="reference internal" href="gwexpy_for_gwpy_users_en.html"><span class="doc">GWexpy Features (For GWpy Users)</span></a> — Overview of all GWexpy extensions</p></li>
+<li><p><a class="reference internal" href="../reference/api/time.html"><span class="std std-doc">API Reference</span></a> — Complete API reference for <code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code></p></li>
+<li><p><a class="reference internal" href="gwexpy_for_gwpy_users_en.html"><span class="std std-doc">Migration from GWpy</span></a> — Overview of all GWexpy extensions</p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">Prerequisites and Conventions</span></a> — Shared assumptions for GPS time, timezones, and FFT behavior</p></li>
 </ul>
 </section>
 </section>
@@ -252,14 +516,16 @@ objects, or GPS numbers — <code class="docutils literal notranslate"><span cla
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwexpy_for_gwpy_users_en.html" class="btn btn-neutral float-left" title="GWexpy Features (For GWpy Users)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="interop.html" class="btn btn-neutral float-left" title="Interop / Conversion Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="numerical_stability.html" class="btn btn-neutral float-right" title="Numerical Stability and Precision" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -276,7 +542,24 @@ objects, or GPS numbers — <code class="docutils literal notranslate"><span cla
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="license.html">License / Disclaimer</a> |
+        <a href="roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

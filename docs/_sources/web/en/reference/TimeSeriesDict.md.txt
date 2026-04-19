@@ -1,5 +1,50 @@
 # TimeSeriesDict
 
+<!-- reference-summary:start -->
+
+**Stability:** Stable
+
+## What it is
+
+Use `TimeSeriesDict` to organize multiple `TimeSeries` objects while preserving per-channel metadata and enabling batch operations.
+
+## Representative Signatures
+
+```python
+TimeSeriesDict(data: dict[str, TimeSeries])
+TimeSeriesDict.to_matrix(align="intersection")
+```
+
+## Minimal Example
+
+```python
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+import numpy as np
+
+ts0 = TimeSeries(np.random.randn(128), sample_rate=128)
+ts1 = TimeSeries(np.random.randn(128), sample_rate=128)
+dct = TimeSeriesDict({"A": ts0, "B": ts1})
+mat = dct.to_matrix()
+```
+
+## Related Theory
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** PhaseMethodsMixin, TimeSeriesDict
 
 Dictionary of TimeSeries objects.
@@ -1145,10 +1190,11 @@ HDF5 dataset names (for GWpy `path=`):
 - If multiple keys sanitize to the same name, a suffix like `__1` is added.
 - The original keys are stored in file attributes, and `gwexpy` restores them on read.
 
-.. warning::
-   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
-   arbitrary code on load.
+:::{warning}
+Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+arbitrary code on load.
 
+:::
 Pickle portability note: pickled gwexpy `TimeSeriesDict` unpickles as a **GWpy**
 `TimeSeriesDict` (gwexpy not required on the loading side).
 

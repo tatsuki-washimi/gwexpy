@@ -1,11 +1,27 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c60f35c1",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "8d8bf632",
+   "id": "2dfb0e8d",
    "metadata": {},
    "source": [
-    "# gwexpy TimeSeries New Features Tutorial\n",
+    "# TimeSeries: Basics\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb)\n",
     "\n",
@@ -26,7 +42,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "358b643e",
+   "id": "aa903252",
    "metadata": {},
    "source": [
     "## 1. Environment Setup\n",
@@ -37,7 +53,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "56fd9804",
+   "id": "f1c179c1",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:10.627481Z",
@@ -48,6 +64,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "from astropy import units as u\n",
@@ -56,20 +76,20 @@
     "from gwexpy.plot import Plot\n",
     "from gwexpy.timeseries import TimeSeries\n",
     "\n",
-    "# Generate sample data (5 seconds of data sampled at 100Hz)\n",
+    "# Generate two toy channels: one nearly stationary line and one drifting chirp so later diagnostics have a clear physical target.\n",
     "fs = 100\n",
     "duration = 5.0\n",
     "# Restore 't' for compatibility with downstream cells if they use it\n",
     "t = np.arange(0, duration, 1 / fs)\n",
     "\n",
-    "# Sensor 1: 10Hz sine wave + noise\n",
+    "# Sensor 1 behaves like a stable calibration line plus measurement noise, which is useful as a demodulation reference.\n",
     "s1 = sine(duration=duration, sample_rate=fs, frequency=10, amplitude=1.0)\n",
     "n1 = gaussian(duration=duration, sample_rate=fs, std=0.2)\n",
     "ts1 = s1 + n1\n",
     "ts1.name = \"Sensor 1\"\n",
     "ts1.override_unit(\"V\")\n",
     "\n",
-    "# Sensor 2: Chirp signal (frequency changes over time: 5Hz -> 25Hz) + exponential amplification\n",
+    "# Sensor 2 mimics a non-stationary line whose frequency sweeps and whose amplitude grows, so Hilbert-based tracking has a meaningful physical trend to recover.\n",
     "s2 = chirp(duration=duration, sample_rate=fs, f0=5, f1=25, t1=duration)\n",
     "env = exponential(\n",
     "    duration=duration, sample_rate=fs, tau=2.0, decay=False, amplitude=0.2\n",
@@ -81,7 +101,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "85a76587",
+   "id": "bd8a3196",
    "metadata": {},
    "source": [
     "## 2. Signal Processing and Demodulation\n",
@@ -91,7 +111,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d8164ef1",
+   "id": "330fe685",
    "metadata": {},
    "source": [
     "### Hilbert Transform and Envelope\n",
@@ -102,7 +122,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "ce20b9ad",
+   "id": "4759a1b4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:12.777881Z",
@@ -124,9 +144,9 @@
     }
    ],
    "source": [
-    "# Calculate the analytic signal\n",
+    "# Build the analytic signal so amplitude and phase can be separated without cancelling positive and negative frequency content.\n",
     "ts_analytic = ts2.hilbert()\n",
-    "# Calculate the envelope\n",
+    "# The envelope isolates the slow amplitude modulation riding on top of the oscillatory carrier.\n",
     "ts_env = ts2.envelope()\n",
     "\n",
     "plot = Plot(ts2, ts_env, figsize=(10, 4))\n",
@@ -143,7 +163,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cd9f4e9b",
+   "id": "c832b124",
    "metadata": {},
    "source": [
     "### Instantaneous Phase and Instantaneous Frequency\n",
@@ -154,7 +174,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "149ebd14",
+   "id": "17096bb7",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:18.572072Z",
@@ -176,11 +196,11 @@
     }
    ],
    "source": [
-    "# Instantaneous phase (unwrap=True to remove phase jumps)\n",
+    "# Unwrap the phase so the chirp appears as continuous phase accumulation instead of artificial 2pi jumps.\n",
     "phase_rad = ts2.instantaneous_phase(unwrap=True)\n",
     "phase_deg = ts2.instantaneous_phase(deg=True, unwrap=True)\n",
     "\n",
-    "# Instantaneous frequency\n",
+    "# Convert the phase slope into instantaneous frequency to follow the drifting line in time.\n",
     "freq = ts2.instantaneous_frequency()\n",
     "\n",
     "plot = Plot(phase_rad, freq, separate=True, sharex=True, figsize=(10, 6))\n",
@@ -194,7 +214,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "26b3ad3a",
+   "id": "924e2be0",
    "metadata": {},
    "source": [
     "### Mixing and Demodulation (Mix-down, Baseband, Lock-in)\n",
@@ -205,7 +225,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "5030c45d",
+   "id": "23849fe3",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:32.505645Z",
@@ -251,13 +271,13 @@
     }
    ],
    "source": [
-    "# 1. mix_down: Demodulate at a specific frequency f0 (becomes a complex signal)\n",
+    "# 1. Mix down to 10 Hz so the narrowband line is shifted to baseband, where slow amplitude and phase changes are easier to measure.\n",
     "ts_mixed = ts1.mix_down(f0=10)\n",
     "\n",
-    "# 2. baseband: Execute demodulation + lowpass + resampling in one step\n",
+    "# 2. Baseband adds low-pass filtering and decimation so the retained samples describe only the slow envelope, not the carrier itself.\n",
     "ts_base = ts1.baseband(f0=10, lowpass=5, output_rate=20)\n",
     "\n",
-    "# 3. lock_in: Lock-in detection (extract amplitude and phase)\n",
+    "# 3. Lock-in detection averages against a phase-matched reference, which suppresses broadband noise while preserving the coherent 10 Hz component.\n",
     "amp, ph = ts1.lock_in(f0=10, stride=0.1)  # Output average every 0.1 seconds\n",
     "res_complex = ts1.lock_in(\n",
     "    f0=10, stride=0.1, output=\"complex\"\n",
@@ -280,7 +300,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e2e30e37",
+   "id": "2e413b1d",
    "metadata": {},
    "source": [
     "## 3. Spectral Analysis and CorrelationWhile inheriting GWpy's functionality, `mode=\"transient\"` FFT for transient signals and transfer function calculation via direct FFT ratio have been added."
@@ -288,7 +308,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a61b84e6",
+   "id": "e29976bb",
    "metadata": {},
    "source": [
     "### Extended FFTUsing `mode=\"transient\"` enables zero-padding, adjustment to fast lengths, and individual left/right padding specifications."
@@ -297,7 +317,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "5a51f4ac",
+   "id": "a774c601",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:50:29.766866Z",
@@ -319,11 +339,11 @@
     }
    ],
    "source": [
-    "# Standard FFT (GWpy compatible)\n",
+    "# Standard FFT is appropriate when the signal is roughly stationary over the full record and you want GWpy-compatible normalization.\n",
     "fs_gwpy = ts1.fft()\n",
     "\n",
-    "# Transient mode:\n",
-    "# Specify padding amount with pad_left/right. Use nfft_mode=\"next_fast_len\" to adjust to computationally efficient length.\n",
+    "# Transient mode is better for short-lived responses because padding reduces edge leakage that would otherwise distort amplitudes.\n",
+    "# pad_left/pad_right extend the event in time, and nfft_mode=\"next_fast_len\" keeps that protection computationally cheap.\n",
     "fs_trans = ts1.fft(\n",
     "    mode=\"transient\", pad_left=0.5, pad_right=0.5, nfft_mode=\"next_fast_len\"\n",
     ")\n",
@@ -335,12 +355,12 @@
     "ax.get_lines()[1].set_alpha(0.7)\n",
     "ax.legend()\n",
     "ax.set_title(\"Comparison of FFT modes\")\n",
-    "plt.show()"
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "91a1d2ed",
+   "id": "04790394",
    "metadata": {},
    "source": [
     "### Transfer Function and Cross-Correlation (xcorr)With `transfer_function`, you can choose not only the Welch method (`mode=\"steady\"`) but also direct FFT ratio (`mode=\"transient\"`)."
@@ -349,7 +369,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "e8fbfd7c",
+   "id": "8c1b0a98",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:50:29.998802Z",
@@ -371,13 +391,13 @@
     }
    ],
    "source": [
-    "# Calculate transfer function (transfer function of Chirp Signal with respect to Sensor 1)\n",
+    "# Estimate the transfer function to ask whether Sensor 1 can linearly explain features in the chirping channel across frequency.\n",
     "tf_welch = ts2.transfer_function(ts1, fftlength=1)\n",
     "tf_fft = ts2.transfer_function(\n",
     "    ts1, mode=\"transient\"\n",
     ")  # Full-span FFT ratio (useful for transient response analysis)\n",
     "\n",
-    "# Cross-correlation (xcorr)\n",
+    "# Cross-correlation checks whether the two channels line up in time, which is a first sanity check before treating one as a witness for the other.\n",
     "corr = ts1.xcorr(ts2, maxlag=0.5, normalize=\"coeff\")\n",
     "\n",
     "plot = Plot(figsize=(10, 6))\n",
@@ -397,7 +417,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "44f1318d",
+   "id": "bd3f402a",
    "metadata": {},
    "source": [
     "### STLT (Short-Time Laplace Transform)STLT (Short-Time Laplace Transform) is a transform for extracting local structures that change over time in a signal.In `gwexpy`, the STLT result is a 3D transform with axes **(time × sigma × frequency)**, represented by `TimePlaneTransform` / `LaplaceGram`.Below is an example of calculating STLT using the `stlt` method and extracting a slice (`Plane2D`) at a specific time.This example also demonstrates specifying `frequencies` (Hz) to evaluate STLT at arbitrary frequency points."
@@ -406,7 +426,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "67d9fd2d",
+   "id": "78c1f546",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:50:30.351184Z",
@@ -462,7 +482,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "98404b2d",
+   "id": "b93699f3",
    "metadata": {},
    "source": [
     "## 4. Hilbert-Huang Transform (HHT)Hilbert-Huang Transform (HHT) functionality for nonlinear and non-stationary signal analysis.Combines Empirical Mode Decomposition (EMD) and Hilbert spectral analysis."
@@ -471,7 +491,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "cb462dcb",
+   "id": "f00b8269",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:50:30.358316Z",
@@ -499,60 +519,11 @@
      "output_type": "display_data"
     }
    ],
-   "source": [
-    "# HHT (Hilbert-Huang Transform)\n",
-    "# Execute Empirical Mode Decomposition (EMD) and extract IMFs (Intrinsic Mode Functions)\n",
-    "# Note: Requires PyEMD (EMD-signal) : `pip install EMD-signal`\n",
-    "\n",
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
-    "\n",
-    "    os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n",
-    "    warnings.filterwarnings(\"ignore\", category=UserWarning, module=\"google.protobuf\")\n",
-    "    warnings.filterwarnings(\"ignore\", message=\"Protobuf gencode version\")\n",
-    "    # EMDExecute EMD (returns dictionary)\n",
-    "    # method=\"emd\" (standard EMD) or \"eemd\" (Ensemble EMD)\n",
-    "    # Here we use ts2 (example with chirp signal)\n",
-    "    imfs = ts2.emd(method=\"emd\", max_imf=3)\n",
-    "\n",
-    "    print(f\"Extracted IMFs: {list(imfs.keys())}\")\n",
-    "\n",
-    "    # Plot IMFs\n",
-    "    sorted_keys = sorted(\n",
-    "        [k for k in imfs.keys() if k.startswith(\"IMF\")], key=lambda x: int(x[3:])\n",
-    "    )\n",
-    "    if \"residual\" in imfs:\n",
-    "        sorted_keys.append(\"residual\")\n",
-    "\n",
-    "    # gwexpy.plot.Plot for batch plotting\n",
-    "    plot_data = [ts2] + [imfs[k] for k in sorted_keys]\n",
-    "    plot = Plot(*plot_data, separate=True, sharex=True, figsize=(10, 8))\n",
-    "\n",
-    "    # Original settings\n",
-    "    ax0 = plot.axes[0]\n",
-    "    ax0.get_lines()[0].set_label(\"Original\")\n",
-    "    ax0.get_lines()[0].set_color(\"black\")\n",
-    "    ax0.legend(loc=\"upper right\")\n",
-    "    ax0.set_title(\"Empirical Mode Decomposition\")\n",
-    "\n",
-    "    # IMF settings\n",
-    "    for i, key in enumerate(sorted_keys):\n",
-    "        ax = plot.axes[i + 1]\n",
-    "        ax.get_lines()[0].set_label(key)\n",
-    "        ax.legend(loc=\"upper right\")\n",
-    "\n",
-    "    plt.show()\n",
-    "\n",
-    "except ImportError:\n",
-    "    print(\"EMD-signal not installed. Skipping HHT demo.\")\n",
-    "except Exception as e:\n",
-    "    print(f\"HHT Error: {e}\")"
-   ]
+   "source": "import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter('ignore')\n\n    # HHT (Hilbert-Huang Transform)\n    # Execute Empirical Mode Decomposition (EMD) and extract IMFs (Intrinsic Mode Functions)\n    # Note: Requires PyEMD (EMD-signal) : `pip install EMD-signal`\n\n    try:\n        import os\n\n        os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n        # EMDExecute EMD (returns dictionary)\n        # method=\"emd\" (standard EMD) or \"eemd\" (Ensemble EMD)\n        # Here we use ts2 (example with chirp signal)\n        imfs = ts2.emd(method=\"emd\", max_imf=3)\n\n        print(f\"Extracted IMFs: {list(imfs.keys())}\")\n\n        # Plot IMFs\n        sorted_keys = sorted(\n        [k for k in imfs.keys() if k.startswith(\"IMF\")], key=lambda x: int(x[3:])\n        )\n        if \"residual\" in imfs:\n            sorted_keys.append(\"residual\")\n\n        # gwexpy.plot.Plot for batch plotting\n        plot_data = [ts2] + [imfs[k] for k in sorted_keys]\n        plot = Plot(*plot_data, separate=True, sharex=True, figsize=(10, 8))\n\n        # Original settings\n        ax0 = plot.axes[0]\n        ax0.get_lines()[0].set_label(\"Original\")\n        ax0.get_lines()[0].set_color(\"black\")\n        ax0.legend(loc=\"upper right\")\n        ax0.set_title(\"Empirical Mode Decomposition\")\n\n        # IMF settings\n        for i, key in enumerate(sorted_keys):\n            ax = plot.axes[i + 1]\n            ax.get_lines()[0].set_label(key)\n            ax.legend(loc=\"upper right\")\n\n        plt.show()\n\n    except ImportError:\n        print(\"EMD-signal not installed. Skipping HHT demo.\")\n    except Exception as e:\n        print(f\"HHT Error: {e}\")\n"
   },
   {
    "cell_type": "markdown",
-   "id": "e740864e",
+   "id": "cac251bb",
    "metadata": {},
    "source": [
     "## 5. Statistics and PreprocessingMissing value imputation, standardization, ARIMA models, Hurst exponent, and rolling statistics are available as TimeSeries methods."
@@ -561,7 +532,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "cc56a043",
+   "id": "407e6885",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:52:35.455924Z",
@@ -608,7 +579,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7899be79",
+   "id": "4954f13d",
    "metadata": {},
    "source": [
     "### Peak Detection (Find Peaks)Wraps `scipy.signal.find_peaks` to detect peaks in time series data."
@@ -617,7 +588,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "745d1e48",
+   "id": "d3f628df",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:53:04.499669Z",
@@ -683,7 +654,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "973a0353",
+   "id": "2107c2e9",
    "metadata": {},
    "source": [
     "### ARIMA Model and Hurst ExponentNote: These features require libraries such as `statsmodels` and `hurst`."
@@ -692,7 +663,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "0844b636",
+   "id": "af069eda",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:53:33.658141Z",
@@ -723,67 +694,11 @@
      "output_type": "display_data"
     }
    ],
-   "source": [
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
-    "\n",
-    "    os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n",
-    "    warnings.filterwarnings(\"ignore\", category=UserWarning, module=\"google.protobuf\")\n",
-    "    warnings.filterwarnings(\"ignore\", message=\"Protobuf gencode version\")\n",
-    "    # 3. fit_arima: ARIMA(1,0,0) fitting and forecasting\n",
-    "    model = ts1.fit_arima(order=(1, 0, 0))\n",
-    "    resid = model.residuals()\n",
-    "    forecast, conf = model.forecast(steps=30)\n",
-    "\n",
-    "    plot = Plot(ts1.tail(100), forecast, figsize=(10, 4))\n",
-    "    ax = plot.gca()\n",
-    "    ax.get_lines()[0].set_label(\"Measured\")\n",
-    "    ax.get_lines()[1].set_label(\"Forecast\")\n",
-    "    ax.get_lines()[1].set_color(\"orange\")\n",
-    "\n",
-    "    # Fill between\n",
-    "    ax.fill_between(\n",
-    "        conf[\"lower\"].times.value,\n",
-    "        conf[\"lower\"].value,\n",
-    "        conf[\"upper\"].value,\n",
-    "        alpha=0.2,\n",
-    "        color=\"orange\",\n",
-    "    )\n",
-    "\n",
-    "    ax.set_title(\"ARIMA(1,0,0) Fit & Forecast\")\n",
-    "    ax.legend()\n",
-    "    plt.show()\n",
-    "except Exception as e:\n",
-    "    print(f\"ARIMA skipping: {e}\")\n",
-    "\n",
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
-    "\n",
-    "    os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n",
-    "    warnings.filterwarnings(\"ignore\", category=UserWarning, module=\"google.protobuf\")\n",
-    "    warnings.filterwarnings(\"ignore\", message=\"Protobuf gencode version\")\n",
-    "    # 4. hurst / local_hurst: Hurst exponent (indicator of long-range correlation)\n",
-    "    h_val = ts1.hurst()\n",
-    "    h_detail = ts1.hurst(return_details=True)  # With detailed information\n",
-    "    h_local = ts1.local_hurst(window=1.0)  # Evolution with 1-second window\n",
-    "\n",
-    "    plot = Plot(h_local, figsize=(10, 4))\n",
-    "    ax = plot.gca()\n",
-    "    ax.get_lines()[0].set_label(\"Local Hurst\")\n",
-    "    ax.axhline(h_val, color=\"red\", linestyle=\"--\", label=f\"Global H={h_val:.2f}\")\n",
-    "    ax.set_ylim(0, 0.2)\n",
-    "    ax.set_title(\"Hurst Exponent Analysis\")\n",
-    "    ax.legend()\n",
-    "    plt.show()\n",
-    "except Exception as e:\n",
-    "    print(f\"Hurst skipping: {e}\")"
-   ]
+   "source": "import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter('ignore')\n\n    try:\n        import os\n\n        os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n        # 3. fit_arima: ARIMA(1,0,0) fitting and forecasting\n        model = ts1.fit_arima(order=(1, 0, 0))\n        resid = model.residuals()\n        forecast, conf = model.forecast(steps=30)\n\n        plot = Plot(ts1.tail(100), forecast, figsize=(10, 4))\n        ax = plot.gca()\n        ax.get_lines()[0].set_label(\"Measured\")\n        ax.get_lines()[1].set_label(\"Forecast\")\n        ax.get_lines()[1].set_color(\"orange\")\n\n        # Fill between\n        ax.fill_between(\n        conf[\"lower\"].times.value,\n        conf[\"lower\"].value,\n        conf[\"upper\"].value,\n        alpha=0.2,\n        color=\"orange\",\n        )\n\n        ax.set_title(\"ARIMA(1,0,0) Fit & Forecast\")\n        ax.legend()\n        plt.show()\n    except Exception as e:\n        print(f\"ARIMA skipping: {e}\")\n\n    try:\n        import os\n\n        os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n        # 4. hurst / local_hurst: Hurst exponent (indicator of long-range correlation)\n        h_val = ts1.hurst()\n        h_detail = ts1.hurst(return_details=True)  # With detailed information\n        h_local = ts1.local_hurst(window=1.0)  # Evolution with 1-second window\n\n        plot = Plot(h_local, figsize=(10, 4))\n        ax = plot.gca()\n        ax.get_lines()[0].set_label(\"Local Hurst\")\n        ax.axhline(h_val, color=\"red\", linestyle=\"--\", label=f\"Global H={h_val:.2f}\")\n        ax.set_ylim(0, 0.2)\n        ax.set_title(\"Hurst Exponent Analysis\")\n        ax.legend()\n        plt.show()\n    except Exception as e:\n        print(f\"Hurst skipping: {e}\")\n"
   },
   {
    "cell_type": "markdown",
-   "id": "c51db639",
+   "id": "71753248",
    "metadata": {},
    "source": [
     "### Rolling StatisticsSimilar to Pandas, `rolling_mean`, `std`, `median`, `min`, `max` are available."
@@ -792,7 +707,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "b7d36547",
+   "id": "ca50ad5b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:54:15.121384Z",
@@ -844,7 +759,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5c4a92a1",
+   "id": "463e9126",
    "metadata": {},
    "source": [
     "## 6. Resampling and ReindexingThe `asfreq` method allows assignment to a fixed grid, and the `resample` method enables \"time bin aggregation\"."
@@ -853,7 +768,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "b1044ba0",
+   "id": "db6240ff",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:54:38.058678Z",
@@ -894,7 +809,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "63030dd7",
+   "id": "f7cda7e3",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:55:10.664149Z",
@@ -943,7 +858,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ed767670",
+   "id": "58d53fcf",
    "metadata": {},
    "source": [
     "## 7. Function Fitting`gwexpy` provides powerful fitting functionality based on `iminuit`. To avoid polluting GWpy's original classes, the `.fit()` method is opt-in."
@@ -952,7 +867,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "e1170762",
+   "id": "aa8be9c2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:55:10.797800Z",
@@ -1033,7 +948,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5b7ba62b",
+   "id": "a8b0b18a",
    "metadata": {},
    "source": [
     "## 8. InteroperabilityInterconversion with major data science and machine learning libraries is very smooth."
@@ -1042,7 +957,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "643d9771",
+   "id": "1075bd52",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:55:35.060799Z",
@@ -1099,41 +1014,12 @@
      ]
     }
    ],
-   "source": [
-    "# Pandas & Xarray\n",
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
-    "\n",
-    "    os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n",
-    "    warnings.filterwarnings(\"ignore\", category=UserWarning, module=\"google.protobuf\")\n",
-    "    warnings.filterwarnings(\"ignore\", message=\"Protobuf gencode version\")\n",
-    "    df = ts1.to_pandas(index=\"datetime\")\n",
-    "    ts_p = TimeSeries.from_pandas(df)\n",
-    "    print(\"Pandas interop OK\")\n",
-    "    display(df)\n",
-    "except ImportError:\n",
-    "    pass\n",
-    "\n",
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
-    "\n",
-    "    os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n",
-    "    warnings.filterwarnings(\"ignore\", category=UserWarning, module=\"google.protobuf\")\n",
-    "    warnings.filterwarnings(\"ignore\", message=\"Protobuf gencode version\")\n",
-    "    xr = ts1.to_xarray()\n",
-    "    ts_xr = TimeSeries.from_xarray(xr)\n",
-    "    print(\"Xarray interop OK\")\n",
-    "    print(xr)\n",
-    "except ImportError:\n",
-    "    pass"
-   ]
+   "source": "import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter('ignore')\n\n    # Pandas & Xarray\n    try:\n        import os\n\n        os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n        df = ts1.to_pandas(index=\"datetime\")\n        ts_p = TimeSeries.from_pandas(df)\n        print(\"Pandas interop OK\")\n        display(df)\n    except ImportError:\n        pass\n\n    try:\n        import os\n\n        os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n        xr = ts1.to_xarray()\n        ts_xr = TimeSeries.from_xarray(xr)\n        print(\"Xarray interop OK\")\n        print(xr)\n    except ImportError:\n        pass\n"
   },
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "45f041c1",
+   "id": "b578c8cf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:55:38.646205Z",
@@ -1174,7 +1060,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "2e064d8a",
+   "id": "1dcb25b8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:55:38.651874Z",
@@ -1263,30 +1149,12 @@
      "output_type": "display_data"
     }
    ],
-   "source": [
-    "# Deep Learning (Torch)\n",
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
-    "\n",
-    "    os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n",
-    "    warnings.filterwarnings(\"ignore\", category=UserWarning, module=\"google.protobuf\")\n",
-    "    warnings.filterwarnings(\"ignore\", message=\"Protobuf gencode version\")\n",
-    "    import torch\n",
-    "\n",
-    "    _ = torch\n",
-    "    t_torch = ts1.to_torch()\n",
-    "    ts_f_torch = TimeSeries.from_torch(t_torch, t0=ts1.t0, dt=ts1.dt)\n",
-    "    print(f\"Torch interop OK (Shape: {t_torch.shape})\")\n",
-    "    display(t_torch)\n",
-    "except ImportError:\n",
-    "    pass"
-   ]
+   "source": "import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter('ignore')\n\n    # Deep Learning (Torch)\n    try:\n        import os\n\n        os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n        import torch\n\n        _ = torch\n        t_torch = ts1.to_torch()\n        ts_f_torch = TimeSeries.from_torch(t_torch, t0=ts1.t0, dt=ts1.dt)\n        print(f\"Torch interop OK (Shape: {t_torch.shape})\")\n        display(t_torch)\n    except ImportError:\n        pass\n"
   },
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "9c617ea4",
+   "id": "054f0c60",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:55:39.653673Z",
@@ -1296,34 +1164,12 @@
     }
    },
    "outputs": [],
-   "source": [
-    "# Deep Learning (TensorFlow)\n",
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
-    "\n",
-    "    os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n",
-    "    warnings.filterwarnings(\n",
-    "        \"ignore\", category=UserWarning, module=r\"google\\.protobuf\\..*\"\n",
-    "    )\n",
-    "    warnings.filterwarnings(\n",
-    "        \"ignore\", category=UserWarning, message=r\"Protobuf gencode version.*\"\n",
-    "    )\n",
-    "    import tensorflow as tf\n",
-    "\n",
-    "    _ = tf\n",
-    "    t_tf = ts1.to_tensorflow()\n",
-    "    ts_f_tf = TimeSeries.from_tensorflow(t_tf, t0=ts1.t0, dt=ts1.dt)\n",
-    "    print(\"TensorFlow interop OK\")\n",
-    "    display(t_tf)\n",
-    "except ImportError:\n",
-    "    pass"
-   ]
+   "source": "import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter('ignore')\n\n    # Deep Learning (TensorFlow)\n    try:\n        import os\n\n        os.environ.setdefault(\"TF_CPP_MIN_LOG_LEVEL\", \"3\")\n        warnings.filterwarnings(\n            \"ignore\", category=UserWarning, module=r\"google\\.protobuf\\..*\"\n        )\n        warnings.filterwarnings(\n            \"ignore\", category=UserWarning, message=r\"Protobuf gencode version.*\"\n        )\n        import tensorflow as tf\n\n        _ = tf\n        t_tf = ts1.to_tensorflow()\n        ts_f_tf = TimeSeries.from_tensorflow(t_tf, t0=ts1.t0, dt=ts1.dt)\n        print(\"TensorFlow interop OK\")\n        display(t_tf)\n    except ImportError:\n        pass\n"
   },
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "f8ff2956",
+   "id": "e0fba555",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:55:39.659097Z",
@@ -1350,29 +1196,11 @@
      "output_type": "display_data"
     }
    ],
-   "source": [
-    "# ObsPy (seismic waveform and time series analysis)\n",
-    "try:\n",
-    "    import os\n",
-    "    import warnings\n",
-    "\n",
-    "    os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n",
-    "    warnings.filterwarnings(\"ignore\", category=UserWarning, module=\"google.protobuf\")\n",
-    "    warnings.filterwarnings(\"ignore\", message=\"Protobuf gencode version\")\n",
-    "    import obspy\n",
-    "\n",
-    "    _ = obspy\n",
-    "    tr = ts1.to_obspy()\n",
-    "    ts_f_obspy = TimeSeries.from_obspy(tr)\n",
-    "    print(f\"ObsPy interop OK: {tr.id}\")\n",
-    "    display(tr)\n",
-    "except ImportError:\n",
-    "    pass"
-   ]
+   "source": "import warnings\nwith warnings.catch_warnings():\n    warnings.simplefilter('ignore')\n\n    # ObsPy (seismic waveform and time series analysis)\n    try:\n        import os\n\n        os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n        import obspy\n\n        _ = obspy\n        tr = ts1.to_obspy()\n        ts_f_obspy = TimeSeries.from_obspy(tr)\n        print(f\"ObsPy interop OK: {tr.id}\")\n        display(tr)\n    except ImportError:\n        pass\n"
   },
   {
    "cell_type": "markdown",
-   "id": "637e60ad",
+   "id": "b2938d10",
    "metadata": {},
    "source": [
     "## Summary\n",
@@ -1412,5 +1240,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

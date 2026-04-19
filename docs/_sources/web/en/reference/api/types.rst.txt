@@ -1,6 +1,8 @@
 Types
 =====
 
+**Stability:** Stable
+
 .. automodule:: gwexpy.types
    :members:
    :undoc-members:

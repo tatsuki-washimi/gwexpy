@@ -4,33 +4,99 @@
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Choose the right GWexpy onboarding path with quickstart, tutorial, GWpy migration, and learning-path links for the next steps in analysis." name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Getting Started &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/getting_started.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="File I/O Supported Formats Guide" href="io_formats.html" />
-    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+    <link rel="next" title="Prerequisites and Conventions" href="prerequisites_and_conventions.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../ja/user_guide/getting_started.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,55 +110,66 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Getting Started</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#quick-example">Quick Example</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quick-summary">Quick Summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#on-this-page">On This Page</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#choose-your-path">Choose Your Path</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#learning-path">Learning Path</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#next-to-read">Next to Read</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -109,110 +186,111 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
-<p>This page provides a <strong>structured learning path</strong> for GWexpy users. Whether you’re new to time series analysis or migrating from GWpy, you’ll find tailored recommendations for your background.</p>
-<p><strong>What you’ll learn:</strong></p>
-<ul class="simple">
-<li><p>Installation and setup</p></li>
-<li><p>Core data structures (TimeSeries, FrequencySeries, Spectrogram)</p></li>
-<li><p>Multi-channel analysis and matrix containers</p></li>
-<li><p>Advanced signal processing techniques</p></li>
-<li><p>Real-world application examples</p></li>
-</ul>
-<p><strong>Time estimate:</strong> 2-3 hours for beginners, 30-60 minutes for GWpy users</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>If you’re in a hurry, start with <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> for a 5-minute overview.</p>
-</div>
-<div class="note admonition">
-<p class="admonition-title">About This Page</p>
-<p>This page provides a <strong>detailed learning roadmap</strong>. If you haven’t visited the <a class="reference internal" href="../index.html"><span class="doc std std-doc">documentation homepage</span></a> yet, start there to understand GWexpy’s overall capabilities.</p>
-</div>
-<section id="quick-example">
-<h2>Quick Example<a class="headerlink" href="#quick-example" title="Link to this heading"></a></h2>
-<p>Here’s the most basic GWexpy workflow:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="c1"># Create a time series</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="c1"># Plot it</span>
-<span class="n">plot</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>For more examples, continue to <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a>.</p>
+<p>We provide a <strong>systematic learning path</strong> for GWexpy users.
+Choose the best starting point based on your background and goals.</p>
+<section id="quick-summary">
+<h2>Quick Summary<a class="headerlink" href="#quick-summary" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Item</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Page Role</strong></p></td>
+<td><p>Guide</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Target Audience</strong></p></td>
+<td><p>Experimental data analysts, GWpy users, and anyone interested in signal processing with Python.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Prerequisites</strong></p></td>
+<td><p>Basics of Python 3.11+, NumPy array manipulation, (Recommended) Matplotlib.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Use Cases</strong></p></td>
+<td><p>Choose a learning path, find the GWpy migration entry point, or identify the shortest path to a working workflow</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Time Required</strong></p></td>
+<td><p>From 5 minutes (Quick Start) to 30 minutes (Basic Hands-on).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Goal</strong></p></td>
+<td><p>Load data, visualize results, and perform basic frequency-domain analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Search Keywords</strong></p></td>
+<td><p>getting started, learning path, GWpy migration, tutorial entry point</p></td>
+</tr>
+</tbody>
+</table>
+<p>If you want the shared assumptions and FFT/time conventions first, use <a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">Prerequisites and Conventions</span></a> as the entry point.</p>
 </section>
-<section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<section id="on-this-page">
+<h2>On This Page<a class="headerlink" href="#on-this-page" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Basic Python 3.9+ knowledge</p></li>
-<li><p>NumPy fundamentals (array operations)</p></li>
-<li><p>(Optional) GWpy experience</p></li>
+<li><p><a class="reference internal" href="#choose-your-path"><span class="std std-ref">Choose Your Path</span></a></p></li>
+<li><p><a class="reference internal" href="#learning-path"><span class="std std-ref">Learning Path</span></a></p></li>
+<li><p><a class="reference internal" href="#next-to-read"><span class="std std-ref">Next Steps</span></a></p></li>
 </ul>
+</section>
+<section id="choose-your-path">
+<h2>Choose Your Path<a class="headerlink" href="#choose-your-path" title="Link to this heading"></a></h2>
+<section id="min-quick-start">
+<h3>🚀 5-min Quick Start<a class="headerlink" href="#min-quick-start" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a></p>
+<p>For those who want to see results immediately. Get a figure in just 3 lines of code.</p>
+</section>
+<section id="min-hands-on">
+<h3>📖 30-min Hands-on<a class="headerlink" href="#min-hands-on" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="tutorials/index.html"><span class="std std-doc">Tutorial index</span></a></p>
+<p>Learn the core data structures and GWexpy-specific matrix operations from scratch.</p>
+</section>
+<section id="for-gwpy-users">
+<h3>🔄 For GWpy Users<a class="headerlink" href="#for-gwpy-users" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="gwexpy_for_gwpy_users_en.html"><span class="std std-doc">Migration from GWpy</span></a></p>
+<p>For current GWpy users. Start with the migration recipes, then use the <a class="reference internal" href="gwpy_added_api_index_en.html"><span class="std std-doc">GWpy Difference API Index</span></a> when you need a difference-oriented lookup of added APIs.</p>
+<p><a id="learning-path"></a></p>
+</section>
 </section>
 <section id="learning-path">
 <h2>Learning Path<a class="headerlink" href="#learning-path" title="Link to this heading"></a></h2>
-<section id="installation">
-<h3>1. Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
-<p>First, install GWexpy by following <a class="reference internal" href="installation.html"><span class="std std-doc">installation</span></a>.</p>
+<section id="preparation">
+<h3>1. Preparation<a class="headerlink" href="#preparation" title="Link to this heading"></a></h3>
+<p>Start with the <a class="reference internal" href="installation.html"><span class="std std-doc">Installation Guide</span></a> to prepare a Python 3.11+ environment.</p>
 </section>
-<section id="quickstart">
-<h3>2. Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h3>
-<p>Learn the basics with <a class="reference internal" href="quickstart.html"><span class="std std-doc">quickstart</span></a>.</p>
-</section>
-<section id="basic-data-structures-recommended-order">
-<h3>3. Basic Data Structures (Recommended Order)<a class="headerlink" href="#basic-data-structures-recommended-order" title="Link to this heading"></a></h3>
-<p><strong>For Beginners</strong></p>
+<section id="core-data-structures">
+<h3>2. Core Data Structures<a class="headerlink" href="#core-data-structures" title="Link to this heading"></a></h3>
+<p>We recommend learning the primary containers in the following order:</p>
 <ol class="arabic simple">
-<li><p><a class="reference internal" href="tutorials/intro_timeseries.html"><span class="std std-doc">intro_timeseries</span></a> - Time series basics</p></li>
-<li><p><a class="reference internal" href="tutorials/intro_frequencyseries.html"><span class="std std-doc">intro_frequencyseries</span></a> - Frequency series basics</p></li>
-<li><p><a class="reference internal" href="tutorials/intro_spectrogram.html"><span class="std std-doc">intro_spectrogram</span></a> - Spectrogram basics</p></li>
-<li><p><a class="reference internal" href="tutorials/intro_plotting.html"><span class="std std-doc">intro_plotting</span></a> - Plotting features</p></li>
+<li><p><a class="reference internal" href="tutorials/intro_timeseries.html"><span class="std std-doc">Basic Time Series</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/intro_frequencyseries.html"><span class="std std-doc">Basic Frequency Series</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/intro_spectrogram.html"><span class="std std-doc">Basic Spectrograms</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/intro_plotting.html"><span class="std std-doc">Plot Customization</span></a></p></li>
 </ol>
-<p><strong>For GWpy Users</strong></p>
+</section>
+<section id="advanced-analysis">
+<h3>3. Advanced Analysis<a class="headerlink" href="#advanced-analysis" title="Link to this heading"></a></h3>
+<p>Refer to these guides based on your needs:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="gwexpy_for_gwpy_users_en.html"><span class="std std-doc">Migration from GWpy</span></a> - Detailed guide for GWpy users</p></li>
+<li><p><strong>Multi-channel &amp; Matrix Processing</strong>: <a class="reference internal" href="tutorials/matrix_timeseries.html"><span class="std std-doc">Using Matrix Containers</span></a></p></li>
+<li><p><strong>High-dimensional Data</strong>: <a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">Field API Intro</span></a> / <a class="reference internal" href="scalarfield_slicing.html"><span class="std std-doc">ScalarField Slicing Guide</span></a></p></li>
+<li><p><strong>Signal Processing</strong>: <a class="reference internal" href="tutorials/advanced_fitting.html"><span class="std std-doc">Fitting</span></a> / <a class="reference internal" href="tutorials/advanced_hht.html"><span class="std std-doc">HHT</span></a> / <a class="reference internal" href="tutorials/advanced_arima.html"><span class="std std-doc">ARIMA</span></a></p></li>
 </ul>
 </section>
-<section id="advanced-topics">
-<h3>4. Advanced Topics<a class="headerlink" href="#advanced-topics" title="Link to this heading"></a></h3>
-<p><strong>Multi-channel &amp; Matrix Containers</strong></p>
-<ul class="simple">
-<li><p><a class="reference internal" href="tutorials/matrix_timeseries.html"><span class="std std-doc">matrix_timeseries</span></a> - Time series matrices</p></li>
-<li><p><a class="reference internal" href="tutorials/matrix_frequencyseries.html"><span class="std std-doc">matrix_frequencyseries</span></a> - Frequency series matrices</p></li>
-</ul>
-<p><strong>High-dimensional Fields (Field API)</strong></p>
-<ul class="simple">
-<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">field_scalar_intro</span></a> - ScalarField introduction</p></li>
-<li><p><a class="reference internal" href="scalarfield_slicing.html"><span class="std std-doc">scalarfield_slicing</span></a> - Slicing guide (Important)</p></li>
-</ul>
-<p><strong>Advanced Signal Processing</strong></p>
-<ul class="simple">
-<li><p><a class="reference internal" href="tutorials/advanced_fitting.html"><span class="std std-doc">advanced_fitting</span></a> - Fitting methods</p></li>
-<li><p><a class="reference internal" href="tutorials/advanced_peak_detection.html"><span class="std std-doc">advanced_peak_detection</span></a> - Peak detection</p></li>
-<li><p><a class="reference internal" href="tutorials/advanced_hht.html"><span class="std std-doc">advanced_hht</span></a> - Hilbert-Huang Transform</p></li>
-<li><p><a class="reference internal" href="tutorials/advanced_arima.html"><span class="std std-doc">advanced_arima</span></a> - ARIMA models</p></li>
-<li><p><a class="reference internal" href="tutorials/advanced_correlation.html"><span class="std std-doc">advanced_correlation</span></a> - Correlation analysis</p></li>
-</ul>
-</section>
-<section id="practical-examples">
-<h3>5. Practical Examples<a class="headerlink" href="#practical-examples" title="Link to this heading"></a></h3>
-<p>Browse the <a class="reference internal" href="../examples/index.html"><span class="doc">Examples Gallery</span></a> for real-world applications:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="tutorials/case_noise_budget.html"><span class="std std-doc">case_noise_budget</span></a> - Noise budget analysis</p></li>
-<li><p><a class="reference internal" href="tutorials/case_transfer_function.html"><span class="std std-doc">case_transfer_function</span></a> - Transfer function calculation</p></li>
-<li><p><a class="reference internal" href="tutorials/case_active_damping.html"><span class="std std-doc">case_active_damping</span></a> - Active damping</p></li>
-</ul>
+<section id="practical-applications">
+<h3>4. Practical Applications<a class="headerlink" href="#practical-applications" title="Link to this heading"></a></h3>
+<p>Explore real-world analysis workflows in our <a class="reference internal" href="../examples/index.html"><span class="std std-doc">Case Studies Gallery</span></a>.</p>
+<p><a id="next-to-read"></a>
+<a id="next-steps"></a></p>
 </section>
 </section>
-<section id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<section id="next-to-read">
+<h2>Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../examples/index.html"><span class="doc">Examples Gallery</span></a> - Visual examples and case studies</p></li>
-<li><p>Complete tutorial list: <a class="reference internal" href="tutorials/index.html"><span class="doc">tutorials/index</span></a></p></li>
-<li><p>API Reference: <a class="reference internal" href="../reference/index.html"><span class="doc">Reference</span></a></p></li>
-<li><p><a class="reference internal" href="validated_algorithms.html"><span class="std std-doc">validated_algorithms</span></a> - Algorithm validation report</p></li>
+<li><p><a class="reference internal" href="../examples/index.html"><span class="std std-doc">Case Studies Gallery</span></a> - Visual examples and practical workflows.</p></li>
+<li><p><a class="reference internal" href="tutorials/index.html"><span class="std std-doc">All Tutorials</span></a></p></li>
+<li><p><a class="reference internal" href="gwexpy_for_gwpy_users_en.html"><span class="std std-doc">Migration from GWpy</span></a> - start from the difference-oriented migration recipes</p></li>
+<li><p><a class="reference internal" href="gwpy_added_api_index_en.html"><span class="std std-doc">GWpy Difference API Index</span></a> - look up added APIs from a GWpy-difference view</p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">Prerequisites and Conventions</span></a> - entry point for environment assumptions, GPS time, and FFT conventions</p></li>
+<li><p><a class="reference internal" href="../reference/index.html"><span class="std std-doc">API Reference</span></a></p></li>
+<li><p><a class="reference internal" href="validated_algorithms.html"><span class="std std-doc">Validated Algorithms</span></a> - Verification reports for numerical accuracy.</p></li>
 </ul>
 </section>
 </section>
@@ -222,13 +300,15 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="io_formats.html" class="btn btn-neutral float-right" title="File I/O Supported Formats Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="prerequisites_and_conventions.html" class="btn btn-neutral float-right" title="Prerequisites and Conventions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -245,7 +325,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="license.html">License / Disclaimer</a> |
+        <a href="roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

@@ -1,8 +1,20 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "57d78f08",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "md_05df19b8",
+   "id": "3d2b05d5",
    "metadata": {},
    "source": [
     "# HDF5 による再現可能なメタデータ管理\n",
@@ -29,7 +41,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0556375e",
+   "id": "39b1175a",
    "metadata": {},
    "source": [
     "## セットアップ"
@@ -38,7 +50,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cd_00197f90",
+   "id": "b4d6be5a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:19.858359Z",
@@ -49,6 +61,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import datetime\n",
     "import json\n",
     "import os\n",
@@ -66,7 +82,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_01b85e2a",
+   "id": "e3a5064d",
    "metadata": {},
    "source": [
     "## 1. 合成データの生成"
@@ -75,7 +91,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cd_04923b53",
+   "id": "91075c47",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:22.322598Z",
@@ -115,7 +131,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0350b353",
+   "id": "97ee36ee",
    "metadata": {},
    "source": [
     "## 2. プロバナンス属性付きで HDF5 に書き込む\n",
@@ -131,7 +147,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "cd_018b39f9",
+   "id": "5259f9ee",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:22.346519Z",
@@ -160,7 +176,8 @@
     "    \"freq_range\": [10.0, 2000.0],\n",
     "}\n",
     "\n",
-    "hdf5_path = tempfile.mktemp(suffix=\".h5\")\n",
+    "fd, hdf5_path = tempfile.mkstemp(suffix=\".h5\")\n",
+    "os.close(fd)\n",
     "\n",
     "with h5py.File(hdf5_path, \"w\") as f:\n",
     "    raw_grp = f.require_group(\"raw\")\n",
@@ -181,7 +198,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_038b8411",
+   "id": "2cedbc45",
    "metadata": {},
    "source": [
     "## 3. 派生量をリネージ情報付きで保存する\n",
@@ -193,7 +210,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cd_03e80558",
+   "id": "d4e3f114",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:22.355076Z",
@@ -255,7 +272,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_05c335c7",
+   "id": "e52e7def",
    "metadata": {},
    "source": [
     "## 4. 読み戻してプロバナンスを検証する"
@@ -264,7 +281,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cd_01b655e9",
+   "id": "ff209f8d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:22.430885Z",
@@ -326,7 +343,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_00bde3d3",
+   "id": "b237d846",
    "metadata": {},
    "source": [
     "## 5. プロバナンス対応パイプラインヘルパー"
@@ -335,7 +352,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "cd_0020b9d5",
+   "id": "d645b647",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:22.439247Z",
@@ -394,7 +411,8 @@
     "\n",
     "        yield f, save_ts, save_array\n",
     "\n",
-    "pipeline_path = tempfile.mktemp(suffix=\"_pipeline.h5\")\n",
+    "fd, pipeline_path = tempfile.mkstemp(suffix=\"_pipeline.h5\")\n",
+    "os.close(fd)\n",
     "run_params = {\"fftlength\": 8.0, \"overlap\": 0.75, \"method\": \"median\", \"run_id\": \"R001\"}\n",
     "\n",
     "with provenance_file(pipeline_path, run_params) as (f, save_ts, save_array):\n",
@@ -412,7 +430,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_01b2d37d",
+   "id": "8aec5222",
    "metadata": {},
    "source": [
     "## 6. 再現性確認：保存済み ASD の可視化"
@@ -421,7 +439,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cd_059caf23",
+   "id": "286ecd04",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:22.469659Z",
@@ -475,7 +493,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_032051aa",
+   "id": "b38c84fb",
    "metadata": {},
    "source": [
     "## まとめ\n",

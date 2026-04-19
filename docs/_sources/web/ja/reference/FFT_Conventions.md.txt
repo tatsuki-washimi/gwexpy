@@ -1,4 +1,46 @@
-# FFTの仕様とコンベンション
+# FFT の仕様と規約 (FFT_Conventions)
+
+<!-- reference-summary:start -->
+
+**安定性:** 安定
+
+## 主な用途
+
+このページはフーリエ正規化、軸規約、それに従う主要 API の対応関係を素早く確認するための入口です。
+
+## 代表的なシグネチャ
+
+```python
+TimeSeries.fft(fftlength=None, overlap=0, window="hann", ...)
+ScalarField.fft_time(nfft=None)
+```
+
+## 最小例
+
+```python
+from gwexpy.timeseries import TimeSeries
+
+# Use this page together with TimeSeries.fft / FrequencySeries.ifft / ScalarField.fft_time
+# when you need the exact normalization and axis conventions.
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
 
 このドキュメントでは、`gwexpy` における高速フーリエ変換（FFT）の数学的定義、正規化（Normalization）、および符号の定義について詳述します。
 

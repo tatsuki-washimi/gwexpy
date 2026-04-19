@@ -1,0 +1,752 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="GWexpy の interop ガイドです。保存表現、解析ライブラリ、ML 基盤、分野別ツールへの to_* / from_* 変換経路を整理します。" name="description" />
+
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interop / 変換ガイド &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/interop.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="GPS 時刻ユーティリティ (gwexpy.time)" href="time_utilities.html" />
+    <link rel="prev" title="前提条件と規約" href="prerequisites_and_conventions.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../en/user_guide/interop.html">English</a>
+    </div>
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメント</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Interop / 変換ガイド</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">このページでわかること</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">セクション移動</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interop-ja-how-to-read">まず最初に: 読み方</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interop-ja-status-labels">状態ラベル</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#a">A. 保存形式・コンテナ変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b">B. 解析ライブラリ・オブジェクト変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c">C. 機械学習・高速化・配列基盤</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d">D. 物理・ドメイン特化ライブラリ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interop-ja-priorities">優先的に見るべき対象</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">関連ページ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">次に読む</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
+      <li class="breadcrumb-item active">Interop / 変換ガイド</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/interop.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="interop">
+<h1>Interop / 変換ガイド<a class="headerlink" href="#interop" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><strong>ページ種別:</strong> ガイド</p>
+</div></blockquote>
+<p>このページは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <strong>interop 専用ガイド</strong> です。<br />
+ここでいう interop は、<code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> を中心とした <strong>変換・橋渡し</strong> を指します。</p>
+<p>このページで扱うもの:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> によるオブジェクト変換</p></li>
+<li><p>外部ライブラリや外部データモデルへの橋渡し</p></li>
+<li><p>object 単位の file-bridge helper</p></li>
+<li><p>対称でない変換 API</p></li>
+<li><p>一部クラスにしか適用されない変換</p></li>
+</ul>
+<p>このページで扱わないもの:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">obj.write(...,</span> <span class="pre">format=...)</span></code></p></li>
+<li><p>ローカルファイル形式の採用判断そのもの</p></li>
+</ul>
+<p>ローカルファイルの読み書きは <a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a> を参照してください。</p>
+<section id="id1">
+<h2>このページでわかること<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>項目</p></th>
+<th class="head"><p>内容</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>対象読者</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> オブジェクトを外部ライブラリ、保存表現、別のデータモデルへ渡したい利用者や開発者</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>前提</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の主要オブジェクト、direct I/O と interop の違い、連携先ライブラリの基本</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>こんなときに読む</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> の入口を選びたい、公開済みの変換と整理待ちの変換を見分けたい</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>検索キーワード</strong></p></td>
+<td><p>interop, conversion, <code class="docutils literal notranslate"><span class="pre">to_*</span></code>, <code class="docutils literal notranslate"><span class="pre">from_*</span></code>, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>検索ヒント:</strong> interop, conversion, <code class="docutils literal notranslate"><span class="pre">to_*</span></code>, <code class="docutils literal notranslate"><span class="pre">from_*</span></code>, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch</p>
+</section>
+<section id="id2">
+<h2>セクション移動<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>まず最初に: 読み方</p></li>
+<li><p>状態ラベル</p></li>
+<li><p>A. 保存形式・コンテナ変換</p></li>
+<li><p>B. 解析ライブラリ・オブジェクト変換</p></li>
+<li><p>C. 機械学習・高速化・配列基盤</p></li>
+<li><p>D. 物理・ドメイン特化ライブラリ</p></li>
+<li><p>優先的に見るべき対象</p></li>
+</ul>
+</section>
+<section id="interop-ja-how-to-read">
+<span id="id3"></span><h2>まず最初に: 読み方<a class="headerlink" href="#interop-ja-how-to-read" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>保存形式やコンテナに写したい</strong>なら A を見てください。</p></li>
+<li><p><strong>pandas / xarray / astropy / dask のような解析オブジェクトに写したい</strong>なら B を見てください。</p></li>
+<li><p><strong>PyTorch / TensorFlow / JAX / CuPy に渡したい</strong>なら C を見てください。</p></li>
+<li><p><strong>ROOT / ObsPy / LAL / PyCBC などの分野別ライブラリに接続したい</strong>なら D を見てください。</p></li>
+<li><p><strong>Field を xarray / NetCDF4 / Zarr に渡したい</strong>場合は、I/O ではなく interop として扱います。</p></li>
+</ul>
+</section>
+<section id="interop-ja-status-labels">
+<span id="id4"></span><h2>状態ラベル<a class="headerlink" href="#interop-ja-status-labels" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">公開済み</span></code>: 実装があり、<code class="docutils literal notranslate"><span class="pre">reference/api/interop</span></code> から到達できる</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">実装済み（公開整理待ち）</span></code>: 実装はあるが、公開ドキュメントでの整理が未完</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">実装済み（一部経路は対応中）</span></code>: 主経路は使えるが、一部変換経路の完成度が不足している</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">対応中</span></code>: 専用の実装面または公開面の整理が未完</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">対応予定</span></code>: 設計対象として明示するが、まだ実装がない</p></li>
+</ul>
+</section>
+<section id="a">
+<span id="interop-ja-storage-conversion"></span><h2>A. 保存形式・コンテナ変換<a class="headerlink" href="#a" title="Link to this heading"></a></h2>
+<p>ここでは、相手が <strong>ファイル形式・保存表現・ストレージ表現</strong> である変換を扱います。<br />
+「どの保存形式 / コンテナに写すか」を見る区分です。</p>
+<ul class="simple">
+<li><p>目的: 保存表現を相手にする object-level bridge の入口を見分ける</p></li>
+<li><p>入力: <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> オブジェクトと、保存先のコンテナやストレージ表現</p></li>
+<li><p>出力: <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> による変換結果や保存向けオブジェクト</p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>連携先</p></th>
+<th class="head"><p>API / 入口</p></th>
+<th class="head"><p>状態</p></th>
+<th class="head"><p>補足</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>HDF5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_hdf5()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>object-level 変換</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.hdf5_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>JSON</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_json()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_json()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>JSON 文字列との相互変換</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.json_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Python dict</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dict()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>dict との相互変換</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>SQLite</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sqlite()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>object-level bridge</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>Zarr</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_zarr()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>array/store bridge</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.zarr_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>NetCDF4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_netcdf4()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>object-level bridge</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.netcdf4_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="b">
+<span id="interop-ja-analysis-conversion"></span><h2>B. 解析ライブラリ・オブジェクト変換<a class="headerlink" href="#b" title="Link to this heading"></a></h2>
+<p>ここでは、相手が <strong>Python ライブラリのオブジェクトモデル</strong> である変換を扱います。<br />
+保存形式そのものではなく、どの解析ライブラリのオブジェクトに写すかを見る区分です。</p>
+<ul class="simple">
+<li><p>目的: 解析ライブラリ向けの橋渡し先を選ぶ</p></li>
+<li><p>入力: <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> オブジェクト、または pandas / xarray / astropy などの外部オブジェクト</p></li>
+<li><p>出力: 解析ライブラリのオブジェクト、または <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> に戻したオブジェクト</p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>連携先</p></th>
+<th class="head"><p>API / 入口</p></th>
+<th class="head"><p>状態</p></th>
+<th class="head"><p>補足</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NumPy</p></td>
+<td><p>専用 <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> API なし</p></td>
+<td><p>実装済み（基盤対応）</p></td>
+<td><p>内部配列表現として広く利用</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>pandas</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pandas_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_dataframe()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>Series / DataFrame</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.pandas_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>polars</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_polars_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_dict()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>Series / DataFrame / dict</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>xarray</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>DataArray / Dataset</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.xarray_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>xarray Field</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_xarray_field()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray_field()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>ScalarField / VectorField</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.xarray_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>astropy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_astropy_timeseries()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">astropy.timeseries.TimeSeries</span></code></p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.astropy_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>dask</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_dask()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dask()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>dask array bridge</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.dask_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="c">
+<span id="interop-ja-ml-conversion"></span><h2>C. 機械学習・高速化・配列基盤<a class="headerlink" href="#c" title="Link to this heading"></a></h2>
+<p>ここでは、加速計算や ML ワークフローへの橋渡しを扱います。<br />
+配列型だけ移るのか、メタデータも戻せるのかを確認してください。</p>
+<ul class="simple">
+<li><p>目的: ML や GPU 配列への橋渡しで、何が保持されるかを見極める</p></li>
+<li><p>入力: <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> オブジェクトと、PyTorch / TensorFlow / JAX / CuPy などの連携先</p></li>
+<li><p>出力: Tensor や高速化配列、場合によっては <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> へ戻すための経路</p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>連携先</p></th>
+<th class="head"><p>API / 入口</p></th>
+<th class="head"><p>状態</p></th>
+<th class="head"><p>補足</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PyTorch</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_torch()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_torch()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>Tensor 変換</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>TensorFlow</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_tf()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_tf()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>Tensor 変換</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>JAX</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_jax()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_jax()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>JAX array 変換</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>CuPy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_cupy()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_cupy()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>GPU array 変換</p></td>
+<td><p>—</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="d">
+<span id="interop-ja-domain-conversion"></span><h2>D. 物理・ドメイン特化ライブラリ<a class="headerlink" href="#d" title="Link to this heading"></a></h2>
+<p>ここでは、分野別ライブラリや専用オブジェクトとの接続を扱います。<br />
+完全往復か片方向変換か、公開整理待ちかどうかを区別して見てください。</p>
+<ul class="simple">
+<li><p>目的: 分野別ライブラリとの橋渡しを、直 I/O と混同せずに整理する</p></li>
+<li><p>入力: <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> オブジェクト、または ObsPy / ROOT / LAL / PyCBC などの外部オブジェクト</p></li>
+<li><p>出力: 連携先ライブラリのオブジェクト、import 結果、または限定的な往復変換</p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>連携先</p></th>
+<th class="head"><p>API / 入口</p></th>
+<th class="head"><p>状態</p></th>
+<th class="head"><p>補足</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ROOT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_tgraph()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_th1d()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_th2d()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_tmultigraph()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_root()</span></code>, <code class="docutils literal notranslate"><span class="pre">write_root_file()</span></code></p></td>
+<td><p>実装済み（一部経路は対応中）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TH1</span> <span class="pre">-&gt;</span> <span class="pre">non-Histogram</span></code> は未完</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.root_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>ObsPy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_obspy()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_obspy()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_obspy_trace()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>seismic bridge</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.obspy_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>LAL</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_lal_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_lal_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_lal_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_lal_frequencyseries()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>GW 時系列 / 周波数系列</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.lal_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>PyCBC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pycbc_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pycbc_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pycbc_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pycbc_frequencyseries()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>GW 時系列 / 周波数系列</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.pycbc_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>GWINC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_gwinc_budget()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>budget import</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.gwinc_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Finesse</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_finesse_frequency_response()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_finesse_noise()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>optics / response</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.finesse_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>python-control</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_control_frd()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_control_frd()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_control_response()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>FRD / response。<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gwexpy[control]</span></code> が必要。FRD 変換は <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code> から利用でき、時間応答の取り込みは <code class="docutils literal notranslate"><span class="pre">TimeSeries.from_control()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.from_control()</span></code> で行えます。</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.control_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>SimPEG</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_simpeg()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_simpeg()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>geophysics</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>MTH5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_mth5()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mth5()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>magnetotellurics</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>MTpy</p></td>
+<td><p>専用 <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> API は対応中</p></td>
+<td><p>対応中</p></td>
+<td><p>MTH5 周辺との整理が未完</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>MNE-Python</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_mne()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mne()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_mne_rawarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mne_raw()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>EEG / biosignal</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>Neo</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_neo()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_neo()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>electrophysiology</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>Elephant</p></td>
+<td><p>専用 <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> API は対応中</p></td>
+<td><p>対応中</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Neo</span></code> / <code class="docutils literal notranslate"><span class="pre">quantities</span></code> 周辺との整理が未完</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>quantities</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_quantity()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_quantity()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>quantity bridge</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>pyroomacoustics</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pyroomacoustics_source()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pyroomacoustics_stft()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_rir()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_mic_signals()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_source()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_stft()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_field()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>room acoustics</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>pydub</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pydub()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pydub()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>audio object bridge</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>librosa</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_librosa()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>export 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>Specutils</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_specutils()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_specutils()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>astronomy spectra</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>pyspeckit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pyspeckit()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyspeckit()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>spectral analysis</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>PySpice</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_pyspice_transient()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyspice_ac()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyspice_noise()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyspice_distortion()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>scikit-rf</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_skrf_network()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_skrf_network()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_skrf_impulse_response()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_skrf_step_response()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>RF network analysis</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>pyOMA</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_pyoma_results()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>multitaper</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_mtspec()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>mtspec</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_mtspec_array()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>pySDy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_uff_dataset55()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_uff_dataset58()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>SDynPy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_sdynpy_frf()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sdynpy_shape()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sdynpy_timehistory()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>Meep</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_meep_hdf5()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>openEMS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_openems_hdf5()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>emg3d</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_emg3d_field()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_emg3d_field()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_emg3d_h5()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>EM field import/export</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>meshio</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_meshio()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_fenics_xdmf()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_fenics_vtk()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>MetPy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_metpy_dataarray()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>WRF</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_wrf_variable()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>Harmonica</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_harmonica_grid()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>Exudyn</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_exudyn_sensor()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p>OpenSees</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_opensees_recorder()</span></code></p></td>
+<td><p>実装済み（公開整理待ち）</p></td>
+<td><p>import 中心</p></td>
+<td><p>—</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="interop-ja-priorities">
+<span id="id5"></span><h2>優先的に見るべき対象<a class="headerlink" href="#interop-ja-priorities" title="Link to this heading"></a></h2>
+<p>公開面で先に理解すると効果が大きいのは次です。</p>
+<ul class="simple">
+<li><p><strong>ROOT</strong>: <code class="docutils literal notranslate"><span class="pre">io_formats</span></code> では EventTable の直 I/O のみ扱い、ROOT object 変換は interop 側で説明する</p></li>
+<li><p><strong>xarray / Field</strong>: ScalarField / VectorField の主要導線</p></li>
+<li><p><strong>Zarr</strong>: direct I/O と interop の境界が混同されやすい</p></li>
+<li><p><strong>NetCDF4</strong>: xarray 経由のワークフローとの境界整理が必要</p></li>
+<li><p><strong>ObsPy</strong>: 時系列・地震波形との往復が分かりやすい</p></li>
+<li><p><strong>pandas / polars / astropy</strong>: 解析ワークフローの入口として頻出</p></li>
+</ul>
+</section>
+<section id="id6">
+<h2>関連ページ<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a></p></li>
+<li><p><a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a></p></li>
+</ul>
+</section>
+<section id="id7">
+<h2>次に読む<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a> で <code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code> と <code class="docutils literal notranslate"><span class="pre">obj.write(...)</span></code> を確認する</p></li>
+<li><p><a class="reference internal" href="time_utilities.html"><span class="doc std std-doc">GPS 時刻ユーティリティ</span></a> で GPS 時刻やタイムゾーンの補助関数を確認する</p></li>
+<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a> で具体例を先に見る</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="prerequisites_and_conventions.html" class="btn btn-neutral float-left" title="前提条件と規約" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="time_utilities.html" class="btn btn-neutral float-right" title="GPS 時刻ユーティリティ (gwexpy.time)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="license.html">ライセンス / 免責</a> |
+        <a href="roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

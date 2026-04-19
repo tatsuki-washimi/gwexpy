@@ -1,8 +1,20 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3df59708",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "md_017a6c44",
+   "id": "96009cf5",
    "metadata": {},
    "source": [
     "# Reading and Using DTT XML Files with gwexpy\n",
@@ -25,7 +37,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_02c28889",
+   "id": "aec32a67",
    "metadata": {},
    "source": [
     "## Setup"
@@ -34,7 +46,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cd_013a2a7a",
+   "id": "47301474",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:05.706446Z",
@@ -45,6 +57,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import numpy as np\n",
     "import matplotlib.pyplot as plt\n",
     "\n",
@@ -54,7 +70,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0333b0de",
+   "id": "e013543d",
    "metadata": {},
    "source": [
     "## 1. Create a Synthetic DTT XML File\n",
@@ -74,7 +90,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cd_03a0270d",
+   "id": "73675fa2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:08.008977Z",
@@ -153,13 +169,13 @@
     "    pathlib.Path(path).write_text(xml)\n",
     "    print(\"Wrote synthetic DTT XML to a temporary file\")\n",
     "\n",
-    "xml_path = \"/tmp/kagra_sus_itmx.xml\"\n",
+    "xml_path = pathlib.Path(\"kagra_sus_itmx.xml\")\n",
     "make_synthetic_dttxml(xml_path)\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "md_0030fd02",
+   "id": "9087ab77",
    "metadata": {},
    "source": [
     "## 2. Inspect Channels\n",
@@ -171,7 +187,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cd_03a0ad75",
+   "id": "7cd7da95",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:08.017450Z",
@@ -199,7 +215,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0009475c",
+   "id": "3831bbc1",
    "metadata": {},
    "source": [
     "## 3. Load Measurement Products\n",
@@ -224,7 +240,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cd_017652f0",
+   "id": "d7411057",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:08.027437Z",
@@ -263,7 +279,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_011c3021",
+   "id": "104d8221",
    "metadata": {},
    "source": [
     "## 4. Bode Plot — Transfer Function\n",
@@ -275,7 +291,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cd_0499ec33",
+   "id": "01e8d76c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:08.031681Z",
@@ -343,7 +359,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_057ba4ea",
+   "id": "fe760a62",
    "metadata": {},
    "source": [
     "## 5. Coherence\n",
@@ -356,7 +372,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "cd_025a9320",
+   "id": "d37899e6",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:08.582634Z",
@@ -404,7 +420,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0486eed0",
+   "id": "ae58e746",
    "metadata": {},
    "source": [
     "## 6. Fitting a Resonant-System Model\n",
@@ -420,7 +436,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cd_01200485",
+   "id": "b46d8692",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:08.755170Z",
@@ -477,7 +493,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "cd_057914da",
+   "id": "e78f3d9d",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:27:09.229085Z",
@@ -532,7 +548,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_02652202",
+   "id": "be873835",
    "metadata": {},
    "source": [
     "## Summary\n",

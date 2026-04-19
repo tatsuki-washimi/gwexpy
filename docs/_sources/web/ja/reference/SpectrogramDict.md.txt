@@ -1,12 +1,77 @@
 # SpectrogramDict
 
+<!-- reference-summary:start -->
+
+**安定性:** 安定
+
+## 主な用途
+
+`SpectrogramDict` は複数の `Spectrogram` をチャンネル情報付きでまとめて扱うために使います。
+
+## 代表的なシグネチャ
+
+```python
+SpectrogramDict(data: dict[str, Spectrogram])
+SpectrogramDict.to_matrix()
+```
+
+## 最小例
+
+```python
+from gwexpy.spectrogram import Spectrogram, SpectrogramDict
+import numpy as np
+
+dct = SpectrogramDict({"A": Spectrogram(np.ones((8, 16)), dt=1.0, df=1.0)})
+mat = dct.to_matrix()
+```
+
+## 関連理論
+
+- [FFT_Conventions](FFT_Conventions.md)
+- [Spectrogram](Spectrogram.md)
+- [SpectrogramMatrix](SpectrogramMatrix.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Spectrogram チュートリアル](../user_guide/tutorials/intro_spectrogram.ipynb)
+- [ブートストラップ PSD & GLS フィット](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
+- [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** PhaseMethodsMixin, UserDict
 
 Spectrogram オブジェクトの辞書。
 
-.. note::
-   Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
-   可能な限り `inplace=True` を使用してコンテナをその場で更新してください。
+:::{note}
+Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
+可能な限り `inplace=True` を使用してコンテナをその場で更新してください。
+
+:::
+## 物理コンテキスト
+
+`SpectrogramDict` は、各時間周波数マップの識別子を明示的に残したい場合に使います。観測点名、チャンネル名、検出器状態、前処理分岐などをキーとして保持できます。
+
+- キー自体が科学的解釈や provenance の一部になります
+- 一括処理をしつつ、どのマップがどの条件に対応するかを明示できます
+
+## よくある誤読
+
+1. キーが揃っているだけで正規化や変換条件まで揃っていると思う
+2. サニタイズ後の出力キーを元の物理ラベルだと誤認する
+3. 同じ変換手法で作ったか確認せず、キー単位で比較を進める
+
+## どのページへ進むか
+
+- 各マップの解釈: [Spectrogram](Spectrogram.md)
+- 整列済みグリッド解析: [SpectrogramMatrix](SpectrogramMatrix.md)
+- 実務ワークフロー: [ブートストラップ PSD & GLS フィット](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb), [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
 
 ## メソッド
 

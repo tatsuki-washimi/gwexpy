@@ -5,32 +5,97 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta property="article:modified_time" content="2026-04-17T21:32:06+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Segments &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/api/segments.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="gwexpy.segments.DataQualityFlag" href="_autosummary/gwexpy.segments.DataQualityFlag.html" />
-    <link rel="prev" title="gwexpy.histogram.HistogramList" href="gwexpy.histogram.HistogramList.html" /> 
+    <link rel="prev" title="gwexpy.histogram.HistogramList" href="gwexpy.histogram.HistogramList.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../ja/reference/api/segments.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,53 +109,64 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">Installation Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../user_guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">API Reference</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../classes.html">Class Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../topics.html">Reference Topics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gui.html">Graphical User Interface (GUI)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -109,98 +185,142 @@
              
   <section id="segments">
 <h1>Segments<a class="headerlink" href="#segments" title="Link to this heading"></a></h1>
+<p><strong>Stability:</strong> Stable</p>
 <p>Classes and utilities for managing time segments (data quality flags, active/inactive intervals).</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataQualityFlag</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataQualityFlag</span></code>([name, active, known, ...])</p></td>
 <td><p>A representation of a named set of segments.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataQualityDict</span></code></p></td>
 <td><p>An <cite>dict</cite> of (key, <cite>DataQualityFlag</cite>) pairs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Segment</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Segment</span></code>([iterable])</p></td>
 <td><p>A tuple defining a semi-open interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">end)</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SegmentList</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SegmentList</span></code>([iterable])</p></td>
 <td><p>A <cite>list</cite> of <cite>Segments &lt;Segment&gt;</cite>.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">DataQualityDict</span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">DataQualityDict</span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <p>An <cite>dict</cite> of (key, <cite>DataQualityFlag</cite>) pairs.</p>
-<dl class="py method">
+<dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">coalesce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.coalesce"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Coalesce all segments lists in this <cite>DataQualityDict</cite>.</p>
-<p><strong>This method modifies this object in-place.</strong></p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A view of this flag, not a copy.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>self</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">read</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityDictRead</span> <span class="pre">object&gt;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityDictWrite</span> <span class="pre">object&gt;</span></span></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Build a copy of this dictionary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>deep</strong> (<cite>bool</cite>, optional, default: <cite>False</cite>) – perform a deep copy of the original dictionary with a fresh
-memory address</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>flag2</strong> – a copy of the original dictionary</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>DataQualityFlag</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ligolw_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segmentdeftable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentDefTable,</span> <span class="pre">segmentsumtable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentSumTable,</span> <span class="pre">segmenttable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentTable,</span> <span class="pre">names:</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">gpstype:</span> <span class="pre">type[SupportsFloat]</span> <span class="pre">|</span> <span class="pre">Callable[[float],</span> <span class="pre">SupportsFloat]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'lal.LIGOTimeGPS'&gt;,</span> <span class="pre">on_missing:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'error'</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.from_ligolw_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Build a <cite>DataQualityDict</cite> from a set of LIGO_LW segment tables.</p>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">query_dqsegdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SegmentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.query_dqsegdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Query the advanced LIGO DQSegDB for a list of flags.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>segmentdeftable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentDefTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table to read.</p></li>
-<li><p><strong>segmentsumtable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentSumTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment_summary</span></code> table to read.</p></li>
-<li><p><strong>segmenttable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment</span></code> table to read.</p></li>
-<li><p><strong>names</strong> (<cite>list</cite> of <cite>str</cite>, optional) – A list of flag names to read.
-Default is to read all names.</p></li>
-<li><p><strong>gpstype</strong> (<cite>type</cite>, <cite>callable</cite>, optional) – Class to use for GPS times in returned objects, can be a function
-to convert GPS time to something else.
-Default is <cite>~gwpy.time.LIGOTimeGPS</cite>.</p></li>
-<li><p><strong>on_missing</strong> (<cite>str</cite>, optional) – <p>Action to take when a one or more <code class="docutils literal notranslate"><span class="pre">names</span></code> are not found in
-the <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table, one of</p>
+<li><p><strong>flags</strong> (<cite>iterable</cite>) – A list of flag names for which to query.</p></li>
+<li><p><strong>args</strong> – Either, two <cite>float</cite>-like numbers indicating the
+GPS [start, stop) interval, or a <cite>SegmentList</cite>
+defining a number of summary segments.</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) – Name or URL of the DQSegDB instance to talk to.
+Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
+<li><p><strong>on_error</strong> (<cite>str</cite>, optional) – <p>how to handle an error querying for one flag, one of</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">'ignore'</span></code> : do nothing</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'warn'</span></code> : print a warning</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">error'</span></code> : raise a <cite>ValueError</cite></p></li>
+<li><p><cite>’raise’</cite> (default): raise the Exception</p></li>
+<li><p><cite>’warn’</cite>: print a warning</p></li>
+<li><p><cite>’ignore’</cite>: move onto the next flag as if nothing happened</p></li>
 </ul>
 </p></li>
+<li><p><strong>parallel</strong> (<cite>int</cite>, optional) – Maximum number of threads to use for parallel connections to
+the DQSegDB host.</p></li>
+<li><p><strong>kwargs</strong> – All other keyword arguments are passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>dqdict</strong> – A dict of <cite>DataQualityFlag</cite> objects populated from the LIGO_LW tables.</p>
+<dd class="field-even"><p><strong>flagdict</strong> – An ordered <cite>DataQualityDict</cite> of (name, <cite>DataQualityFlag</cite>)
+pairs.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>DataQualityDict</cite></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>The GPS interval(s) of interest can be passed as two arguments
+specifing the start and end of a single interval:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a single <cite>Segment</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_veto_definer_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ifo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">read_kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.from_veto_definer_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SegmentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span></dt>
+<dd><p>Query the advanced LIGO DQSegDB for a list of flags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flags</strong> (<cite>iterable</cite>) – A list of flag names for which to query.</p></li>
+<li><p><strong>args</strong> – Either, two <cite>float</cite>-like numbers indicating the
+GPS [start, stop) interval, or a <cite>SegmentList</cite>
+defining a number of summary segments.</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) – Name or URL of the DQSegDB instance to talk to.
+Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
+<li><p><strong>on_error</strong> (<cite>str</cite>, optional) – <p>how to handle an error querying for one flag, one of</p>
+<ul>
+<li><p><cite>’raise’</cite> (default): raise the Exception</p></li>
+<li><p><cite>’warn’</cite>: print a warning</p></li>
+<li><p><cite>’ignore’</cite>: move onto the next flag as if nothing happened</p></li>
+</ul>
+</p></li>
+<li><p><strong>parallel</strong> (<cite>int</cite>, optional) – Maximum number of threads to use for parallel connections to
+the DQSegDB host.</p></li>
+<li><p><strong>kwargs</strong> – All other keyword arguments are passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flagdict</strong> – An ordered <cite>DataQualityDict</cite> of (name, <cite>DataQualityFlag</cite>)
+pairs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The GPS interval(s) of interest can be passed as two arguments
+specifing the start and end of a single interval:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a single <cite>Segment</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_veto_definer_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ifo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">read_kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.from_veto_definer_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Read a <cite>DataQualityDict</cite> from a LIGO_LW XML VetoDefinerTable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -238,61 +358,76 @@ be made for that as follows</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataQualityFlag</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Return the intersection of all flags in this dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>intersection</strong> – a new <cite>DataQualityFlag</cite> who’s active and known segments
-are the intersection of those of the values of this dict</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><cite>DataQualityFlag</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'key'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plot</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Plot this dict on a segments projection.</p>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_ligolw_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segmentdeftable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentDefTable,</span> <span class="pre">segmentsumtable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentSumTable,</span> <span class="pre">segmenttable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentTable,</span> <span class="pre">names:</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">gpstype:</span> <span class="pre">type[SupportsFloat]</span> <span class="pre">|</span> <span class="pre">Callable[[float],</span> <span class="pre">SupportsFloat]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'lal.LIGOTimeGPS'&gt;,</span> <span class="pre">on_missing:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'error'</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.from_ligolw_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Build a <cite>DataQualityDict</cite> from a set of LIGO_LW segment tables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<cite>str</cite>, optional) – <p>Labelling system to use, or fixed label for all flags,
-special values include</p>
+<li><p><strong>segmentdeftable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentDefTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table to read.</p></li>
+<li><p><strong>segmentsumtable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentSumTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment_summary</span></code> table to read.</p></li>
+<li><p><strong>segmenttable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment</span></code> table to read.</p></li>
+<li><p><strong>names</strong> (<cite>list</cite> of <cite>str</cite>, optional) – A list of flag names to read.
+Default is to read all names.</p></li>
+<li><p><strong>gpstype</strong> (<cite>type</cite>, <cite>callable</cite>, optional) – Class to use for GPS times in returned objects, can be a function
+to convert GPS time to something else.
+Default is <cite>~gwpy.time.LIGOTimeGPS</cite>.</p></li>
+<li><p><strong>on_missing</strong> (<cite>str</cite>, optional) – <p>Action to take when a one or more <code class="docutils literal notranslate"><span class="pre">names</span></code> are not found in
+the <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table, one of</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">'key'</span></code>: use the key of the <cite>DataQualityDict</cite>,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'name'</span></code>: use the <code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code> of the flag</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'ignore'</span></code> : do nothing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'warn'</span></code> : print a warning</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">error'</span></code> : raise a <cite>ValueError</cite></p></li>
 </ul>
-<p>If anything else, that fixed label will be used for all lines.</p>
 </p></li>
-<li><p><strong>kwargs</strong> – All keyword arguments are passed to the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> constructor.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>figure</strong> – the newly created figure, with populated Axes.</p>
+<dd class="field-even"><p><strong>dqdict</strong> – A dict of <cite>DataQualityFlag</cite> objects populated from the LIGO_LW tables.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>~matplotlib.figure.Figure</cite></p>
+<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.figure</span></code></dt><dd><p>For documentation of keyword arguments used to create the figure.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.add_subplot</span></code></dt><dd><p>For documentation of keyword arguments used to create the axes.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwpy.plot.SegmentAxes.plot_segmentlist</span></code></dt><dd><p>For documentation of keyword arguments used in rendering the data.</p>
-</dd>
-</dl>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentList</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.populate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">to_ligolw_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">igwn_ligolw.lsctables.SegmentDefTable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">igwn_ligolw.lsctables.SegmentSumTable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">igwn_ligolw.lsctables.SegmentTable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.to_ligolw_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Convert this <cite>DataQualityDict</cite> into a trio of LIGO_LW segment tables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attrs</strong> – Other attributes to add to all rows in all tables
+(e.g. <code class="docutils literal notranslate"><span class="pre">'process_id'</span></code>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>segmentdeftable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentDefTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table.</p></li>
+<li><p><strong>segmentsumtable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentSumTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment_summary</span></code> table.</p></li>
+<li><p><strong>segmenttable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment</span></code> table.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">coalesce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.coalesce"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Coalesce all segments lists in this <cite>DataQualityDict</cite>.</p>
+<p><strong>This method modifies this object in-place.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A view of this flag, not a copy.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentList</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.populate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Query the segment database for each flag’s active segments.</p>
 <p>This method assumes all of the metadata for each flag have been
 filled. Minimally, the following attributes must be filled</p>
@@ -340,132 +475,25 @@ flag, default: <cite>True</cite>.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SegmentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span></dt>
-<dd><p>Query the advanced LIGO DQSegDB for a list of flags.</p>
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Build a copy of this dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flags</strong> (<cite>iterable</cite>) – A list of flag names for which to query.</p></li>
-<li><p><strong>args</strong> – Either, two <cite>float</cite>-like numbers indicating the
-GPS [start, stop) interval, or a <cite>SegmentList</cite>
-defining a number of summary segments.</p></li>
-<li><p><strong>host</strong> (<cite>str</cite>, optional) – Name or URL of the DQSegDB instance to talk to.
-Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
-<li><p><strong>on_error</strong> (<cite>str</cite>, optional) – <p>how to handle an error querying for one flag, one of</p>
-<ul>
-<li><p><cite>’raise’</cite> (default): raise the Exception</p></li>
-<li><p><cite>’warn’</cite>: print a warning</p></li>
-<li><p><cite>’ignore’</cite>: move onto the next flag as if nothing happened</p></li>
-</ul>
-</p></li>
-<li><p><strong>parallel</strong> (<cite>int</cite>, optional) – Maximum number of threads to use for parallel connections to
-the DQSegDB host.</p></li>
-<li><p><strong>kwargs</strong> – All other keyword arguments are passed to
-<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>deep</strong> (<cite>bool</cite>, optional, default: <cite>False</cite>) – perform a deep copy of the original dictionary with a fresh
+memory address</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>flagdict</strong> – An ordered <cite>DataQualityDict</cite> of (name, <cite>DataQualityFlag</cite>)
-pairs.</p>
+<dd class="field-even"><p><strong>flag2</strong> – a copy of the original dictionary</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>The GPS interval(s) of interest can be passed as two arguments
-specifing the start and end of a single interval:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or, as a single <cite>Segment</cite>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_dqsegdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SegmentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.query_dqsegdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Query the advanced LIGO DQSegDB for a list of flags.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flags</strong> (<cite>iterable</cite>) – A list of flag names for which to query.</p></li>
-<li><p><strong>args</strong> – Either, two <cite>float</cite>-like numbers indicating the
-GPS [start, stop) interval, or a <cite>SegmentList</cite>
-defining a number of summary segments.</p></li>
-<li><p><strong>host</strong> (<cite>str</cite>, optional) – Name or URL of the DQSegDB instance to talk to.
-Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
-<li><p><strong>on_error</strong> (<cite>str</cite>, optional) – <p>how to handle an error querying for one flag, one of</p>
-<ul>
-<li><p><cite>’raise’</cite> (default): raise the Exception</p></li>
-<li><p><cite>’warn’</cite>: print a warning</p></li>
-<li><p><cite>’ignore’</cite>: move onto the next flag as if nothing happened</p></li>
-</ul>
-</p></li>
-<li><p><strong>parallel</strong> (<cite>int</cite>, optional) – Maximum number of threads to use for parallel connections to
-the DQSegDB host.</p></li>
-<li><p><strong>kwargs</strong> – All other keyword arguments are passed to
-<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>flagdict</strong> – An ordered <cite>DataQualityDict</cite> of (name, <cite>DataQualityFlag</cite>)
-pairs.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>The GPS interval(s) of interest can be passed as two arguments
-specifing the start and end of a single interval:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or, as a single <cite>Segment</cite>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">read</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityDictRead</span> <span class="pre">object&gt;</span></em></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_ligolw_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">igwn_ligolw.lsctables.SegmentDefTable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">igwn_ligolw.lsctables.SegmentSumTable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">igwn_ligolw.lsctables.SegmentTable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.to_ligolw_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Convert this <cite>DataQualityDict</cite> into a trio of LIGO_LW segment tables.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>attrs</strong> – Other attributes to add to all rows in all tables
-(e.g. <code class="docutils literal notranslate"><span class="pre">'process_id'</span></code>).</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>segmentdeftable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentDefTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table.</p></li>
-<li><p><strong>segmentsumtable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentSumTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment_summary</span></code> table.</p></li>
-<li><p><strong>segmenttable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentTable</span></code>) – The <code class="docutils literal notranslate"><span class="pre">segment</span></code> table.</p></li>
-</ul>
-</p>
+<dd class="field-odd"><p><cite>DataQualityFlag</cite></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataQualityFlag</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.union"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.DataQualityFlag/#gwpy.segments.DataQualityFlag" title="(in GWpy v4.0.1)"><span class="pre">DataQualityFlag</span></a></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.union"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return the union of all flags in this dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -478,22 +506,71 @@ are the union of those of the values of this dict</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">write</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityDictWrite</span> <span class="pre">object&gt;</span></em></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.DataQualityFlag/#gwpy.segments.DataQualityFlag" title="(in GWpy v4.0.1)"><span class="pre">DataQualityFlag</span></a></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return the intersection of all flags in this dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>intersection</strong> – a new <cite>DataQualityFlag</cite> who’s active and known segments
+are the intersection of those of the values of this dict</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>DataQualityFlag</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'key'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plot</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityDict.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Plot this dict on a segments projection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<cite>str</cite>, optional) – <p>Labelling system to use, or fixed label for all flags,
+special values include</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'key'</span></code>: use the key of the <cite>DataQualityDict</cite>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'name'</span></code>: use the <code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code> of the flag</p></li>
+</ul>
+<p>If anything else, that fixed label will be used for all lines.</p>
+</p></li>
+<li><p><strong>kwargs</strong> – All keyword arguments are passed to the
+<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.Plot/#gwpy.plot.Plot" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>figure</strong> – the newly created figure, with populated Axes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~matplotlib.figure.Figure</cite></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.figure</span></code></a></dt><dd><p>For documentation of keyword arguments used to create the figure.</p>
+</dd>
+<dt><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.add_subplot.html#matplotlib.figure.Figure.add_subplot" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.add_subplot</span></code></a></dt><dd><p>For documentation of keyword arguments used to create the axes.</p>
+</dd>
+<dt><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.SegmentAxes/#gwpy.plot.SegmentAxes.plot_segmentlist" title="(in GWpy v4.0.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwpy.plot.SegmentAxes.plot_segmentlist</span></code></a></dt><dd><p>For documentation of keyword arguments used in rendering the data.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">DataQualityFlag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentListLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentListLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">DataQualityFlag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentListLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentListLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isgood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A representation of a named set of segments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of this flag.
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – The name of this flag.
 This should be of the form {ifo}:{tag}:{version}, e.g.
 ‘H1:DMT-SCIENCE:1’. Use <cite>label</cite> for human-readable names.</p></li>
 <li><p><strong>active</strong> (<cite>SegmentList</cite>, optional) – A list of active segments for this flag</p></li>
@@ -507,85 +584,206 @@ This should be of the form {ifo}:{tag}:{version}, e.g.
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">active</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SegmentList</span></em></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></dt>
+<dd><p>The name associated with this flag.</p>
+<p>This normally takes the form {ifo}:{tag}:{version}. If found,
+each component is stored separately the associated attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>str</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ifo</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></dt>
+<dd><p>The interferometer associated with this flag.</p>
+<p>This should be a single uppercase letter and a single number,
+e.g. <code class="docutils literal notranslate"><span class="pre">'H1'</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">tag</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></dt>
+<dd><p>The tag (name) associated with this flag.</p>
+<p>This should take the form <code class="docutils literal notranslate"><span class="pre">'AAA-BBB_CCC_DDD'</span></code>, i.e. where
+each component is an uppercase acronym of alphanumeric
+characters only, e.g. <code class="docutils literal notranslate"><span class="pre">'DCH-IMC_BAD_CALIBRATION'</span></code> or
+<code class="docutils literal notranslate"><span class="pre">'DMT-SCIENCE'</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">version</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></dt>
+<dd><p>The version number of this flag.</p>
+<p>Each flag in the segment database is stored with a version
+integer, with each successive version representing a more
+accurate dataset for its known segments than any previous.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">label</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></dt>
+<dd><p>A human-readable label for this flag.</p>
+<p>For example: <code class="docutils literal notranslate"><span class="pre">'Science-mode'</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">active</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.SegmentList/#gwpy.segments.SegmentList" title="(in GWpy v4.0.1)"><span class="pre">SegmentList</span></a></span></dt>
 <dd><p>The set of segments during which this flag was active.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
-<dd><p>Veto category for this flag.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">coalesce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.coalesce"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Coalesce the segments for this flag.</p>
-<p>This method does two things:</p>
-<ul class="simple">
-<li><p><cite>coalesces &lt;SegmentList.coalesce&gt;</cite> the <cite>~DataQualityFlag.known</cite> and
-<cite>~DataQualityFlag.active</cite> segment lists</p></li>
-<li><p>forces the <cite>active</cite> segments to be a proper subset of the <cite>known</cite>
-segments</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This operation is performed in-place.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A view of this flag, not a copy.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>self</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">contract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SegmentList</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.contract"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Contract each of the <code class="docutils literal notranslate"><span class="pre">active</span></code> segments by <code class="docutils literal notranslate"><span class="pre">x</span></code> seconds.</p>
-<p>This method adds <code class="docutils literal notranslate"><span class="pre">x</span></code> to each segment’s lower bound, and subtracts
-<code class="docutils literal notranslate"><span class="pre">x</span></code> from the upper bound.</p>
-<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">active</span></code> <cite>SegmentList</cite> is modified
-in place.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<cite>float</cite>) – Number of seconds by which to contract each <cite>Segment</cite>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Build an exact copy of this flag.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>flag</strong> – A deepcopy of the original flag.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><cite>DataQualityFlag</cite></p>
-</dd>
-</dl>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">known</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.SegmentList/#gwpy.segments.SegmentList" title="(in GWpy v4.0.1)"><span class="pre">SegmentList</span></a></span></dt>
+<dd><p>The segments during which this flag was known.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">category</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></dt>
+<dd><p>Veto category for this flag.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">description</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></dt>
 <dd><p>Description of why/how this flag was generated.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Segment</span></em></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">isgood</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></dt>
+<dd><p>Whether <cite>active</cite> segments mean the instrument was in a good state.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">padding</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></dt>
+<dd><p>(start, end) padding for this flag’s active segments.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">texname</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></dt>
+<dd><p>Name of this flag in LaTeX printable format.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">extent</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.Segment/#gwpy.segments.Segment" title="(in GWpy v4.0.1)"><span class="pre">Segment</span></a></span></dt>
 <dd><p>The GPS <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop)</span></code> enclosing segment of this <cite>DataQualityFlag</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">livetime</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></dt>
+<dd><p>Amount of time this flag was <cite>active</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">regular</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></dt>
+<dd><p><cite>True</cite> if the <cite>active</cite> segments are a proper subset of the <cite>known</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityFlagRead</span> <span class="pre">object&gt;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityFlagWrite</span> <span class="pre">object&gt;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">query_dqsegdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SegmentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.query_dqsegdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Query a DQSegDB server for a flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flag</strong> (<cite>str</cite>) – The name of the flag for which to query</p></li>
+<li><p><strong>args</strong> – Either, two <cite>float</cite>-like numbers indicating the
+GPS [start, stop) interval, or a <cite>SegmentList</cite>
+defining a number of summary segments</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) – Name or URL of the DQSegDB instance to talk to.
+Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
+<li><p><strong>kwargs</strong> – All other keyword arguments are passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flag</strong> – A new <cite>DataQualityFlag</cite>, with the <cite>known</cite> and <cite>active</cite> lists
+filled appropriately.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityFlag</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The GPS interval(s) of interest can be passed as two arguments
+specifing the start and end of a single interval:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a single <cite>Segment</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_open_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.fetch_open_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SegmentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span></dt>
+<dd><p>Query a DQSegDB server for a flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flag</strong> (<cite>str</cite>) – The name of the flag for which to query</p></li>
+<li><p><strong>args</strong> – Either, two <cite>float</cite>-like numbers indicating the
+GPS [start, stop) interval, or a <cite>SegmentList</cite>
+defining a number of summary segments</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) – Name or URL of the DQSegDB instance to talk to.
+Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
+<li><p><strong>kwargs</strong> – All other keyword arguments are passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flag</strong> – A new <cite>DataQualityFlag</cite>, with the <cite>known</cite> and <cite>active</cite> lists
+filled appropriately.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityFlag</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The GPS interval(s) of interest can be passed as two arguments
+specifing the start and end of a single interval:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a single <cite>Segment</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fetch_open_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.fetch_open_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Fetch Open Data timeline segments into a flag.</p>
 <dl>
 <dt>flag<span class="classifier"><cite>str</cite></span></dt><dd><p>The name of the flag to query</p>
@@ -632,7 +830,7 @@ any input parseable by <cite>~gwpy.time.to_gps</cite> is fine</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_veto_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">veto</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">igwn_ligolw.lsctables.VetoDef</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">astropy.table.Row</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.from_veto_def"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_veto_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">veto</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">igwn_ligolw.lsctables.VetoDef</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.table.Row.html#astropy.table.Row" title="(in Astropy v7.2)"><span class="pre">astropy.table.Row</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.from_veto_def"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Define a <cite>DataQualityFlag</cite> from a <cite>VetoDef</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -641,130 +839,9 @@ any input parseable by <cite>~gwpy.time.to_gps</cite> is fine</p>
 </dl>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ifo</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
-<dd><p>The interferometer associated with this flag.</p>
-<p>This should be a single uppercase letter and a single number,
-e.g. <code class="docutils literal notranslate"><span class="pre">'H1'</span></code>.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">isgood</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em></dt>
-<dd><p>Whether <cite>active</cite> segments mean the instrument was in a good state.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">known</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SegmentList</span></em></dt>
-<dd><p>The segments during which this flag was known.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
-<dd><p>A human-readable label for this flag.</p>
-<p>For example: <code class="docutils literal notranslate"><span class="pre">'Science-mode'</span></code>.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">livetime</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
-<dd><p>Amount of time this flag was <cite>active</cite>.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
-<dd><p>The name associated with this flag.</p>
-<p>This normally takes the form {ifo}:{tag}:{version}. If found,
-each component is stored separately the associated attributes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>str</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.pad"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply a padding to each segment in this <cite>DataQualityFlag</cite>.</p>
-<p>This method either takes no arguments, in which case the value of
-the <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding</span></code> attribute will be used,
-or two values representing the padding for the start and end of
-each segment.</p>
-<p>For both the <cite>start</cite> and <cite>end</cite> paddings, a positive value means
-pad forward in time, so that a positive <cite>start</cite> pad or negative
-<cite>end</cite> padding will contract a segment at one or both ends,
-and vice-versa.</p>
-<p>This method will apply the same padding to both the
-<cite>~DataQualityFlag.known</cite> and <cite>~DataQualityFlag.active</cite> lists,
-but will not <code class="xref py py-meth docutils literal notranslate"><span class="pre">coalesce()</span></code> the result.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<cite>float</cite>, optional) – Two floats giving the start and end padding to apply.
-If not given, <cite>self.padding</cite> will be used.</p></li>
-<li><p><strong>inplace</strong> (<cite>bool</cite>, optional) – Modify this object in-place.
-Default is <cite>False</cite>, i.e. return a copy of the original
-object with padded segments.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>paddedflag</strong> – A view of the modified flag.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>DataQualityFlag</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em></dt>
-<dd><p>(start, end) padding for this flag’s active segments.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto-gps'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plot</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Plot this flag on a segments projection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>figsize</strong> (<cite>tuple</cite> of <cite>float</cite>) – The size (width, height) of the figure to create.</p></li>
-<li><p><strong>xscale</strong> (<cite>str</cite>) – The scaling to use for the X-axis (time axis).
-Default is <code class="docutils literal notranslate"><span class="pre">&quot;auto-gps&quot;</span></code> to dynamically choose the right scaling
-based on how much time is covered by the visible span.</p></li>
-<li><p><strong>kwargs</strong> – Other keyword arguments are passed to the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> constructor.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>figure</strong> – The newly created figure, with populated Axes.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>~matplotlib.figure.Figure</cite></p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.figure</span></code></dt><dd><p>For documentation of keyword arguments used to create the figure.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.add_subplot</span></code></dt><dd><p>For documentation of keyword arguments used to create the axes</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwpy.plot.SegmentAxes.plot_segmentlist</span></code></dt><dd><p>For documentation of keyword arguments used in rendering the data.</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentList</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.populate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SegmentList</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.populate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Query the segment database for this flag’s active segments.</p>
 <p>This method assumes all of the metadata for each flag have been
 filled. Minimally, the following attributes must be filled</p>
@@ -805,7 +882,22 @@ flag, default: <cite>True</cite>.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">protract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SegmentList</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.protract"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">contract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.SegmentList/#gwpy.segments.SegmentList" title="(in GWpy v4.0.1)"><span class="pre">SegmentList</span></a></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.contract"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Contract each of the <code class="docutils literal notranslate"><span class="pre">active</span></code> segments by <code class="docutils literal notranslate"><span class="pre">x</span></code> seconds.</p>
+<p>This method adds <code class="docutils literal notranslate"><span class="pre">x</span></code> to each segment’s lower bound, and subtracts
+<code class="docutils literal notranslate"><span class="pre">x</span></code> from the upper bound.</p>
+<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">active</span></code> <cite>SegmentList</cite> is modified
+in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<cite>float</cite>) – Number of seconds by which to contract each <cite>Segment</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">protract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.segments.SegmentList/#gwpy.segments.SegmentList" title="(in GWpy v4.0.1)"><span class="pre">SegmentList</span></a></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.protract"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Protract each of the <code class="docutils literal notranslate"><span class="pre">active</span></code> segments by <code class="docutils literal notranslate"><span class="pre">x</span></code> seconds.</p>
 <p>This method subtracts <code class="docutils literal notranslate"><span class="pre">x</span></code> from each segment’s lower bound,
 and adds <code class="docutils literal notranslate"><span class="pre">x</span></code> to the upper bound, while maintaining that each
@@ -821,100 +913,41 @@ in place.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SegmentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span></dt>
-<dd><p>Query a DQSegDB server for a flag.</p>
+<span class="sig-name descname"><span class="pre">pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.pad"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Apply a padding to each segment in this <cite>DataQualityFlag</cite>.</p>
+<p>This method either takes no arguments, in which case the value of
+the <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding</span></code> attribute will be used,
+or two values representing the padding for the start and end of
+each segment.</p>
+<p>For both the <cite>start</cite> and <cite>end</cite> paddings, a positive value means
+pad forward in time, so that a positive <cite>start</cite> pad or negative
+<cite>end</cite> padding will contract a segment at one or both ends,
+and vice-versa.</p>
+<p>This method will apply the same padding to both the
+<cite>~DataQualityFlag.known</cite> and <cite>~DataQualityFlag.active</cite> lists,
+but will not <code class="xref py py-meth docutils literal notranslate"><span class="pre">coalesce()</span></code> the result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>flag</strong> (<cite>str</cite>) – The name of the flag for which to query</p></li>
-<li><p><strong>args</strong> – Either, two <cite>float</cite>-like numbers indicating the
-GPS [start, stop) interval, or a <cite>SegmentList</cite>
-defining a number of summary segments</p></li>
-<li><p><strong>host</strong> (<cite>str</cite>, optional) – Name or URL of the DQSegDB instance to talk to.
-Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
-<li><p><strong>kwargs</strong> – All other keyword arguments are passed to
-<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
+<li><p><strong>args</strong> (<cite>float</cite>, optional) – Two floats giving the start and end padding to apply.
+If not given, <cite>self.padding</cite> will be used.</p></li>
+<li><p><strong>inplace</strong> (<cite>bool</cite>, optional) – Modify this object in-place.
+Default is <cite>False</cite>, i.e. return a copy of the original
+object with padded segments.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>flag</strong> – A new <cite>DataQualityFlag</cite>, with the <cite>known</cite> and <cite>active</cite> lists
-filled appropriately.</p>
+<dd class="field-even"><p><strong>paddedflag</strong> – A view of the modified flag.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>DataQualityFlag</cite></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<p>The GPS interval(s) of interest can be passed as two arguments
-specifing the start and end of a single interval:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or, as a single <cite>Segment</cite>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_dqsegdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SegmentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.query_dqsegdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Query a DQSegDB server for a flag.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flag</strong> (<cite>str</cite>) – The name of the flag for which to query</p></li>
-<li><p><strong>args</strong> – Either, two <cite>float</cite>-like numbers indicating the
-GPS [start, stop) interval, or a <cite>SegmentList</cite>
-defining a number of summary segments</p></li>
-<li><p><strong>host</strong> (<cite>str</cite>, optional) – Name or URL of the DQSegDB instance to talk to.
-Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
-<li><p><strong>kwargs</strong> – All other keyword arguments are passed to
-<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>flag</strong> – A new <cite>DataQualityFlag</cite>, with the <cite>known</cite> and <cite>active</cite> lists
-filled appropriately.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><cite>DataQualityFlag</cite></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>The GPS interval(s) of interest can be passed as two arguments
-specifing the start and end of a single interval:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or, as a single <cite>Segment</cite>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">read</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityFlagRead</span> <span class="pre">object&gt;</span></em></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regular</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em></dt>
-<dd><p><cite>True</cite> if the <cite>active</cite> segments are a proper subset of the <cite>known</cite>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">contract</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.round"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">contract</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.round"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Round this flag to integer segments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -932,42 +965,86 @@ padded out to integer boundaries..</p>
 </dl>
 </dd></dl>
 
-<dl class="py property">
+<dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
-<dd><p>The tag (name) associated with this flag.</p>
-<p>This should take the form <code class="docutils literal notranslate"><span class="pre">'AAA-BBB_CCC_DDD'</span></code>, i.e. where
-each component is an uppercase acronym of alphanumeric
-characters only, e.g. <code class="docutils literal notranslate"><span class="pre">'DCH-IMC_BAD_CALIBRATION'</span></code> or
-<code class="docutils literal notranslate"><span class="pre">'DMT-SCIENCE'</span></code>.</p>
+<span class="sig-name descname"><span class="pre">coalesce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.coalesce"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Coalesce the segments for this flag.</p>
+<p>This method does two things:</p>
+<ul class="simple">
+<li><p><cite>coalesces &lt;SegmentList.coalesce&gt;</cite> the <cite>~DataQualityFlag.known</cite> and
+<cite>~DataQualityFlag.active</cite> segment lists</p></li>
+<li><p>forces the <cite>active</cite> segments to be a proper subset of the <cite>known</cite>
+segments</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is performed in-place.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A view of this flag, not a copy.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py property">
+<dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">texname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
-<dd><p>Name of this flag in LaTeX printable format.</p>
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Build an exact copy of this flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flag</strong> – A deepcopy of the original flag.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>DataQualityFlag</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py property">
+<dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
-<dd><p>The version number of this flag.</p>
-<p>Each flag in the segment database is stored with a version
-integer, with each successive version representing a more
-accurate dataset for its known segments than any previous.</p>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(12,</span> <span class="pre">4)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto-gps'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plot</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/flag.html#DataQualityFlag.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Plot this flag on a segments projection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>figsize</strong> (<cite>tuple</cite> of <cite>float</cite>) – The size (width, height) of the figure to create.</p></li>
+<li><p><strong>xscale</strong> (<cite>str</cite>) – The scaling to use for the X-axis (time axis).
+Default is <code class="docutils literal notranslate"><span class="pre">&quot;auto-gps&quot;</span></code> to dynamically choose the right scaling
+based on how much time is covered by the visible span.</p></li>
+<li><p><strong>kwargs</strong> – Other keyword arguments are passed to the
+<a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.Plot/#gwpy.plot.Plot" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>figure</strong> – The newly created figure, with populated Axes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~matplotlib.figure.Figure</cite></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.figure</span></code></a></dt><dd><p>For documentation of keyword arguments used to create the figure.</p>
+</dd>
+<dt><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.add_subplot.html#matplotlib.figure.Figure.add_subplot" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.add_subplot</span></code></a></dt><dd><p>For documentation of keyword arguments used to create the axes</p>
+</dd>
+<dt><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.plot.SegmentAxes/#gwpy.plot.SegmentAxes.plot_segmentlist" title="(in GWpy v4.0.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwpy.plot.SegmentAxes.plot_segmentlist</span></code></a></dt><dd><p>For documentation of keyword arguments used in rendering the data.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">write</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityFlagWrite</span> <span class="pre">object&gt;</span></em></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">Segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/segments/segments.html#Segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">segment</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">Segment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/segments/segments.html#Segment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">segment</span></code>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p>A tuple defining a semi-open interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">end)</span></code>.</p>
 <p>Each <cite>Segment</cite> represents the range of values in a given interval, with
 general arithmetic supported for combining/comparing overlapping segments.</p>
@@ -1002,21 +1079,21 @@ general arithmetic supported for combining/comparing overlapping segments.</p>
 </div>
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em></dt>
-<dd><p>The end of this segment.</p>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></span></dt>
+<dd><p>The beginning of this segment.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em></dt>
-<dd><p>The beginning of this segment.</p>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">end</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></span></dt>
+<dd><p>The end of this segment.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">SegmentList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/segments/segments.html#SegmentList"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">SegmentList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/segments/segments.html#SegmentList"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">segmentlist</span></code></p>
 <p>A <cite>list</cite> of <cite>Segments &lt;Segment&gt;</cite>.</p>
 <p>The <cite>SegmentList</cite> provides additional methods that assist in the
@@ -1052,24 +1129,19 @@ arithmetic operators.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">coalesce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/segments.html#SegmentList.coalesce"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Sort the elements of the list into ascending order, and merge
-continuous segments into single segments.  Segmentlist is
-modified in place.  This operation is O(n log n).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">extent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Return the segment whose end-points denote the maximum and
 minimum extent of the segmentlist.  Does not require the
 segmentlist to be coalesced.</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">read</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.SegmentListRead</span> <span class="pre">object&gt;</span></em></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">coalesce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/segments/segments.html#SegmentList.coalesce"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Sort the elements of the list into ascending order, and merge
+continuous segments into single segments.  Segmentlist is
+modified in place.  This operation is O(n log n).</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
@@ -1085,14 +1157,19 @@ objects in comma-separated value (CSV) format, via the
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">write</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.SegmentListWrite</span> <span class="pre">object&gt;</span></em></dt>
+<span class="sig-name descname"><span class="pre">read</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.SegmentListRead</span> <span class="pre">object&gt;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.SegmentListWrite</span> <span class="pre">object&gt;</span></span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">SegmentListDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/segments/segments.html#SegmentListDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">SegmentListDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/segments/segments.html#SegmentListDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">segmentlistdict</span></code></p>
 <p>A <cite>dict</cite> of <cite>SegmentLists &lt;SegmentList&gt;</cite>.</p>
 <p>This class implements a standard mapping interface, with additional
@@ -1145,7 +1222,9 @@ amount.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-17 21:32:06.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -1162,7 +1241,24 @@ amount.</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

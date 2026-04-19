@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6ae391d0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "e7af38a2",
+   "id": "e9ecf70d",
    "metadata": {},
    "source": [
-    "# Machine Learning Preprocessing Pipeline\n",
+    "# Case Study: ML Preprocessing Pipeline\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_ml_preprocessing.ipynb)\n",
     "\n",
@@ -15,13 +27,16 @@
     "- **Bandpass filtering**: Butterworth filter with multiple frequency bands\n",
     "- **Standardization**: Channel-wise normalization (Z-score or robust MAD-based)\n",
     "\n",
-    "This preprocessing is applicable to any machine learning model (DeepClean, Random Forest, XGBoost, etc.), not just deep learning."
+    "This preprocessing is applicable to any machine learning model (DeepClean, Random Forest, XGBoost, etc.), not just deep learning.\n",
+    "\n",
+    "- **Related API**: [Preprocessing API](../../reference/api/preprocessing.rst), [Time Series API](../../reference/api/timeseries.rst)\n",
+    "- **Related theory**: [Validated Algorithms](../validated_algorithms.md), [Numerical Stability](../numerical_stability.md)"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cell-warnings-suppression",
+   "id": "b53792de",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:01.979421Z",
@@ -32,17 +47,21 @@
    },
    "outputs": [],
    "source": [
-    "# Suppress warnings for cleaner documentation output\n",
     "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "warnings.filterwarnings('ignore', 'Wswiglal-redir-stdio')\n",
-    "warnings.filterwarnings('ignore', category=UserWarning, module='gwpy.time')"
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
+    "\n",
+    "    # Suppress warnings for cleaner documentation output\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "938f1e68",
+   "id": "38f53da4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:01.985800Z",
@@ -74,7 +93,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "4d054f4f",
+   "id": "883e871e",
    "metadata": {},
    "source": [
     "## Basic Usage\n",
@@ -85,7 +104,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "2abbdb8d",
+   "id": "8fddc7cf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:04.088199Z",
@@ -140,7 +159,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "9c89fa98",
+   "id": "01cef028",
    "metadata": {},
    "source": [
     "### Preprocessing Pipeline\n",
@@ -154,7 +173,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "b0a4c8d0",
+   "id": "8747cd3f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:04.100794Z",
@@ -193,7 +212,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "92ff754d",
+   "id": "ce002095",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:04.123057Z",
@@ -228,7 +247,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7aa40b14",
+   "id": "558b07b5",
    "metadata": {},
    "source": [
     "## Data Splitting Visualization\n",
@@ -239,7 +258,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "2a8f9693",
+   "id": "b50c5f4b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:04.135963Z",
@@ -292,7 +311,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "db879deb",
+   "id": "af742ceb",
    "metadata": {},
    "source": [
     "## Filtering and Standardization Effects\n",
@@ -307,7 +326,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "19ee7c45",
+   "id": "6138c810",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:04.742594Z",
@@ -362,7 +381,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6d7d14a8",
+   "id": "b19d648a",
    "metadata": {},
    "source": [
     "### Frequency Domain Analysis"
@@ -371,7 +390,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "3fd9dbfd",
+   "id": "35331b23",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:05.262332Z",
@@ -413,7 +432,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "37f33c43",
+   "id": "14b511d0",
    "metadata": {},
    "source": [
     "## PyTorch Integration\n",
@@ -424,7 +443,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "d53b8d67",
+   "id": "cc9bf949",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:05.539951Z",
@@ -481,7 +500,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "36757dc0",
+   "id": "2f792d3d",
    "metadata": {},
    "source": [
     "## Advanced Topics\n",
@@ -494,7 +513,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "f57df64a",
+   "id": "b7a5177f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:06.512045Z",
@@ -568,7 +587,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1caf8007",
+   "id": "226e3e1b",
    "metadata": {},
    "source": [
     "### Robust Standardization\n",
@@ -579,7 +598,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "95c08756",
+   "id": "2f6f4d09",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:49:06.753230Z",
@@ -655,7 +674,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f7dd6764",
+   "id": "d4fd6d92",
    "metadata": {},
    "source": [
     "## Summary\n",
@@ -671,7 +690,10 @@
     "- Witness channels (X): Standardization only (no filtering)\n",
     "- Target channel (y): Filtering → Standardization\n",
     "\n",
-    "For more details, see the [API documentation](../../reference/api/preprocessing.rst)."
+    "For more details, see the [API documentation](../../reference/api/preprocessing.rst).\n",
+    "\n",
+    "- **Related API**: [Preprocessing API](../../reference/api/preprocessing.rst), [Time Series API](../../reference/api/timeseries.rst)\n",
+    "- **Related theory**: [Validated Algorithms](../validated_algorithms.md), [Numerical Stability](../numerical_stability.md)"
    ]
   }
  ],

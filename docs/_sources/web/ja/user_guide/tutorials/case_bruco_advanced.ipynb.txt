@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8e0ffc2b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "4ebdb5ef",
+   "id": "633ca240",
    "metadata": {},
    "source": [
-    "# Bruco 応用編：バイリニアカップリングと AM/FM 復調\n",
+    "# Bruco: バイリニアカップリングと AM/FM 復調\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_advanced.ipynb)\n",
     "\n",
@@ -17,6 +29,8 @@
     "1. **バイリニアカップリング検出** — `fast × slow` 合成ウィットネスを作成し Bruco を再スキャン\n",
     "2. **Hilbert AM/FM 復調** — スペクトル線の瞬時振幅／周波数を抽出し環境センサと相関\n",
     "\n",
+    "両者で共通する物理的な問いは、DARM に見えている高周波特徴を、どの低速な環境・制御変数が変調しているのか、そしてその仮説を Bruco が試せる形にどう符号化するかです。\n",
+    "\n",
     "> **前提知識**:\n",
     "> - [Bruco によるノイズハンティング](advanced_bruco.ipynb)\n",
     "> - [Bruco + ICA エンドツーエンド ノイズ削減](case_bruco_ica_denoising.ipynb)\n"
@@ -24,7 +38,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6ebe1048",
+   "id": "a1506094",
    "metadata": {},
    "source": [
     "## セットアップ"
@@ -33,7 +47,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "12909220",
+   "id": "bf9e8ac4",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:48.190028Z",
@@ -44,6 +58,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "# ruff: noqa: I001\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
@@ -56,7 +74,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "07743377",
+   "id": "0fef519d",
    "metadata": {},
    "source": [
     "## 1. モックデータ生成\n",
@@ -69,13 +87,15 @@
     "| **AM ライン** | `DARM += A(t) · sin(2π·30Hz·t)`, A(t) ∝ 環境ドリフト | 振幅が揺らぐ 30 Hz ライン |\n",
     "\n",
     "線形 Bruco では個々のウィットネスチャンネルと DARM の直接コヒーレンスは低く、\n",
-    "バイリニアカップリングは**検出されません**。\n"
+    "バイリニアカップリングは**検出されません**。\n",
+    "\n",
+    "> **よくある誤り**: ベースラインの線形スキャンだけを見て「結合はない」と判断すること。バイリニア問題では、線形ウィットネスが失敗すること自体が期待される診断結果です。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "e0ace90a",
+   "id": "8e479da1",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.016962Z",
@@ -178,7 +198,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "3531a114",
+   "id": "35414f94",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.035029Z",
@@ -219,7 +239,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a0d965d7",
+   "id": "8d849162",
    "metadata": {},
    "source": [
     "## 2. 線形 Bruco スキャン（ベースライン）\n",
@@ -231,7 +251,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "c5dec8ee",
+   "id": "594a0930",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.467230Z",
@@ -299,7 +319,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "c9c4f7a4",
+   "id": "6a0a3ebb",
    "metadata": {},
    "source": [
     "## 3. バイリニアカップリング検出\n",
@@ -315,13 +335,15 @@
     "この合成チャンネルは干渉計内部の積型非線形性を模擬します。\n",
     "DARM が `fast × slow` を含む場合、バイリニアウィットネスとの高いコヒーレンスが現れます。\n",
     "\n",
-    "拡張チャンネルセットを `Bruco.compute()` に渡して再スキャンします。\n"
+    "拡張チャンネルセットを `Bruco.compute()` に渡して再スキャンします。\n",
+    "\n",
+    "> **失敗しやすい点**: slow 側の帯域を広く取りすぎたり、fast 側に DC ドリフトを残したまま積を作ること。どちらも積ウィットネスをぼかし、見かけ上は強そうでも帯域局在しないコヒーレンスを生みがちです。slow 側は想定する変調帯域に合わせてください。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "b8bffb31",
+   "id": "a2d342b8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:51.967137Z",
@@ -403,7 +425,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "2abe046d",
+   "id": "5923cd55",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:52.363297Z",
@@ -468,7 +490,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ca7cbac2",
+   "id": "3ca4d5b8",
    "metadata": {},
    "source": [
     "## 4. Hilbert AM/FM 復調\n",
@@ -487,13 +509,15 @@
     "```\n",
     "\n",
     "`inst_amp` および `inst_freq` を低速補助チャンネルと相関させ、\n",
-    "変調源を特定します。\n"
+    "変調源を特定します。\n",
+    "\n",
+    "> **よくある誤り**: 生のキャリア ASD と低速ウィットネスを相関させただけで探索を打ち切ること。AM/FM 問題の本体は、多くの場合キャリア周波数そのものではなく包絡線や瞬時周波数側に現れます。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cd7bcaff",
+   "id": "8d192b85",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:52.859017Z",
@@ -563,20 +587,22 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3758d0f8",
+   "id": "ee6e1617",
    "metadata": {},
    "source": [
     "## 5. AM/FM と低速ウィットネスのコヒーレンス\n",
     "\n",
     "Hilbert 包絡線（`inst_amp`）と瞬時周波数（`inst_freq`）は\n",
     "変調周波数帯域（ここでは 0 – 5 Hz）に独自の ASD を持ちます。\n",
-    "これらと低速環境チャンネルのコヒーレンスを計算し、変調源を特定します。\n"
+    "これらと低速環境チャンネルのコヒーレンスを計算し、変調源を特定します。\n",
+    "\n",
+    "> **注意したい失敗モード**: キャリア周辺の帯域通過が広すぎると隣接ラインが解析信号へ漏れ、狭すぎると包絡線が人工的に潰れます。1 本の物理的ライン族を分離できる窓幅に調整してください。\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "2967884f",
+   "id": "6dc19199",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:53.232587Z",
@@ -669,7 +695,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e07fa76b",
+   "id": "79deac7f",
    "metadata": {},
    "source": [
     "## まとめ\n",
@@ -690,6 +716,7 @@
     "  変調帯域でのコヒーレンス探索を可能にする。\n",
     "- どちらのパターンも `TimeSeries` の四則演算（`*`、`.highpass()`、`.bandpass()`）と\n",
     "  `Bruco.compute()` のみで実現できる。\n",
+    "- 期待される物理が積型や低速変調なら、ベースライン線形スキャンの失敗自体が重要な手掛かりになる。\n",
     "\n",
     "### 次のステップ\n",
     "\n",
@@ -702,7 +729,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "fb4085c7",
+   "id": "532407ec",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:12:53.894955Z",

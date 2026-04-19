@@ -5,35 +5,101 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwexpy TimeSeries 新機能チュートリアル &mdash; GWexpy Documentation</title>
+  <title>TimeSeries: 基本 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/intro_timeseries.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="FrequencySeries の新機能と高度な操作" href="intro_frequencyseries.html" />
-    <link rel="prev" title="チュートリアル" href="index.html" /> 
+    <link rel="next" title="FrequencySeries: 基本" href="intro_frequencyseries.html" />
+    <link rel="prev" title="チュートリアル" href="index.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../../en/user_guide/tutorials/intro_timeseries.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -47,41 +113,53 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
 <li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
 <li class="toctree-l4"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
-<li class="toctree-l4"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
-<li class="toctree-l4"><a class="reference internal" href="index.html#vi">VI. セグメント解析</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v-i-o">V. データ I/O と相互運用</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#vi">VI. ノイズハンティングと特殊ツール</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#vii">VII. セグメント解析</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャと物理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
 </ul>
@@ -90,19 +168,19 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメント</a></li>
           <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
-      <li class="breadcrumb-item active">gwexpy TimeSeries 新機能チュートリアル</li>
+      <li class="breadcrumb-item active">TimeSeries: 基本</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_timeseries.ipynb" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -117,8 +195,18 @@
 <p>このページは Jupyter Notebook から生成されました。
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/intro_timeseries.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
-<section id="gwexpy-TimeSeries-新機能チュートリアル">
-<h1>gwexpy TimeSeries 新機能チュートリアル<a class="headerlink" href="#gwexpy-TimeSeries-新機能チュートリアル" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
+
+<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
+</pre></div>
+</div>
+</div>
+<section id="TimeSeries:-基本">
+<h1>TimeSeries: 基本<a class="headerlink" href="#TimeSeries:-基本" title="Link to this heading"></a></h1>
 <p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwpy</span></code> を拡張した <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された新しいメソッドとその使い方を解説します。</p>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は GWpy との高い互換性を維持しつつ、信号処理、統計解析、他ライブラリとの相互運用性を大幅に強化しています。</p>
@@ -142,7 +230,11 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
@@ -150,20 +242,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-<span class="c1"># SampleData Generate (100Hz done5seconds Data)</span>
+<span class="c1"># 後段の解析で物理的な違いを追えるように、定常線に近いチャンネルと周波数が流れるチャンネルを用意します。</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="mf">5.0</span>
 <span class="c1"># Restore &#39;t&#39; for compatibility with downstream cells if they use it</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
 
-<span class="c1"># Sensor 1: 10Hz Sine wave + Noise</span>
+<span class="c1"># Sensor 1 は安定した 10 Hz 線と計測雑音を重ねた基準チャンネルとして扱い、復調や相関確認の参照にします。</span>
 <span class="n">s1</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="n">n1</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 <span class="n">ts1</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="n">n1</span>
 <span class="n">ts1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Sensor 1&quot;</span>
 <span class="n">ts1</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 
-<span class="c1"># Sensor 2: Signal (Frequency time / duration : 5Hz -&gt; 25Hz) + Function Width</span>
+<span class="c1"># Sensor 2 は周波数が掃引しつつ包絡が成長する非定常線を模擬し、Hilbert 系の指標で追うべき物理変化を与えます。</span>
 <span class="n">s2</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">exponential</span><span class="p">(</span>
     <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">0.2</span>
@@ -185,9 +277,9 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># minutes Signal (Analytic Signal) Calculate</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 解析信号を作ることで、正負周波数の打ち消しを避けながら振幅と位相を分けて扱います。</span>
 <span class="n">ts_analytic</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">hilbert</span><span class="p">()</span>
-<span class="c1"># (Envelope) Calculate</span>
+<span class="c1"># 包絡線は搬送波を取り除いた後に残るゆっくりした振幅変動を表します。</span>
 <span class="n">ts_env</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">envelope</span><span class="p">()</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">ts_env</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
@@ -207,7 +299,7 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_5_0.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_6_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_6_0.png" />
 </div>
 </div>
 </section>
@@ -218,11 +310,11 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Phase (unwrap=True Phase )</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 位相を unwrap して 2π ジャンプを除くと、チャープの連続的な位相蓄積として解釈できます。</span>
 <span class="n">phase_rad</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_phase</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">phase_deg</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_phase</span><span class="p">(</span><span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="c1"># Frequency</span>
+<span class="c1"># 位相の傾きを瞬時周波数に変換し、時間とともに動く線周波数を追跡します。</span>
 <span class="n">freq</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_frequency</span><span class="p">()</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">phase_rad</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
@@ -239,7 +331,7 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_7_0.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_8_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_8_0.png" />
 </div>
 </div>
 </section>
@@ -250,13 +342,13 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. mix_down: Frequency f0 ( Signal )</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. 10 Hz 線を baseband へ落とし、ゆっくりした振幅・位相変動だけを読みやすくします。</span>
 <span class="n">ts_mixed</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">mix_down</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-<span class="c1"># 2. baseband: demodulation + lowpass + resampling BatchRun</span>
+<span class="c1"># 2. baseband は復調後に低域だけを残して間引くので、搬送波そのものではなく包絡の時間変化に注目できます。</span>
 <span class="n">ts_base</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">baseband</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">lowpass</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">output_rate</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 
-<span class="c1"># 3. lock_in: (Amplitude Phase )</span>
+<span class="c1"># 3. lock-in は位相を合わせた参照波で平均することで、広帯域雑音を抑えながら 10 Hz 成分だけを抽出します。</span>
 <span class="n">amp</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="c1"># 0.1seconds Mean</span>
 <span class="n">res_complex</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;complex&quot;</span><span class="p">)</span> <span class="c1"># Complex number</span>
 
@@ -305,7 +397,7 @@ TimeSeries([0.97370674, 0.88468624, 0.94466389, 0.91826691,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_9_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_10_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_10_1.png" />
 </div>
 </div>
 </section>
@@ -320,11 +412,11 @@ TimeSeries([0.97370674, 0.88468624, 0.94466389, 0.91826691,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT (GWpy )</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 標準 FFT は記録全体をほぼ定常とみなせる場合の基準スペクトル比較に向いています。</span>
 <span class="n">fs_gwpy</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
 
-<span class="c1"># Transient Mode:</span>
-<span class="c1"># pad_left/right 。nfft_mode=&quot;next_fast_len&quot; Calculate Length 。</span>
+<span class="c1"># transient mode は短い応答や端点効果が効く場合に使い、端のリーケージで振幅を見誤るのを防ぎます。</span>
+<span class="c1"># pad_left/pad_right でイベント前後に余白を持たせ、nfft_mode=&quot;next_fast_len&quot; でその保護を高速な FFT 長に合わせます。</span>
 <span class="n">fs_trans</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;transient&quot;</span><span class="p">,</span> <span class="n">pad_left</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pad_right</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nfft_mode</span><span class="o">=</span><span class="s2">&quot;next_fast_len&quot;</span>
 <span class="p">)</span>
@@ -337,14 +429,14 @@ TimeSeries([0.97370674, 0.88468624, 0.94466389, 0.91826691,
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Comparison of FFT modes&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_12_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_12_0.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_13_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_13_0.png" />
 </div>
 </div>
 </section>
@@ -355,13 +447,13 @@ TimeSeries([0.97370674, 0.88468624, 0.94466389, 0.91826691,
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Transfer Function Calculate (Sensor 1 do Chirp Signal Transfer Function)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 伝達関数を見て、Sensor 1 がチャープ信号のどの周波数成分を線形に説明できるかを確かめます。</span>
 <span class="n">tf_welch</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">tf_fft</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span>
     <span class="n">ts1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;transient&quot;</span>
 <span class="p">)</span> <span class="c1"># FFTRatio ( Response )</span>
 
-<span class="c1"># CrossCorrelation (xcorr)</span>
+<span class="c1"># 相互相関は 2 チャンネルの時間ずれを確かめる最初の sanity check で、witness として使えるかの判断材料になります。</span>
 <span class="n">corr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">xcorr</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="s2">&quot;coeff&quot;</span><span class="p">)</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
@@ -384,7 +476,7 @@ TimeSeries([0.97370674, 0.88468624, 0.94466389, 0.91826691,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_14_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_14_0.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_15_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_15_0.png" />
 </div>
 </div>
 </section>
@@ -497,7 +589,7 @@ Axis 2: frequency
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EMD-signal not installed. Skipping HHT demo.&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HHT Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -512,7 +604,7 @@ Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_18_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_18_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_19_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_19_1.png" />
 </div>
 </div>
 </section>
@@ -551,7 +643,7 @@ Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_20_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_20_0.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_21_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_21_0.png" />
 </div>
 </div>
 <section id="ピーク検出-(Find-Peaks)">
@@ -609,7 +701,7 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_22_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_22_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_23_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_23_1.png" />
 </div>
 </div>
 </section>
@@ -675,21 +767,21 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hurst skipping: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_24_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_24_0.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_25_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_25_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_24_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_24_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_25_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_25_1.png" />
 </div>
 </div>
 </section>
@@ -733,7 +825,7 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_26_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_26_0.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_27_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_27_0.png" />
 </div>
 </div>
 </section>
@@ -765,7 +857,7 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_28_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_28_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_29_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_29_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -802,7 +894,7 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_29_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_29_0.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_30_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_30_0.png" />
 </div>
 </div>
 </section>
@@ -876,7 +968,7 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_31_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_31_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_32_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_32_1.png" />
 </div>
 </div>
 </section>
@@ -915,7 +1007,7 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
     <span class="nb">print</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1017,7 +1109,7 @@ SQLite interop OK: my_sensor
     <span class="n">display</span><span class="p">(</span><span class="n">t_torch</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1123,7 +1215,7 @@ tensor([ 0.1367,  0.9166,  0.9133,  0.6989,  0.3079, -0.0841, -0.4856, -0.9327,
     <span class="n">display</span><span class="p">(</span><span class="n">t_tf</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -1147,7 +1239,7 @@ tensor([ 0.1367,  0.9166,  0.9133,  0.6989,  0.3079, -0.0841, -0.4856, -0.9327,
     <span class="n">display</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1192,13 +1284,15 @@ ObsPy interop OK: .Sensor 1..
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="チュートリアル" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="intro_frequencyseries.html" class="btn btn-neutral float-right" title="FrequencySeries の新機能と高度な操作" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="intro_frequencyseries.html" class="btn btn-neutral float-right" title="FrequencySeries: 基本" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -1215,7 +1309,24 @@ ObsPy interop OK: .Sensor 1..
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="../license.html">ライセンス / 免責</a> |
+        <a href="../roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

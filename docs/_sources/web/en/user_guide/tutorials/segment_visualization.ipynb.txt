@@ -1,19 +1,33 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c2d8650b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "984b5bb9",
+   "id": "178ca5bc",
    "metadata": {},
    "source": [
-    "# Visualization Deep Dive\n",
+    "# Segment Analysis: Visualization\n",
     "\n",
-    "`SegmentTable` provides rich plotting features, specifically optimized for comparing spectra over multiple segments via `overlay_spectra()`."
+    "`SegmentTable` provides rich plotting features, specifically optimized for comparing spectra over multiple segments via `overlay_spectra()`.\n",
+    "\n",
+    "The segment boundaries are still `gwpy.segments.Segment`, and the spectra being overlaid are GWpy `FrequencySeries` objects. gwexpy adds the table-oriented visualization layer by collecting those GWpy base classes in `SegmentTable` and providing overlay, color grading, and overview layouts on top. For the base relationship between GWpy classes and gwexpy extensions, see [SegmentTable: Basics](intro_segment_table.ipynb).\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "80936539",
+   "id": "d0397f17",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:33.354347Z",
@@ -48,29 +62,35 @@
    ],
    "source": [
     "import warnings\n",
-    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
-    "import numpy as np\n",
-    "from gwpy.segments import Segment\n",
-    "from gwexpy.table import SegmentTable\n",
-    "from gwpy.frequencyseries import FrequencySeries\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "def make_fs(i):\n",
-    "    f = np.linspace(1, 32, 256)\n",
-    "    data = (1.0/(f**1.5)) * (1.0 + i*0.1)\n",
-    "    return FrequencySeries(data, frequencies=f)\n",
+    "import warnings\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
     "\n",
-    "segs = [Segment(i*100, i*100+100) for i in range(10)]\n",
-    "st = SegmentTable.from_segments(segs, snr=np.random.uniform(5, 20, 10))\n",
-    "st.add_series_column(\"asd\", data=[make_fs(i) for i in range(10)], kind=\"frequencyseries\")\n",
+    "    import numpy as np\n",
+    "    from gwpy.segments import Segment\n",
+    "    from gwexpy.table import SegmentTable\n",
+    "    from gwpy.frequencyseries import FrequencySeries\n",
     "\n",
-    "# 1. Overlay spectra graded by start time (default)\n",
-    "plot = st.overlay_spectra(\"asd\", color_by=\"t0\")\n",
-    "plot.show() # NOTE: Normally use plot in notebooks"
+    "    def make_fs(i):\n",
+    "        f = np.linspace(1, 32, 256)\n",
+    "        data = (1.0/(f**1.5)) * (1.0 + i*0.1)\n",
+    "        return FrequencySeries(data, frequencies=f)\n",
+    "\n",
+    "    segs = [Segment(i*100, i*100+100) for i in range(10)]\n",
+    "    st = SegmentTable.from_segments(segs, snr=np.random.uniform(5, 20, 10))\n",
+    "    st.add_series_column(\"asd\", data=[make_fs(i) for i in range(10)], kind=\"frequencyseries\")\n",
+    "\n",
+    "    # 1. Overlay spectra graded by start time (default)\n",
+    "    plot = st.overlay_spectra(\"asd\", color_by=\"t0\")\n",
+    "    plot\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "fcecfe8b",
+   "id": "b964cd07",
    "metadata": {},
    "source": [
     "## Color Grading by Meta Column\n",
@@ -81,7 +101,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "c77fda98",
+   "id": "d9bc235c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:36.151835Z",
@@ -120,7 +140,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "bd66d914",
+   "id": "3315234a",
    "metadata": {},
    "source": [
     "## Overview Layouts\n",
@@ -131,7 +151,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "42bd11ee",
+   "id": "dabb87a8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:36.511567Z",

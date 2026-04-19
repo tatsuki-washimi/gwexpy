@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4ea9c683",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "802233ae",
+   "id": "3c6e57bd",
    "metadata": {},
    "source": [
-    "# SpectrogramList and SpectrogramDict Tutorial\n",
+    "# Spectrogram: Basics\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_spectrogram.ipynb)\n",
     "\n",
@@ -18,7 +30,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "b8677c55",
+   "id": "de74dcce",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:48:42.503028Z",
@@ -29,6 +41,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "\n",
     "from gwexpy.noise.wave import gaussian, sine\n",
@@ -37,7 +53,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "39b81b7a",
+   "id": "280868a0",
    "metadata": {},
    "source": [
     "## 1. Data Preparation\n",
@@ -49,7 +65,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "6402ab42",
+   "id": "19b33bf8",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:48:44.653265Z",
@@ -104,7 +120,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5ce83059",
+   "id": "9120599b",
    "metadata": {},
    "source": [
     "## 2. Basic Operations with SpectrogramList\n",
@@ -116,7 +132,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "a091f27a",
+   "id": "43285f98",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:48:44.821919Z",
@@ -148,7 +164,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "738c046c",
+   "id": "72e9d3c6",
    "metadata": {},
    "source": [
     "### Batch Processing: Cropping Time Axis (`crop`)\n",
@@ -160,7 +176,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "1dc571c3",
+   "id": "dfb48fa0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:48:44.829176Z",
@@ -189,7 +205,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0207edfa",
+   "id": "ae085291",
    "metadata": {},
    "source": [
     "### Batch Processing: Cropping Frequency Axis (`crop_frequencies`)\n",
@@ -200,7 +216,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "d44307a6",
+   "id": "049e6ff7",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:48:44.834144Z",
@@ -230,7 +246,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1459bba5",
+   "id": "69af7816",
    "metadata": {},
    "source": [
     "## 3. Using SpectrogramDict\n",
@@ -241,7 +257,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "1f31799f",
+   "id": "59ceffe0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:48:44.838888Z",
@@ -267,7 +283,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "507ca8a8",
+   "id": "b8c0447b",
    "metadata": {},
    "source": [
     "## 4. Visualization (`plot`)\n",
@@ -279,7 +295,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "196971a6",
+   "id": "136f11e6",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:48:44.842186Z",
@@ -309,7 +325,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8695c783",
+   "id": "43dc7c92",
    "metadata": {},
    "source": [
     "## 5. Conversion to Matrix Format and Deep Learning Integration\n",
@@ -322,7 +338,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "1f1cd316",
+   "id": "f8eb967a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T11:48:49.989645Z",
@@ -358,7 +374,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "98019959",
+   "id": "3946396a",
    "metadata": {},
    "source": [
     "If PyTorch or CuPy is installed, you can directly convert to Tensors, etc.\n",
@@ -371,7 +387,22 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5f0cf07b",
+   "id": "6f1e9a24",
+   "metadata": {},
+   "source": [
+    "## Common Mistakes and Failure Modes\n",
+    "\n",
+    "- **Reading color intensity as absolute amplitude without checking settings**: different normalization, color limits, or log scaling choices can change the visual impression without changing the underlying data.\n",
+    "- **Over-interpreting time or frequency localization**: `fftlength`, `stride`, and windowing create a resolution tradeoff. A narrow-looking feature in the image is not automatically narrow in the signal model.\n",
+    "- **Comparing panels with unmatched axes**: if `sharex` / `sharey` or explicit ranges are inconsistent, visual differences may come from plotting choices rather than spectral structure.\n",
+    "- **Treating cropped output as a new physical measurement**: `crop` and `crop_frequencies` only restrict the displayed or retained region; they do not regenerate the spectrogram with different estimation parameters.\n",
+    "- **Feeding matrices into ML pipelines without tracking axis meaning**: `SpectrogramMatrix` stores `(Channels, Time, Frequency)`. Swapping axes silently can produce convincing but incorrect downstream results.\n",
+    "- **Ignoring noise-floor context**: a bright band is not automatically significant. Interpret peaks relative to baseline structure, leakage, and the chosen spectrogram parameters.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "47ffc143",
    "metadata": {},
    "source": [
     "## Summary\n",
@@ -396,5 +427,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

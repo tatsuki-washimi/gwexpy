@@ -4,33 +4,99 @@
 <html class="writer-html5" lang="ja" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="GWexpy のケーススタディをテーマ別に探せる正本ギャラリーです。キャリブレーション、外部連携、ML、ノイズハンティングをまとめています。" name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ケーススタディ &mdash; GWexpy Documentation</title>
+  <title>ケーススタディ (Case Studies) &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/examples/index.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="ノイズバジェッティングと多チャンネル相関解析" href="../user_guide/tutorials/case_noise_budget.html" />
-    <link rel="prev" title="ケーススタディ: イベント同期解析" href="../user_guide/tutorials/case_segment_analysis.html" /> 
+    <link rel="next" title="閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)" href="../user_guide/tutorials/case_active_damping.html" />
+    <link rel="prev" title="セグメント解析: 可視化" href="../user_guide/tutorials/segment_visualization.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../en/examples/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,39 +110,51 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">ケーススタディ</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_transfer_function.html">チュートリアル: 伝達関数の測定</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_active_damping.html">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_segment_analysis.html">ケーススタディ: イベント同期解析</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/architecture.html">アーキテクチャと物理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ケーススタディ (Case Studies)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples-ja-featured-gallery">注目ギャラリー</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#i">I. キャリブレーション・応答・制御</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ii-i-o">II. 外部連携・I/O・再現性</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iii">III. 統計・機械学習ワークフロー</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iv">IV. ノイズハンティングと検出器診断</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -85,18 +163,18 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
-      <li class="breadcrumb-item active">ケーススタディ</li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
+      <li class="breadcrumb-item active">ケーススタディ (Case Studies)</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/examples/index.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -106,33 +184,160 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>ケーススタディ<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<p>実際の解析タスクを想定した、実践的なワークフロー集です。</p>
-<p>機能ごとの使い方（API、引数、基本パターン）を学ぶ場合は
-<a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> を参照してください。</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/case_transfer_function.html">チュートリアル: 伝達関数の測定</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/case_active_damping.html">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/case_segment_analysis.html">ケーススタディ: イベント同期解析</a></li>
+  <section id="case-studies">
+<span id="examples-ja-gallery-entry"></span><h1>ケーススタディ (Case Studies)<a class="headerlink" href="#case-studies" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ページ種別: ガイド索引</p>
+</div>
+<p>複数の GWexpy 機能をひとつのテーマに沿って組み合わせる、実践的なデモ集です。
+クラスや機能ごとの使い方を順番に学びたい場合は、 <a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> を参照してください。</p>
+<p><strong>対象読者:</strong> 基本操作を理解したうえで、実務に近い一連の解析例を探したい利用者。
+<strong>前提知識:</strong> <a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> や <a class="reference internal" href="../user_guide/getting_started.html"><span class="doc">はじめに (Getting Started)</span></a> にある主要クラスの基本を理解していること。
+<strong>このページの用途:</strong> GWexpy のケーススタディをテーマ別に探すための正本一覧として使うこと。
+<strong>検索のヒント:</strong> ケーススタディ, ギャラリー, 実践ワークフロー, キャリブレーション, 相互運用, ノイズハンティング, ML</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>Case Studies</cite> はテーマ別の実演、<cite>Tutorials</cite> はクラスや機能ごとの例です。
+このページを <cite>case_*</cite> ノートブックの正本一覧として扱います。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>このページの見方:
+I はキャリブレーションと制御、II は外部連携と再現性、III は統計・機械学習、IV はノイズハンティングと検出器診断を扱います。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>例の読み方:
+目的: 自分の課題に近いワークフローを選ぶこと。
+入力: 関連する GWexpy オブジェクトの基本知識と notebook 実行環境。
+出力: 読むべき、またはローカルで実行すべきケーススタディ notebook の候補。</p>
+</div>
+<section id="examples-ja-featured-gallery">
+<span id="id1"></span><h2>注目ギャラリー<a class="headerlink" href="#examples-ja-featured-gallery" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>この注目カードは、ホームページの teaser で使っている 3 枚のサムネイルと同じ画像を再利用しています。
+ただし正本はこのページです。ホームページは短い導入であり、以下のカテゴリ別一覧が正式なギャラリーです。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>最小限のビジュアル索引:</p>
+<ul class="simple">
+<li><p><cite>ノイズバジェット</cite> のサムネイル -&gt; <a class="reference internal" href="#section-iv-noise-hunting-and-detector-diagnostics-ja"><span class="std std-ref">IV. ノイズハンティングと検出器診断</span></a> から探し始める</p></li>
+<li><p><cite>伝達関数推定</cite> のサムネイル -&gt; <a class="reference internal" href="#section-i-calibration-response-and-control-ja"><span class="std std-ref">I. キャリブレーション・応答・制御</span></a> から探し始める</p></li>
+<li><p><cite>アクティブダンピング</cite> のサムネイル -&gt; <a class="reference internal" href="#section-i-calibration-response-and-control-ja"><span class="std std-ref">I. キャリブレーション・応答・制御</span></a> から探し始める</p></li>
 </ul>
 </div>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover sd-text-center docutils">
+<img alt="ノイズバジェット例のサムネイル" class="sd-card-img-top" src="../../../_images/case_noise_budget_thumb.png" />
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+ノイズバジェット</div>
+<p class="sd-card-text">検出器雑音の主要な結合経路を切り分け、どこから対策すべきかを比較します。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="../user_guide/tutorials/case_noise_budget.html"><span class="doc">ノイズバジェッティングと多チャンネル相関解析</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover sd-text-center docutils">
+<img alt="伝達関数推定例のサムネイル" class="sd-card-img-top" src="../../../_images/case_transfer_function_thumb.png" />
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+伝達関数推定</div>
+<p class="sd-card-text">コヒーレンス評価、応答のフィッティング、実測伝達経路の解釈をひとつの流れで確認します。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="../user_guide/tutorials/case_transfer_function.html"><span class="doc">チュートリアル: 伝達関数の測定</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover sd-text-center docutils">
+<img alt="アクティブダンピング例のサムネイル" class="sd-card-img-top" src="../../../_images/case_active_damping_thumb.png" />
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+アクティブダンピング</div>
+<p class="sd-card-text">6 自由度防振系に対する MIMO 制御ワークフローを具体例でたどれます。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="../user_guide/tutorials/case_active_damping.html"><span class="doc">閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="i">
+<span id="section-i-calibration-response-and-control-ja"></span><span id="examples-ja-canonical-list"></span><h2>I. キャリブレーション・応答・制御<a class="headerlink" href="#i" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_active_damping.html"><span class="doc">アクティブダンピング: 6自由度防振系の MIMO 制御</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_transfer_function.html"><span class="doc">伝達関数計測: 実測・コヒーレンス・フィッティング</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_calibration_pipeline.html"><span class="doc">キャリブレーションパイプライン: Counts から Strain へ</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_dttxml_calibration.html"><span class="doc">DTT XML 活用: 測定済み応答の読み込みと再利用</span></a></p></li>
+</ul>
+</section>
+<section id="ii-i-o">
+<span id="section-ii-interoperability-io-and-reproducibility-ja"></span><h2>II. 外部連携・I/O・再現性<a class="headerlink" href="#ii-i-o" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_finesse_optics.html"><span class="doc">Finesse 3 連携: シミュレーションと測定の比較</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_seismic_obspy.html"><span class="doc">ObsPy 連携: 地震データの取り込みと解析</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_gbd_format.html"><span class="doc">GBD 形式 I/O: 書き出しと再読込の実務フロー</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_hdf5_provenance.html"><span class="doc">HDF5 provenance: 再現可能なメタデータ管理</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_pycbc_search.html"><span class="doc">PyCBC 連携: gwexpy 前処理から探索まで</span></a></p></li>
+</ul>
+</section>
+<section id="iii">
+<span id="section-iii-statistical-and-ml-workflows-ja"></span><h2>III. 統計・機械学習ワークフロー<a class="headerlink" href="#iii" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_bootstrap_gls_fitting.html"><span class="doc">Bootstrap PSD と GLS フィッティング</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_ml_preprocessing.html"><span class="doc">ML 前処理パイプライン: 特徴量整形と比較</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_segment_analysis.html"><span class="doc">イベント同期解析: SegmentTable による窓選択</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_physics_validation.html"><span class="doc">物理妥当性検証: 単位・数値床・健全性テスト</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_signal_extraction.html"><span class="doc">信号抽出: 色付き雑音からの微弱信号回収</span></a></p></li>
+</ul>
+</section>
+<section id="iv">
+<span id="section-iv-noise-hunting-and-detector-diagnostics-ja"></span><h2>IV. ノイズハンティングと検出器診断<a class="headerlink" href="#iv" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_noise_budget.html"><span class="doc">ノイズバジェット解析: 多チャンネル相関で寄与源を切り分ける</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_lockin_detection.html"><span class="doc">ロックイン検出: 弱い AM/FM 構造の復元</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_wiener_filter.html"><span class="doc">ウィーナーフィルタ: コヒーレント雑音の差し引き</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_coupling_analysis.html"><span class="doc">カップリング解析: チャンネル間伝達経路の推定</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_bruco_ica_denoising.html"><span class="doc">BruCo と ICA: ウィットネス選定から差し引きまで</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_bruco_advanced.html"><span class="doc">BruCo 応用: バイリニア結合と AM/FM の失敗モード</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_violin_mode.html"><span class="doc">バイオリンモード解析: 共振モードの同定と追跡</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_schumann_resonance.html"><span class="doc">シューマン共鳴解析: 環境磁場モードの読み解き</span></a></p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/case_glitch_analysis.html"><span class="doc">グリッチ詳細解析: Q 変換と Omega スキャン</span></a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>各 API の詳細（引数・戻り値・クラス一覧）は <a class="reference internal" href="../reference/index.html"><span class="doc">リファレンス (Reference)</span></a> を参照してください。</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>次に読むページ:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> でクラス別・機能別の基礎を固める</p></li>
+<li><p><a class="reference internal" href="../reference/index.html"><span class="doc">リファレンス (Reference)</span></a> でケーススタディ内の API 詳細を確認する</p></li>
+<li><p><a class="reference internal" href="../user_guide/io_formats.html"><span class="doc">ファイル I/O 対応フォーマットガイド</span></a> で対応フォーマットと読み書き経路を調べる</p></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../user_guide/tutorials/case_segment_analysis.html" class="btn btn-neutral float-left" title="ケーススタディ: イベント同期解析" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../user_guide/tutorials/case_noise_budget.html" class="btn btn-neutral float-right" title="ノイズバジェッティングと多チャンネル相関解析" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../user_guide/tutorials/segment_visualization.html" class="btn btn-neutral float-left" title="セグメント解析: 可視化" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../user_guide/tutorials/case_active_damping.html" class="btn btn-neutral float-right" title="閉ループを作り、開ループと比較して共振運動が本当に減衰するかを見ます。 6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -149,7 +354,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="../user_guide/license.html">ライセンス / 免責</a> |
+        <a href="../user_guide/roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

@@ -1,5 +1,47 @@
 # Plane2D
 
+<!-- reference-summary:start -->
+
+**Stability:** Stable
+
+## What it is
+
+Use `Plane2D` for 2D slices that should keep semantic axis names and physical metadata after extracting a plane from a higher-dimensional result.
+
+## Representative Signatures
+
+```python
+Plane2D(data, axis1_name="axis1", axis2_name="axis2", ...)
+Plane2D.swapaxes(0, 1)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.types import Plane2D
+import numpy as np
+
+plane = Plane2D(np.ones((4, 8)), axis1_name="time", axis2_name="frequency")
+plane_t = plane.swapaxes(0, 1)
+```
+
+## Related Theory
+
+- [Prerequisites and Conventions](../user_guide/prerequisites_and_conventions.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## Related Tutorials
+
+- [TimeSeries Basics](../user_guide/tutorials/intro_timeseries.ipynb)
+- [ScalarField Signal Processing](../user_guide/tutorials/field_scalar_signal.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** Array2D
 
 
@@ -122,7 +164,8 @@ inplace : `bool`, optional
     perform operation in-place, modifying current series,
     otherwise copy data and return new series, default: `True`
 
-    .. warning::
+    :::{warning}
+    :::
 
        `inplace` append bypasses the reference check in
        `numpy.ndarray.resize`, so be carefully to only use this
@@ -791,7 +834,8 @@ inplace : `bool`, optional
     perform operation in-place, modifying current series,
     otherwise copy data and return new series, default: `True`
 
-    .. warning::
+    :::{warning}
+    :::
 
        `inplace` prepend bypasses the reference check in
        `numpy.ndarray.resize`, so be carefully to only use this
@@ -1208,6 +1252,5 @@ array([[-5.,  0.],
        [-3.,  4.],
        [-2.,  6.],
        [-1.,  8.]])
-
 
 

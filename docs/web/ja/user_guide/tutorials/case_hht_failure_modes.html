@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ケーススタディ: HHT 解析で失敗しやすいパターン &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=9fddb14a" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/case_hht_failure_modes.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../../en/user_guide/tutorials/case_hht_failure_modes.html">English</a>
+    </div>
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">GWexpy ドキュメント</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ケーススタディ: HHT 解析で失敗しやすいパターン</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_hht_failure_modes.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="hht">
+<h1>ケーススタディ: HHT 解析で失敗しやすいパターン<a class="headerlink" href="#hht" title="Link to this heading"></a></h1>
+<p>HHT は非定常・非線形信号の追跡に強力ですが、パラメータと解釈を誤ると STFT より不安定に見えることがあります。ここでは :doc:<code class="docutils literal notranslate"><span class="pre">advanced_hht</span></code> を補完する形で、重力波・振動解析で頻出する失敗モードを整理します。</p>
+<section id="id1">
+<h2>このケーススタディで扱うこと<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>ノイズの強い信号で EMD をそのまま使ってモード混合を起こす失敗</p></li>
+<li><p>端点効果で瞬時周波数を誤読する失敗</p></li>
+<li><p>IMF を物理モードと 1 対 1 対応だと思い込む失敗</p></li>
+<li><p>STFT と HHT を比較するときの公平な見方</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>前提<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>基本 API と SASI 例は :doc:<code class="docutils literal notranslate"><span class="pre">advanced_hht</span></code> を参照</p></li>
+<li><p>時間周波数表現の比較は :doc:<code class="docutils literal notranslate"><span class="pre">time_frequency_comparison</span></code> も参照</p></li>
+</ul>
+</section>
+<section id="emd">
+<h2>失敗例 1: 標準 EMD だけで弱いトラックを追う<a class="headerlink" href="#emd" title="Link to this heading"></a></h2>
+<p><strong>症状</strong>: 130 Hz 付近の成分が複数 IMF に分散し、瞬時周波数が激しく振れる。<br />
+<strong>典型原因</strong>: 雑音レベルが高いのに <code class="docutils literal notranslate"><span class="pre">emd_method=&quot;emd&quot;</span></code> を固定し、モード混合をそのまま受けている。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hht_plain</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">hht</span><span class="p">(</span>
+    <span class="n">emd_method</span><span class="o">=</span><span class="s2">&quot;emd&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;spectrogram&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>まずは EEMD/CEEMD 系へ切り替え、結果の安定性を比較します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hht_eemd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">hht</span><span class="p">(</span>
+    <span class="n">emd_method</span><span class="o">=</span><span class="s2">&quot;eemd&quot;</span><span class="p">,</span>
+    <span class="n">eemd_trials</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;spectrogram&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>確認ポイント</strong>:</p>
+<ul class="simple">
+<li><p>同じ信号トラックが複数 IMF に割れていないか</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eemd_trials</span></code> を増やしても主トラックの位置が大きく変わらないか</p></li>
+<li><p>振幅の大きい雑音バーストだけを拾っていないか</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>失敗例 2: 端点効果を物理変化だと誤認する<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>ヒルベルト変換は端で不安定になりやすく、解析区間の最初と最後で瞬時周波数が跳ねることがあります。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hht_spec</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">hht</span><span class="p">(</span>
+    <span class="n">emd_method</span><span class="o">=</span><span class="s2">&quot;eemd&quot;</span><span class="p">,</span>
+    <span class="n">eemd_trials</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">hilbert_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pad&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">},</span>
+    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;spectrogram&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>実務上の扱い</strong>:</p>
+<ul class="simple">
+<li><p>端の数百サンプルは解釈対象から外す</p></li>
+<li><p>パディングあり/なしで主トラック位置が変わるか比べる</p></li>
+<li><p>端点付近だけに現れる急変は物理解釈しない</p></li>
+</ul>
+</section>
+<section id="imf">
+<h2>失敗例 3: IMF をそのまま物理モード名で呼ぶ<a class="headerlink" href="#imf" title="Link to this heading"></a></h2>
+<p><strong>症状</strong>: <code class="docutils literal notranslate"><span class="pre">IMF</span> <span class="pre">2</span> <span class="pre">=</span> <span class="pre">SASI</span></code>, <code class="docutils literal notranslate"><span class="pre">IMF</span> <span class="pre">3</span> <span class="pre">=</span> <span class="pre">convection</span></code> のように即断する。<br />
+<strong>典型原因</strong>: EMD の分解結果を観測器・シミュレーション文脈と照合せずに命名している。</p>
+<p>IMF はアルゴリズム上の分解単位であり、物理モードの直接ラベルではありません。少なくとも以下を確認してください。</p>
+<ol class="arabic simple">
+<li><p>周波数帯と時間発展が理論期待と整合するか</p></li>
+<li><p>近傍 IMF を足し戻しても同じトラックが出るか</p></li>
+<li><p>STFT や wavelet でも同じイベント時刻が見えるか</p></li>
+</ol>
+</section>
+<section id="stft-hht">
+<h2>失敗例 4: STFT と HHT を片方だけ有利な条件で比較する<a class="headerlink" href="#stft-hht" title="Link to this heading"></a></h2>
+<p>HHT は時間分解能で有利に見える一方、前処理と雑音感度の違いで見え方が簡単に変わります。比較時は次を揃えます。</p>
+<ul class="simple">
+<li><p>同じ前処理済み <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を入力する</p></li>
+<li><p>STFT の窓長・オーバーラップを明記する</p></li>
+<li><p>HHT 側は <code class="docutils literal notranslate"><span class="pre">emd_method</span></code>, <code class="docutils literal notranslate"><span class="pre">eemd_trials</span></code>, <code class="docutils literal notranslate"><span class="pre">hilbert_kwargs</span></code> を明記する</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts_white</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">stft</span> <span class="o">=</span> <span class="n">ts_white</span><span class="o">.</span><span class="n">spectrogram2</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.045</span><span class="p">)</span>
+<span class="n">hht</span> <span class="o">=</span> <span class="n">ts_white</span><span class="o">.</span><span class="n">hht</span><span class="p">(</span><span class="n">emd_method</span><span class="o">=</span><span class="s2">&quot;eemd&quot;</span><span class="p">,</span> <span class="n">eemd_trials</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;spectrogram&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>STFT で見えないから HHT が正しい、あるいは HHT が荒れるから STFT が正しい、とは言えません。両者の失敗モードが違うだけです。</p>
+</section>
+<section id="id4">
+<h2>推奨ワークフロー<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">advanced_hht</span></code> の SASI 例で基準挙動を確認する</p></li>
+<li><p>ノイズが強い場合は最初から EEMD/CEEMD を候補に入れる</p></li>
+<li><p>端点効果を見るため padding と無視区間を設定する</p></li>
+<li><p>IMF 単体ではなく近傍 IMF の合算と STFT 比較で解釈を固める</p></li>
+<li><p>物理モード名を付ける前に理論期待と照合する</p></li>
+</ol>
+</section>
+<section id="id5">
+<h2>関連ページ<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>:doc:<code class="docutils literal notranslate"><span class="pre">advanced_hht</span></code></p></li>
+<li><p>:doc:<code class="docutils literal notranslate"><span class="pre">case_glitch_analysis</span></code></p></li>
+<li><p>:doc:<code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison</span></code></p></li>
+<li><p>:doc:<code class="docutils literal notranslate"><span class="pre">time_frequency_comparison</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="../license.html">ライセンス / 免責</a> |
+        <a href="../roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

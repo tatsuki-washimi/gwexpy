@@ -4,33 +4,99 @@
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Learn why ScalarField slicing in GWexpy preserves 4D structure, how metadata survives indexing, and when squeeze() is safe." name="description" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ScalarField Slicing Guide &mdash; GWexpy Documentation</title>
+  <title>Scalar Field Slicing Guide (Why 4D is Preserved) &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/scalarfield_slicing.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Validated Algorithms" href="validated_algorithms.html" />
-    <link rel="prev" title="Numerical Stability and Precision" href="numerical_stability.html" /> 
+    <link rel="next" title="Migration Guide for GWpy Users" href="gwexpy_for_gwpy_users_en.html" />
+    <link rel="prev" title="Numerical Stability and Precision" href="numerical_stability.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../ja/user_guide/scalarfield_slicing.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,60 +110,72 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Scalar Field Slicing Guide (Why 4D is Preserved)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#at-a-glance">At a Glance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#on-this-page">On This Page</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-always-maintain-4d">Why Always Maintain “4D”?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-operation-examples">Practical Operation Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#faq">FAQ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#next-to-read">Next to Read</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">ScalarField Slicing Guide</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#d-structure-preservation-in-scalarfield">4D Structure Preservation in ScalarField</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#frequently-asked-questions-faq">Frequently Asked Questions (FAQ)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#related-links">Related Links</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
-      <li class="breadcrumb-item active">ScalarField Slicing Guide</li>
+      <li class="breadcrumb-item active">Scalar Field Slicing Guide (Why 4D is Preserved)</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/scalarfield_slicing.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -107,100 +185,181 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="scalarfield-slicing-guide">
-<h1>ScalarField Slicing Guide<a class="headerlink" href="#scalarfield-slicing-guide" title="Link to this heading"></a></h1>
-<p><strong>Overview:</strong> This guide explains how <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> preserves 4D structure during indexing operations, which differs from NumPy and GWpy behavior. Understanding this behavior is essential for correct domain transformations (time/frequency, space/k-space) and FFT operations.</p>
-<p><strong>Target Audience:</strong> Intermediate users working with multi-dimensional field data</p>
-<p><strong>Prerequisites:</strong></p>
+  <section class="tex2jax_ignore mathjax_ignore" id="scalar-field-slicing-guide-why-4d-is-preserved">
+<h1>Scalar Field Slicing Guide (Why 4D is Preserved)<a class="headerlink" href="#scalar-field-slicing-guide-why-4d-is-preserved" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Who should read this page?</strong>
+Refer to this guide if you use <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> and have the following questions:</p>
 <ul class="simple">
-<li><p>Basic familiarity with NumPy array indexing</p></li>
-<li><p>Understanding of <a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">ScalarField basics</span></a></p></li>
+<li><p>Why does <code class="docutils literal notranslate"><span class="pre">field[0]</span></code> remain 4D instead of becoming a 1D array?</p></li>
+<li><p>Why do I get <code class="docutils literal notranslate"><span class="pre">Shape</span> <span class="pre">Mismatch</span></code> errors during indexing operations?</p></li>
+<li><p>When is it safe to use <code class="docutils literal notranslate"><span class="pre">squeeze()</span></code>, and when should it be avoided?</p></li>
 </ul>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>If you’re encountering unexpected shapes after slicing operations, jump to the <a class="reference internal" href="#frequently-asked-questions-faq"><span class="std std-ref">FAQ section</span></a> for quick answers.</p>
 </div>
-<section id="d-structure-preservation-in-scalarfield">
-<h2>4D Structure Preservation in ScalarField<a class="headerlink" href="#d-structure-preservation-in-scalarfield" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> always maintains a 4D structure, even after indexing operations. This differs from the standard behavior of NumPy arrays and GWpy.</p>
-<section id="d-structure-preservation">
-<h3>4D Structure Preservation<a class="headerlink" href="#d-structure-preservation" title="Link to this heading"></a></h3>
-<p><strong>NumPy array behavior</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(5, 5, 5)  # Dimension reduced</span>
-</pre></div>
-</div>
-<p><strong>ScalarField behavior</strong>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)),</span> <span class="o">...</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(1, 5, 5, 5)  # 4D structure preserved</span>
-</pre></div>
-</div>
-<p>This behavior provides the following benefits:</p>
-<ol class="arabic simple">
-<li><p><strong>Axis metadata retention</strong>: <code class="docutils literal notranslate"><span class="pre">axis0_domain</span></code>, <code class="docutils literal notranslate"><span class="pre">space_domain</span></code>, etc. are preserved</p></li>
-<li><p><strong>Broadcast operation consistency</strong>: Always treated as 4D</p></li>
-<li><p><strong>FFT operation safety</strong>: Can perform FFT while maintaining domain information</p></li>
-</ol>
+<p>This guide explains why <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> <strong>always maintains its 4-dimensional structure</strong> during indexing operations. This differs from the standard behavior of NumPy or GWpy and is designed as an “invariant” to ensure the integrity of multidimensional physical data.</p>
+<section id="at-a-glance">
+<h2>At a Glance<a class="headerlink" href="#at-a-glance" title="Link to this heading"></a></h2>
+<p>The summary table below stays compact to match the shared docs table styling. On narrow screens, horizontal scrolling may be the easiest way to read every column.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Item</p></th>
+<th class="head"><p>Details</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Page Role</strong></p></td>
+<td><p>Guide</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Audience</strong></p></td>
+<td><p>Users confused by <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> slicing results, and users who want to understand why metadata stays attached</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Prerequisites</strong></p></td>
+<td><p>Basic familiarity with <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> shape and ordinary NumPy slicing behavior</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Use Cases</strong></p></td>
+<td><p>Understand why <code class="docutils literal notranslate"><span class="pre">field[0]</span></code> stays 4D, use <code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> safely, or diagnose shape mismatch errors</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Search Keywords</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, slicing, <code class="docutils literal notranslate"><span class="pre">squeeze</span></code>, 4D persistence, shape mismatch, Field API</p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="reducing-dimensions">
-<h3>Reducing Dimensions<a class="headerlink" href="#reducing-dimensions" title="Link to this heading"></a></h3>
-<p>To explicitly reduce dimensions, use the <code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(5, 5, 5)  # Length-1 axes removed</span>
-</pre></div>
-</div>
-</section>
-<section id="slicing-examples">
-<h3>Slicing Examples<a class="headerlink" href="#slicing-examples" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Extract specific time snapshot</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snapshot</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>  <span class="c1"># shape: (1, 5, 5, 5)</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Extract spatial cross-section</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plane</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># shape: (n_time, 5, 5, 1)</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Extract time series at specific spatial point</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">point_ts</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># shape: (n_time, 1, 1, 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Use squeeze for TimeSeries-like handling</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">point_ts_1d</span> <span class="o">=</span> <span class="n">point_ts</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>  <span class="c1"># shape: (n_time,)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="frequently-asked-questions-faq">
-<h2>Frequently Asked Questions (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="Link to this heading"></a></h2>
-<section id="why-preserve-4d-structure">
-<h3>Why preserve 4D structure?<a class="headerlink" href="#why-preserve-4d-structure" title="Link to this heading"></a></h3>
-<p>ScalarField represents physical quantities with different domains (time/frequency, real space/k-space) per axis. Reducing dimensions would lose this metadata, causing FFT operations and domain transformations to fail.</p>
-</section>
-<section id="what-if-i-need-numpy-like-behavior">
-<h3>What if I need NumPy-like behavior?<a class="headerlink" href="#what-if-i-need-numpy-like-behavior" title="Link to this heading"></a></h3>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> method. This removes length-1 axes and returns a NumPy-like array.</p>
-</section>
-</section>
-<section id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
-<section id="broadcast-operations-not-working-as-expected">
-<h3>Broadcast operations not working as expected<a class="headerlink" href="#broadcast-operations-not-working-as-expected" title="Link to this heading"></a></h3>
-<p>ScalarField is always 4D, so you need to match shapes when operating with other arrays.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Incorrect: Operation with 1D array</span>
-<span class="n">field</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>  <span class="c1"># Error</span>
-
-<span class="c1"># Correct: Match shape</span>
-<span class="n">field</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="related-links">
-<h2>Related Links<a class="headerlink" href="#related-links" title="Link to this heading"></a></h2>
+<section id="on-this-page">
+<h2>On This Page<a class="headerlink" href="#on-this-page" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">field_scalar_intro</span></a> - ScalarField Tutorial</p></li>
-<li><p><a class="reference internal" href="../reference/ScalarField.html"><span class="std std-doc">ScalarField</span></a> - ScalarField API Reference</p></li>
-<li><p><a class="reference internal" href="../reference/FieldList.html"><span class="std std-doc">FieldList</span></a> - FieldList / FieldDict Collections</p></li>
+<li><p><a class="reference internal" href="#why-always-maintain-4d"><span class="std std-ref">Why Always Maintain “4D”?</span></a></p></li>
+<li><p><a class="reference internal" href="#practical-operation-examples"><span class="std std-ref">Practical Operation Examples</span></a></p></li>
+<li><p><a class="reference internal" href="#faq"><span class="std std-ref">FAQ</span></a></p></li>
+</ul>
+</section>
+<section id="why-always-maintain-4d">
+<span id="scalarfield-slicing-4d-persistence"></span><h2>Why Always Maintain “4D”?<a class="headerlink" href="#why-always-maintain-4d" title="Link to this heading"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> represents a physical “field” with four axes: (time, frequency, x, y). The reasons for not reducing dimensions (Rank Loss) like NumPy does are based on the <strong>Four Pillars of Persistence</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Domain Protection</strong>: Reducing dimensions causes the loss of metadata associated with those axes (e.g., <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">f0</span></code>, <code class="docutils literal notranslate"><span class="pre">dx</span></code>), making it impossible to map back to the original physical space.</p></li>
+<li><p><strong>FFT/Transformation Consistency</strong>: Always being 4D allows immediate multidimensional operations like <code class="docutils literal notranslate"><span class="pre">fft()</span></code>, <code class="docutils literal notranslate"><span class="pre">ifft()</span></code>, and <code class="docutils literal notranslate"><span class="pre">spatial_filter()</span></code> on any slice.</p></li>
+<li><p><strong>Stream Processing Safety</strong>: The number of dimensions remains constant when passing objects between functions, improving program robustness.</p></li>
+<li><p><strong>Broadcast Consistency</strong>: Dimensional alignment (<code class="docutils literal notranslate"><span class="pre">reshape</span></code>) intent becomes explicit in the code because the object is always 4D.</p></li>
+</ol>
+<section id="numpy-vs-gwexpy-slicing-behavior">
+<span id="scalarfield-slicing-comparison-diagram"></span><h3>NumPy vs GWexpy Slicing Behavior<a class="headerlink" href="#numpy-vs-gwexpy-slicing-behavior" title="Link to this heading"></a></h3>
+<p><img alt="4D Dimension Persistence comparison between NumPy and GWexpy" src="../../../_images/scalarfield_slicing_4d_persistence.png" /></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Operation Example</p></th>
+<th class="head text-center"><p>Result Shape (NumPy)</p></th>
+<th class="head text-center"><p>Result Shape (Field)</p></th>
+<th class="head text-left"><p>Physical Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">field[5]</span></code></p></td>
+<td class="text-center"><p>3D (Rank Loss)</p></td>
+<td class="text-center"><p><strong>4D (1, F, X, Y)</strong></p></td>
+<td class="text-left"><p>Snapshot at a specific time (metadata preserved)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">field[:,</span> <span class="pre">:,</span> <span class="pre">3,</span> <span class="pre">3]</span></code></p></td>
+<td class="text-center"><p>2D (Rank Loss)</p></td>
+<td class="text-center"><p><strong>4D (T, F, 1, 1)</strong></p></td>
+<td class="text-left"><p>Time-series at a specific spatial point (metadata preserved)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">field[10:20]</span></code></p></td>
+<td class="text-center"><p>4D (Maintained)</p></td>
+<td class="text-center"><p><strong>4D (10, F, X, Y)</strong></p></td>
+<td class="text-left"><p>Time interval extraction</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><strong>Critical Warning: Using <code class="docutils literal notranslate"><span class="pre">.squeeze()</span></code></strong>
+When you call <code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> to reduce dimensions, <strong>all metadata (coordinate information) associated with the removed axes is completely lost.</strong>
+Since you can no longer reconstruct the correct physical axes for operations like <code class="docutils literal notranslate"><span class="pre">field.fft()</span></code>, we strongly recommend using <code class="docutils literal notranslate"><span class="pre">squeeze()</span></code> only at the “final output stage,” such as for plotting or saving to CSV.</p>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="practical-operation-examples">
+<span id="scalarfield-slicing-practical-examples"></span><h2>Practical Operation Examples<a class="headerlink" href="#practical-operation-examples" title="Link to this heading"></a></h2>
+<section id="slicing-behavior">
+<h3>1. Slicing Behavior<a class="headerlink" href="#slicing-behavior" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Purpose: show that axis metadata stays attached after indexing</p></li>
+<li><p>Input: a <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> with shape <code class="docutils literal notranslate"><span class="pre">(100,</span> <span class="pre">50,</span> <span class="pre">10,</span> <span class="pre">10)</span></code></p></li>
+<li><p>Output: <code class="docutils literal notranslate"><span class="pre">snapshot</span></code> and <code class="docutils literal notranslate"><span class="pre">plane</span></code> objects that keep singleton axes</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># (time, freq, x, y) = (100, 50, 10, 10)</span>
+<span class="n">field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span> <span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># Extract a snapshot at a specific time</span>
+<span class="n">snapshot</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">50</span><span class="p">]</span>
+<span class="c1"># Shape becomes (1, 50, 10, 10), preserving time axis information.</span>
+
+<span class="c1"># Extract a spatial cross-section (x-y plane)</span>
+<span class="n">plane</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="c1"># Shape becomes (100, 50, 10, 1), preserving y-axis information.</span>
+</pre></div>
+</div>
+</section>
+<section id="when-to-reduce-dimensions-squeeze">
+<h3>2. When to Reduce Dimensions (<code class="docutils literal notranslate"><span class="pre">squeeze</span></code>)<a class="headerlink" href="#when-to-reduce-dimensions-squeeze" title="Link to this heading"></a></h3>
+<p>If you intentionally want to treat the data as 1D or 2D (e.g., for plotting or input to an external library), explicitly call <code class="docutils literal notranslate"><span class="pre">.squeeze()</span></code>.</p>
+<ul class="simple">
+<li><p>Purpose: reduce dimensions only at the final output step</p></li>
+<li><p>Input: a sliced <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code></p></li>
+<li><p>Output: a 1D array suitable for plotting or external libraries</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get time-series at a specific spatial point for plotting</span>
+<span class="n">point_ts</span> <span class="o">=</span> <span class="n">field</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>      <span class="c1"># (100, 1, 1, 1)</span>
+<span class="n">actual_ts</span> <span class="o">=</span> <span class="n">point_ts</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>    <span class="c1"># (100,) - compatible with TimeSeries</span>
+</pre></div>
+</div>
+<p>Specifying <code class="docutils literal notranslate"><span class="pre">axis=</span></code> makes it explicit which singleton axes you are removing and reduces the risk of dropping a dimension you still need.</p>
+</section>
+<section id="broadcasting-considerations">
+<h3>3. Broadcasting Considerations<a class="headerlink" href="#broadcasting-considerations" title="Link to this heading"></a></h3>
+<p>Since <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> is always 4D, you must match the shape when adding or subtracting NumPy arrays.</p>
+<ul class="simple">
+<li><p>Purpose: avoid shape mismatch during broadcasting</p></li>
+<li><p>Input: a <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> plus a 1D calibration array</p></li>
+<li><p>Output: an explicit <code class="docutils literal notranslate"><span class="pre">reshape(...)</span></code> that documents intent</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ❌ Bad Example: Attempting to add a 1D array directly</span>
+<span class="n">field</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>  <span class="c1"># Shape mismatch</span>
+
+<span class="c1"># ✅ Good Example: Reshaping to the correct dimensions</span>
+<span class="n">calibration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># three coefficients only along the frequency axis</span>
+<span class="n">field</span> <span class="o">+</span> <span class="n">calibration</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">reshape(3,</span> <span class="pre">1,</span> <span class="pre">1,</span> <span class="pre">1)</span></code> form means “these 3 values belong to the frequency axis, and the same value is broadcast across time, x, and y.”</p>
+<hr class="docutils" />
+</section>
+</section>
+<section id="faq">
+<span id="scalarfield-slicing-faq"></span><h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading"></a></h2>
+<section id="q-isn-t-it-inconvenient-for-1d-calculations-if-it-s-always-4d">
+<h3>Q: Isn’t it inconvenient for 1D calculations if it’s always 4D?<a class="headerlink" href="#q-isn-t-it-inconvenient-for-1d-calculations-if-it-s-always-4d" title="Link to this heading"></a></h3>
+<p><strong>A:</strong> <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> is designed for handling data that has spatial and temporal extent as a “field.” If you are working with simple, single-channel time-series data, we recommend using the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class from the start.</p>
+</section>
+<section id="q-what-happens-if-i-extract-a-scalar-like-scalarfield-0-0-0-0">
+<h3>Q: What happens if I extract a scalar like <code class="docutils literal notranslate"><span class="pre">ScalarField[0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0]</span></code>?<a class="headerlink" href="#q-what-happens-if-i-extract-a-scalar-like-scalarfield-0-0-0-0" title="Link to this heading"></a></h3>
+<p><strong>A:</strong> If all indices are scalars, a standard Python scalar or NumPy scalar is returned.</p>
+</section>
+</section>
+<section id="next-to-read">
+<span id="scalarfield-slicing-next-to-read"></span><h2>Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="tutorials/field_scalar_intro.html"><span class="std std-doc">ScalarField introduction tutorial</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">Field module API reference</span></a></p></li>
+<li><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">Numerical stability</span></a> - Precision management for 4D operations</p></li>
+<li><p><a class="reference internal" href="architecture.html"><span class="std std-doc">Architecture and Data Flow</span></a> - Where the Field API fits in the broader design</p></li>
 </ul>
 </section>
 </section>
@@ -210,13 +369,15 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="numerical_stability.html" class="btn btn-neutral float-left" title="Numerical Stability and Precision" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="validated_algorithms.html" class="btn btn-neutral float-right" title="Validated Algorithms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwexpy_for_gwpy_users_en.html" class="btn btn-neutral float-right" title="Migration Guide for GWpy Users" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -233,7 +394,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="license.html">License / Disclaimer</a> |
+        <a href="roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

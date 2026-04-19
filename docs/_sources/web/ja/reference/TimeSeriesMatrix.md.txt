@@ -1,10 +1,54 @@
 # TimeSeriesMatrix
 
+<!-- reference-summary:start -->
+
+**安定性:** 安定
+
+## 主な用途
+
+`TimeSeriesMatrix` は全チャンネルが同じ時間軸を共有する場合に使い、行列単位で FFT・PSD・コヒーレンス・前処理を適用できます。
+
+## 代表的なシグネチャ
+
+```python
+TimeSeriesMatrix(data, times=None, dt=None, t0=None, sample_rate=None, ...)
+TimeSeriesMatrix.psd(fftlength=None, overlap=0, ...)
+```
+
+## 最小例
+
+```python
+from gwexpy.timeseries import TimeSeriesMatrix
+import numpy as np
+
+mat = TimeSeriesMatrix(np.random.randn(2, 2, 256), sample_rate=256)
+coh = mat.coherence(mat)
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** PhaseMethodsMixin, TimeSeriesMatrixCoreMixin, TimeSeriesMatrixAnalysisMixin, TimeSeriesMatrixSpectralMixin, TimeSeriesMatrixInteropMixin, SeriesMatrix
 
-**共通の時間軸を共有する複数の TimeSeries オブジェクト用の2Dマトリックスコンテナ。**
+**共通の時間軸を共有する複数の TimeSeries オブジェクト用の 2D 行列コンテナ。**
 
-このクラスは、各要素が TimeSeries データストリームに対応する2次元配列（行 x 列）を表します。**マトリックス内のすべての要素は同じ時間配列を共有します**（同じ `t0`, `dt`, サンプル数）。グリッド構造で整理された多変量時系列のように振る舞います。
+このクラスは、各要素が TimeSeries データストリームに対応する 2 次元配列（行 x 列）を表します。**行列内のすべての要素は同じ時間配列を共有します**（同じ `t0`, `dt`, サンプル数）。グリッド構造で整理された多変量時系列のように振る舞います。
 
 ## 主要プロパティ
 
@@ -72,8 +116,8 @@
 
 | メソッド | 説明 |
 |---------|------|
-| `read()` | ファイルからマトリックスを読み込む |
-| `write()` | マトリックスをファイルに書き込む |
+| `read()` | ファイルから行列を読み込む |
+| `write()` | 行列をファイルに書き込む |
 | `to_hdf5()` / `to_zarr()` | HDF5/Zarr 形式で保存 |
 
 ## データ操作
@@ -81,6 +125,6 @@
 | メソッド | 説明 |
 |---------|------|
 | `crop()` | GPS 開始/終了時刻でクロップ。gwexpy.time.to_gps がサポートする形式を使用可能 |
-| `append()` / `prepend()` | サンプル軸に沿って別のマトリックスを追加 |
+| `append()` / `prepend()` | サンプル軸に沿って別の行列を追加 |
 | `interpolate()` | 新しいサンプル軸に補間 |
 | `pad()` | サンプル軸に沿ってパディング |

@@ -1,11 +1,27 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "edc5d8ae",
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "5ada18fe",
+   "id": "a556e9ef",
    "metadata": {},
    "source": [
-    "# Bootstrap PSD 推定と GLS フィッティング\n",
+    "# ケーススタディ: Bootstrap PSD と GLS フィッティング\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)\n",
     "\n",
@@ -31,12 +47,17 @@
     "- オーバーラップする FFT セグメントが周波数相関をどのように導入するか\n",
     "- Bootstrap 法が完全な共分散行列をどのように推定するか\n",
     "- 相関が存在する場合に GLS が OLS よりも優れている理由\n",
-    "- ロバストな不確かさ推定のための MCMC の統合方法"
+    "- ロバストな不確かさ推定のための MCMC の統合方法\n",
+    "\n",
+    "## 関連 API と理論\n",
+    "\n",
+    "- **関連 API**: [Spectral API](../../reference/api/spectral.rst), [Fitting API](../../reference/api/fitting.rst)\n",
+    "- **関連理論**: [検証済みアルゴリズム](../validated_algorithms.md)"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "5c4819c7",
+   "id": "069d9672",
    "metadata": {},
    "source": [
     "## 1. セットアップとデータの準備\n",
@@ -47,7 +68,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "805a7997",
+   "id": "e53fef65",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:52.500314Z",
@@ -58,6 +79,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
     "\n",
@@ -77,7 +102,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "bfc2ee77",
+   "id": "a1f18cce",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:54.684784Z",
@@ -105,7 +130,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3bc41676",
+   "id": "afe8c7e2",
    "metadata": {},
    "source": [
     "### 1.2 カラードノイズ + 共振ピークの生成\n",
@@ -118,7 +143,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "c02ff322",
+   "id": "5686ae2b",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:54.688322Z",
@@ -187,7 +212,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "91f85acb",
+   "id": "a0e6454a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:54.764134Z",
@@ -240,7 +265,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "19c654a7",
+   "id": "4254c88c",
    "metadata": {},
    "source": [
     "## 2. スペクトログラムの構築\n",
@@ -258,7 +283,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "7c281039",
+   "id": "9484d8bf",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:55.516993Z",
@@ -304,7 +329,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "af60941d",
+   "id": "9cbad5f5",
    "metadata": {},
    "source": [
     "### 2.2 スペクトログラムの生成"
@@ -313,7 +338,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "daf3ce77",
+   "id": "86387061",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:55.521324Z",
@@ -378,7 +403,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "48951301",
+   "id": "2b837ea6",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:55.540921Z",
@@ -424,7 +449,7 @@
     "ax1.set_xlabel(\"Time [s]\")\n",
     "ax1.set_ylabel(\"Frequency [Hz]\")\n",
     "ax1.set_title(\"Spectrogram (ASD)\")\n",
-    "plt.colorbar(mappable=plt.gca().get_images()[-1] if plt.gca().get_images() else plt.gca().collections[-1], im, ax=ax1, label=\"ASD [1/√Hz]\")\n",
+    "plt.colorbar(mappable=im, ax=ax1, label=\"ASD [1/√Hz]\")\n",
     "\n",
     "# Time-averaged PSD\n",
     "ax2 = axes[1]\n",
@@ -444,7 +469,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3f31dc10",
+   "id": "824de507",
    "metadata": {},
    "source": [
     "## 3. Bootstrap PSD 推定と共分散行列\n",
@@ -466,7 +491,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "fa78d1f3",
+   "id": "fc922e76",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:56.034151Z",
@@ -505,7 +530,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "12b3b96a",
+   "id": "4d693157",
    "metadata": {},
    "source": [
     "### 3.3 Bootstrap 推定の実行\n",
@@ -518,7 +543,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "03add2cd",
+   "id": "f7bb1200",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:04:56.038335Z",
@@ -569,7 +594,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "c985198a",
+   "id": "1776b3e0",
    "metadata": {},
    "source": [
     "### 3.4 VIF（分散膨張因子）の検証\n",
@@ -581,7 +606,7 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "0dc424aa",
+   "id": "338d61a2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:02.361022Z",
@@ -621,7 +646,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a61ffff9",
+   "id": "9a154d59",
    "metadata": {},
    "source": [
     "### 3.5 Bootstrap 結果の可視化"
@@ -630,7 +655,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "a8c4ea7d",
+   "id": "79fe88ca",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:02.365478Z",
@@ -713,7 +738,7 @@
     "ax3.set_xlabel(\"Frequency 1 [Hz]\")\n",
     "ax3.set_ylabel(\"Frequency 2 [Hz]\")\n",
     "ax3.set_title(\"Covariance Matrix (|Cov|, log scale)\")\n",
-    "plt.colorbar(mappable=plt.gca().get_images()[-1] if plt.gca().get_images() else plt.gca().collections[-1], im3, ax=ax3, label=\"|Covariance|\")\n",
+    "plt.colorbar(mappable=im3, ax=ax3, label=\"|Covariance|\")\n",
     "\n",
     "# 4. Correlation matrix (zoomed near peak)\n",
     "ax4 = axes[1, 1]\n",
@@ -739,7 +764,7 @@
     "ax4.set_xlabel(\"Frequency 1 [Hz]\")\n",
     "ax4.set_ylabel(\"Frequency 2 [Hz]\")\n",
     "ax4.set_title(f\"Correlation Matrix (near {peak_freq} Hz peak)\")\n",
-    "plt.colorbar(mappable=plt.gca().get_images()[-1] if plt.gca().get_images() else plt.gca().collections[-1], im4, ax=ax4, label=\"Correlation\")\n",
+    "plt.colorbar(mappable=im4, ax=ax4, label=\"Correlation\")\n",
     "\n",
     "plt.tight_layout()\n",
     "plt.show()\n",
@@ -769,7 +794,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1d4e1214",
+   "id": "76712e81",
    "metadata": {},
    "source": [
     "**主な観察結果:**\n",
@@ -782,7 +807,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "616c17c7",
+   "id": "18a849d3",
    "metadata": {},
    "source": [
     "## 4. モデル定義と GLS フィッティング\n",
@@ -797,7 +822,7 @@
   {
    "cell_type": "code",
    "execution_count": 12,
-   "id": "f562f757",
+   "id": "61e268b5",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:15.580607Z",
@@ -841,7 +866,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "78223e87",
+   "id": "a63182eb",
    "metadata": {},
    "source": [
     "### 4.2 フィッティング用データの準備\n",
@@ -852,7 +877,7 @@
   {
    "cell_type": "code",
    "execution_count": 13,
-   "id": "9adbc32e",
+   "id": "ba3051cc",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:15.585164Z",
@@ -918,7 +943,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "c48334d9",
+   "id": "161ad92d",
    "metadata": {},
    "source": [
     "### 4.3 初期パラメータの推定値と範囲\n",
@@ -929,7 +954,7 @@
   {
    "cell_type": "code",
    "execution_count": 14,
-   "id": "35c85cd9",
+   "id": "b5a598c0",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:15.600323Z",
@@ -970,7 +995,7 @@
   {
    "cell_type": "code",
    "execution_count": 15,
-   "id": "bbcc2954",
+   "id": "94564629",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:15.605739Z",
@@ -1019,7 +1044,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f5485c76",
+   "id": "6034f44a",
    "metadata": {},
    "source": [
     "### 4.4 GLS フィッティングの実行\n",
@@ -1030,7 +1055,7 @@
   {
    "cell_type": "code",
    "execution_count": 16,
-   "id": "794944b5",
+   "id": "36397a62",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:15.609946Z",
@@ -1218,7 +1243,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b73fd18c",
+   "id": "6127fb25",
    "metadata": {},
    "source": [
     "### 4.5 フィッティング結果の解析"
@@ -1227,7 +1252,7 @@
   {
    "cell_type": "code",
    "execution_count": 17,
-   "id": "65933864",
+   "id": "ede8a614",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:16.376834Z",
@@ -1285,7 +1310,7 @@
   {
    "cell_type": "code",
    "execution_count": 18,
-   "id": "a4bde9ed",
+   "id": "c3de8bff",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:16.382764Z",
@@ -1354,7 +1379,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8441a21e",
+   "id": "1bf82e7b",
    "metadata": {},
    "source": [
     "## 5. MCMC による不確かさの評価\n",
@@ -1367,7 +1392,7 @@
   {
    "cell_type": "code",
    "execution_count": 19,
-   "id": "de481daf",
+   "id": "fa0107f6",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:16.721820Z",
@@ -1414,7 +1439,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "31bc2c3a",
+   "id": "f2d25d78",
    "metadata": {},
    "source": [
     "### 5.2 収束診断"
@@ -1423,7 +1448,7 @@
   {
    "cell_type": "code",
    "execution_count": 20,
-   "id": "4b99f8f1",
+   "id": "b9b8626c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:16.726621Z",
@@ -1454,7 +1479,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5668c352",
+   "id": "41ac84f7",
    "metadata": {},
    "source": [
     "### 5.3 コーナープロットとトレースプロット"
@@ -1463,7 +1488,7 @@
   {
    "cell_type": "code",
    "execution_count": 21,
-   "id": "85c8ae47",
+   "id": "6b94a1ef",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:16.732035Z",
@@ -1491,7 +1516,7 @@
   {
    "cell_type": "code",
    "execution_count": 22,
-   "id": "a74abceb",
+   "id": "d32b6fde",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:16.737134Z",
@@ -1526,7 +1551,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7433fc3c",
+   "id": "0d5f82c4",
    "metadata": {},
    "source": [
     "## 6. GLS と OLS の比較\n",
@@ -1539,7 +1564,7 @@
   {
    "cell_type": "code",
    "execution_count": 23,
-   "id": "6b53b543",
+   "id": "2a238a4c",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:16.740971Z",
@@ -1739,7 +1764,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "00bb4f86",
+   "id": "e0735205",
    "metadata": {},
    "source": [
     "### 6.2 GLS と OLS の結果比較"
@@ -1748,7 +1773,7 @@
   {
    "cell_type": "code",
    "execution_count": 24,
-   "id": "c025b195",
+   "id": "b733570f",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:17.217239Z",
@@ -1808,7 +1833,7 @@
   {
    "cell_type": "code",
    "execution_count": 25,
-   "id": "636a6c10",
+   "id": "f0d16abd",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:17.222356Z",
@@ -1867,7 +1892,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "c2fdf484",
+   "id": "369f5750",
    "metadata": {},
    "source": [
     "### 6.3 重要な知見\n",
@@ -1894,7 +1919,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "9138d5e5",
+   "id": "98e979ce",
    "metadata": {},
    "source": [
     "## 7. まとめとベストプラクティス\n",
@@ -1935,7 +1960,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "0ec68042",
+   "id": "68396761",
    "metadata": {},
    "source": [
     "## 付録: BifrequencyMap の操作\n",
@@ -1946,7 +1971,7 @@
   {
    "cell_type": "code",
    "execution_count": 26,
-   "id": "2b169e55",
+   "id": "b4b707da",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-02-26T13:05:17.335594Z",
@@ -2005,7 +2030,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f951d57e",
+   "id": "017bec31",
    "metadata": {},
    "source": [
     "---\n",
@@ -2014,6 +2039,7 @@
     "\n",
     "- **Percival & Walden (1993)**: Spectral Analysis for Physical Applications - VIF の導出\n",
     "- **gwexpy API**: [Spectral module](../../reference/api/spectral.rst), [Fitting module](../../reference/api/fitting.rst)\n",
+    "- **関連理論**: [検証済みアルゴリズム](../validated_algorithms.md), [数値安定性](../numerical_stability.md)\n",
     "- **関連チュートリアル**: [Advanced Fitting](advanced_fitting.ipynb), [Noise Budget](case_noise_budget.ipynb)"
    ]
   }
@@ -2038,5 +2064,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

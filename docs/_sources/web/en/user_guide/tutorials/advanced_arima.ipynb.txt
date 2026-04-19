@@ -1,14 +1,32 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": [
+     "ci-heavy"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Time Series Forecasting with ARIMA Models\n",
+    "# ARIMA: Time Series Forecasting\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_arima.ipynb)\n",
     "\n",
     "This notebook demonstrates how to model and forecast time series data using ARIMA-related functions (AR, MA, ARMA, ARIMA/SARIMAX) that have been added to the `gwexpy` `TimeSeries` class.\n",
+    "\n",
+    "- **Related API**: [Time Series API](../../reference/api/timeseries.rst)\n",
+    "- **Related theory**: [Validated Algorithms](../validated_algorithms.md), [Numerical Stability](../numerical_stability.md)\n",
     "\n",
     "## Setup\n",
     "\n",
@@ -32,6 +50,16 @@
     "\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
+    "import sklearn.utils.validation\n",
+    "\n",
+    "# Monkeypatch for pmdarima compatibility with scikit-learn >= 1.6\n",
+    "_orig_check_array = sklearn.utils.validation.check_array\n",
+    "\n",
+    "def _patched_check_array(*args, **kwargs):\n",
+    "    kwargs.pop(\"force_all_finite\", None)\n",
+    "    return _orig_check_array(*args, **kwargs)\n",
+    "\n",
+    "sklearn.utils.validation.check_array = _patched_check_array\n",
     "\n",
     "warnings.filterwarnings(\n",
     "    \"ignore\", message=r\".*force_all_finite.*\", category=FutureWarning\n",
@@ -684,7 +712,10 @@
    "source": [
     "### Summary\n",
     "- Using `model.residuals()`, whitening can be easily performed without writing complex mathematical formulas.\n",
-    "- This technique is very powerful for searching for burst signals in gravitational wave analysis and for extracting ringdown waveforms (exponentially decaying sinusoids) immediately after events."
+    "- This technique is very powerful for searching for burst signals in gravitational wave analysis and for extracting ringdown waveforms (exponentially decaying sinusoids) immediately after events.\n",
+    "\n",
+    "- **Related API**: [Time Series API](../../reference/api/timeseries.rst)\n",
+    "- **Related theory**: [Validated Algorithms](../validated_algorithms.md), [Numerical Stability](../numerical_stability.md)"
    ]
   }
  ],
@@ -708,5 +739,5 @@
   }
  },
  "nbformat": 4,
- "nbformat_minor": 4
+ "nbformat_minor": 5
 }

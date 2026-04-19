@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "53e09ffc",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "e4ccfd69",
+   "id": "864551b8",
    "metadata": {},
    "source": [
-    "# ノイズモデルガイド\n",
+    "# ノイズ生成: 基本\n",
     "\n",
     "**目的**: **GWexpy** を使用して重力波データのノイズを生成・操作・モデル化する方法を学びます。\n",
     "\n",
@@ -16,7 +28,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f4f1bf49",
+   "id": "208aa625",
    "metadata": {},
    "source": [
     "## 1. ASD（振幅スペクトル密度）の生成\n",
@@ -27,7 +39,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "efa9375d",
+   "id": "a498c972",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:56.420103Z",
@@ -49,6 +61,10 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import numpy as np\n",
     "import matplotlib.pyplot as plt\n",
     "from gwexpy.noise import asd\n",
@@ -70,7 +86,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "7c4e9fc0",
+   "id": "8fb91091",
    "metadata": {},
    "source": [
     "## 2. 時間領域ノイズの生成\n",
@@ -81,7 +97,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "fc2e0805",
+   "id": "794400c7",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:13:59.206367Z",
@@ -118,7 +134,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "6505e6c5",
+   "id": "a5fc0f98",
    "metadata": {},
    "source": [
     "## 3. スペクトル線とマスキング\n",
@@ -129,7 +145,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "7d134a25",
+   "id": "4931d5b2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:14:02.746945Z",
@@ -165,7 +181,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b3a88c86",
+   "id": "e803bc76",
    "metadata": {},
    "source": [
     "## 4. 非ガウスノイズ（グリッチ）\n",
@@ -176,7 +192,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "feaca2ff",
+   "id": "af355e7a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:14:02.922911Z",
@@ -215,7 +231,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "8359b769",
+   "id": "08f816ee",
    "metadata": {},
    "source": [
     "## 5. ケーススタディ：簡単なノイズバジェット\n",
@@ -226,7 +242,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "a661ffee",
+   "id": "572e860e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:14:03.219443Z",
@@ -264,7 +280,22 @@
   },
   {
    "cell_type": "markdown",
-   "id": "b263f22d",
+   "id": "91b4de73",
+   "metadata": {},
+   "source": [
+    "## よくある落とし穴と失敗モード\n",
+    "\n",
+    "- **ASD の傾きだけで時間領域ノイズが妥当だと判断すること**: 目標スペクトルに平均的には合っていても、有限長の分散、線構造、過渡成分は別の挙動を示すことがあります。\n",
+    "- **別々に生成した成分をそのまま独立な物理源だと読むこと**: 地震・熱・ショットノイズを合成した合計曲線は、数値モデルの例であり、実機で同じ分離が観測的に確立していることを意味しません。\n",
+    "- **スペクトル線の高さと幅を混同すること**: 狭線では `Q` や `gamma` の変更は、単純な振幅変更とは別の解釈を持ちます。\n",
+    "- **グリッチ例を実環境の発生分布だと思うこと**: 非ガウスノイズの例は形状とワークフローを示すためのもので、実際の発生率や装置環境を校正したモデルではありません。\n",
+    "- **単位や基準周波数を確認せずに曲線を比較すること**: 見た目がもっともらしくても、`amplitude`、`exponent`、`f_ref` の意味づけを誤ると解釈は崩れます。\n",
+    "- **簡易ノイズバジェットを検証済みの装置バジェットだと扱うこと**: このケーススタディは合成方法の説明であり、結合測定や不確かさ評価を含む検証済みバジェットの代替ではありません。\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e41ccf48",
    "metadata": {},
    "source": [
     "## 6. 演習\n",
@@ -275,7 +306,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e1cd0acf",
+   "id": "d1ab99ee",
    "metadata": {},
    "source": [
     "## 7. 検証セル（NBMAKE）\n",
@@ -286,7 +317,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "bc8157bc",
+   "id": "559f47fc",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:14:03.454183Z",

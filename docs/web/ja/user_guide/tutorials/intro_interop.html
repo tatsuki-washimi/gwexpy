@@ -5,35 +5,101 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GWExPy TimeSeries 相互運用性 (Interop) チュートリアル &mdash; GWexpy Documentation</title>
+  <title>相互運用: 基本 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/intro_interop.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="ヒストグラム入門（gwexpy）" href="intro_histogram.html" />
-    <link rel="prev" title="チュートリアル: 全天マップと地理マップのプロット" href="intro_mapplotting.html" /> 
+    <link rel="next" title="Bruco: 基本" href="advanced_bruco.html" />
+    <link rel="prev" title="分解解析: PCA・ICA と固有モード" href="advanced_decomposition.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../../en/user_guide/tutorials/intro_interop.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -47,41 +113,53 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメント</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
 <li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
 <li class="toctree-l4"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
-<li class="toctree-l4"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
-<li class="toctree-l4"><a class="reference internal" href="index.html#vi">VI. セグメント解析</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v-i-o">V. データ I/O と相互運用</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#vi">VI. ノイズハンティングと特殊ツール</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#vii">VII. セグメント解析</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../time_utilities.html">時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャと物理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.html">コマンドラインインターフェース (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
 </ul>
@@ -90,19 +168,19 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメント</a></li>
           <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
-      <li class="breadcrumb-item active">GWExPy TimeSeries 相互運用性 (Interop) チュートリアル</li>
+      <li class="breadcrumb-item active">相互運用: 基本</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_interop.ipynb" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -117,8 +195,18 @@
 <p>このページは Jupyter Notebook から生成されました。
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/intro_interop.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
-<section id="GWExPy-TimeSeries-相互運用性-(Interop)-チュートリアル">
-<h1>GWExPy TimeSeries 相互運用性 (Interop) チュートリアル<a class="headerlink" href="#GWExPy-TimeSeries-相互運用性-(Interop)-チュートリアル" title="Link to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
+
+<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
+</pre></div>
+</div>
+</div>
+<section id="相互運用:-基本">
+<h1>相互運用: 基本<a class="headerlink" href="#相互運用:-基本" title="Link to this heading"></a></h1>
 <p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_interop.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された新しい相互運用機能 (Interoperability Features) を紹介します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、Pandas, Xarray, PyTorch, Astropy などの一般的なデータサイエンス・ライブラリとの間で、シームレスにデータを変換することができます。</p>
 <section id="目次">
@@ -130,10 +218,10 @@
 <ul class="simple">
 <li><p>1.1. NumPy [Original GWpy]</p></li>
 <li><p>1.2. Pandas との連携 [Original GWpy]</p></li>
-<li><p>1.3. Polars [GWExPy New]</p></li>
+<li><p>1.3. Polars [GWexpy New]</p></li>
 <li><p>1.4. Xarray との連携 [Original GWpy]</p></li>
-<li><p>1.5. Dask との連携 [GWExPy New]</p></li>
-<li><p>1.6. JSON / Python Dict (to_json) (to_json) [GWExPy New]</p></li>
+<li><p>1.5. Dask との連携 [GWexpy New]</p></li>
+<li><p>1.6. JSON / Python Dict (to_json) (to_json) [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="2">
@@ -141,19 +229,19 @@
 </ol>
 <ul class="simple">
 <li><p>2.1. HDF5 [Original GWpy]</p></li>
-<li><p>2.2. SQLite [GWExPy New]</p></li>
-<li><p>2.3. Zarr [GWExPy New]</p></li>
-<li><p>2.4. netCDF4 [GWExPy New]</p></li>
+<li><p>2.2. SQLite [GWexpy New]</p></li>
+<li><p>2.3. Zarr [GWexpy New]</p></li>
+<li><p>2.4. netCDF4 [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="3">
 <li><p>情報科学・機械学習・加速計算</p></li>
 </ol>
 <ul class="simple">
-<li><p>3.1. PyTorch との連携 [GWExPy New]</p></li>
-<li><p>3.2. CuPy (CUDA 加速) [GWExPy New]</p></li>
-<li><p>3.3. TensorFlow との連携 [GWExPy New]</p></li>
-<li><p>3.4. JAX との連携 [GWExPy New]</p></li>
+<li><p>3.1. PyTorch との連携 [GWexpy New]</p></li>
+<li><p>3.2. CuPy (CUDA 加速) [GWexpy New]</p></li>
+<li><p>3.3. TensorFlow との連携 [GWexpy New]</p></li>
+<li><p>3.4. JAX との連携 [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="4">
@@ -162,15 +250,15 @@
 <ul class="simple">
 <li><p>4.1. PyCBC / LAL [Original GWpy]</p></li>
 <li><p>4.2. Astropy との連携 [Original GWpy]</p></li>
-<li><p>4.3. Specutils との連携 [GWExPy New]</p></li>
-<li><p>4.4. Pyspeckit との連携 [GWExPy New]</p></li>
+<li><p>4.3. Specutils との連携 [GWexpy New]</p></li>
+<li><p>4.4. Pyspeckit との連携 [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="5">
 <li><p>素粒子物理学・高エネルギー物理</p></li>
 </ol>
 <ul class="simple">
-<li><p>5.1. CERN ROOT との連携 [GWExPy New]</p></li>
+<li><p>5.1. CERN ROOT との連携 [GWexpy New]</p></li>
 <li><p>5.2. ROOT オブジェクトからの復元 (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)</p></li>
 </ul>
 </li>
@@ -179,24 +267,24 @@
 </ol>
 <ul class="simple">
 <li><p>6.1. ObsPy [Original GWpy]</p></li>
-<li><p>6.2. SimPEG との連携 [GWExPy New]</p></li>
-<li><p>6.3. MTH5 / MTpy [GWExPy New]</p></li>
+<li><p>6.2. SimPEG との連携 [GWexpy New]</p></li>
+<li><p>6.3. MTH5 / MTpy [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="7">
 <li><p>音響・音声解析</p></li>
 </ol>
 <ul class="simple">
-<li><p>7.1. Librosa / Pydub [GWExPy New]</p></li>
+<li><p>7.1. Librosa / Pydub [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="8">
 <li><p>医学・生体信号解析</p></li>
 </ol>
 <ul class="simple">
-<li><p>8.1. MNE-Python [GWExPy New]</p></li>
-<li><p>8.2. Elephant / quantities との連携 [GWExPy New]</p></li>
-<li><p>8.3. Neo [GWExPy New]</p></li>
+<li><p>8.1. MNE-Python [GWexpy New]</p></li>
+<li><p>8.2. Elephant / quantities との連携 [GWexpy New]</p></li>
+<li><p>8.3. Neo [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="9">
@@ -208,7 +296,11 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
 </pre></div>
@@ -228,27 +320,27 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
 
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;Wswiglal-redir-stdio&quot;</span><span class="p">)</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mt_metadata&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mt_metadata&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIGOTimeGPS</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIGOTimeGPS</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-<span class="c1"># Suppress MTH5 redundant warnings</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5.groups.base&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
-</pre></div>
+    <span class="c1"># Suppress MTH5 redundant warnings</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5.groups.base&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -299,7 +391,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_4_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_4_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_5_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_5_1.png" />
 </div>
 </div>
 </section>
@@ -327,9 +419,10 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     <span class="n">s_pd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Pandas Series ---&quot;</span><span class="p">)</span>
     <span class="n">display</span><span class="p">(</span><span class="n">s_pd</span><span class="p">)</span>
-    <span class="n">s_pd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Pandas Series&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">s_pd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Pandas Series&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
 
     <span class="c1"># Pandas Series from TimeSeries</span>
     <span class="n">ts_restored</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">s_pd</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
@@ -340,7 +433,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas is not installed.&quot;</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -376,7 +469,7 @@ Name: demo_signal, Length: 1000, dtype: float64
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_8_2.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_8_2.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_9_2.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_9_2.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -395,8 +488,8 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div></div>
 </div>
 </section>
-<section id="1.3.-Polars-[GWExPy-New]">
-<h3>1.3. Polars [GWExPy New]<a class="headerlink" href="#1.3.-Polars-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="1.3.-Polars-[GWexpy-New]">
+<h3>1.3. Polars [GWexpy New]<a class="headerlink" href="#1.3.-Polars-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>Polars</strong>: Polars は Rust で実装された高速な DataFrame ライブラリで、大規模データの高速処理に優れています。 📚 <a class="reference external" href="https://pola.rs/">Polars Documentation</a></p>
 </div></blockquote>
@@ -458,7 +551,7 @@ shape: (5, 2)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_10_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_10_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_11_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_11_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -535,7 +628,7 @@ Attributes: {&#39;unit&#39;: &#39;V&#39;, &#39;name&#39;: &#39;demo_signal&#39;,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_12_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_12_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_13_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_13_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -554,8 +647,8 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div></div>
 </div>
 </section>
-<section id="1.5.-Dask-との連携-[GWExPy-New]">
-<h3>1.5. Dask との連携 [GWExPy New]<a class="headerlink" href="#1.5.-Dask-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="1.5.-Dask-との連携-[GWexpy-New]">
+<h3>1.5. Dask との連携 [GWexpy New]<a class="headerlink" href="#1.5.-Dask-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>Dask</strong>: Dask は並列計算のためのライブラリで、NumPy/Pandas を超える大規模データの処理を可能にします。 📚 <a class="reference external" href="https://www.dask.org/">Dask Documentation</a></p>
 </div></blockquote>
@@ -600,8 +693,8 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div></div>
 </div>
 </section>
-<section id="1.6.-JSON-/-Python-Dict-(to_json)-[GWExPy-New]">
-<h3>1.6. JSON / Python Dict (to_json) [GWExPy New]<a class="headerlink" href="#1.6.-JSON-/-Python-Dict-(to_json)-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="1.6.-JSON-/-Python-Dict-(to_json)-[GWexpy-New]">
+<h3>1.6. JSON / Python Dict (to_json) [GWexpy New]<a class="headerlink" href="#1.6.-JSON-/-Python-Dict-(to_json)-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>JSON</strong>: JSON (JavaScript Object Notation) は軽量なデータ交換フォーマットで、Python 標準ライブラリでサポートされています。 📚 <a class="reference external" href="https://docs.python.org/3/library/json.html">JSON Documentation</a></p>
 </div></blockquote>
@@ -670,7 +763,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_16_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_16_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_17_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_17_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -756,12 +849,12 @@ Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_19_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_19_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_20_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_20_1.png" />
 </div>
 </div>
 </section>
-<section id="2.2.-SQLite-[GWExPy-New]">
-<h3>2.2. SQLite [GWExPy New]<a class="headerlink" href="#2.2.-SQLite-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="2.2.-SQLite-[GWexpy-New]">
+<h3>2.2. SQLite [GWexpy New]<a class="headerlink" href="#2.2.-SQLite-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>SQLite</strong>: SQLite は軽量な組み込み型 SQL データベースエンジンで、Python 標準ライブラリに含まれています。 📚 <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html">SQLite Documentation</a></p>
 </div></blockquote>
@@ -817,12 +910,12 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_21_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_21_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_22_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_22_1.png" />
 </div>
 </div>
 </section>
-<section id="2.3.-Zarr-[GWExPy-New]">
-<h3>2.3. Zarr [GWExPy New]<a class="headerlink" href="#2.3.-Zarr-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="2.3.-Zarr-[GWexpy-New]">
+<h3>2.3. Zarr [GWexpy New]<a class="headerlink" href="#2.3.-Zarr-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>Zarr</strong>: Zarr はチャンク化・圧縮された多次元配列のためのストレージフォーマットで、クラウドストレージとの連携に優れています。 📚 <a class="reference external" href="https://zarr.dev/">Zarr Documentation</a></p>
 </div></blockquote>
@@ -897,12 +990,12 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_23_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_23_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_24_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_24_1.png" />
 </div>
 </div>
 </section>
-<section id="2.4.-netCDF4-[GWExPy-New]">
-<h3>2.4. netCDF4 [GWExPy New]<a class="headerlink" href="#2.4.-netCDF4-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="2.4.-netCDF4-[GWexpy-New]">
+<h3>2.4. netCDF4 [GWexpy New]<a class="headerlink" href="#2.4.-netCDF4-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>netCDF4</strong>: netCDF4 は気象・海洋・地球科学データの標準フォーマットで、自己記述的なデータ構造を持ちます。 📚 <a class="reference external" href="https://unidata.github.io/netcdf4-python/">netCDF4 Documentation</a></p>
 </div></blockquote>
@@ -975,15 +1068,15 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_25_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_25_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_26_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_26_1.png" />
 </div>
 </div>
 </section>
 </section>
 <section id="3.-情報科学・機械学習・加速計算">
 <h2>3. 情報科学・機械学習・加速計算<a class="headerlink" href="#3.-情報科学・機械学習・加速計算" title="Link to this heading"></a></h2>
-<section id="3.1.-PyTorch-との連携-[GWExPy-New]">
-<h3>3.1. PyTorch との連携 [GWExPy New]<a class="headerlink" href="#3.1.-PyTorch-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="3.1.-PyTorch-との連携-[GWexpy-New]">
+<h3>3.1. PyTorch との連携 [GWexpy New]<a class="headerlink" href="#3.1.-PyTorch-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>PyTorch</strong>: PyTorch は深層学習フレームワークで、動的計算グラフと GPU 加速をサポートします。 📚 <a class="reference external" href="https://pytorch.org/">PyTorch Documentation</a></p>
 </div></blockquote>
@@ -1034,8 +1127,8 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div></div>
 </div>
 </section>
-<section id="3.2.-CuPy-(CUDA-加速)-[GWExPy-New]">
-<h3>3.2. CuPy (CUDA 加速) [GWExPy New]<a class="headerlink" href="#3.2.-CuPy-(CUDA-加速)-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="3.2.-CuPy-(CUDA-加速)-[GWexpy-New]">
+<h3>3.2. CuPy (CUDA 加速) [GWexpy New]<a class="headerlink" href="#3.2.-CuPy-(CUDA-加速)-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>CuPy</strong>: CuPy は NumPy 互換の GPU 配列ライブラリで、NVIDIA CUDA を使用した高速計算を可能にします。 📚 <a class="reference external" href="https://cupy.dev/">CuPy Documentation</a></p>
 </div></blockquote>
@@ -1085,8 +1178,8 @@ CuPy or CUDA driver not available.
 </pre></div></div>
 </div>
 </section>
-<section id="3.3.-TensorFlow-との連携-[GWExPy-New]">
-<h3>3.3. TensorFlow との連携 [GWExPy New]<a class="headerlink" href="#3.3.-TensorFlow-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="3.3.-TensorFlow-との連携-[GWexpy-New]">
+<h3>3.3. TensorFlow との連携 [GWexpy New]<a class="headerlink" href="#3.3.-TensorFlow-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>TensorFlow</strong>: TensorFlow は Google が開発した機械学習プラットフォームで、大規模な本番環境での利用に優れています。 📚 <a class="reference external" href="https://www.tensorflow.org/">TensorFlow Documentation</a></p>
 </div></blockquote>
@@ -1094,42 +1187,41 @@ CuPy or CUDA driver not available.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
 
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
-        <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;google\.protobuf\..*&quot;</span>
-    <span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
-        <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Protobuf gencode version.*&quot;</span>
-    <span class="p">)</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-    <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span>
-    <span class="c1"># TensorFlow Tensor Transform</span>
-    <span class="n">tf_tensor</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to TensorFlow Tensor ---&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor shape: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor dtype: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;google\.protobuf\..*&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Protobuf gencode version.*&quot;</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
 
-    <span class="c1">#</span>
-    <span class="n">ts_from_tensorflow</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_tensorflow</span><span class="p">(</span>
-        <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from TF:&quot;</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span><span class="p">)</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span>
+        <span class="c1"># TensorFlow Tensor Transform</span>
+        <span class="n">tf_tensor</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to TensorFlow Tensor ---&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor shape: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor dtype: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">del</span> <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span>
+        <span class="c1">#</span>
+        <span class="n">ts_from_tensorflow</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_tensorflow</span><span class="p">(</span>
+            <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from TF:&quot;</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span><span class="p">)</span>
 
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">pass</span>
-</pre></div>
+        <span class="k">del</span> <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span>
+
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">pass</span>
+<br/></pre></div>
 </div>
 </div>
 </section>
-<section id="3.4.-JAX-との連携-[GWExPy-New]">
-<h3>3.4. JAX との連携 [GWExPy New]<a class="headerlink" href="#3.4.-JAX-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="3.4.-JAX-との連携-[GWexpy-New]">
+<h3>3.4. JAX との連携 [GWexpy New]<a class="headerlink" href="#3.4.-JAX-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>JAX</strong>: JAX は Google が開発した高性能数値計算ライブラリで、自動微分と XLA コンパイルによる高速化が特徴です。 📚 <a class="reference external" href="https://jax.readthedocs.io/">JAX Documentation</a></p>
 </div></blockquote>
@@ -1244,7 +1336,7 @@ Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_38_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_38_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_39_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_39_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1263,8 +1355,8 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div></div>
 </div>
 </section>
-<section id="4.3.-Specutils-との連携-[GWExPy-New]">
-<h3>4.3. Specutils との連携 [GWExPy New]<a class="headerlink" href="#4.3.-Specutils-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="4.3.-Specutils-との連携-[GWexpy-New]">
+<h3>4.3. Specutils との連携 [GWexpy New]<a class="headerlink" href="#4.3.-Specutils-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>specutils</strong>: specutils は天文スペクトルデータの操作・解析のための Astropy 関連パッケージです。 📚 <a class="reference external" href="https://specutils.readthedocs.io/">specutils Documentation</a></p>
 </div></blockquote>
@@ -1314,8 +1406,8 @@ Restored FrequencySeries unit: Jy
 </pre></div></div>
 </div>
 </section>
-<section id="4.4.-Pyspeckit-との連携-[GWExPy-New]">
-<h3>4.4. Pyspeckit との連携 [GWExPy New]<a class="headerlink" href="#4.4.-Pyspeckit-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="4.4.-Pyspeckit-との連携-[GWexpy-New]">
+<h3>4.4. Pyspeckit との連携 [GWexpy New]<a class="headerlink" href="#4.4.-Pyspeckit-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>PySpecKit</strong>: PySpecKit は電波天文学のスペクトル解析ツールキットで、スペクトル線のフィッティングなどをサポートします。 📚 <a class="reference external" href="https://pyspeckit.readthedocs.io/">PySpecKit Documentation</a></p>
 </div></blockquote>
@@ -1367,8 +1459,8 @@ WARNING: No header given.  Creating an empty one.
 </section>
 <section id="5.-素粒子物理学・高エネルギー物理">
 <h2>5. 素粒子物理学・高エネルギー物理<a class="headerlink" href="#5.-素粒子物理学・高エネルギー物理" title="Link to this heading"></a></h2>
-<section id="5.1.-CERN-ROOT-との連携-[GWExPy-New]">
-<h3>5.1. CERN ROOT との連携 [GWExPy New]<a class="headerlink" href="#5.1.-CERN-ROOT-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="5.1.-CERN-ROOT-との連携-[GWexpy-New]">
+<h3>5.1. CERN ROOT との連携 [GWexpy New]<a class="headerlink" href="#5.1.-CERN-ROOT-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>ROOT</strong>: ROOT は CERN が開発した高エネルギー物理学向けのデータ解析フレームワークです。 📚 <a class="reference external" href="https://root.cern/">ROOT Documentation</a></p>
 </div></blockquote>
@@ -1508,7 +1600,7 @@ WARNING: No header given.  Creating an empty one.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_50_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_50_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_51_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_51_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1552,8 +1644,8 @@ ObsPy Trace: .demo_signal.. | 2019-02-18T23:31:12.000000Z - 2019-02-18T23:31:21.
 </pre></div></div>
 </div>
 </section>
-<section id="6.2.-SimPEG-との連携-[GWExPy-New]">
-<h3>6.2. SimPEG との連携 [GWExPy New]<a class="headerlink" href="#6.2.-SimPEG-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="6.2.-SimPEG-との連携-[GWexpy-New]">
+<h3>6.2. SimPEG との連携 [GWexpy New]<a class="headerlink" href="#6.2.-SimPEG-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>SimPEG</strong>: SimPEG は地球物理学的逆問題のシミュレーション・推定フレームワークです。 📚 <a class="reference external" href="https://simpeg.xyz/">SimPEG Documentation</a></p>
 </div></blockquote>
@@ -1603,8 +1695,8 @@ SimPEG FDEM data shape: (10,)
 </pre></div></div>
 </div>
 </section>
-<section id="6.3.-MTH5-/-MTpy-[GWExPy-New]">
-<h3>6.3. MTH5 / MTpy [GWExPy New]<a class="headerlink" href="#6.3.-MTH5-/-MTpy-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="6.3.-MTH5-/-MTpy-[GWexpy-New]">
+<h3>6.3. MTH5 / MTpy [GWexpy New]<a class="headerlink" href="#6.3.-MTH5-/-MTpy-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>MTH5</strong>: MTH5 は磁気地電流 (MT) データのための HDF5 ベースのデータフォーマットです。 📚 <a class="reference external" href="https://mth5.readthedocs.io/">MTH5 Documentation</a></p>
 </div></blockquote>
@@ -1698,15 +1790,15 @@ Recovered from MTH5: TimeSeries([-8.73335907e-01,  3.85949249e-01,  8.85888075e-
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_55_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_55_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_56_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_56_1.png" />
 </div>
 </div>
 </section>
 </section>
 <section id="7.-音響・音声解析">
 <h2>7. 音響・音声解析<a class="headerlink" href="#7.-音響・音声解析" title="Link to this heading"></a></h2>
-<section id="7.1.-Librosa-/-Pydub-[GWExPy-New]">
-<h3>7.1. Librosa / Pydub [GWExPy New]<a class="headerlink" href="#7.1.-Librosa-/-Pydub-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="7.1.-Librosa-/-Pydub-[GWexpy-New]">
+<h3>7.1. Librosa / Pydub [GWexpy New]<a class="headerlink" href="#7.1.-Librosa-/-Pydub-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>pydub</strong>: pydub はオーディオファイルの操作（編集・変換・エフェクト）のためのシンプルなライブラリです。 📚 <a class="reference external" href="https://github.com/jiaaro/pydub">pydub Documentation</a></p>
 </div></blockquote>
@@ -1759,7 +1851,7 @@ Signal shape: (100,), Sample rate: 100
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_58_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_58_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_59_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_59_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1812,8 +1904,8 @@ Recovered from Librosa: TimeSeries([-8.73335898e-01,  3.85949254e-01,  8.8588810
 </section>
 <section id="8.-医学・生体信号解析">
 <h2>8. 医学・生体信号解析<a class="headerlink" href="#8.-医学・生体信号解析" title="Link to this heading"></a></h2>
-<section id="8.1.-MNE-Python-[GWExPy-New]">
-<h3>8.1. MNE-Python [GWExPy New]<a class="headerlink" href="#8.1.-MNE-Python-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="8.1.-MNE-Python-[GWexpy-New]">
+<h3>8.1. MNE-Python [GWexpy New]<a class="headerlink" href="#8.1.-MNE-Python-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>MNE</strong>: MNE-Python は脳波 (EEG)・脳磁図 (MEG) データの解析ライブラリで、神経科学研究に広く使用されています。 📚 <a class="reference external" href="https://mne.tools/">MNE Documentation</a></p>
 </div></blockquote>
@@ -1939,8 +2031,8 @@ MNE Raw: &lt;RawArray | 1 x 100 (1.0 s), ~6 KiB, data loaded&gt;
 </pre></div></div>
 </div>
 </section>
-<section id="8.2.-Elephant-/-quantities-との連携-[GWExPy-New]">
-<h3>8.2. Elephant / quantities との連携 [GWExPy New]<a class="headerlink" href="#8.2.-Elephant-/-quantities-との連携-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="8.2.-Elephant-/-quantities-との連携-[GWexpy-New]">
+<h3>8.2. Elephant / quantities との連携 [GWexpy New]<a class="headerlink" href="#8.2.-Elephant-/-quantities-との連携-[GWexpy-New]" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> や <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> は、<code class="docutils literal notranslate"><span class="pre">quantities.Quantity</span></code> オブジェクトと相互変換可能です。 これは Elephant や Neo との連携に役立ちます。</p>
 <p>※ 事前に <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">quantities</span></code> が必要です。</p>
 <div class="nbinput docutils container">
@@ -2009,8 +2101,8 @@ Restored FrequencySeries unit: mV
 </pre></div></div>
 </div>
 </section>
-<section id="8.3.-Neo-[GWExPy-New]">
-<h3>8.3. Neo [GWExPy New]<a class="headerlink" href="#8.3.-Neo-[GWExPy-New]" title="Link to this heading"></a></h3>
+<section id="8.3.-Neo-[GWexpy-New]">
+<h3>8.3. Neo [GWexpy New]<a class="headerlink" href="#8.3.-Neo-[GWexpy-New]" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p><strong>Neo</strong>: Neo は電気生理学データ（神経科学）のためのデータ構造ライブラリで、様々なフォーマットへの入出力をサポートします。 📚 <a class="reference external" href="https://neo.readthedocs.io/">Neo Documentation</a></p>
 </div></blockquote>
@@ -2173,7 +2265,7 @@ Restored FrequencySeries unit: mV
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_66_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_66_1.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_67_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_67_1.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -2367,6 +2459,17 @@ col0
 </div>
 </section>
 </section>
+<section id="よくある落とし穴と解釈上の注意">
+<h2>よくある落とし穴と解釈上の注意<a class="headerlink" href="#よくある落とし穴と解釈上の注意" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>すべての変換が可逆だと思い込むこと</strong>: 多くの bridge は配列本体を渡せても、単位、<code class="docutils literal notranslate"><span class="pre">t0</span></code>、<code class="docutils literal notranslate"><span class="pre">dt</span></code>、チャネル名、軸ラベルまでは自動で完全保存されない場合があります。</p></li>
+<li><p><strong>direct I/O と interop を混同すること</strong>: <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> はオブジェクト変換の説明であり、<code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code> や <code class="docutils literal notranslate"><span class="pre">obj.write(...)</span></code> と同じ保存保証を意味しません。</p></li>
+<li><p><strong>時刻情報やサンプルレートが曖昧なまま解釈すること</strong>: 変換自体が成功しても、タイムゾーンやサンプリング情報が十分に運ばれていないと、整列や比較の解釈を誤ります。</p></li>
+<li><p><strong>規約を確認せずに数値だけ比較すること</strong>: FFT 正規化、周波数刻み、軸順序、shape の約束はライブラリごとに異なることがあり、見た目が似ていても意味は一致しない場合があります。</p></li>
+<li><p><strong>一部対応を全面対応だと読むこと</strong>: ここで動く例は、特定のクラスや経路での実例であり、すべての round-trip や補助属性まで保証するものではありません。</p></li>
+<li><p><strong>図が似ているだけで意味も同じだと判断すること</strong>: プロットが近く見えても、単位、座標、インデックスの意味が変わっている可能性があります。図だけでなく metadata を確認してください。</p></li>
+</ul>
+</section>
 <section id="10.-まとめ">
 <h2>10. まとめ<a class="headerlink" href="#10.-まとめ" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は多種多様な bilimti 向けライブラリとの相互運用を提供し、既存のエコシステムとのシームレスな統合を可能にします。</p>
@@ -2377,14 +2480,16 @@ col0
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="intro_mapplotting.html" class="btn btn-neutral float-left" title="チュートリアル: 全天マップと地理マップのプロット" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="intro_histogram.html" class="btn btn-neutral float-right" title="ヒストグラム入門（gwexpy）" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="advanced_decomposition.html" class="btn btn-neutral float-left" title="分解解析: PCA・ICA と固有モード" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_bruco.html" class="btn btn-neutral float-right" title="Bruco: 基本" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -2401,7 +2506,24 @@ col0
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="../license.html">ライセンス / 免責</a> |
+        <a href="../roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

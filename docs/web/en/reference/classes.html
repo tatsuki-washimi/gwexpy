@@ -5,32 +5,97 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta property="article:modified_time" content="2026-04-17T21:32:06+09:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Class Index &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/classes.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="TimeSeries" href="TimeSeries.html" />
-    <link rel="prev" title="fitting" href="api/extra.html" /> 
+    <link rel="next" title="Array2D" href="Array2D.html" />
+    <link rel="prev" title="Graphical User Interface" href="api/gui.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../ja/reference/classes.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -44,53 +109,64 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">Installation Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="api/index.html">API Reference</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Class Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="topics.html">Reference Topics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gui.html">Graphical User Interface (GUI)</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -108,60 +184,121 @@
              
   <section id="class-index">
 <h1>Class Index<a class="headerlink" href="#class-index" title="Link to this heading"></a></h1>
+<p><strong>Stability:</strong> Stable</p>
+<p>This index lists the major GWexpy classes in alphabetical order by class name.
+If you want a domain-oriented entry point, see <a class="reference internal" href="index.html"><span class="doc">Reference</span></a>. For theory pages, helper overviews, and conventions, see <a class="reference internal" href="topics.html"><span class="doc">Reference Topics</span></a>.</p>
+<section id="a">
+<h2>A<a class="headerlink" href="#a" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Array2D.html">Array2D</a></li>
+</ul>
+</div>
+</section>
+<section id="b">
+<h2>B<a class="headerlink" href="#b" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Bruco.html">Bruco</a></li>
+</ul>
+</div>
+</section>
+<section id="f">
+<h2>F<a class="headerlink" href="#f" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FieldList.html">FieldList</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FrequencySeries.html">FrequencySeries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FrequencySeriesDict.html">FrequencySeriesDict</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FrequencySeriesList.html">FrequencySeriesList</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FrequencySeriesMatrix.html">FrequencySeriesMatrix</a></li>
+</ul>
+</div>
+</section>
+<section id="i">
+<h2>I<a class="headerlink" href="#i" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
+</ul>
+</div>
+</section>
+<section id="n">
+<h2>N<a class="headerlink" href="#n" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plot.html">Plot</a></li>
+</ul>
+</div>
+</section>
+<section id="s">
+<h2>S<a class="headerlink" href="#s" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentCell.html">SegmentCell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentTable.html">SegmentTable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Spectrogram.html">Spectrogram</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SpectrogramDict.html">SpectrogramDict</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SpectrogramList.html">SpectrogramList</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SpectrogramMatrix.html">SpectrogramMatrix</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BifrequencyMap.html">BifrequencyMap</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Array2D.html">Array2D</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Plane2D.html">Plane2D</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Array4D.html">Array4D</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ScalarField.html">ScalarField</a></li>
-<li class="toctree-l1"><a class="reference internal" href="VectorField.html">VectorField</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TensorField.html">TensorField</a></li>
-<li class="toctree-l1"><a class="reference internal" href="FieldList.html">FieldList</a></li>
-<li class="toctree-l1"><a class="reference internal" href="FieldDict.html">FieldDict</a></li>
-<li class="toctree-l1"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Plot.html">Plot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Noise.html">Noise</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Pipeline.html">Pipeline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Transform.html">Transform</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ImputeTransform.html">ImputeTransform</a></li>
 <li class="toctree-l1"><a class="reference internal" href="StandardizeTransform.html">StandardizeTransform</a></li>
-<li class="toctree-l1"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PCATransform.html">PCATransform</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ICATransform.html">ICATransform</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Spectral.html">Spectral Estimation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="FFT_Conventions.html">FFT Specifications and Conventions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Bruco.html">Bruco (Brute force coherence)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="SeriesMatrix.html">SeriesMatrix</a></li>
 </ul>
 </div>
+</section>
+<section id="t">
+<h2>T<a class="headerlink" href="#t" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="TensorField.html">TensorField</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimePlaneTransform.html">TimePlaneTransform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimeSeries.html">TimeSeries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimeSeriesDict.html">TimeSeriesDict</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimeSeriesList.html">TimeSeriesList</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TimeSeriesMatrix.html">TimeSeriesMatrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Transform.html">Transform</a></li>
+</ul>
+</div>
+</section>
+<section id="v">
+<h2>V<a class="headerlink" href="#v" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="VectorField.html">VectorField</a></li>
+</ul>
+</div>
+</section>
+<section id="w">
+<h2>W<a class="headerlink" href="#w" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="WhitenTransform.html">WhitenTransform</a></li>
+</ul>
+</div>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="api/extra.html" class="btn btn-neutral float-left" title="fitting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="TimeSeries.html" class="btn btn-neutral float-right" title="TimeSeries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api/gui.html" class="btn btn-neutral float-left" title="Graphical User Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Array2D.html" class="btn btn-neutral float-right" title="Array2D" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-17 21:32:06.
+      </span></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -178,7 +315,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../user_guide/license.html">License / Disclaimer</a> |
+        <a href="../user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

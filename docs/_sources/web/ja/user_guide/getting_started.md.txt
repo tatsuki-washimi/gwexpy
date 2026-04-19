@@ -1,105 +1,93 @@
+---
+myst:
+  html_meta:
+    description: "GWexpy の学習を始める入口として、クイックスタート、チュートリアル、GWpy からの移行、学習ロードマップを整理した案内ページです。"
+---
+
 # はじめに (Getting Started)
 
-このページでは、GWexpyユーザー向けに**体系的な学習パス**を提供します。時系列解析の初心者でも、GWpyからの移行者でも、あなたのバックグラウンドに合わせた推奨事項が見つかります。
+GWexpy は、Python 3.11 以上で動作する重力波データ解析ライブラリです。GWpy との高い互換性を維持しつつ、より直感的な API と豊富な解析機能を提供します。
+あなたのバックグラウンドと目的に合わせて、最適なスタート地点を選択してください。
 
-**学べる内容:**
+## 概要 (Quick Summary)
 
-- インストールとセットアップ
-- 基本データ構造（TimeSeries, FrequencySeries, Spectrogram）
-- 多チャンネル解析と行列コンテナ
-- 高度な信号処理技術
-- 実世界での応用例
+| 項目 | 内容 |
+| --- | --- |
+| **ページ種別** | ガイド |
+| **対象読者** | 物理実験データの解析者、GWpy ユーザー、Python での信号処理に関心がある方 |
+| **前提知識** | Python 3.11+ の基礎、NumPy 配列操作、(推奨) Matplotlib |
+| **こんなときに読む** | 学習順序を決めたい、GWpy からの入口を探したい、最短ルートを知りたい |
+| **所要時間** | 最短 5 分（クイックスタート）〜 30 分（基本ハンズオン） |
+| **到達点** | データの読み込み、可視化、基本的な周波数解析の実行 |
+| **検索キーワード** | getting started, 学習ロードマップ, GWpy 移行, チュートリアル入口 |
 
-**所要時間:** 初心者は2-3時間、GWpyユーザーは30-60分
+共通の前提条件と FFT・時刻系の規約を先に確認したい場合は、[前提条件と規約](prerequisites_and_conventions.md) を入口として使ってください。
 
-:::{tip}
-お急ぎの場合は、[クイックスタート](quickstart.md)で5分間の概要をご覧ください。
-:::
+## このページの近道
 
-:::{admonition} このページについて
-:class: note
+- [あなたに最適なスタート地点](#あなたに最適なスタート地点-choose-your-path)
+- [学習ロードマップ](#learning-path)
+- [次のステップ](#next-to-read)
 
-このページでは**詳細な学習ロードマップ**を提供します。まだ[ドキュメントトップページ](../index)をご覧になっていない場合は、まずそちらでGWexpyの全体像をご確認ください。
-:::
+## あなたに最適なスタート地点 (Choose Your Path)
 
-## クイック例
+### 🚀 5分で最初のプロット
 
-最も基本的なGWexpyワークフローを示します：
+[クイックスタート](quickstart.md)
 
-```python
-from gwexpy.timeseries import TimeSeries
-import numpy as np
+対象: Python 3.11 以上の環境が手元にあり、すぐにコードを動かしたい方。
+内容: 最短 3 行でデータを取得・描画するコードと、Google Colab での実行環境を提供します。
 
-# 時系列データを作成
-ts = TimeSeries(np.random.randn(1000), sample_rate=100, t0=0)
+### 📖 30分で基本操作
 
-# プロット
-plot = ts.plot()
-plot.show()
-```
+[チュートリアル一覧](tutorials/index.rst)
 
-詳細は [クイックスタート](quickstart.md) を参照してください。
+データの構造や GWexpy 固有の行列演算を基礎から学びます。チュートリアル Notebook を順に進めることで、基本的な解析ワークフローを習得できます。
 
-## 前提知識
+### 🔄 GWpy から移行
 
-- Python 3.9+ の基本的な知識
-- NumPy の基本（配列操作）
-- （オプション）GWpy の経験
+[GWpy からの移行](gwexpy_for_gwpy_users_ja.md)
 
-## 学習パス
+既に GWpy を使っている方向け。まずは差分レシピで移行の入口を掴み、必要になったら [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) で追加 API を引いてください。
 
-### 1. インストール
+<a id="learning-path"></a>
 
-まず [installation](installation.md) でGWexpyをインストールしてください。
+## 学習ロードマップ (Learning Path)
 
-### 2. クイックスタート
+### 1. 準備
 
-[quickstart](quickstart.md) で基本的な使い方を学びましょう。
+まず [インストールガイド](installation.md) で環境を構築してください。
 
-### 3. 基本データ構造（推奨順）
+### 2. 基本データ構造の習得
 
-**初心者向け**
+主要なコンテナの使い方を以下の順序で学ぶことを推奨します：
 
-1. [intro_timeseries](tutorials/intro_timeseries.ipynb) - 時系列データの基本
-2. [intro_frequencyseries](tutorials/intro_frequencyseries.ipynb) - 周波数系列の基本
-3. [intro_spectrogram](tutorials/intro_spectrogram.ipynb) - スペクトログラムの基本
-4. [intro_plotting](tutorials/intro_plotting.ipynb) - プロット機能
+1. [時系列データの基本](tutorials/intro_timeseries.ipynb)
+2. [周波数系列の基本](tutorials/intro_frequencyseries.ipynb)
+3. [スペクトログラムの基本](tutorials/intro_spectrogram.ipynb)
+4. [プロット機能のカスタマイズ](tutorials/intro_plotting.ipynb)
 
-**GWpyユーザー向け**
+### 3. 高度な解析機能
 
-- [gwexpy_for_gwpy_users_ja](gwexpy_for_gwpy_users_ja.md) - GWpyからの移行ガイド
+目的に応じて以下のガイドを参照してください：
 
-### 4. 高度なトピック
+* **多チャンネル・行列処理**: [行列コンテナ (Matrix) の活用](tutorials/matrix_timeseries.ipynb)
+* **高次元データ**: [Field API 入門](tutorials/field_scalar_intro.ipynb) / [ScalarField のスライス操作ガイド](scalarfield_slicing.md)
+* **信号処理**: [フィッティング](tutorials/advanced_fitting.ipynb) / [HHT](tutorials/advanced_hht.ipynb) / [ARIMA](tutorials/advanced_arima.ipynb)
 
-**多チャンネル & 行列**
+### 4. 実践的な活用
 
-- [matrix_timeseries](tutorials/matrix_timeseries.ipynb) - 時系列行列
-- [matrix_frequencyseries](tutorials/matrix_frequencyseries.ipynb) - 周波数系列行列
+実際の解析ワークフローは、[ケーススタディ集](../examples/index.rst) で確認できます。
 
-**高次元フィールド（Field API）**
+<a id="next-to-read"></a>
+<a id="next-steps"></a>
 
-- [field_scalar_intro](tutorials/field_scalar_intro.ipynb) - スカラーフィールド入門
-- [scalarfield_slicing](scalarfield_slicing.md) - スライス操作ガイド（重要）
+## 次に読む (Next to Read)
 
-**高度な信号処理**
-
-- [advanced_fitting](tutorials/advanced_fitting.ipynb) - フィッティング
-- [advanced_peak_detection](tutorials/advanced_peak_detection.ipynb) - ピーク検出
-- [advanced_hht](tutorials/advanced_hht.ipynb) - ヒルベルト-黄変換
-- [advanced_arima](tutorials/advanced_arima.ipynb) - ARIMA モデル
-- [advanced_correlation](tutorials/advanced_correlation.ipynb) - 相関解析
-
-### 5. 実践例
-
-[{doc}`実例集ギャラリー <../examples/index>`]で実世界の応用例を参照できます：
-
-- [case_noise_budget](tutorials/case_noise_budget.ipynb) - ノイズバジェット解析
-- [case_transfer_function](tutorials/case_transfer_function.ipynb) - 伝達関数計算
-- [case_active_damping](tutorials/case_active_damping.ipynb) - アクティブダンピング
-
-## 次のステップ
-
-- [{doc}`実例集ギャラリー <../examples/index>`] - 視覚的な使用例とケーススタディ
-- 全チュートリアル一覧: [{doc}`tutorials/index <tutorials/index>`]
-- API リファレンス: [{doc}`リファレンス <../reference/index>`]
-- [validated_algorithms](validated_algorithms.md) - アルゴリズム検証レポート
+* [ケーススタディ集](../examples/index.rst) - 視覚的な使用例と解析ワークフロー
+* [全チュートリアル一覧](tutorials/index.rst)
+* [GWpy ユーザー向け移行ガイド](gwexpy_for_gwpy_users_ja.md) - 差分レシピから移行の入口を掴む
+* [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) - 追加 API を差分観点で引く
+* [前提条件と規約](prerequisites_and_conventions.md) - 環境前提、GPS 時刻、FFT 規約の入口
+* [API リファレンス](../reference/index.rst)
+* [検証済みアルゴリズム](validated_algorithms.md) - 数値的正確性の検証レポート

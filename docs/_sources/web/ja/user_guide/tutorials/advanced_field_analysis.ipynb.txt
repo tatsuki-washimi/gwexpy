@@ -1,8 +1,20 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "54ed108e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "md_04efbb39",
+   "id": "84ebba5c",
    "metadata": {},
    "source": [
     "# 多次元フィールド解析：ビームプロファイルと空間統計\n",
@@ -30,7 +42,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_04792085",
+   "id": "7bc9b847",
    "metadata": {},
    "source": [
     "## セットアップ"
@@ -39,7 +51,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cd_05826fea",
+   "id": "0de47d2a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:30.411148Z",
@@ -50,6 +62,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import numpy as np\n",
     "import matplotlib.pyplot as plt\n",
     "import astropy.units as u\n",
@@ -63,7 +79,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_05067c94",
+   "id": "d52b37bd",
    "metadata": {},
    "source": [
     "## 1. 合成ビームプロファイルデータの生成\n",
@@ -76,7 +92,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cd_010f5ef5",
+   "id": "62128217",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:32.817305Z",
@@ -133,7 +149,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_01afd20a",
+   "id": "f37e1395",
    "metadata": {},
    "source": [
     "## 2. 平均ビームプロファイルと分散マップ"
@@ -142,7 +158,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cd_047791a5",
+   "id": "68accaff",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:32.828838Z",
@@ -197,7 +213,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_0555f8e0",
+   "id": "76c631ad",
    "metadata": {},
    "source": [
     "## 3. 空間 PSD — 波数スペクトル"
@@ -206,7 +222,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cd_02f6327e",
+   "id": "130e1e36",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:33.150808Z",
@@ -281,7 +297,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_045521db",
+   "id": "23236869",
    "metadata": {},
    "source": [
     "## 4. 波動場伝播と時間遅延マップ\n",
@@ -294,7 +310,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cd_03f373a1",
+   "id": "de1ccddb",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:33.592726Z",
@@ -392,7 +408,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_041bec11",
+   "id": "5a86568f",
    "metadata": {},
    "source": [
     "## 5. コヒーレンスマップ"
@@ -401,7 +417,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "cd_03964d7a",
+   "id": "ba6858a5",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:34.017471Z",
@@ -459,7 +475,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_01c00f25",
+   "id": "509d6df8",
    "metadata": {},
    "source": [
     "## 6. VectorField：勾配とノルム"
@@ -468,7 +484,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cd_014655df",
+   "id": "4a06caab",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T03:58:34.369959Z",
@@ -536,7 +552,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "md_01ce8f7b",
+   "id": "388c79da",
    "metadata": {},
    "source": [
     "## まとめ\n",

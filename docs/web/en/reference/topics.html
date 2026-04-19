@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="article:modified_time" content="2026-04-19T14:09:21+09:00" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reference Topics &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/topics.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="FFT Specifications and Conventions" href="FFT_Conventions.html" />
+    <link rel="prev" title="WhitenTransform" href="WhitenTransform.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../ja/reference/topics.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">Installation Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="api/index.html">API Reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes.html">Class Index</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Reference Topics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/cli.html">Command-Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gui.html">Graphical User Interface (GUI)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメント</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Reference</a></li>
+      <li class="breadcrumb-item active">Reference Topics</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/reference/topics.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="reference-topics">
+<h1>Reference Topics<a class="headerlink" href="#reference-topics" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Page role: Theory and concept landing</p>
+</div>
+<p><strong>Stability:</strong> Stable</p>
+<p>Use this page when you want to browse the reference by concept rather than by class or module name.</p>
+<p><strong>Audience:</strong> Users who know the analytical question they are asking, but need the matching convention, theory note, or helper surface.
+<strong>Use this page for:</strong> Starting from concepts such as Fourier conventions, validation assumptions, spectral estimation, or compatibility layers.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 15.0%" />
+<col style="width: 55.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Topic</p></th>
+<th class="head"><p>Stability</p></th>
+<th class="head"><p>Start here</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Theory and conventions</p></td>
+<td><p>Stable</p></td>
+<td><p><a class="reference internal" href="FFT_Conventions.html"><span class="doc">FFT Specifications and Conventions</span></a>, <a class="reference internal" href="../user_guide/prerequisites_and_conventions.html"><span class="doc">Prerequisites and Conventions</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Spectral and fitting helpers</p></td>
+<td><p>Stable</p></td>
+<td><p><a class="reference internal" href="Spectral.html"><span class="doc">Spectral Estimation</span></a>, <a class="reference internal" href="fitting.html"><span class="doc">gwexpy.fitting</span></a>, <a class="reference internal" href="../user_guide/tutorials/case_bootstrap_gls_fitting.html"><span class="doc">Case Study: Bootstrap PSD and GLS Fitting</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Validation and audit notes</p></td>
+<td><p>Stable</p></td>
+<td><p><a class="reference internal" href="../user_guide/validated_algorithms.html"><span class="doc">Validated Algorithms</span></a>, <a class="reference internal" href="../user_guide/numerical_stability.html"><span class="doc">Numerical Stability and Precision</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Noise modeling helpers</p></td>
+<td><p>Stable</p></td>
+<td><p><a class="reference internal" href="Noise.html"><span class="doc">Noise</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Compatibility and extra APIs</p></td>
+<td><p>Stable</p></td>
+<td><p><a class="reference internal" href="api/extra.html"><span class="doc">Compatibility / Extra</span></a></p></td>
+</tr>
+</tbody>
+</table>
+<section id="concept-guides">
+<h2>Concept Guides<a class="headerlink" href="#concept-guides" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="FFT_Conventions.html"><span class="doc">FFT Specifications and Conventions</span></a> for Fourier normalization, axis conventions, and API mappings.</p></li>
+<li><p><a class="reference internal" href="../user_guide/prerequisites_and_conventions.html"><span class="doc">Prerequisites and Conventions</span></a> for shared assumptions about time systems, FFT conventions, and physical interpretation.</p></li>
+<li><p><a class="reference internal" href="Spectral.html"><span class="doc">Spectral Estimation</span></a> for PSD, ASD, and bootstrap-oriented estimators.</p></li>
+<li><p><a class="reference internal" href="fitting.html"><span class="doc">gwexpy.fitting</span></a> for least-squares, GLS, and MCMC-oriented fitting helpers.</p></li>
+<li><p><a class="reference internal" href="../user_guide/validated_algorithms.html"><span class="doc">Validated Algorithms</span></a> for audit-backed assumptions, evidence, and exact API cross-links.</p></li>
+<li><p><a class="reference internal" href="../user_guide/numerical_stability.html"><span class="doc">Numerical Stability and Precision</span></a> for stabilization choices such as adaptive whitening.</p></li>
+<li><p><a class="reference internal" href="Noise.html"><span class="doc">Noise</span></a> for synthetic detector-noise and surrogate generation helpers.</p></li>
+</ul>
+</section>
+<section id="bridge-pages">
+<h2>Bridge Pages<a class="headerlink" href="#bridge-pages" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="api/extra.html"><span class="doc">Compatibility / Extra</span></a> for compatibility-oriented API entry points.</p></li>
+<li><p><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_en.html"><span class="doc">Migration Guide for GWpy Users</span></a> for GWpy migration guidance.</p></li>
+<li><p><a class="reference internal" href="../user_guide/gwpy_added_api_index_en.html"><span class="doc">GWpy Difference API Index</span></a> for GWpy difference-oriented API browsing.</p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/field_scalar_intro.html"><span class="doc">Field API: ScalarField Basics</span></a> and <a class="reference internal" href="../user_guide/tutorials/advanced_arima.html"><span class="doc">ARIMA: Time Series Forecasting</span></a> for exact tutorial entry points that map back to the reference.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Cross-navigation:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="index.html"><span class="doc">Reference</span></a> for the main reference hub</p></li>
+<li><p><a class="reference internal" href="api/index.html"><span class="doc">API Reference</span></a> for module/category-first API browsing</p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">Tutorials</span></a> for tutorial-first navigation</p></li>
+<li><p><a class="reference internal" href="../user_guide/validated_algorithms.html"><span class="doc">Validated Algorithms</span></a> for the explicit advanced/theory user-guide landing</p></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="FFT_Conventions.html">FFT Specifications and Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Spectral.html">Spectral Estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">gwexpy.fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Noise.html">Noise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/extra.html">Compatibility / Extra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/extra.html#additional-apis-and-compatibility-notes">Additional APIs and compatibility notes</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="WhitenTransform.html" class="btn btn-neutral float-left" title="WhitenTransform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="FFT_Conventions.html" class="btn btn-neutral float-right" title="FFT Specifications and Conventions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-19 14:09:21.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../user_guide/license.html">License / Disclaimer</a> |
+        <a href="../user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

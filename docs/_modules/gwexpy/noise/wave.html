@@ -9,25 +9,87 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
 
   
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/noise/wave.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <style>
+  #lang-pill {
+    position: fixed;
+    top: 12px;
+    right: 20px;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.6;
+  }
+  #lang-pill a {
+    color: #2980B9;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  #lang-pill a:hover {
+    color: #1a5f8c;
+    text-decoration: underline;
+  }
+  #lang-pill .lang-sep {
+    color: #bbb;
+  }
+  #lang-pill .lang-current {
+    color: #333;
+    font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) {
+    #lang-pill {
+      background: #2c2c2e;
+      border-color: #3a3a3c;
+      color: #efeff4;
+    }
+    #lang-pill .lang-current { color: #efeff4; }
+    #lang-pill .lang-sep     { color: #636366; }
+  }
+  </style>
+
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+   
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
 
           
           
@@ -41,23 +103,25 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
 </ul>
 
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">GWexpy</a>
       </nav>
 
       <div class="wy-nav-content">
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
@@ -90,8 +154,8 @@
 <span class="sd">&gt;&gt;&gt; sine_wave = sine(duration=1.0, sample_rate=1024, frequency=10.0)</span>
 <span class="sd">&gt;&gt;&gt; noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)</span>
 <span class="sd">&gt;&gt;&gt; sweep = chirp(duration=1.0, sample_rate=1024, f0=10, f1=100)</span>
-<span class="sd">&quot;&quot;&quot;</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
@@ -121,7 +185,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper to create a TimeSeries from data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a ``TimeSeries`` from array data and sampling metadata.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
     <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span>
@@ -159,8 +223,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate Gaussian (normal) white noise.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate Gaussian (normal) white noise.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -176,6 +239,8 @@
 <span class="sd">        Start time. Default is 0.0.</span>
 <span class="sd">    rng : numpy.random.Generator, optional</span>
 <span class="sd">        Random number generator. If None, creates a new one.</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Seed used to initialize the default random generator.</span>
 <span class="sd">    unit : astropy.units.Unit, optional</span>
 <span class="sd">        Unit of the output.</span>
 <span class="sd">    name : str, optional</span>
@@ -192,6 +257,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import gaussian</span>
 <span class="sd">    &gt;&gt;&gt; noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -217,8 +283,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate uniform white noise.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate uniform white noise.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -234,6 +299,8 @@
 <span class="sd">        Start time. Default is 0.0.</span>
 <span class="sd">    rng : numpy.random.Generator, optional</span>
 <span class="sd">        Random number generator.</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Seed used to initialize the default random generator.</span>
 <span class="sd">    unit : astropy.units.Unit, optional</span>
 <span class="sd">        Unit of the output.</span>
 <span class="sd">    name : str, optional</span>
@@ -245,6 +312,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    TimeSeries</span>
 <span class="sd">        Uniform noise time-series.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -271,8 +339,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate colored (power-law) noise.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate colored (power-law) noise.</span>
 
 <span class="sd">    The noise follows a power-law spectrum: ASD(f) ~ f^(-exponent).</span>
 
@@ -295,6 +362,8 @@
 <span class="sd">        Start time. Default is 0.0.</span>
 <span class="sd">    rng : numpy.random.Generator, optional</span>
 <span class="sd">        Random number generator.</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Seed used to initialize the default random generator.</span>
 <span class="sd">    unit : astropy.units.Unit, optional</span>
 <span class="sd">        Unit of the output.</span>
 <span class="sd">    name : str, optional</span>
@@ -311,6 +380,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import colored</span>
 <span class="sd">    &gt;&gt;&gt; pink = colored(duration=1.0, sample_rate=1024, exponent=0.5)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.asd</span><span class="w"> </span><span class="kn">import</span> <span class="n">power_law</span>
 
@@ -361,8 +431,7 @@
     <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate white noise (flat spectrum).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate white noise (flat spectrum).</span>
 
 <span class="sd">    Shortcut for colored(exponent=0).</span>
 
@@ -381,6 +450,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    TimeSeries</span>
 <span class="sd">        White noise time-series.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">colored</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -394,8 +464,7 @@
     <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate pink noise (1/f^0.5 spectrum).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate pink noise (1/f^0.5 spectrum).</span>
 
 <span class="sd">    Shortcut for colored(exponent=0.5).</span>
 
@@ -414,6 +483,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    TimeSeries</span>
 <span class="sd">        Pink noise time-series.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">colored</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -427,8 +497,7 @@
     <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate red/Brownian noise (1/f spectrum).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate red/Brownian noise (1/f spectrum).</span>
 
 <span class="sd">    Shortcut for colored(exponent=1.0).</span>
 
@@ -447,6 +516,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    TimeSeries</span>
 <span class="sd">        Red noise time-series.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">colored</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -470,8 +540,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a sine wave.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a sine wave.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -503,6 +572,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import sine</span>
 <span class="sd">    &gt;&gt;&gt; wave = sine(duration=1.0, sample_rate=1024, frequency=10.0)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">phase</span><span class="p">)</span>
@@ -525,8 +595,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a square wave.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a square wave.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -555,6 +624,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    TimeSeries</span>
 <span class="sd">        Square wave time-series.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">phase</span><span class="p">,</span> <span class="n">duty</span><span class="o">=</span><span class="n">duty</span><span class="p">)</span>
@@ -577,8 +647,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a sawtooth wave.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a sawtooth wave.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -608,6 +677,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    TimeSeries</span>
 <span class="sd">        Sawtooth wave time-series.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">sawtooth</span><span class="p">(</span>
@@ -631,8 +701,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a triangle wave.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a triangle wave.</span>
 
 <span class="sd">    This is a sawtooth with width=0.5.</span>
 
@@ -661,6 +730,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    TimeSeries</span>
 <span class="sd">        Triangle wave time-series.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">sawtooth</span><span class="p">(</span>
         <span class="n">duration</span><span class="p">,</span>
@@ -693,8 +763,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a swept-frequency cosine (chirp) signal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a swept-frequency cosine (chirp) signal.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -733,6 +802,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import chirp</span>
 <span class="sd">    &gt;&gt;&gt; sweep = chirp(duration=1.0, sample_rate=1024, f0=10, f1=100)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">t1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">t1</span> <span class="o">=</span> <span class="n">duration</span>
@@ -763,8 +833,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a step (Heaviside) function.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a step (Heaviside) function.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -794,6 +863,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import step</span>
 <span class="sd">    &gt;&gt;&gt; s = step(duration=1.0, sample_rate=1024, t_step=0.5)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="n">t_step</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
@@ -814,8 +884,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate an impulse (delta-like) signal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an impulse (delta-like) signal.</span>
 
 <span class="sd">    The impulse is placed at the sample closest to t_impulse.</span>
 
@@ -847,6 +916,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import impulse</span>
 <span class="sd">    &gt;&gt;&gt; i = impulse(duration=1.0, sample_rate=1024, t_impulse=0.5)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
@@ -874,8 +944,7 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate an exponential signal.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate an exponential signal.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -910,6 +979,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import exponential</span>
 <span class="sd">    &gt;&gt;&gt; decay_signal = exponential(duration=1.0, sample_rate=1024, tau=0.2)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">_get_times</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
     <span class="n">t_rel</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="n">t_start</span>
@@ -939,8 +1009,7 @@
     <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).</span>
 
 <span class="sd">    Uses FFT-based colored noise synthesis to produce a time-series with the</span>
 <span class="sd">    spectral characteristics defined by the input ASD.</span>
@@ -958,6 +1027,8 @@
 <span class="sd">    rng : numpy.random.Generator, optional</span>
 <span class="sd">        Random number generator instance. If None, a new default generator</span>
 <span class="sd">        is created.</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Seed used to initialize the default random generator.</span>
 <span class="sd">    **kwargs</span>
 <span class="sd">        Additional arguments passed to TimeSeries constructor (e.g., name, channel, unit).</span>
 <span class="sd">        If provided, these override values derived from the ASD.</span>
@@ -973,6 +1044,7 @@
 <span class="sd">    &gt;&gt;&gt; from gwexpy.noise.wave import from_asd</span>
 <span class="sd">    &gt;&gt;&gt; asd = from_pygwinc(&#39;aLIGO&#39;, fmin=4.0, fmax=1024.0, df=0.01)</span>
 <span class="sd">    &gt;&gt;&gt; noise = from_asd(asd, duration=128, sample_rate=2048, t0=0)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">rng</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -1075,7 +1147,24 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
 
 </body>
 </html>

@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "903d95c1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "cd7f58f3",
+   "id": "9b625921",
    "metadata": {},
    "source": [
-    "# Fitting and Parameter Estimation\n",
+    "# Fitting: Basics\n",
     "\n",
     "**Goal**: Learn how to fit models to GW data using Ordinary Least Squares (OLS) and Generalized Least Squares (GLS).\n",
     "\n",
@@ -14,7 +26,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "34777310",
+   "id": "68f2b11f",
    "metadata": {},
    "source": [
     "## 1. Simple OLS Fit\n",
@@ -25,7 +37,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "eb5a81c9",
+   "id": "2cde139e",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:24.127574Z",
@@ -54,6 +66,10 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "import numpy as np\n",
     "import matplotlib.pyplot as plt\n",
     "from gwexpy.noise.asd import white_noise\n",
@@ -77,7 +93,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1c3907ba",
+   "id": "c9eba214",
    "metadata": {},
    "source": [
     "## 2. Generalized Least Squares (GLS)\n",
@@ -88,7 +104,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "af008982",
+   "id": "e55baf8a",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:27.172513Z",
@@ -126,7 +142,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "dbf6fb77",
+   "id": "90d01793",
    "metadata": {},
    "source": [
     "## 3. High-level Integration\n",
@@ -137,7 +153,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cc408e49",
+   "id": "2f742690",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:27.179858Z",
@@ -181,7 +197,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1bf84e7f",
+   "id": "fa32b61a",
    "metadata": {},
    "source": [
     "## 4. Exercises\n",
@@ -192,7 +208,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a274ab10",
+   "id": "1ca40305",
    "metadata": {},
    "source": [
     "## 5. Quick Check (NBMAKE)"
@@ -201,7 +217,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "5b9acea7",
+   "id": "08ae0470",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T13:11:29.098009Z",

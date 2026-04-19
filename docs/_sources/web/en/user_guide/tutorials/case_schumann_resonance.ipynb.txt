@@ -1,11 +1,23 @@
 {
  "cells": [
   {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d561a077",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+    "\n",
+    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "cell-0",
+   "id": "95a1d553",
    "metadata": {},
    "source": [
-    "# Schumann Resonance Analysis in GW Detectors\n",
+    "# Case Study: Schumann Resonance Analysis\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb)\n",
     "\n",
@@ -24,6 +36,8 @@
     "   returned by the bootstrap; used automatically for GLS fitting\n",
     "4. **Temporal tracking** — monitor mode amplitude over the observation window\n",
     "\n",
+    "The physical question is whether the observed ELF peaks behave like global magnetic resonances, with shared narrowband structure and correlated amplitude changes, rather than local magnetic contamination or fitting artefacts.\n",
+    "\n",
     "> **Prerequisites**:\n",
     "> - [Spectrogram basics](intro_spectrogram.ipynb)\n",
     "> - [Advanced Fitting](advanced_fitting.ipynb)\n",
@@ -32,7 +46,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-1",
+   "id": "77547235",
    "metadata": {},
    "source": [
     "## Setup"
@@ -41,7 +55,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "cell-2",
+   "id": "a8a55404",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T23:59:22.256604Z",
@@ -52,6 +66,10 @@
    },
    "outputs": [],
    "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
     "# ruff: noqa: I001\n",
     "import matplotlib.pyplot as plt\n",
     "import numpy as np\n",
@@ -66,7 +84,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-3",
+   "id": "4a19ff87",
    "metadata": {},
    "source": [
     "## 1. Mock Data: Magnetometer with Schumann Resonances\n",
@@ -81,13 +99,15 @@
     "| SR1  | 7.83 Hz   | 5.0 | 4.0 nT/√Hz |\n",
     "| SR2  | 14.3 Hz   | 4.5 | 2.5 nT/√Hz |\n",
     "| SR3  | 20.8 Hz   | 4.0 | 1.5 nT/√Hz |\n",
-    "| SR4  | 26.4 Hz   | 3.5 | 1.0 nT/√Hz |"
+    "| SR4  | 26.4 Hz   | 3.5 | 1.0 nT/√Hz |\n",
+    "\n",
+    "> **Common mistake**: treating every low-frequency peak as Schumann structure. Local magnetic lines and anthropogenic combs can live in the same band, so later sections focus on width, covariance, and temporal coherence rather than frequency alone.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "cell-4",
+   "id": "224e21f2",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T23:59:25.328081Z",
@@ -142,7 +162,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "cell-5",
+   "id": "9007de03",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T23:59:25.342594Z",
@@ -185,7 +205,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-6",
+   "id": "c94a15f9",
    "metadata": {},
    "source": [
     "## 2. Bootstrap PSD Estimation\n",
@@ -194,13 +214,15 @@
     "**robust PSD estimate** (median or mean) together with asymmetric confidence\n",
     "intervals.  When `return_map=True` it also returns the **covariance `BifrequencyMap`**\n",
     "`cov_map(f1, f2)` — a 2-D matrix quantifying correlations between frequency bins,\n",
-    "which is used in the GLS fitting step."
+    "which is used in the GLS fitting step.\n",
+    "\n",
+    "> **Failure-prone pattern**: using the bootstrap only for error bars and then fitting with diagonal-only uncertainties. In narrowband magnetic data, inter-bin covariance is part of the signal model, not optional decoration.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "cell-7",
+   "id": "d21b0dc1",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T23:59:25.810837Z",
@@ -249,7 +271,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "cell-8",
+   "id": "01cc8c46",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T23:59:51.979975Z",
@@ -301,7 +323,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-9",
+   "id": "60032b06",
    "metadata": {},
    "source": [
     "## 3. Lorentzian Q-Factor Fitting\n",
@@ -313,13 +335,15 @@
     "`fit_series` minimises a **Generalised Least Squares** (GLS) cost by passing the\n",
     "covariance BifrequencyMap directly via `cov=cov_map`.  This accounts for\n",
     "correlations between overlapping FFT segments and gives correct parameter\n",
-    "uncertainties."
+    "uncertainties.\n",
+    "\n",
+    "> **Common mistake**: over-interpreting the fitted Q when the fit window includes multiple overlapping peaks or a strong local baseline slope. A good Q estimate requires one dominant mode plus an uncertainty model that matches the PSD estimator.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "cell-10",
+   "id": "84c76ef3",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T23:59:57.702949Z",
@@ -366,7 +390,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "cell-11",
+   "id": "0471c516",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T23:59:57.714596Z",
@@ -418,7 +442,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-12",
+   "id": "6ddfd8b2",
    "metadata": {},
    "source": [
     "## 4. Covariance Structure via BifrequencyMap\n",
@@ -433,13 +457,15 @@
     "\n",
     "`BifrequencyMap` methods used here:\n",
     "- `.diagonal(method='mean')` — returns the variance profile (diagonal of the matrix)\n",
-    "- `.get_slice(at=f0, axis='f1')` — returns a 1-D covariance slice at fixed f1"
+    "- `.get_slice(at=f0, axis='f1')` — returns a 1-D covariance slice at fixed f1\n",
+    "\n",
+    "If the map is nearly structureless away from the diagonal, that is often a hint that the chosen FFT or averaging setup is too coarse to resolve the resonance physics you are trying to measure."
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "cell-13",
+   "id": "727e6d02",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-05T23:59:58.212347Z",
@@ -506,7 +532,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "cell-14",
+   "id": "ea37eed7",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T00:00:03.669663Z",
@@ -550,20 +576,22 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-15",
+   "id": "54c3dc3d",
    "metadata": {},
    "source": [
     "## 5. Temporal Amplitude Tracking\n",
     "\n",
     "Schumann resonance amplitude varies with global lightning activity (diurnal cycle,\n",
     "seasonal effects).  We extract the band-averaged power around each mode from the\n",
-    "spectrogram and convert to an **ASD time series** to monitor evolution."
+    "spectrogram and convert to an **ASD time series** to monitor evolution.\n",
+    "\n",
+    "> **Failure mode to watch for**: band averages that are too wide mix neighbouring modes and local disturbances; bands that are too narrow become sensitive to bin-to-bin jitter. Choose a window that tracks one resonance family across the full observation span.\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "cell-16",
+   "id": "903f2416",
    "metadata": {
     "execution": {
      "iopub.execute_input": "2026-04-06T00:00:04.052672Z",
@@ -607,7 +635,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "cell-17",
+   "id": "7dab9303",
    "metadata": {},
    "source": [
     "## Summary\n",
@@ -628,6 +656,7 @@
     "- The `lorentzian_q` parameterisation directly gives the physically meaningful **Q-factor**\n",
     "  of each Schumann mode.\n",
     "- The full pipeline applies unchanged to real KAGRA PEM magnetometer data.\n",
+    "- Robust identification depends on combining frequency, width, covariance structure, and time evolution rather than matching canonical Schumann frequencies alone.\n",
     "\n",
     "### Next steps\n",
     "\n",

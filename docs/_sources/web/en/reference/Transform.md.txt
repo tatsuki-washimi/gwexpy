@@ -1,5 +1,45 @@
 # Transform
 
+<!-- reference-summary:start -->
+
+**Stability:** Stable
+
+## What it is
+
+Use `Transform` as the base contract for reusable preprocessing steps that implement `fit`, `transform`, and optional inversion.
+
+## Representative Signatures
+
+```python
+Transform.fit(x)
+Transform.transform(x)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.timeseries import Transform
+
+# Implement fit/transform in a subclass before using it inside Pipeline.
+```
+
+## Related Theory
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [Numerical Stability](../user_guide/numerical_stability.md)
+
+## Related Tutorials
+
+- [ML Preprocessing Methods](../user_guide/tutorials/ml_preprocessing_methods.md)
+- [ML Preprocessing Case Study](../user_guide/tutorials/case_ml_preprocessing.ipynb)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** object
 
 
@@ -39,4 +79,3 @@ transform(self, x)
 ```
 
 Apply the transform to data. Must be implemented by subclasses.
-
