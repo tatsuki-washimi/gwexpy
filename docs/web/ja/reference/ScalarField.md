@@ -34,8 +34,8 @@ field_f = field.fft_time()
 
 ## 関連チュートリアル
 
-- [Field API Intro](../user_guide/tutorials/field_scalar_intro.ipynb)
-- [ScalarField Slicing](../user_guide/scalarfield_slicing.md)
+- [Field API 入門](../user_guide/tutorials/field_scalar_intro.ipynb)
+- [ScalarField のスライス](../user_guide/scalarfield_slicing.md)
 
 ## API リファレンス
 

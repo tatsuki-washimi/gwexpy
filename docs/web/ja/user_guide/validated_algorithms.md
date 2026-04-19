@@ -77,12 +77,12 @@ myst:
 
 | アルゴリズム | 主対象 API | API ページ | 証拠 | 関連チュートリアル |
 | :--- | :--- | :--- | :--- | :--- |
-| **k-space 計算** | `ScalarField.fft_space()` | [Fields API](../reference/api/fields.rst) / [ScalarField](../reference/ScalarField.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Field 入門](tutorials/field_scalar_intro.ipynb) |
+| **k-space 計算** | `ScalarField.fft_space()` | [フィールド API](../reference/api/fields.rst) / [ScalarField](../reference/ScalarField.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Field 入門](tutorials/field_scalar_intro.ipynb) |
 | **Transient FFT** | `TimeSeries.fft(mode="transient")` / `TimeSeries._fft_transient` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Signal Extraction](tutorials/case_signal_extraction.ipynb) |
 | **VIF 補正** | `calculate_correlation_factor()` | [Spectral API](../reference/api/spectral.rst) / [Spectral](../reference/Spectral.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Bootstrap 用](tutorials/case_bootstrap_gls_fitting.ipynb) |
 | **予測時刻計算** | `ArimaResult.forecast()` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Advanced ARIMA](tutorials/advanced_arima.ipynb) |
 | **MCMC / GLS 尤度** | `fit_series()` / `GeneralizedLeastSquares` | [Fitting API](../reference/api/fitting.rst) / [gwexpy.fitting](../reference/fitting.md) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [Bootstrap 用](tutorials/case_bootstrap_gls_fitting.ipynb) |
-| **適応ホワイトニング** | `whiten()` / `WhiteningModel` | [Preprocessing API](../reference/api/preprocessing.rst) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [ML Preprocessing 事例](tutorials/case_ml_preprocessing.ipynb) |
+| **適応ホワイトニング** | `whiten()` / `WhiteningModel` | [前処理 API](../reference/api/preprocessing.rst) | {ref}`客観的証拠 <validated-ja-objective-evidence>` | [ML Preprocessing 事例](tutorials/case_ml_preprocessing.ipynb) |
 
 ---
 
@@ -91,7 +91,7 @@ myst:
 
 - 共通の前提条件、時刻系、FFT 規約を先に整理したい場合は [前提条件と規約](prerequisites_and_conventions.md) を入口にしてください。
 - 監査メモより先に手を動かしたい場合は、要約表にある個別チュートリアルから該当手法だけ読むのが最短です。
-- 実装側の API を先に確認したい場合は [Fields API](../reference/api/fields.rst), [Time Series API](../reference/api/timeseries.rst), [Spectral API](../reference/api/spectral.rst), [Fitting API](../reference/api/fitting.rst), [Preprocessing API](../reference/api/preprocessing.rst) を参照してください。
+- 実装側の API を先に確認したい場合は [フィールド API](../reference/api/fields.rst), [Time Series API](../reference/api/timeseries.rst), [Spectral API](../reference/api/spectral.rst), [Fitting API](../reference/api/fitting.rst), [前処理 API](../reference/api/preprocessing.rst) を参照してください。
 - 検証の背景や監査メモまで追いたい場合は、後述の {ref}`客観的証拠 <validated-ja-objective-evidence>`、{ref}`参照元一覧 <validated-ja-source-references>`、Audit Trail を参照してください。
 
 (validated-algorithms-detail-sections-ja)=
