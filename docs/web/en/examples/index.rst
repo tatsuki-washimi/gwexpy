@@ -3,22 +3,22 @@
 
 .. _examples-en-gallery-entry:
 
-Case Studies
-============
+Case Studies (Goal-Oriented Workflows)
+======================================
 
 .. note::
    Page role: Guide index
 
-A collection of theme-driven demonstrations that combine multiple GWexpy features into practical workflows.
-To learn class- and feature-oriented examples first, refer to :doc:`../user_guide/tutorials/index`.
+A collection of goal-oriented demonstrations that combine multiple GWexpy features into practical workflows.
+To learn feature-oriented examples first, refer to :doc:`../user_guide/tutorials/index`.
 
 **Audience:** Users who already know the basics and want end-to-end examples mapped to real analysis tasks.
 **Prerequisites:** Familiarity with the relevant core classes, especially from :doc:`../user_guide/tutorials/index` and :doc:`../user_guide/getting_started`.
-**Use this page for:** Finding the canonical public gallery of GWexpy case studies by workflow theme.
+**Use this page for:** Finding the canonical public gallery of GWexpy goal-oriented case studies by workflow theme.
 **Search hints:** case studies, gallery, end-to-end workflow, calibration, interoperability, noise hunting, ML
 
 .. note::
-   `Case Studies` are theme-based demonstrations, while `Tutorials` are class/feature examples.
+   `Case Studies` are goal-oriented workflow demonstrations, while `Tutorials` are feature-oriented class/capability examples.
    This page is the canonical public index for all `case_*` notebooks.
 
 .. note::
