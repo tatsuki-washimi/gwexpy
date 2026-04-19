@@ -41,7 +41,7 @@ Concept Guides
 - :doc:`../user_guide/prerequisites_and_conventions` for shared assumptions about time systems, FFT conventions, and physical interpretation.
 - :doc:`Spectral` for PSD, ASD, and bootstrap-oriented estimators.
 - :doc:`fitting` for least-squares, GLS, and MCMC-oriented fitting helpers.
-- :doc:`../user_guide/validated_algorithms` for audit-backed assumptions, evidence, and exact API cross-links.
+- :doc:`../user_guide/validated_algorithms` for the advanced/theory landing with audit-backed assumptions, evidence, and exact API cross-links.
 - :doc:`../user_guide/numerical_stability` for stabilization choices such as adaptive whitening.
 - :doc:`Noise` for synthetic detector-noise and surrogate generation helpers.
 

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy の interop ガイドです。保存表現、解析ライブラリ、ML 基盤、分野別ツールへの to_* / from_* 変換経路を整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Interop / 変換ガイド &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -144,8 +144,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
@@ -157,8 +157,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -211,7 +211,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">obj.write(...,</span> <span class="pre">format=...)</span></code></p></li>
 <li><p>ローカルファイル形式の採用判断そのもの</p></li>
 </ul>
-<p>ローカルファイルの読み書きは <a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a> を参照してください。</p>
+<p>ローカルファイルの <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> 系の入口は <a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a> を参照してください。</p>
 <section id="id1">
 <h2>このページでわかること<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -252,11 +252,11 @@
 <section id="interop-ja-how-to-read">
 <span id="id3"></span><h2>まず最初に: 読み方<a class="headerlink" href="#interop-ja-how-to-read" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><strong>保存形式やコンテナに写したい</strong>なら A を見てください。</p></li>
+<li><p><strong>手元のオブジェクトを保存形式やコンテナに写したい</strong>なら A を見てください。</p></li>
 <li><p><strong>pandas / xarray / astropy / dask のような解析オブジェクトに写したい</strong>なら B を見てください。</p></li>
 <li><p><strong>PyTorch / TensorFlow / JAX / CuPy に渡したい</strong>なら C を見てください。</p></li>
 <li><p><strong>ROOT / ObsPy / LAL / PyCBC などの分野別ライブラリに接続したい</strong>なら D を見てください。</p></li>
-<li><p><strong>Field を xarray / NetCDF4 / Zarr に渡したい</strong>場合は、I/O ではなく interop として扱います。</p></li>
+<li><p><strong>Field を xarray / NetCDF4 / Zarr に <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> で渡したい</strong>場合は、I/O ではなく interop として扱います。</p></li>
 </ul>
 </section>
 <section id="interop-ja-status-labels">
@@ -711,7 +711,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

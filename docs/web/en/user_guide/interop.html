@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="Find the right GWexpy interop path for converting objects to and from storage containers, analysis libraries, ML backends, and domain-specific tools." name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Interop / Conversion Guide &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -143,8 +143,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials (Feature-Oriented Learning)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies (Goal-Oriented Workflows)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
@@ -156,8 +156,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI, Experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI, Experimental)</a></li>
 </ul>
 </li>
 </ul>
@@ -211,7 +211,7 @@ Here, interop means <strong>conversion and bridging</strong> centered on <code c
 <li><p><code class="docutils literal notranslate"><span class="pre">obj.write(...,</span> <span class="pre">format=...)</span></code></p></li>
 <li><p>the choice of local file formats themselves</p></li>
 </ul>
-<p>For local file formats and direct I/O, see the <a class="reference internal" href="io_formats.html"><span class="doc std std-doc">File I/O Supported Formats Guide</span></a>.</p>
+<p>For local file formats and direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> paths, see the <a class="reference internal" href="io_formats.html"><span class="doc std std-doc">File I/O Supported Formats Guide</span></a>.</p>
 <section id="at-a-glance">
 <h2>At a Glance<a class="headerlink" href="#at-a-glance" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -252,11 +252,11 @@ Here, interop means <strong>conversion and bridging</strong> centered on <code c
 <section id="how-to-read-this-page">
 <span id="interop-en-how-to-read"></span><h2>How to Read This Page<a class="headerlink" href="#how-to-read-this-page" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>If you want to convert to a <strong>storage format or container</strong>, start with A.</p></li>
+<li><p>If you want to convert a live object to a <strong>storage format or container</strong>, start with A.</p></li>
 <li><p>If you want to convert to <strong>analysis objects</strong> such as pandas, xarray, astropy, or dask, start with B.</p></li>
 <li><p>If you want to hand data to <strong>PyTorch, TensorFlow, JAX, or CuPy</strong>, start with C.</p></li>
 <li><p>If you want to connect to <strong>ROOT, ObsPy, LAL, PyCBC</strong>, or other domain-specific libraries, start with D.</p></li>
-<li><p>If you want to move <strong>Field</strong> objects into xarray, NetCDF4, or Zarr workflows, treat that as interop, not as direct I/O.</p></li>
+<li><p>If you want to move <strong>Field</strong> objects into xarray, NetCDF4, or Zarr workflows via <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code>, treat that as interop, not as direct I/O.</p></li>
 </ul>
 </section>
 <section id="status-labels">
@@ -711,7 +711,7 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

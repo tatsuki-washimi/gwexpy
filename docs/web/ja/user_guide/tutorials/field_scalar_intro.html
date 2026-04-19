@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field API: ScalarField の基本 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
@@ -134,7 +134,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル（機能別）</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
 <li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
 <li class="toctree-l4"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
@@ -144,7 +144,7 @@
 <li class="toctree-l4 current"><a class="reference internal" href="index.html#vii">VII. セグメント解析</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
@@ -156,8 +156,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../license.html">ライセンス</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cli.html">コマンドラインインターフェース (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -179,7 +179,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメント</a></li>
-          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル（機能別）</a></li>
       <li class="breadcrumb-item active">Field API: ScalarField の基本</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/field_scalar_intro.ipynb" class="fa fa-github"> Edit on GitHub</a>
@@ -319,6 +319,7 @@ Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z
 <section id="2.-4D構造を保持するスライシング">
 <h2>2. 4D構造を保持するスライシング<a class="headerlink" href="#2.-4D構造を保持するスライシング" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の重要な特徴は、<strong>スライシングしても常に4次元を維持する</strong>ことです。 整数インデックスを使っても、自動的に長さ1のスライスに変換されます。</p>
+<p><strong>注意:</strong> <code class="docutils literal notranslate"><span class="pre">np.squeeze()</span></code> のような軸を落とす処理は、Field API の外に出たい場合に限って使ってください。長さ1の軸を保つことで、軸メタデータが維持され、その後の FFT や可視化でも扱いを誤りにくくなります。</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -1304,7 +1305,7 @@ time / durationFFT Round-trip max error: 9.99e-16
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

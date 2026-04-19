@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="Start GWexpy quickly with a GitHub install command, a 3-line first plot, and pointers to the next tutorials and migration guides." name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quickstart &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -141,8 +141,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials (Feature-Oriented Learning)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies (Goal-Oriented Workflows)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
@@ -154,8 +154,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI, Experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI, Experimental)</a></li>
 </ul>
 </li>
 </ul>
@@ -231,7 +231,7 @@
 </section>
 <section id="quick-install">
 <h2>Quick Install<a class="headerlink" href="#quick-install" title="Link to this heading"></a></h2>
-<p>Since GWexpy is currently in development, please install it directly from GitHub:</p>
+<p>GWexpy is currently in development and is <strong>not yet published on PyPI or Conda</strong>, so install it directly from the GitHub source repository for now:</p>
 <ul class="simple">
 <li><p>Purpose: install the current development build as quickly as possible</p></li>
 <li><p>Input: Python 3.11+ with <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
@@ -240,6 +240,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
 </pre></div>
 </div>
+<p>If you need a Conda-managed environment, GW binary dependencies such as NDS2 / FrameLIB, or optional tools such as <code class="docutils literal notranslate"><span class="pre">pygmt</span></code>, start with the <a class="reference internal" href="installation.html"><span class="std std-doc">Installation Guide</span></a> instead of adding those packages ad hoc after this quick install.</p>
 <p><a id="quick-demo"></a></p>
 </section>
 <section id="line-quickstart">
@@ -304,7 +305,7 @@ New APIs for handling multi-channel (matrix format) or multi-dimensional field-l
 </section>
 <section id="need-help">
 <h2>Need Help?<a class="headerlink" href="#need-help" title="Link to this heading"></a></h2>
-<p>If you encounter errors or plots do not appear, check the <a class="reference internal" href="troubleshooting.html"><span class="std std-doc">Troubleshooting Guide</span></a>.</p>
+<p>If you encounter errors or plots do not appear, check the <a class="reference internal" href="troubleshooting.html"><span class="std std-doc">Troubleshooting Guide</span></a>. If the problem is really an environment setup issue, return to the <a class="reference internal" href="installation.html"><span class="std std-doc">Installation Guide</span></a> for the Conda-first workflow.</p>
 <p><a id="next-to-read"></a>
 <a id="next-steps"></a></p>
 </section>
@@ -312,6 +313,7 @@ New APIs for handling multi-channel (matrix format) or multi-dimensional field-l
 <h2>Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="installation.html"><span class="std std-doc">Installation Guide</span></a> - Setting up your environment.</p></li>
+<li><p><a class="reference internal" href="troubleshooting.html"><span class="std std-doc">Troubleshooting Guide</span></a> - Reverse-lookup fixes by symptom.</p></li>
 <li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> - Systematic learning roadmap.</p></li>
 <li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">Prerequisites and Conventions</span></a> - Review FFT, GPS time, and compatibility assumptions first.</p></li>
 <li><p><a class="reference internal" href="gwexpy_for_gwpy_users_en.html"><span class="std std-doc">Migration from GWpy</span></a> - Difference guide for existing users.</p></li>
@@ -331,7 +333,7 @@ New APIs for handling multi-channel (matrix format) or multi-dimensional field-l
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

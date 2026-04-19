@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy ドキュメントの入口ページ。インストール、クイックスタート、チュートリアル、ケーススタディ、リファレンスへの導線をまとめています。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GWexpy ドキュメント &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="インストールガイド (Installation)" href="user_guide/installation.html" />
-    <link rel="prev" title="Graphical User Interface (GUI)" href="../en/user_guide/gui.html" />
+    <link rel="prev" title="Graphical User Interface (GUI, Experimental)" href="../en/user_guide/gui.html" />
    
   
   <style>
@@ -131,8 +131,8 @@
 <li class="toctree-l3"><a class="reference internal" href="user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
@@ -144,8 +144,8 @@
 <li class="toctree-l3"><a class="reference internal" href="user_guide/citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/license.html">ライセンス</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/cli.html">コマンドラインインターフェース (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -348,6 +348,11 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <hr class="docutils" id="hub-ja-workflow-entry" />
 <section id="id1">
 <h2>あなたに合ったガイド<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>Tutorials</cite> は 1 つずつ機能やクラスを学ぶ機能別の学習導線です。
+<cite>Case Studies</cite> は 解析目的に沿って複数機能を組み合わせる目的別の実践導線です。</p>
+</div>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 grid-container docutils">
 <div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -358,7 +363,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <p class="sd-card-text">基礎から学びたい方向け</p>
 <ul class="simple">
 <li><p class="sd-card-text">インストールガイド</p></li>
-<li><p class="sd-card-text">基本チュートリアル</p></li>
+<li><p class="sd-card-text">機能別チュートリアル</p></li>
 </ul>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/getting_started.html"><span class="doc">はじめに (Getting Started)</span></a></div>
@@ -370,11 +375,11 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 🔬 実験データ解析者向け</div>
 <p class="sd-card-text">実践的な解析例を知りたい方向け</p>
 <ul class="simple">
-<li><p class="sd-card-text">解析ケーススタディ</p></li>
+<li><p class="sd-card-text">目的別ケーススタディ</p></li>
 <li><p class="sd-card-text">高度な信号処理</p></li>
 </ul>
 </div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="examples/index.html"><span class="doc">ケーススタディ (Case Studies)</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="examples/index.html"><span class="doc">ケーススタディ（目的別） / Case Studies</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -494,7 +499,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 </section>
 <section id="visual-examples">
 <span id="hub-ja-gallery-entry"></span><h2>Visual Examples<a class="headerlink" href="#visual-examples" title="Link to this heading"></a></h2>
-<p>このカード群は、正本であるケーススタディギャラリーの短い teaser です。</p>
+<p>このカード群は、正本である目的別ケーススタディギャラリーの短い teaser です。</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -523,13 +528,13 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 </div>
 </div>
 </div>
-<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-secondary reference internal" href="examples/index.html"><span class="doc">正式なケーススタディギャラリーを見る</span></a></span></p>
+<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-secondary reference internal" href="examples/index.html"><span class="doc">正式な目的別ケーススタディギャラリーを見る</span></a></span></p>
 </section>
 <hr class="docutils" id="hub-ja-reference-entry" />
 <section id="gwpy">
 <h2>GWpy の基礎を学ぶ<a class="headerlink" href="#gwpy" title="Link to this heading"></a></h2>
 <p>GWexpy は GWpy の上に構築されています。GWpy の基本操作は下記の公式ドキュメントを参照してください。</p>
-<p><a class="reference external" href="https://gwpy.github.io/docs/stable/">gwpy.github.io/docs/stable/</a></p>
+<p><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/">gwpy.readthedocs.io/en/stable/</a></p>
 </section>
 <hr class="docutils" />
 <section id="id3">
@@ -662,7 +667,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">🎓 学習 (Learn)</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/tutorials/index.html">チュートリアル</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/tutorials/index.html">チュートリアル（機能別）</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/tutorials/index.html#i">I. 基本データ構造</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/tutorials/index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/tutorials/index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
@@ -672,7 +677,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/tutorials/index.html#vii">VII. セグメント解析</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples/index.html">ケーススタディ (Case Studies)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">ケーススタディ（目的別） / Case Studies</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples/index.html#examples-ja-featured-gallery">注目ギャラリー</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/index.html#i">I. キャリブレーション・応答・制御</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples/index.html#ii-i-o">II. 外部連携・I/O・再現性</a></li>
@@ -766,7 +771,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../en/user_guide/gui.html" class="btn btn-neutral float-left" title="Graphical User Interface (GUI)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../en/user_guide/gui.html" class="btn btn-neutral float-left" title="Graphical User Interface (GUI, Experimental)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="user_guide/installation.html" class="btn btn-neutral float-right" title="インストールガイド (Installation)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
@@ -774,7 +779,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

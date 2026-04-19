@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy のリファレンス入口です。API、クラス、トピック別に安定した参照先へ移動できます。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>リファレンス (Reference) &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -131,8 +131,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">リファレンス (Reference)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api/index.html">API リファレンス (API Reference)</a></li>
@@ -149,8 +149,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/license.html">ライセンス</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/cli.html">コマンドラインインターフェース (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -202,7 +202,7 @@ API リファレンスはサブシステム別の参照、クラス索引は Pyt
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>高度・理論系の入口:
-検証前提、規約、監査根拠付きの理論メモを確認したい場合は、まず <a class="reference internal" href="topics.html"><span class="doc">トピック別参照 (Topics)</span></a> を開き、その後 <a class="reference internal" href="../user_guide/validated_algorithms.html"><span class="doc">検証済みアルゴリズム</span></a> に進んでください。</p>
+検証前提、規約、監査根拠付きの理論メモを確認したい場合は、まず <a class="reference internal" href="topics.html"><span class="doc">トピック別参照 (Topics)</span></a> を開き、その後 高度・理論向けの入口である <a class="reference internal" href="../user_guide/validated_algorithms.html"><span class="doc">検証済みアルゴリズム</span></a> に進んでください。</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -275,7 +275,7 @@ API リファレンスはサブシステム別の参照、クラス索引は Pyt
 <ul class="simple">
 <li><p><a class="reference internal" href="api/index.html"><span class="doc">API リファレンス (API Reference)</span></a> でサブシステム別に API をたどる</p></li>
 <li><p><a class="reference internal" href="topics.html"><span class="doc">トピック別参照 (Topics)</span></a> で理論・規約・橋渡しページから入る</p></li>
-<li><p><a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> でチュートリアルから学んだあとに参照へ戻る</p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル（機能別）</span></a> でチュートリアルから学んだあとに参照へ戻る</p></li>
 </ul>
 </div>
 <div class="admonition note">
@@ -283,7 +283,7 @@ API リファレンスはサブシステム別の参照、クラス索引は Pyt
 <p>リファレンスではなく用途別ガイドから入りたい場合は、総合 index ではなく次の個別ページを起点にしてください。</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../user_guide/scalarfield_slicing.html"><span class="doc">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</span></a> for <cite>ScalarField</cite> のスライス設計と実例</p></li>
-<li><p><a class="reference internal" href="../user_guide/validated_algorithms.html"><span class="doc">検証済みアルゴリズム</span></a> for 高度な検証前提と監査ベースの理論メモ</p></li>
+<li><p><a class="reference internal" href="../user_guide/validated_algorithms.html"><span class="doc">検証済みアルゴリズム</span></a> for 高度・理論向けの検証前提と監査ベースのノート</p></li>
 <li><p><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html"><span class="doc">GWpy ユーザー向け移行ガイド</span></a> for GWpy からの移行ガイド</p></li>
 </ul>
 </div>
@@ -291,7 +291,7 @@ API リファレンスはサブシステム別の参照、クラス索引は Pyt
 <p class="admonition-title">See also</p>
 <p>次に読むページ:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> で notebook ベースの学習導線をたどる</p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル（機能別）</span></a> で notebook ベースの学習導線をたどる</p></li>
 <li><p><a class="reference internal" href="api/index.html"><span class="doc">API リファレンス (API Reference)</span></a> でカテゴリ別の API 入口を開く</p></li>
 <li><p><a class="reference internal" href="topics.html"><span class="doc">トピック別参照 (Topics)</span></a> で理論、規約、補助資料を概念別に探す</p></li>
 </ul>
@@ -359,7 +359,7 @@ API リファレンスはサブシステム別の参照、クラス索引は Pyt
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

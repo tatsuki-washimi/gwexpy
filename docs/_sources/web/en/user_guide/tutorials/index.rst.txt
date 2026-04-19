@@ -3,17 +3,17 @@
 
 .. _tutorials-en-entry:
 
-Tutorials
-=========
+Tutorials (Feature-Oriented Learning)
+=====================================
 
 .. note::
    Page role: Guide index
 
-Learn how to use **GWexpy** through interactive examples.
+Learn how to use **GWexpy** through feature-oriented, interactive examples.
 
 **Audience:** New users, GWpy users, and analysis practitioners who want step-by-step notebook-based learning.
 **Prerequisites:** A working GWexpy environment and familiarity with the basics in :doc:`../getting_started`.
-**Use this page for:** Choosing tutorials by data structure, workflow, and expected difficulty.
+**Use this page for:** Choosing feature-oriented tutorials by data structure, workflow, and expected difficulty.
 **Search hints:** notebooks, Jupyter, tutorial index, beginner workflow, Field API, signal processing, interoperability
 
 .. tip::
@@ -34,8 +34,8 @@ These tutorials are generated from Jupyter Notebook source files. To run them lo
    Audience labels are normalized to `Beginners`, `GWpy Users`, and `Analysis Practitioners`.
 
 .. note::
-   `Tutorials` are class- and feature-oriented examples.
-   Theme-driven demonstrations that combine multiple features are collected in :doc:`../../examples/index` under `Case Studies`.
+   `Tutorials` are feature-oriented examples that teach one class, container, or capability at a time.
+   Goal-oriented demonstrations that combine multiple features are collected in :doc:`../../examples/index` under `Case Studies`.
 
 .. note::
    Reference bridge:
@@ -121,9 +121,11 @@ Table-based analysis for time segments.
 - :doc:`Segment Analysis: Visualization <segment_visualization>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
 
 .. note::
-   Theme-driven demonstrations live in :doc:`../../examples/index`.
+   Goal-oriented demonstrations live in :doc:`../../examples/index`.
    See the case studies section for workflows such as noise budgeting,
    transfer function measurement, ML preprocessing, and event-synchronized analysis.
+   For next steps after this page, see `ML Preprocessing Pipeline` and
+   `Bootstrap PSD and GLS Fitting` there.
 
 .. seealso::
    Next to read:

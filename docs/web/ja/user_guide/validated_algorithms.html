@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy の検証済みアルゴリズムについて、数値許容誤差、前提条件、監査根拠、理論・API・チュートリアルへの導線を整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>検証済みアルゴリズム &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -134,8 +134,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">検証済みアルゴリズム</a><ul>
@@ -159,8 +159,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -208,7 +208,7 @@
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p><strong>高度な検証・理論ページです</strong></p>
-<p>このページは機能紹介の文書から辿りやすいよう user guide 配下に残していますが、入門ページではありません。API リファレンス、理論ノート、個別チュートリアルを監査目線でつなぐ補助ページとして扱ってください。初見の方は <a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a>、<a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a>、または各手法に対応する個別チュートリアルから読むのを推奨します。</p>
+<p>このページは機能紹介の文書から辿りやすいよう user guide 配下に残していますが、入門ページではありません。API リファレンス、理論ノート、個別チュートリアルを監査目線でつなぐ高度・理論向けの入口として扱ってください。初見の方は <a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a>、<a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a>、または各手法に対応する個別チュートリアルから読むのを推奨します。</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> で使用されている主要な数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。</p>
 <p><strong>検索のヒント:</strong> <code class="docutils literal notranslate"><span class="pre">validated</span> <span class="pre">algorithms</span></code>, <code class="docutils literal notranslate"><span class="pre">tolerance</span></code>, <code class="docutils literal notranslate"><span class="pre">FFT</span> <span class="pre">conventions</span></code>, <code class="docutils literal notranslate"><span class="pre">ホワイトニング</span></code>, <code class="docutils literal notranslate"><span class="pre">GLS</span></code>, <code class="docutils literal notranslate"><span class="pre">MCMC</span></code>, <code class="docutils literal notranslate"><span class="pre">VIF</span></code></p>
@@ -571,7 +571,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-16T01:32:44+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Troubleshooting &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -129,8 +129,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials (Feature-Oriented Learning)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies (Goal-Oriented Workflows)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
@@ -139,6 +139,7 @@
 <li class="toctree-l3"><a class="reference internal" href="glossary.html">Glossary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#start-here">Start Here</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#installation-issues">Installation Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#plotting-visualization-issues">Plotting &amp; Visualization Issues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#still-not-working">Still Not Working?</a></li>
@@ -147,8 +148,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI, Experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI, Experimental)</a></li>
 </ul>
 </li>
 </ul>
@@ -184,16 +185,29 @@
   <section class="tex2jax_ignore mathjax_ignore" id="troubleshooting">
 <h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
 <p>Common issues encountered when using GWexpy and their solutions.</p>
+<section id="start-here">
+<h2>Start Here<a class="headerlink" href="#start-here" title="Link to this heading"></a></h2>
+<p>Use this page as a reverse lookup by symptom:</p>
+<ul class="simple">
+<li><p>Install worked for the minimal example, but you now need NDS2 / FrameLIB / other binary dependencies: go back to the <a class="reference internal" href="installation.html#conda-environment-recommended-gw-analysis"><span class="std std-ref">Installation Guide</span></a>.</p></li>
+<li><p>The first example from <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> does not import or plot cleanly: check the matching issue below, then retry the quick example.</p></li>
+<li><p>The environment feels mixed or broken after repeated <code class="docutils literal notranslate"><span class="pre">pip</span></code> and Conda changes: rebuild the dedicated Conda environment from the <a class="reference internal" href="installation.html#conda-environment-recommended-gw-analysis"><span class="std std-ref">Installation Guide</span></a>.</p></li>
+</ul>
+</section>
 <section id="installation-issues">
 <h2>Installation Issues<a class="headerlink" href="#installation-issues" title="Link to this heading"></a></h2>
 <section id="cannot-install-nds2-framel">
 <h3>1. Cannot install <code class="docutils literal notranslate"><span class="pre">nds2</span></code> / <code class="docutils literal notranslate"><span class="pre">framel</span></code><a class="headerlink" href="#cannot-install-nds2-framel" title="Link to this heading"></a></h3>
 <p>Binary libraries used in the <code class="docutils literal notranslate"><span class="pre">[gw]</span></code> extra cannot be installed via <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
 <p><strong>Solution:</strong>
-Use Conda (Miniforge, etc.) to install the dependencies first.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-nds2-client<span class="w"> </span>python-framel<span class="w"> </span>ldas-tools-framecpp
+Use Conda (Miniforge, etc.) in a dedicated environment, then install GWexpy from source there.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>gwexpy<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11
+conda<span class="w"> </span>activate<span class="w"> </span>gwexpy
+conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-nds2-client<span class="w"> </span>python-framel<span class="w"> </span>ldas-tools-framecpp
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
 </pre></div>
 </div>
+<p>See also: <a class="reference internal" href="installation.html#conda-environment-recommended-gw-analysis"><span class="std std-ref">Installation Guide</span></a></p>
 </section>
 <section id="errors-on-apple-silicon-m1-m2-m3-mac">
 <h3>2. Errors on Apple Silicon (M1/M2/M3) Mac<a class="headerlink" href="#errors-on-apple-silicon-m1-m2-m3-mac" title="Link to this heading"></a></h3>
@@ -212,6 +226,7 @@ Run the automated build script included in the repository.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/install_minepy.py
 </pre></div>
 </div>
+<p>If this happened while expanding a minimal install, review the extras guidance in the <a class="reference internal" href="installation.html#optional-dependencies-extras-details"><span class="std std-ref">Installation Guide</span></a>.</p>
 </section>
 </section>
 <section id="plotting-visualization-issues">
@@ -234,6 +249,7 @@ We recommend reinstalling <code class="docutils literal notranslate"><span class
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>pygmt
 </pre></div>
 </div>
+<p>If you started from the smallest example in <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a>, note that <code class="docutils literal notranslate"><span class="pre">pygmt</span></code> is optional and is not part of the minimal source install.</p>
 </section>
 </section>
 <hr class="docutils" />
@@ -261,7 +277,7 @@ Including the following information will help us assist you faster:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-16 01:32:44.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

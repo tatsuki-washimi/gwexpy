@@ -6,9 +6,9 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy のケーススタディをテーマ別に探せる正本ギャラリーです。キャリブレーション、外部連携、ML、ノイズハンティングをまとめています。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ケーススタディ (Case Studies) &mdash; GWexpy Documentation</title>
+  <title>ケーススタディ（目的別） / Case Studies &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -131,8 +131,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">ケーススタディ (Case Studies)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ケーススタディ（目的別） / Case Studies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#examples-ja-featured-gallery">注目ギャラリー</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#i">I. キャリブレーション・応答・制御</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ii-i-o">II. 外部連携・I/O・再現性</a></li>
@@ -151,8 +151,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/license.html">ライセンス</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/cli.html">コマンドラインインターフェース (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -174,7 +174,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
-      <li class="breadcrumb-item active">ケーススタディ (Case Studies)</li>
+      <li class="breadcrumb-item active">ケーススタディ（目的別） / Case Studies</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/examples/index.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -185,20 +185,20 @@
            <div itemprop="articleBody">
              
   <section id="case-studies">
-<span id="examples-ja-gallery-entry"></span><h1>ケーススタディ (Case Studies)<a class="headerlink" href="#case-studies" title="Link to this heading"></a></h1>
+<span id="examples-ja-gallery-entry"></span><h1>ケーススタディ（目的別） / Case Studies<a class="headerlink" href="#case-studies" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>ページ種別: ガイド索引</p>
 </div>
-<p>複数の GWexpy 機能をひとつのテーマに沿って組み合わせる、実践的なデモ集です。
-クラスや機能ごとの使い方を順番に学びたい場合は、 <a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> を参照してください。</p>
+<p>複数の GWexpy 機能を解析目的に沿って組み合わせる、目的別の実践デモ集です。
+クラスや機能ごとの使い方を順番に学びたい場合は、 <a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル（機能別）</span></a> を参照してください。</p>
 <p><strong>対象読者:</strong> 基本操作を理解したうえで、実務に近い一連の解析例を探したい利用者。
-<strong>前提知識:</strong> <a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> や <a class="reference internal" href="../user_guide/getting_started.html"><span class="doc">はじめに (Getting Started)</span></a> にある主要クラスの基本を理解していること。
-<strong>このページの用途:</strong> GWexpy のケーススタディをテーマ別に探すための正本一覧として使うこと。
+<strong>前提知識:</strong> <a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル（機能別）</span></a> や <a class="reference internal" href="../user_guide/getting_started.html"><span class="doc">はじめに (Getting Started)</span></a> にある主要クラスの基本を理解していること。
+<strong>このページの用途:</strong> GWexpy の目的別ケーススタディをテーマ別に探すための正本一覧として使うこと。
 <strong>検索のヒント:</strong> ケーススタディ, ギャラリー, 実践ワークフロー, キャリブレーション, 相互運用, ノイズハンティング, ML</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><cite>Case Studies</cite> はテーマ別の実演、<cite>Tutorials</cite> はクラスや機能ごとの例です。
+<p><cite>Case Studies</cite> は解析目的ごとの実演、<cite>Tutorials</cite> は機能やクラスごとの学習例です。
 このページを <cite>case_*</cite> ノートブックの正本一覧として扱います。</p>
 </div>
 <div class="admonition note">
@@ -314,7 +314,7 @@ I はキャリブレーションと制御、II は外部連携と再現性、III
 <p class="admonition-title">See also</p>
 <p>次に読むページ:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> でクラス別・機能別の基礎を固める</p></li>
+<li><p><a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル（機能別）</span></a> でクラス別・機能別の基礎を固める</p></li>
 <li><p><a class="reference internal" href="../reference/index.html"><span class="doc">リファレンス (Reference)</span></a> でケーススタディ内の API 詳細を確認する</p></li>
 <li><p><a class="reference internal" href="../user_guide/io_formats.html"><span class="doc">ファイル I/O 対応フォーマットガイド</span></a> で対応フォーマットと読み書き経路を調べる</p></li>
 </ul>
@@ -336,7 +336,7 @@ I はキャリブレーションと制御、II は外部連携と再現性、III
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

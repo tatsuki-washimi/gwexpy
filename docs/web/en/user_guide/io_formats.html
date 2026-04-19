@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="Choose the right direct file or network I/O path in GWexpy, including supported formats, read/write limits, fetch routes, and when to set format= explicitly." name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File I/O Supported Formats Guide &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -130,8 +130,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials (Feature-Oriented Learning)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies (Goal-Oriented Workflows)</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">File I/O Supported Formats Guide</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#at-a-glance">At a Glance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#first-decision-rules">First: Decision Rules</a></li>
@@ -159,8 +159,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI, Experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI, Experimental)</a></li>
 </ul>
 </li>
 </ul>
@@ -200,8 +200,8 @@
 <div><p><strong>Page Role:</strong> Guide</p>
 </div></blockquote>
 <p>This is the end-user I/O guide for <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>.
-This page only covers the public <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> style APIs that users call directly.</p>
-<p>It does <strong>not</strong> cover <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> conversions or object bridges to xarray, ROOT objects, or Zarr arrays. For those topics, see the <a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">interop tutorial</span></a> and the <a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">interop API reference</span></a>.</p>
+This page only covers the public <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> style APIs that users call directly to read, write, or fetch data.</p>
+<p>It does <strong>not</strong> cover <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> conversions or object bridges to xarray, ROOT objects, or Zarr arrays. If the question is “how do I convert this object into another library or container?”, that belongs to interop instead. For those topics, see the <a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">interop tutorial</span></a> and the <a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">interop API reference</span></a>.</p>
 <section id="at-a-glance">
 <h2>At a Glance<a class="headerlink" href="#at-a-glance" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -241,7 +241,7 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <li><p><strong>Set <code class="docutils literal notranslate"><span class="pre">format=</span></code> explicitly</strong> for ambiguous extensions such as <code class="docutils literal notranslate"><span class="pre">.xml</span></code>, for custom lab extensions, or whenever auto-detection is unclear.</p></li>
 <li><p><strong>Pass <code class="docutils literal notranslate"><span class="pre">timezone</span></code> explicitly</strong> when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, <strong>GBD</strong> is the main required case.</p></li>
 <li><p><strong>Read-only / write-only matters</strong>: <code class="docutils literal notranslate"><span class="pre">○</span> <span class="pre">/</span> <span class="pre">×</span></code> means a format can be read but not written.</p></li>
-<li><p>If you need to preserve <strong>Field</strong> objects safely, this page treats <strong>HDF5</strong> and <strong>Pickle</strong> as the direct-I/O baseline. NetCDF4 / Zarr / ROOT object bridges belong to interop, not to this page.</p></li>
+<li><p>If you need to preserve <strong>Field</strong> objects safely through direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> style APIs, this page treats <strong>HDF5</strong> and <strong>Pickle</strong> as the baseline. NetCDF4 / Zarr / ROOT object bridges belong to interop, not to this page.</p></li>
 </ul>
 </section>
 <section id="jump-links">
@@ -831,7 +831,7 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

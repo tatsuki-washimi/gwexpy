@@ -5,9 +5,9 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-17T12:13:51+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>コマンドラインインターフェース (CLI) &mdash; GWexpy Documentation</title>
+  <title>コマンドラインインターフェース（CLI、試作版） &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -27,7 +27,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="グラフィカルユーザーインターフェース (GUI)" href="gui.html" />
+    <link rel="next" title="グラフィカルユーザーインターフェース（GUI、試作版）" href="gui.html" />
     <link rel="prev" title="ライセンス" href="license.html" />
    
   
@@ -130,8 +130,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
@@ -143,7 +143,7 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">コマンドラインインターフェース (CLI)</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">コマンドラインインターフェース（CLI、試作版）</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id1">概要</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id2">現在のステータス</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">利用可能なコマンド</a></li>
@@ -152,7 +152,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#id5">トラブルシューティング</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -174,7 +174,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメント</a></li>
-      <li class="breadcrumb-item active">コマンドラインインターフェース (CLI)</li>
+      <li class="breadcrumb-item active">コマンドラインインターフェース（CLI、試作版）</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/cli.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -185,9 +185,10 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="cli">
-<h1>コマンドラインインターフェース (CLI)<a class="headerlink" href="#cli" title="Link to this heading"></a></h1>
+<h1>コマンドラインインターフェース（CLI、試作版）<a class="headerlink" href="#cli" title="Link to this heading"></a></h1>
 <section id="id1">
 <h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><strong>ステータス:</strong> 試作版（安定性ラベル）</p>
 <p>GWexpy CLI は現在 <strong>最小限のプレースホルダ的インターフェース</strong>であり、<strong>試作段階の機能</strong>として扱ってください。現時点では、GWexpy は主に <strong>Python API</strong> を用いた対話的解析およびスクリプティングで利用することを想定しています。</p>
 </section>
 <section id="id2">
@@ -249,14 +250,14 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="license.html" class="btn btn-neutral float-left" title="ライセンス" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gui.html" class="btn btn-neutral float-right" title="グラフィカルユーザーインターフェース (GUI)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gui.html" class="btn btn-neutral float-right" title="グラフィカルユーザーインターフェース（GUI、試作版）" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-17 12:13:51.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

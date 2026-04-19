@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="Install GWexpy for Python 3.11+ with minimal, recommended, GW-analysis, or developer setups, including extras guidance and dependency troubleshooting." name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation Guide &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -140,8 +140,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials (Feature-Oriented Learning)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies (Goal-Oriented Workflows)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
@@ -153,8 +153,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">Command-Line Interface (CLI, Experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">Graphical User Interface (GUI, Experimental)</a></li>
 </ul>
 </li>
 </ul>
@@ -229,7 +229,7 @@
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>GWexpy is currently in its <strong>Development Version</strong>. Since it is not yet officially published on PyPI or Conda, we recommend a source installation from GitHub. These commands will be fully operational after the official release.</p>
+<p>GWexpy is currently in its <strong>Development Version</strong> and is <strong>not yet published on PyPI or Conda</strong>. For now, install it from the GitHub source repository using the commands on this page.</p>
 </div>
 <p>GWexpy supports <strong>Python 3.11 or later</strong>. You can choose from several installation options (extras) depending on your analysis goals.</p>
 <p><a id="install-command"></a></p>
@@ -270,6 +270,7 @@
 <li><p>Input: Python 3.11+ and <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
 <li><p>Output: a minimal GWexpy environment</p></li>
 </ul>
+<p>If you need NDS2, FrameLIB, <code class="docutils literal notranslate"><span class="pre">pygmt</span></code>, or other binary-heavy tools, skip this section and start with Conda Environment (Recommended / GW Analysis).</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
 </pre></div>
 </div>
@@ -318,6 +319,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <li><p>If you see <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">nds2</span></code>: install <code class="docutils literal notranslate"><span class="pre">python-nds2-client</span></code> in the active dedicated Conda environment.</p></li>
 <li><p>If you see FrameLIB / <code class="docutils literal notranslate"><span class="pre">framecpp</span></code>-related errors: reinstall <code class="docutils literal notranslate"><span class="pre">python-framel</span></code> and <code class="docutils literal notranslate"><span class="pre">ldas-tools-framecpp</span></code> in the same environment.</p></li>
 <li><p>If the environment has already been mixed with unrelated packages: recreating it with <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">gwexpy</span> <span class="pre">python=3.11</span></code> is usually safer than trying to repair it in place.</p></li>
+<li><p>If you installed from <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> and later discover you need GW binary dependencies: return to Conda Environment (Recommended / GW Analysis) before adding more packages.</p></li>
 </ul>
 </section>
 <hr class="docutils" />
@@ -394,6 +396,7 @@ Python’s <code class="docutils literal notranslate"><span class="pre">pickle</
 <h2>6. Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> - confirm import and plotting with the smallest possible example</p></li>
+<li><p><a class="reference internal" href="troubleshooting.html"><span class="std std-doc">Troubleshooting</span></a> - reverse-lookup common install, plotting, and binary dependency issues</p></li>
 <li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> - choose the right learning path after installation</p></li>
 <li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">Prerequisites and Conventions</span></a> - review FFT, GPS time, and GWpy-compatibility assumptions</p></li>
 </ul>
@@ -412,7 +415,7 @@ Python’s <code class="docutils literal notranslate"><span class="pre">pickle</
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

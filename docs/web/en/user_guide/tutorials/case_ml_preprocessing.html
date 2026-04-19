@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Case Study: ML Preprocessing Pipeline &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
@@ -133,8 +133,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html">Tutorials</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../../examples/index.html">Case Studies</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html">Tutorials (Feature-Oriented Learning)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../examples/index.html">Case Studies (Goal-Oriented Workflows)</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../../examples/index.html#featured-gallery">Featured Gallery</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../examples/index.html#i-calibration-response-and-control">I. Calibration, Response, and Control</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../examples/index.html#ii-interoperability-i-o-and-reproducibility">II. Interoperability, I/O, and Reproducibility</a></li>
@@ -153,8 +153,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../citation.html">Citation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../license.html">License</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cli.html">Command-Line Interface (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../gui.html">Graphical User Interface (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cli.html">Command-Line Interface (CLI, Experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gui.html">Graphical User Interface (GUI, Experimental)</a></li>
 </ul>
 </li>
 </ul>
@@ -177,7 +177,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
-          <li class="breadcrumb-item"><a href="../../examples/index.html">Case Studies</a></li>
+          <li class="breadcrumb-item"><a href="../../examples/index.html">Case Studies (Goal-Oriented Workflows)</a></li>
       <li class="breadcrumb-item active">Case Study: ML Preprocessing Pipeline</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_ml_preprocessing.ipynb" class="fa fa-github"> Edit on GitHub</a>
@@ -315,6 +315,7 @@ Duration: 10 seconds
 <li><p><strong>fit()</strong>: Learn statistics and filter coefficients from training data</p></li>
 <li><p><strong>transform()</strong>: Apply preprocessing to train/validation data</p></li>
 </ol>
+<p><strong>Axis-order note:</strong> in this notebook, witness inputs <code class="docutils literal notranslate"><span class="pre">X</span></code> stay in GWexpy’s channel-first order <code class="docutils literal notranslate"><span class="pre">(n_channels,</span> <span class="pre">1,</span> <span class="pre">n_samples)</span></code>. Many ML libraries expect batch-major tensors later, so transpose only at the dataset/model boundary and keep the preprocessing steps in the original axis order.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -730,7 +731,7 @@ Robust:  median=-0.000, MAD*1.4826=1.000
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

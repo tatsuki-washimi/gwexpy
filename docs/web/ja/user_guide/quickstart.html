@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy を最短で始めるための導入ガイドです。GitHub からのインストール、3 行の最小例、次に読むチュートリアルへの入口をまとめています。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>クイックスタート (Quickstart) &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -142,8 +142,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
@@ -155,8 +155,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -231,7 +231,7 @@
 </section>
 <section id="quick-install">
 <h2>クイックインストール (Quick Install)<a class="headerlink" href="#quick-install" title="Link to this heading"></a></h2>
-<p>現在、開発版のため GitHub から直接インストールしてください：</p>
+<p>GWexpy は現在開発版で、<strong>PyPI / Conda にはまだ公開されていない</strong>ため、まずは GitHub のソースリポジトリから直接インストールしてください：</p>
 <ul class="simple">
 <li><p>目的: 開発版を最短でインストールする</p></li>
 <li><p>入力: Python 3.11 以上と <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
@@ -240,6 +240,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
 </pre></div>
 </div>
+<p>Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、<code class="docutils literal notranslate"><span class="pre">pygmt</span></code> などの追加ツールを使いたい場合は、後から場当たり的に足さず <a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a> の Conda 前提手順から始めてください。</p>
 <p><a id="quick-demo"></a></p>
 </section>
 <section id="line-quickstart">
@@ -304,7 +305,7 @@
 </section>
 <section id="id4">
 <h2>困ったときは<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<p>実行時にエラーが発生したり、プロットが表示されない場合は、<a class="reference internal" href="troubleshooting.html"><span class="std std-doc">トラブルシューティング</span></a> を確認してください。</p>
+<p>実行時にエラーが発生したり、プロットが表示されない場合は、<a class="reference internal" href="troubleshooting.html"><span class="std std-doc">トラブルシューティング</span></a> を確認してください。原因が環境構築にある場合は、<a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a> の Conda 前提手順に戻るのが最短です。</p>
 <p><a id="next-to-read"></a>
 <a id="next-steps"></a></p>
 </section>
@@ -312,6 +313,7 @@
 <h2>次に読む<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a> - 環境の構築</p></li>
+<li><p><a class="reference internal" href="troubleshooting.html"><span class="std std-doc">トラブルシューティング</span></a> - 症状から解決策を逆引きする</p></li>
 <li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">はじめに</span></a> - 体系的な学習ロードマップ</p></li>
 <li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a> - GPS 時刻や FFT の前提を先に確認する</p></li>
 <li><p><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html"><span class="std std-doc">GWpy からの移行</span></a> - 既存ユーザー向け差分ガイド</p></li>
@@ -331,7 +333,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 

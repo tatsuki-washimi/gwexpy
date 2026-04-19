@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy の direct I/O ガイドです。対応フォーマット、読み書きの可否、fetch 系の入口、format= を明示すべき場面を整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ファイル I/O 対応フォーマットガイド &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
@@ -131,8 +131,8 @@
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ (Case Studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">ファイル I/O 対応フォーマットガイド</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id1">このページでわかること</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id2">まず最初に: 判断ルール</a></li>
@@ -160,8 +160,8 @@
 <li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース (CLI)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース (GUI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
 </ul>
 </li>
 </ul>
@@ -200,8 +200,8 @@
 <div><p><strong>ページ種別:</strong> ガイド</p>
 </div></blockquote>
 <p>gwexpy の利用者向け I/O ガイドです。
-このページでは、ユーザーが直接使う <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> 系 API だけを扱います。</p>
-<p><code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。必要な場合は <a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a> や <a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a> を参照してください。</p>
+このページでは、ユーザーが直接使う <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> 系 API による読み書き・取得だけを扱います。</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。質問が「このオブジェクトを別ライブラリや別コンテナへどう変換するか」であれば、それは interop 側の話です。必要な場合は <a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a> や <a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a> を参照してください。</p>
 <section id="id1">
 <h2>このページでわかること<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -241,7 +241,7 @@
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">format=</span></code> を明示する</strong>のは、<code class="docutils literal notranslate"><span class="pre">.xml</span></code> のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">timezone</span></code> を必ず指定する</strong>のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは <strong>GBD</strong> です。</p></li>
 <li><p><strong>Read only / Write only に注意する</strong>: 表の <code class="docutils literal notranslate"><span class="pre">○</span> <span class="pre">/</span> <span class="pre">×</span></code> は「読めるが書けない」「書けるが読めない」を意味します。</p></li>
-<li><p><strong>Field を安全に保存したい</strong>場合は、このページでは <strong>HDF5</strong> と <strong>Pickle</strong> を基準に考えてください。NetCDF4 / Zarr / ROOT object への橋渡しは interop 側の話です。</p></li>
+<li><p><strong>Field を安全に保存したい</strong>場合は、direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> 系 API の基準として <strong>HDF5</strong> と <strong>Pickle</strong> を考えてください。NetCDF4 / Zarr / ROOT object への橋渡しは interop 側の話です。</p></li>
 </ul>
 </section>
 <section id="id3">
@@ -831,7 +831,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
       </span></p>
   </div>
 
