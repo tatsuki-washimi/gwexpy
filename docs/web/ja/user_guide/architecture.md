@@ -102,7 +102,7 @@ API 入口: [fields API](../reference/api/fields.rst), [スライス操作ガイ
 - [4次元フィールドの操作詳細](scalarfield_slicing.md) — フィールド API が 4 次元を保つ理由
 - [前提条件と規約](prerequisites_and_conventions.md) — 時刻系、FFT、互換性の共通前提
 - [Matrix API](../reference/api/matrix.rst) — 行列系コンテナと平坦化の参照入口
-- [Fields API](../reference/api/fields.rst) — フィールド変換とスライスの参照入口
+- [フィールド API](../reference/api/fields.rst) — フィールド変換とスライスの参照入口
 
 (next-to-read-ja)=
 ## 次に読む
