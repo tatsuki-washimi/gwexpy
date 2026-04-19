@@ -41,6 +41,18 @@ class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
         )
         return super().test_find_datafind_httperror(*args, **kwargs)
 
+    @pytest.fixture(scope="class")
+    def gw150914_h1_32(self):
+        pytest.skip(
+            "GWOSC/lalframe-backed H1 fixture segfaults in CI when pytest runs under PR Fast"
+        )
+
+    @pytest.fixture(scope="class")
+    def gw150914_l1_32(self):
+        pytest.skip(
+            "GWOSC/lalframe-backed L1 fixture segfaults in CI when pytest runs under PR Fast"
+        )
+
     @pytest.mark.xfail(
         reason="gwpy no longer emits UserWarning for median_mean with lal",
         strict=True,
