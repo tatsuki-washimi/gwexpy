@@ -55,6 +55,10 @@ try:
 except ImportError:
     pd = None
 
+# Keep generated fixture bytes stable across repeated local/CI runs so the test
+# harness can safely regenerate files without polluting the git worktree.
+np.random.seed(1)
+
 def try_or_skip(name, func, *args, **kwargs):
     """Execution wrapper to continue generation even if a specific format fails."""
     try:

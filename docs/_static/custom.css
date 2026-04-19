@@ -91,19 +91,48 @@ body {
 /* Table overflow handling & Scroll wrapper style */
 .wy-table-responsive {
     border-radius: 8px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 2em;
+}
+
+.wy-table-responsive table {
+    width: 100%;
+    table-layout: auto;
 }
 
 .wy-table-responsive table td, 
 .wy-table-responsive table th {
     white-space: normal !important;
     padding: 12px !important;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    hyphens: auto;
 }
 
 .wy-table-responsive table thead th {
     background-color: #f4f4f4 !important;
     border-bottom: 2px solid #ddd !important;
+}
+
+@media (max-width: 768px) {
+    .wy-table-responsive {
+        display: block;
+        max-width: 100%;
+        border-radius: 10px;
+    }
+
+    .wy-table-responsive table {
+        min-width: 36rem;
+    }
+
+    .wy-table-responsive table td,
+    .wy-table-responsive table th {
+        padding: 10px !important;
+        font-size: 0.95rem;
+        line-height: 1.45;
+    }
 }
 
 /* --- 4. Language Switcher & Utilities --- */

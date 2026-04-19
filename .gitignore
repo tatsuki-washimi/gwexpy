@@ -88,6 +88,8 @@ venv/
 !**/config/*.xml
 tests/sample-data/**
 gwexpy/gui/test-data/**
+tests/fixtures/data/test.*
+tests/fixtures/data/davis.db
 
 # Notebook backups
 *.ipynb.bak
@@ -129,3 +131,6 @@ gwexpy/gui/test-data/*.sdb
 gwexpy/gui/test-data/*:Zone.Identifier
 # Publications (confidential until publication)
 docs_internal/publications/
+
+# Sphinx autosummary targets
+**/_autosummary/

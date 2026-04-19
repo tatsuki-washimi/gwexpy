@@ -1,7 +1,7 @@
 時刻・時間 (Time)
 =================
 
-**安定性:** Stable
+**安定性:** 安定
 
 .. automodule:: gwexpy.time
 

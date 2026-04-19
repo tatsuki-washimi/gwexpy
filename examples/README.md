@@ -1,17 +1,19 @@
 
 # gwexpy Examples & Tutorials
 
-This directory is the **canonical location for all user-runnable examples and tutorials**.
+This directory contains legacy notebooks, runnable examples, and promotion candidates for the public documentation site.
 The files are organized with prefixes to distinguish between basic feature introductions and scenario-based case studies.
 
 ## Role of this directory vs. the documentation site
 
 | Location | Purpose | Audience |
 | --- | --- | --- |
-| `examples/` **(here)** | Executable notebooks and scripts. Clone and run locally. | Users who want hands-on practice |
-| `docs/web/*/user_guide/tutorials/` | Static read-only versions embedded in the Sphinx site. | Users reading the online documentation |
+| `examples/` **(here)** | Legacy notebooks, local runnable examples, and incubation material for future public docs. | Contributors and users exploring unpublished or in-progress examples |
+| `docs/web/*/user_guide/tutorials/` | Canonical notebook sources for the published Sphinx site. | Users reading or downloading the public documentation notebooks |
 
-The notebooks in `examples/` are the **source of truth**. Selected notebooks are referenced or rendered by the Sphinx documentation, but the runnable originals always live here.
+Public notebook pages are maintained from `docs/web/{en,ja}/user_guide/tutorials/`.
+If a notebook exists in both `examples/` and `docs/web/.../tutorials/`, the public-docs copy is authoritative for published content.
+Use `examples/` as a staging area for notebooks that may later be promoted into the published tutorial or case-study set.
 
 ## 1. Feature Introductions (`basic-new-methods/intro_*.ipynb`)
 
@@ -35,6 +37,12 @@ These notebooks focus on introducing specific classes and methods within the `gw
 ## 2. Case Studies & Applications (`case-studies/`)
 
 These notebooks demonstrate how to combine multiple `gwexpy` features to solve practical data analysis problems.
+
+Published/public versions already exist for the following duplicated case studies, so edits for user-facing docs should land in `docs/web/.../tutorials/` instead of here:
+
+- `case_active_damping.ipynb`
+- `case_noise_budget.ipynb`
+- `case_transfer_function.ipynb`
 
 - **[case_signal_extraction.ipynb](case-studies/case_signal_extraction.ipynb)**: Extracting weak signals from noisy backgrounds using whitening and filtering.
 - **[case_trend_analysis.ipynb](case-studies/case_trend_analysis.ipynb)**: Monitoring long-term stability and detecting impulsive glitches.

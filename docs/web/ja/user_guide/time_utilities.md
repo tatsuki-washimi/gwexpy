@@ -1,11 +1,41 @@
-# GPS時刻ユーティリティ関数 (`gwexpy.time`)
+---
+myst:
+  html_meta:
+    description: "GWexpy の GPS 時刻ユーティリティガイドです。to_gps、from_gps、tconvert、LIGOTimeGPS の使い分け、ベクトル入力、タイムゾーンや閏秒の注意点を整理します。"
+---
+
+# GPS 時刻ユーティリティ (`gwexpy.time`)
 
 GWexpy は GWpy の時刻ユーティリティを拡張し、GWpy が対応するスカラーの文字列・datetime に加えて、pandas・NumPy・Astropy オブジェクトに対するベクトル演算をサポートします。
+
+## このページでわかること
+
+| 項目 | 内容 |
+| --- | --- |
+| **ページ種別** | ガイド |
+| **対象読者** | GPS 時刻と UTC 変換を安全に扱いたい利用者、`gwexpy.time` の入口を探している利用者 |
+| **前提** | Python の `datetime`、タイムゾーン、GW 解析で GPS 時刻を使う前提の理解 |
+| **こんなときに読む** | `to_gps` / `from_gps` / `tconvert` の使い分けを知りたい、閏秒やタイムゾーンの罠を避けたい |
+| **検索キーワード** | GPS 時刻, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, 閏秒, timezone |
+
+**検索ヒント:** GPS 時刻, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, 閏秒, timezone
+
+## このページの近道
+
+- [重要な注意事項](#クイックガイド-重要な注意事項-faq)
+- [関数選択早見表](#関数選択早見表)
+- [基本的な使用例](#基本的な使用例-examples)
+- [`to_gps`](#to_gps--日時--gps-秒)
+- [`from_gps`](#from_gps--gps-秒--日時)
+- [`tconvert`](#tconvert--自動判定変換)
+- [`LIGOTimeGPS`](#ligotimegps--高精度-gps-時刻)
+- [TimeSeries との連携](#timeseries-との連携)
 
 ```python
 from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 ```
 
+(time-utils-ja-faq)=
 ## クイックガイド: 重要な注意事項 (FAQ)
 
 変換を行う前に、以下の基本特性を理解しておくことが重要です。
@@ -30,7 +60,7 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 
 目的に応じて最適な関数を選択してください。
 
-| 目的 | 推奨関数 | 主な入力の型 | 出力の型 (Scalar / Vector) | 主要引数 |
+| 目的 | 使う関数 | 主な入力型 | 出力 | 主要引数 |
 | :--- | :--- | :--- | :--- | :--- |
 | **日時 → GPS秒** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | — |
 | **GPS秒 → 日時** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `astropy.time.Time` | — |
@@ -42,6 +72,10 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 ## 基本的な使用例 (Examples)
 
 ### 1. 単一時刻の相互変換
+
+- 目的: 1 つの日時文字列と GPS 秒の相互変換を確認する
+- 入力: UTC 文字列と GPS 秒スカラー
+- 出力: `LIGOTimeGPS` / `datetime` / `tconvert` の返り値
 
 ```python
 from gwexpy.time import to_gps, from_gps, tconvert
@@ -63,6 +97,10 @@ tconvert(1126259462) # 固定文字列（"September 14 2015, ..."）
 
 リストや NumPy 配列を渡すと、内部的に最適化されたベクトル変換が行われます。
 
+- 目的: 複数時刻をまとめて変換する
+- 入力: 日時文字列のリストや GPS 秒の NumPy 配列
+- 出力: `numpy.ndarray` または `astropy.time.Time` 配列
+
 ```python
 import numpy as np
 
@@ -76,6 +114,10 @@ times = from_gps(np.arange(1126259400, 1126259410))
 ```
 
 ### 3. タイムゾーンと言号（Leap Second）の注意点
+
+- 目的: タイムゾーン未指定入力と timezone-aware `datetime` の違いを確認する
+- 入力: 文字列または `datetime`
+- 出力: 解釈の違いが分かる GPS 秒変換
 
 ```python
 # 明示的なタイムゾーン指定（推奨）
@@ -97,6 +139,10 @@ to_gps(datetime(2024, 1, 1, 9, 0, 0, tzinfo=ZoneInfo("Asia/Tokyo")))
 
 ### 4. 異常入力の扱い
 
+- 目的: どの入力が `ValueError` / `TypeError` になるかを先に把握する
+- 入力: 不正文字列、非数値 GPS、未対応キーワード引数
+- 出力: 代表的な例外条件
+
 ```python
 # 日時として解釈できない文字列
 to_gps("not-a-time")  # -> ValueError
@@ -108,6 +154,7 @@ from_gps("abc")       # -> ValueError
 to_gps("2024-01-01 09:00:00", timezone="Asia/Tokyo")  # -> TypeError
 ```
 
+(time-utils-ja-to-gps)=
 ## `to_gps` — 日時 → GPS 秒
 
 **Signature**: `to_gps(t, *args, **kwargs)`
@@ -115,6 +162,10 @@ to_gps("2024-01-01 09:00:00", timezone="Asia/Tokyo")  # -> TypeError
 さまざまな時刻表現を GPS 秒に変換します。単一の値（スカラー）だけでなく、リストや配列に対しても効率的なベクトル演算を行います。
 
 ### 文字列・datetime オブジェクト
+
+- 目的: 単一の日時入力を GPS 秒へ変換する
+- 入力: 文字列または `datetime`
+- 出力: `LIGOTimeGPS` などのスカラー GPS 表現
 
 ```python
 from gwexpy.time import to_gps
@@ -140,6 +191,10 @@ to_gps(t)
 
 ### pandas Series / DatetimeIndex（ベクトル対応）
 
+- 目的: 複数時刻をまとめて変換する
+- 入力: pandas の `Series`
+- 出力: GPS 秒の NumPy 配列
+
 ```python
 import pandas as pd
 
@@ -159,6 +214,7 @@ to_gps(dt64)
 
 ---
 
+(time-utils-ja-from-gps)=
 ## `from_gps` — GPS 秒 → 日時
 
 **Signature**: `from_gps(t, *args, **kwargs)`
@@ -182,12 +238,17 @@ from_gps([1126259462, 1126259472, 1126259482])
 
 ---
 
+(time-utils-ja-tconvert)=
 ## `tconvert` — 自動判定変換
 
 **Signature**: `tconvert(t=None, *args, **kwargs)`
 
 `tconvert` は入力の型を自動判定し、`to_gps` または `from_gps` に振り分けます。
 GWpy の `tconvert` と同様の動作に加え、配列入力に対応しています。
+
+- 目的: 入力型が混在する場面で 1 つの関数から変換する
+- 入力: 日時表現、GPS 秒、または `"now"`
+- 出力: 入力に応じた GPS 秒または UTC 側の表現
 
 ```python
 from gwexpy.time import tconvert
@@ -206,10 +267,15 @@ tconvert("now")
 
 ---
 
+(time-utils-ja-ligotimegps)=
 ## `LIGOTimeGPS` — 高精度 GPS 時刻
 
 `LIGOTimeGPS` は GPS 時刻をナノ秒精度（整数秒 + 整数ナノ秒）で保持します。
 LIGO データアクセスライブラリで標準的に使用される表現形式です。
+
+- 目的: 秒とナノ秒を分けて高精度に保持する
+- 入力: 整数秒と、必要に応じて整数ナノ秒
+- 出力: `LIGOTimeGPS` オブジェクト
 
 ```python
 from gwexpy.time import LIGOTimeGPS
@@ -227,10 +293,15 @@ print(t - 5)     # LIGOTimeGPS(1126259457, 391000000)
 
 ---
 
+(time-utils-ja-timeseries)=
 ## TimeSeries との連携
 
 GWexpy の多くのメソッドは、文字列・datetime・GPS 数値などの時刻指定を直接受け付けます。
 内部で `gwexpy.time.to_gps` が自動的に呼び出されます。
+
+- 目的: 日常的な `TimeSeries` 操作の中で時刻ユーティリティがどう使われるかを見る
+- 入力: `to_gps()` が受け付ける時刻文字列、`datetime`、GPS 数値
+- 出力: 取得済みまたは切り出した `TimeSeries`
 
 ```python
 import gwexpy
@@ -245,7 +316,8 @@ segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 
 ---
 
-## 関連ドキュメント
+## 次に読む
 
 - [API リファレンス](../reference/api/time.rst) — `gwexpy.time` の完全な API リファレンス
 - [GWpy からの移行](gwexpy_for_gwpy_users_ja.md) — GWexpy の全拡張機能の概要
+- [前提条件と規約](prerequisites_and_conventions.md) — GPS 時刻・タイムゾーン・FFT の共通前提をまとめて確認する

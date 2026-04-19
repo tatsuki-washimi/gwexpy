@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GWexpy Hub Prototype EN</title>
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <main class="hub-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <p class="eyebrow">Phase 3 Prototype / English Hub</p>
+        <h1 class="brand-title">GWexpy Documentation Hub</h1>
+      </div>
+      <div class="top-actions">
+        <a class="pill-link" href="../gateway/index.html">Back to Gateway</a>
+        <a class="pill-link primary" href="index-ja.html">日本語 Hub</a>
+      </div>
+    </header>
+
+    <div class="hub-layout">
+      <aside class="hub-sidebar">
+        <section class="sidebar-section">
+          <p class="sidebar-title">Start</p>
+          <ul class="nav-list">
+            <li><a href="#quickstart">Quick start</a></li>
+            <li><a href="#routes">Audience routes</a></li>
+            <li><a href="#tasks">Find by task</a></li>
+          </ul>
+        </section>
+        <section class="sidebar-section">
+          <p class="sidebar-title">Advanced</p>
+          <ul class="nav-list">
+            <li><a href="#tasks">I/O / Interop / Matrix</a></li>
+            <li><a href="#visuals">Visual Examples</a></li>
+            <li><a href="#nav-matrix">Gateway ↔ Reference</a></li>
+          </ul>
+        </section>
+        <section class="sidebar-section">
+          <p class="sidebar-title">Reference</p>
+          <ul class="nav-list">
+            <li><a href="../../../../../docs/web/en/reference/index.rst">reference/index.rst</a></li>
+            <li><a href="../../../../../docs/web/en/reference/classes.rst">reference/classes.rst</a></li>
+            <li><a href="../../../../../docs/web/en/reference/topics.rst">reference/topics.rst</a></li>
+            <li><a href="../../../../../docs/web/en/reference/api/index.rst">reference/api/index.rst</a></li>
+          </ul>
+        </section>
+      </aside>
+
+      <div class="hub-main">
+        <section class="hero-panel" id="quickstart">
+          <div class="hero-grid">
+            <div>
+              <p class="section-label">How to Use</p>
+              <h2>Turn the post-Gateway experience into a clear hierarchy of learning, doing, and looking up</h2>
+              <p class="hero-lede">
+                This prototype is the dashboard that follows the Gateway landing page. It separates
+                audience-specific routes from task-specific routes, then makes the handoff into
+                the Reference explicit so users can move from orientation to exact API lookup
+                without losing context.
+              </p>
+              <div class="hero-meta">
+                <span>assumes v0.x.x</span>
+                <span>Python ≥ 3.9</span>
+                <span>post-Gateway landing</span>
+              </div>
+            </div>
+            <div class="jump-grid">
+              <article class="route-card">
+                <p class="card-kicker">Start</p>
+                <h2>Run code first</h2>
+                <ul>
+                  <li><a href="../../../../../docs/web/en/user_guide/quickstart.md">quickstart.md</a></li>
+                  <li><a href="../../../../../docs/web/en/user_guide/getting_started.md">getting_started.md</a></li>
+                  <li><a href="../../../../../docs/web/en/user_guide/installation.md">installation.md</a></li>
+                </ul>
+              </article>
+              <article class="route-card">
+                <p class="card-kicker">Reference Bridge</p>
+                <h2>Look up exact APIs</h2>
+                <ul>
+                  <li><a href="../../../../../docs/web/en/reference/index.rst">Reference Hub</a></li>
+                  <li><a href="../../../../../docs/web/en/reference/classes.rst">Class Index</a></li>
+                  <li><a href="../../../../../docs/web/en/reference/api/index.rst">API Index</a></li>
+                </ul>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="routes">
+          <div class="section-heading">
+            <h2>Find the right guide for you</h2>
+            <p>The first-level split after the Gateway language choice</p>
+          </div>
+          <div class="task-grid">
+            <article class="task-card">
+              <p class="card-kicker">Beginner</p>
+              <h3>🎓 New to GWexpy?</h3>
+              <p>Installation, first notebook, and the minimum conceptual ramp.</p>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/getting_started.md">Getting Started</a>
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/quickstart.md">Quickstart</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Analysis</p>
+              <h3>🔬 For analysts</h3>
+              <p>Case-study and practical notebook path for experimental workflows.</p>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/examples/index.rst">Examples</a>
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/index.rst">Tutorial Index</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Migration</p>
+              <h3>🔄 For GWpy users</h3>
+              <p>Compatibility, migration cues, and direct paths into the added API surface.</p>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md">Migration Guide</a>
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/gwpy_added_api_index_en.md">Added API</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="tasks">
+          <div class="section-heading">
+            <h2>Find by what you want to do</h2>
+            <p>Each card pairs a task entry with the matching reference target</p>
+          </div>
+          <div class="task-grid">
+            <article class="task-card">
+              <p class="card-kicker">Time Series</p>
+              <h3>📈 Time-series analysis</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/intro_timeseries.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/reference/api/timeseries.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Spectrogram</p>
+              <h3>📊 Spectrogram analysis</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/intro_spectrogram.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/reference/api/spectrogram.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Field Data</p>
+              <h3>🌊 Field data operations</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/field_scalar_intro.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/reference/api/fields.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Noise Budget</p>
+              <h3>🔧 Noise budget</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/advanced_bruco.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/reference/api/analysis.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Model Fitting</p>
+              <h3>📐 Fitting &amp; MCMC</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/intro_fitting.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/reference/api/fitting.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Preprocessing</p>
+              <h3>🧮 Pre-processing &amp; ML pipeline</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/ml_preprocessing_methods.md">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/reference/api/preprocessing.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card highlight">
+              <p class="card-kicker">Differentiator</p>
+              <h3>📁 Multi-format I/O</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/case_gbd_format.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/io_formats.md">Guide</a>
+              </div>
+            </article>
+            <article class="task-card highlight">
+              <p class="card-kicker">Differentiator</p>
+              <h3>🔗 Library interoperability</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md">Guide</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Matrix</p>
+              <h3>🔢 Matrix operations</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/en/user_guide/tutorials/matrix_timeseries.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/en/reference/api/timeseries.rst">Reference</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="visuals">
+          <div class="section-heading">
+            <h2>Visual Examples</h2>
+            <p>Reserved blocks for later scientific thumbnails, with layout and hierarchy fixed now</p>
+          </div>
+          <div class="visual-grid">
+            <article class="visual-card">
+              <div class="visual-thumb"></div>
+              <div class="visual-card-body">
+                <h3>Noise budget</h3>
+                <p>High-level analysis proof point for users arriving from the Gateway hero narrative.</p>
+              </div>
+            </article>
+            <article class="visual-card">
+              <div class="visual-thumb"></div>
+              <div class="visual-card-body">
+                <h3>Transfer function estimation</h3>
+                <p>Bridges matrix containers, fitting, and instrumentation workflows.</p>
+              </div>
+            </article>
+            <article class="visual-card">
+              <div class="visual-thumb"></div>
+              <div class="visual-card-body">
+                <h3>Active damping</h3>
+                <p>Supports the case-study route with a dedicated 4:3 thumbnail frame.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="matrix-panel" id="nav-matrix">
+          <p class="section-label">Navigation Matrix</p>
+          <h2>Verified handoff from Gateway to Reference</h2>
+          <p>The prototype keeps internal HTML links separate from live doc source targets so the information architecture can be reviewed before promotion.</p>
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Target</th>
+                <th>Verified Path</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Gateway prototype</td>
+                <td>English Hub prototype</td>
+                <td><code>../hub/index-en.html</code></td>
+                <td><span class="status-ok">verified</span></td>
+              </tr>
+              <tr>
+                <td>English Hub prototype</td>
+                <td>Reference hub source</td>
+                <td><code>docs/web/en/reference/index.rst</code></td>
+                <td><span class="status-ok">verified</span></td>
+              </tr>
+              <tr>
+                <td>English Hub prototype</td>
+                <td>API index source</td>
+                <td><code>docs/web/en/reference/api/index.rst</code></td>
+                <td><span class="status-ok">verified</span></td>
+              </tr>
+              <tr>
+                <td>Gateway / Hub design</td>
+                <td>Built HTML route</td>
+                <td><code>/en/reference/index.html</code> expected after Sphinx build</td>
+                <td><span class="status-assumed">build-time assumption</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="footer-note">
+            The full route inventory lives in <a href="nav_matrix.json">nav_matrix.json</a>.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

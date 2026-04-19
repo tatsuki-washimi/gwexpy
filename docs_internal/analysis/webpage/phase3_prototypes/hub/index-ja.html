@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GWexpy Hub Prototype JA</title>
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body>
+  <main class="hub-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <p class="eyebrow">Phase 3 Prototype / Japanese Hub</p>
+        <h1 class="brand-title">GWexpy ドキュメントハブ</h1>
+      </div>
+      <div class="top-actions">
+        <a class="pill-link" href="../gateway/index.html">Gateway に戻る</a>
+        <a class="pill-link primary" href="index-en.html">English Hub</a>
+      </div>
+    </header>
+
+    <div class="hub-layout">
+      <aside class="hub-sidebar">
+        <section class="sidebar-section">
+          <p class="sidebar-title">導入</p>
+          <ul class="nav-list">
+            <li><a href="#quickstart">クイックスタート</a></li>
+            <li><a href="#routes">読者別の導線</a></li>
+            <li><a href="#tasks">やりたいことから探す</a></li>
+          </ul>
+        </section>
+        <section class="sidebar-section">
+          <p class="sidebar-title">高度な機能</p>
+          <ul class="nav-list">
+            <li><a href="#tasks">I/O / Interop / Matrix</a></li>
+            <li><a href="#visuals">Visual Examples</a></li>
+            <li><a href="#nav-matrix">Gateway ↔ Reference</a></li>
+          </ul>
+        </section>
+        <section class="sidebar-section">
+          <p class="sidebar-title">Reference</p>
+          <ul class="nav-list">
+            <li><a href="../../../../../docs/web/ja/reference/index.rst">reference/index.rst</a></li>
+            <li><a href="../../../../../docs/web/ja/reference/classes.rst">reference/classes.rst</a></li>
+            <li><a href="../../../../../docs/web/ja/reference/topics.rst">reference/topics.rst</a></li>
+            <li><a href="../../../../../docs/web/ja/reference/api/index.rst">reference/api/index.rst</a></li>
+          </ul>
+        </section>
+      </aside>
+
+      <div class="hub-main">
+        <section class="hero-panel" id="quickstart">
+          <div class="hero-grid">
+            <div>
+              <p class="section-label">How to Use</p>
+              <h2>GWpy の拡張を、目的ベースでたどれる入口に整理する</h2>
+              <p class="hero-lede">
+                このプロトタイプは、Gateway が「GWexpy とは何か」を伝えた後に、
+                利用者を Quickstart、チュートリアル、そして Reference に迷わず送るための
+                ハブ骨格です。サイドバーは情報の階層を固定し、メインカラムは
+                読者別ルートとタスク別ルートを分離しています。
+              </p>
+              <div class="hero-meta">
+                <span>v0.x.x 想定</span>
+                <span>Python ≥ 3.9</span>
+                <span>Gateway からの遷移先</span>
+              </div>
+            </div>
+            <div class="jump-grid">
+              <article class="route-card">
+                <p class="card-kicker">Start</p>
+                <h2>5分で動かす</h2>
+                <ul>
+                  <li><a href="../../../../../docs/web/ja/user_guide/quickstart.md">quickstart.md</a></li>
+                  <li><a href="../../../../../docs/web/ja/user_guide/getting_started.md">getting_started.md</a></li>
+                  <li><a href="../../../../../docs/web/ja/user_guide/installation.md">installation.md</a></li>
+                </ul>
+              </article>
+              <article class="route-card">
+                <p class="card-kicker">Reference Bridge</p>
+                <h2>仕様を引く</h2>
+                <ul>
+                  <li><a href="../../../../../docs/web/ja/reference/index.rst">Reference Hub</a></li>
+                  <li><a href="../../../../../docs/web/ja/reference/classes.rst">Class Index</a></li>
+                  <li><a href="../../../../../docs/web/ja/reference/api/index.rst">API Index</a></li>
+                </ul>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="routes">
+          <div class="section-heading">
+            <h2>あなたに合ったガイド</h2>
+            <p>Gateway の言語選択後、最初に分岐させる読者別導線</p>
+          </div>
+          <div class="task-grid">
+            <article class="task-card">
+              <p class="card-kicker">Beginner</p>
+              <h3>🎓 初めての方へ</h3>
+              <p>インストールから最初の Notebook までを最短で通す入口。</p>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/getting_started.md">はじめに</a>
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/quickstart.md">Quickstart</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Analysis</p>
+              <h3>🔬 実験データ解析者向け</h3>
+              <p>ケーススタディと時系列・スペクトログラム解析へ送る実務導線。</p>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/examples/index.rst">Examples</a>
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/index.rst">Tutorial Index</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Migration</p>
+              <h3>🔄 GWpy ユーザー向け</h3>
+              <p>差分理解と追加 API の把握から Reference へつなぐ移行ルート。</p>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md">移行ガイド</a>
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/gwpy_added_api_index_ja.md">追加 API</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="tasks">
+          <div class="section-heading">
+            <h2>やりたいことから探す</h2>
+            <p>チュートリアルと Reference を対で示すナビゲーション骨格</p>
+          </div>
+          <div class="task-grid">
+            <article class="task-card">
+              <p class="card-kicker">Time Series</p>
+              <h3>📈 時系列の可視化・解析</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/intro_timeseries.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/reference/api/timeseries.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Spectrogram</p>
+              <h3>📊 スペクトログラム解析</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/intro_spectrogram.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/reference/api/spectrogram.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Field Data</p>
+              <h3>🌊 フィールドデータ操作</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/field_scalar_intro.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/reference/api/fields.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Noise Budget</p>
+              <h3>🔧 ノイズバジェット</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/advanced_bruco.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/reference/api/analysis.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Model Fitting</p>
+              <h3>📐 フィッティング &amp; MCMC</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/intro_fitting.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/reference/api/fitting.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Preprocessing</p>
+              <h3>🧮 前処理 &amp; ML パイプライン</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/ml_preprocessing_methods.md">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/reference/api/preprocessing.rst">Reference</a>
+              </div>
+            </article>
+            <article class="task-card highlight">
+              <p class="card-kicker">Differentiator</p>
+              <h3>📁 マルチフォーマット I/O</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/case_gbd_format.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/io_formats.md">Guide</a>
+              </div>
+            </article>
+            <article class="task-card highlight">
+              <p class="card-kicker">Differentiator</p>
+              <h3>🔗 他ライブラリ連携</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/case_seismic_obspy.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/gwexpy_for_gwpy_users_ja.md">Guide</a>
+              </div>
+            </article>
+            <article class="task-card">
+              <p class="card-kicker">Matrix</p>
+              <h3>🔢 行列演算（Matrix 系）</h3>
+              <div class="task-links">
+                <a class="task-link" href="../../../../../docs/web/ja/user_guide/tutorials/matrix_timeseries.ipynb">Tutorial</a>
+                <a class="task-link" href="../../../../../docs/web/ja/reference/api/timeseries.rst">Reference</a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="visuals">
+          <div class="section-heading">
+            <h2>Visual Examples</h2>
+            <p>プレースホルダーで配置だけ固定し、後で実画像に差し替える</p>
+          </div>
+          <div class="visual-grid">
+            <article class="visual-card">
+              <div class="visual-thumb"></div>
+              <div class="visual-card-body">
+                <h3>ノイズバジェット</h3>
+                <p>BrUCo の解析例。Gateway から来た利用者が高度解析へ進む視覚的入口。</p>
+              </div>
+            </article>
+            <article class="visual-card">
+              <div class="visual-thumb"></div>
+              <div class="visual-card-body">
+                <h3>伝達関数推定</h3>
+                <p>FrequencySeriesMatrix と fitting の橋渡し例として配置。</p>
+              </div>
+            </article>
+            <article class="visual-card">
+              <div class="visual-thumb"></div>
+              <div class="visual-card-body">
+                <h3>アクティブダンピング</h3>
+                <p>ケーススタディ導線を補強する 4:3 のサムネイル領域。</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="matrix-panel" id="nav-matrix">
+          <p class="section-label">Navigation Matrix</p>
+          <h2>Gateway から Reference までの接続確認</h2>
+          <p>プロトタイプ内リンクと実ドキュメントのソースパスを分けて管理し、導線の穴を早期に確認する。</p>
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Target</th>
+                <th>Verified Path</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Gateway prototype</td>
+                <td>Japanese Hub prototype</td>
+                <td><code>../hub/index-ja.html</code></td>
+                <td><span class="status-ok">verified</span></td>
+              </tr>
+              <tr>
+                <td>Japanese Hub prototype</td>
+                <td>Reference hub source</td>
+                <td><code>docs/web/ja/reference/index.rst</code></td>
+                <td><span class="status-ok">verified</span></td>
+              </tr>
+              <tr>
+                <td>Japanese Hub prototype</td>
+                <td>API index source</td>
+                <td><code>docs/web/ja/reference/api/index.rst</code></td>
+                <td><span class="status-ok">verified</span></td>
+              </tr>
+              <tr>
+                <td>Gateway / Hub design</td>
+                <td>Built HTML route</td>
+                <td><code>/ja/reference/index.html</code> expected after Sphinx build</td>
+                <td><span class="status-assumed">build-time assumption</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="footer-note">
+            詳細なルート定義は <a href="nav_matrix.json">nav_matrix.json</a> に保持。
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -224,8 +224,9 @@ class TimeSeriesMatrix(  # type: ignore[misc]
 
                 # Intelligent reshaping based on data shape
                 try:
-                    if hasattr(data, "shape"):
-                        dshape = data.shape
+                    dshape: tuple[int, ...]
+                    if data is None:
+                        dshape = ()
                     else:
                         dshape = np.shape(data)
 

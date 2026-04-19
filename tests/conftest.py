@@ -3,6 +3,8 @@ import importlib
 import multiprocessing as _mp
 import os
 import socket
+import subprocess
+import sys
 from pathlib import Path
 
 import gwpy.conftest as _gwpy_conftest
@@ -112,11 +114,23 @@ def _is_network_error(exc: BaseException) -> bool:
 # =============================================================================
 
 _ROOT = Path(__file__).resolve().parent
+_FIXTURE_SCRIPT = _ROOT / "fixtures" / "generate_fixtures.py"
+
+
+def _generate_synthetic_fixtures() -> None:
+    """Ensure generated fixtures exist before test modules are collected."""
+    if _FIXTURE_SCRIPT.exists():
+        subprocess.check_call([sys.executable, str(_FIXTURE_SCRIPT)])
 
 # Match gwpy's test setup for consistent plotting behavior.
 mpl_use("agg", force=True)
 rcParams.update({"text.usetex": False})
 np.random.seed(1)
+
+# Some tests gate collection with ``Path.exists()`` checks against fixture files.
+# Generate deterministic fixtures during conftest import so those checks see the
+# expected files even when the fixture outputs are not tracked in git.
+_generate_synthetic_fixtures()
 
 # Ensure a writable home for packages that write to ~/.<tool> directories.
 _home_dir = _ROOT / ".home"
@@ -196,20 +210,6 @@ def pytest_configure(config):
         "markers",
         "requires(module): skip test if optional dependency cannot be imported",
     )
-
-
-def pytest_sessionstart(session):
-    """
-    Called after the Session object has been created and
-    before selection and entering the run test loop.
-    """
-    import subprocess
-    import sys
-
-    # Generate synthetic fixtures
-    fixture_script = Path(__file__).parent / "fixtures" / "generate_fixtures.py"
-    if fixture_script.exists():
-        subprocess.check_call([sys.executable, str(fixture_script)])
 
 
 def pytest_collection_modifyitems(config, items):

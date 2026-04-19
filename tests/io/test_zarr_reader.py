@@ -59,15 +59,47 @@ class TestZarrRoundtrip:
         tsd = TimeSeriesDict.read(str(path), format="zarr")
         assert np.isclose(tsd["sig"].sample_rate.value, 250.0)
 
-    def test_default_sample_rate_when_no_attrs(self, tmp_path):
-        """When no sample_rate or dt attrs exist, defaults to 1 Hz."""
+    def test_missing_timing_metadata_raises_clear_error(self, tmp_path):
+        """Missing timing metadata should fail fast instead of silently assuming 1 Hz."""
         path = tmp_path / "bare.zarr"
         store = zarr.open_group(str(path), mode="w")
         creator = getattr(store, "create_array", None) or store.create_dataset
         creator("bare", data=np.ones(5))
 
-        tsd = TimeSeriesDict.read(str(path), format="zarr")
-        assert np.isclose(tsd["bare"].sample_rate.value, 1.0)
+        with pytest.raises(ValueError, match="sample_rate|dt|timing"):
+            TimeSeriesDict.read(str(path), format="zarr")
+
+    def test_missing_timing_metadata_recovers_with_sample_rate_override(self, tmp_path):
+        """Explicit sample-rate override should recover bare Zarr arrays."""
+        path = tmp_path / "bare_sample_rate_override.zarr"
+        store = zarr.open_group(str(path), mode="w")
+        creator = getattr(store, "create_array", None) or store.create_dataset
+        creator("bare", data=np.arange(5, dtype=np.float64))
+
+        tsd = TimeSeriesDict.read(
+            str(path),
+            format="zarr",
+            sample_rate_override=32.0,
+        )
+
+        assert np.isclose(tsd["bare"].sample_rate.value, 32.0)
+        assert np.isclose(tsd["bare"].dt.value, 1.0 / 32.0)
+
+    def test_missing_timing_metadata_recovers_with_dt_override(self, tmp_path):
+        """Explicit dt override should also recover bare Zarr arrays."""
+        path = tmp_path / "bare_dt_override.zarr"
+        store = zarr.open_group(str(path), mode="w")
+        creator = getattr(store, "create_array", None) or store.create_dataset
+        creator("bare", data=np.arange(5, dtype=np.float64))
+
+        tsd = TimeSeriesDict.read(
+            str(path),
+            format="zarr",
+            dt_override=0.125,
+        )
+
+        assert np.isclose(tsd["bare"].dt.value, 0.125)
+        assert np.isclose(tsd["bare"].sample_rate.value, 8.0)
 
     def test_unit_override(self, tmp_path):
         path = tmp_path / "unit.zarr"

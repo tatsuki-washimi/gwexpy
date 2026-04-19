@@ -1,9 +1,19 @@
 API リファレンス (API Reference)
 ================================
 
-**安定性:** Stable
+.. note::
+   ページ種別: API カテゴリ索引
+
+**安定性:** 安定
 
 主要モジュールをカテゴリ別に並べています。迷った場合は `timeseries`, `matrix`, `fields`, `signal`, `fitting`, `io` から確認してください。
+
+**対象読者:** どのサブシステムを見たいかが分かっており、カテゴリ単位で API をたどりたい利用者。
+**このページの用途:** リファレンス総合入口やチュートリアルから、適切なモジュール群へ進むこと。
+
+.. note::
+   高度・理論系の導線:
+   メソッドやシンボルではなく、検証前提、フーリエ規約、監査根拠を確認したい場合は :doc:`../topics` と :doc:`../../user_guide/validated_algorithms` を参照してください。
 
 .. list-table::
    :header-rows: 1
@@ -13,77 +23,85 @@ API リファレンス (API Reference)
      - 安定性
      - 対象
    * - 時系列 (Time Series)
-     - Stable
+     - 安定
      - 時間領域コンテナと関連 API
    * - 周波数系列 (Frequency Series)
-     - Stable
+     - 安定
      - 周波数領域コンテナと変換 API
    * - スペクトログラム (Spectrogram)
-     - Stable
+     - 安定
      - 時間周波数コンテナと描画 API
    * - 行列コンテナ (Matrix Containers)
-     - Stable
+     - 安定
      - バッチ処理向けコンテナ群
    * - フィールド (Fields)
-     - Stable
+     - 安定
      - Field 系クラスと演算 API
    * - スペクトル解析 (Spectral)
-     - Stable
+     - 安定
      - PSD/ASD 推定と関連ヘルパ
    * - 解析ユーティリティ (Analysis)
-     - Stable
+     - 安定
      - 結合解析、統計、補助解析 API
    * - ノイズシミュレーション (Noise)
-     - Stable
+     - 安定
      - 合成ノイズモデルと補助関数
    * - 前処理 (Preprocessing)
-     - Stable
+     - 安定
      - クリーニング、正規化、前処理 API
    * - フィッティング (Fitting)
-     - Stable
+     - 安定
      - 回帰、GLS、フィッティング API
    * - 基本型 (Types)
-     - Stable
+     - 安定
      - 共通型と基底コンテナ
    * - テーブル (Table)
-     - Stable
+     - 安定
      - テーブル系データ構造
    * - ヒストグラム (Histogram)
-     - Stable
+     - 安定
      - ヒストグラム API
    * - セグメント (Segments)
-     - Stable
+     - 安定
      - セグメントとデータ品質 API
    * - 信号処理 (Signal Processing)
-     - Stable
+     - 安定
      - フィルタと信号処理ヘルパ
    * - 時刻・時間 (Time)
-     - Stable
+     - 安定
      - 時刻変換と GPS 補助 API
    * - 外部連携 (Interoperability)
-     - Stable
+     - 安定
      - 外部ライブラリ変換 API
    * - 天体物理ユーティリティ (Astrophysics)
-     - Stable
+     - 安定
      - 天体物理向け補助 API
    * - 検出器ユーティリティ (Detector)
-     - Stable
+     - 安定
      - 検出器・装置向け補助 API
    * - 描画 (Plotting)
-     - Stable
+     - 安定
      - 描画と Figure 補助 API
    * - 入出力 (I/O)
-     - Stable
+     - 安定
      - 読み書きとフォーマット統合
    * - 互換・補助 (Extra)
-     - Stable
+     - 安定
      - 互換入口と補助 API
    * - コマンドラインインターフェース (CLI)
-     - Stable
-     - コマンドライン操作
+     - 実験的
+     - エントリポイント、バージョン表示、将来の CLI ワークフロー
    * - グラフィカルユーザーインターフェース (GUI)
-     - Experimental
+     - 実験的
      - GUI と対話ツール
+
+.. seealso::
+   ハブ間の移動:
+
+   - :doc:`../index` でリファレンス総合入口に戻る
+   - :doc:`../topics` で理論、規約、橋渡しページから入る
+   - :doc:`../../user_guide/tutorials/index` で機能別チュートリアルから学ぶ
+   - :doc:`matrix`, :doc:`frequencyseries`, :doc:`spectrogram` でよく使う二次カテゴリを確認する
 
 .. toctree::
    :maxdepth: 2

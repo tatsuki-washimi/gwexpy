@@ -2,7 +2,7 @@
 
 <!-- reference-summary:start -->
 
-**安定性:** Stable
+**安定性:** 安定
 
 ## 主な用途
 
@@ -26,13 +26,12 @@ from gwexpy.timeseries import Transform
 ## 関連理論
 
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
-- [FFT_Conventions](FFT_Conventions.md)
+- [数値的安定性と精度](../user_guide/numerical_stability.md)
 
 ## 関連チュートリアル
 
-- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [ML 前処理手法](../user_guide/tutorials/ml_preprocessing_methods.md)
+- [ML 前処理ケーススタディ](../user_guide/tutorials/case_ml_preprocessing.ipynb)
 
 ## API リファレンス
 

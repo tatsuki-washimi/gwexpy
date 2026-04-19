@@ -1,8 +1,13 @@
 ---
 orphan: true
+myst:
+  html_meta:
+    description: "Find the right GWexpy interop path for converting objects to and from storage containers, analysis libraries, ML backends, and domain-specific tools."
 ---
 
 # Interop / Conversion Guide
+
+> **Page Role:** Guide
 
 This page is the dedicated **interop guide** for `gwexpy`.  
 Here, interop means **conversion and bridging** centered on `to_*()` / `from_*()` APIs.
@@ -23,6 +28,17 @@ This page does not cover:
 
 For local file formats and direct I/O, see the [File I/O Supported Formats Guide](io_formats).
 
+## At a Glance
+
+| Item | Details |
+| --- | --- |
+| **Audience** | Users and contributors who need to move `gwexpy` objects into other libraries, containers, or storage representations |
+| **Prerequisites** | Basic familiarity with `gwexpy` object types, direct I/O versus interop, and the target library or container you want to use |
+| **Use Cases** | Choose a `to_*()` / `from_*()` path, check whether a bridge is public yet, and distinguish storage conversion from object conversion |
+| **Search Keywords** | interop, conversion, `to_*`, `from_*`, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch |
+
+**Search hints:** interop, conversion, `to_*`, `from_*`, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch
+
 ## Jump Links
 
 - [How to Read This Page](#how-to-read-this-page)
@@ -33,6 +49,7 @@ For local file formats and direct I/O, see the [File I/O Supported Formats Guide
 - [D. Physics and Domain-Specific Libraries](#d-physics-and-domain-specific-libraries)
 - [What to Prioritize First](#what-to-prioritize-first)
 
+(interop-en-how-to-read)=
 ## How to Read This Page
 
 - If you want to convert to a **storage format or container**, start with A.
@@ -41,6 +58,7 @@ For local file formats and direct I/O, see the [File I/O Supported Formats Guide
 - If you want to connect to **ROOT, ObsPy, LAL, PyCBC**, or other domain-specific libraries, start with D.
 - If you want to move **Field** objects into xarray, NetCDF4, or Zarr workflows, treat that as interop, not as direct I/O.
 
+(interop-en-status-labels)=
 ## Status Labels
 
 - `Public`: implemented and reachable from `reference/api/interop`
@@ -49,12 +67,17 @@ For local file formats and direct I/O, see the [File I/O Supported Formats Guide
 - `In progress`: the implementation or the public presentation is not finished yet
 - `Planned`: explicitly in scope, but not implemented yet
 
+(interop-en-storage-conversion)=
 ## A. Storage Formats and Container Conversion
 
 This section is for conversions where the target is a **file format, container, or storage representation**.  
 Use it when the question is “what storage representation do I bridge to?”
 
-| Target | Public API / Entry Point | Status | Notes | Details |
+- Purpose: identify object-level bridges whose target is a storage representation
+- Input: a `gwexpy` object plus a destination container or storage backend
+- Output: a converted object, container, or storage-facing representation via `to_*()` / `from_*()`
+
+| Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
 | HDF5 | `to_hdf5()`, `from_hdf5()` | Public | object-level conversion | [API](../reference/api/gwexpy.interop.hdf5_.rst) |
 | JSON | `to_json()`, `from_json()` | Public | JSON string conversion | [API](../reference/api/gwexpy.interop.json_.rst) |
@@ -63,12 +86,17 @@ Use it when the question is “what storage representation do I bridge to?”
 | Zarr | `to_zarr()`, `from_zarr()` | Public | array/store bridge | [API](../reference/api/gwexpy.interop.zarr_.rst) |
 | NetCDF4 | `to_netcdf4()`, `from_netcdf4()` | Public | object-level bridge | [API](../reference/api/gwexpy.interop.netcdf4_.rst) |
 
+(interop-en-analysis-conversion)=
 ## B. Analysis Library and Object Conversion
 
 This section is for conversions where the target is a **Python object model** rather than a storage format.  
 Use it when the question is “which analysis-library object do I bridge to?”
 
-| Target | Public API / Entry Point | Status | Notes | Details |
+- Purpose: pick the correct bridge into analysis-oriented Python objects
+- Input: a `gwexpy` object or an external analysis object such as pandas, xarray, or astropy
+- Output: an analysis-library object or a reconstructed `gwexpy` object
+
+| Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
 | NumPy | no dedicated `to_*()` / `from_*()` API | Implemented as infrastructure | widely used as the internal array basis | — |
 | pandas | `to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, `from_pandas_dataframe()` | Public | Series / DataFrame | [API](../reference/api/gwexpy.interop.pandas_.rst) |
@@ -78,24 +106,34 @@ Use it when the question is “which analysis-library object do I bridge to?”
 | astropy | `to_astropy_timeseries()`, `from_astropy_timeseries()` | Public | `astropy.timeseries.TimeSeries` | [API](../reference/api/gwexpy.interop.astropy_.rst) |
 | dask | `to_dask()`, `from_dask()` | Public | dask array bridge | [API](../reference/api/gwexpy.interop.dask_.rst) |
 
+(interop-en-ml-conversion)=
 ## C. Machine Learning, Acceleration, and Array Backends
 
 This section is for accelerated computing and ML-oriented bridges.  
 Check whether only the array payload moves, or whether metadata can also be reconstructed.
 
-| Target | Public API / Entry Point | Status | Notes | Details |
+- Purpose: decide whether an ML or accelerated-array bridge matches your workflow
+- Input: a `gwexpy` object and an ML / GPU / array backend target
+- Output: tensors or accelerated arrays, and in some cases a route back into `gwexpy`
+
+| Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
 | PyTorch | `to_torch()`, `from_torch()` | Implemented, public cleanup pending | tensor conversion | — |
 | TensorFlow | `to_tf()`, `from_tf()` | Implemented, public cleanup pending | tensor conversion | — |
 | JAX | `to_jax()`, `from_jax()` | Implemented, public cleanup pending | JAX array conversion | — |
 | CuPy | `to_cupy()`, `from_cupy()` | Implemented, public cleanup pending | GPU array conversion | — |
 
+(interop-en-domain-conversion)=
 ## D. Physics and Domain-Specific Libraries
 
 This section is for domain-specific libraries and specialized objects.  
 Read the status carefully: some targets are full round-trips, some are mainly import paths, and some are still being organized publicly.
 
-| Target | Public API / Entry Point | Status | Notes | Details |
+- Purpose: find bridges into domain-specific tools without confusing them with direct file I/O
+- Input: a `gwexpy` object or a domain-library object such as ObsPy, ROOT, LAL, or PyCBC
+- Output: a target-library object, imported data, or a partial round-trip depending on status
+
+| Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
 | ROOT | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | Implemented, some paths still in progress | `TH1 -> non-Histogram` is incomplete | [API](../reference/api/gwexpy.interop.root_.rst) |
 | ObsPy | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | Public | seismic bridge | [API](../reference/api/gwexpy.interop.obspy_.rst) |
@@ -133,6 +171,7 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 | Exudyn | `from_exudyn_sensor()` | Implemented, public cleanup pending | mainly import | — |
 | OpenSees | `from_opensees_recorder()` | Implemented, public cleanup pending | mainly import | — |
 
+(interop-en-priorities)=
 ## What to Prioritize First
 
 The following targets are especially important because they sit close to the direct-I/O boundary or because they are high-value public entry points:
@@ -149,3 +188,9 @@ The following targets are especially important because they sit close to the dir
 - [Interop tutorial](tutorials/intro_interop)
 - [Interop API reference](../reference/api/interop)
 - [File I/O Supported Formats Guide](io_formats)
+
+## Next to Read
+
+- [File I/O Supported Formats Guide](io_formats) if your real question is about `Class.read(..., format=...)` or `obj.write(...)`
+- [GPS Time Utility Functions](time_utilities) if conversion workflows depend on GPS or timezone handling
+- [Interop tutorial](tutorials/intro_interop) for worked examples before dropping into the API reference

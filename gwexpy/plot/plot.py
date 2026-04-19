@@ -104,6 +104,7 @@ class Plot(BasePlot):
         Convenience helper for median/min/max overlays.
     gwexpy.types.SeriesMatrix
         Matrix container expanded automatically by this plot class.
+
     """
 
     # Suppress _repr_html_ to prevent double plotting (repr + backend)

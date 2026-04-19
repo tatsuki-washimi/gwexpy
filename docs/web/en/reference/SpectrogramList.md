@@ -27,14 +27,16 @@ mat = lst.to_matrix()
 
 ## Related Theory
 
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [Spectrogram](Spectrogram.md)
+- [SpectrogramMatrix](SpectrogramMatrix.md)
 
 ## Related Tutorials
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Spectrogram Tutorial](../user_guide/tutorials/intro_spectrogram.ipynb)
+- [Segment Visualization](../user_guide/tutorials/segment_visualization.ipynb)
+- [Glitch Analysis](../user_guide/tutorials/case_glitch_analysis.ipynb)
 
 ## API Reference
 
@@ -48,6 +50,25 @@ The detailed generated API continues below on this page.
 
 List of Spectrogram objects.
 Reference: similar to TimeSeriesList but for 2D Spectrograms.
+
+## Physical Context
+
+Use `SpectrogramList` for several time-frequency maps that should stay separate but be processed together: repeated runs, multiple sensors, or several preprocessing branches of the same event.
+
+- each item can have different provenance even when you batch-plot them
+- the container does not enforce matching color semantics, normalization, or binning
+
+## Common Misreadings
+
+1. comparing brightness across items without matching scaling and units
+2. assuming all entries share the same `dt`/`df` because they live in one list
+3. treating stacked visual summaries as evidence of alignment without checking metadata
+
+## Where to go next
+
+- per-map interpretation: [Spectrogram](Spectrogram.md)
+- aligned collection analysis: [SpectrogramMatrix](SpectrogramMatrix.md)
+- practical workflows: [Segment Visualization](../user_guide/tutorials/segment_visualization.ipynb), [Glitch Analysis](../user_guide/tutorials/case_glitch_analysis.ipynb)
 
 :::{note}
 Spectrogram objects can be very large in memory.

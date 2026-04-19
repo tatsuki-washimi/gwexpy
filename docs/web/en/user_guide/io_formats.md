@@ -1,11 +1,30 @@
+---
+myst:
+  html_meta:
+    description: "Choose the right direct file or network I/O path in GWexpy, including supported formats, read/write limits, fetch routes, and when to set format= explicitly."
+---
+
 <a id="io-formats-en-top"></a>
 
 # File I/O Supported Formats Guide
+
+> **Page Role:** Guide
 
 This is the end-user I/O guide for `gwexpy`.
 This page only covers the public `.read()` / `.write()` / `fetch()` style APIs that users call directly.
 
 It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. For those topics, see the [interop tutorial](tutorials/intro_interop) and the [interop API reference](../reference/api/interop).
+
+## At a Glance
+
+| Item | Details |
+| --- | --- |
+| **Audience** | Users choosing a direct file or network I/O path for `gwexpy` objects |
+| **Prerequisites** | Basic familiarity with `TimeSeries` / `TimeSeriesDict`, file extensions, and the difference between direct I/O and interop conversion |
+| **Use Cases** | Pick a supported format, decide when to set `format=`, identify read/write limits, and avoid confusing direct I/O with object conversion |
+| **Search Hints** | file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC |
+
+**Search hints:** file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC
 
 :::{warning}
 **Security Warning: Pickle Files**
@@ -17,7 +36,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 
 ## First: Decision Rules
 
-- If you need a **default GW storage format**, start with **HDF5**. For existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / Audio**.
+- If you need a **default GW storage format**, start with **HDF5**. For existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / Audio**. For **MTH5**, the current public direct-I/O story is only the single **`ats.mth5`** path. A generic standalone **`format="mth5"`** route is not published yet.
 - **Auto-detect is fine** when the extension uniquely selects one reader.
 - **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
 - **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
@@ -38,10 +57,10 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 
 ## Quick Selection Table
 
-| Group | Choose this when... | First format to check | Formats covered here |
+| Group | Start here when... | First format | Formats covered here |
 |---|---|---|---|
 | **A. GW Standards** | You want standard GW storage, exchange, or acquisition paths | **HDF5** | GWF, HDF5, ndscope-hdf5, DTTXML, NDS2, GWOSC |
-| **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5, MTH5 standalone |
+| **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here) |
 | **C. General Analysis and Exchange** | You need general-purpose storage or external analysis exchange | **CSV / TXT** or **Zarr** | CSV / TXT, NetCDF4, Zarr, Pickle, ROOT |
 | **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
 
@@ -50,6 +69,10 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 <a id="io-formats-en-basic"></a>
 
 ## Basic `.read()` / `.write()` / `fetch()` Usage
+
+- Purpose: show the baseline direct-I/O entry points before format-specific details
+- Input: file paths, an explicit `format=` when needed, or a detector/network query
+- Output: `TimeSeries`, `TimeSeriesDict`, or other direct-I/O return objects
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -72,11 +95,12 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 - `.xml` is ambiguous, so **use `format="dttxml"` explicitly** for DTTXML data.
 - `NDS2` and `GWOSC` are not file readers, so they use `fetch()` / `fetch_open_data()` instead of `.read()`.
 
+(io-formats-en-supported-classes)=
 ## Supported Classes at a Glance
 
 If the main question is whether a format is for a single channel or multiple channels, use this table first.
 
-| Format / Family | Single-channel | Multi-channel | Other supported classes |
+| Format / Family | Single | Multi | Other classes |
 |---|---|---|---|
 | **GWF / MiniSEED / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
 | **NetCDF4 / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
@@ -99,14 +123,18 @@ If the main question is whether a format is for a single channel or multiple cha
 These are the standard GW storage, exchange, and acquisition paths.
 If you are unsure, start with **HDF5**. Use **GWF** when you need external standard compatibility, and **DTTXML** for diagnostic tool output.
 
-| Format / Path | R / W | Main entry point | Best for | Notes |
+| Format / Path | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Standard LIGO/KAGRA frame exchange | Standard format, via gwpy |
 | **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `.read(..., format="hdf5")`, `.write(..., format="hdf5")` on major classes | Long-term storage with metadata | Main direct-I/O option for Field objects |
-| **ndscope-hdf5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | ndscope-compatible HDF5 | `TimeSeriesDict` only |
+| **ndscope-hdf5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Backward-compatible aliases: `ndscope_hdf5`, `ndscopehdf5` |
 | **DTTXML** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="dttxml", products="...")` | DTT outputs and diagnostics | `products` is required |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | Detector data server access | Network path |
 | **GWOSC** | ○ / × | `TimeSeries.fetch_open_data()` | Open data access | Network path |
+
+- Purpose: compare the main GW-oriented direct-I/O and network entry points
+- Input: HDF5, GWF, DTTXML, or detector/open-data access parameters
+- Output: `TimeSeries`, `TimeSeriesDict`, or fetched open data
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -129,7 +157,7 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 This group is for existing seismic and electromagnetic observation formats.
 In practice, **MiniSEED** is the easiest starting point when you need to place a format in context.
 
-| Format | R / W | Main entry point | Best for | Notes |
+| Format | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
 | **MiniSEED** (`.mseed`) | ○ / ○ | `TimeSeriesDict.read(..., format="miniseed")`, `.write(..., format="miniseed")` | Standard seismic waveform exchange | `gap` controls gap handling |
 | **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | Seismic waveform analysis | Via ObsPy |
@@ -138,7 +166,11 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 | **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Partial support |
-| **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Direct MTH5 I/O | Current direct path is only `ats.mth5` |
+| **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
+
+- Purpose: compare common seismic and geophysical readers without overstating MTH5 support
+- Input: existing waveform files such as MiniSEED, WIN/WIN32, or the limited `ats.mth5` path
+- Output: `TimeSeries` or `TimeSeriesDict` objects depending on the reader
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -151,7 +183,8 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 
 - **MiniSEED** pads gaps with `NaN` by default. Use `gap="raise"` if you want failures instead.
 - **K-NET** and **WIN / WIN32** are intentionally read-only.
-- **ATS.MTH5** is a limited path. The docs should not imply that generic MTH5 direct I/O is already complete.
+- **ATS.MTH5** is the limited current direct path.
+- **MTH5 standalone** is still in design/publication cleanup. Read this as **"`ats.mth5` has partial support"**, not as **"MTH5 direct I/O is generally complete."**
 
 <a id="io-formats-en-c"></a>
 
@@ -160,13 +193,17 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 These formats are useful for analysis notebooks, interchange, and general storage.
 The key rule here is not to mix up “format choice” with “library conversion.”
 
-| Format | R / W | Main entry point | Best for | Notes |
+| Format | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
 | **CSV / TXT** (`.csv`, `.txt`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Lightweight exchange and inspection | Also supports directory bulk loading |
-| **NetCDF4** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="netcdf4")`, `TimeSeriesDict.read(..., format="netcdf4")`, `.write(..., format="netcdf4")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes |
-| **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `.write(..., format="zarr")` | Chunked storage and parallel workflows | Direct I/O here is centered on TimeSeries classes |
+| **NetCDF4** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="netcdf4")`, `TimeSeriesDict.read(..., format="netcdf4")`, `TimeSeriesMatrix.read(..., format="netcdf4")`, `.write(..., format="netcdf4")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes |
+| **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | Chunked storage and parallel workflows | Direct I/O here is centered on TimeSeries classes |
 | **Pickle** (`.pkl`) | ○ / ○ | `.read()` / `.write()` on major classes | Python object snapshots | Only for trusted data |
 | **ROOT** (`.root`) | ○ / ○ | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | EventTable I/O | Direct I/O here is EventTable only |
+
+- Purpose: show the general-purpose direct-I/O routes without mixing them with interop-only bridges
+- Input: CSV, Zarr, ROOT, or other general exchange formats
+- Output: `TimeSeriesDict`, `TimeSeriesMatrix`, or `EventTable`
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -179,7 +216,7 @@ events = EventTable.read("events.root", format="root")
 
 - **CSV / TXT** remains useful for inspection and simple interchange.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop.
-- **Zarr** still has an open API-behavior issue around missing sampling-rate metadata. That is tracked separately from this page structure work.
+- **Zarr** direct I/O stores and restores timing metadata such as `t0` and `dt` in Zarr attributes. This page treats that metadata path as part of the current supported behavior.
 - **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O.
 
 <a id="io-formats-en-d"></a>
@@ -189,13 +226,17 @@ events = EventTable.read("events.root", format="root")
 This group is for logger and instrument-specific time-series formats.
 Time handling, units, and audio `t0` semantics are the main points to watch.
 
-| Format | R / W | Main entry point | Best for | Notes |
+| Format | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
-| **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd")`, `TimeSeriesDict.read(..., format="gbd")` | GRAPHTEC loggers | `timezone` is required |
-| **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")` | National Instruments data | Read-only |
+| **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd")`, `TimeSeriesDict.read(..., format="gbd")`, `TimeSeriesMatrix.read(..., format="gbd")` | GRAPHTEC loggers | `timezone` is required |
+| **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")`, `TimeSeriesMatrix.read(..., format="tdms")` | National Instruments data | Read-only |
 | **SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`) | ○ / × | `TimeSeries.read(..., format="sdb" / "sqlite" / "sqlite3")`, `TimeSeriesDict.read(...)` | WeeWX and similar archives | Same reader family |
 | **WAV** (`.wav`) | ○ / ○ | `TimeSeries.read(..., format="wav")`, `TimeSeriesDict.read(..., format="wav")`, `.write(..., format="wav")` | Uncompressed audio | Does not preserve absolute time |
 | **MP3 / FLAC / OGG / M4A** | ○ / ○ | `TimeSeries.read(..., format="mp3" / "flac" / "ogg" / "m4a")`, `.write(...)` | Compressed audio | Uses `pydub`; some formats also need `ffmpeg` |
+
+- Purpose: highlight logger-specific and audio-specific direct-I/O requirements
+- Input: logger data, SQLite-family archives, or audio files
+- Output: `TimeSeries`, `TimeSeriesDict`, or `TimeSeriesMatrix`
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -218,12 +259,12 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 
 ### Managed in design, but not prominent in the public page
 
-| Format | Current state | Notes |
+| Format | Status | Notes |
 |---|---|---|
-| `ndscope-hdf5` | Implemented, not yet prominent | `TimeSeriesDict`-only HDF5 schema |
+| `ndscope-hdf5` | Implemented, not yet prominent | `TimeSeriesDict`-only HDF5 schema. Canonical name: `ndscope-hdf5`; backward-compatible aliases: `ndscope_hdf5`, `ndscopehdf5` |
 | `SQLite`, `SQLite3` | Implemented, not yet prominent | Aliases in the same family as `SDB` |
-| `ATS.MTH5` | Implemented with partial scope | Single MTH5-backed path |
-| `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet |
+| `ATS.MTH5` | Implemented with partial scope | Current public direct path backed by MTH5 |
+| `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet; not published as public direct I/O |
 
 ### Unimplemented Formats (Stubs)
 
@@ -261,6 +302,12 @@ These entries exist as placeholders only. Calling `.read()` on them is expected 
 - [Interop tutorial](tutorials/intro_interop)
 - [Interop API reference](../reference/api/interop)
 - [Installation guide](installation)
+
+## Next to Read
+
+- [Interop / Conversion Guide](interop) for `to_*()` / `from_*()` bridges and object-level conversion
+- [GPS Time Utility Functions](time_utilities) if your I/O workflow needs timezone or GPS-time handling
+- [Installation guide](installation) if you need optional dependencies before using a format backend
 
 ## Page-End Navigation
 

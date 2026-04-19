@@ -26,13 +26,12 @@ filled = ImputeTransform(method="interpolate").fit_transform(ts)
 ## Related Theory
 
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
-- [FFT_Conventions](FFT_Conventions.md)
+- [Numerical Stability](../user_guide/numerical_stability.md)
 
 ## Related Tutorials
 
-- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [ML Preprocessing Methods](../user_guide/tutorials/ml_preprocessing_methods.md)
+- [ML Preprocessing Case Study](../user_guide/tutorials/case_ml_preprocessing.ipynb)
 
 ## API Reference
 
@@ -92,4 +91,3 @@ transform(self, x)
 Apply the transform to data. Must be implemented by subclasses.
 
 *(Inherited from `Transform`)*
-

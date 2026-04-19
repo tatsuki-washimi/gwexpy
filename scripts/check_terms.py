@@ -11,6 +11,21 @@ DOCS_DIR = Path('docs/web/ja')
 # TERMS_CSV: CSV file defining canonical terms and their forbidden variants
 TERMS_CSV = Path('scripts/terms.csv')
 
+
+def _mask_text(text):
+    """Replace non-newline characters with spaces to preserve line offsets."""
+    return re.sub(r"[^\n]", " ", text)
+
+
+def _preserve_label(full_text, label):
+    """Keep the visible label while masking the remainder of the matched markup."""
+    return label + _mask_text(full_text[len(label):])
+
+
+def _looks_like_url(text):
+    """Return True when text resembles a URL or domain/path label."""
+    return bool(re.fullmatch(r"(https?://\S+|(?:[\w-]+\.)+[\w-]+/\S*)", text.strip()))
+
 def load_terms():
     """Load canonical terms and variants from CSV."""
     terms = {}
@@ -34,11 +49,57 @@ def load_terms():
 def strip_code(text):
     """Remove code blocks and inline code to avoid false positives."""
     # Remove fenced code blocks (```...```)
-    text = re.sub(r'```.*?```', '', text, flags=re.DOTALL)
-    # Remove inline code (`...`)
-    text = re.sub(r'`[^`]+`', '', text)
+    text = re.sub(r'```.*?```', lambda m: _mask_text(m.group(0)), text, flags=re.DOTALL)
+
+    # Preserve visible labels in reStructuredText roles while masking link targets.
+    text = re.sub(
+        r':[a-zA-Z0-9_+-]+:`(?P<label>[^`<>]+?)\s*<(?P<target>[^`>]+)>`',
+        lambda m: _preserve_label(m.group(0), m.group("label")),
+        text,
+    )
+
+    # Preserve visible labels in generic reStructuredText links unless the label is itself a URL.
+    text = re.sub(
+        r'`(?P<label>[^`<>]+?)\s*<(?P<target>[^`>]+)>`_?',
+        lambda m: _mask_text(m.group(0))
+        if _looks_like_url(m.group("label"))
+        else _preserve_label(m.group(0), m.group("label")),
+        text,
+    )
+
+    # Preserve Markdown link labels while masking link targets.
+    text = re.sub(
+        r'\[(?P<label>[^\]]+)\]\((?P<target>[^)]+)\)',
+        lambda m: _preserve_label(m.group(0), m.group("label")),
+        text,
+    )
+
+    # Remove bare URLs and URL-like labels that should not participate in terminology checks.
+    text = re.sub(
+        r'https?://\S+|(?:[\w-]+\.)+[\w-]+/\S*',
+        lambda m: _mask_text(m.group(0)),
+        text,
+    )
+
+    # Remove remaining inline code (`...`)
+    text = re.sub(r'`[^`]+`', lambda m: _mask_text(m.group(0)), text)
+
+    # Remove hidden toctree entries and MyST-style anchor labels.
+    text = re.sub(
+        r'^\s+[A-Za-z0-9_./-]+(?:\s*<[^>]+>)?\s*$',
+        lambda m: _mask_text(m.group(0)),
+        text,
+        flags=re.MULTILINE,
+    )
+    text = re.sub(
+        r'^\([A-Za-z0-9_.-]+\)=\s*$',
+        lambda m: _mask_text(m.group(0)),
+        text,
+        flags=re.MULTILINE,
+    )
+
     # Remove rST directives and comments that might contain code-like text
-    text = re.sub(r'^\.\..*$', '', text, flags=re.MULTILINE)
+    text = re.sub(r'^\.\..*$', lambda m: _mask_text(m.group(0)), text, flags=re.MULTILINE)
     return text
 
 def main():

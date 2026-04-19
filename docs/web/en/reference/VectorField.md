@@ -33,8 +33,9 @@ amplitude = vec.norm()
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [VectorField Tutorial](../user_guide/tutorials/field_vector_intro.md)
+- [Advanced Field Analysis](../user_guide/tutorials/advanced_field_analysis.ipynb)
+- [Field Advanced Integration](../user_guide/tutorials/field_advanced_integration.md)
 
 ## API Reference
 

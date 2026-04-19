@@ -27,15 +27,16 @@ out = mat.to_dict()
 
 ## Related Theory
 
-- [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [Spectrogram](Spectrogram.md)
+- [SeriesMatrix](SeriesMatrix.md)
 
 ## Related Tutorials
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Spectrogram Matrix Tutorial](../user_guide/tutorials/matrix_spectrogram.ipynb)
+- [Time-Frequency Comparison Guide](../user_guide/tutorials/time_frequency_comparison.md)
+- [HHT Analysis](../user_guide/tutorials/advanced_hht.ipynb)
 
 ## API Reference
 
@@ -55,6 +56,25 @@ This class represents a collection of Spectrograms, structured as either:
 
 It inherits from SeriesMatrix, providing powerful indexing, metadata management,
 and analysis capabilities (slicing, interpolation, statistics).
+
+## Physical Context
+
+Use `SpectrogramMatrix` when multiple time-frequency maps share one binning scheme and their relationships matter: detector arrays, parameter sweeps, before/after processing grids, or channel-by-channel summary studies.
+
+- matrix statistics are meaningful only when time and frequency axes are aligned
+- this container is for comparing structure across maps, not just storing many unrelated plots
+
+## Common Misreadings
+
+1. treating any stack of spectrograms as comparable without matching transform settings
+2. interpreting matrix summaries as physical averages when the input maps use different scales or normalization
+3. forgetting that row/column structure is analytical metadata, not automatically spatial geometry
+
+## Where to go next
+
+- per-map interpretation: [Spectrogram](Spectrogram.md)
+- container conversions: [SpectrogramList](SpectrogramList.md), [SpectrogramDict](SpectrogramDict.md)
+- aligned workflow: [Spectrogram Matrix Tutorial](../user_guide/tutorials/matrix_spectrogram.ipynb)
 
 
 ## Methods
@@ -832,4 +852,3 @@ Full extent of the sample axis as a tuple (start, end).
 ### `xunit`
 
 _No documentation available._
-

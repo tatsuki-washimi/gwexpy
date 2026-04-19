@@ -1,7 +1,7 @@
 時系列 (Time Series)
 ====================
 
-**安定性:** Stable
+**安定性:** 安定
 
 .. currentmodule:: gwexpy.timeseries
 
@@ -10,10 +10,22 @@
 
 .. seealso::
 
-   :doc:`../../user_guide/validated_algorithms`
-      FFT・PSD・ASD・コヒーレンス推定の検証ノート。
+   :ref:`validated-ja-transient-fft`
+      トランジェント FFT の振幅規約と前提条件。
+   :ref:`validated-ja-arima-forecast`
+      ``ArimaResult.forecast()`` の GPS 時刻前提。
+   :ref:`validated-ja-mcmc-gls`
+      時系列データが GLS / MCMC フィットに渡る際の尤度前提。
    :doc:`../FFT_Conventions`
       GWexpy が採用するフーリエ正規化と軸の規約。
+   :doc:`../../user_guide/tutorials/intro_timeseries`
+      ``TimeSeries`` の基本操作を先に確認するための入門チュートリアル。
+   :doc:`../../user_guide/tutorials/matrix_timeseries`
+      複数チャネルや行列系の時系列処理を扱うチュートリアル。
+   :doc:`../../user_guide/tutorials/case_signal_extraction`
+      transient 系の解析導線を含む時系列チュートリアル。
+   :doc:`../../user_guide/tutorials/advanced_arima`
+      ``ArimaResult.forecast()`` に戻れる ARIMA チュートリアル。
 
 .. autosummary::
    :toctree: _autosummary

@@ -33,8 +33,8 @@ trace = ten.trace()
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [TensorField Tutorial](../user_guide/tutorials/field_tensor_intro.md)
+- [Field Advanced Integration](../user_guide/tutorials/field_advanced_integration.md)
 
 ## API Reference
 

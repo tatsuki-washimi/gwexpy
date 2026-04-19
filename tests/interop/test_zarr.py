@@ -63,3 +63,20 @@ class TestFromZarr:
         to_zarr(ts, mem_store, "ch")
         ts2 = from_zarr(TimeSeries, mem_store, "ch")
         assert str(ts2.unit) == "km"
+
+    def test_missing_timing_metadata_uses_low_level_defaults(self, mem_store):
+        """Low-level interop keeps its legacy recovery defaults for bare arrays."""
+        arr = zarr.open_array(
+            store=mem_store,
+            mode="w",
+            path="bare",
+            shape=(4,),
+            dtype=np.float64,
+        )
+        arr[:] = np.arange(4, dtype=np.float64)
+
+        ts = from_zarr(TimeSeries, mem_store, "bare")
+
+        np.testing.assert_array_equal(ts.value, np.arange(4, dtype=np.float64))
+        assert ts.t0.value == pytest.approx(0.0)
+        assert ts.dt.value == pytest.approx(1.0)

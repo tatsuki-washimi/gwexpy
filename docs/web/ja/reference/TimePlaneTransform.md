@@ -2,7 +2,7 @@
 
 <!-- reference-summary:start -->
 
-**安定性:** Stable
+**安定性:** 安定
 
 ## 主な用途
 
@@ -33,8 +33,8 @@ plane = obj.at_time(0)
 
 ## 関連チュートリアル
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [TimeSeries 基本](../user_guide/tutorials/intro_timeseries.ipynb)
+- [時間周波数解析の比較](../user_guide/tutorials/time_frequency_analysis_comparison.md)
 
 ## API リファレンス
 

@@ -1,7 +1,7 @@
 天体物理ユーティリティ (Astrophysics)
 =====================================
 
-**安定性:** Stable
+**安定性:** 安定
 
 .. currentmodule:: gwexpy.astro
 

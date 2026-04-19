@@ -1,7 +1,7 @@
 クラス索引 (Class Index)
 ========================
 
-**安定性:** Stable
+**安定性:** 安定
 
 この索引では、GWexpy の主要なクラスを英名のアルファベット順に一覧します。
 検索性を優先するため、項目ラベルは Python クラス名の英名のみで表記します。
@@ -22,7 +22,7 @@ B
    :maxdepth: 1
 
    BifrequencyMap <BifrequencyMap>
-   Bruco <Bruco>
+   BruCo <Bruco>
 
 F
 -
