@@ -13,6 +13,31 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* Root docs page logo, used because the index page hides the RTD sidebar. */
+.gw-home-brand {
+    padding: 1.5rem 1rem 0.5rem;
+    text-align: center;
+}
+
+.gw-home-brand img {
+    display: block;
+    width: min(72vw, 280px);
+    max-width: 280px;
+    height: auto;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .gw-home-brand {
+        padding-top: 1.1rem;
+    }
+
+    .gw-home-brand img {
+        width: min(78vw, 220px);
+        max-width: 220px;
+    }
+}
+
 /* Brand logo sizing for the RTD sidebar/header */
 .wy-side-nav-search > a,
 .wy-side-nav-search > a:hover,
