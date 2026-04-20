@@ -73,8 +73,15 @@ class TestFrequencySeriesDttxml:
         with pytest.raises(ValueError):
             FrequencySeriesDict.read(str(dummy), format=fmt, products="TIMESERIES")
 
+    @pytest.mark.parametrize("fmt", ("xml.diaggui", "dttxml"))
+    def test_public_frequencyseries_read_dispatches_via_gwpy_registry(self, tmp_path, fmt):
+        dummy = tmp_path / "dummy.xml"
+        dummy.write_text("<dttxml></dttxml>")
+        with pytest.raises(ValueError, match="not a frequency-series product"):
+            FrequencySeries.read(str(dummy), format=fmt, products="TIMESERIES")
+
     def test_legacy_alias_resolves_to_canonical_reader(self):
-        from astropy.io import registry as io_registry
+        from gwpy.io.registry import default_registry as io_registry
 
         canonical = io_registry.get_reader("xml.diaggui", FrequencySeriesDict)
         legacy = io_registry.get_reader("dttxml", FrequencySeriesDict)

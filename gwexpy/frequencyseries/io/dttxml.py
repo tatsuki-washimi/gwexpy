@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import UTC
 
 import numpy as np
-from astropy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.dttxml_common import (
     SUPPORTED_FREQ,
@@ -238,8 +238,12 @@ def read_frequencyseriesmatrix_dttxml(
 
 # -- registration
 for _fmt in _DTTXML_FORMATS:
-    io_registry.register_reader(_fmt, FrequencySeriesDict, read_frequencyseriesdict_dttxml)
-    io_registry.register_reader(_fmt, FrequencySeriesMatrix, read_frequencyseriesmatrix_dttxml)
+    io_registry.register_reader(
+        _fmt, FrequencySeriesDict, read_frequencyseriesdict_dttxml, force=True
+    )
+    io_registry.register_reader(
+        _fmt, FrequencySeriesMatrix, read_frequencyseriesmatrix_dttxml, force=True
+    )
 
 
 def _adapt_frequencyseries(*args, **kwargs):
@@ -249,7 +253,7 @@ def _adapt_frequencyseries(*args, **kwargs):
     return fsd[next(iter(fsd.keys()))]
 
 for _fmt in _DTTXML_FORMATS:
-    io_registry.register_reader(_fmt, FrequencySeries, _adapt_frequencyseries)
+    io_registry.register_reader(_fmt, FrequencySeries, _adapt_frequencyseries, force=True)
 
 for _fmt in _DTTXML_FORMATS:
     io_registry.register_identifier(
