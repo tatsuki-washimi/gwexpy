@@ -1,5 +1,4 @@
-"""
-Generate advanced_spectrogram_processing.ipynb (EN + JA).
+"""Generate advanced_spectrogram_processing.ipynb (EN + JA).
 
 Covers:
   - Spectrogram.normalize()  – SNR, median, mean, percentile, reference

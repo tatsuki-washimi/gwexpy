@@ -1,5 +1,4 @@
-"""
-Generate advanced_peak_tracking.ipynb (EN + JA).
+"""Generate advanced_peak_tracking.ipynb (EN + JA).
 
 Covers:
   - spectrogram2() per-frame PSD

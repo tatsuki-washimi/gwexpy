@@ -1,7 +1,8 @@
-import nbformat
 import os
-import numpy as np
 import re
+
+import nbformat
+
 
 def patch_source(source):
     # 0. Clean up duplicate arguments from previous failed patches
@@ -51,7 +52,7 @@ def patch_source(source):
             "ax.scatter(fn, zeta * 100, c=colors, s=120, zorder=5, edgecolors=\"black\")",
             "for r, (f0, z) in enumerate(zip(np.atleast_1d(fn), np.atleast_1d(zeta))):\n    ax.scatter(f0, z*100, color=f\"C{r}\", s=120, zorder=5, edgecolors=\"black\")"
         )
-    
+
     if "np.atleast_1d" in source and "import numpy as np" not in source:
          source = "import numpy as np\n" + source
 
@@ -61,18 +62,18 @@ def patch_notebook(path):
     print(f"Patching {path}...")
     with open(path) as f:
         nb = nbformat.read(f, as_version=4)
-    
+
     changed = False
     for cell in nb.cells:
         if cell.cell_type != 'code':
             continue
-            
+
         old_source = cell.source
         new_source = patch_source(old_source)
         if old_source != new_source:
             cell.source = new_source
             changed = True
-        
+
     if changed:
         with open(path, 'w') as f:
             nbformat.write(nb, f)
@@ -84,6 +85,6 @@ if __name__ == "__main__":
         for f in files:
             if f.endswith(".ipynb"):
                 notebooks.append(os.path.join(root, f))
-    
+
     for nb in notebooks:
         patch_notebook(nb)

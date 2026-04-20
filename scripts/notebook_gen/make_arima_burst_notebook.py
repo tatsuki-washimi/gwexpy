@@ -258,7 +258,7 @@ plt.show()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, 'w', encoding='utf-8') as f:
         nbf.write(nb, f)
-    
+
     print(f"Notebook generated: {out_path}")
 
 if __name__ == "__main__":

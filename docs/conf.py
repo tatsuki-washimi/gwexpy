@@ -1,10 +1,10 @@
 import os
-import tempfile
-from html.parser import HTMLParser
 import shutil
 import sys
+import tempfile
 import warnings
 from datetime import datetime
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin
 

@@ -1,5 +1,4 @@
-"""
-Generate case_violin_mode.ipynb (EN + JA).
+"""Generate case_violin_mode.ipynb (EN + JA).
 
 Covers:
   - Violin mode physics (f_n, Q value, FWHM, ring-down time)

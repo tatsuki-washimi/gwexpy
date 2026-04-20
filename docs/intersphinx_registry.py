@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 DOCS_DIR = Path(__file__).resolve().parent
 INTERSPHINX_DIR = DOCS_DIR / "_intersphinx"
 

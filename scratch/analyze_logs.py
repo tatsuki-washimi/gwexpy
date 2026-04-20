@@ -1,19 +1,20 @@
+import json
 import os
 import re
-import json
+
 
 def analyze_log(file_path):
     if not os.path.exists(file_path):
         return None, "Log file not found"
-    
-    with open(file_path, 'r', errors='ignore') as f:
+
+    with open(file_path, errors='ignore') as f:
         lines = f.readlines()
-    
+
     if not lines:
         return None, "Empty log"
 
     full_text = "".join(lines)
-    
+
     # Precise diagnosis
     if "SyntaxError: from __future__ imports must occur at the beginning" in full_text:
         diagnosis = "Python: SyntaxError (__future__ position)"
@@ -33,15 +34,15 @@ def analyze_log(file_path):
         diagnosis = "General: Check log for details"
 
     # Extract relevant excerpt
-    keywords = [r"ERROR", "exception", "Traceback", "FAILED", "error:", "##\[error\]", r"D\d{3}", "SyntaxError"]
+    keywords = [r"ERROR", "exception", "Traceback", "FAILED", "error:", r"##\[error\]", r"D\d{3}", "SyntaxError"]
     excerpt_lines = []
-    
+
     for i, line in enumerate(lines):
         if any(re.search(kw, line) for kw in keywords):
             start_idx = max(0, i - 2)
             excerpt_lines = lines[start_idx : start_idx + 20]
             # Keep the last major error found as the primary excerpt
-    
+
     if not excerpt_lines:
         excerpt_lines = lines[-20:]
 
@@ -52,19 +53,19 @@ def generate_report():
     report += "## Summary of Failed Runs\n\n"
     report += "| Workflow | Run ID | Timestamp | Status | Short Diagnosis | Priority |\n"
     report += "| --- | --- | --- | --- | --- | --- |\n"
-    
+
     all_runs = []
     for f in ["doc_fails.json", "test_fails.json"]:
         wname = "Documentation" if "doc" in f else "Tests"
         folder = "doc" if "doc" in f else "test"
         if not os.path.exists(f): continue
-        with open(f, 'r') as jf:
+        with open(f) as jf:
             data = json.load(jf)
             for item in data:
                 rid = item["databaseId"]
                 log_path = f"temp_logs/{folder}/run-{rid}-failed.log"
                 excerpt, diagnosis = analyze_log(log_path)
-                
+
                 # Default priority
                 priority = "P1"
                 if "Intersphinx" in diagnosis:
@@ -73,40 +74,40 @@ def generate_report():
                     priority = "P0"
                 elif "Ruff" in diagnosis:
                     priority = "P1"
-                
+
                 item["workflow"] = wname
                 item["diagnosis"] = diagnosis
                 item["priority"] = priority
                 item["excerpt"] = excerpt
                 all_runs.append(item)
-                
+
                 report += f"| {wname} | [{rid}]({item['url']}) | {item['createdAt']} | {item['conclusion']} | {diagnosis} | {priority} |\n"
 
     report += "\n## Distinct Failure Breakdown\n\n"
-    
+
     unique_failures = {}
     for run in all_runs:
         diag = run["diagnosis"]
         if diag not in unique_failures:
             unique_failures[diag] = []
         unique_failures[diag].append(run)
-    
+
     # Sort by priority (P0 first)
     sorted_failures = sorted(unique_failures.items(), key=lambda x: x[1][0]['priority'])
-    
+
     for diag, runs in sorted_failures:
         report += f"### {diag}\n\n"
         report += f"**Priority**: {runs[0]['priority']}\n\n"
         report += f"**Affected runs**: {', '.join([f'[{r['databaseId']}]({r['url']})' for r in runs])}\n\n"
-        
+
         excerpt = runs[0]["excerpt"]
         report += "#### Log Excerpt\n```text\n"
         report += excerpt + "\n```\n\n"
-        
+
         suggestion = "Investigate further."
         files = "Unknown"
         pr_required = "yes"
-        
+
         if "SyntaxError" in diag:
             suggestion = "Move '__future__' imports to the top of the file, before any other code/imports."
             files = "tests/fitting/test_fitting_core.py, tests/fitting/test_gls.py"
@@ -123,7 +124,7 @@ def generate_report():
         elif "types-numpy" in diag:
             suggestion = "Add 'types-numpy' to docs environment."
             files = "docs/requirements.txt"
-            
+
         report += f"- **Suggested Fix**: {suggestion}\n"
         report += f"- **Files Affected**: {files}\n"
         report += f"- **PR Required**: {pr_required}\n\n"
@@ -131,12 +132,12 @@ def generate_report():
     # Save to workspace first
     with open("gwexpy-failure-report.md", "w") as rf:
         rf.write(report)
-        
+
     # Also save to tmp as requested (inside workspace)
     os.makedirs("tmp", exist_ok=True)
     with open("tmp/gwexpy-failure-report.md", "w") as rf:
         rf.write(report)
-    
+
     # Copy logs
     for run in all_runs:
         folder = "doc" if run["workflow"] == "Documentation" else "test"

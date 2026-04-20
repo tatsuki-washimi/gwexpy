@@ -64,8 +64,9 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
 
-    import numpy as np
     from pathlib import Path
+
+    import numpy as np
     from scipy.signal import butter, sosfilt
 
     from gwexpy.timeseries import TimeSeries, TimeSeriesList, TimeSeriesMatrix
@@ -180,8 +181,8 @@ def main():
 
     fig = result.plot_ranked(top_k=3)
     fig.suptitle(
-        f"Coherence ranking: GWOSC H1 strain vs proxy channels\n"
-        f"(1024 s around GW150914)",
+        "Coherence ranking: GWOSC H1 strain vs proxy channels\n"
+        "(1024 s around GW150914)",
         y=1.02,
     )
 

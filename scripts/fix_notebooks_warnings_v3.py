@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""
-Notebook warnings fix script v3.1 (Aggressive Reset & Clean Indentation).
+"""Notebook warnings fix script v3.1 (Aggressive Reset & Clean Indentation).
 
 Cleans up all corrupted or duplicate warnings blocks and re-wraps cells correctly with clean indentation.
 """
-import nbformat
-from pathlib import Path
-import re
 import argparse
+import re
 import shutil
+from pathlib import Path
+
+import nbformat
+
 
 def clean_and_rewrap(src):
     """Clean the source of warnings garbage and wrap the whole cell in a single with block."""
@@ -58,7 +59,7 @@ def process_nb(path, dry_run=True):
             "warnings.filterwarnings" in cell.source or
             # also catch double indentation if already fixed by v2 but with extra spaces
             "    with warnings.catch_warnings()" in cell.source):
-            
+
             new_source = clean_and_rewrap(cell.source)
             if new_source != cell.source:
                 print(f"[{'DRY RUN' if dry_run else 'FIXING'}] Cell {i} in {path}")
