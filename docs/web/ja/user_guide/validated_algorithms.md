@@ -270,6 +270,7 @@ MCMC の対数尤度計算では、複素残差に対してもエルミート形
 
 - [数値安定性](numerical_stability.md) - 数値安定性（精度管理）
 - [前提条件と規約](prerequisites_and_conventions.md) - 時刻系と FFT 規約の共通前提
+- [検証と品質の見方](verification_and_quality.md) - notebook、I/O、coverage の公開根拠をまとめて確認する
 - [用語集](glossary.rst) - アルゴリズム用語集
 - [Fields API](../reference/api/fields.rst)
 - [Time Series API](../reference/api/timeseries.rst)

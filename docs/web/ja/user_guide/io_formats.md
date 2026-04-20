@@ -301,6 +301,7 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 
 - [他ライブラリ連携チュートリアル](tutorials/intro_interop)
 - [Interop API リファレンス](../reference/api/interop)
+- [検証と品質の見方](verification_and_quality.md)
 - [インストールガイド](installation)
 
 ## 次に読む
