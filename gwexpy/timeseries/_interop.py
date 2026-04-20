@@ -2,7 +2,7 @@
 
 This module provides interoperability with other libraries as a mixin class:
 - Data Science: pandas, xarray
-- Storage: hdf5, sqlite, zarr, netcdf4
+- Storage bridges: HDF5 groups, SQLite, Zarr stores, NetCDF4 datasets
 - Domain Specific: obspy, astropy, mne, pydub, librosa
 - Computational: torch, tensorflow, jax, cupy, dask
 """
@@ -585,7 +585,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
     # ===============================
 
     def to_netcdf4(self, ds: Any, var_name: str, **kwargs: Any) -> None:
-        """Write to netCDF4 Dataset.
+        """Write to a live netCDF4 Dataset object.
 
         Parameters
         ----------
@@ -603,7 +603,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
 
     @classmethod
     def from_netcdf4(cls, ds: Any, var_name: str) -> Any:
-        """Read from netCDF4 Dataset.
+        """Read from a live netCDF4 Dataset object.
 
         Parameters
         ----------

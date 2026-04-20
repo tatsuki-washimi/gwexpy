@@ -1,4 +1,4 @@
-"""dttxml reader (Diag GUI XML).
+"""DiagGUI XML reader.
 
 This module supports a minimal XML parser and will use an external
 `dttxml_source.txt` parser if it is available next to the project root.
@@ -23,6 +23,8 @@ from gwexpy.io.utils import (
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
+_DTTXML_FORMATS = ("xml.diaggui", "dttxml")
+
 
 def _build_epoch(value, timezone):
     if value is None:
@@ -46,12 +48,12 @@ def read_timeseriesdict_dttxml(
     pad=np.nan,
     **kwargs,
 ) -> TimeSeriesDict:
-    """Read one DTT XML product into a ``TimeSeriesDict``."""
+    """Read one DiagGUI XML product into a ``TimeSeriesDict``."""
     if products is None:
-        raise ValueError("products must be specified for dttxml")
+        raise ValueError("products must be specified for xml.diaggui")
     prod = str(products).upper()
     if prod not in SUPPORTED_TS:
-        raise ValueError(f"dttxml products '{prod}' is not a time-series product")
+        raise ValueError(f"xml.diaggui products '{prod}' is not a time-series product")
 
     normalized = load_dttxml_products(source)
     payload = normalized.get(prod, {})
@@ -76,7 +78,7 @@ def read_timeseriesdict_dttxml(
     set_provenance(
         tsd,
         {
-            "format": "dttxml",
+            "format": "xml.diaggui",
             "products": prod,
             "channels": list(channels) if channels else list(tsd.keys()),
             "unit_source": "override" if unit else "file",
@@ -89,7 +91,7 @@ def read_timeseries_dttxml(*args, **kwargs) -> TimeSeries:
     """Read one DTT XML product and return its first channel."""
     tsd = read_timeseriesdict_dttxml(*args, **kwargs)
     if not tsd:
-        raise ValueError("No channels found in dttxml")
+        raise ValueError("No channels found in xml.diaggui")
     return tsd[next(iter(tsd.keys()))]
 
 
@@ -100,17 +102,21 @@ def read_timeseriesmatrix_dttxml(*args, **kwargs) -> TimeSeriesMatrix:
 
 
 # -- registration
-io_registry.register_reader(
-    "dttxml", TimeSeriesDict, read_timeseriesdict_dttxml, force=True
-)
-io_registry.register_reader("dttxml", TimeSeries, read_timeseries_dttxml, force=True)
-io_registry.register_reader(
-    "dttxml", TimeSeriesMatrix, read_timeseriesmatrix_dttxml, force=True
-)
+for _fmt in _DTTXML_FORMATS:
+    io_registry.register_reader(
+        _fmt, TimeSeriesDict, read_timeseriesdict_dttxml, force=True
+    )
+    io_registry.register_reader(_fmt, TimeSeries, read_timeseries_dttxml, force=True)
+    io_registry.register_reader(
+        _fmt, TimeSeriesMatrix, read_timeseriesmatrix_dttxml, force=True
+    )
 
-io_registry.register_identifier(
-    "dttxml", TimeSeries, lambda *args, **kwargs: str(args[1]).endswith(".xml")
-)
-io_registry.register_identifier(
-    "dttxml", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).endswith(".xml")
-)
+for _fmt in _DTTXML_FORMATS:
+    io_registry.register_identifier(
+        _fmt, TimeSeries, lambda *args, **kwargs: str(args[1]).endswith(".xml")
+    )
+    io_registry.register_identifier(
+        _fmt,
+        TimeSeriesDict,
+        lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+    )

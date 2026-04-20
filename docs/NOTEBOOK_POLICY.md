@@ -28,6 +28,25 @@ GWexpy のドキュメントおよびサンプルで使用される Jupyter Note
 - **Heavy**: `metadata: { "tags": ["ci-heavy"] }`
 - **Display-only**: `metadata: { "tags": ["display-only"] }`
 
+GitHub Actions で notebook を実行するジョブは fail-closed を既定とします。
+`NBS_ALLOW_ERRORS` は明示的に無効化し、実行された notebook の例外を成功扱いにしません。
+PR では `scripts/notebook_gen/check_changed_notebooks.py` による changed-notebook 検証を使い、
+docs build 自体は `nbsphinx_execute=never` の非実行パスを維持しつつ、
+notebook を実行する検証ジョブ側では同じ fail-closed 方針を維持します。
+
+## 2.5. 日本語プロット用フォント設定
+
+docs / notebook build では共有の Matplotlib 設定を `MPLCONFIGDIR/matplotlibrc` に生成し、
+notebook kernel からも継承されるようにします。
+
+- `backend: Agg`
+- `font.family: sans-serif`
+- `font.sans-serif: Noto Sans CJK JP, IPAexGothic, IPAGothic, DejaVu Sans`
+- `axes.unicode_minus: False`
+
+GitHub Actions では workflow レベルで CJK フォントをインストールし、
+notebook ごとの個別フォント回避策は追加しない方針とします。
+
 ## 3. 出力管理 (`nbstripout`)
 
 リポジトリの肥大化を防ぐため、原則としてノートブックの出力はコミットしません。

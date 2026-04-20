@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import UTC
 
 import numpy as np
-from gwpy.io.registry import default_registry as io_registry
+from astropy.io import registry as io_registry
 
 from gwexpy.io.dttxml_common import (
     SUPPORTED_FREQ,
@@ -23,6 +23,8 @@ from gwexpy.io.utils import (
 from ..collections import FrequencySeriesDict
 from ..frequencyseries import FrequencySeries
 from ..matrix import FrequencySeriesMatrix
+
+_DTTXML_FORMATS = ("xml.diaggui", "dttxml")
 
 
 def _build_epoch(value, timezone):
@@ -73,10 +75,12 @@ def read_frequencyseriesdict_dttxml(
     """
     del kwargs
     if products is None:
-        raise ValueError("products must be specified for dttxml")
+        raise ValueError("products must be specified for xml.diaggui")
     prod = str(products).upper()
     if prod not in SUPPORTED_FREQ:
-        raise ValueError(f"dttxml products '{prod}' is not a frequency-series product")
+        raise ValueError(
+            f"xml.diaggui products '{prod}' is not a frequency-series product"
+        )
 
     normalized = load_dttxml_products(source, native=native)
     payload = normalized.get(prod, {})
@@ -105,7 +109,7 @@ def read_frequencyseriesdict_dttxml(
     set_provenance(
         fsd,
         {
-            "format": "dttxml",
+            "format": "xml.diaggui",
             "products": prod,
             "channels": list(channels) if channels else list(fsd.keys()),
             "unit_source": "override" if unit else "file",
@@ -157,10 +161,10 @@ def read_frequencyseriesmatrix_dttxml(
     """
     del kwargs
     if products is None:
-        raise ValueError("products must be specified for dttxml")
+        raise ValueError("products must be specified for xml.diaggui")
     prod = str(products).upper()
     if prod not in SUPPORTED_MATRIX:
-        raise ValueError(f"dttxml products '{prod}' is not a matrix product")
+        raise ValueError(f"xml.diaggui products '{prod}' is not a matrix product")
 
     normalized = load_dttxml_products(source, native=native)
     payload = normalized.get(prod, {})
@@ -222,7 +226,7 @@ def read_frequencyseriesmatrix_dttxml(
     set_provenance(
         fsm,
         {
-            "format": "dttxml",
+            "format": "xml.diaggui",
             "products": prod,
             "rows": row_labels,
             "cols": col_labels,
@@ -233,28 +237,28 @@ def read_frequencyseriesmatrix_dttxml(
 
 
 # -- registration
-io_registry.register_reader(
-    "dttxml", FrequencySeriesDict, read_frequencyseriesdict_dttxml, force=True
-)
-io_registry.register_reader(
-    "dttxml", FrequencySeriesMatrix, read_frequencyseriesmatrix_dttxml, force=True
-)
+for _fmt in _DTTXML_FORMATS:
+    io_registry.register_reader(_fmt, FrequencySeriesDict, read_frequencyseriesdict_dttxml)
+    io_registry.register_reader(_fmt, FrequencySeriesMatrix, read_frequencyseriesmatrix_dttxml)
 
 
 def _adapt_frequencyseries(*args, **kwargs):
     fsd = read_frequencyseriesdict_dttxml(*args, **kwargs)
     if not fsd:
-        raise ValueError("No channels found in dttxml")
+        raise ValueError("No channels found in xml.diaggui")
     return fsd[next(iter(fsd.keys()))]
 
+for _fmt in _DTTXML_FORMATS:
+    io_registry.register_reader(_fmt, FrequencySeries, _adapt_frequencyseries)
 
-io_registry.register_reader(
-    "dttxml", FrequencySeries, _adapt_frequencyseries, force=True
-)
-
-io_registry.register_identifier(
-    "dttxml", FrequencySeries, lambda *args, **kwargs: str(args[1]).endswith(".xml")
-)
-io_registry.register_identifier(
-    "dttxml", FrequencySeriesDict, lambda *args, **kwargs: str(args[1]).endswith(".xml")
-)
+for _fmt in _DTTXML_FORMATS:
+    io_registry.register_identifier(
+        _fmt,
+        FrequencySeries,
+        lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+    )
+    io_registry.register_identifier(
+        _fmt,
+        FrequencySeriesDict,
+        lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+    )

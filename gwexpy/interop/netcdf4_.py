@@ -1,3 +1,9 @@
+"""Object-level NetCDF4 bridge helpers.
+
+These helpers bridge a live ``TimeSeries`` object to a writable
+``netCDF4.Dataset`` and back. They are distinct from direct file I/O such as
+``TimeSeries.read(..., format="nc")`` / ``.write(..., format="nc")``.
+"""
 from __future__ import annotations
 
 from ._optional import require_optional
