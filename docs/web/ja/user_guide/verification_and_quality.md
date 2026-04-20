@@ -18,10 +18,10 @@ myst:
 | --- | --- |
 | **対象読者** | チュートリアル、I/O 形式、アルゴリズムがどの程度公開根拠に支えられているかを確認したい方 |
 | **前提** | user guide を読める程度の基本知識があれば十分です |
-| **こんなときに読む** | notebook や doctest 系の例がどう検証されるか知りたい、I/O 対応表とテストの関係を見たい、監査ノートの入口を知りたい、coverage 表示の意味と限界を確認したい |
-| **検索ヒント** | verification, quality, coverage, notebook policy, doctest, SUPPORTED_IO_MATRIX, codecov, audit trail |
+| **こんなときに読む** | notebook や Doctest 系の例がどう検証されるか知りたい、I/O 対応表とテストの関係を見たい、監査ノートの入口を知りたい、coverage 表示の意味と限界を確認したい |
+| **検索ヒント** | verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail |
 
-**検索ヒント:** verification, quality, coverage, notebook policy, doctest, SUPPORTED_IO_MATRIX, codecov, audit trail
+**検索ヒント:** verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail
 
 :::{important}
 **このページは「透明性の地図」であって、一括保証ではありません**
@@ -58,7 +58,7 @@ myst:
 
 現在の公開根拠から言えるのは、「すべてのサンプルコードが一律に保証される」よりも狭い範囲です。
 
-- extended nightly workflow により、module / docstring 例には自動 doctest 系のカバレッジがあります。
+- extended nightly workflow により、module / docstring 例には自動 Doctest 系のカバレッジがあります。
 - 同じ Nightly CI でも notebook の扱いは分類依存で、`Light` は `papermill`、`Heavy` は `nbval --nbval-lax` です。
 - docs PR workflow では、docs PR で変更された notebook に対して `papermill` が実行されます。
 
@@ -66,7 +66,7 @@ myst:
 
 - 公開例が完全に放置されているわけではなく、現在も自動検証の経路があります。
 - ただし、すべての公開コード片が、すべての workflow で毎回実行されることを意味しません。
-- doctest や notebook 検証が、ドキュメント全体に対する単一の release-blocking gate だという意味でもありません。
+- Doctest や notebook 検証が、ドキュメント全体に対する単一の release-blocking gate だという意味でもありません。
 - 強い保証として読む前に、notebook の分類、optional dependency、どの workflow がその対象を見ているかを確認する必要があります。
 
 ## direct I/O の検証可視化

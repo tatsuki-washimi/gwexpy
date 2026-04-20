@@ -109,7 +109,6 @@ III. 統計・機械学習ワークフロー
 - :doc:`ML 前処理パイプライン: 特徴量整形と比較 <../user_guide/tutorials/case_ml_preprocessing>`
 - :doc:`イベント同期解析: SegmentTable による窓選択 <../user_guide/tutorials/case_segment_analysis>`
 - :doc:`物理妥当性検証: 単位・数値床・健全性テスト <../user_guide/tutorials/case_physics_validation>`
-- :doc:`ARIMA ベースのバースト検出 <../user_guide/tutorials/case_arima_burst_search>`
 - :doc:`信号抽出: 色付き雑音からの微弱信号回収 <../user_guide/tutorials/case_signal_extraction>`
 
 .. _section-iv-noise-hunting-and-detector-diagnostics-ja:
@@ -153,7 +152,6 @@ IV. ノイズハンティングと検出器診断
    ../user_guide/tutorials/case_ml_preprocessing
    ../user_guide/tutorials/case_segment_analysis
    ../user_guide/tutorials/case_physics_validation
-   ../user_guide/tutorials/case_arima_burst_search
    ../user_guide/tutorials/case_signal_extraction
    ../user_guide/tutorials/case_noise_budget
    ../user_guide/tutorials/case_lockin_detection
