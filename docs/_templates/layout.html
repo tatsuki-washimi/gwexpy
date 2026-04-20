@@ -87,6 +87,11 @@
 
 {% block extrabody %}
   {{ super() }}
+  {% if pagename == 'index' %}
+    <div class="gw-home-brand">
+      <img src="_static/branding/logo.svg" alt="GWexpy" />
+    </div>
+  {% endif %}
   {% if pagename.startswith('web/ja/') %}
     {% set peer_doc = 'web/en/' + pagename.split('web/ja/', 1)[1] %}
     {% set peer_href = pathto(peer_doc if hasdoc(peer_doc) else 'web/en/index') %}
