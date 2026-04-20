@@ -301,6 +301,7 @@ These entries exist as placeholders only. Calling `.read()` on them is expected 
 
 - [Interop tutorial](tutorials/intro_interop)
 - [Interop API reference](../reference/api/interop)
+- [Verification and Quality Signals](verification_and_quality.md)
 - [Installation guide](installation)
 
 ## Next to Read
