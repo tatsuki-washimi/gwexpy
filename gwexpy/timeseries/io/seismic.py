@@ -117,11 +117,17 @@ def _read_timeseriesdict(
     tsd = _build_dict(
         stream, channels=channels, unit=unit, timezone=timezone, epoch=epoch
     )
+    canonical_format = {
+        "MSEED": "mseed",
+        "SAC": "sac",
+        "GSE2": "gse2",
+        "KNET": "knet",
+    }.get(format_name, format_name.lower())
 
     set_provenance(
         tsd,
         {
-            "format": format_name,
+            "format": canonical_format,
             "gap": "pad",
             "pad_value": pad,
             "timezone": timezone,
@@ -202,9 +208,10 @@ def write_gse2(tsd, target, **kwargs):
 
 # -- Registration
 
-# MINISEED
+# MSEED
 register_timeseries_format(
-    "miniseed",
+    "mseed",
+    aliases=("miniseed",),
     reader_dict=read_miniseed_timeseriesdict,
     reader_single=lambda *a, **k: _adapt_timeseries(read_miniseed_timeseriesdict, *a, **k),
     reader_matrix=lambda *a, **k: _adapt_matrix(read_miniseed_timeseriesdict, *a, **k),

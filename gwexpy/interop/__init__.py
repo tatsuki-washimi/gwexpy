@@ -1,3 +1,9 @@
+"""Public interop entry points.
+
+This namespace exposes object-level bridges such as ``to_netcdf4()`` and
+``from_netcdf4()``. Direct file I/O format names live in the ``.read()`` /
+``.write()`` registry and use canonical spellings such as ``"nc"``.
+"""
 from __future__ import annotations
 
 import os

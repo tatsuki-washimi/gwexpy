@@ -286,6 +286,34 @@ def test_advanced_hht_spectrogram_example_calls_hht_on_timeseries(relative_path:
     assert "spec = ts_norm.hht(" in joined
 
 
+@pytest.mark.parametrize(
+    "relative_path",
+    [
+        Path("en/user_guide/tutorials/advanced_control_basics.ipynb"),
+        Path("ja/user_guide/tutorials/advanced_control_basics.ipynb"),
+        Path("en/user_guide/tutorials/advanced_control_discretization.ipynb"),
+        Path("ja/user_guide/tutorials/advanced_control_discretization.ipynb"),
+        Path("en/user_guide/tutorials/advanced_control_modeling.ipynb"),
+        Path("ja/user_guide/tutorials/advanced_control_modeling.ipynb"),
+        Path("en/user_guide/tutorials/case_coupling_analysis.ipynb"),
+        Path("ja/user_guide/tutorials/case_coupling_analysis.ipynb"),
+        Path("en/user_guide/tutorials/case_lockin_detection.ipynb"),
+        Path("ja/user_guide/tutorials/case_lockin_detection.ipynb"),
+        Path("en/user_guide/tutorials/case_signal_extraction.ipynb"),
+        Path("ja/user_guide/tutorials/case_signal_extraction.ipynb"),
+        Path("en/user_guide/tutorials/case_wiener_filter.ipynb"),
+        Path("ja/user_guide/tutorials/case_wiener_filter.ipynb"),
+        Path("ja/user_guide/tutorials/advanced_hht.ipynb"),
+    ],
+)
+def test_non_fitting_tutorials_keep_committed_plot_outputs(relative_path: Path):
+    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
+    assert any(
+        cell.get("cell_type") == "code" and cell.get("outputs")
+        for cell in nb.get("cells", [])
+    ), f"Expected committed outputs in {relative_path}"
+
+
 def test_ja_advanced_hht_keeps_note_in_markdown_not_code():
     nb = _read_notebook(TUTORIAL_ROOT / "ja" / "user_guide" / "tutorials" / "advanced_hht.ipynb")
     first_code = next(cell for cell in nb.get("cells", []) if cell.get("cell_type") == "code")

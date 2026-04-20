@@ -1,4 +1,5 @@
 import os
+import tempfile
 from html.parser import HTMLParser
 import shutil
 import sys
@@ -82,6 +83,58 @@ def _default_nbsphinx_execute() -> str:
         return "always"
     return "never"
 
+
+def _default_nbsphinx_allow_errors() -> bool:
+    """Allow notebook errors locally, but fail them by default in GitHub Actions."""
+    if "NBS_ALLOW_ERRORS" in os.environ:
+        return _env_flag("NBS_ALLOW_ERRORS")
+    return not _env_flag("GITHUB_ACTIONS")
+
+
+DOCS_MPL_FONT_FAMILY = ["sans-serif"]
+DOCS_MPL_FONT_SANS_SERIF = [
+    "Noto Sans CJK JP",
+    "IPAexGothic",
+    "IPAGothic",
+    "DejaVu Sans",
+]
+
+
+def _configure_mplconfig_dir() -> Path:
+    """Prepare a shared Matplotlib config directory for docs and notebook kernels."""
+    if "MPLCONFIGDIR" in os.environ:
+        mplconfig_dir = Path(os.environ["MPLCONFIGDIR"])
+    else:
+        mplconfig_dir = Path(tempfile.gettempdir()) / "gwexpy-mplconfig"
+        os.environ["MPLCONFIGDIR"] = str(mplconfig_dir)
+
+    mplconfig_dir.mkdir(parents=True, exist_ok=True)
+    (mplconfig_dir / "matplotlibrc").write_text(
+        "\n".join(
+            [
+                "backend: Agg",
+                f"font.family: {', '.join(DOCS_MPL_FONT_FAMILY)}",
+                f"font.sans-serif: {', '.join(DOCS_MPL_FONT_SANS_SERIF)}",
+                "axes.unicode_minus: False",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return mplconfig_dir
+
+
+try:
+    _configure_mplconfig_dir()
+    os.environ.setdefault("MPLBACKEND", "Agg")
+    import matplotlib as mpl
+except Exception:  # pragma: no cover - docs env should have matplotlib
+    mpl = None
+else:
+    mpl.rcParams["font.family"] = DOCS_MPL_FONT_FAMILY
+    mpl.rcParams["font.sans-serif"] = DOCS_MPL_FONT_SANS_SERIF
+    mpl.rcParams["axes.unicode_minus"] = False
+
 # Only include sphinx_sitemap for environments that actually need sitemap generation.
 # The extension unconditionally creates a multiprocessing.Manager() queue during
 # ``builder-inited``, which fails in restricted local sandboxes with
@@ -109,9 +162,8 @@ if notebook_build_enabled:
 # GitHub Actions default below.
 nbsphinx_execute = _default_nbsphinx_execute()
 
-# Allow errors in notebooks during local development
-# For CI/production: set NBS_ALLOW_ERRORS=false to catch notebook errors
-nbsphinx_allow_errors = os.environ.get("NBS_ALLOW_ERRORS", "true").lower() == "true"
+# Allow errors locally, but fail notebook errors by default in GitHub Actions.
+nbsphinx_allow_errors = _default_nbsphinx_allow_errors()
 
 autosummary_generate = True
 autosummary_imported_members = False
@@ -269,9 +321,6 @@ autodoc_mock_imports = getattr(globals(), "autodoc_mock_imports", []) + [
     "qtpy",
     "pyqtgraph",
 ]
-# Allow nbsphinx not to fail the build on heavy notebook errors (temporary)
-nbsphinx_allow_errors = True
-
 source_suffix = {
     ".rst": "restructuredtext",
     ".md": "markdown",

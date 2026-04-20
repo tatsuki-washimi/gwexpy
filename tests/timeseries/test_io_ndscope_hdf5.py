@@ -14,7 +14,12 @@ from gwexpy.timeseries.io.ndscope_hdf5 import (
 )
 
 SAMPLE_HDF5 = Path(__file__).parent.parent / "fixtures" / "data" / "ndscope.h5"
-_NDSCOPE_ACCEPTED_FORMATS = ("ndscope-hdf5", "ndscope_hdf5", "ndscopehdf5")
+_NDSCOPE_ACCEPTED_FORMATS = (
+    "hdf.ndscope",
+    "ndscope-hdf5",
+    "ndscope_hdf5",
+    "ndscopehdf5",
+)
 
 # ---------------------------------------------------------------------------
 # Helpers to create synthetic ndscope HDF5 files
@@ -172,7 +177,7 @@ class TestRead:
         """Test that TimeSeriesDict.read auto-detects ndscope format."""
         p = tmp_path / "autodetect.hdf5"
         _make_ndscope_raw(p)
-        tsd = TimeSeriesDict.read(str(p), format="ndscope-hdf5")
+        tsd = TimeSeriesDict.read(str(p), format="hdf.ndscope")
         assert "K1:TEST-CHANNEL" in tsd
 
     @pytest.mark.parametrize("fmt", _NDSCOPE_ACCEPTED_FORMATS)
@@ -190,7 +195,7 @@ class TestRead:
         """Test that TimeSeries.read works with ndscope format."""
         p = tmp_path / "single.hdf5"
         _make_ndscope_raw(p)
-        ts = TimeSeries.read(str(p), format="ndscope-hdf5")
+        ts = TimeSeries.read(str(p), format="hdf.ndscope")
         assert ts.name == "K1:TEST-CHANNEL"
         assert len(ts) == 256
 
@@ -222,7 +227,7 @@ class TestWrite:
             unit="m",
         )
         tsd = TimeSeriesDict({"K1:WRITE-TEST": ts})
-        tsd.write(str(p), format="ndscope-hdf5")
+        tsd.write(str(p), format="hdf.ndscope")
 
         # Verify HDF5 structure
         with h5py.File(str(p), "r") as f:
@@ -249,7 +254,7 @@ class TestWrite:
 
         TimeSeriesDict({"K1:WRITE-ALIAS": ts}).write(str(p), format=fmt)
 
-        reread = TimeSeriesDict.read(str(p), format="ndscope-hdf5")
+        reread = TimeSeriesDict.read(str(p), format="hdf.ndscope")
         assert list(reread.keys()) == ["K1:WRITE-ALIAS"]
         np.testing.assert_allclose(reread["K1:WRITE-ALIAS"].value, np.arange(16, dtype=np.float64))
 
@@ -264,9 +269,9 @@ class TestWrite:
             unit="V",
         )
         tsd_orig = TimeSeriesDict({"K1:ROUNDTRIP": ts})
-        tsd_orig.write(str(p), format="ndscope-hdf5")
+        tsd_orig.write(str(p), format="hdf.ndscope")
 
-        tsd_read = TimeSeriesDict.read(str(p), format="ndscope-hdf5")
+        tsd_read = TimeSeriesDict.read(str(p), format="hdf.ndscope")
         assert "K1:ROUNDTRIP" in tsd_read
         np.testing.assert_allclose(tsd_read["K1:ROUNDTRIP"].value, data)
         assert float(tsd_read["K1:ROUNDTRIP"].sample_rate.value) == 256.0
@@ -293,7 +298,7 @@ class TestWrite:
                 ),
             }
         )
-        tsd.write(str(p), format="ndscope-hdf5")
+        tsd.write(str(p), format="hdf.ndscope")
 
         # Verify internal structure: single group with 3 datasets
         with h5py.File(str(p), "r") as f:
@@ -301,7 +306,7 @@ class TestWrite:
             grp = f["K1:CH"]
             assert set(grp.keys()) == {"mean", "min", "max"}
 
-        tsd2 = TimeSeriesDict.read(str(p), format="ndscope-hdf5")
+        tsd2 = TimeSeriesDict.read(str(p), format="hdf.ndscope")
         assert set(tsd2.keys()) == {"K1:CH.max", "K1:CH.mean", "K1:CH.min"}
         np.testing.assert_allclose(tsd2["K1:CH.min"].value, 0.0)
 
@@ -323,7 +328,7 @@ class TestWrite:
             }
         )
         with pytest.raises(ValueError, match="sample_rate"):
-            tsd.write(str(p), format="ndscope-hdf5")
+            tsd.write(str(p), format="hdf.ndscope")
 
     def test_write_inconsistent_t0_raises(self, tmp_path):
         """Writer must reject series with mismatched gps_start in same group."""
@@ -343,7 +348,7 @@ class TestWrite:
             }
         )
         with pytest.raises(ValueError, match="gps_start"):
-            tsd.write(str(p), format="ndscope-hdf5")
+            tsd.write(str(p), format="hdf.ndscope")
 
 
 # ---------------------------------------------------------------------------

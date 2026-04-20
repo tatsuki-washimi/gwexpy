@@ -59,8 +59,8 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 
 | Group | Start here when... | First format | Formats covered here |
 |---|---|---|---|
-| **A. GW Standards** | You want standard GW storage, exchange, or acquisition paths | **HDF5** | GWF, HDF5, ndscope-hdf5, DTTXML, NDS2, GWOSC |
-| **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here) |
+| **A. GW Standards** | You want standard GW storage, exchange, or acquisition paths | **HDF5** | GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC |
+| **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **mseed** | mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here) |
 | **C. General Analysis and Exchange** | You need general-purpose storage or external analysis exchange | **CSV / TXT** or **Zarr** | CSV / TXT, NetCDF4, Zarr, Pickle, ROOT |
 | **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
 
@@ -82,7 +82,7 @@ from gwexpy.timeseries import TimeSeries
 tsd = TimeSeriesDict.read("path/to/data.mseed")
 
 # Explicit format
-tsd = TimeSeriesDict.read("path/to/data.dat", format="miniseed")
+tsd = TimeSeriesDict.read("path/to/data.dat", format="mseed")
 
 # Write out
 tsd.write("output.h5", format="hdf5")
@@ -92,7 +92,7 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 ```
 
 - `.read()` / `.write()` uses the gwpy-style I/O registry.
-- `.xml` is ambiguous, so **use `format="dttxml"` explicitly** for DTTXML data.
+- `.xml` is ambiguous, so **use `format="xml.diaggui"` explicitly** for DiagGUI XML data.
 - `NDS2` and `GWOSC` are not file readers, so they use `fetch()` / `fetch_open_data()` instead of `.read()`.
 
 (io-formats-en-supported-classes)=
@@ -102,11 +102,11 @@ If the main question is whether a format is for a single channel or multiple cha
 
 | Format / Family | Single | Multi | Other classes |
 |---|---|---|---|
-| **GWF / MiniSEED / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
-| **NetCDF4 / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
+| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
+| **nc / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
 | **HDF5** | `TimeSeries`, `FrequencySeries`, and related classes | `TimeSeriesDict` and related collections | Also covers `Spectrogram`, `Histogram`, `EventTable`, and `Field` |
-| **ndscope-hdf5** | - | `TimeSeriesDict` | ndscope-compatible schema |
-| **DTTXML** | - | `TimeSeriesDict` | Requires `products` |
+| **hdf.ndscope** | - | `TimeSeriesDict` | ndscope-compatible schema; aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| **xml.diaggui** | - | `TimeSeriesDict` | Requires `products`; legacy alias: `dttxml` |
 | **NDS2 / GWOSC** | `TimeSeries` | - | Use `fetch()` / `fetch_open_data()` |
 | **ATS.MTH5** | `TimeSeries` | - | Partial single-path support |
 | **Pickle** | Major classes broadly | Major classes broadly | Use only for trusted data |
@@ -127,8 +127,8 @@ If you are unsure, start with **HDF5**. Use **GWF** when you need external stand
 |---|:---:|---|---|---|
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Standard LIGO/KAGRA frame exchange | Standard format, via gwpy |
 | **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `.read(..., format="hdf5")`, `.write(..., format="hdf5")` on major classes | Long-term storage with metadata | Main direct-I/O option for Field objects |
-| **ndscope-hdf5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Backward-compatible aliases: `ndscope_hdf5`, `ndscopehdf5` |
-| **DTTXML** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="dttxml", products="...")` | DTT outputs and diagnostics | `products` is required |
+| **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| **xml.diaggui** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT outputs | `products` is required; legacy alias: `dttxml` |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | Detector data server access | Network path |
 | **GWOSC** | ○ / × | `TimeSeries.fetch_open_data()` | Open data access | Network path |
 
@@ -142,7 +142,7 @@ from gwexpy.timeseries import TimeSeries
 
 tsd = TimeSeriesDict.read("data.h5", format="hdf5")
 frame = TimeSeriesDict.read("data.gwf", format="gwf")
-dtt = TimeSeriesDict.read("diag.xml", format="dttxml", products="TS")
+dtt = TimeSeriesDict.read("diag.xml", format="xml.diaggui", products="TS")
 open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 ```
 
@@ -159,7 +159,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 
 | Format | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
-| **MiniSEED** (`.mseed`) | ○ / ○ | `TimeSeriesDict.read(..., format="miniseed")`, `.write(..., format="miniseed")` | Standard seismic waveform exchange | `gap` controls gap handling |
+| **mseed** (`.mseed`) | ○ / ○ | `TimeSeriesDict.read(..., format="mseed")`, `.write(..., format="mseed")` | Standard seismic waveform exchange | `gap` controls gap handling; legacy alias: `miniseed` |
 | **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | Seismic waveform analysis | Via ObsPy |
 | **GSE2** (`.gse2`) | ○ / ○ | `TimeSeriesDict.read(..., format="gse2")`, `.write(..., format="gse2")` | Seismic waveform exchange | Via ObsPy |
 | **K-NET** (`.knet`) | ○ / × | `TimeSeriesDict.read(..., format="knet")` | Strong-motion records | Read-only |
@@ -176,7 +176,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 from gwexpy.timeseries.collections import TimeSeriesDict
 from gwexpy.timeseries import TimeSeries
 
-tsd = TimeSeriesDict.read("data.mseed", format="miniseed", gap="pad")
+tsd = TimeSeriesDict.read("data.mseed", format="mseed", gap="pad")
 win = TimeSeriesDict.read("data.cnt", format="win32")
 ats = TimeSeries.read("data.atss", format="ats.mth5")
 ```
@@ -196,7 +196,7 @@ The key rule here is not to mix up “format choice” with “library conversio
 | Format | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
 | **CSV / TXT** (`.csv`, `.txt`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Lightweight exchange and inspection | Also supports directory bulk loading |
-| **NetCDF4** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="netcdf4")`, `TimeSeriesDict.read(..., format="netcdf4")`, `TimeSeriesMatrix.read(..., format="netcdf4")`, `.write(..., format="netcdf4")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes |
+| **nc** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")`, `.write(..., format="nc")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes; legacy alias: `netcdf4` |
 | **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | Chunked storage and parallel workflows | Direct I/O here is centered on TimeSeries classes |
 | **Pickle** (`.pkl`) | ○ / ○ | `.read()` / `.write()` on major classes | Python object snapshots | Only for trusted data |
 | **ROOT** (`.root`) | ○ / ○ | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | EventTable I/O | Direct I/O here is EventTable only |
@@ -261,7 +261,7 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 
 | Format | Status | Notes |
 |---|---|---|
-| `ndscope-hdf5` | Implemented, not yet prominent | `TimeSeriesDict`-only HDF5 schema. Canonical name: `ndscope-hdf5`; backward-compatible aliases: `ndscope_hdf5`, `ndscopehdf5` |
+| `hdf.ndscope` | Implemented, not yet prominent | `TimeSeriesDict`-only HDF5 schema. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
 | `SQLite`, `SQLite3` | Implemented, not yet prominent | Aliases in the same family as `SDB` |
 | `ATS.MTH5` | Implemented with partial scope | Current public direct path backed by MTH5 |
 | `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet; not published as public direct I/O |

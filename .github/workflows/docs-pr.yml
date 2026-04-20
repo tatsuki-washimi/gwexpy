@@ -34,6 +34,8 @@ jobs:
     env:
       PYTHONFAULTHANDLER: "1"
       NBS_EXECUTE: never
+      NBS_ALLOW_ERRORS: "0"
+      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -52,7 +54,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 pandoc
+          sudo apt-get install -y libgl1 pandoc fonts-noto-cjk
 
       - name: Provision gwexpy docs environment
         run: |
@@ -72,42 +74,16 @@ jobs:
           python scripts/run_quickstart_test.py --lang ja
           python scripts/run_quickstart_test.py --lang en
 
-      - name: Detect changed notebooks
-        id: changed_notebooks
+      - name: Check changed notebooks
         run: |
-          python - <<'PY'
-          import os
-          import subprocess
-
-          base = "${{ github.event.pull_request.base.sha }}"
-          head = "${{ github.event.pull_request.head.sha }}"
-          output = subprocess.check_output(
-              ["git", "diff", "--name-only", base, head],
-              text=True,
-          )
-          notebooks = [
-              line.strip()
-              for line in output.splitlines()
-              if line.strip().endswith(".ipynb") and line.startswith("docs/")
-          ]
-
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
-              fh.write("has_notebooks={}\n".format(str(bool(notebooks)).lower()))
-              fh.write("notebooks<<EOF\n")
-              fh.write("\n".join(notebooks))
-              fh.write("\nEOF\n")
-          PY
-
-      - name: Execute changed notebooks
-        if: steps.changed_notebooks.outputs.has_notebooks == 'true'
-        run: |
-          while IFS= read -r nb; do
-            [ -n "$nb" ] || continue
-            echo "Executing changed notebook: $nb"
-            papermill "$nb" /dev/null --kernel python3
-          done <<< "${{ steps.changed_notebooks.outputs.notebooks }}"
+          python scripts/notebook_gen/check_changed_notebooks.py \
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --head "${{ github.event.pull_request.head.sha }}"
 
       - name: Build Sphinx HTML
         run: |
           cd docs
-          sphinx-build -b html -W --keep-going . _build/html
+          sphinx-build -b html -W --keep-going \
+            -D nbsphinx_execute=never \
+            -D nbsphinx_allow_errors=0 \
+            . _build/html
