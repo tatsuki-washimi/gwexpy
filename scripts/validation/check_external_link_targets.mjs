@@ -12,13 +12,14 @@ const docsJsPath = path.join(repoRoot, 'docs', '_static', 'external-links.js');
 const outDir = path.join(os.tmpdir(), 'gwexpy-17-18-external-links');
 const args = process.argv.slice(2);
 
-function resolveChromePath() {
-  const configuredPath = process.env.CHROME_BIN || process.env.BROWSER_BIN;
+export function resolveChromePath() {
+  const configuredPath =
+    process.env.CHROME_BIN || process.env.GOOGLE_CHROME_BIN || process.env.BROWSER_BIN;
   if (configuredPath) {
     return configuredPath;
   }
 
-  for (const candidate of ['google-chrome', 'chromium', 'chromium-browser']) {
+  for (const candidate of ['google-chrome', 'chromium', 'chromium-browser', 'chrome']) {
     const result = spawnSync('which', [candidate], { encoding: 'utf8' });
     if (result.status === 0) {
       const resolved = result.stdout.trim();
@@ -29,7 +30,7 @@ function resolveChromePath() {
   }
 
   throw new Error(
-    'Could not resolve a Chrome/Chromium executable. Set CHROME_BIN or BROWSER_BIN, or add google-chrome/chromium to PATH.',
+    'Could not resolve a Chrome/Chromium executable. Set CHROME_BIN, GOOGLE_CHROME_BIN, or BROWSER_BIN, or add google-chrome/chromium to PATH.',
   );
 }
 
@@ -368,13 +369,15 @@ async function main() {
   }
 }
 
-main().catch(async (error) => {
-  await fs.mkdir(outDir, { recursive: true });
-  const payload = {
-    message: error.message,
-    results: error.results ?? null,
-  };
-  await fs.writeFile(path.join(outDir, 'error.json'), JSON.stringify(payload, null, 2));
-  console.error(error.message);
-  process.exit(1);
-});
+if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
+  main().catch(async (error) => {
+    await fs.mkdir(outDir, { recursive: true });
+    const payload = {
+      message: error.message,
+      results: error.results ?? null,
+    };
+    await fs.writeFile(path.join(outDir, 'error.json'), JSON.stringify(payload, null, 2));
+    console.error(error.message);
+    process.exit(1);
+  });
+}
