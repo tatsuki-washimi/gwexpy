@@ -1,9 +1,11 @@
 import os
+from html.parser import HTMLParser
 import shutil
 import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urljoin
 
 from pygments.lexers.python import PythonLexer
 
@@ -212,6 +214,10 @@ html_theme_options = {
 # User-facing site title/branding (package name remains `gwexpy`).
 html_title = "GWexpy Documentation"
 html_short_title = "GWexpy"
+social_og_image = (
+    "https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/phase3/"
+    "gateway_hero_scientific.png"
+)
 html_context = {
     "display_github": True,
     "github_user": "tatsuki-washimi",
@@ -226,7 +232,7 @@ html_context = {
     "og_description": "A comprehensive Python package for Gravitational Wave experimental data analysis.",
     "og_type": "website",
     "og_url": "https://tatsuki-washimi.github.io/gwexpy/",
-    "og_image": "https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/ogp.png",
+    "og_image": social_og_image,
     "twitter_card": "summary_large_image",
 }
 
@@ -398,6 +404,70 @@ def html_page_context(app, pagename, templatename, context, doctree):
     """Set lang="ja" for Japanese pages so <html lang="ja"> is rendered correctly."""
     if "/ja/" in pagename or pagename.startswith("web/ja"):
         context["language"] = "ja"
+
+    site_context = getattr(app.config, "html_context", {}) or {}
+    site_title = getattr(app.config, "html_title", "")
+    page_title = _build_social_title(context.get("title"), site_title)
+    page_description = _extract_meta_content(
+        context.get("metatags", ""),
+        "description",
+    ) or site_context.get("og_description", "")
+    page_url = _build_page_url(getattr(app.config, "html_baseurl", ""), pagename)
+    page_image = site_context.get("og_image", "")
+
+    context.update(
+        {
+            "og_title": page_title,
+            "og_description": page_description,
+            "og_type": site_context.get("og_type", "website"),
+            "og_url": page_url or site_context.get("og_url", ""),
+            "og_image": page_image,
+            "og_site_name": site_title,
+            "twitter_card": site_context.get("twitter_card", "summary_large_image"),
+            "twitter_title": page_title,
+            "twitter_description": page_description,
+            "twitter_image": page_image,
+        }
+    )
+
+
+class _MetaTagParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.meta: dict[str, str] = {}
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag.lower() != "meta":
+            return
+
+        attr_map = {name.lower(): value for name, value in attrs if value is not None}
+        key = attr_map.get("name") or attr_map.get("property")
+        content = attr_map.get("content")
+        if key and content:
+            self.meta[key] = content
+
+
+def _extract_meta_content(metatags: str, key: str) -> str | None:
+    parser = _MetaTagParser()
+    parser.feed(metatags or "")
+    return parser.meta.get(key)
+
+
+def _build_social_title(page_title: str | None, site_title: str) -> str:
+    normalized_page_title = (page_title or "").strip()
+    normalized_site_title = site_title.strip()
+    if not normalized_page_title:
+        return normalized_site_title
+    if not normalized_site_title or normalized_site_title in normalized_page_title:
+        return normalized_page_title
+    return f"{normalized_page_title} — {normalized_site_title}"
+
+
+def _build_page_url(baseurl: str, pagename: str) -> str | None:
+    normalized_baseurl = (baseurl or "").rstrip("/")
+    if not normalized_baseurl:
+        return None
+    return urljoin(f"{normalized_baseurl}/", f"{pagename}.html")
 
 
 def setup(app):
