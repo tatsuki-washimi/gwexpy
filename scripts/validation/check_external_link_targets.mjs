@@ -1,14 +1,37 @@
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const chromePath = '/usr/bin/google-chrome';
+const scriptPath = fileURLToPath(import.meta.url);
+const repoRoot = path.resolve(path.dirname(scriptPath), '..', '..');
+const chromePath = resolveChromePath();
 const chromePort = 18774;
-const repoRoot = '/home/washimi/work/gwexpy';
 const docsJsPath = path.join(repoRoot, 'docs', '_static', 'external-links.js');
 const outDir = path.join(os.tmpdir(), 'gwexpy-17-18-external-links');
 const args = process.argv.slice(2);
+
+function resolveChromePath() {
+  const configuredPath = process.env.CHROME_BIN || process.env.BROWSER_BIN;
+  if (configuredPath) {
+    return configuredPath;
+  }
+
+  for (const candidate of ['google-chrome', 'chromium', 'chromium-browser']) {
+    const result = spawnSync('which', [candidate], { encoding: 'utf8' });
+    if (result.status === 0) {
+      const resolved = result.stdout.trim();
+      if (resolved) {
+        return resolved;
+      }
+    }
+  }
+
+  throw new Error(
+    'Could not resolve a Chrome/Chromium executable. Set CHROME_BIN or BROWSER_BIN, or add google-chrome/chromium to PATH.',
+  );
+}
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -315,7 +338,7 @@ async function main() {
   try {
     await waitForDevtools();
     if (builtPages.length === 0) {
-      const target = await openPage(`file://${fixturePath}`);
+      const target = await openPage(pathToFileURL(fixturePath).href);
       const session = new CdpSession(target.webSocketDebuggerUrl);
       await session.open();
       const results = await evaluateFixture(session);
@@ -329,7 +352,7 @@ async function main() {
 
     const pageResults = [];
     for (const pagePath of builtPages) {
-      const target = await openPage(`file://${pagePath}`);
+      const target = await openPage(pathToFileURL(pagePath).href);
       const session = new CdpSession(target.webSocketDebuggerUrl);
       await session.open();
       const results = await evaluateBuiltPage(session);

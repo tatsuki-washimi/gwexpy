@@ -17,10 +17,10 @@
 
 **目標:** Phase 7 として、実装済み変更と docs/audit 記録の不整合を解消する `docs/audit resync` を完了する。
 **主要リソース:**
-- 監査レポート: [統合監査レポート_計214件の指摘.md](file:///home/washimi/work/gwexpy/docs_internal/analysis/webpage/%E7%B5%B1%E5%90%88%E7%9B%A3%E6%9F%BB%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88_%E8%A8%88214%E4%BB%B6%E3%81%AE%E6%8C%87%E6%81%98.md)
-- 実装計画書: [2026-04-18-docs-next-phase-implementation-plan.md](file:///home/washimi/work/gwexpy/docs/developers/plans/2026-04-18-docs-next-phase-implementation-plan.md)
-- 真実台帳: [truth_ledger.md](file:///home/washimi/work/gwexpy/docs/developers/plans/truth_ledger.md)
-- ガイドライン: [.agent/AGENTS.md](file:///home/washimi/work/gwexpy/.agent/AGENTS.md)
+- 監査レポート: [統合監査レポート_計214件の指摘.md](../../../docs_internal/analysis/webpage/統合監査レポート_計214件の指摘.md)
+- 実装計画書: [2026-04-18-docs-next-phase-implementation-plan.md](./2026-04-18-docs-next-phase-implementation-plan.md)
+- 真実台帳: [truth_ledger.md](./truth_ledger.md)
+- ガイドライン: [.agent/AGENTS.md](../../../.agent/AGENTS.md)
 
 ## 3. 進捗ログ (最新10件)
 
