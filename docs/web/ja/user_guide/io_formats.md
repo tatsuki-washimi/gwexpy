@@ -216,7 +216,7 @@ events = EventTable.read("events.root", format="root")
 
 - **CSV / TXT** は素朴ですが、共有や確認には依然として有用です。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。
-- **Zarr** の direct I/O では、`t0` と `dt` などの時刻メタデータを Zarr attributes に保存し、読み込み時に復元します。このページでは、そのメタデータ保持を現在の対応動作として扱います。
+- **Zarr** の direct I/O では、配列ごとの timing metadata を明示的に要求します。`sample_rate` を優先し、`dt` は fallback として受け付けます。どちらも無い場合は `ValueError` を送出し、legacy store を意図的に救済したい場合だけ `sample_rate_override=...` または `dt_override=...` を指定してください。
 - **ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは EventTable の直 I/O のみ扱います。
 
 <a id="io-formats-ja-d"></a>

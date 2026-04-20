@@ -4,7 +4,7 @@
 - Scope: local built HTML under `docs/_build/html` only
 - Allowed runtime:
   - `node`
-  - `/usr/bin/google-chrome`
+  - browser executable resolved dynamically from `CHROME_BIN` / `BROWSER_BIN` or `PATH`
 - Probe script: `/tmp/gwexpy_17_19_probe.mjs`
 - Raw evidence bundle: `/tmp/gwexpy-17-19-evidence/`
 
@@ -19,11 +19,11 @@
 1. `conda run -n gwexpy sphinx-build -E -b html -D nbsphinx_execute=never docs docs/_build/html`
 2. `node /tmp/gwexpy_17_19_probe.mjs`
 
-Probe は `file://` で以下のローカル生成ページを直接開いて計測した。
+Probe は repo-relative な built HTML path から `file://` URI を動的生成して以下のローカルページを開き、直接計測した。
 
-- `file:///home/washimi/work/gwexpy/docs/_build/html/web/ja/user_guide/io_formats.html`
-- `file:///home/washimi/work/gwexpy/docs/_build/html/web/ja/user_guide/tutorials/intro_table.html`
-- `file:///home/washimi/work/gwexpy/docs/_build/html/web/ja/user_guide/tutorials/matrix_frequencyseries.html`
+- `docs/_build/html/web/ja/user_guide/io_formats.html`
+- `docs/_build/html/web/ja/user_guide/tutorials/intro_table.html`
+- `docs/_build/html/web/ja/user_guide/tutorials/matrix_frequencyseries.html`
 
 ## Viewports Used
 
@@ -39,7 +39,7 @@ Probe は `file://` で以下のローカル生成ページを直接開いて計
 
 #### `io_formats`
 
-- Page: `file:///home/washimi/work/gwexpy/docs/_build/html/web/ja/user_guide/io_formats.html`
+- Page: `docs/_build/html/web/ja/user_guide/io_formats.html`
 - Screenshot: `/tmp/gwexpy-17-19-evidence/mobile_320x900/io_formats.png`
 - Body:
   - `bodyClientWidth = 320`
@@ -57,7 +57,7 @@ Probe は `file://` で以下のローカル生成ページを直接開いて計
 
 #### `intro_table`
 
-- Page: `file:///home/washimi/work/gwexpy/docs/_build/html/web/ja/user_guide/tutorials/intro_table.html`
+- Page: `docs/_build/html/web/ja/user_guide/tutorials/intro_table.html`
 - Screenshot: `/tmp/gwexpy-17-19-evidence/mobile_320x900/intro_table.png`
 - Body:
   - `bodyClientWidth = 320`
@@ -77,7 +77,7 @@ Probe は `file://` で以下のローカル生成ページを直接開いて計
 
 #### `matrix_frequencyseries`
 
-- Page: `file:///home/washimi/work/gwexpy/docs/_build/html/web/ja/user_guide/tutorials/matrix_frequencyseries.html`
+- Page: `docs/_build/html/web/ja/user_guide/tutorials/matrix_frequencyseries.html`
 - Screenshot: `/tmp/gwexpy-17-19-evidence/mobile_320x900/matrix_frequencyseries.png`
 - Body:
   - `bodyClientWidth = 320`

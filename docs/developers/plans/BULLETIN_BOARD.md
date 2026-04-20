@@ -6,20 +6,21 @@
 
 | セッションID | 役割 | 担当内容 | ステータス |
 |-------------|------|----------|------------|
-| `gw-gm` | GM | Phase 4 review / Phase 5 割当 | ✅ Phase 5 実行開始 |
+| `gw-gm` | GM | Phase 7 docs/audit resync 総括 | ✅ Phase 7 review-ready |
 | `gw-consultant` | Consultant | 戦略提案（文書・物理） | 🔵 待機中 (アドバイザー) |
-| `gw-worker-1` | Worker 1 | ndscope alias / registry normalization | 🟡 Phase 5 実行中 |
-| `gw-worker-2` | Worker 2 | Zarr timing metadata fail-fast | 🟡 Phase 5 実行中 |
-| `gw-worker-3` | Worker 3 | docs / audit sync for API fixes | 🟡 Phase 5 実行中 |
-| `gw-worker-4` | Worker 4 | regression validation / fixtures | 🟡 Phase 5 実行中 |
+| `gw-worker-1` | Worker 1 | ndscope alias / registry normalization | ✅ Phase 5 完了 / Phase 7 連携待ち |
+| `gw-worker-2` | Worker 2 | Zarr timing metadata fail-fast | ✅ Phase 5 完了 / Phase 7 連携待ち |
+| `gw-worker-3` | Worker 3 | docs / audit resync and truth ledger | ✅ Phase 7 review-ready |
+| `gw-worker-4` | Worker 4 | regression validation / fixtures | ✅ Phase 5 完了 / Phase 7 連携待ち |
 
 ## 2. 現在のミッション
 
-**目標:** Webドキュメント刷新次フェーズ（Phase 1-4）の完遂。
+**目標:** Phase 7 として、実装済み変更と docs/audit 記録の不整合を解消する `docs/audit resync` を完了する。
 **主要リソース:**
-- 監査レポート: [統合監査レポート_計214件の指摘.md](file:///home/washimi/work/gwexpy/docs_internal/analysis/webpage/%E7%B5%B1%E5%90%88%E7%9B%A3%E6%9F%BB%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88_%E8%A8%88214%E4%BB%B6%E3%81%AE%E6%8C%87%E6%81%98.md)
-- 実装計画書: [2026-04-18-docs-next-phase-implementation-plan.md](file:///home/washimi/work/gwexpy/docs/developers/plans/2026-04-18-docs-next-phase-implementation-plan.md)
-- ガイドライン: [.agent/AGENTS.md](file:///home/washimi/work/gwexpy/.agent/AGENTS.md)
+- 監査レポート: [統合監査レポート_計214件の指摘.md](../../../docs_internal/analysis/webpage/統合監査レポート_計214件の指摘.md)
+- 実装計画書: [2026-04-18-docs-next-phase-implementation-plan.md](./2026-04-18-docs-next-phase-implementation-plan.md)
+- 真実台帳: [truth_ledger.md](./truth_ledger.md)
+- ガイドライン: [.agent/AGENTS.md](../../../.agent/AGENTS.md)
 
 ## 3. 進捗ログ (最新10件)
 
@@ -38,6 +39,9 @@
 - **2026-04-18 19:45**: `gw-consultant` が Phase 4 方針を承認。条件は「Worker 1 が shared CSS / RST surface を先行確定し、その後に Worker 2-4 が JA/EN ペア単位で個別ページへ展開する」一方向フロー。table CSS 方針の後出し変更は禁止。
 - **2026-04-18 20:23**: Phase 4 review 完了。Worker 1-4 の変更に対し、GM が MyST frontmatter を `myst.html_meta` 形式へ統一し、JA `numerical_stability.md` の trailing whitespace を除去。`git diff --check` は clean、`conda run -n gwexpy sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-phase4-review-html-2` は warning なしで成功。
 - **2026-04-18 20:28**: `gw-consultant` の助言に基づき、次ミッションは Gate A 再開の前提となる code/API unblockers を優先することを確定。Phase 5 を docs wave とは別の「Non-Docs API Follow-up」として開始し、`8-19` Zarr timing metadata 修正と ndscope HDF5 format keyword 整理を 4-way 分担した。順序は ndscope の後方互換 alias を先に収束し、その後に Zarr fail-fast を進める。
+- **2026-04-20 20:58**: Coordinator 指示により Phase 7（Truth Ledger 起点の docs/audit resync）を開始。`docs/developers/plans/truth_ledger.md` を新設し、Git 履歴と現行ソースに照らして「実装済みだが統合監査レポートが古い」項目の基線を固定した。初期収録は `15-1`, `15-3`, `17-17`, `17-18`, `17-19`, `17-24`。`17-21` は `Needs revalidation` のまま別管理とする。
+- **2026-04-20 20:59**: `337238d4 docs: sync Phase 7 truth-ledger and API docs` を反映。Truth Ledger 追加に加えて、Zarr I/O 仕様・`io_formats`・ScalarField 単位記述・JA tutorial/Colab 導線・branding metadata 周辺の docs を code 実装へ同期した。
+- **2026-04-20 21:01**: `8ccc9bd7 test: restore OG metadata constant for docs checks` を反映。branding / OGP 系の docs test を現行 asset 名へ再同期し、Phase 7 PR の検証整合性を確保した。
 
 ## 3.5 Phase 2 Worker Ownership
 
