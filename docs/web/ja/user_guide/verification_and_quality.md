@@ -36,7 +36,7 @@ myst:
 | Notebook チュートリアル | [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) | `Light` / `Heavy` / `Display-only` の分類と、CI がそれぞれをどう扱うか |
 | direct I/O 形式 | [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) | どの公開 format 群に、どのテストファイルが対応づけられているかと、どこに optional backend があるか |
 | アルゴリズム監査 | [検証済みアルゴリズム](validated_algorithms.md) | 数値許容誤差、前提条件、監査証跡への導線 |
-| リポジトリ全体の coverage | [Codecov ダッシュボード](https://codecov.io/gh/tatsuki-washimi/gwexpy) | リポジトリ全体の自動テスト coverage の概況 |
+| リポジトリ全体の coverage | [README の codecov バッジ](https://github.com/tatsuki-washimi/gwexpy) と、そのリンク先である [Codecov ダッシュボード](https://codecov.io/gh/tatsuki-washimi/gwexpy) | リポジトリ全体の line coverage がどこで公開されているかを示す入口。feature 単位の証明ではなく、全体傾向のシグナルとして使います |
 
 ## Notebook の検証方針
 
