@@ -7,6 +7,7 @@ import json
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
 CONF_PATH = ROOT / "docs" / "conf.py"
@@ -37,6 +38,11 @@ class MetaTagParser(HTMLParser):
         content = attr_map.get("content")
         if key and content:
             self.meta[key] = content
+
+
+def _is_branding_social_image(image_url: str) -> bool:
+    parsed = urlparse(image_url)
+    return parsed.path.endswith("/_static/branding/og-card.png")
 
 
 def _load_conf_module(name: str):
@@ -94,6 +100,20 @@ def main() -> int:
     expected_image = conf.html_context["og_image"]
     expected_twitter_card = conf.html_context["twitter_card"]
     expected_baseurl = conf.html_baseurl
+
+    if not _is_branding_social_image(expected_image):
+        print(
+            json.dumps(
+                {
+                    "error": "docs/conf.py does not point og:image at the branding social card",
+                    "expected_suffix": "/_static/branding/og-card.png",
+                    "actual": expected_image,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 1
 
     results = [
         _validate_page(
