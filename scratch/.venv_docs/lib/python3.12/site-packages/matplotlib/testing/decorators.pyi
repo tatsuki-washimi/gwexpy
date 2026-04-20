@@ -1,6 +1,7 @@
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, TypeVar
+
 from typing_extensions import ParamSpec
 
 from matplotlib.figure import Figure

@@ -199,8 +199,17 @@ from gwexpy.time import to_gps
 # Vectorized GPS conversion
 gps = to_gps(["2025-01-01 00:00:00", "2025-01-01 00:00:01"])
 
+<<<<<<< Updated upstream
 # Convert axes to Series with automatic unit handling
 ts = as_series((1419724818 + np.arange(10)) * u.s, unit="h")
+=======
+ts1 = TimeSeries(np.arange(8.0), dt=1.0, name="A")
+ts2 = TimeSeries(np.arange(8.0) * 2.0, dt=1.0, name="B")
+asd_single = ts1.asd(fftlength=2.0)
+matrix = TimeSeriesList([ts1, ts2]).to_matrix()
+asd = matrix.asd(fftlength=2.0)
+print(matrix.shape)
+>>>>>>> Stashed changes
 ```
 
 ### 2. TimeSeriesMatrix & Decomposition

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # scripts/check_external_links.py
-import requests
 import re
-from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+
+import requests
 
 # root of documentation to scan
 DOCS_ROOT = Path('docs/web')
@@ -43,16 +44,16 @@ def check_link(url):
             r = requests.head(url, headers=HEADERS, timeout=TIMEOUT, allow_redirects=True)
             if 200 <= r.status_code < 400:
                 return True, r.status_code
-            
+
             # Fallback to GET because some services (like Google Colab) may reject HEAD
             r = requests.get(url, headers=HEADERS, timeout=TIMEOUT, allow_redirects=True, stream=True)
             if 200 <= r.status_code < 400:
                 return True, r.status_code
-                
+
             return False, r.status_code
         except Exception as e:
             last_err = str(e)
-            
+
     return False, last_err
 
 def main():
@@ -60,18 +61,18 @@ def main():
     links = extract_links()
     total = len(links)
     print(f"Extracted {total} unique external links from {DOCS_ROOT}...")
-    
+
     failures = []
-    
+
     with ThreadPoolExecutor(max_workers=CONCURRENCY) as executor:
         # Submit all check jobs
         future_to_url = {executor.submit(check_link, url): (path, url) for path, url in links}
-        
+
         # Collect results as they complete
         for i, future in enumerate(as_completed(future_to_url), 1):
             path, url = future_to_url[future]
             ok, result = future.result()
-            
+
             if not ok:
                 # Check if it's in Whitelist
                 if any(domain in url for domain in WHITELIST):

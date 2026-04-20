@@ -1,5 +1,4 @@
-"""
-Extend advanced_fitting.ipynb (EN + JA) with Lorentzian / Voigt spectral-line
+"""Extend advanced_fitting.ipynb (EN + JA) with Lorentzian / Voigt spectral-line
 fitting sections.
 
 Usage:

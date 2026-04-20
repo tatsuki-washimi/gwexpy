@@ -6,7 +6,7 @@
 import datetime
 import glob
 import os
-from typing import Dict, Optional, Tuple, Union
+from typing import Optional, Union
 
 import zmq
 
@@ -31,7 +31,7 @@ def _write_key_file(
     banner: str,
     public_key: Union[str, bytes],
     secret_key: Optional[Union[str, bytes]] = None,
-    metadata: Optional[Dict[str, str]] = None,
+    metadata: Optional[dict[str, str]] = None,
     encoding: str = 'utf-8',
 ) -> None:
     """Create a certificate file"""
@@ -61,8 +61,8 @@ def _write_key_file(
 def create_certificates(
     key_dir: Union[str, os.PathLike],
     name: str,
-    metadata: Optional[Dict[str, str]] = None,
-) -> Tuple[str, str]:
+    metadata: Optional[dict[str, str]] = None,
+) -> tuple[str, str]:
     """Create zmq certificates.
 
     Returns the file paths to the public and secret certificate files.
@@ -88,7 +88,7 @@ def create_certificates(
 
 def load_certificate(
     filename: Union[str, os.PathLike],
-) -> Tuple[bytes, Optional[bytes]]:
+) -> tuple[bytes, Optional[bytes]]:
     """Load public and secret key from a zmq certificate.
 
     Returns (public_key, secret_key)
@@ -121,7 +121,7 @@ def load_certificate(
     return public_key, secret_key
 
 
-def load_certificates(directory: Union[str, os.PathLike] = '.') -> Dict[bytes, bool]:
+def load_certificates(directory: Union[str, os.PathLike] = '.') -> dict[bytes, bool]:
     """Load public keys from all certificates in a directory"""
     certs = {}
     if not os.path.isdir(directory):

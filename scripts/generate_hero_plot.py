@@ -14,6 +14,7 @@ Phase 3 prototype usage:
 
 from __future__ import annotations
 
+import argparse
 import io
 import json
 import pathlib
@@ -21,7 +22,6 @@ import sys
 from collections.abc import Mapping
 from pathlib import Path
 
-import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image

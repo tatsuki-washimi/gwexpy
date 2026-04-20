@@ -33,8 +33,9 @@ def main():
     import matplotlib
     matplotlib.use('Agg')  # Non-interactive backend for file output
 
-    import numpy as np
     from pathlib import Path
+
+    import numpy as np
 
     from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 
@@ -112,8 +113,8 @@ def main():
     fig.savefig(str(output_dir / "figure3_coherence_ranking.pdf"), bbox_inches='tight')
 
     print(f"✅ Saved figures to {output_dir}/")
-    print(f"   - figure3_coherence_ranking.png")
-    print(f"   - figure3_coherence_ranking.pdf")
+    print("   - figure3_coherence_ranking.png")
+    print("   - figure3_coherence_ranking.pdf")
 
     # ==== 5. Validation ====
     print("\n" + "=" * 60)

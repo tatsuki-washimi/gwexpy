@@ -3,13 +3,14 @@ from functools import partial
 from operator import methodcaller
 from typing import (
     Any,
+    Concatenate,
     Generic,
     Protocol,
     TypeVar,
     overload,
 )
 
-from typing_extensions import Concatenate, ParamSpec, TypeVarTuple, Unpack
+from typing_extensions import ParamSpec, TypeVarTuple, Unpack
 
 _P = ParamSpec('_P')
 _R = TypeVar('_R')

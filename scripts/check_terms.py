@@ -2,8 +2,8 @@
 # scripts/check_terms.py
 import csv
 import re
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Constants for directory and file paths
 # DOCS_DIR: root for Japanese documentation

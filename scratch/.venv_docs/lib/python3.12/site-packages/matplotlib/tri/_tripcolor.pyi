@@ -1,11 +1,11 @@
-from matplotlib.axes import Axes
-from matplotlib.collections import PolyCollection, TriMesh
-from matplotlib.colors import Normalize, Colormap
-from matplotlib.tri._triangulation import Triangulation
+from typing import Literal, overload
 
 from numpy.typing import ArrayLike
 
-from typing import overload, Literal
+from matplotlib.axes import Axes
+from matplotlib.collections import PolyCollection, TriMesh
+from matplotlib.colors import Colormap, Normalize
+from matplotlib.tri._triangulation import Triangulation
 
 @overload
 def tripcolor(

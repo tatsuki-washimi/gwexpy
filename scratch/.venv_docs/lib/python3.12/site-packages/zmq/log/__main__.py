@@ -25,7 +25,6 @@ avoid this issue.
 
 import argparse
 from datetime import datetime
-from typing import Dict
 
 import zmq
 
@@ -89,7 +88,7 @@ sub = ctx.socket(zmq.SUB)
 sub.subscribe(args.topic.encode("utf8"))
 sub.connect(args.zmq_pub_url)
 
-topic_widths: Dict[int, int] = {}
+topic_widths: dict[int, int] = {}
 
 while True:
     try:

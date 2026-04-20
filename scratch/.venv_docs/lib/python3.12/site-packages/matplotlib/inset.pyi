@@ -2,7 +2,6 @@ from . import artist
 from .axes import Axes
 from .backend_bases import RendererBase
 from .patches import ConnectionPatch, Rectangle
-
 from .typing import ColorType, LineStyleType
 
 class InsetIndicator(artist.Artist):

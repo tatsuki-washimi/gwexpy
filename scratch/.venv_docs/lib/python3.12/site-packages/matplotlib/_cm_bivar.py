@@ -2,6 +2,7 @@
 # date: 2024-05-24
 
 import numpy as np
+
 from matplotlib.colors import SegmentedBivarColormap
 
 BiPeak = np.array(

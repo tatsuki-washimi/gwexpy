@@ -1,9 +1,10 @@
-from matplotlib.tri._triangulation import Triangulation
+from typing import overload
+
+from numpy.typing import ArrayLike
+
 from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
-
-from typing import overload
-from numpy.typing import ArrayLike
+from matplotlib.tri._triangulation import Triangulation
 
 @overload
 def triplot(

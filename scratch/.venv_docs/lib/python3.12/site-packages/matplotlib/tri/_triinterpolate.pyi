@@ -1,8 +1,9 @@
-from matplotlib.tri import Triangulation, TriFinder
-
 from typing import Literal
+
 import numpy as np
 from numpy.typing import ArrayLike
+
+from matplotlib.tri import Triangulation, TriFinder
 
 class TriInterpolator:
     def __init__(

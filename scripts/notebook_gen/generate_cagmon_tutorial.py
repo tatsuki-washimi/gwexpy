@@ -2,6 +2,7 @@ from pathlib import Path
 
 import nbformat as nbf
 
+
 def create_cagmon_tutorial():
     nb = nbf.v4.new_notebook()
 
@@ -48,7 +49,7 @@ def create_cagmon_tutorial():
         "| **MIC_1** | 超低周波音圧 (IDCH) | **非線形（二乗）結合** |\n"
         "| **MAG_Y** | シューマン共鳴 | **無相関** |\n"
         "| **TEMP** | 1日周期 sine + WN | **弱い線形結合** |"))
-    
+
     nb.cells.append(nbf.v4.new_code_cell("from astropy import units as u\n\nfs = 1024  # サンプリングレート [Hz]\ndur = 32   # 長さ [s]\nfreqs = np.arange(1, fs//2 + 1, 1.0)\n\n# 1. ASD (Amplitude Spectral Density) の取得\nasd_darm = asd.from_pygwinc('aLIGO', quantity='darm', fmin=1, fmax=fs//2, df=1)\nasd_acc  = asd.from_obspy('NHNM', quantity='acceleration', frequencies=freqs)\nasd_mic  = asd.from_obspy('IDCH', frequencies=freqs)  # 超低周波音圧ノイズ\nasd_mag  = asd.schumann_resonance(frequencies=freqs)\n\n# 2. ASD から時系列波形を生成\ndarm_base = wave.from_asd(asd_darm, duration=dur, sample_rate=fs, name='DARM_base')\nacc_x     = wave.from_asd(asd_acc,  duration=dur, sample_rate=fs, name='ACC_X')\nmic_raw   = wave.from_asd(asd_mic,  duration=dur, sample_rate=fs, name='MIC_raw')\nmag_y     = wave.from_asd(asd_mag,  duration=dur, sample_rate=fs, name='MAG_Y')\n\n# 3. 温度チャネル (1日周期の正弦波 + ホワイトノイズ)\n# 単位を °C と明示します\ntemp_sine = wave.sine(dur, fs, frequency=1/86400, amplitude=1.0, unit='deg_C', name='TEMP_base')\ntemp      = temp_sine + wave.white_noise(dur, fs, amplitude=0.01, unit='deg_C')\ntemp.name = 'TEMP'\n\n# 4. カップリングの注入 (DARM = base + Linear(ACC) + NonLinear(MIC) + WeakLinear(TEMP))\n# 単位を合わせて加算します\nalpha = 0.5 * u.Unit('s^2')           # [m] / [m/s^2]\nbeta  = 0.1 * u.Unit('m/Pa^2')        # [m] / [Pa^2]\ngamma = 0.005 * u.Unit('m/deg_C')     # [m] / [deg_C]\n\ndarm = darm_base + alpha * acc_x + beta * (mic_raw ** 2) + gamma * temp\ndarm.name = 'DARM'\nmic_1 = mic_raw\nmic_1.name = 'MIC_1'\n\n# TimeSeriesDict にまとめる\ndata = TimeSeriesDict({'DARM': darm, 'ACC_X': acc_x, 'MIC_1': mic_1, 'MAG_Y': mag_y, 'TEMP': temp})\nprint('Generated 5 channels.')"))
 
     # --- Visualization ---
@@ -61,7 +62,7 @@ def create_cagmon_tutorial():
     nb.cells.append(nbf.v4.new_markdown_cell("## 4. ペアワイズ相関解析 (Pearson vs MIC)\n\nCAGMon の核心部です。DARM と各補助チャネルの相関係数を計算し、カップリングの種類を特定します。\n\n"
         "- **PCC (Pearson)**: 線形な相関を捉える。\n"
         "- **MIC (Maximal Information)**: 線形・非線形を問わない依存関係を捉える。"))
-    
+
     nb.cells.append(nbf.v4.new_code_cell("channels = ['ACC_X', 'MIC_1', 'MAG_Y', 'TEMP']\nresults = []\n\nfor ch in channels:\n    target = data[ch]\n    pcc = darm.pcc(target)\n    mic = darm.mic(target)\n    results.append({'channel': ch, 'PCC': pcc, 'MIC': mic})\n\nimport pandas as pd\ndf_res = pd.DataFrame(results)\n\n# 判別ロジックの可視化\ndef categorize(row):\n    if row['MIC'] < 0.2: return 'Uncorrelated'\n    if abs(row['PCC']) > 0.8 * row['MIC']: return 'Linear'\n    return 'Non-Linear'\n\ndf_res['Relation'] = df_res.apply(categorize, axis=1)\ndisplay(df_res)"))
 
     nb.cells.append(nbf.v4.new_markdown_cell("**結果の考察**:\n"

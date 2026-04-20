@@ -18,7 +18,6 @@ import argparse
 import ast
 import hashlib
 import json
-import os
 import re
 import sys
 from collections import defaultdict
@@ -749,8 +748,8 @@ def generate_summary(entries: list[dict[str, Any]], catalog_path: Path) -> str:
         "",
         "## 全体統計",
         "",
-        f"| 項目 | 値 |",
-        f"|------|-----|",
+        "| 項目 | 値 |",
+        "|------|-----|",
         f"| 総ファイル数 | {total:,} |",
         f"| Python (.py) | {py_count:,} |",
         f"| Notebook (.ipynb) | {ipynb_count:,} |",

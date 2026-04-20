@@ -1,7 +1,7 @@
 from collections.abc import Iterator, Mapping
+
 from matplotlib import colors
 from matplotlib.colorizer import _ScalarMappable
-
 
 class ColormapRegistry(Mapping[str, colors.Colormap]):
     def __init__(self, cmaps: Mapping[str, colors.Colormap]) -> None: ...

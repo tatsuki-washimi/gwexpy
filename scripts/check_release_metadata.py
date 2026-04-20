@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+import json
 import re
 import sys
-import json
 from pathlib import Path
+
 
 def get_version_from_py():
     version_file = Path("gwexpy/_version.py")
@@ -54,12 +55,12 @@ def main():
         sys.exit(1)
 
     print(f"Detected version: {py_version}")
-    
+
     cff_version = get_version_from_cff()
     zenodo_version = get_version_from_zenodo()
-    
+
     errors = 0
-    
+
     if cff_version and cff_version != py_version:
         print(f"Error: Version mismatch in CITATION.cff: {cff_version} != {py_version}")
         errors += 1
@@ -80,7 +81,7 @@ def main():
     if errors > 0:
         print(f"\nFound {errors} metadata consistency error(s).")
         sys.exit(1)
-    
+
     print("\nMetadata consistency check passed!")
 
 if __name__ == "__main__":

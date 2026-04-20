@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from asyncio import Future
+from collections.abc import Awaitable, Sequence
 from pickle import DEFAULT_PROTOCOL
-from typing import Any, Awaitable, Literal, Sequence, TypeVar, overload
+from typing import Any, Literal, TypeVar, overload
 
 import zmq as _zmq
 

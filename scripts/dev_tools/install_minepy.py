@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Install script for `minepy` on Python 3.11+
+"""Install script for `minepy` on Python 3.11+
 minepy currently lacks pre-built wheels for Python 3.11+ and its setup.py
 contains an outdated dependency on `pkg_resources` that breaks in modern pip.
 This script downloads the source, patches it, recompiles the Cython extension,

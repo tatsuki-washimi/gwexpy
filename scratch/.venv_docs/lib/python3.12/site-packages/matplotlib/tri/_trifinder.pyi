@@ -1,5 +1,6 @@
-from matplotlib.tri import Triangulation
 from numpy.typing import ArrayLike
+
+from matplotlib.tri import Triangulation
 
 class TriFinder:
     def __init__(self, triangulation: Triangulation) -> None: ...

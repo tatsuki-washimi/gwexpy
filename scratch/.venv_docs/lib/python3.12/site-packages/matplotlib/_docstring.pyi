@@ -1,7 +1,6 @@
 from collections.abc import Callable
 from typing import Any, TypeVar, overload
 
-
 _T = TypeVar('_T')
 
 

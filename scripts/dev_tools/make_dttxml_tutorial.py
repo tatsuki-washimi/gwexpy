@@ -2,11 +2,9 @@
 
 import base64
 import json
-import struct
 from pathlib import Path
 
 import numpy as np
-
 
 # ---------------------------------------------------------------------------
 # Helper: build a minimal DTT XML in memory

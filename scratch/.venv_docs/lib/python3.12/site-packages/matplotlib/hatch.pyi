@@ -1,7 +1,7 @@
-from matplotlib.path import Path
-
 import numpy as np
 from numpy.typing import ArrayLike
+
+from matplotlib.path import Path
 
 class HatchPatternBase: ...
 

@@ -9,7 +9,6 @@ from pathlib import Path
 
 import requests
 
-
 ROOT = Path(__file__).resolve().parents[1]
 DOCS_DIR = ROOT / "docs"
 if str(DOCS_DIR) not in sys.path:

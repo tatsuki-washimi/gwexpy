@@ -24,12 +24,13 @@ def main():
     import matplotlib
     matplotlib.use('Agg')  # Non-interactive backend for file output
 
-    import numpy as np
-    from scipy import signal as scipy_signal
     from pathlib import Path
 
-    from gwexpy.timeseries import TimeSeries
+    import numpy as np
+    from scipy import signal as scipy_signal
+
     from gwexpy.plot import Plot
+    from gwexpy.timeseries import TimeSeries
 
     # ==== 1. Generate synthetic input/output time series ====
     print("=" * 60)
@@ -91,8 +92,8 @@ def main():
     plot.save(str(output_dir / "figure2_transfer_function.pdf"), bbox_inches='tight')
 
     print(f"✅ Saved figures to {output_dir}/")
-    print(f"   - figure2_transfer_function.png")
-    print(f"   - figure2_transfer_function.pdf")
+    print("   - figure2_transfer_function.png")
+    print("   - figure2_transfer_function.pdf")
 
     # ==== 4. Validation ====
     print("\n" + "=" * 60)

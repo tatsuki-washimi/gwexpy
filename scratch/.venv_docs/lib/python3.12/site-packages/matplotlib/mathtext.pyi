@@ -1,5 +1,5 @@
 import os
-from typing import Generic, IO, Literal, TypeVar, overload
+from typing import IO, Generic, Literal, TypeVar, overload
 
 from matplotlib.font_manager import FontProperties
 from matplotlib.typing import ColorType
@@ -7,7 +7,11 @@ from matplotlib.typing import ColorType
 # Re-exported API from _mathtext.
 from ._mathtext import (
     RasterParse as RasterParse,
+)
+from ._mathtext import (
     VectorParse as VectorParse,
+)
+from ._mathtext import (
     get_unicode_index as get_unicode_index,
 )
 

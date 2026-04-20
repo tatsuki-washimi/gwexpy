@@ -1,9 +1,10 @@
-from matplotlib import _tri
-from matplotlib.tri._trifinder import TriFinder
+from typing import Any
 
 import numpy as np
 from numpy.typing import ArrayLike
-from typing import Any
+
+from matplotlib import _tri
+from matplotlib.tri._trifinder import TriFinder
 
 class Triangulation:
     x: np.ndarray

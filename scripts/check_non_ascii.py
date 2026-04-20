@@ -18,7 +18,7 @@ def check_file(path, exclude_patterns=None):
 
     bad_lines = []
     try:
-        with open(path, "r", encoding="utf-8", errors="ignore") as fh:
+        with open(path, encoding="utf-8", errors="ignore") as fh:
             for i, line in enumerate(fh, 1):
                 if PAT.search(line):
                     bad_lines.append(f"{path}:{i}: {line.strip()}")

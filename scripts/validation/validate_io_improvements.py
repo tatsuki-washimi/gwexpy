@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""
-Basic validation script for Phase 1-2 I/O improvements.
+"""Basic validation script for Phase 1-2 I/O improvements.
 Tests core functionality without pytest dependency.
 """
 
