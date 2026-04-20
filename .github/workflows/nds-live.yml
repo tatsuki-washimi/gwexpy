@@ -33,10 +33,10 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up micromamba (conda-forge)
-        uses: mamba-org/setup-micromamba@v2
+        uses: mamba-org/setup-micromamba@v3
         with:
           environment-name: gwexpy-nds
           condarc: |
