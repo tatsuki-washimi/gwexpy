@@ -8,6 +8,36 @@
 
 {% block extrahead %}
   {{ super() }}
+  {% if og_title %}
+  <meta property="og:title" content="{{ og_title|e }}" />
+  {% endif %}
+  {% if og_description %}
+  <meta property="og:description" content="{{ og_description|e }}" />
+  {% endif %}
+  {% if og_type %}
+  <meta property="og:type" content="{{ og_type|e }}" />
+  {% endif %}
+  {% if og_url %}
+  <meta property="og:url" content="{{ og_url|e }}" />
+  {% endif %}
+  {% if og_image %}
+  <meta property="og:image" content="{{ og_image|e }}" />
+  {% endif %}
+  {% if og_site_name %}
+  <meta property="og:site_name" content="{{ og_site_name|e }}" />
+  {% endif %}
+  {% if twitter_card %}
+  <meta name="twitter:card" content="{{ twitter_card|e }}" />
+  {% endif %}
+  {% if twitter_title %}
+  <meta name="twitter:title" content="{{ twitter_title|e }}" />
+  {% endif %}
+  {% if twitter_description %}
+  <meta name="twitter:description" content="{{ twitter_description|e }}" />
+  {% endif %}
+  {% if twitter_image %}
+  <meta name="twitter:image" content="{{ twitter_image|e }}" />
+  {% endif %}
   {# ヘッダー右端に固定する言語切替ピル #}
   <style>
   #lang-pill {
