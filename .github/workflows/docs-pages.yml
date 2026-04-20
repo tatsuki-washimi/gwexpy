@@ -35,6 +35,8 @@ jobs:
     env:
       PYTHONFAULTHANDLER: "1"
       NBS_EXECUTE: never
+      NBS_ALLOW_ERRORS: "0"
+      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -53,7 +55,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 pandoc
+          sudo apt-get install -y libgl1 pandoc fonts-noto-cjk
 
       - name: Provision gwexpy docs environment
         run: |
@@ -78,7 +80,10 @@ jobs:
         run: |
           html_dir="${RUNNER_TEMP}/gwexpy-pages-html"
           doctree_dir="${RUNNER_TEMP}/gwexpy-pages-doctrees"
-          sphinx-build -b html -d "${doctree_dir}" -D nbsphinx_execute=never docs "${html_dir}"
+          sphinx-build -b html -W --keep-going -d "${doctree_dir}" \
+            -D nbsphinx_execute=never \
+            -D nbsphinx_allow_errors=0 \
+            docs "${html_dir}"
           echo "html_dir=${html_dir}" >> "${GITHUB_OUTPUT}"
 
       - name: Publish to gh-pages

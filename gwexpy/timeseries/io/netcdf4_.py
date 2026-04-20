@@ -176,7 +176,7 @@ def read_timeseriesdict_netcdf4(
         set_provenance(
             tsd,
             {
-                "format": "netcdf4",
+                "format": "nc",
                 "time_coord": tc,
                 "channels": list(tsd.keys()),
                 "unit_source": "override" if unit else "file",
@@ -258,13 +258,13 @@ def write_timeseries_netcdf4(ts, target, **kwargs):
 
 # -- Registration --------------------------------------------------------------
 
-for _fmt in ("netcdf4", "nc"):
-    register_timeseries_format(
-        _fmt,
-        reader_dict=read_timeseriesdict_netcdf4,
-        reader_single=read_timeseries_netcdf4,
-        reader_matrix=read_timeseriesmatrix_netcdf4,
-        writer_dict=write_timeseriesdict_netcdf4,
-        writer_single=write_timeseries_netcdf4,
-        extension="nc" if _fmt == "netcdf4" else _fmt,
-    )
+register_timeseries_format(
+    "nc",
+    aliases=("netcdf4",),
+    reader_dict=read_timeseriesdict_netcdf4,
+    reader_single=read_timeseries_netcdf4,
+    reader_matrix=read_timeseriesmatrix_netcdf4,
+    writer_dict=write_timeseriesdict_netcdf4,
+    writer_single=write_timeseries_netcdf4,
+    extension="nc",
+)

@@ -161,10 +161,11 @@ def test_dttxml_products_requires_argument(tmp_path):
     dummy = tmp_path / "dummy.xml"
     dummy.write_text("<dttxml></dttxml>")
     with pytest.raises(ValueError):
-        TimeSeriesDict.read(dummy, format="dttxml")
+        TimeSeriesDict.read(dummy, format="xml.diaggui")
 
 
-def test_miniseed_pad_behavior(tmp_path):
+@pytest.mark.parametrize("fmt", ("mseed", "miniseed"))
+def test_miniseed_pad_behavior(tmp_path, fmt):
     _skip_if_obspy_sqlalchemy_incompatible()
     obspy = pytest.importorskip("obspy")
 
@@ -185,7 +186,7 @@ def test_miniseed_pad_behavior(tmp_path):
     path = tmp_path / "test.mseed"
     stream.write(path, format="MSEED")
 
-    tsd = TimeSeriesDict.read(path, format="miniseed", pad=np.nan)
+    tsd = TimeSeriesDict.read(path, format=fmt, pad=np.nan)
     ts = tsd[next(iter(tsd))]
     assert len(ts) == 12
     np.testing.assert_array_equal(ts.value[:5], np.ones(5))

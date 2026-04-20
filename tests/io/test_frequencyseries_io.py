@@ -9,7 +9,6 @@ from gwexpy.frequencyseries import (
     FrequencySeriesDict,
     FrequencySeriesList,
 )
-from gwexpy.frequencyseries.io.dttxml import read_frequencyseriesdict_dttxml
 
 
 class TestFrequencySeriesHdf5:
@@ -60,17 +59,40 @@ class TestFrequencySeriesHdf5:
 
 
 class TestFrequencySeriesDttxml:
-    def test_requires_products(self, tmp_path):
+    @pytest.mark.parametrize("fmt", ("xml.diaggui", "dttxml"))
+    def test_requires_products(self, tmp_path, fmt):
         dummy = tmp_path / "dummy.xml"
         dummy.write_text("<dttxml></dttxml>")
         with pytest.raises(ValueError, match="products"):
-            read_frequencyseriesdict_dttxml(str(dummy))
+            FrequencySeriesDict.read(str(dummy), format=fmt)
 
-    def test_invalid_product_type(self, tmp_path):
+    @pytest.mark.parametrize("fmt", ("xml.diaggui", "dttxml"))
+    def test_invalid_product_type(self, tmp_path, fmt):
         dummy = tmp_path / "dummy.xml"
         dummy.write_text("<dttxml></dttxml>")
         with pytest.raises(ValueError):
-            read_frequencyseriesdict_dttxml(str(dummy), products="TIMESERIES")
+            FrequencySeriesDict.read(str(dummy), format=fmt, products="TIMESERIES")
+
+    @pytest.mark.parametrize("fmt", ("xml.diaggui", "dttxml"))
+    def test_public_frequencyseries_read_dispatches_via_gwpy_registry(self, tmp_path, fmt):
+        dummy = tmp_path / "dummy.xml"
+        dummy.write_text("<dttxml></dttxml>")
+        with pytest.raises(ValueError, match="not a frequency-series product"):
+            FrequencySeries.read(str(dummy), format=fmt, products="TIMESERIES")
+
+    def test_auto_detected_xml_format_is_not_ambiguous(self, tmp_path):
+        dummy = tmp_path / "dummy.xml"
+        dummy.write_text("<dttxml></dttxml>")
+        with pytest.raises(ValueError, match="products"):
+            FrequencySeries.read(str(dummy))
+
+    def test_legacy_alias_resolves_to_canonical_reader(self):
+        from gwpy.io.registry import default_registry as io_registry
+
+        canonical = io_registry.get_reader("xml.diaggui", FrequencySeriesDict)
+        legacy = io_registry.get_reader("dttxml", FrequencySeriesDict)
+
+        assert canonical is legacy
 
 
 class TestFrequencySeriesCsv:

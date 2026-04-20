@@ -1,23 +1,38 @@
 """Tests for DTT XML timeseries reader."""
 
-import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeriesDict
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 class TestDttxmlReader:
-    def test_requires_products_argument(self, tmp_path):
+    @pytest.mark.parametrize("fmt", ("xml.diaggui", "dttxml"))
+    def test_requires_products_argument(self, tmp_path, fmt):
         dummy = tmp_path / "dummy.xml"
         dummy.write_text("<dttxml></dttxml>")
         with pytest.raises(ValueError, match="products must be specified"):
-            TimeSeriesDict.read(str(dummy), format="dttxml")
+            TimeSeriesDict.read(str(dummy), format=fmt)
 
-    def test_unsupported_products_raises(self, tmp_path):
+    @pytest.mark.parametrize("fmt", ("xml.diaggui", "dttxml"))
+    def test_unsupported_products_raises(self, tmp_path, fmt):
         dummy = tmp_path / "dummy.xml"
         dummy.write_text("<dttxml></dttxml>")
         with pytest.raises(ValueError, match="not a time-series product"):
-            TimeSeriesDict.read(str(dummy), format="dttxml", products="INVALID_PRODUCT")
+            TimeSeriesDict.read(str(dummy), format=fmt, products="INVALID_PRODUCT")
+
+    def test_auto_detected_xml_format_is_not_ambiguous(self, tmp_path):
+        dummy = tmp_path / "dummy.xml"
+        dummy.write_text("<dttxml></dttxml>")
+        with pytest.raises(ValueError, match="products must be specified"):
+            TimeSeries.read(str(dummy))
+
+    def test_legacy_alias_resolves_to_canonical_reader(self):
+        from gwpy.io.registry import default_registry as io_registry
+
+        canonical = io_registry.get_reader("xml.diaggui", TimeSeriesDict)
+        legacy = io_registry.get_reader("dttxml", TimeSeriesDict)
+
+        assert canonical is legacy
 
 
 class TestBuildEpoch:

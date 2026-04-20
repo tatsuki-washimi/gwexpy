@@ -10,6 +10,18 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 class TestNetCDF4Roundtrip:
+    @pytest.mark.parametrize("fmt", ("nc", "netcdf4"))
+    def test_canonical_and_legacy_aliases_roundtrip(self, tmp_path, fmt):
+        path = tmp_path / f"alias_{fmt}.nc"
+        data = np.arange(8, dtype=np.float64)
+        ts = TimeSeries(data, t0=1234567890, dt=0.25, name="signal", unit="m")
+
+        TimeSeriesDict({"signal": ts}).write(str(path), format=fmt)
+
+        tsd = TimeSeriesDict.read(str(path), format=fmt)
+        np.testing.assert_allclose(tsd["signal"].value, data)
+        assert np.isclose(tsd["signal"].dt.value, 0.25)
+
     def test_single_variable_roundtrip(self, tmp_path):
         path = tmp_path / "test.nc"
         data = np.arange(100, dtype=np.float64)
@@ -17,10 +29,10 @@ class TestNetCDF4Roundtrip:
 
         # Write
         tsd_out = TimeSeriesDict({"signal": ts})
-        tsd_out.write(str(path), format="netcdf4")
+        tsd_out.write(str(path), format="nc")
 
         # Read
-        tsd_in = TimeSeriesDict.read(str(path), format="netcdf4")
+        tsd_in = TimeSeriesDict.read(str(path), format="nc")
         assert "signal" in tsd_in
         np.testing.assert_allclose(tsd_in["signal"].value, data)
         assert np.isclose(tsd_in["signal"].dt.value, 0.01)
@@ -31,17 +43,17 @@ class TestNetCDF4Roundtrip:
             "ch1": TimeSeries(np.ones(50), t0=0, dt=0.1, name="ch1"),
             "ch2": TimeSeries(np.zeros(50), t0=0, dt=0.1, name="ch2"),
         })
-        tsd_out.write(str(path), format="netcdf4")
+        tsd_out.write(str(path), format="nc")
 
-        tsd_in = TimeSeriesDict.read(str(path), format="netcdf4")
+        tsd_in = TimeSeriesDict.read(str(path), format="nc")
         assert set(tsd_in.keys()) >= {"ch1", "ch2"}
 
     def test_unit_override(self, tmp_path):
         path = tmp_path / "unit.nc"
         ts = TimeSeries(np.ones(10), t0=0, dt=1.0, name="x", unit="m")
-        TimeSeriesDict({"x": ts}).write(str(path), format="netcdf4")
+        TimeSeriesDict({"x": ts}).write(str(path), format="nc")
 
-        tsd = TimeSeriesDict.read(str(path), format="netcdf4", unit="V")
+        tsd = TimeSeriesDict.read(str(path), format="nc", unit="V")
         assert str(tsd["x"].unit) == "V"
 
     def test_auto_time_coord_detection(self, tmp_path):
@@ -55,7 +67,7 @@ class TestNetCDF4Roundtrip:
             )
             ds.to_netcdf(str(path))
 
-            tsd = TimeSeriesDict.read(str(path), format="netcdf4")
+            tsd = TimeSeriesDict.read(str(path), format="nc")
             assert "signal" in tsd
             assert len(tsd["signal"]) == 10
 
@@ -64,7 +76,7 @@ class TestNetCDF4Roundtrip:
 
         path = tmp_path / "single.nc"
         ts = TimeSeries(np.arange(20, dtype=np.float64), t0=0, dt=0.5, name="x")
-        TimeSeriesDict({"x": ts}).write(str(path), format="netcdf4")
+        TimeSeriesDict({"x": ts}).write(str(path), format="nc")
 
         ts_in = read_timeseries_netcdf4(str(path))
         assert len(ts_in) == 20
@@ -74,4 +86,4 @@ class TestNetCDF4Roundtrip:
         ds = xr.Dataset()
         ds.to_netcdf(str(path))
         with pytest.raises((ValueError, KeyError)):
-            TimeSeriesDict.read(str(path), format="netcdf4")
+            TimeSeriesDict.read(str(path), format="nc")

@@ -14,121 +14,14 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 
 .. raw:: html
 
-   <style>
-   .gw-hub-hero {
-     display: grid;
-     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-     gap: 1.25rem;
-     margin: 1.5rem 0 2rem;
-     align-items: stretch;
-   }
-   .gw-hub-panel {
-     background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-     border: 1px solid #d7e3ef;
-     border-radius: 20px;
-     box-shadow: 0 16px 40px rgba(15, 42, 74, 0.08);
-   }
-   .gw-hub-copy {
-     padding: 1.5rem;
-   }
-   .gw-hub-eyebrow {
-     margin: 0 0 0.65rem;
-     color: #0f6cbd;
-     font-size: 0.78rem;
-     font-weight: 700;
-     letter-spacing: 0.08em;
-     text-transform: uppercase;
-   }
-   .gw-hub-title {
-     margin: 0;
-     font-size: 2.35rem;
-     line-height: 1.02;
-     letter-spacing: -0.03em;
-     color: #10243a;
-   }
-   .gw-hub-lede {
-     margin: 0.9rem 0 0;
-     color: #566779;
-     line-height: 1.8;
-   }
-   .gw-hub-meta {
-     display: grid;
-     grid-template-columns: repeat(3, minmax(0, 1fr));
-     gap: 0.75rem;
-     margin-top: 1.1rem;
-   }
-   .gw-hub-meta div {
-     padding: 0.85rem 0.9rem;
-     background: rgba(255,255,255,0.82);
-     border: 1px solid #d7e3ef;
-     border-radius: 14px;
-   }
-   .gw-hub-meta dt {
-     margin: 0;
-     color: #61758a;
-     font-size: 0.72rem;
-     font-weight: 700;
-     letter-spacing: 0.08em;
-     text-transform: uppercase;
-   }
-   .gw-hub-meta dd {
-     margin: 0.35rem 0 0;
-     color: #10243a;
-     font-size: 0.92rem;
-     font-weight: 700;
-   }
-   .gw-hub-figure {
-     padding: 1rem;
-   }
-   .gw-hub-figure img {
-     width: 100%;
-     height: auto;
-     display: block;
-     border-radius: 14px;
-     border: 1px solid #d7e3ef;
-     background: #fff;
-   }
-   .gw-hub-figure p {
-     margin: 0.75rem 0 0;
-     color: #5c6d80;
-     font-size: 0.88rem;
-     line-height: 1.65;
-   }
-   .gw-hub-duo {
-     display: grid;
-     grid-template-columns: repeat(2, minmax(0, 1fr));
-     gap: 1rem;
-     margin: 0 0 2rem;
-   }
-   .gw-hub-duo section {
-     padding: 1.15rem 1.2rem;
-   }
-   .gw-hub-duo p {
-     margin: 0 0 0.65rem;
-     color: #0f6cbd;
-     font-size: 0.76rem;
-     font-weight: 700;
-     letter-spacing: 0.08em;
-     text-transform: uppercase;
-   }
-   .gw-hub-duo pre {
-     margin: 0;
-     padding: 0.95rem 1rem;
-     border: 1px solid #d7e3ef;
-     border-radius: 14px;
-     background: #f8fbfe;
-     overflow-x: auto;
-   }
-   @media (max-width: 900px) {
-     .gw-hub-hero,
-     .gw-hub-duo {
-       grid-template-columns: 1fr;
-     }
-     .gw-hub-meta {
-       grid-template-columns: 1fr;
-     }
-   }
-   </style>
+   <div class="gw-hub-lang-switch">
+     <div id="lang-pill">
+       <span>🌐</span>
+       <span class="lang-current">日本語</span>
+       <span class="lang-sep">|</span>
+       <a href="../en/index.html">English</a>
+     </div>
+   </div>
 
 .. raw:: html
 
