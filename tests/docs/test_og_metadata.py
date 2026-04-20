@@ -5,9 +5,10 @@ from types import SimpleNamespace
 ROOT = Path(__file__).resolve().parents[2]
 CONF_PATH = ROOT / "docs" / "conf.py"
 APPROVED_OG_IMAGE = (
-    "https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/"
-    "phase3/gateway_hero_scientific.png"
+    "https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png"
 )
+APPROVED_HTML_LOGO = "_static/branding/logo.svg"
+APPROVED_HTML_FAVICON = "_static/branding/icon.png"
 
 
 def _load_conf_module(name: str):
@@ -65,6 +66,7 @@ def test_html_page_context_adds_page_level_og_fields(monkeypatch):
         "verification_and_quality.html"
     )
     assert context["og_image"] == APPROVED_OG_IMAGE
+    assert context["og_site_name"] == conf.html_title
     assert context["twitter_card"] == "summary_large_image"
     assert context["twitter_title"] == context["og_title"]
     assert context["twitter_description"] == context["og_description"]
@@ -95,3 +97,16 @@ def test_html_page_context_sets_ja_language_and_description_fallback(monkeypatch
     assert context["og_description"] == conf.html_context["og_description"]
     assert context["og_url"] == "https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/index.html"
     assert context["og_image"] == APPROVED_OG_IMAGE
+
+
+def test_docs_branding_configuration_points_to_brand_assets(monkeypatch):
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+    monkeypatch.delenv("NBS_EXECUTE", raising=False)
+    monkeypatch.setattr("shutil.which", lambda name: None)
+
+    conf = _load_conf_module("gwexpy_docs_conf_branding")
+
+    assert conf.html_logo == APPROVED_HTML_LOGO
+    assert conf.html_favicon == APPROVED_HTML_FAVICON
+    assert conf.social_og_image == APPROVED_OG_IMAGE
+    assert conf.html_context["og_image"] == APPROVED_OG_IMAGE
