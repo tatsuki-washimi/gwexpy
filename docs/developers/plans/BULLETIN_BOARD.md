@@ -6,11 +6,11 @@
 
 | セッションID | 役割 | 担当内容 | ステータス |
 |-------------|------|----------|------------|
-| `gw-gm` | GM | Phase 7 docs/audit resync 総括 | ✅ Phase 7 実行中 |
+| `gw-gm` | GM | Phase 7 docs/audit resync 総括 | ✅ Phase 7 review-ready |
 | `gw-consultant` | Consultant | 戦略提案（文書・物理） | 🔵 待機中 (アドバイザー) |
 | `gw-worker-1` | Worker 1 | ndscope alias / registry normalization | ✅ Phase 5 完了 / Phase 7 連携待ち |
 | `gw-worker-2` | Worker 2 | Zarr timing metadata fail-fast | ✅ Phase 5 完了 / Phase 7 連携待ち |
-| `gw-worker-3` | Worker 3 | docs / audit resync and truth ledger | 🟡 Phase 7 実行中 |
+| `gw-worker-3` | Worker 3 | docs / audit resync and truth ledger | ✅ Phase 7 review-ready |
 | `gw-worker-4` | Worker 4 | regression validation / fixtures | ✅ Phase 5 完了 / Phase 7 連携待ち |
 
 ## 2. 現在のミッション

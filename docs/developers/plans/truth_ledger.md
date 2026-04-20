@@ -32,8 +32,8 @@ Phase 7 starts from this ledger so that workers can update the audit-facing docu
 
 ## Cross-Reference
 
-- Audit report: `docs_internal/analysis/webpage/統合監査レポート_計214件の指摘.md`
-- Rebaseline ledger: `docs_internal/analysis/webpage/A0_再基準化台帳.md`
+- Audit report: `docs_internal/analysis/webpage/統合監査レポート_計214件の指摘.md` (`reference-only` historical audit surface; update only when Phase 7 status sync is intentionally performed)
+- Rebaseline ledger: `docs_internal/analysis/webpage/A0_再基準化台帳.md` (`reference-only` historical classification record)
 - Phase 7 kickoff log: `docs/developers/plans/BULLETIN_BOARD.md`
 
 ## Immediate Use In Phase 7
