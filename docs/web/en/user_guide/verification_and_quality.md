@@ -18,10 +18,10 @@ It is not a single "all features are verified" claim. Instead, it points you to 
 | --- | --- |
 | **Audience** | Users who want to judge how strongly a tutorial, format, or algorithm path is backed by public evidence |
 | **Prerequisites** | None beyond basic familiarity with the user guide |
-| **Use Cases** | Check how notebooks and Doctest-backed examples are exercised, see where I/O support is tied to tests, find algorithm audit evidence, and understand what repository coverage signals do and do not mean |
-| **Search Hints** | verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail |
+| **Use Cases** | Check how notebooks and doctest-backed examples are exercised, see where I/O support is tied to tests, find algorithm audit evidence, and understand what repository coverage signals do and do not mean |
+| **Search Hints** | verification, quality, coverage, notebook policy, doctest, SUPPORTED_IO_MATRIX, codecov, audit trail |
 
-**Search hints:** verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail
+**Search hints:** verification, quality, coverage, notebook policy, doctest, SUPPORTED_IO_MATRIX, codecov, audit trail
 
 :::{important}
 **Read this page as a transparency map, not as a blanket guarantee**
@@ -34,7 +34,7 @@ Different parts of the project are verified in different ways. Some module/docst
 | Area | Public source | What it tells you |
 | --- | --- | --- |
 | Notebook tutorials | [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) | Which notebook classes are treated as `Light`, `Heavy`, or `Display-only`, and how CI handles each class |
-| Module/docstring examples | [Extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) | Which nightly CI path runs `pytest --Doctest-modules` against `tests/` and `gwexpy/`, useful as public evidence for docstring-level example execution scope |
+| Module/docstring examples | [Extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) | Which nightly CI path runs `pytest --doctest-modules` against `tests/` and `gwexpy/`, useful as public evidence for docstring-level example execution scope |
 | Direct I/O formats | [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) | Which public format families are tied to which tests and which backends are optional |
 | Algorithm audit trail | [Validated Algorithms](validated_algorithms.md) | Numerical tolerances, assumptions, and links to audit evidence for selected high-value algorithms |
 | Repository coverage signal | [README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the linked [Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy) | Where repository-level line coverage is surfaced publicly, useful as a broad signal rather than a per-feature proof |
@@ -45,7 +45,7 @@ The public notebook policy is defined in the repository's [Notebook Policy](http
 
 The current public model is:
 
-- Module and docstring examples in `tests/` and `gwexpy/` are exercised in the public [extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) via `pytest --Doctest-modules`.
+- Module and docstring examples in `tests/` and `gwexpy/` are exercised in the public [extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) via `pytest --doctest-modules`.
 - **Light** notebooks are classified for full execution and validation in CI through `papermill`.
 - **Heavy** notebooks are kept in CI, but the policy describes them as `nbval --nbval-lax` checks rather than guaranteed full execution.
 - **Display-only** notebooks prioritize curated outputs and are outside normal execution validation, or limited to load-style checks.
@@ -58,7 +58,7 @@ This is why a notebook or docstring example being present in the docs is a usefu
 
 The current public evidence supports a narrower statement than "all sample code is universally guaranteed."
 
-- The extended nightly workflow shows that `gwexpy` already runs automated Doctest coverage for module/docstring examples.
+- The extended nightly workflow shows that `gwexpy` already runs automated doctest coverage for module/docstring examples.
 - The same nightly workflow shows that notebook handling is class-dependent: `Light` notebooks are executed with `papermill`, while `Heavy` notebooks are checked with `nbval --nbval-lax`.
 - The docs PR workflow shows that notebooks changed in docs pull requests are executed with `papermill` before the docs build.
 
@@ -66,7 +66,7 @@ Read those signals carefully:
 
 - They show that public examples are not unmanaged; some are exercised automatically in CI today.
 - They do **not** mean every published code block is executed in every workflow.
-- They do **not** mean Doctest or notebook coverage is a single release-blocking gate for the whole documentation set.
+- They do **not** mean doctest or notebook coverage is a single release-blocking gate for the whole documentation set.
 - They do **not** remove the need to check notebook class, optional dependencies, and workflow scope before treating an example as strongly guaranteed.
 
 ## Direct I/O Verification Visibility
