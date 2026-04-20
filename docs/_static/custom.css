@@ -13,6 +13,30 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* Brand logo sizing for the RTD sidebar/header */
+.wy-side-nav-search > a,
+.wy-side-nav-search > a:hover,
+.wy-side-nav-search > a:focus,
+.wy-nav-top > a {
+    display: block;
+}
+
+.wy-side-nav-search > a img,
+.wy-nav-top > a img {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .wy-side-nav-search > a img,
+    .wy-nav-top > a img {
+        max-width: 160px;
+    }
+}
+
 /* Sidebar indentation and spacing */
 .wy-menu-vertical li.toctree-l1 > a {
     font-weight: bold;
