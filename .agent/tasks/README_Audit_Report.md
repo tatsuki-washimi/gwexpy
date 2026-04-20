@@ -58,5 +58,5 @@ Source: Consultant (45) final audit summary as reflected in PR [#225](https://gi
 ## Follow-up Recorded In This Session
 
 - Added one extra Quick Start line to `README.md` to show a direct `gwexpy`-style ASD operation:
-  - `asd_single = ts1.asd(fftlength=2.0)`
+  - `asd = matrix.asd(fftlength=2.0)`
 - This was added as a small differentiation cue without expanding README scope beyond the existing example.
