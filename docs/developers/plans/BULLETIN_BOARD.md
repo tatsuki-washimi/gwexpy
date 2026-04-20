@@ -38,6 +38,7 @@
 - **2026-04-18 19:45**: `gw-consultant` が Phase 4 方針を承認。条件は「Worker 1 が shared CSS / RST surface を先行確定し、その後に Worker 2-4 が JA/EN ペア単位で個別ページへ展開する」一方向フロー。table CSS 方針の後出し変更は禁止。
 - **2026-04-18 20:23**: Phase 4 review 完了。Worker 1-4 の変更に対し、GM が MyST frontmatter を `myst.html_meta` 形式へ統一し、JA `numerical_stability.md` の trailing whitespace を除去。`git diff --check` は clean、`conda run -n gwexpy sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-phase4-review-html-2` は warning なしで成功。
 - **2026-04-18 20:28**: `gw-consultant` の助言に基づき、次ミッションは Gate A 再開の前提となる code/API unblockers を優先することを確定。Phase 5 を docs wave とは別の「Non-Docs API Follow-up」として開始し、`8-19` Zarr timing metadata 修正と ndscope HDF5 format keyword 整理を 4-way 分担した。順序は ndscope の後方互換 alias を先に収束し、その後に Zarr fail-fast を進める。
+- **2026-04-20 20:58**: Coordinator 指示により Phase 7（Truth Ledger 起点の docs/audit resync）を開始。`docs/developers/plans/truth_ledger.md` を新設し、Git 履歴と現行ソースに照らして「実装済みだが統合監査レポートが古い」項目の基線を固定した。初期収録は `15-1`, `15-3`, `17-17`, `17-18`, `17-19`, `17-24`。`17-21` は `Needs revalidation` のまま別管理とする。
 
 ## 3.5 Phase 2 Worker Ownership
 

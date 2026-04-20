@@ -216,7 +216,7 @@ events = EventTable.read("events.root", format="root")
 
 - **CSV / TXT** remains useful for inspection and simple interchange.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop.
-- **Zarr** direct I/O stores and restores timing metadata such as `t0` and `dt` in Zarr attributes. This page treats that metadata path as part of the current supported behavior.
+- **Zarr** direct I/O now expects per-array timing metadata explicitly. `sample_rate` is the primary key, `dt` is accepted as a fallback, and reads raise `ValueError` if neither is present unless you intentionally recover a legacy store with `sample_rate_override=...` or `dt_override=...`.
 - **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O.
 
 <a id="io-formats-en-d"></a>

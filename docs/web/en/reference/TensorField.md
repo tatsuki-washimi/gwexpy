@@ -11,7 +11,7 @@ Use `TensorField` for physics-aware field data with explicit domains, units, and
 ## Representative Signatures
 
 ```python
-TensorField(components, axis0_domain="time", spatial_domains=(...), ...)
+TensorField(components, rank=None, validate=True)
 TensorField.trace()
 ```
 

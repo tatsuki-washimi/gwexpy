@@ -11,8 +11,9 @@
 ## 代表的なシグネチャ
 
 ```python
-ScalarField(data, axis0_domain="time", spatial_domains=("real", "real", "real"), ...)
+ScalarField(data, axis0_domain="time", space_domain="real", ...)
 ScalarField.fft_time(nfft=None)
+ScalarField.fft_space(axes=None, n=None)
 ```
 
 ## 最小例
@@ -20,8 +21,17 @@ ScalarField.fft_time(nfft=None)
 ```python
 from gwexpy.fields import ScalarField
 import numpy as np
+from astropy import units as u
 
-field = ScalarField(np.random.randn(16, 4, 4, 4), axis0_domain="time")
+field = ScalarField(
+    np.random.randn(16, 4, 4, 4),
+    axis0=np.arange(16) * 0.1 * u.s,
+    axis1=np.arange(4) * 0.5 * u.m,
+    axis2=np.arange(4) * 0.5 * u.m,
+    axis3=np.arange(4) * 0.5 * u.m,
+    axis0_domain="time",
+    space_domain="real",
+)
 field_f = field.fft_time()
 ```
 
@@ -50,7 +60,7 @@ field_f = field.fft_time()
 
 ## 特徴
 
-- **明示的なドメイン保持**: `axis0_domain ∈ {time, frequency}` と空間軸の `space_domain ∈ {real, k}` を明示的に保持。
+- **明示的なドメイン保持**: `axis0_domain ∈ {time, frequency}` と `space_domain` 引数を通じた空間軸ごとの `{real, k}` を明示的に保持。
 - **物理整合性を保つスライス**: インデクシング操作を行っても4次元構造が維持され、軸メタデータが欠落しません。
 - **単位とドメインの検証**: コンストラクタおよび FFT 操作後にドメインと単位の整合性を自動検証。
 - **信号処理機能**: PSD、コヒーレンス、相互相関などの解析機能を内蔵。

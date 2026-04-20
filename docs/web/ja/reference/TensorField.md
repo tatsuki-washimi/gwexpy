@@ -11,7 +11,7 @@
 ## 代表的なシグネチャ
 
 ```python
-TensorField(components, axis0_domain="time", spatial_domains=(...), ...)
+TensorField(components, rank=None, validate=True)
 TensorField.trace()
 ```
 
