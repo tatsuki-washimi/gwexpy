@@ -6,7 +6,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), '..', '..');
-const chromePath = resolveChromePath();
 const chromePort = 18774;
 const docsJsPath = path.join(repoRoot, 'docs', '_static', 'external-links.js');
 const outDir = path.join(os.tmpdir(), 'gwexpy-17-18-external-links');
@@ -132,7 +131,7 @@ class CdpSession {
   }
 }
 
-function spawnChrome(profileDir) {
+function spawnChrome(chromePath, profileDir) {
   return spawn(
     chromePath,
     [
@@ -335,7 +334,8 @@ async function main() {
   const builtPages = parseBuiltPages();
   const fixturePath = builtPages.length === 0 ? await buildFixture() : null;
   const profileDir = await fs.mkdtemp(path.join(os.tmpdir(), 'gwexpy-17-18-chrome-'));
-  const chrome = spawnChrome(profileDir);
+  const chromePath = resolveChromePath();
+  const chrome = spawnChrome(chromePath, profileDir);
   try {
     await waitForDevtools();
     if (builtPages.length === 0) {
