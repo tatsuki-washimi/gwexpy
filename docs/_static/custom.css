@@ -135,6 +135,47 @@ body {
     }
 }
 
+/* Notebook-rendered pandas dataframes do not get the RTD responsive wrapper. */
+.output_area.rendered_html {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.output_area.rendered_html > div {
+    max-width: 100%;
+}
+
+.output_area.rendered_html table.dataframe {
+    width: 100%;
+    max-width: 100%;
+    table-layout: auto;
+}
+
+.output_area.rendered_html table.dataframe td,
+.output_area.rendered_html table.dataframe th {
+    white-space: normal !important;
+    padding: 12px !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+    vertical-align: top;
+}
+
+@media (max-width: 768px) {
+    .output_area.rendered_html table.dataframe {
+        table-layout: fixed;
+    }
+
+    .output_area.rendered_html table.dataframe td,
+    .output_area.rendered_html table.dataframe th {
+        padding: 10px !important;
+        font-size: 0.95rem;
+        line-height: 1.45;
+    }
+}
+
 /* --- 4. Language Switcher & Utilities --- */
 /* #lang-pill のスタイルは _templates/layout.html の extrahead ブロック内に定義済み */
 

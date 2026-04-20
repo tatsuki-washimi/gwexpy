@@ -6,13 +6,13 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy の direct I/O ガイドです。対応フォーマット、読み書きの可否、fetch 系の入口、format= を明示すべき場面を整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T01:10:11+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ファイル I/O 対応フォーマットガイド &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=3b013463" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
@@ -25,12 +25,43 @@
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
       <script src="../../../_static/copybutton.js?v=17e82a72"></script>
+      <script src="../../../_static/external-links.js?v=5d50874a"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="リファレンス (Reference)" href="../reference/index.html" />
     <link rel="prev" title="グリッチ詳細解析：Q-変換と Omega スキャン" href="tutorials/case_glitch_analysis.html" />
    
+  
+  <meta property="og:title" content="ファイル I/O 対応フォーマットガイド — GWexpy Documentation" />
+  
+  
+  <meta property="og:description" content="GWexpy の direct I/O ガイドです。対応フォーマット、読み書きの可否、fetch 系の入口、format= を明示すべき場面を整理します。" />
+  
+  
+  <meta property="og:type" content="website" />
+  
+  
+  <meta property="og:url" content="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/io_formats.html" />
+  
+  
+  <meta property="og:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/phase3/gateway_hero_scientific.png" />
+  
+  
+  <meta property="og:site_name" content="GWexpy Documentation" />
+  
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  
+  <meta name="twitter:title" content="ファイル I/O 対応フォーマットガイド — GWexpy Documentation" />
+  
+  
+  <meta name="twitter:description" content="GWexpy の direct I/O ガイドです。対応フォーマット、読み書きの可否、fetch 系の入口、format= を明示すべき場面を整理します。" />
+  
+  
+  <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/phase3/gateway_hero_scientific.png" />
+  
   
   <style>
   #lang-pill {
@@ -157,6 +188,7 @@
 <li class="toctree-l3"><a class="reference internal" href="glossary.html">用語集 (Glossary)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
 <li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="verification_and_quality.html">検証と品質の見方</a></li>
 <li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
@@ -798,6 +830,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a></p></li>
 <li><p><a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a></p></li>
+<li><p><a class="reference internal" href="verification_and_quality.html"><span class="std std-doc">検証と品質の見方</span></a></p></li>
 <li><p><a class="reference internal" href="installation.html"><span class="doc std std-doc">インストールガイド</span></a></p></li>
 </ul>
 </section>
@@ -831,7 +864,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
+      <span class="lastupdated">Last updated on 2026-04-20 01:10:11.
       </span></p>
   </div>
 

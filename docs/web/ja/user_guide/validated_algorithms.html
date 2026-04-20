@@ -6,13 +6,13 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy の検証済みアルゴリズムについて、数値許容誤差、前提条件、監査根拠、理論・API・チュートリアルへの導線を整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T12:34:34+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T01:10:11+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>検証済みアルゴリズム &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=9fddb14a" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=3b013463" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
@@ -28,12 +28,43 @@
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
       <script src="../../../_static/copybutton.js?v=17e82a72"></script>
+      <script src="../../../_static/external-links.js?v=5d50874a"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="アーキテクチャとデータフロー" href="architecture.html" />
     <link rel="prev" title="ノイズ生成 (Noise)" href="../reference/Noise.html" />
    
+  
+  <meta property="og:title" content="検証済みアルゴリズム — GWexpy Documentation" />
+  
+  
+  <meta property="og:description" content="GWexpy の検証済みアルゴリズムについて、数値許容誤差、前提条件、監査根拠、理論・API・チュートリアルへの導線を整理します。" />
+  
+  
+  <meta property="og:type" content="website" />
+  
+  
+  <meta property="og:url" content="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/validated_algorithms.html" />
+  
+  
+  <meta property="og:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/phase3/gateway_hero_scientific.png" />
+  
+  
+  <meta property="og:site_name" content="GWexpy Documentation" />
+  
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  
+  <meta name="twitter:title" content="検証済みアルゴリズム — GWexpy Documentation" />
+  
+  
+  <meta name="twitter:description" content="GWexpy の検証済みアルゴリズムについて、数値許容誤差、前提条件、監査根拠、理論・API・チュートリアルへの導線を整理します。" />
+  
+  
+  <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/phase3/gateway_hero_scientific.png" />
+  
   
   <style>
   #lang-pill {
@@ -156,6 +187,7 @@
 <li class="toctree-l3"><a class="reference internal" href="glossary.html">用語集 (Glossary)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
 <li class="toctree-l3"><a class="reference internal" href="troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="verification_and_quality.html">検証と品質の見方</a></li>
 <li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="changelog.html">更新履歴 (Changelog)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
@@ -540,6 +572,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="numerical_stability.html"><span class="std std-doc">数値安定性</span></a> - 数値安定性（精度管理）</p></li>
 <li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a> - 時刻系と FFT 規約の共通前提</p></li>
+<li><p><a class="reference internal" href="verification_and_quality.html"><span class="std std-doc">検証と品質の見方</span></a> - notebook、I/O、coverage の公開根拠をまとめて確認する</p></li>
 <li><p><a class="reference internal" href="glossary.html"><span class="std std-doc">用語集</span></a> - アルゴリズム用語集</p></li>
 <li><p><a class="reference internal" href="../reference/api/fields.html"><span class="std std-doc">Fields API</span></a></p></li>
 <li><p><a class="reference internal" href="../reference/api/timeseries.html"><span class="std std-doc">Time Series API</span></a></p></li>
@@ -571,7 +604,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 12:34:34.
+      <span class="lastupdated">Last updated on 2026-04-20 01:10:11.
       </span></p>
   </div>
 
