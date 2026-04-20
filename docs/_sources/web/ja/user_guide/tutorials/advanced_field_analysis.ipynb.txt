@@ -63,17 +63,18 @@
    "outputs": [],
    "source": [
     "import warnings\n",
+    "\n",
     "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
     "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
-    "import numpy as np\n",
-    "import matplotlib.pyplot as plt\n",
     "import astropy.units as u\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
     "\n",
     "from gwexpy.fields import ScalarField, VectorField\n",
-    "from gwexpy.fields.demo import make_demo_scalar_field, make_propagating_gaussian\n",
+    "from gwexpy.fields.demo import make_propagating_gaussian\n",
     "from gwexpy.fields.signal import (\n",
-    "    spectral_density, coherence_map, time_delay_map, compute_xcorr,\n",
+    "    spectral_density,\n",
     ")\n"
    ]
   },

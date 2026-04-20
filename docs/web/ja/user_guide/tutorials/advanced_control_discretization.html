@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>制御解析: 離散化の基礎 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=508f903c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
 
   
-    <link rel="shortcut icon" href="../../../../_static/icon.png"/>
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/advanced_control_discretization.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -39,7 +39,7 @@
   <meta property="og:title" content="制御解析: 離散化の基礎 — GWexpy Documentation" />
   
   
-  <meta property="og:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta property="og:type" content="website" />
@@ -60,56 +60,11 @@
   <meta name="twitter:title" content="制御解析: 離散化の基礎 — GWexpy Documentation" />
   
   
-  <meta name="twitter:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
   
-  
-  <style>
-  #lang-pill {
-    position: fixed;
-    top: 12px;
-    right: 20px;
-    z-index: 9999;
-    background: #fff;
-    border: 1px solid #d0d0d0;
-    border-radius: 16px;
-    padding: 4px 14px;
-    font-size: 0.82em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    line-height: 1.6;
-  }
-  #lang-pill a {
-    color: #2980B9;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  #lang-pill a:hover {
-    color: #1a5f8c;
-    text-decoration: underline;
-  }
-  #lang-pill .lang-sep {
-    color: #bbb;
-  }
-  #lang-pill .lang-current {
-    color: #333;
-    font-weight: 700;
-  }
-  @media (prefers-color-scheme: dark) {
-    #lang-pill {
-      background: #2c2c2e;
-      border-color: #3a3a3c;
-      color: #efeff4;
-    }
-    #lang-pill .lang-current { color: #efeff4; }
-    #lang-pill .lang-sep     { color: #636366; }
-  }
-  </style>
 
 </head>
 
@@ -119,12 +74,14 @@
   
     
     
+    
     <div id="lang-pill">
       <span>🌐</span>
       <span class="lang-current">日本語</span>
       <span class="lang-sep">|</span>
       <a href="../../../en/user_guide/tutorials/advanced_control_discretization.html">English</a>
     </div>
+    
   
 
   <div class="wy-grid-for-nav">
@@ -244,12 +201,11 @@
 <p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/advanced_control_discretization.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>この notebook は legacy の制御理論例を公開 docs 用に整理したものです。ここで見たいのは <code class="docutils literal notranslate"><span class="pre">c2d()</span></code> の使い方そのものではなく、<strong>連続時間プラントがデジタル実装でどう見え方を変えるか</strong> です。</p>
 <p><strong>Zero-Order Hold (ZOH)</strong> は DAC が指令をサンプル間で保持するという物理モデルに対応し、<strong>Tustin</strong> は周波数応答の形を比較的よく保ちます。どちらを使うかで時間応答と位相余裕の見え方が変わります。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">control.matlab</span><span class="w"> </span><span class="kn">import</span> <span class="n">bode</span><span class="p">,</span> <span class="n">c2d</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">tf</span>
 
@@ -261,11 +217,25 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;TransferFunction&gt;: sys[9]
+Inputs (1): [&#39;u[0]&#39;]
+Outputs (1): [&#39;y[0]&#39;]
+
+      1
+  ---------
+  0.5 s + 1
+</pre></div></div>
+</div>
 <section id="1.-プラントを離散化する">
 <h2>1. プラントを離散化する<a class="headerlink" href="#1.-プラントを離散化する" title="Link to this heading"></a></h2>
 <p>サンプリングは「指令を保持する」という近似と、「周波数軸を写像する」という近似を同時に導入します。制御系ではこの 2 つを混同しないことが重要です。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># サンプリング周期 [s]</span>
@@ -283,12 +253,37 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ZOH:
+&lt;TransferFunction&gt;: sys[9]$sampled
+Inputs (1): [&#39;u[0]&#39;]
+Outputs (1): [&#39;y[0]&#39;]
+dt = 0.2
+
+    0.3297
+  ----------
+  z - 0.6703
+Tustin:
+&lt;TransferFunction&gt;: sys[9]$sampled
+Inputs (1): [&#39;u[0]&#39;]
+Outputs (1): [&#39;y[0]&#39;]
+dt = 0.2
+
+  0.1667 z + 0.1667
+  -----------------
+     z - 0.6667
+</pre></div></div>
+</div>
 </section>
 <section id="2.-周波数応答を比べる">
 <h2>2. 周波数応答を比べる<a class="headerlink" href="#2.-周波数応答を比べる" title="Link to this heading"></a></h2>
 <p>制御的に重要なのは、位相とゲインが連続系からどこでずれ始めるかです。とくに位相誤差は安定余裕を直接変えます。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
@@ -320,12 +315,40 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_7_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_7_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_7_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_7_2.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_7_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_7_3.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_7_3.png" />
+</div>
+</div>
 </section>
 <section id="3.-時間応答を比べる">
 <h2>3. 時間応答を比べる<a class="headerlink" href="#3.-時間応答を比べる" title="Link to this heading"></a></h2>
 <p>時間領域では ZOH が「保持された指令」を自然に再現し、Tustin は loop shape には有利でも保持入力の忠実度は別問題であることが見えてきます。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T_end</span> <span class="o">=</span> <span class="mi">3</span>
@@ -350,6 +373,27 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_9_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_9_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_9_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_9_2.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_control_discretization_9_2.png" />
+</div>
+</div>
 </section>
 </section>
 
@@ -365,7 +409,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
       </span></p>
   </div>
 

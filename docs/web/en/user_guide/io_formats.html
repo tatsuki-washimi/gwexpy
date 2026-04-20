@@ -6,16 +6,16 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="Choose the right direct file or network I/O path in GWexpy, including supported formats, read/write limits, fetch routes, and when to set format= explicitly." name="description" />
 
-    <meta property="article:modified_time" content="2026-04-20T01:10:11+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T17:44:56+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File I/O Supported Formats Guide &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=508f903c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a4af9253" />
 
   
-    <link rel="shortcut icon" href="../../../_static/icon.png"/>
+    <link rel="shortcut icon" href="../../../_static/icon.svg"/>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/io_formats.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -62,51 +62,6 @@
   
   <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
   
-  
-  <style>
-  #lang-pill {
-    position: fixed;
-    top: 12px;
-    right: 20px;
-    z-index: 9999;
-    background: #fff;
-    border: 1px solid #d0d0d0;
-    border-radius: 16px;
-    padding: 4px 14px;
-    font-size: 0.82em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    line-height: 1.6;
-  }
-  #lang-pill a {
-    color: #2980B9;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  #lang-pill a:hover {
-    color: #1a5f8c;
-    text-decoration: underline;
-  }
-  #lang-pill .lang-sep {
-    color: #bbb;
-  }
-  #lang-pill .lang-current {
-    color: #333;
-    font-weight: 700;
-  }
-  @media (prefers-color-scheme: dark) {
-    #lang-pill {
-      background: #2c2c2e;
-      border-color: #3a3a3c;
-      color: #efeff4;
-    }
-    #lang-pill .lang-current { color: #efeff4; }
-    #lang-pill .lang-sep     { color: #636366; }
-  }
-  </style>
 
 </head>
 
@@ -116,12 +71,14 @@
   
     
     
+    
     <div id="lang-pill">
       <span>🌐</span>
       <a href="../../ja/user_guide/io_formats.html">日本語</a>
       <span class="lang-sep">|</span>
       <span class="lang-current">English</span>
     </div>
+    
   
 
   <div class="wy-grid-for-nav">
@@ -305,12 +262,12 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <tr class="row-even"><td><p><strong>A. GW Standards</strong></p></td>
 <td><p>You want standard GW storage, exchange, or acquisition paths</p></td>
 <td><p><strong>HDF5</strong></p></td>
-<td><p>GWF, HDF5, ndscope-hdf5, DTTXML, NDS2, GWOSC</p></td>
+<td><p>GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>B. Seismic and Geophysical Observation</strong></p></td>
 <td><p>You need to read existing seismic or EM observation data</p></td>
-<td><p><strong>MiniSEED</strong></p></td>
-<td><p>MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here)</p></td>
+<td><p><strong>mseed</strong></p></td>
+<td><p>mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here)</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>C. General Analysis and Exchange</strong></p></td>
 <td><p>You need general-purpose storage or external analysis exchange</p></td>
@@ -343,7 +300,7 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.mseed&quot;</span><span class="p">)</span>
 
 <span class="c1"># Explicit format</span>
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.dat&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.dat&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mseed&quot;</span><span class="p">)</span>
 
 <span class="c1"># Write out</span>
 <span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -354,7 +311,7 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> uses the gwpy-style I/O registry.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.xml</span></code> is ambiguous, so <strong>use <code class="docutils literal notranslate"><span class="pre">format=&quot;dttxml&quot;</span></code> explicitly</strong> for DTTXML data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.xml</span></code> is ambiguous, so <strong>use <code class="docutils literal notranslate"><span class="pre">format=&quot;xml.diaggui&quot;</span></code> explicitly</strong> for DiagGUI XML data.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NDS2</span></code> and <code class="docutils literal notranslate"><span class="pre">GWOSC</span></code> are not file readers, so they use <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch_open_data()</span></code> instead of <code class="docutils literal notranslate"><span class="pre">.read()</span></code>.</p></li>
 </ul>
 </section>
@@ -370,12 +327,12 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>GWF / MiniSEED / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio</strong></p></td>
+<tr class="row-even"><td><p><strong>GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
 <td><p>Baseline end-user direct I/O pattern</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>NetCDF4 / Zarr / GBD / TDMS</strong></p></td>
+<tr class="row-odd"><td><p><strong>nc / Zarr / GBD / TDMS</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code></p></td>
 <td><p>Includes matrix-style direct I/O</p></td>
@@ -385,15 +342,15 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> and related collections</p></td>
 <td><p>Also covers <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">Histogram</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable</span></code>, and <code class="docutils literal notranslate"><span class="pre">Field</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>ndscope-hdf5</strong></p></td>
+<tr class="row-odd"><td><p><strong>hdf.ndscope</strong></p></td>
 <td><p>-</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
-<td><p>ndscope-compatible schema</p></td>
+<td><p>ndscope-compatible schema; aliases: <code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><strong>DTTXML</strong></p></td>
+<tr class="row-even"><td><p><strong>xml.diaggui</strong></p></td>
 <td><p>-</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
-<td><p>Requires <code class="docutils literal notranslate"><span class="pre">products</span></code></p></td>
+<td><p>Requires <code class="docutils literal notranslate"><span class="pre">products</span></code>; legacy alias: <code class="docutils literal notranslate"><span class="pre">dttxml</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>NDS2 / GWOSC</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
@@ -450,17 +407,17 @@ If you are unsure, start with <strong>HDF5</strong>. Use <strong>GWF</strong> wh
 <td><p>Long-term storage with metadata</p></td>
 <td><p>Main direct-I/O option for Field objects</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ndscope-hdf5</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>)</p></td>
+<tr class="row-even"><td><p><strong>hdf.ndscope</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;ndscope-hdf5&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;ndscope-hdf5&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;hdf.ndscope&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;hdf.ndscope&quot;)</span></code></p></td>
 <td><p>ndscope-compatible HDF5</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> only. Backward-compatible aliases: <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> only. Legacy aliases: <code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>DTTXML</strong> (<code class="docutils literal notranslate"><span class="pre">.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml.gz</span></code>)</p></td>
+<tr class="row-odd"><td><p><strong>xml.diaggui</strong> (<code class="docutils literal notranslate"><span class="pre">.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml.gz</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;dttxml&quot;,</span> <span class="pre">products=&quot;...&quot;)</span></code></p></td>
-<td><p>DTT outputs and diagnostics</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">products</span></code> is required</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;xml.diaggui&quot;,</span> <span class="pre">products=&quot;...&quot;)</span></code></p></td>
+<td><p>DiagGUI / DTT outputs</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">products</span></code> is required; legacy alias: <code class="docutils literal notranslate"><span class="pre">dttxml</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>NDS2</strong></p></td>
 <td class="text-center"><p>○ / ×</p></td>
@@ -486,7 +443,7 @@ If you are unsure, start with <strong>HDF5</strong>. Use <strong>GWF</strong> wh
 
 <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
 <span class="n">frame</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.gwf&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gwf&quot;</span><span class="p">)</span>
-<span class="n">dtt</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;diag.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TS&quot;</span><span class="p">)</span>
+<span class="n">dtt</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;diag.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;xml.diaggui&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TS&quot;</span><span class="p">)</span>
 <span class="n">open_data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch_open_data</span><span class="p">(</span><span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="mi">1126259446</span><span class="p">,</span> <span class="mi">1126259478</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -511,11 +468,11 @@ In practice, <strong>MiniSEED</strong> is the easiest starting point when you ne
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>MiniSEED</strong> (<code class="docutils literal notranslate"><span class="pre">.mseed</span></code>)</p></td>
+<tr class="row-even"><td><p><strong>mseed</strong> (<code class="docutils literal notranslate"><span class="pre">.mseed</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;miniseed&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;miniseed&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;mseed&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;mseed&quot;)</span></code></p></td>
 <td><p>Standard seismic waveform exchange</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">gap</span></code> controls gap handling</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gap</span></code> controls gap handling; legacy alias: <code class="docutils literal notranslate"><span class="pre">miniseed</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>SAC</strong> (<code class="docutils literal notranslate"><span class="pre">.sac</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -569,7 +526,7 @@ In practice, <strong>MiniSEED</strong> is the easiest starting point when you ne
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s2">&quot;pad&quot;</span><span class="p">)</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mseed&quot;</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s2">&quot;pad&quot;</span><span class="p">)</span>
 <span class="n">win</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.cnt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;win32&quot;</span><span class="p">)</span>
 <span class="n">ats</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.atss&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ats.mth5&quot;</span><span class="p">)</span>
 </pre></div>
@@ -602,11 +559,11 @@ The key rule here is not to mix up “format choice” with “library conversio
 <td><p>Lightweight exchange and inspection</p></td>
 <td><p>Also supports directory bulk loading</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>NetCDF4</strong> (<code class="docutils literal notranslate"><span class="pre">.nc</span></code>)</p></td>
+<tr class="row-odd"><td><p><strong>nc</strong> (<code class="docutils literal notranslate"><span class="pre">.nc</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;netcdf4&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;netcdf4&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;netcdf4&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;netcdf4&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code></p></td>
 <td><p>Scientific storage for time-series-oriented data</p></td>
-<td><p>Direct I/O here is centered on TimeSeries classes</p></td>
+<td><p>Direct I/O here is centered on TimeSeries classes; legacy alias: <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Zarr</strong> (<code class="docutils literal notranslate"><span class="pre">.zarr</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -644,7 +601,7 @@ The key rule here is not to mix up “format choice” with “library conversio
 <ul class="simple">
 <li><p><strong>CSV / TXT</strong> remains useful for inspection and simple interchange.</p></li>
 <li><p><strong>NetCDF4 / Zarr</strong> are treated here only as <strong>direct TimeSeries-style I/O</strong>. Field/xarray bridges belong to interop.</p></li>
-<li><p><strong>Zarr</strong> direct I/O stores and restores timing metadata such as <code class="docutils literal notranslate"><span class="pre">t0</span></code> and <code class="docutils literal notranslate"><span class="pre">dt</span></code> in Zarr attributes. This page treats that metadata path as part of the current supported behavior.</p></li>
+<li><p><strong>Zarr</strong> direct I/O now expects per-array timing metadata explicitly. <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> is the primary key, <code class="docutils literal notranslate"><span class="pre">dt</span></code> is accepted as a fallback, and reads raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if neither is present unless you intentionally recover a legacy store with <code class="docutils literal notranslate"><span class="pre">sample_rate_override=...</span></code> or <code class="docutils literal notranslate"><span class="pre">dt_override=...</span></code>.</p></li>
 <li><p><strong>ROOT</strong> object-level export/import belongs to interop. This page only covers EventTable direct I/O.</p></li>
 </ul>
 <p><a id="io-formats-en-d"></a></p>
@@ -728,9 +685,9 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hdf.ndscope</span></code></p></td>
 <td><p>Implemented, not yet prominent</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>-only HDF5 schema. Canonical name: <code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code>; backward-compatible aliases: <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>-only HDF5 schema. Legacy aliases: <code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SQLite</span></code>, <code class="docutils literal notranslate"><span class="pre">SQLite3</span></code></p></td>
 <td><p>Implemented, not yet prominent</p></td>
@@ -866,7 +823,7 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 01:10:11.
+      <span class="lastupdated">Last updated on 2026-04-20 17:44:56.
       </span></p>
   </div>
 

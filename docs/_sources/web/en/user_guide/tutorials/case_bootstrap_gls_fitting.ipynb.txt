@@ -80,6 +80,7 @@
    "outputs": [],
    "source": [
     "import warnings\n",
+    "\n",
     "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
     "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
@@ -115,17 +116,17 @@
    "source": [
     "# Data generation parameters\n",
     "fs = 2048.0              # Sample rate [Hz]\n",
-    "duration = 256.0         # Duration [s]\n",
+    "duration = 512.0         # Duration [s]\n",
     "\n",
     "# Resonance peak parameters (true values)\n",
     "peak_freq = 100.0        # Resonance frequency [Hz]\n",
     "peak_Q = 20.0            # Quality factor\n",
-    "peak_amplitude = 2e-21   # Peak height [1/rtHz]\n",
+    "peak_amplitude = 5e-21   # ASD amplitude at resonance [1/rtHz]\n",
     "\n",
     "# Background noise parameters\n",
     "noise_exponent = 0.5     # Power-law exponent (pink noise ~ f^-0.5)\n",
     "noise_amp = 1e-22        # Noise amplitude at f_ref\n",
-    "f_ref = 100.0            # Reference frequency [Hz]"
+    "f_ref = 100.0            # Reference frequency [Hz]\n"
    ]
   },
   {
@@ -179,14 +180,18 @@
     "    name=\"Background ASD\",\n",
     ")\n",
     "\n",
-    "# Add Lorentzian peak to the ASD\n",
-    "gamma = peak_freq / peak_Q  # Half-width at half-maximum\n",
-    "lorentzian = peak_amplitude * (gamma / 2) ** 2 / (\n",
-    "    (frequencies - peak_freq) ** 2 + (gamma / 2) ** 2\n",
+    "# Build the synthetic spectrum in PSD space so the fitted model matches\n",
+    "# the injected line shape and width.\n",
+    "background_psd = background_asd.value ** 2\n",
+    "gamma_hwhm = peak_freq / (2 * peak_Q)  # Half-width at half-maximum\n",
+    "peak_psd_amplitude = peak_amplitude ** 2\n",
+    "peak_psd = peak_psd_amplitude * gamma_hwhm**2 / (\n",
+    "    (frequencies - peak_freq) ** 2 + gamma_hwhm**2\n",
     ")\n",
     "\n",
-    "# Total ASD (background + peak)\n",
-    "total_asd_values = np.sqrt(background_asd.value ** 2 + lorentzian ** 2)\n",
+    "# Total ASD = sqrt(total PSD)\n",
+    "total_psd_values = background_psd + peak_psd\n",
+    "total_asd_values = np.sqrt(total_psd_values)\n",
     "total_asd = FrequencySeries(\n",
     "    total_asd_values,\n",
     "    frequencies=frequencies,\n",
@@ -206,7 +211,7 @@
     "\n",
     "print(f\"Generated TimeSeries: {data}\")\n",
     "print(f\"Duration: {data.duration.value:.1f} s\")\n",
-    "print(f\"Sample rate: {data.sample_rate.value:.0f} Hz\")"
+    "print(f\"Sample rate: {data.sample_rate.value:.0f} Hz\")\n"
    ]
   },
   {
@@ -515,7 +520,7 @@
    ],
    "source": [
     "# Bootstrap parameters\n",
-    "n_boot = 2000         # Number of bootstrap resamples\n",
+    "n_boot = 300         # Number of bootstrap resamples\n",
     "block_size = 4        # Block bootstrap (accounts for time correlation)\n",
     "ci = 0.68             # Confidence interval (1-sigma equivalent)\n",
     "rebin_width = None    # No rebinning - preserves frequency correlations\n",
@@ -816,7 +821,7 @@
     "\n",
     "We fit a model consisting of:\n",
     "- **Power-law background**: $A_{bg} (f/f_{ref})^{\\alpha}$\n",
-    "- **Lorentzian peak**: $A_{peak} \\frac{(\\gamma/2)^2}{(f-f_0)^2 + (\\gamma/2)^2}$ where $\\gamma = f_0/Q$"
+    "- **Lorentzian peak**: $A_{peak} \\frac{\\gamma^2}{(f-f_0)^2 + \\gamma^2}$ where $\\gamma = f_0/(2Q)$\n"
    ]
   },
   {
@@ -834,19 +839,18 @@
    "outputs": [],
    "source": [
     "def psd_model(f, A_bg, alpha, A_peak, f0, Q):\n",
-    "    \"\"\"\n",
-    "    PSD model: Power-law background + Lorentzian peak.\n",
+    "    \"\"\"PSD model: power-law background + Lorentzian resonance.\n",
     "\n",
     "    Parameters\n",
     "    ----------\n",
-    "    f : array\n",
-    "        Frequency [Hz]\n",
+    "    f : array-like\n",
+    "        Frequency array [Hz]\n",
     "    A_bg : float\n",
-    "        Background PSD amplitude at f_ref=100 Hz\n",
+    "        Background amplitude at f_ref [PSD units]\n",
     "    alpha : float\n",
-    "        Power-law exponent (negative for red noise)\n",
+    "        Power-law exponent\n",
     "    A_peak : float\n",
-    "        Peak PSD amplitude\n",
+    "        PSD amplitude at resonance\n",
     "    f0 : float\n",
     "        Resonance frequency [Hz]\n",
     "    Q : float\n",
@@ -854,14 +858,14 @@
     "\n",
     "    Returns\n",
     "    -------\n",
-    "    psd : array\n",
-    "        Model PSD values\n",
+    "    psd : array-like\n",
+    "        Model PSD\n",
+    "\n",
     "    \"\"\"\n",
-    "    f_ref = 100.0\n",
     "    background = A_bg * (f / f_ref) ** alpha\n",
-    "    gamma = f0 / Q\n",
-    "    lorentzian = A_peak * (gamma / 2) ** 2 / ((f - f0) ** 2 + (gamma / 2) ** 2)\n",
-    "    return background + lorentzian"
+    "    gamma_hwhm = f0 / (2 * Q)\n",
+    "    peak_psd = A_peak * gamma_hwhm**2 / ((f - f0) ** 2 + gamma_hwhm**2)\n",
+    "    return background + peak_psd\n"
    ]
   },
   {
@@ -948,7 +952,9 @@
    "source": [
     "### 4.3 Initial Parameter Guesses and Bounds\n",
     "\n",
-    "Good initial guesses help the optimizer converge to the correct minimum."
+    "Good initial guesses help the optimizer converge to the correct minimum.\n",
+    "\n",
+    "In this synthetic example, the center frequency is known to be near 100 Hz and the resonance is a moderately broad commissioning line rather than an arbitrarily narrow delta-like feature. Use bounds to encode that prior knowledge so the optimizer does not explain broadband structure by pushing `f0` or `Q` into nonphysical corners.\n"
    ]
   },
   {
@@ -1019,27 +1025,28 @@
     }
    ],
    "source": [
-    "# Initial guesses (slightly offset from true values)\n",
+    "# Initial guesses (slightly offset from the injected values)\n",
     "p0 = {\n",
-    "    \"A_bg\": 1.5e-44,   # Start somewhat close\n",
+    "    \"A_bg\": 1.5e-44,\n",
     "    \"alpha\": -0.8,\n",
     "    \"A_peak\": 5e-42,\n",
-    "    \"f0\": 98.0,\n",
-    "    \"Q\": 15.0,\n",
+    "    \"f0\": 99.5,\n",
+    "    \"Q\": 18.0,\n",
     "}\n",
     "\n",
     "# Parameter bounds\n",
+    "# Keep f0 near the injected commissioning line and cap Q to a physically plausible range\n",
     "bounds = {\n",
     "    \"A_bg\": (1e-46, 1e-42),\n",
-    "    \"alpha\": (-3, 0),\n",
+    "    \"alpha\": (-2.0, 0.0),\n",
     "    \"A_peak\": (1e-44, 1e-40),\n",
-    "    \"f0\": (90, 110),\n",
-    "    \"Q\": (5, 50),\n",
+    "    \"f0\": (95.0, 105.0),\n",
+    "    \"Q\": (8.0, 35.0),\n",
     "}\n",
     "\n",
     "print(\"Initial guesses:\")\n",
     "for k, v in p0.items():\n",
-    "    print(f\"  {k}: {v:.3e}\" if abs(v) < 0.01 else f\"  {k}: {v:.3f}\")"
+    "    print(f\"  {k}: {v:.3e}\" if abs(v) < 0.01 else f\"  {k}: {v:.3f}\")\n"
    ]
   },
   {
@@ -1248,7 +1255,10 @@
    "id": "e0abb701",
    "metadata": {},
    "source": [
-    "### 4.5 Analyze Fit Results"
+    "### 4.5 Analyze Fit Results\n",
+    "\n",
+    "For commissioning use, treat `f0` and `Q` as the primary diagnostics.\n",
+    "The absolute `A_peak` normalization is more sensitive to window leakage, bootstrap median bias, and the PSD/ASD convention than the line center or linewidth, so read it as an effective line-strength parameter rather than the most robust truth-matching check.\n"
    ]
   },
   {

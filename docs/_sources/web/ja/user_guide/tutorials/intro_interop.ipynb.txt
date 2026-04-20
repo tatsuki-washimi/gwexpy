@@ -23,7 +23,7 @@
    "source": [
     "# 相互運用: 基本\n",
     "\n",
-    "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_interop.ipynb)\n",
+    "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_interop.ipynb)\n",
     "\n",
     "このノートブックでは、`gwexpy` の `TimeSeries` クラスに追加された新しい相互運用機能 (Interoperability Features) を紹介します。\n",
     "`gwexpy` は、Pandas, Xarray, PyTorch, Astropy などの一般的なデータサイエンス・ライブラリとの間で、シームレスにデータを変換することができます。"
@@ -100,6 +100,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
     "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
@@ -129,10 +130,10 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",
-    "    import logging\n",
     "    import logging\n",
     "\n",
     "    logging.getLogger(\"mth5\").disabled = True\n",
@@ -1221,6 +1222,7 @@
    "outputs": [],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",
@@ -2684,8 +2686,9 @@
    "source": [
     "try:\n",
     "    from unittest.mock import MagicMock\n",
+    "\n",
     "    import numpy as np\n",
-    "    from gwexpy.interop.pyroomacoustics_ import from_pyroomacoustics_rir\n",
+    "\n",
     "\n",
     "    # モックルーム: 2マイク x 2音源 — 実際のレイアウト: rir[mic][source]\n",
     "    room = MagicMock()\n",
@@ -2722,9 +2725,12 @@
    "outputs": [],
    "source": [
     "try:\n",
+    "    import os\n",
+    "    import tempfile\n",
+    "\n",
     "    import h5py\n",
     "    import numpy as np\n",
-    "    import tempfile, os\n",
+    "\n",
     "    from gwexpy.fields import VectorField\n",
     "    from gwexpy.interop.openems_ import from_openems_hdf5\n",
     "\n",
@@ -2771,7 +2777,9 @@
    "source": [
     "try:\n",
     "    from unittest.mock import MagicMock\n",
+    "\n",
     "    import numpy as np\n",
+    "\n",
     "    from gwexpy.fields import ScalarField\n",
     "    from gwexpy.interop.meshio_ import from_meshio\n",
     "\n",
@@ -2816,6 +2824,7 @@
    "source": [
     "try:\n",
     "    from unittest.mock import MagicMock\n",
+    "\n",
     "    import numpy as np\n",
     "\n",
     "    # モックレジストリ（FrequencySeries / FrequencySeriesDict の代替）\n",

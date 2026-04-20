@@ -142,10 +142,12 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
     "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
     "from pathlib import Path\n",
+    "\n",
     "from gwexpy.table import SegmentTable\n",
     "\n",
     "# Resolve the sample path robustly for both repo-root and notebook-dir execution.\n",
@@ -243,6 +245,7 @@
    ],
    "source": [
     "from gwexpy.noise.wave import gaussian\n",
+    "\n",
     "\n",
     "def noise_loader(segment):\n",
     "    # Generate synthetic noise for the segment\n",

@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T17:44:56+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lock-in Detection: Recovering Weak AM/FM Structure &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=508f903c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
 
   
-    <link rel="shortcut icon" href="../../../../_static/icon.png"/>
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/case_lockin_detection.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -39,7 +39,7 @@
   <meta property="og:title" content="Lock-in Detection: Recovering Weak AM/FM Structure — GWexpy Documentation" />
   
   
-  <meta property="og:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta property="og:type" content="website" />
@@ -60,56 +60,11 @@
   <meta name="twitter:title" content="Lock-in Detection: Recovering Weak AM/FM Structure — GWexpy Documentation" />
   
   
-  <meta name="twitter:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
   
-  
-  <style>
-  #lang-pill {
-    position: fixed;
-    top: 12px;
-    right: 20px;
-    z-index: 9999;
-    background: #fff;
-    border: 1px solid #d0d0d0;
-    border-radius: 16px;
-    padding: 4px 14px;
-    font-size: 0.82em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    line-height: 1.6;
-  }
-  #lang-pill a {
-    color: #2980B9;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  #lang-pill a:hover {
-    color: #1a5f8c;
-    text-decoration: underline;
-  }
-  #lang-pill .lang-sep {
-    color: #bbb;
-  }
-  #lang-pill .lang-current {
-    color: #333;
-    font-weight: 700;
-  }
-  @media (prefers-color-scheme: dark) {
-    #lang-pill {
-      background: #2c2c2e;
-      border-color: #3a3a3c;
-      color: #efeff4;
-    }
-    #lang-pill .lang-current { color: #efeff4; }
-    #lang-pill .lang-sep     { color: #636366; }
-  }
-  </style>
 
 </head>
 
@@ -119,12 +74,14 @@
   
     
     
+    
     <div id="lang-pill">
       <span>🌐</span>
       <a href="../../../ja/user_guide/tutorials/case_lockin_detection.html">日本語</a>
       <span class="lang-sep">|</span>
       <span class="lang-current">English</span>
     </div>
+    
   
 
   <div class="wy-grid-for-nav">
@@ -243,7 +200,7 @@
 <p>Lock-in detection is the right tool when the physically interesting information lives as a <strong>slow modulation</strong> on a much faster carrier. The goal is not to measure the carrier itself, but to move the modulation into baseband where low-frequency trend tools can recover it.</p>
 <p>This public version is distilled from the legacy heterodyne notebook and focuses on the essential AM/FM recovery workflow.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -273,8 +230,8 @@
 <section id="1.-Recover-amplitude-and-phase-with-lock_in">
 <h2>1. Recover amplitude and phase with <code class="docutils literal notranslate"><span class="pre">lock_in</span></code><a class="headerlink" href="#1.-Recover-amplitude-and-phase-with-lock_in" title="Link to this heading"></a></h2>
 <p>The reference frequency tells the algorithm which coherent part of the waveform to keep. Broadband noise averages away, while the slow AM/FM structure survives.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># stride sets the time resolution of the recovered baseband trend: shorter stride follows faster modulation but averages less noise.</span>
@@ -295,12 +252,19 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_lockin_detection_5_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_lockin_detection_5_0.png" />
+</div>
+</div>
 </section>
 <section id="2.-Manual-demodulation-shows-the-same-physics">
 <h2>2. Manual demodulation shows the same physics<a class="headerlink" href="#2.-Manual-demodulation-shows-the-same-physics" title="Link to this heading"></a></h2>
 <p>Mixing with cosine/sine creates a DC term plus an image at <code class="docutils literal notranslate"><span class="pre">2*f_c</span></code>. The low-pass filter rejects that high-frequency image so only the slow envelope and phase drift remain.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ref_cos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f_carrier</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
@@ -326,12 +290,19 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_lockin_detection_7_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_lockin_detection_7_0.png" />
+</div>
+</div>
 </section>
 <section id="3.-Demodulation-moves-the-information-into-baseband">
 <h2>3. Demodulation moves the information into baseband<a class="headerlink" href="#3.-Demodulation-moves-the-information-into-baseband" title="Link to this heading"></a></h2>
 <p>After demodulation, the interesting structure is centered near zero frequency. That is why lock-in detection turns a high-frequency carrier problem into a low-frequency trend-analysis problem.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">asd_raw</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -346,6 +317,13 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_lockin_detection_9_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_lockin_detection_9_0.png" />
 </div>
 </div>
 </section>
@@ -363,7 +341,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-20 17:44:56.
       </span></p>
   </div>
 

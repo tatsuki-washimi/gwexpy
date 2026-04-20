@@ -28,6 +28,18 @@ myst:
 
 ローカルファイルの `.read()` / `.write()` / `fetch()` 系の入口は [ファイル I/O 対応フォーマットガイド](io_formats) を参照してください。
 
+## 直接 I/O 名
+
+以下は `gwexpy` で使う direct I/O の正規名です。
+移行期間中は旧 alias も使えますが、新しい例では下の正規名を優先してください。
+
+| 正規名 | 旧 alias | 代表的な direct I/O 入口 | 外部パッケージ / スキーマ |
+| --- | --- | --- | --- |
+| `mseed` | `miniseed` | `TimeSeriesDict.read(..., format="mseed")`, `.write(..., format="mseed")` | [ObsPy](https://docs.obspy.org/) |
+| `nc` | `netcdf4` | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")` | [netCDF4](https://unidata.github.io/netcdf4-python/), [xarray](https://docs.xarray.dev/) |
+| `hdf.ndscope` | `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope HDF5 schema |
+| `xml.diaggui` | `dttxml` | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT XML |
+
 ## このページでわかること
 
 | 項目 | 内容 |
@@ -62,7 +74,7 @@ myst:
 ## 状態ラベル
 
 - `公開済み`: 実装があり、`reference/api/interop` から到達できる
-- `実装済み（公開整理待ち）`: 実装はあるが、公開ドキュメントでの整理が未完
+- `実装済み`: 実装はあるが、このページ上の導線や参照整理がまだ残っている
 - `実装済み（一部経路は対応中）`: 主経路は使えるが、一部変換経路の完成度が不足している
 - `対応中`: 専用の実装面または公開面の整理が未完
 - `対応予定`: 設計対象として明示するが、まだ実装がない
@@ -79,12 +91,12 @@ myst:
 
 | 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
-| HDF5 | `to_hdf5()`, `from_hdf5()` | 公開済み | object-level 変換 | [API](../reference/api/gwexpy.interop.hdf5_.rst) |
+| [HDF5](https://www.hdfgroup.org/solutions/hdf5/) | `to_hdf5()`, `from_hdf5()` | 公開済み | object-level 変換 | [API](../reference/api/gwexpy.interop.hdf5_.rst) |
 | JSON | `to_json()`, `from_json()` | 公開済み | JSON 文字列との相互変換 | [API](../reference/api/gwexpy.interop.json_.rst) |
 | Python dict | `to_dict()`, `from_dict()` | 公開済み | dict との相互変換 | — |
-| SQLite | `to_sqlite()`, `from_sqlite()` | 実装済み（公開整理待ち） | object-level bridge | — |
-| Zarr | `to_zarr()`, `from_zarr()` | 公開済み | array/store bridge | [API](../reference/api/gwexpy.interop.zarr_.rst) |
-| NetCDF4 | `to_netcdf4()`, `from_netcdf4()` | 公開済み | object-level bridge | [API](../reference/api/gwexpy.interop.netcdf4_.rst) |
+| [SQLite](https://www.sqlite.org/index.html) | `to_sqlite()`, `from_sqlite()` | 実装済み | object-level bridge | — |
+| [Zarr](https://zarr.readthedocs.io/en/stable/) | `to_zarr()`, `from_zarr()` | 公開済み | array/store bridge | [API](../reference/api/gwexpy.interop.zarr_.rst) |
+| [NetCDF4](https://unidata.github.io/netcdf4-python/) | `to_netcdf4()`, `from_netcdf4()` | 公開済み | object-level bridge | [API](../reference/api/gwexpy.interop.netcdf4_.rst) |
 
 (interop-ja-analysis-conversion)=
 ## B. 解析ライブラリ・オブジェクト変換
@@ -99,12 +111,12 @@ myst:
 | 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
 | NumPy | 専用 `to_*()` / `from_*()` API なし | 実装済み（基盤対応） | 内部配列表現として広く利用 | — |
-| pandas | `to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, `from_pandas_dataframe()` | 公開済み | Series / DataFrame | [API](../reference/api/gwexpy.interop.pandas_.rst) |
-| polars | `to_polars_series()`, `from_polars_series()`, `to_polars_dataframe()`, `from_polars_dataframe()`, `to_polars_dict()`, `from_polars_dict()` | 実装済み（公開整理待ち） | Series / DataFrame / dict | — |
-| xarray | `to_xarray()`, `from_xarray()` | 公開済み | DataArray / Dataset | [API](../reference/api/gwexpy.interop.xarray_.rst) |
-| xarray Field | `to_xarray_field()`, `from_xarray_field()` | 公開済み | ScalarField / VectorField | [API](../reference/api/gwexpy.interop.xarray_.rst) |
-| astropy | `to_astropy_timeseries()`, `from_astropy_timeseries()` | 公開済み | `astropy.timeseries.TimeSeries` | [API](../reference/api/gwexpy.interop.astropy_.rst) |
-| dask | `to_dask()`, `from_dask()` | 公開済み | dask array bridge | [API](../reference/api/gwexpy.interop.dask_.rst) |
+| [pandas](https://pandas.pydata.org/) | `to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, `from_pandas_dataframe()` | 公開済み | Series / DataFrame | [API](../reference/api/gwexpy.interop.pandas_.rst) |
+| [polars](https://pola.rs/) | `to_polars_series()`, `from_polars_series()`, `to_polars_dataframe()`, `from_polars_dataframe()`, `to_polars_dict()`, `from_polars_dict()` | 実装済み | Series / DataFrame / dict | — |
+| [xarray](https://docs.xarray.dev/) | `to_xarray()`, `from_xarray()` | 公開済み | DataArray / Dataset | [API](../reference/api/gwexpy.interop.xarray_.rst) |
+| [xarray](https://docs.xarray.dev/) Field | `to_xarray_field()`, `from_xarray_field()` | 公開済み | ScalarField / VectorField | [API](../reference/api/gwexpy.interop.xarray_.rst) |
+| [astropy](https://www.astropy.org/) | `to_astropy_timeseries()`, `from_astropy_timeseries()` | 公開済み | `astropy.timeseries.TimeSeries` | [API](../reference/api/gwexpy.interop.astropy_.rst) |
+| [dask](https://www.dask.org/) | `to_dask()`, `from_dask()` | 公開済み | dask array bridge | [API](../reference/api/gwexpy.interop.dask_.rst) |
 
 (interop-ja-ml-conversion)=
 ## C. 機械学習・高速化・配列基盤
@@ -118,16 +130,16 @@ myst:
 
 | 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
-| PyTorch | `to_torch()`, `from_torch()` | 実装済み（公開整理待ち） | Tensor 変換 | — |
-| TensorFlow | `to_tf()`, `from_tf()` | 実装済み（公開整理待ち） | Tensor 変換 | — |
-| JAX | `to_jax()`, `from_jax()` | 実装済み（公開整理待ち） | JAX array 変換 | — |
-| CuPy | `to_cupy()`, `from_cupy()` | 実装済み（公開整理待ち） | GPU array 変換 | — |
+| [PyTorch](https://pytorch.org/) | `to_torch()`, `from_torch()` | 実装済み | Tensor 変換 | — |
+| [TensorFlow](https://www.tensorflow.org/) | `to_tf()`, `from_tf()` | 実装済み | Tensor 変換 | — |
+| [JAX](https://jax.readthedocs.io/en/latest/) | `to_jax()`, `from_jax()` | 実装済み | JAX array 変換 | — |
+| [CuPy](https://cupy.dev/) | `to_cupy()`, `from_cupy()` | 実装済み | GPU array 変換 | — |
 
 (interop-ja-domain-conversion)=
 ## D. 物理・ドメイン特化ライブラリ
 
 ここでは、分野別ライブラリや専用オブジェクトとの接続を扱います。  
-完全往復か片方向変換か、公開整理待ちかどうかを区別して見てください。
+完全往復か片方向変換か、まだ対応中の経路があるかを区別して見てください。
 
 - 目的: 分野別ライブラリとの橋渡しを、直 I/O と混同せずに整理する
 - 入力: `gwexpy` オブジェクト、または ObsPy / ROOT / LAL / PyCBC などの外部オブジェクト
@@ -135,41 +147,41 @@ myst:
 
 | 連携先 | API / 入口 | 状態 | 補足 | 詳細 |
 | --- | --- | --- | --- | --- |
-| ROOT | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | 実装済み（一部経路は対応中） | `TH1 -> non-Histogram` は未完 | [API](../reference/api/gwexpy.interop.root_.rst) |
-| ObsPy | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | 公開済み | seismic bridge | [API](../reference/api/gwexpy.interop.obspy_.rst) |
-| LAL | `to_lal_timeseries()`, `from_lal_timeseries()`, `to_lal_frequencyseries()`, `from_lal_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 | [API](../reference/api/gwexpy.interop.lal_.rst) |
-| PyCBC | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 | [API](../reference/api/gwexpy.interop.pycbc_.rst) |
-| GWINC | `from_gwinc_budget()` | 公開済み | budget import | [API](../reference/api/gwexpy.interop.gwinc_.rst) |
-| Finesse | `from_finesse_frequency_response()`, `from_finesse_noise()` | 公開済み | optics / response | [API](../reference/api/gwexpy.interop.finesse_.rst) |
-| python-control | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | 公開済み | FRD / response。`pip install gwexpy[control]` が必要。FRD 変換は `FrequencySeries` / `FrequencySeriesDict` から利用でき、時間応答の取り込みは `TimeSeries.from_control()` / `TimeSeriesDict.from_control()` で行えます。 | [API](../reference/api/gwexpy.interop.control_.rst) |
-| SimPEG | `to_simpeg()`, `from_simpeg()` | 実装済み（公開整理待ち） | geophysics | — |
-| MTH5 | `to_mth5()`, `from_mth5()` | 実装済み（公開整理待ち） | magnetotellurics | — |
+| [ROOT](https://root.cern/) | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | 実装済み（一部経路は対応中） | `TH1 -> non-Histogram` は未完 | [API](../reference/api/gwexpy.interop.root_.rst) |
+| [ObsPy](https://docs.obspy.org/) | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | 公開済み | seismic bridge | [API](../reference/api/gwexpy.interop.obspy_.rst) |
+| [LALSuite](https://lscsoft.docs.ligo.org/lalsuite/) | `to_lal_timeseries()`, `from_lal_timeseries()`, `to_lal_frequencyseries()`, `from_lal_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 | [API](../reference/api/gwexpy.interop.lal_.rst) |
+| [PyCBC](https://pycbc.org/) | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 | [API](../reference/api/gwexpy.interop.pycbc_.rst) |
+| [GWINC](https://git.ligo.org/gwinc/pygwinc) | `from_gwinc_budget()` | 公開済み | budget import | [API](../reference/api/gwexpy.interop.gwinc_.rst) |
+| [Finesse](https://finesse.ifosim.org/) | `from_finesse_frequency_response()`, `from_finesse_noise()` | 公開済み | optics / response | [API](../reference/api/gwexpy.interop.finesse_.rst) |
+| [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | 公開済み | FRD / response。`pip install gwexpy[control]` が必要。FRD 変換は `FrequencySeries` / `FrequencySeriesDict` から利用でき、時間応答の取り込みは `TimeSeries.from_control()` / `TimeSeriesDict.from_control()` で行えます。 | [API](../reference/api/gwexpy.interop.control_.rst) |
+| [SimPEG](https://simpeg.xyz/) | `to_simpeg()`, `from_simpeg()` | 実装済み | geophysics | — |
+| [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | 実装済み | magnetotellurics | — |
 | MTpy | 専用 `to_*()` / `from_*()` API は対応中 | 対応中 | MTH5 周辺との整理が未完 | — |
-| MNE-Python | `to_mne()`, `from_mne()`, `to_mne_rawarray()`, `from_mne_raw()` | 実装済み（公開整理待ち） | EEG / biosignal | — |
-| Neo | `to_neo()`, `from_neo()` | 実装済み（公開整理待ち） | electrophysiology | — |
+| [MNE-Python](https://mne.tools/stable/index.html) | `to_mne()`, `from_mne()`, `to_mne_rawarray()`, `from_mne_raw()` | 実装済み | EEG / biosignal | — |
+| [Neo](https://neo.readthedocs.io/en/latest/) | `to_neo()`, `from_neo()` | 実装済み | electrophysiology | — |
 | Elephant | 専用 `to_*()` / `from_*()` API は対応中 | 対応中 | `Neo` / `quantities` 周辺との整理が未完 | — |
-| quantities | `to_quantity()`, `from_quantity()` | 実装済み（公開整理待ち） | quantity bridge | — |
-| pyroomacoustics | `to_pyroomacoustics_source()`, `to_pyroomacoustics_stft()`, `from_pyroomacoustics_rir()`, `from_pyroomacoustics_mic_signals()`, `from_pyroomacoustics_source()`, `from_pyroomacoustics_stft()`, `from_pyroomacoustics_field()` | 実装済み（公開整理待ち） | room acoustics | — |
-| pydub | `to_pydub()`, `from_pydub()` | 実装済み（公開整理待ち） | audio object bridge | — |
-| librosa | `to_librosa()` | 実装済み（公開整理待ち） | export 中心 | — |
-| Specutils | `to_specutils()`, `from_specutils()` | 実装済み（公開整理待ち） | astronomy spectra | — |
-| pyspeckit | `to_pyspeckit()`, `from_pyspeckit()` | 実装済み（公開整理待ち） | spectral analysis | — |
-| PySpice | `from_pyspice_transient()`, `from_pyspice_ac()`, `from_pyspice_noise()`, `from_pyspice_distortion()` | 実装済み（公開整理待ち） | import 中心 | — |
-| scikit-rf | `to_skrf_network()`, `from_skrf_network()`, `from_skrf_impulse_response()`, `from_skrf_step_response()` | 実装済み（公開整理待ち） | RF network analysis | — |
-| pyOMA | `from_pyoma_results()` | 実装済み（公開整理待ち） | import 中心 | — |
-| multitaper | `from_mtspec()` | 実装済み（公開整理待ち） | import 中心 | — |
-| mtspec | `from_mtspec_array()` | 実装済み（公開整理待ち） | import 中心 | — |
-| pySDy | `from_uff_dataset55()`, `from_uff_dataset58()` | 実装済み（公開整理待ち） | import 中心 | — |
-| SDynPy | `from_sdynpy_frf()`, `from_sdynpy_shape()`, `from_sdynpy_timehistory()` | 実装済み（公開整理待ち） | import 中心 | — |
-| Meep | `from_meep_hdf5()` | 実装済み（公開整理待ち） | import 中心 | — |
-| openEMS | `from_openems_hdf5()` | 実装済み（公開整理待ち） | import 中心 | — |
-| emg3d | `to_emg3d_field()`, `from_emg3d_field()`, `from_emg3d_h5()` | 実装済み（公開整理待ち） | EM field import/export | — |
-| meshio | `from_meshio()`, `from_fenics_xdmf()`, `from_fenics_vtk()` | 実装済み（公開整理待ち） | import 中心 | — |
-| MetPy | `from_metpy_dataarray()` | 実装済み（公開整理待ち） | import 中心 | — |
-| WRF | `from_wrf_variable()` | 実装済み（公開整理待ち） | import 中心 | — |
-| Harmonica | `from_harmonica_grid()` | 実装済み（公開整理待ち） | import 中心 | — |
-| Exudyn | `from_exudyn_sensor()` | 実装済み（公開整理待ち） | import 中心 | — |
-| OpenSees | `from_opensees_recorder()` | 実装済み（公開整理待ち） | import 中心 | — |
+| [quantities](https://python-quantities.readthedocs.io/en/latest/) | `to_quantity()`, `from_quantity()` | 実装済み | quantity bridge | — |
+| [pyroomacoustics](https://pyroomacoustics.readthedocs.io/en/stable/) | `to_pyroomacoustics_source()`, `to_pyroomacoustics_stft()`, `from_pyroomacoustics_rir()`, `from_pyroomacoustics_mic_signals()`, `from_pyroomacoustics_source()`, `from_pyroomacoustics_stft()`, `from_pyroomacoustics_field()` | 実装済み | room acoustics | — |
+| [pydub](https://www.pydub.com/) | `to_pydub()`, `from_pydub()` | 実装済み | audio object bridge | — |
+| [librosa](https://librosa.org/doc/latest/index.html) | `to_librosa()` | 実装済み | export 中心 | — |
+| [specutils](https://specutils.readthedocs.io/en/stable/) | `to_specutils()`, `from_specutils()` | 実装済み | astronomy spectra | — |
+| [pyspeckit](https://pyspeckit.readthedocs.io/en/latest/) | `to_pyspeckit()`, `from_pyspeckit()` | 実装済み | spectral analysis | — |
+| PySpice | `from_pyspice_transient()`, `from_pyspice_ac()`, `from_pyspice_noise()`, `from_pyspice_distortion()` | 実装済み | import 中心 | — |
+| [scikit-rf](https://scikit-rf.readthedocs.io/en/latest/) | `to_skrf_network()`, `from_skrf_network()`, `from_skrf_impulse_response()`, `from_skrf_step_response()` | 実装済み | RF network analysis | — |
+| [pyOMA](https://py-oma.readthedocs.io/en/latest/) | `from_pyoma_results()` | 実装済み | import 中心 | — |
+| multitaper | `from_mtspec()` | 実装済み | import 中心 | — |
+| mtspec | `from_mtspec_array()` | 実装済み | import 中心 | — |
+| pySDy | `from_uff_dataset55()`, `from_uff_dataset58()` | 実装済み | import 中心 | — |
+| SDynPy | `from_sdynpy_frf()`, `from_sdynpy_shape()`, `from_sdynpy_timehistory()` | 実装済み | import 中心 | — |
+| Meep | `from_meep_hdf5()` | 実装済み | import 中心 | — |
+| openEMS | `from_openems_hdf5()` | 実装済み | import 中心 | — |
+| emg3d | `to_emg3d_field()`, `from_emg3d_field()`, `from_emg3d_h5()` | 実装済み | EM field import/export | — |
+| meshio | `from_meshio()`, `from_fenics_xdmf()`, `from_fenics_vtk()` | 実装済み | import 中心 | — |
+| MetPy | `from_metpy_dataarray()` | 実装済み | import 中心 | — |
+| WRF | `from_wrf_variable()` | 実装済み | import 中心 | — |
+| Harmonica | `from_harmonica_grid()` | 実装済み | import 中心 | — |
+| Exudyn | `from_exudyn_sensor()` | 実装済み | import 中心 | — |
+| OpenSees | `from_opensees_recorder()` | 実装済み | import 中心 | — |
 
 (interop-ja-priorities)=
 ## 優先的に見るべき対象

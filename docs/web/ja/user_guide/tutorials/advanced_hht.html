@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HHT: 解析 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=508f903c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
 
   
-    <link rel="shortcut icon" href="../../../../_static/icon.png"/>
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/advanced_hht.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -39,7 +39,7 @@
   <meta property="og:title" content="HHT: 解析 — GWexpy Documentation" />
   
   
-  <meta property="og:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta property="og:type" content="website" />
@@ -60,56 +60,11 @@
   <meta name="twitter:title" content="HHT: 解析 — GWexpy Documentation" />
   
   
-  <meta name="twitter:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
   
-  
-  <style>
-  #lang-pill {
-    position: fixed;
-    top: 12px;
-    right: 20px;
-    z-index: 9999;
-    background: #fff;
-    border: 1px solid #d0d0d0;
-    border-radius: 16px;
-    padding: 4px 14px;
-    font-size: 0.82em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    line-height: 1.6;
-  }
-  #lang-pill a {
-    color: #2980B9;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  #lang-pill a:hover {
-    color: #1a5f8c;
-    text-decoration: underline;
-  }
-  #lang-pill .lang-sep {
-    color: #bbb;
-  }
-  #lang-pill .lang-current {
-    color: #333;
-    font-weight: 700;
-  }
-  @media (prefers-color-scheme: dark) {
-    #lang-pill {
-      background: #2c2c2e;
-      border-color: #3a3a3c;
-      color: #efeff4;
-    }
-    #lang-pill .lang-current { color: #efeff4; }
-    #lang-pill .lang-sep     { color: #636366; }
-  }
-  </style>
 
 </head>
 
@@ -119,12 +74,14 @@
   
     
     
+    
     <div id="lang-pill">
       <span>🌐</span>
       <span class="lang-current">日本語</span>
       <span class="lang-sep">|</span>
       <a href="../../../en/user_guide/tutorials/advanced_hht.html">English</a>
     </div>
+    
   
 
   <div class="wy-grid-for-nav">
@@ -241,7 +198,7 @@
 </div>
 <section id="HHT:-解析">
 <h1>HHT: 解析<a class="headerlink" href="#HHT:-解析" title="Link to this heading"></a></h1>
-<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_hht.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/advanced_hht.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このチュートリアルでは <strong>gwexpy</strong> を用いた <strong>ヒルベルト–黄変換（HHT）解析</strong> のワークフローを解説します。 HHT は非線形・非定常な信号に強く、STFT やウェーブレットでは捉えにくい瞬時周波数の変化を可視化できます。</p>
 <p>HHT は次の2ステップで構成されます:</p>
 <ol class="arabic simple">
@@ -255,12 +212,11 @@
 <blockquote>
 <div><p><strong>注記</strong>: この日本語版は、英語版の理論比較をそのまま翻訳したものではなく、<code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code> を中心にした実践ワークフロー重視の版です。</p>
 </div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
@@ -276,6 +232,14 @@
     <span class="p">)</span>
 <br/></pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PyEMD is installed and ready.
+</pre></div></div>
 </div>
 <section id="1.-HHTの理論的背景と利点">
 <h2>1. HHTの理論的背景と利点<a class="headerlink" href="#1.-HHTの理論的背景と利点" title="Link to this heading"></a></h2>
@@ -308,16 +272,11 @@
 <p>サイン・ガウシアン信号は以下の式で表されます:</p>
 <div class="math notranslate nohighlight">
 \[h(t) = A \exp\left( - \left( \frac{2\pi (t - t_0)}{t_{\text{width}}} \right)^2 \right) \sin(2\pi f_0 t)\]</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">sine_gaussian</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t_width</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><br/><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sine_gaussian</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t_width</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
     <span class="n">exponent</span> <span class="o">=</span> <span class="o">-</span><span class="p">(((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span> <span class="o">/</span> <span class="n">t_width</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">exponent</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
 
@@ -357,6 +316,13 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_5_0.png" />
+</div>
+</div>
 </section>
 <section id="3.-比較分析：STFT-vs-HHT">
 <h2>3. 比較分析：STFT vs HHT<a class="headerlink" href="#3.-比較分析：STFT-vs-HHT" title="Link to this heading"></a></h2>
@@ -365,8 +331,8 @@
 <blockquote>
 <div><p><strong>よくある誤り</strong>: HHT の鋭い ridge をすべて物理モードだと読むこと。padding、分解法、IMF 数を少し変えただけで筋が崩れるなら、それは堅牢な信号特徴ではなく分解アーティファクトである可能性が高いです。</p>
 </div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- 1. STFT (Spectrogram) using gwexpy API ---</span>
@@ -464,6 +430,21 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Extracted 8 IMFs from normalized data.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_7_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_7_1.png" />
+</div>
+</div>
 </section>
 <section id="4.-応用：EEMDによるモード抽出とパラメータ推定">
 <h2>4. 応用：EEMDによるモード抽出とパラメータ推定<a class="headerlink" href="#4.-応用：EEMDによるモード抽出とパラメータ推定" title="Link to this heading"></a></h2>
@@ -477,8 +458,8 @@
 <blockquote>
 <div><p><strong>注意したい失敗モード</strong>: <code class="docutils literal notranslate"><span class="pre">eemd_trials</span></code> を増やすと IMF は安定しやすくなりますが、不適切な帯域選択や広帯域トランジェント優勢のデータまで自動で救ってくれるわけではありません。狙う物理が狭帯域でゆっくり動くモードなら、まず妥当な時間帯・周波数帯に切り出してください。</p>
 </div></blockquote>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run EEMD (gwexpy API)</span>
@@ -524,13 +505,29 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Running EEMD on normalized data via TimeSeries.hht()...
+EEMD completed. Extracted 9 IMFs.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_9_1.png" />
+</div>
+</div>
 </section>
 </section>
 <section id="5.-ヒルベルトスペクトル-(HHTSpectrogram)">
 <h2>5. ヒルベルトスペクトル (HHTSpectrogram)<a class="headerlink" href="#5.-ヒルベルトスペクトル-(HHTSpectrogram)" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">output='spectrogram'</span></code> を指定すると時間-周波数マップを得られます。<code class="docutils literal notranslate"><span class="pre">HHTSpectrogram.plot()</span></code> は既定で対数スケールです。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spec</span> <span class="o">=</span> <span class="n">ts_norm</span><span class="o">.</span><span class="n">hht</span><span class="p">(</span>
@@ -557,6 +554,13 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_11_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_11_0.png" />
 </div>
 </div>
 </section>
@@ -604,7 +608,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
       </span></p>
   </div>
 

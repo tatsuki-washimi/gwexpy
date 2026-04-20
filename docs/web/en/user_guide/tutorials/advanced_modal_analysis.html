@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-16T01:32:44+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>High-Precision Modal Analysis of Suspension Systems &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=508f903c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
 
   
-    <link rel="shortcut icon" href="../../../../_static/icon.png"/>
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/advanced_modal_analysis.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -37,7 +37,7 @@
   <meta property="og:title" content="High-Precision Modal Analysis of Suspension Systems — GWexpy Documentation" />
   
   
-  <meta property="og:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta property="og:type" content="website" />
@@ -58,56 +58,11 @@
   <meta name="twitter:title" content="High-Precision Modal Analysis of Suspension Systems — GWexpy Documentation" />
   
   
-  <meta name="twitter:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
   
-  
-  <style>
-  #lang-pill {
-    position: fixed;
-    top: 12px;
-    right: 20px;
-    z-index: 9999;
-    background: #fff;
-    border: 1px solid #d0d0d0;
-    border-radius: 16px;
-    padding: 4px 14px;
-    font-size: 0.82em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    line-height: 1.6;
-  }
-  #lang-pill a {
-    color: #2980B9;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  #lang-pill a:hover {
-    color: #1a5f8c;
-    text-decoration: underline;
-  }
-  #lang-pill .lang-sep {
-    color: #bbb;
-  }
-  #lang-pill .lang-current {
-    color: #333;
-    font-weight: 700;
-  }
-  @media (prefers-color-scheme: dark) {
-    #lang-pill {
-      background: #2c2c2e;
-      border-color: #3a3a3c;
-      color: #efeff4;
-    }
-    #lang-pill .lang-current { color: #efeff4; }
-    #lang-pill .lang-sep     { color: #636366; }
-  }
-  </style>
 
 </head>
 
@@ -117,12 +72,14 @@
   
     
     
+    
     <div id="lang-pill">
       <span>🌐</span>
       <a href="../../../ja/user_guide/tutorials/advanced_modal_analysis.html">日本語</a>
       <span class="lang-sep">|</span>
       <span class="lang-current">English</span>
     </div>
+    
   
 
   <div class="wy-grid-for-nav">
@@ -212,15 +169,15 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesMatrix</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._modal_helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_mode_dataframe</span><span class="p">,</span> <span class="n">build_frf_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._modal_helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_frf_matrix</span><span class="p">,</span> <span class="n">build_mode_dataframe</span>
 <br/></pre></div>
 </div>
 </div>
@@ -421,7 +378,6 @@ Extracted modal parameters:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert to pandas DataFrame via from_pyoma_results</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="n">node_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="n">coords</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">],</span>
@@ -502,6 +458,7 @@ Stored metadata:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fn</span><span class="p">))]</span>
 <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">fn</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">zeta</span><span class="p">))):</span>
@@ -633,7 +590,7 @@ Mean relative reconstruction error: 99.40%
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-16 01:32:44.
+      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
       </span></p>
   </div>
 

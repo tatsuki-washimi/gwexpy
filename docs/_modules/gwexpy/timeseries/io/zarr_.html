@@ -1,0 +1,444 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.timeseries.io.zarr_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/timeseries/io/zarr_.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
+      <script src="../../../../_static/external-links.js?v=5d50874a"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  
+  <meta property="og:title" content="gwexpy.timeseries.io.zarr_ — GWexpy Documentation" />
+  
+  
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta property="og:type" content="website" />
+  
+  
+  <meta property="og:url" content="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/timeseries/io/zarr_.html" />
+  
+  
+  <meta property="og:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+  
+  <meta property="og:site_name" content="GWexpy Documentation" />
+  
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  
+  <meta name="twitter:title" content="gwexpy.timeseries.io.zarr_ — GWexpy Documentation" />
+  
+  
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../../web/en/index.html">English</a>
+    </div>
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../web/ja/index.html">GWexpy ドキュメント</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.timeseries.io.zarr_</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.timeseries.io.zarr_</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Zarr reader/writer for gwexpy.</span>
+
+<span class="sd">Convention</span>
+<span class="sd">----------</span>
+<span class="sd">A Zarr store is a group where each array represents one channel.</span>
+<span class="sd">Per-array attributes ``sample_rate`` (Hz) and ``t0`` (GPS seconds) are</span>
+<span class="sd">used to reconstruct the time axis. If ``sample_rate`` is absent the</span>
+<span class="sd">inverse of ``dt`` is tried. If both are absent, reading fails with a</span>
+<span class="sd">clear error instead of silently assuming 1 Hz.</span>
+
+<span class="sd">Directory stores, zip stores, and any other backend supported by the</span>
+<span class="sd">``zarr`` library can be used as *source* / *target*.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">apply_unit</span><span class="p">,</span>
+    <span class="n">ensure_dependency</span><span class="p">,</span>
+    <span class="n">filter_by_channels</span><span class="p">,</span>
+    <span class="n">set_provenance</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._registration</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_timeseries_format</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_import_zarr</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">zarr</span> <span class="o">=</span> <span class="n">ensure_dependency</span><span class="p">(</span><span class="s2">&quot;zarr&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">&quot;zarr is required for reading/writing Zarr stores. &quot;</span>
+            <span class="s2">&quot;Install with `pip install zarr`.&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+    <span class="k">return</span> <span class="n">zarr</span>
+
+
+<span class="c1"># -- Reader --------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_coerce_sample_rate_from_attrs_or_override</span><span class="p">(</span>
+    <span class="n">attrs</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">channel_name</span><span class="p">,</span>
+    <span class="n">sample_rate_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dt_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve sample rate from metadata or explicit override.</span>
+
+<span class="sd">    The recovery path is intentionally explicit: callers may provide either</span>
+<span class="sd">    ``sample_rate_override`` or ``dt_override`` when reading legacy stores that</span>
+<span class="sd">    lack timing metadata, but never both.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sample_rate_override</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dt_override</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Pass only one of sample_rate_override or dt_override when reading &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Zarr channel &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">sr</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_rate&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sample_rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sample_rate</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Zarr channel &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39; has invalid sample_rate=</span><span class="si">{</span><span class="n">sr</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Expected a positive value in Hz.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sample_rate</span>
+
+    <span class="n">dt_val</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dt_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt_val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Zarr channel &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39; has invalid dt=</span><span class="si">{</span><span class="n">dt_val</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Expected a positive time spacing in seconds.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt</span>
+
+    <span class="k">if</span> <span class="n">sample_rate_override</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sample_rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sample_rate_override</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sample_rate</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;sample_rate_override must be positive; got </span><span class="si">{</span><span class="n">sample_rate_override</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sample_rate</span>
+
+    <span class="k">if</span> <span class="n">dt_override</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt_override</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dt_override must be positive; got </span><span class="si">{</span><span class="n">dt_override</span><span class="si">!r}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Zarr channel &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39; is missing timing metadata. &quot;</span>
+        <span class="s2">&quot;Expected per-array &#39;sample_rate&#39; (Hz) or &#39;dt&#39; (seconds) attributes. &quot;</span>
+        <span class="s2">&quot;To read legacy data intentionally, add that metadata to the store or &quot;</span>
+        <span class="s2">&quot;pass sample_rate_override=... or dt_override=... to the Zarr reader.&quot;</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="read_timeseriesdict_zarr">
+<a class="viewcode-back" href="../../../../web/ja/reference/api/gwexpy.timeseries.io.zarr_.html#gwexpy.timeseries.io.zarr_.read_timeseriesdict_zarr">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_timeseriesdict_zarr</span><span class="p">(</span>
+    <span class="n">source</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sample_rate_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dt_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a Zarr store into a TimeSeriesDict.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source : str, path-like, or zarr store</span>
+<span class="sd">        Path to the ``.zarr`` directory (or any zarr-compatible store).</span>
+<span class="sd">    channels : iterable of str, optional</span>
+<span class="sd">        Array names to read.  If *None*, all arrays in the root group</span>
+<span class="sd">        are loaded.</span>
+<span class="sd">    unit : str, optional</span>
+<span class="sd">        Physical unit override applied to every channel.</span>
+<span class="sd">    sample_rate_override : float, optional</span>
+<span class="sd">        Explicit sample-rate recovery value in Hz for legacy stores that lack</span>
+<span class="sd">        per-array ``sample_rate`` and ``dt`` metadata. Mutually exclusive with</span>
+<span class="sd">        ``dt_override``.</span>
+<span class="sd">    dt_override : float, optional</span>
+<span class="sd">        Explicit sample-spacing recovery value in seconds for legacy stores</span>
+<span class="sd">        that lack per-array timing metadata. Mutually exclusive with</span>
+<span class="sd">        ``sample_rate_override``.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments forwarded to ``zarr.open_group``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zarr</span> <span class="o">=</span> <span class="n">_import_zarr</span><span class="p">()</span>
+
+    <span class="c1"># Only coerce to str for path-like objects; pass store objects through</span>
+    <span class="c1"># directly so that in-memory / remote stores work unchanged.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)):</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="n">store</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open_group</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span> <span class="k">if</span> <span class="n">channels</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">store</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="c1"># Only load arrays (skip sub-groups)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;t0&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+
+        <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">_coerce_sample_rate_from_attrs_or_override</span><span class="p">(</span>
+            <span class="n">attrs</span><span class="p">,</span>
+            <span class="n">channel_name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">sample_rate_override</span><span class="o">=</span><span class="n">sample_rate_override</span><span class="p">,</span>
+            <span class="n">dt_override</span><span class="o">=</span><span class="n">dt_override</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">arr_unit</span> <span class="o">=</span> <span class="n">unit</span> <span class="ow">or</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">)</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arr</span><span class="p">[:],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+            <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">apply_unit</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">arr_unit</span><span class="p">)</span> <span class="k">if</span> <span class="n">arr_unit</span> <span class="k">else</span> <span class="n">ts</span>
+        <span class="n">tsd</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span>
+
+    <span class="k">if</span> <span class="n">channels</span><span class="p">:</span>
+        <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">(</span><span class="n">filter_by_channels</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">channels</span><span class="p">))</span>
+
+    <span class="n">set_provenance</span><span class="p">(</span>
+        <span class="n">tsd</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;zarr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;channels&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">tsd</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="s2">&quot;unit_source&quot;</span><span class="p">:</span> <span class="s2">&quot;override&quot;</span> <span class="k">if</span> <span class="n">unit</span> <span class="k">else</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">tsd</span></div>
+
+
+
+<div class="viewcode-block" id="read_timeseries_zarr">
+<a class="viewcode-back" href="../../../../web/ja/reference/api/gwexpy.timeseries.io.zarr_.html#gwexpy.timeseries.io.zarr_.read_timeseries_zarr">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_timeseries_zarr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a Zarr store and return the first channel.&quot;&quot;&quot;</span>
+    <span class="n">tsd</span> <span class="o">=</span> <span class="n">read_timeseriesdict_zarr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tsd</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No arrays found in Zarr store&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tsd</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">tsd</span><span class="o">.</span><span class="n">keys</span><span class="p">()))]</span></div>
+
+
+
+<div class="viewcode-block" id="read_timeseriesmatrix_zarr">
+<a class="viewcode-back" href="../../../../web/ja/reference/api/gwexpy.timeseries.io.zarr_.html#gwexpy.timeseries.io.zarr_.read_timeseriesmatrix_zarr">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_timeseriesmatrix_zarr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesMatrix</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a Zarr store and convert its channels to a matrix.&quot;&quot;&quot;</span>
+    <span class="n">tsd</span> <span class="o">=</span> <span class="n">read_timeseriesdict_zarr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span></div>
+
+
+
+<span class="c1"># -- Writer --------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="write_timeseriesdict_zarr">
+<a class="viewcode-back" href="../../../../web/ja/reference/api/gwexpy.timeseries.io.zarr_.html#gwexpy.timeseries.io.zarr_.write_timeseriesdict_zarr">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_timeseriesdict_zarr</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a TimeSeriesDict to a Zarr store.</span>
+
+<span class="sd">    Each channel is written as an array in the root group with</span>
+<span class="sd">    ``sample_rate``, ``t0``, and ``unit`` stored as attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zarr</span> <span class="o">=</span> <span class="n">_import_zarr</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tsd</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot write empty TimeSeriesDict to Zarr&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)):</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">store</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open_group</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tsd</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="c1"># zarr&gt;=3 uses create_array(data=...) and removed create_dataset.</span>
+        <span class="c1"># zarr&lt;3 has create_dataset; fall back for compatibility.</span>
+        <span class="n">creator</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s2">&quot;create_array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">store</span><span class="o">.</span><span class="n">create_dataset</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">creator</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">arr</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;sample_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">arr</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;t0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">arr</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">arr</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="write_timeseries_zarr">
+<a class="viewcode-back" href="../../../../web/ja/reference/api/gwexpy.timeseries.io.zarr_.html#gwexpy.timeseries.io.zarr_.write_timeseries_zarr">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_timeseries_zarr</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write one ``TimeSeries`` to a Zarr store.&quot;&quot;&quot;</span>
+    <span class="n">write_timeseriesdict_zarr</span><span class="p">(</span>
+        <span class="n">TimeSeriesDict</span><span class="p">({</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;channel_0&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">}),</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># -- Registration --------------------------------------------------------------</span>
+
+<span class="n">register_timeseries_format</span><span class="p">(</span>
+    <span class="s2">&quot;zarr&quot;</span><span class="p">,</span>
+    <span class="n">reader_dict</span><span class="o">=</span><span class="n">read_timeseriesdict_zarr</span><span class="p">,</span>
+    <span class="n">reader_single</span><span class="o">=</span><span class="n">read_timeseries_zarr</span><span class="p">,</span>
+    <span class="n">reader_matrix</span><span class="o">=</span><span class="n">read_timeseriesmatrix_zarr</span><span class="p">,</span>
+    <span class="n">writer_dict</span><span class="o">=</span><span class="n">write_timeseriesdict_zarr</span><span class="p">,</span>
+    <span class="n">writer_single</span><span class="o">=</span><span class="n">write_timeseries_zarr</span><span class="p">,</span>
+    <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;zarr&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

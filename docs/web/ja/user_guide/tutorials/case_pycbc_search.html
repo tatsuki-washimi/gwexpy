@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-16T01:32:44+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PyCBC 連携：gwexpy 前処理から重力波探索まで &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=508f903c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
 
   
-    <link rel="shortcut icon" href="../../../../_static/icon.png"/>
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/case_pycbc_search.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -39,7 +39,7 @@
   <meta property="og:title" content="PyCBC 連携：gwexpy 前処理から重力波探索まで — GWexpy Documentation" />
   
   
-  <meta property="og:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta property="og:type" content="website" />
@@ -60,56 +60,11 @@
   <meta name="twitter:title" content="PyCBC 連携：gwexpy 前処理から重力波探索まで — GWexpy Documentation" />
   
   
-  <meta name="twitter:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
   
-  
-  <style>
-  #lang-pill {
-    position: fixed;
-    top: 12px;
-    right: 20px;
-    z-index: 9999;
-    background: #fff;
-    border: 1px solid #d0d0d0;
-    border-radius: 16px;
-    padding: 4px 14px;
-    font-size: 0.82em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    line-height: 1.6;
-  }
-  #lang-pill a {
-    color: #2980B9;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  #lang-pill a:hover {
-    color: #1a5f8c;
-    text-decoration: underline;
-  }
-  #lang-pill .lang-sep {
-    color: #bbb;
-  }
-  #lang-pill .lang-current {
-    color: #333;
-    font-weight: 700;
-  }
-  @media (prefers-color-scheme: dark) {
-    #lang-pill {
-      background: #2c2c2e;
-      border-color: #3a3a3c;
-      color: #efeff4;
-    }
-    #lang-pill .lang-current { color: #efeff4; }
-    #lang-pill .lang-sep     { color: #636366; }
-  }
-  </style>
 
 </head>
 
@@ -119,12 +74,14 @@
   
     
     
+    
     <div id="lang-pill">
       <span>🌐</span>
       <span class="lang-current">日本語</span>
       <span class="lang-sep">|</span>
       <a href="../../../en/user_guide/tutorials/case_pycbc_search.html">English</a>
     </div>
+    
   
 
   <div class="wy-grid-for-nav">
@@ -263,26 +220,27 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.pycbc_</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">to_pycbc_timeseries</span><span class="p">,</span> <span class="n">from_pycbc_timeseries</span><span class="p">,</span>
-    <span class="n">to_pycbc_frequencyseries</span><span class="p">,</span> <span class="n">from_pycbc_frequencyseries</span><span class="p">,</span>
+    <span class="n">from_pycbc_timeseries</span><span class="p">,</span>
+    <span class="n">to_pycbc_frequencyseries</span><span class="p">,</span>
+    <span class="n">to_pycbc_timeseries</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
 <span class="n">PYCBC_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pycbc</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">pycbc.types</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pycbc.filter</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">pycbc.waveform</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pycbc.psd</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pycbc.types</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pycbc.waveform</span>
     <span class="n">PYCBC_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PyCBC </span><span class="si">{</span><span class="n">pycbc</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2"> が見つかりました — 実際のマッチトフィルターを実行します。&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -370,7 +328,7 @@ PyCBC 2.8.2 が見つかりました — 実際のマッチトフィルターを
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">PYCBC_AVAILABLE</span><span class="p">:</span>
     <span class="n">ts_pycbc</span> <span class="o">=</span> <span class="n">to_pycbc_timeseries</span><span class="p">(</span><span class="n">ts_strain</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pycbc.TimeSeries:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pycbc.TimeSeries:&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  delta_t   : </span><span class="si">{</span><span class="n">ts_pycbc</span><span class="o">.</span><span class="n">delta_t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  start_time: </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">ts_pycbc</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  len       : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_pycbc</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -566,7 +524,7 @@ SNR 時系列: 262144 サンプル
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-16 01:32:44.
+      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
       </span></p>
   </div>
 

@@ -62,6 +62,7 @@
    "outputs": [],
    "source": [
     "import warnings\n",
+    "\n",
     "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
     "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
@@ -75,9 +76,8 @@
     "import numpy as np\n",
     "\n",
     "import gwexpy\n",
-    "from gwexpy.timeseries import TimeSeries\n",
-    "from gwexpy.frequencyseries import FrequencySeries\n",
-    "from gwexpy.interop.hdf5_ import to_hdf5, from_hdf5\n"
+    "from gwexpy.interop.hdf5_ import from_hdf5, to_hdf5\n",
+    "from gwexpy.timeseries import TimeSeries\n"
    ]
   },
   {
@@ -165,7 +165,7 @@
     "        \"h5py_version\":    h5py.__version__,\n",
     "        \"python_version\":  platform.python_version(),\n",
     "        \"hostname\":        platform.node(),\n",
-    "        \"created_utc\":     datetime.datetime.now(datetime.timezone.utc).isoformat(),\n",
+    "        \"created_utc\":     datetime.datetime.now(datetime.UTC).isoformat(),\n",
     "        \"params_json\":     json.dumps(params),\n",
     "    }\n",
     "\n",
@@ -380,6 +380,7 @@
    ],
    "source": [
     "import contextlib\n",
+    "\n",
     "\n",
     "@contextlib.contextmanager\n",
     "def provenance_file(path, params: dict, mode: str = \"w\"):\n",

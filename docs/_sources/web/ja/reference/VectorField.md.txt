@@ -11,7 +11,7 @@
 ## 代表的なシグネチャ
 
 ```python
-VectorField(components, axis0_domain="time", spatial_domains=(...), ...)
+VectorField(components, basis="cartesian", validate=True)
 VectorField.norm()
 ```
 

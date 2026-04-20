@@ -11,8 +11,9 @@ Use `ScalarField` for physics-aware field data with explicit domains, units, and
 ## Representative Signatures
 
 ```python
-ScalarField(data, axis0_domain="time", spatial_domains=("real", "real", "real"), ...)
+ScalarField(data, axis0_domain="time", space_domain="real", ...)
 ScalarField.fft_time(nfft=None)
+ScalarField.fft_space(axes=None, n=None)
 ```
 
 ## Minimal Example
@@ -20,8 +21,17 @@ ScalarField.fft_time(nfft=None)
 ```python
 from gwexpy.fields import ScalarField
 import numpy as np
+from astropy import units as u
 
-field = ScalarField(np.random.randn(16, 4, 4, 4), axis0_domain="time")
+field = ScalarField(
+    np.random.randn(16, 4, 4, 4),
+    axis0=np.arange(16) * 0.1 * u.s,
+    axis1=np.arange(4) * 0.5 * u.m,
+    axis2=np.arange(4) * 0.5 * u.m,
+    axis3=np.arange(4) * 0.5 * u.m,
+    axis0_domain="time",
+    space_domain="real",
+)
 field_f = field.fft_time()
 ```
 
@@ -52,7 +62,7 @@ ScalarField represents physical fields that can exist in different domains (time
 
 ## Key features
 
-- **Explicit domains**: `axis0_domain in {time, frequency}`, spatial domains in `{real, k}` per axis.
+- **Explicit domains**: `axis0_domain in {time, frequency}`, spatial domains in `{real, k}` per axis via the `space_domain` constructor argument.
 - **Physics-aware slicing**: Indexing preserves 4D structure (axes are never dropped, keeping metadata alive).
 - **Unit/domain consistency**: Validated at construction and after FFT transitions.
 - **Signal Processing**: Built-in support for PSD, coherence, and cross-correlation.

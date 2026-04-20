@@ -23,7 +23,7 @@
    "source": [
     "# スペクトログラム: 正規化とクリーニング\n",
     "\n",
-    "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_spectrogram_processing.ipynb)\n",
+    "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/advanced_spectrogram_processing.ipynb)\n",
     "\n",
     "このチュートリアルでは **gwexpy** が提供するスペクトログラム後処理ツール 2 種類を解説します：\n",
     "\n",
@@ -50,6 +50,7 @@
    "outputs": [],
    "source": [
     "import warnings\n",
+    "\n",
     "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
     "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
     "\n",
@@ -177,6 +178,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",
@@ -247,6 +249,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",
@@ -346,6 +349,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",
@@ -356,7 +360,7 @@
     "        kw = {\"percentile\": 75.0} if m == \"percentile\" else {}\n",
     "        spec_n = spec.normalize(method=m, **kw)\n",
     "        spec_n.plot(ax=ax, norm=\"log\", vmin=0.1, vmax=100)\n",
-    "        label = f\"percentile=75\" if m == \"percentile\" else \"\"\n",
+    "        label = \"percentile=75\" if m == \"percentile\" else \"\"\n",
     "        ax.set_title(f\"method='{m}' {label}\")\n",
     "        fig.colorbar(next((c for c in ax.get_children() if hasattr(c, \"get_clim\")), None), ax=ax, label=\"SNR² []\")\n",
     "        plt.suptitle(\"Normalization methods comparison\", fontsize=13)\n",
@@ -420,6 +424,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",
@@ -515,6 +520,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",
@@ -604,6 +610,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",
@@ -697,6 +704,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "# ── line-removal cleaning ─────────────────────────────────────────────────────\n",
     "# Detect persistent narrowband lines and replace with column median.\n",
     "spec_noline, line_indices = spec_snr.clean(\n",
@@ -806,6 +814,7 @@
    ],
    "source": [
     "import warnings\n",
+    "\n",
     "with warnings.catch_warnings():\n",
     "    warnings.simplefilter('ignore')\n",
     "\n",

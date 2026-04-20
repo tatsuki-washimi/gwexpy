@@ -5,17 +5,17 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
+    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Case Study: Bootstrap PSD and GLS Fitting &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=508f903c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
 
   
-    <link rel="shortcut icon" href="../../../../_static/icon.png"/>
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/case_bootstrap_gls_fitting.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
@@ -39,7 +39,7 @@
   <meta property="og:title" content="Case Study: Bootstrap PSD and GLS Fitting — GWexpy Documentation" />
   
   
-  <meta property="og:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta property="og:type" content="website" />
@@ -60,56 +60,11 @@
   <meta name="twitter:title" content="Case Study: Bootstrap PSD and GLS Fitting — GWexpy Documentation" />
   
   
-  <meta name="twitter:description" content="A comprehensive Python package for Gravitational Wave experimental data analysis." />
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
   
   
   <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
   
-  
-  <style>
-  #lang-pill {
-    position: fixed;
-    top: 12px;
-    right: 20px;
-    z-index: 9999;
-    background: #fff;
-    border: 1px solid #d0d0d0;
-    border-radius: 16px;
-    padding: 4px 14px;
-    font-size: 0.82em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    line-height: 1.6;
-  }
-  #lang-pill a {
-    color: #2980B9;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  #lang-pill a:hover {
-    color: #1a5f8c;
-    text-decoration: underline;
-  }
-  #lang-pill .lang-sep {
-    color: #bbb;
-  }
-  #lang-pill .lang-current {
-    color: #333;
-    font-weight: 700;
-  }
-  @media (prefers-color-scheme: dark) {
-    #lang-pill {
-      background: #2c2c2e;
-      border-color: #3a3a3c;
-      color: #efeff4;
-    }
-    #lang-pill .lang-current { color: #efeff4; }
-    #lang-pill .lang-sep     { color: #636366; }
-  }
-  </style>
 
 </head>
 
@@ -119,12 +74,14 @@
   
     
     
+    
     <div id="lang-pill">
       <span>🌐</span>
       <a href="../../../ja/user_guide/tutorials/case_bootstrap_gls_fitting.html">日本語</a>
       <span class="lang-sep">|</span>
       <span class="lang-current">English</span>
     </div>
+    
   
 
   <div class="wy-grid-for-nav">
@@ -283,6 +240,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
@@ -309,18 +267,18 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data generation parameters</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span>              <span class="c1"># Sample rate [Hz]</span>
-<span class="n">duration</span> <span class="o">=</span> <span class="mf">256.0</span>         <span class="c1"># Duration [s]</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mf">512.0</span>         <span class="c1"># Duration [s]</span>
 
 <span class="c1"># Resonance peak parameters (true values)</span>
 <span class="n">peak_freq</span> <span class="o">=</span> <span class="mf">100.0</span>        <span class="c1"># Resonance frequency [Hz]</span>
 <span class="n">peak_Q</span> <span class="o">=</span> <span class="mf">20.0</span>            <span class="c1"># Quality factor</span>
-<span class="n">peak_amplitude</span> <span class="o">=</span> <span class="mf">2e-21</span>   <span class="c1"># Peak height [1/rtHz]</span>
+<span class="n">peak_amplitude</span> <span class="o">=</span> <span class="mf">5e-21</span>   <span class="c1"># ASD amplitude at resonance [1/rtHz]</span>
 
 <span class="c1"># Background noise parameters</span>
 <span class="n">noise_exponent</span> <span class="o">=</span> <span class="mf">0.5</span>     <span class="c1"># Power-law exponent (pink noise ~ f^-0.5)</span>
 <span class="n">noise_amp</span> <span class="o">=</span> <span class="mf">1e-22</span>        <span class="c1"># Noise amplitude at f_ref</span>
 <span class="n">f_ref</span> <span class="o">=</span> <span class="mf">100.0</span>            <span class="c1"># Reference frequency [Hz]</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 </section>
@@ -349,14 +307,18 @@
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Background ASD&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Add Lorentzian peak to the ASD</span>
-<span class="n">gamma</span> <span class="o">=</span> <span class="n">peak_freq</span> <span class="o">/</span> <span class="n">peak_Q</span>  <span class="c1"># Half-width at half-maximum</span>
-<span class="n">lorentzian</span> <span class="o">=</span> <span class="n">peak_amplitude</span> <span class="o">*</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span>
-    <span class="p">(</span><span class="n">frequencies</span> <span class="o">-</span> <span class="n">peak_freq</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="c1"># Build the synthetic spectrum in PSD space so the fitted model matches</span>
+<span class="c1"># the injected line shape and width.</span>
+<span class="n">background_psd</span> <span class="o">=</span> <span class="n">background_asd</span><span class="o">.</span><span class="n">value</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">gamma_hwhm</span> <span class="o">=</span> <span class="n">peak_freq</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">peak_Q</span><span class="p">)</span>  <span class="c1"># Half-width at half-maximum</span>
+<span class="n">peak_psd_amplitude</span> <span class="o">=</span> <span class="n">peak_amplitude</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">peak_psd</span> <span class="o">=</span> <span class="n">peak_psd_amplitude</span> <span class="o">*</span> <span class="n">gamma_hwhm</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span>
+    <span class="p">(</span><span class="n">frequencies</span> <span class="o">-</span> <span class="n">peak_freq</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">gamma_hwhm</span><span class="o">**</span><span class="mi">2</span>
 <span class="p">)</span>
 
-<span class="c1"># Total ASD (background + peak)</span>
-<span class="n">total_asd_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">background_asd</span><span class="o">.</span><span class="n">value</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">lorentzian</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="c1"># Total ASD = sqrt(total PSD)</span>
+<span class="n">total_psd_values</span> <span class="o">=</span> <span class="n">background_psd</span> <span class="o">+</span> <span class="n">peak_psd</span>
+<span class="n">total_asd_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">total_psd_values</span><span class="p">)</span>
 <span class="n">total_asd</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
     <span class="n">total_asd_values</span><span class="p">,</span>
     <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
@@ -377,7 +339,7 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated TimeSeries: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duration: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sample rate: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -621,7 +583,7 @@ Expected correlation from overlap: ~0.50
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bootstrap parameters</span>
-<span class="n">n_boot</span> <span class="o">=</span> <span class="mi">2000</span>         <span class="c1"># Number of bootstrap resamples</span>
+<span class="n">n_boot</span> <span class="o">=</span> <span class="mi">300</span>         <span class="c1"># Number of bootstrap resamples</span>
 <span class="n">block_size</span> <span class="o">=</span> <span class="mi">4</span>        <span class="c1"># Block bootstrap (accounts for time correlation)</span>
 <span class="n">ci</span> <span class="o">=</span> <span class="mf">0.68</span>             <span class="c1"># Confidence interval (1-sigma equivalent)</span>
 <span class="n">rebin_width</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># No rebinning - preserves frequency correlations</span>
@@ -882,26 +844,25 @@ Range: [-0.161, 0.640]
 <p>We fit a model consisting of:</p>
 <ul class="simple">
 <li><p><strong>Power-law background</strong>: <span class="math notranslate nohighlight">\(A_{bg} (f/f_{ref})^{\alpha}\)</span></p></li>
-<li><p><strong>Lorentzian peak</strong>: <span class="math notranslate nohighlight">\(A_{peak} \frac{(\gamma/2)^2}{(f-f_0)^2 + (\gamma/2)^2}\)</span> where <span class="math notranslate nohighlight">\(\gamma = f_0/Q\)</span></p></li>
+<li><p><strong>Lorentzian peak</strong>: <span class="math notranslate nohighlight">\(A_{peak} \frac{\gamma^2}{(f-f_0)^2 + \gamma^2}\)</span> where <span class="math notranslate nohighlight">\(\gamma = f_0/(2Q)\)</span></p></li>
 </ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">psd_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">A_bg</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">A_peak</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    PSD model: Power-law background + Lorentzian peak.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;PSD model: power-law background + Lorentzian resonance.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    f : array</span>
-<span class="sd">        Frequency [Hz]</span>
+<span class="sd">    f : array-like</span>
+<span class="sd">        Frequency array [Hz]</span>
 <span class="sd">    A_bg : float</span>
-<span class="sd">        Background PSD amplitude at f_ref=100 Hz</span>
+<span class="sd">        Background amplitude at f_ref [PSD units]</span>
 <span class="sd">    alpha : float</span>
-<span class="sd">        Power-law exponent (negative for red noise)</span>
+<span class="sd">        Power-law exponent</span>
 <span class="sd">    A_peak : float</span>
-<span class="sd">        Peak PSD amplitude</span>
+<span class="sd">        PSD amplitude at resonance</span>
 <span class="sd">    f0 : float</span>
 <span class="sd">        Resonance frequency [Hz]</span>
 <span class="sd">    Q : float</span>
@@ -909,15 +870,15 @@ Range: [-0.161, 0.640]
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    psd : array</span>
-<span class="sd">        Model PSD values</span>
+<span class="sd">    psd : array-like</span>
+<span class="sd">        Model PSD</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">f_ref</span> <span class="o">=</span> <span class="mf">100.0</span>
     <span class="n">background</span> <span class="o">=</span> <span class="n">A_bg</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="n">f_ref</span><span class="p">)</span> <span class="o">**</span> <span class="n">alpha</span>
-    <span class="n">gamma</span> <span class="o">=</span> <span class="n">f0</span> <span class="o">/</span> <span class="n">Q</span>
-    <span class="n">lorentzian</span> <span class="o">=</span> <span class="n">A_peak</span> <span class="o">*</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="n">f0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">background</span> <span class="o">+</span> <span class="n">lorentzian</span>
-</pre></div>
+    <span class="n">gamma_hwhm</span> <span class="o">=</span> <span class="n">f0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">Q</span><span class="p">)</span>
+    <span class="n">peak_psd</span> <span class="o">=</span> <span class="n">A_peak</span> <span class="o">*</span> <span class="n">gamma_hwhm</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="n">f0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">gamma_hwhm</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">background</span> <span class="o">+</span> <span class="n">peak_psd</span>
+<br/></pre></div>
 </div>
 </div>
 </section>
@@ -986,6 +947,7 @@ Covariance matrix shape: (720, 720)
 <section id="4.3-Initial-Parameter-Guesses-and-Bounds">
 <h3>4.3 Initial Parameter Guesses and Bounds<a class="headerlink" href="#4.3-Initial-Parameter-Guesses-and-Bounds" title="Link to this heading"></a></h3>
 <p>Good initial guesses help the optimizer converge to the correct minimum.</p>
+<p>In this synthetic example, the center frequency is known to be near 100 Hz and the resonance is a moderately broad commissioning line rather than an arbitrarily narrow delta-like feature. Use bounds to encode that prior knowledge so the optimizer does not explain broadband structure by pushing <code class="docutils literal notranslate"><span class="pre">f0</span></code> or <code class="docutils literal notranslate"><span class="pre">Q</span></code> into nonphysical corners.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
@@ -1022,28 +984,29 @@ True parameters (for validation):
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initial guesses (slightly offset from true values)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initial guesses (slightly offset from the injected values)</span>
 <span class="n">p0</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;A_bg&quot;</span><span class="p">:</span> <span class="mf">1.5e-44</span><span class="p">,</span>   <span class="c1"># Start somewhat close</span>
+    <span class="s2">&quot;A_bg&quot;</span><span class="p">:</span> <span class="mf">1.5e-44</span><span class="p">,</span>
     <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">,</span>
     <span class="s2">&quot;A_peak&quot;</span><span class="p">:</span> <span class="mf">5e-42</span><span class="p">,</span>
-    <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="mf">98.0</span><span class="p">,</span>
-    <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+    <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="mf">99.5</span><span class="p">,</span>
+    <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">18.0</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># Parameter bounds</span>
+<span class="c1"># Keep f0 near the injected commissioning line and cap Q to a physically plausible range</span>
 <span class="n">bounds</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;A_bg&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1e-46</span><span class="p">,</span> <span class="mf">1e-42</span><span class="p">),</span>
-    <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
     <span class="s2">&quot;A_peak&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1e-44</span><span class="p">,</span> <span class="mf">1e-40</span><span class="p">),</span>
-    <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="mi">110</span><span class="p">),</span>
-    <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+    <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">95.0</span><span class="p">,</span> <span class="mf">105.0</span><span class="p">),</span>
+    <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">35.0</span><span class="p">),</span>
 <span class="p">}</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial guesses:&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p0</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1241,6 +1204,7 @@ GLS Fit Results:
 </section>
 <section id="4.5-Analyze-Fit-Results">
 <h3>4.5 Analyze Fit Results<a class="headerlink" href="#4.5-Analyze-Fit-Results" title="Link to this heading"></a></h3>
+<p>For commissioning use, treat <code class="docutils literal notranslate"><span class="pre">f0</span></code> and <code class="docutils literal notranslate"><span class="pre">Q</span></code> as the primary diagnostics. The absolute <code class="docutils literal notranslate"><span class="pre">A_peak</span></code> normalization is more sensitive to window leakage, bootstrap median bias, and the PSD/ASD convention than the line center or linewidth, so read it as an effective line-strength parameter rather than the most robust truth-matching check.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
@@ -1906,7 +1870,7 @@ Created test BifrequencyMap: (10, 10)
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
+      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
       </span></p>
   </div>
 

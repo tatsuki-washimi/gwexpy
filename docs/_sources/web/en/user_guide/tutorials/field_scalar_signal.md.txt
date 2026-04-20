@@ -10,7 +10,7 @@ This tutorial explains advanced signal processing techniques using the `ScalarFi
 # Transform all spatial axes to K-domain using FFT
 field_k = field.fft_space()
 
-print(f"Space domains: {field_k.space_domains}")  # Outputs ('k', 'k', 'k')
+print(f"Space domains: {field_k.space_domains}")  # {'kx': 'k', 'ky': 'k', 'kz': 'k'}
 ```
 
 ## 2. Wavelength and Wavenumber Analysis
@@ -18,17 +18,20 @@ print(f"Space domains: {field_k.space_domains}")  # Outputs ('k', 'k', 'k')
 In the K-domain, you can retrieve wavenumbers for each axis and calculate the wavelength corresponding to specific wavenumbers.
 
 ```python
+from astropy import units as u
+
 # Get wavelengths for a specific spatial axis
 wavelengths = field_k.wavelength("kx")
 ```
 
 ## 3. Point Extraction (Time-series at specific coordinates)
 
-You can extract a `TimeSeries` at any spatial coordinate $(x, y, z)$ from the 4D field. If the specified coordinates are not on the grid, interpolation is automatically performed.
+You can extract one or more `TimeSeries` objects at arbitrary spatial coordinates $(x, y, z)$ from the 4D field. If the specified coordinates are not on the grid, interpolation is automatically performed.
 
 ```python
-# Extract time-series at coordinates (0.5, 0.5, 0.5)
-ts_at_point = field.extract_points(x=0.5, y=0.5, z=0.5)
+# Extract a time-series at coordinates (0.5 m, 0.5 m, 0.5 m)
+ts_list = field.extract_points([(0.5 * u.m, 0.5 * u.m, 0.5 * u.m)])
+ts_at_point = ts_list[0]
 
 ts_at_point.plot()
 ```
@@ -39,7 +42,7 @@ It is easy to extract 2D cross-sections (Plane2D) by fixing specific axes.
 
 ```python
 # Extract the plane at z=0
-plane_z0 = field.sel(z=0)
+plane_z0 = field.sel(z=0 * u.m)
 plane_z0.plot()
 ```
 
