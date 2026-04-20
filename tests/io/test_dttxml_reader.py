@@ -1,9 +1,8 @@
 """Tests for DTT XML timeseries reader."""
 
-import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeriesDict
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 class TestDttxmlReader:
@@ -20,6 +19,12 @@ class TestDttxmlReader:
         dummy.write_text("<dttxml></dttxml>")
         with pytest.raises(ValueError, match="not a time-series product"):
             TimeSeriesDict.read(str(dummy), format=fmt, products="INVALID_PRODUCT")
+
+    def test_auto_detected_xml_format_is_not_ambiguous(self, tmp_path):
+        dummy = tmp_path / "dummy.xml"
+        dummy.write_text("<dttxml></dttxml>")
+        with pytest.raises(ValueError, match="products must be specified"):
+            TimeSeries.read(str(dummy))
 
     def test_legacy_alias_resolves_to_canonical_reader(self):
         from gwpy.io.registry import default_registry as io_registry

@@ -80,6 +80,12 @@ class TestFrequencySeriesDttxml:
         with pytest.raises(ValueError, match="not a frequency-series product"):
             FrequencySeries.read(str(dummy), format=fmt, products="TIMESERIES")
 
+    def test_auto_detected_xml_format_is_not_ambiguous(self, tmp_path):
+        dummy = tmp_path / "dummy.xml"
+        dummy.write_text("<dttxml></dttxml>")
+        with pytest.raises(ValueError, match="products"):
+            FrequencySeries.read(str(dummy))
+
     def test_legacy_alias_resolves_to_canonical_reader(self):
         from gwpy.io.registry import default_registry as io_registry
 

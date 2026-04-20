@@ -255,14 +255,13 @@ def _adapt_frequencyseries(*args, **kwargs):
 for _fmt in _DTTXML_FORMATS:
     io_registry.register_reader(_fmt, FrequencySeries, _adapt_frequencyseries, force=True)
 
-for _fmt in _DTTXML_FORMATS:
-    io_registry.register_identifier(
-        _fmt,
-        FrequencySeries,
-        lambda *args, **kwargs: str(args[1]).endswith(".xml"),
-    )
-    io_registry.register_identifier(
-        _fmt,
-        FrequencySeriesDict,
-        lambda *args, **kwargs: str(args[1]).endswith(".xml"),
-    )
+io_registry.register_identifier(
+    "xml.diaggui",
+    FrequencySeries,
+    lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+)
+io_registry.register_identifier(
+    "xml.diaggui",
+    FrequencySeriesDict,
+    lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+)

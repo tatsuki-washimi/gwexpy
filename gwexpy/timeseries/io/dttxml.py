@@ -111,12 +111,11 @@ for _fmt in _DTTXML_FORMATS:
         _fmt, TimeSeriesMatrix, read_timeseriesmatrix_dttxml, force=True
     )
 
-for _fmt in _DTTXML_FORMATS:
-    io_registry.register_identifier(
-        _fmt, TimeSeries, lambda *args, **kwargs: str(args[1]).endswith(".xml")
-    )
-    io_registry.register_identifier(
-        _fmt,
-        TimeSeriesDict,
-        lambda *args, **kwargs: str(args[1]).endswith(".xml"),
-    )
+io_registry.register_identifier(
+    "xml.diaggui", TimeSeries, lambda *args, **kwargs: str(args[1]).endswith(".xml")
+)
+io_registry.register_identifier(
+    "xml.diaggui",
+    TimeSeriesDict,
+    lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+)
