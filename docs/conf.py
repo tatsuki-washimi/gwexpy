@@ -21,6 +21,18 @@ project = "GWexpy"
 author = "GWexpy contributors"
 copyright = f"{datetime.now():%Y}, GWexpy contributors"
 
+BRANDING_STATIC_DIR = "_static/branding"
+BRANDING_LOGO = f"{BRANDING_STATIC_DIR}/logo.svg"
+BRANDING_FAVICON = f"{BRANDING_STATIC_DIR}/icon.svg"
+BRANDING_SOCIAL_CARD = f"{BRANDING_STATIC_DIR}/og-card.png"
+BRANDING_SITE_TITLE = "GWexpy Documentation"
+BRANDING_SITE_SHORT_TITLE = "GWexpy"
+BRANDING_OG_TITLE = "GWexpy Documentation"
+BRANDING_OG_DESCRIPTION = (
+    "GWexpy documentation hub for installation, quickstart, tutorials, case "
+    "studies, and API reference entry points."
+)
+
 # Version variables — automatically resolved by Sphinx |release| and |version|
 try:
     from importlib.metadata import version as _get_version
@@ -195,8 +207,8 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_js_files = ["copybutton.js", "external-links.js"]
-html_logo = "_static/branding/logo.svg"
-html_favicon = "_static/branding/icon.png"
+html_logo = BRANDING_LOGO
+html_favicon = BRANDING_FAVICON
 html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/docs/"
 html_theme_options = {
     "logo_only": False,
@@ -213,10 +225,10 @@ html_theme_options = {
 }
 
 # User-facing site title/branding (package name remains `gwexpy`).
-html_title = "GWexpy Documentation"
-html_short_title = "GWexpy"
+html_title = BRANDING_SITE_TITLE
+html_short_title = BRANDING_SITE_SHORT_TITLE
 # Keep social images absolute so OGP/Twitter metadata stays valid on GitHub Pages.
-social_og_image = urljoin(html_baseurl, "_static/branding/og-card.png")
+social_og_image = urljoin(html_baseurl, BRANDING_SOCIAL_CARD)
 html_context = {
     "display_github": True,
     "github_user": "tatsuki-washimi",
@@ -227,8 +239,8 @@ html_context = {
     # GitHub Pages publishes docs under /gwexpy/; user-facing docs live in /docs/web/{en,ja}/.
     "languages": [("en", "/tatsuki-washimi/gwexpy/docs/web/en/"), ("ja", "/tatsuki-washimi/gwexpy/docs/web/ja/")],
     # OGP / Metadata
-    "og_title": "GWexpy: Advanced GH Data Analysis",
-    "og_description": "A comprehensive Python package for Gravitational Wave experimental data analysis.",
+    "og_title": BRANDING_OG_TITLE,
+    "og_description": BRANDING_OG_DESCRIPTION,
     "og_type": "website",
     "og_url": "https://tatsuki-washimi.github.io/gwexpy/",
     "og_image": social_og_image,

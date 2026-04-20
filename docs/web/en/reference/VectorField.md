@@ -11,7 +11,7 @@ Use `VectorField` for physics-aware field data with explicit domains, units, and
 ## Representative Signatures
 
 ```python
-VectorField(components, axis0_domain="time", spatial_domains=(...), ...)
+VectorField(components, basis="cartesian", validate=True)
 VectorField.norm()
 ```
 

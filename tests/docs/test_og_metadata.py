@@ -7,8 +7,6 @@ CONF_PATH = ROOT / "docs" / "conf.py"
 APPROVED_OG_IMAGE = (
     "https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png"
 )
-APPROVED_HTML_LOGO = "_static/branding/logo.svg"
-APPROVED_HTML_FAVICON = "_static/branding/icon.png"
 
 
 def _load_conf_module(name: str):
@@ -106,7 +104,11 @@ def test_docs_branding_configuration_points_to_brand_assets(monkeypatch):
 
     conf = _load_conf_module("gwexpy_docs_conf_branding")
 
-    assert conf.html_logo == APPROVED_HTML_LOGO
-    assert conf.html_favicon == APPROVED_HTML_FAVICON
+    assert conf.html_logo == conf.BRANDING_LOGO
+    assert conf.html_favicon == conf.BRANDING_FAVICON
+    assert conf.html_title == conf.BRANDING_SITE_TITLE
+    assert conf.html_short_title == conf.BRANDING_SITE_SHORT_TITLE
     assert conf.social_og_image == APPROVED_OG_IMAGE
+    assert conf.html_context["og_title"] == conf.BRANDING_OG_TITLE
+    assert conf.html_context["og_description"] == conf.BRANDING_OG_DESCRIPTION
     assert conf.html_context["og_image"] == APPROVED_OG_IMAGE

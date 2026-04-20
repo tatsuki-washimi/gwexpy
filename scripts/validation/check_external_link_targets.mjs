@@ -1,14 +1,37 @@
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const chromePath = '/usr/bin/google-chrome';
+const scriptPath = fileURLToPath(import.meta.url);
+const repoRoot = path.resolve(path.dirname(scriptPath), '..', '..');
 const chromePort = 18774;
-const repoRoot = '/home/washimi/work/gwexpy';
 const docsJsPath = path.join(repoRoot, 'docs', '_static', 'external-links.js');
 const outDir = path.join(os.tmpdir(), 'gwexpy-17-18-external-links');
 const args = process.argv.slice(2);
+
+export function resolveChromePath() {
+  const configuredPath =
+    process.env.CHROME_BIN || process.env.GOOGLE_CHROME_BIN || process.env.BROWSER_BIN;
+  if (configuredPath) {
+    return configuredPath;
+  }
+
+  for (const candidate of ['google-chrome', 'chromium', 'chromium-browser', 'chrome']) {
+    const result = spawnSync('which', [candidate], { encoding: 'utf8' });
+    if (result.status === 0) {
+      const resolved = result.stdout.trim();
+      if (resolved) {
+        return resolved;
+      }
+    }
+  }
+
+  throw new Error(
+    'Could not resolve a Chrome/Chromium executable. Set CHROME_BIN, GOOGLE_CHROME_BIN, or BROWSER_BIN, or add google-chrome/chromium to PATH.',
+  );
+}
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -108,7 +131,7 @@ class CdpSession {
   }
 }
 
-function spawnChrome(profileDir) {
+function spawnChrome(chromePath, profileDir) {
   return spawn(
     chromePath,
     [
@@ -311,11 +334,12 @@ async function main() {
   const builtPages = parseBuiltPages();
   const fixturePath = builtPages.length === 0 ? await buildFixture() : null;
   const profileDir = await fs.mkdtemp(path.join(os.tmpdir(), 'gwexpy-17-18-chrome-'));
-  const chrome = spawnChrome(profileDir);
+  const chromePath = resolveChromePath();
+  const chrome = spawnChrome(chromePath, profileDir);
   try {
     await waitForDevtools();
     if (builtPages.length === 0) {
-      const target = await openPage(`file://${fixturePath}`);
+      const target = await openPage(pathToFileURL(fixturePath).href);
       const session = new CdpSession(target.webSocketDebuggerUrl);
       await session.open();
       const results = await evaluateFixture(session);
@@ -329,7 +353,7 @@ async function main() {
 
     const pageResults = [];
     for (const pagePath of builtPages) {
-      const target = await openPage(`file://${pagePath}`);
+      const target = await openPage(pathToFileURL(pagePath).href);
       const session = new CdpSession(target.webSocketDebuggerUrl);
       await session.open();
       const results = await evaluateBuiltPage(session);
@@ -345,13 +369,15 @@ async function main() {
   }
 }
 
-main().catch(async (error) => {
-  await fs.mkdir(outDir, { recursive: true });
-  const payload = {
-    message: error.message,
-    results: error.results ?? null,
-  };
-  await fs.writeFile(path.join(outDir, 'error.json'), JSON.stringify(payload, null, 2));
-  console.error(error.message);
-  process.exit(1);
-});
+if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
+  main().catch(async (error) => {
+    await fs.mkdir(outDir, { recursive: true });
+    const payload = {
+      message: error.message,
+      results: error.results ?? null,
+    };
+    await fs.writeFile(path.join(outDir, 'error.json'), JSON.stringify(payload, null, 2));
+    console.error(error.message);
+    process.exit(1);
+  });
+}
