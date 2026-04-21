@@ -41,7 +41,7 @@ python scripts/install_minepy.py
 Do not commit generated environments, caches, or docs build outputs.
 
 - Forbidden tracked paths include `docs/.doctrees/`, `docs/_build/`, `scratch/.venv_docs/`, `.venv-ci/`, `.conda-envs/`, `.conda-pkgs/`, `.mypy_cache/`, `.ruff_cache/`, and `.pytest_cache/`.
-- `pre-commit` and CI both enforce this guard with `scripts/check_forbidden_artifacts.py`.
+- `pre-commit` and CI both enforce this guard with `scripts/check_forbidden_artifacts.py` and `scripts/check_repo_hygiene.py`.
 - Keep local environments outside the repository when possible, and treat docs build outputs as disposable artifacts.
 
 ## Design Principles: Modular Extensibility
@@ -76,11 +76,11 @@ Then open `docs/_build/html/docs/index.html` (English/Japanese are under `docs/_
 
 Documentation and examples use Jupyter Notebooks (.ipynb). We categorize them to optimize CI performance:
 
-- **Light** (Default): Fast execution. Tested via `papermill`. Cell outputs are stripped on commit.
-- **Heavy**: Resource intensive or requires special env (GPU/LIGO VPN). Syntax-checked via `nbval`. Metadata tag: `"tags": ["ci-heavy"]`.
-- **Display-only**: Pre-rendered results are the goal. CI skips execution. Metadata tag: `"tags": ["display-only"]`. Needs `.gitattributes` entry to keep outputs.
+- **Light** (Default): Fast execution. Tested via `papermill`. Source notebooks under `docs/web/` and `examples/` stay tracked, but their cell outputs are stripped before commit.
+- **Heavy**: Resource intensive or requires special env (GPU/LIGO VPN). Syntax-checked via `nbval`. Metadata tag: `"tags": ["ci-heavy"]`. The same clean-by-default rule applies to tracked docs/example notebooks.
+- **Display-only**: Pre-rendered results are the goal. CI skips execution. Metadata tag: `"tags": ["display-only"]`. This is the explicit exception path for intentionally retained outputs and needs a `.gitattributes` entry to keep them.
 
-See [NOTEBOOK_POLICY.md](docs/NOTEBOOK_POLICY.md) for details. We use `nbstripout` via `pre-commit` to prevent committing large binary outputs for most notebooks.
+See [NOTEBOOK_POLICY.md](docs/NOTEBOOK_POLICY.md) for details. We use `nbstripout` via `pre-commit` to keep tracked docs/example notebooks clean by default, while docs can still be generated from executed notebooks during local builds or CI.
 
 #### Syntax & Indentation
 
@@ -120,3 +120,5 @@ Interactive examples in docstrings must be self-contained and stable.
 1. Create a branch for your change.
 2. Include tests and docs when relevant.
 3. Open a pull request with a concise summary and motivation.
+4. Use CI workflow summaries/check logs to triage failures; do not auto-create GitHub issues for CI telemetry.
+5. Keep the issue tracker for human-triaged work items only. Historical commented CI issues are a manual cleanup queue, not a future tracking model.

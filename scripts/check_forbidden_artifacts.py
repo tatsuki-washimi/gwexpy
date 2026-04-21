@@ -22,7 +22,10 @@ FORBIDDEN_PREFIXES = (
 
 
 def _normalize(path: str) -> str:
-    return path.replace("\\", "/").lstrip("./")
+    normalized = path.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    return normalized
 
 
 def _iter_tracked_files() -> Iterable[str]:

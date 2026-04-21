@@ -20,7 +20,6 @@ jobs:
             && github.event.workflow_run.actor.login != 'github-actions[bot]' }}
     permissions:
       actions: read
-      issues: write
       contents: read
 
     steps:
