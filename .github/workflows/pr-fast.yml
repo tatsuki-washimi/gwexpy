@@ -59,6 +59,9 @@ jobs:
       - name: Run Ruff
         run: ruff check gwexpy tests
 
+      - name: Check forbidden generated artifacts
+        run: python scripts/check_forbidden_artifacts.py
+
       - name: Run mypy
         run: mypy gwexpy tests/docs/test_tutorial_notebook_quality.py --ignore-missing-imports
 

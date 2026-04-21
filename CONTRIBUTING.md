@@ -36,6 +36,14 @@ python scripts/install_minepy.py
 - Add or update tests for behavior changes.
 - Run `ruff check .` before submitting.
 
+## Generated artifacts
+
+Do not commit generated environments, caches, or docs build outputs.
+
+- Forbidden tracked paths include `docs/.doctrees/`, `docs/_build/`, `scratch/.venv_docs/`, `.venv-ci/`, `.conda-envs/`, `.conda-pkgs/`, `.mypy_cache/`, `.ruff_cache/`, and `.pytest_cache/`.
+- `pre-commit` and CI both enforce this guard with `scripts/check_forbidden_artifacts.py`.
+- Keep local environments outside the repository when possible, and treat docs build outputs as disposable artifacts.
+
 ## Design Principles: Modular Extensibility
 
 GWexpy is designed to extend GWpy and other core libraries in a way that remains safe and predictable. We avoid "silent monkeypatching" of upstream classes in favor of explicit, documented extension points.

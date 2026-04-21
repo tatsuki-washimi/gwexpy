@@ -24,6 +24,10 @@ repos:
 
   - repo: local
     hooks:
+      - id: check-forbidden-artifacts
+        name: check-forbidden-artifacts
+        entry: python scripts/check_forbidden_artifacts.py
+        language: python
       - id: check-non-ascii
         name: check-non-ascii
         entry: python scripts/check_non_ascii.py

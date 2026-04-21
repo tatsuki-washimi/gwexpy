@@ -69,6 +69,9 @@ jobs:
       - name: Check JA/EN synchronization
         run: python scripts/check_docs_sync.py
 
+      - name: Check forbidden generated artifacts
+        run: python scripts/check_forbidden_artifacts.py
+
       - name: Run quickstart tests
         run: |
           python scripts/run_quickstart_test.py --lang ja
