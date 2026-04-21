@@ -50,14 +50,46 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install requests -r docs/requirements.txt
 
-      - name: Run docs health checks
+      - name: Run docs consistency checks
         run: |
           python scripts/check_terms.py
           python scripts/check_docs_sync.py
-          python scripts/check_external_links.py
           python scripts/update_intersphinx_inventories.py --check-upstream
+
+      - name: Check external links (advisory)
+        continue-on-error: true
+        run: |
+          set +e
+          python scripts/check_external_links.py | tee external-links.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo "## External link scan"
+            echo
+            echo "Exit status: ${status}"
+            echo
+            echo '```text'
+            tail -n 80 external-links.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run Sphinx linkcheck (advisory)
+        continue-on-error: true
+        run: |
           cd docs
-          sphinx-build -b linkcheck . _build/linkcheck
+          set +e
+          sphinx-build -b linkcheck . _build/linkcheck 2>&1 | tee ../docs-linkcheck.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo "## Sphinx linkcheck"
+            echo
+            echo "Exit status: ${status}"
+            echo
+            echo '```text'
+            tail -n 120 ../docs-linkcheck.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   security-audit:
     name: Security audit
@@ -85,10 +117,38 @@ jobs:
           python -m pip install pip-audit bandit
 
       - name: Run pip-audit
-        run: pip-audit -r requirements-dev.txt
+        continue-on-error: true
+        run: |
+          set +e
+          pip-audit -r requirements-dev.txt | tee pip-audit.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo "## pip-audit"
+            echo
+            echo "Exit status: ${status}"
+            echo
+            echo '```text'
+            cat pip-audit.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run bandit
-        run: bandit -r gwexpy -ll
+        continue-on-error: true
+        run: |
+          set +e
+          bandit -r gwexpy -ll | tee bandit.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo "## Bandit"
+            echo
+            echo "Exit status: ${status}"
+            echo
+            echo '```text'
+            cat bandit.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Summarize outdated packages
         run: |

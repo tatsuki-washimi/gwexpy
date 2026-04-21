@@ -8,6 +8,10 @@ updates:
     labels:
       - "dependencies"
       - "python"
+    groups:
+      python-dependencies:
+        patterns:
+          - "*"
     # No automated pinning yet, as we are following a "manual review" policy.
     # New PRs will be assigned to the maintainer.
     reviewers:
