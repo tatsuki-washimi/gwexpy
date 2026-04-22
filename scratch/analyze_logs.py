@@ -1,6 +1,13 @@
 import json
 import os
 import re
+from pathlib import Path
+
+
+ANALYSIS_DIR = Path("temp_logs/analysis")
+DOC_FAILS_PATH = ANALYSIS_DIR / "doc_fails.json"
+TEST_FAILS_PATH = ANALYSIS_DIR / "test_fails.json"
+FAILURE_REPORT_PATH = ANALYSIS_DIR / "gwexpy-failure-report.md"
 
 
 def analyze_log(file_path):
@@ -55,11 +62,12 @@ def generate_report():
     report += "| --- | --- | --- | --- | --- | --- |\n"
 
     all_runs = []
-    for f in ["doc_fails.json", "test_fails.json"]:
-        wname = "Documentation" if "doc" in f else "Tests"
-        folder = "doc" if "doc" in f else "test"
-        if not os.path.exists(f): continue
-        with open(f) as jf:
+    for summary_path in [DOC_FAILS_PATH, TEST_FAILS_PATH]:
+        wname = "Documentation" if "doc" in summary_path.name else "Tests"
+        folder = "doc" if "doc" in summary_path.name else "test"
+        if not summary_path.exists():
+            continue
+        with summary_path.open() as jf:
             data = json.load(jf)
             for item in data:
                 rid = item["databaseId"]
@@ -129,8 +137,10 @@ def generate_report():
         report += f"- **Files Affected**: {files}\n"
         report += f"- **PR Required**: {pr_required}\n\n"
 
-    # Save to workspace first
-    with open("gwexpy-failure-report.md", "w") as rf:
+    ANALYSIS_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Save canonical analysis artifacts under temp_logs/analysis/.
+    with FAILURE_REPORT_PATH.open("w") as rf:
         rf.write(report)
 
     # Also save to tmp as requested (inside workspace)

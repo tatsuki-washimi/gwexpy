@@ -25,6 +25,7 @@ Scripts that programmatically create or run Jupyter notebooks.
 | `check_changed_notebooks.py` | Run CI-style checks only for notebooks changed in the current PR |
 | `prepare_docs_notebook_tree.py` | Copy the repo to a temp tree and execute docs notebooks there for docs builds |
 | `run_all_notebooks.py` | Execute all notebooks under `docs/` via `nbconvert` |
+| `exec_notebooks.sh` | Execute a notebook glob serially and write timestamped logs under `temp_logs/notebook_exec/` |
 
 ```bash
 # CI と同じ分類規則で、PR 変更 notebook だけを検証
@@ -32,6 +33,9 @@ conda run -n gwexpy python scripts/notebook_gen/check_changed_notebooks.py --bas
 
 # 実行せず、対象 notebook の分類だけ確認
 conda run -n gwexpy python scripts/notebook_gen/check_changed_notebooks.py --list-only
+
+# 単純な逐次実行ログを temp_logs/notebook_exec/ に残す
+bash scripts/notebook_gen/exec_notebooks.sh 'docs/web/ja/user_guide/tutorials/*.ipynb'
 ```
 
 ## validation/
