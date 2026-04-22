@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -16,6 +17,14 @@ from typing import NamedTuple
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DISPLAY_ONLY_TAG = "display-only"
 DOCS_NOTEBOOK_PREFIX = "docs/web/"
+CI_SKIP_BOOTSTRAP_COMMENT = (
+    "# Skipped in CI: Colab/bootstrap dependency install cell.\n"
+)
+BOOTSTRAP_PATTERNS = (
+    re.compile(r"(^|\n)\s*%pip\s+install\b"),
+    re.compile(r"(^|\n)\s*!pip\s+install\b"),
+)
+BOOTSTRAP_HINTS = ("gwexpy[all]", "colab", "scipy<", "numpy<", "astropy<", "gwpy<")
 
 
 class ExecutionResult(NamedTuple):
@@ -82,6 +91,13 @@ def _load_notebook(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _save_notebook(path: Path, notebook: dict) -> None:
+    path.write_text(
+        json.dumps(notebook, ensure_ascii=False, indent=1) + "\n",
+        encoding="utf-8",
+    )
+
+
 def _is_display_only(path: Path) -> bool:
     notebook = _load_notebook(path)
     if not notebook.get("cells"):
@@ -89,6 +105,31 @@ def _is_display_only(path: Path) -> bool:
     metadata = notebook["cells"][0].get("metadata", {})
     tags = metadata.get("tags", [])
     return isinstance(tags, list) and DISPLAY_ONLY_TAG in tags
+
+
+def _is_bootstrap_install_cell(cell: dict) -> bool:
+    if cell.get("cell_type") != "code":
+        return False
+    source = "".join(cell.get("source", []))
+    normalized = source.lower()
+    return any(pattern.search(source) for pattern in BOOTSTRAP_PATTERNS) and any(
+        hint in normalized for hint in BOOTSTRAP_HINTS
+    )
+
+
+def _sanitize_notebook_for_ci(path: Path) -> bool:
+    notebook = _load_notebook(path)
+    changed = False
+    for cell in notebook.get("cells", []):
+        if not _is_bootstrap_install_cell(cell):
+            continue
+        cell["source"] = [CI_SKIP_BOOTSTRAP_COMMENT]
+        cell["outputs"] = []
+        cell["execution_count"] = None
+        changed = True
+    if changed:
+        _save_notebook(path, notebook)
+    return changed
 
 
 def _iter_docs_notebooks(repo_root: Path) -> list[str]:
@@ -139,6 +180,15 @@ def _copy_repo_tree(repo_root: Path, output_root: Path) -> None:
             destination.symlink_to(os.readlink(source))
             continue
         shutil.copy2(source, destination)
+
+
+def _sanitize_docs_notebooks_for_ci(output_root: Path, notebook_paths: list[str]) -> None:
+    sanitized = 0
+    for rel_path in notebook_paths:
+        if _sanitize_notebook_for_ci(output_root / rel_path):
+            sanitized += 1
+    if sanitized:
+        print(f"Sanitized {sanitized} notebook(s) to skip Colab bootstrap cells in CI.")
 
 
 def _execute_notebook(output_root: Path, rel_path: str, kernel: str) -> ExecutionResult:
@@ -251,6 +301,7 @@ def main() -> int:
         notebook_paths = _list_changed_docs_notebooks(repo_root, base, args.head)
 
     _copy_repo_tree(repo_root, output_root)
+    _sanitize_docs_notebooks_for_ci(output_root, notebook_paths)
     _execute_notebooks(
         output_root,
         notebook_paths,

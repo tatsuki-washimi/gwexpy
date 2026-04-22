@@ -138,3 +138,34 @@ def test_copy_repo_tree_uses_tracked_files_only(tmp_path: Path):
 
     assert (output_root / "docs" / "conf.py").exists()
     assert (output_root / "docs" / "scratch.txt").exists() is False
+
+
+def test_sanitize_notebook_for_ci_replaces_bootstrap_install_cells(tmp_path: Path):
+    module = load_script_module()
+    notebook_path = tmp_path / "bootstrap.ipynb"
+    notebook = {
+        "cells": [
+            {
+                "cell_type": "code",
+                "execution_count": 1,
+                "metadata": {},
+                "outputs": [{"output_type": "stream", "text": "ok\n"}],
+                "source": [
+                    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+                    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\"\n",
+                ],
+            }
+        ],
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    notebook_path.write_text(json.dumps(notebook), encoding="utf-8")
+
+    changed = module._sanitize_notebook_for_ci(notebook_path)
+    rewritten = json.loads(notebook_path.read_text(encoding="utf-8"))
+
+    assert changed is True
+    assert rewritten["cells"][0]["source"] == [module.CI_SKIP_BOOTSTRAP_COMMENT]
+    assert rewritten["cells"][0]["outputs"] == []
+    assert rewritten["cells"][0]["execution_count"] is None

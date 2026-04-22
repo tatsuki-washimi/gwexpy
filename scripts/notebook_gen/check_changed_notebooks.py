@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from collections.abc import Iterable
@@ -11,6 +12,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DISPLAY_ONLY_TAG = "display-only"
 HEAVY_TAG = "ci-heavy"
 DEFAULT_OUTPUT_DIR = Path("/tmp/gwexpy_changed_notebooks")
+CI_SKIP_BOOTSTRAP_COMMENT = (
+    "# Skipped in CI: Colab/bootstrap dependency install cell.\n"
+)
+BOOTSTRAP_PATTERNS = (
+    re.compile(r"(^|\n)\s*%pip\s+install\b"),
+    re.compile(r"(^|\n)\s*!pip\s+install\b"),
+)
+BOOTSTRAP_HINTS = ("gwexpy[all]", "colab", "scipy<", "numpy<", "astropy<", "gwpy<")
 
 
 def run_command(cmd: list[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
@@ -76,6 +85,34 @@ def classify_notebook(path: Path) -> str:
     return "light"
 
 
+def _is_bootstrap_install_cell(cell: dict) -> bool:
+    if cell.get("cell_type") != "code":
+        return False
+    source = "".join(cell.get("source", []))
+    normalized = source.lower()
+    return any(pattern.search(source) for pattern in BOOTSTRAP_PATTERNS) and any(
+        hint in normalized for hint in BOOTSTRAP_HINTS
+    )
+
+
+def _sanitize_notebook_for_ci(path: Path, destination: Path) -> bool:
+    notebook = json.loads(path.read_text(encoding="utf-8"))
+    changed = False
+    for cell in notebook.get("cells", []):
+        if not _is_bootstrap_install_cell(cell):
+            continue
+        cell["source"] = [CI_SKIP_BOOTSTRAP_COMMENT]
+        cell["outputs"] = []
+        cell["execution_count"] = None
+        changed = True
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        json.dumps(notebook, ensure_ascii=False, indent=1) + "\n",
+        encoding="utf-8",
+    )
+    return changed
+
+
 def summarize_groups(groups: dict[str, list[Path]]) -> None:
     """Print a compact summary of notebook groups."""
     print(
@@ -95,20 +132,25 @@ def summarize_groups(groups: dict[str, list[Path]]) -> None:
 def run_light_notebooks(paths: list[Path], output_dir: Path, kernel: str) -> None:
     """Execute light notebooks with papermill."""
     output_dir.mkdir(parents=True, exist_ok=True)
+    input_root = output_dir / "_inputs"
     for path in paths:
         rel_path = path.relative_to(REPO_ROOT)
+        input_path = input_root / rel_path
         output_path = output_dir / rel_path
+        sanitized = _sanitize_notebook_for_ci(path, input_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         cmd = [
             sys.executable,
             "-m",
             "papermill",
-            str(rel_path),
+            str(input_path),
             str(output_path),
             "--kernel",
             kernel,
         ]
         print(f"\n[light] Executing {rel_path}")
+        if sanitized:
+            print(f"[light] Sanitized bootstrap install cell(s) in {rel_path}")
         result = run_command(cmd)
         if result.returncode != 0:
             raise SystemExit(result.returncode)

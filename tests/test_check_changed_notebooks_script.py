@@ -71,3 +71,38 @@ def test_filter_changed_notebooks_skips_build_and_missing(tmp_path: Path):
     )
 
     assert filtered == [keep]
+
+
+def test_sanitize_notebook_for_ci_writes_temp_copy_without_mutating_source(tmp_path: Path):
+    module = load_script_module()
+    source = tmp_path / "docs" / "tutorial.ipynb"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    notebook = {
+        "cells": [
+            {
+                "cell_type": "code",
+                "metadata": {},
+                "execution_count": 3,
+                "outputs": [{"output_type": "stream", "text": "install\n"}],
+                "source": [
+                    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
+                    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\"\n",
+                ],
+            }
+        ],
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    source.write_text(json.dumps(notebook), encoding="utf-8")
+    destination = tmp_path / "tmp" / "tutorial.ipynb"
+
+    changed = module._sanitize_notebook_for_ci(source, destination)
+    sanitized = json.loads(destination.read_text(encoding="utf-8"))
+    original = json.loads(source.read_text(encoding="utf-8"))
+
+    assert changed is True
+    assert sanitized["cells"][0]["source"] == [module.CI_SKIP_BOOTSTRAP_COMMENT]
+    assert sanitized["cells"][0]["outputs"] == []
+    assert sanitized["cells"][0]["execution_count"] is None
+    assert original["cells"][0]["source"] == notebook["cells"][0]["source"]
