@@ -306,12 +306,13 @@ def test_advanced_hht_spectrogram_example_calls_hht_on_timeseries(relative_path:
         Path("ja/user_guide/tutorials/advanced_hht.ipynb"),
     ],
 )
-def test_non_fitting_tutorials_keep_committed_plot_outputs(relative_path: Path):
+def test_non_fitting_tutorials_keep_source_notebooks_clean(relative_path: Path):
     nb = _read_notebook(TUTORIAL_ROOT / relative_path)
-    assert any(
-        cell.get("cell_type") == "code" and cell.get("outputs")
+    assert not any(
+        cell.get("cell_type") == "code"
+        and (cell.get("outputs") or cell.get("execution_count") is not None)
         for cell in nb.get("cells", [])
-    ), f"Expected committed outputs in {relative_path}"
+    ), f"Expected clean committed notebook source in {relative_path}"
 
 
 def test_ja_advanced_hht_keeps_note_in_markdown_not_code():

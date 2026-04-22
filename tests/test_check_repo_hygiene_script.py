@@ -4,9 +4,14 @@ import importlib.util
 import json
 from pathlib import Path
 
+TUTORIALS_ROOT = ("docs", "web", "en", "user_guide", "tutorials")
+JA_TUTORIALS_ROOT = ("docs", "web", "ja", "user_guide", "tutorials")
+
 
 def load_script_module():
-    script_path = Path(__file__).resolve().parents[1] / "scripts" / "check_repo_hygiene.py"
+    script_path = (
+        Path(__file__).resolve().parents[1] / "scripts" / "check_repo_hygiene.py"
+    )
     spec = importlib.util.spec_from_file_location("check_repo_hygiene", script_path)
     assert spec is not None
     assert spec.loader is not None
@@ -46,7 +51,7 @@ def write_notebook(
 
 def test_clean_notebook_has_no_violations(tmp_path: Path):
     module = load_script_module()
-    notebook_path = tmp_path / "docs" / "web" / "en" / "user_guide" / "tutorials" / "clean.ipynb"
+    notebook_path = tmp_path.joinpath(*TUTORIALS_ROOT, "clean.ipynb")
     write_notebook(notebook_path)
 
     violations = module.check_paths(
@@ -59,7 +64,7 @@ def test_clean_notebook_has_no_violations(tmp_path: Path):
 
 def test_public_docs_notebook_flags_persisted_outputs_by_default(tmp_path: Path):
     module = load_script_module()
-    notebook_path = tmp_path / "docs" / "web" / "en" / "user_guide" / "tutorials" / "with_outputs.ipynb"
+    notebook_path = tmp_path.joinpath(*TUTORIALS_ROOT, "with_outputs.ipynb")
     write_notebook(
         notebook_path,
         outputs=[
@@ -155,7 +160,7 @@ def test_display_only_notebook_still_flags_oversized_output(tmp_path: Path):
 
 def test_notebook_flags_forbidden_cell_metadata(tmp_path: Path):
     module = load_script_module()
-    notebook_path = tmp_path / "docs" / "web" / "en" / "user_guide" / "tutorials" / "metadata.ipynb"
+    notebook_path = tmp_path.joinpath(*TUTORIALS_ROOT, "metadata.ipynb")
     write_notebook(
         notebook_path,
         cell_metadata={
@@ -177,7 +182,10 @@ def test_dot_prefixed_forbidden_path_is_reported(tmp_path: Path):
     module = load_script_module()
     artifact_path = tmp_path / ".pytest_cache" / "CACHEDIR.TAG"
     artifact_path.parent.mkdir(parents=True, exist_ok=True)
-    artifact_path.write_text("Signature: 8a477f597d28d172789f06886806bc55", encoding="utf-8")
+    artifact_path.write_text(
+        "Signature: 8a477f597d28d172789f06886806bc55",
+        encoding="utf-8",
+    )
 
     violations = module.check_paths(
         [str(artifact_path.relative_to(tmp_path))],
@@ -206,7 +214,7 @@ def test_notebook_flags_execution_count_on_clean_source(tmp_path: Path):
 
 def test_public_docs_notebook_flags_execution_count_on_clean_source(tmp_path: Path):
     module = load_script_module()
-    notebook_path = tmp_path / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "executed.ipynb"
+    notebook_path = tmp_path.joinpath(*JA_TUTORIALS_ROOT, "executed.ipynb")
     write_notebook(notebook_path, execution_count=1)
 
     violations = module.check_paths(

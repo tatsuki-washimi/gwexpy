@@ -209,6 +209,8 @@ exclude = [
   "dist",
   "gwexpy.egg-info",
   "htmlcov",
+  "scratch",
+  "*.ipynb",
 ]
 
 [tool.ruff.lint]
@@ -239,8 +241,14 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 # Tests and examples: allow unused imports and ignore docstring/modernization rules
 "tests/*" = ["F401", "E741", "D", "UP"]
+"tests/**/*.py" = ["F401", "E741", "D", "UP"]
 "examples/*" = ["F401", "E741", "D", "UP"]
+"examples/**/*.py" = ["F401", "E741", "D", "UP"]
 "gwexpy/*/tests/*" = ["F401", "E741", "D", "UP"]
+# Auxiliary scripts: docstring coverage is not yet enforced project-wide.
+"scripts/*.py" = ["D"]
+"scripts/**/*.py" = ["D"]
+"docs/*.py" = ["D"]
 # GUI code: compact style is acceptable; allow Optional/Union for py39 runtime safety
 "gwexpy/gui/*" = ["E701", "E702", "UP045"]
 "gwexpy/analysis/threshold.py" = ["D416"]

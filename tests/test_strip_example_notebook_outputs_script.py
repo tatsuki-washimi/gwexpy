@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+TUTORIALS_ROOT = ("docs", "web", "en", "user_guide", "tutorials")
+
 
 def load_script_module():
     script_path = (
@@ -55,7 +57,7 @@ def read_notebook(path: Path) -> dict:
 
 def test_strip_notebook_clears_public_docs_outputs(tmp_path: Path):
     module = load_script_module()
-    notebook_path = tmp_path / "docs" / "web" / "en" / "user_guide" / "tutorials" / "sample.ipynb"
+    notebook_path = tmp_path.joinpath(*TUTORIALS_ROOT, "sample.ipynb")
     write_notebook(
         notebook_path,
         outputs=[{"output_type": "stream", "name": "stdout", "text": "ok\n"}],

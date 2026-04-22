@@ -8,7 +8,10 @@ def load_script_module():
     script_path = (
         Path(__file__).resolve().parents[1] / "scripts" / "check_forbidden_artifacts.py"
     )
-    spec = importlib.util.spec_from_file_location("check_forbidden_artifacts", script_path)
+    spec = importlib.util.spec_from_file_location(
+        "check_forbidden_artifacts",
+        script_path,
+    )
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)

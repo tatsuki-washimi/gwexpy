@@ -5,6 +5,8 @@ import json
 import subprocess
 from pathlib import Path
 
+TUTORIALS_ROOT = ("docs", "web", "en", "user_guide", "tutorials")
+
 
 def load_script_module():
     script_path = (
@@ -53,13 +55,22 @@ def mutate_notebook(path: Path, marker: str) -> None:
 
 def init_git_repo(path: Path) -> None:
     subprocess.run(["git", "init"], cwd=path, check=True, capture_output=True)
-    subprocess.run(["git", "config", "user.email", "ci@example.com"], cwd=path, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "ci@example.com"],
+        cwd=path,
+        check=True,
+    )
     subprocess.run(["git", "config", "user.name", "CI"], cwd=path, check=True)
 
 
 def commit_all(path: Path, message: str) -> None:
     subprocess.run(["git", "add", "."], cwd=path, check=True)
-    subprocess.run(["git", "commit", "-m", message], cwd=path, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "commit", "-m", message],
+        cwd=path,
+        check=True,
+        capture_output=True,
+    )
 
 
 def test_iter_docs_notebooks_skips_display_only(tmp_path: Path):
@@ -68,9 +79,9 @@ def test_iter_docs_notebooks_skips_display_only(tmp_path: Path):
     repo_root.mkdir()
     init_git_repo(repo_root)
 
-    write_notebook(repo_root / "docs" / "web" / "en" / "user_guide" / "tutorials" / "keep.ipynb")
+    write_notebook(repo_root.joinpath(*TUTORIALS_ROOT, "keep.ipynb"))
     write_notebook(
-        repo_root / "docs" / "web" / "en" / "user_guide" / "tutorials" / "display.ipynb",
+        repo_root.joinpath(*TUTORIALS_ROOT, "display.ipynb"),
         tags=["display-only"],
     )
     commit_all(repo_root, "init")

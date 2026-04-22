@@ -38,7 +38,10 @@ def clean_and_rewrap(src):
         return src
 
     # Re-wrap
-    indented = "\n".join(("    " + l) if l.strip() else "" for l in body.splitlines())
+    indented = "\n".join(
+        ("    " + line) if line.strip() else ""
+        for line in body.splitlines()
+    )
     wrapped = (
         "import warnings\n"
         "with warnings.catch_warnings():\n"

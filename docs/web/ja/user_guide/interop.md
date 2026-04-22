@@ -197,7 +197,7 @@ myst:
 
 ## 関連ページ
 
-- [他ライブラリ連携チュートリアル](tutorials/intro_interop)
+- [他ライブラリ連携チュートリアル](tutorials/intro_interop.ipynb)
 - [Interop API リファレンス](../reference/api/interop)
 - [ファイル I/O 対応フォーマットガイド](io_formats)
 
@@ -205,4 +205,4 @@ myst:
 
 - [ファイル I/O 対応フォーマットガイド](io_formats) で `Class.read(..., format=...)` と `obj.write(...)` を確認する
 - [GPS 時刻ユーティリティ](time_utilities) で GPS 時刻やタイムゾーンの補助関数を確認する
-- [他ライブラリ連携チュートリアル](tutorials/intro_interop) で具体例を先に見る
+- [他ライブラリ連携チュートリアル](tutorials/intro_interop.ipynb) で具体例を先に見る

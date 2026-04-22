@@ -18,7 +18,7 @@ myst:
 
 ## On This Page
 
-- [Install Commands](#install-command)
+- [Install Commands](#en-install-command)
 - [Installation Steps](#1-installation-steps)
 - [Dependency Troubleshooting](#21-dependency-troubleshooting)
 - [Optional Dependencies (Extras) Details](#3-optional-dependencies-extras-details)
@@ -32,7 +32,8 @@ GWexpy is currently in its **Development Version** and is **not yet published on
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
 
-<a id="install-command"></a>
+(en-install-command)=
+## Install Commands
 
 | Goal | Installation Command | Features |
 | --- | --- | --- |

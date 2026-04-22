@@ -206,7 +206,7 @@ for snr in snr_values:
         n_val = colored(duration=4, sample_rate=sample_rate, exponent=0.5, seed=snr*100+i).value
         s_val = make_sine_gaussian(4, sample_rate, 2.0, burst_freq, burst_tau, snr * n_val.std()).value
         trial_ts = TimeSeries(n_val + s_val, sample_rate=sample_rate)[::downsample_factor]
-        
+
         # フィットとチェック
         try:
             res = trial_ts.fit_arima(order=order_tuple)

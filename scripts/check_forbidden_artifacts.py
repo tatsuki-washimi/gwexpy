@@ -6,7 +6,6 @@ from __future__ import annotations
 import subprocess
 import sys
 from collections.abc import Iterable
-from pathlib import Path
 
 FORBIDDEN_PREFIXES = (
     "docs/.doctrees/",
@@ -44,8 +43,6 @@ def _find_forbidden(paths: Iterable[str]) -> list[str]:
     matches: list[str] = []
     for path in paths:
         normalized = _normalize(path)
-        if not Path(normalized).exists():
-            continue
         if any(normalized.startswith(prefix) for prefix in FORBIDDEN_PREFIXES):
             matches.append(normalized)
     return sorted(set(matches))

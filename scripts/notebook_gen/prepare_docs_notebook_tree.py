@@ -16,7 +16,11 @@ from typing import NamedTuple
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DISPLAY_ONLY_TAG = "display-only"
 DOCS_NOTEBOOK_PREFIX = "docs/web/"
+
+
 class ExecutionResult(NamedTuple):
+    """Execution outcome for one notebook in the temp docs tree."""
+
     path: str
     returncode: int
     stdout: str
@@ -102,7 +106,14 @@ def _iter_docs_notebooks(repo_root: Path) -> list[str]:
 def _list_changed_docs_notebooks(repo_root: Path, base: str, head: str) -> list[str]:
     changed_paths = _run_git(
         repo_root,
-        ["diff", "--name-only", "--diff-filter=ACMR", f"{base}...{head}", "--", "*.ipynb"],
+        [
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMR",
+            f"{base}...{head}",
+            "--",
+            "*.ipynb",
+        ],
     )
     notebooks: list[str] = []
     for rel_path in changed_paths:
@@ -196,6 +207,7 @@ def _execute_notebooks(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments for docs tree preparation."""
     parser = argparse.ArgumentParser(
         description="Prepare a temporary docs source tree with executed notebook pages."
     )
@@ -217,12 +229,17 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--base", default=None, help="Base ref for changed mode.")
     parser.add_argument("--head", default="HEAD", help="Head ref for changed mode.")
-    parser.add_argument("--kernel", default="python3", help="Kernel name for papermill.")
+    parser.add_argument(
+        "--kernel",
+        default="python3",
+        help="Kernel name for papermill.",
+    )
     parser.add_argument("--jobs", type=int, default=4, help="Parallel notebook workers.")
     return parser.parse_args()
 
 
 def main() -> int:
+    """Build the temp docs tree and execute the selected notebooks."""
     args = parse_args()
     repo_root = Path(args.repo_root).resolve()
     output_root = Path(args.output_root).resolve()

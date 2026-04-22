@@ -1,0 +1,130 @@
+# Notebook Execution Timing Snapshot (2026-04-22)
+
+- Source: local publish-style verification via `scripts/notebook_gen/prepare_docs_notebook_tree.py --mode full --jobs 8`.
+- Timing source: per-notebook `metadata.papermill.duration` recorded in the executed notebook JSON.
+- Snapshot scope: `docs/web/**` non-`display-only` notebooks only.
+- Snapshot status: finalized after the full local publish-style verification run.
+- Final coverage: 117 notebooks completed out of 117 targeted `docs/web/**` non-`display-only` notebooks.
+
+## Completed Notebook Timings
+
+```tsv
+notebook	duration_seconds	duration_minutes	start_utc	end_utc
+en/user_guide/tutorials/advanced_arima.ipynb	353.326	5.89	2026-04-22T06:48:11.829579+00:00	2026-04-22T06:54:05.155144+00:00
+en/user_guide/tutorials/advanced_bruco.ipynb	115.484	1.92	2026-04-22T06:48:11.850158+00:00	2026-04-22T06:50:07.334591+00:00
+en/user_guide/tutorials/advanced_control_basics.ipynb	85.809	1.43	2026-04-22T06:48:11.853045+00:00	2026-04-22T06:49:37.661925+00:00
+en/user_guide/tutorials/advanced_control_discretization.ipynb	129.029	2.15	2026-04-22T06:48:11.853411+00:00	2026-04-22T06:50:20.882657+00:00
+en/user_guide/tutorials/advanced_control_modeling.ipynb	5.181	0.09	2026-04-22T06:48:11.837959+00:00	2026-04-22T06:48:17.018753+00:00
+en/user_guide/tutorials/advanced_correlation.ipynb	309.673	5.16	2026-04-22T06:48:11.837637+00:00	2026-04-22T06:53:21.510827+00:00
+en/user_guide/tutorials/advanced_coupling.ipynb	7.223	0.12	2026-04-22T06:48:11.848850+00:00	2026-04-22T06:48:19.072083+00:00
+en/user_guide/tutorials/advanced_decomposition.ipynb	547.986	9.13	2026-04-22T06:48:11.848562+00:00	2026-04-22T06:57:19.834189+00:00
+en/user_guide/tutorials/advanced_field_analysis.ipynb	6.060	0.10	2026-04-22T06:48:17.559378+00:00	2026-04-22T06:48:23.619667+00:00
+en/user_guide/tutorials/advanced_fitting.ipynb	85.129	1.42	2026-04-22T06:48:19.553494+00:00	2026-04-22T06:49:44.682546+00:00
+en/user_guide/tutorials/advanced_hht.ipynb	67.746	1.13	2026-04-22T06:48:24.044450+00:00	2026-04-22T06:49:31.789973+00:00
+en/user_guide/tutorials/advanced_modal_analysis.ipynb	8.357	0.14	2026-04-22T06:49:32.417295+00:00	2026-04-22T06:49:40.774572+00:00
+en/user_guide/tutorials/advanced_peak_detection.ipynb	7.880	0.13	2026-04-22T06:49:38.350340+00:00	2026-04-22T06:49:46.229929+00:00
+en/user_guide/tutorials/advanced_peak_tracking.ipynb	388.024	6.47	2026-04-22T06:49:41.651305+00:00	2026-04-22T06:56:09.675271+00:00
+en/user_guide/tutorials/advanced_spectrogram_processing.ipynb	1156.552	19.28	2026-04-22T06:49:45.483416+00:00	2026-04-22T07:09:02.035403+00:00
+en/user_guide/tutorials/case_active_damping.ipynb	15.348	0.26	2026-04-22T06:49:46.893290+00:00	2026-04-22T06:50:02.241507+00:00
+en/user_guide/tutorials/case_arima_burst_search.ipynb	80.168	1.34	2026-04-22T06:50:02.988686+00:00	2026-04-22T06:51:23.156913+00:00
+en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb	201.393	3.36	2026-04-22T06:50:08.079337+00:00	2026-04-22T06:53:29.472587+00:00
+en/user_guide/tutorials/case_bruco_advanced.ipynb	12.065	0.20	2026-04-22T06:50:21.672634+00:00	2026-04-22T06:50:33.738040+00:00
+en/user_guide/tutorials/case_bruco_ica_denoising.ipynb	10.123	0.17	2026-04-22T06:50:34.465299+00:00	2026-04-22T06:50:44.588261+00:00
+en/user_guide/tutorials/case_calibration_pipeline.ipynb	18.596	0.31	2026-04-22T06:50:45.143193+00:00	2026-04-22T06:51:03.739624+00:00
+en/user_guide/tutorials/case_coupling_analysis.ipynb	10.876	0.18	2026-04-22T06:51:04.403351+00:00	2026-04-22T06:51:15.279266+00:00
+en/user_guide/tutorials/case_dttxml_calibration.ipynb	9.768	0.16	2026-04-22T06:51:15.949369+00:00	2026-04-22T06:51:25.717615+00:00
+en/user_guide/tutorials/case_finesse_optics.ipynb	10.726	0.18	2026-04-22T06:51:24.109321+00:00	2026-04-22T06:51:34.835611+00:00
+en/user_guide/tutorials/case_gbd_format.ipynb	153.475	2.56	2026-04-22T06:51:26.543171+00:00	2026-04-22T06:54:00.018171+00:00
+en/user_guide/tutorials/case_glitch_analysis.ipynb	28.261	0.47	2026-04-22T06:51:35.762415+00:00	2026-04-22T06:52:04.023474+00:00
+en/user_guide/tutorials/case_hdf5_provenance.ipynb	9.814	0.16	2026-04-22T06:52:05.144283+00:00	2026-04-22T06:52:14.958593+00:00
+en/user_guide/tutorials/case_lockin_detection.ipynb	11.285	0.19	2026-04-22T06:52:16.006681+00:00	2026-04-22T06:52:27.291445+00:00
+en/user_guide/tutorials/case_ml_preprocessing.ipynb	11.939	0.20	2026-04-22T06:52:28.231337+00:00	2026-04-22T06:52:40.170401+00:00
+en/user_guide/tutorials/case_noise_budget.ipynb	15.378	0.26	2026-04-22T06:52:41.313553+00:00	2026-04-22T06:52:56.691469+00:00
+en/user_guide/tutorials/case_physics_validation.ipynb	8.118	0.14	2026-04-22T06:52:57.553319+00:00	2026-04-22T06:53:05.671808+00:00
+en/user_guide/tutorials/case_pycbc_search.ipynb	8.226	0.14	2026-04-22T06:53:06.715381+00:00	2026-04-22T06:53:14.941658+00:00
+en/user_guide/tutorials/case_schumann_resonance.ipynb	65.785	1.10	2026-04-22T06:53:16.219550+00:00	2026-04-22T06:54:22.004317+00:00
+en/user_guide/tutorials/case_segment_analysis.ipynb	7.249	0.12	2026-04-22T06:53:22.360365+00:00	2026-04-22T06:53:29.609215+00:00
+en/user_guide/tutorials/case_seismic_obspy.ipynb	9.895	0.16	2026-04-22T06:53:30.384724+00:00	2026-04-22T06:53:40.280041+00:00
+en/user_guide/tutorials/case_signal_extraction.ipynb	171.663	2.86	2026-04-22T06:53:30.480271+00:00	2026-04-22T06:56:22.143422+00:00
+en/user_guide/tutorials/case_transfer_function.ipynb	172.798	2.88	2026-04-22T06:53:40.996574+00:00	2026-04-22T06:56:33.794117+00:00
+en/user_guide/tutorials/case_violin_mode.ipynb	7.945	0.13	2026-04-22T06:54:00.715317+00:00	2026-04-22T06:54:08.660010+00:00
+en/user_guide/tutorials/case_wiener_filter.ipynb	7.038	0.12	2026-04-22T06:54:05.613897+00:00	2026-04-22T06:54:12.652383+00:00
+en/user_guide/tutorials/field_advanced_workflow.ipynb	4.898	0.08	2026-04-22T06:54:09.148140+00:00	2026-04-22T06:54:14.046288+00:00
+en/user_guide/tutorials/field_scalar_intro.ipynb	5.886	0.10	2026-04-22T06:54:13.117326+00:00	2026-04-22T06:54:19.003540+00:00
+en/user_guide/tutorials/intro_fitting.ipynb	6.669	0.11	2026-04-22T06:54:14.484271+00:00	2026-04-22T06:54:21.152965+00:00
+en/user_guide/tutorials/intro_frequencyseries.ipynb	8.553	0.14	2026-04-22T06:54:19.482460+00:00	2026-04-22T06:54:28.035217+00:00
+en/user_guide/tutorials/intro_histogram.ipynb	4.926	0.08	2026-04-22T06:54:21.601376+00:00	2026-04-22T06:54:26.527333+00:00
+en/user_guide/tutorials/intro_interop.ipynb	261.486	4.36	2026-04-22T06:54:22.479404+00:00	2026-04-22T06:58:43.965286+00:00
+en/user_guide/tutorials/intro_mapplotting.ipynb	5.828	0.10	2026-04-22T06:54:27.015667+00:00	2026-04-22T06:54:32.843435+00:00
+en/user_guide/tutorials/intro_noise.ipynb	52.468	0.87	2026-04-22T06:54:28.506723+00:00	2026-04-22T06:55:20.974895+00:00
+en/user_guide/tutorials/intro_plotting.ipynb	629.214	10.49	2026-04-22T06:54:33.256425+00:00	2026-04-22T07:05:02.470023+00:00
+en/user_guide/tutorials/intro_segment_table.ipynb	4.239	0.07	2026-04-22T06:55:21.413402+00:00	2026-04-22T06:55:25.652211+00:00
+en/user_guide/tutorials/intro_spectrogram.ipynb	52.726	0.88	2026-04-22T06:55:26.114509+00:00	2026-04-22T06:56:18.840030+00:00
+en/user_guide/tutorials/intro_table.ipynb	4.649	0.08	2026-04-22T06:56:10.149683+00:00	2026-04-22T06:56:14.798573+00:00
+en/user_guide/tutorials/intro_timeseries.ipynb	898.930	14.98	2026-04-22T06:56:15.232231+00:00	2026-04-22T07:11:14.161926+00:00
+en/user_guide/tutorials/matrix_frequencyseries.ipynb	188.480	3.14	2026-04-22T06:56:19.265262+00:00	2026-04-22T06:59:27.745607+00:00
+en/user_guide/tutorials/matrix_spectrogram.ipynb	719.969	12.00	2026-04-22T06:56:22.580118+00:00	2026-04-22T07:08:22.549610+00:00
+en/user_guide/tutorials/matrix_timeseries.ipynb	2333.924	38.90	2026-04-22T06:56:34.217388+00:00	2026-04-22T07:35:28.141708+00:00
+en/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb	824.746	13.75	2026-04-22T06:57:20.263555+00:00	2026-04-22T07:11:05.009144+00:00
+en/user_guide/tutorials/segment_asd_pipeline.ipynb	4.442	0.07	2026-04-22T06:58:44.436004+00:00	2026-04-22T06:58:48.878364+00:00
+en/user_guide/tutorials/segment_visualization.ipynb	5.166	0.09	2026-04-22T06:58:49.319625+00:00	2026-04-22T06:58:54.485957+00:00
+en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb	10.427	0.17	2026-04-22T06:58:54.969593+00:00	2026-04-22T06:59:05.397086+00:00
+ja/user_guide/tutorials/advanced_arima.ipynb	359.595	5.99	2026-04-22T06:59:05.941881+00:00	2026-04-22T07:05:05.537378+00:00
+ja/user_guide/tutorials/advanced_bruco.ipynb	122.025	2.03	2026-04-22T06:59:28.194831+00:00	2026-04-22T07:01:30.219496+00:00
+ja/user_guide/tutorials/advanced_control_basics.ipynb	129.305	2.16	2026-04-22T07:01:31.132578+00:00	2026-04-22T07:03:40.437567+00:00
+ja/user_guide/tutorials/advanced_control_discretization.ipynb	167.216	2.79	2026-04-22T07:03:41.344293+00:00	2026-04-22T07:06:28.559910+00:00
+ja/user_guide/tutorials/advanced_control_modeling.ipynb	5.758	0.10	2026-04-22T07:05:03.316092+00:00	2026-04-22T07:05:09.074157+00:00
+ja/user_guide/tutorials/advanced_correlation.ipynb	340.172	5.67	2026-04-22T07:05:05.968240+00:00	2026-04-22T07:10:46.140711+00:00
+ja/user_guide/tutorials/advanced_coupling.ipynb	10.306	0.17	2026-04-22T07:05:09.534956+00:00	2026-04-22T07:05:19.841046+00:00
+ja/user_guide/tutorials/advanced_decomposition.ipynb	579.681	9.66	2026-04-22T07:05:20.281932+00:00	2026-04-22T07:14:59.963199+00:00
+ja/user_guide/tutorials/advanced_field_analysis.ipynb	6.184	0.10	2026-04-22T07:06:29.029773+00:00	2026-04-22T07:06:35.214102+00:00
+ja/user_guide/tutorials/advanced_fitting.ipynb	79.501	1.33	2026-04-22T07:06:35.675477+00:00	2026-04-22T07:07:55.175991+00:00
+ja/user_guide/tutorials/advanced_hht.ipynb	60.885	1.01	2026-04-22T07:07:55.644005+00:00	2026-04-22T07:08:56.529420+00:00
+ja/user_guide/tutorials/advanced_modal_analysis.ipynb	5.460	0.09	2026-04-22T07:08:23.023490+00:00	2026-04-22T07:08:28.483415+00:00
+ja/user_guide/tutorials/advanced_peak_detection.ipynb	4.930	0.08	2026-04-22T07:08:28.946114+00:00	2026-04-22T07:08:33.876156+00:00
+ja/user_guide/tutorials/advanced_peak_tracking.ipynb	376.034	6.27	2026-04-22T07:08:34.302342+00:00	2026-04-22T07:14:50.336130+00:00
+ja/user_guide/tutorials/advanced_spectrogram_processing.ipynb	1137.253	18.95	2026-04-22T07:08:57.029234+00:00	2026-04-22T07:27:54.282170+00:00
+ja/user_guide/tutorials/case_active_damping.ipynb	9.585	0.16	2026-04-22T07:09:02.496711+00:00	2026-04-22T07:09:12.081408+00:00
+ja/user_guide/tutorials/case_arima_burst_search.ipynb	63.078	1.05	2026-04-22T07:09:12.518431+00:00	2026-04-22T07:10:15.596243+00:00
+ja/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb	80.072	1.33	2026-04-22T07:10:16.021512+00:00	2026-04-22T07:11:36.093394+00:00
+ja/user_guide/tutorials/case_bruco_advanced.ipynb	7.472	0.12	2026-04-22T07:10:46.613435+00:00	2026-04-22T07:10:54.085746+00:00
+ja/user_guide/tutorials/case_bruco_ica_denoising.ipynb	6.989	0.12	2026-04-22T07:10:54.583626+00:00	2026-04-22T07:11:01.572815+00:00
+ja/user_guide/tutorials/case_calibration_pipeline.ipynb	14.556	0.24	2026-04-22T07:11:02.114645+00:00	2026-04-22T07:11:16.670953+00:00
+ja/user_guide/tutorials/case_coupling_analysis.ipynb	8.430	0.14	2026-04-22T07:11:05.517312+00:00	2026-04-22T07:11:13.947441+00:00
+ja/user_guide/tutorials/case_dttxml_calibration.ipynb	7.888	0.13	2026-04-22T07:11:14.407385+00:00	2026-04-22T07:11:22.295179+00:00
+ja/user_guide/tutorials/case_finesse_optics.ipynb	8.215	0.14	2026-04-22T07:11:14.766598+00:00	2026-04-22T07:11:22.981841+00:00
+ja/user_guide/tutorials/case_gbd_format.ipynb	147.365	2.46	2026-04-22T07:11:17.179914+00:00	2026-04-22T07:13:44.545347+00:00
+ja/user_guide/tutorials/case_glitch_analysis.ipynb	9.994	0.17	2026-04-22T07:11:22.808323+00:00	2026-04-22T07:11:32.802604+00:00
+ja/user_guide/tutorials/case_hdf5_provenance.ipynb	5.090	0.08	2026-04-22T07:11:23.444844+00:00	2026-04-22T07:11:28.534672+00:00
+ja/user_guide/tutorials/case_lockin_detection.ipynb	6.830	0.11	2026-04-22T07:11:29.033149+00:00	2026-04-22T07:11:35.863332+00:00
+ja/user_guide/tutorials/case_ml_preprocessing.ipynb	7.330	0.12	2026-04-22T07:11:33.270379+00:00	2026-04-22T07:11:40.600316+00:00
+ja/user_guide/tutorials/case_noise_budget.ipynb	8.852	0.15	2026-04-22T07:11:36.332817+00:00	2026-04-22T07:11:45.184963+00:00
+ja/user_guide/tutorials/case_physics_validation.ipynb	5.401	0.09	2026-04-22T07:11:36.643511+00:00	2026-04-22T07:11:42.044446+00:00
+ja/user_guide/tutorials/case_pycbc_search.ipynb	5.173	0.09	2026-04-22T07:11:41.185330+00:00	2026-04-22T07:11:46.358594+00:00
+ja/user_guide/tutorials/case_schumann_resonance.ipynb	44.914	0.75	2026-04-22T07:11:42.480446+00:00	2026-04-22T07:12:27.394435+00:00
+ja/user_guide/tutorials/case_segment_analysis.ipynb	4.269	0.07	2026-04-22T07:11:45.699187+00:00	2026-04-22T07:11:49.968354+00:00
+ja/user_guide/tutorials/case_seismic_obspy.ipynb	6.151	0.10	2026-04-22T07:11:46.825347+00:00	2026-04-22T07:11:52.976681+00:00
+ja/user_guide/tutorials/case_signal_extraction.ipynb	168.692	2.81	2026-04-22T07:11:50.398860+00:00	2026-04-22T07:14:39.091131+00:00
+ja/user_guide/tutorials/case_transfer_function.ipynb	169.534	2.83	2026-04-22T07:11:53.407327+00:00	2026-04-22T07:14:42.940949+00:00
+ja/user_guide/tutorials/case_violin_mode.ipynb	6.547	0.11	2026-04-22T07:12:27.880234+00:00	2026-04-22T07:12:34.427696+00:00
+ja/user_guide/tutorials/case_wiener_filter.ipynb	6.685	0.11	2026-04-22T07:12:34.898724+00:00	2026-04-22T07:12:41.583941+00:00
+ja/user_guide/tutorials/field_advanced_workflow.ipynb	4.756	0.08	2026-04-22T07:12:42.046238+00:00	2026-04-22T07:12:46.801806+00:00
+ja/user_guide/tutorials/field_scalar_intro.ipynb	5.769	0.10	2026-04-22T07:12:47.264040+00:00	2026-04-22T07:12:53.032754+00:00
+ja/user_guide/tutorials/intro_fitting.ipynb	6.562	0.11	2026-04-22T07:12:53.464758+00:00	2026-04-22T07:13:00.026572+00:00
+ja/user_guide/tutorials/intro_frequencyseries.ipynb	8.395	0.14	2026-04-22T07:13:00.504667+00:00	2026-04-22T07:13:08.899592+00:00
+ja/user_guide/tutorials/intro_histogram.ipynb	4.782	0.08	2026-04-22T07:13:09.391433+00:00	2026-04-22T07:13:14.172945+00:00
+ja/user_guide/tutorials/intro_interop.ipynb	261.420	4.36	2026-04-22T07:13:14.658257+00:00	2026-04-22T07:17:36.078336+00:00
+ja/user_guide/tutorials/intro_mapplotting.ipynb	5.789	0.10	2026-04-22T07:13:45.011229+00:00	2026-04-22T07:13:50.800574+00:00
+ja/user_guide/tutorials/intro_noise.ipynb	52.616	0.88	2026-04-22T07:13:51.216934+00:00	2026-04-22T07:14:43.832684+00:00
+ja/user_guide/tutorials/intro_plotting.ipynb	621.386	10.36	2026-04-22T07:14:39.523705+00:00	2026-04-22T07:25:00.909652+00:00
+ja/user_guide/tutorials/intro_segment_table.ipynb	4.487	0.07	2026-04-22T07:14:43.415783+00:00	2026-04-22T07:14:47.902286+00:00
+ja/user_guide/tutorials/intro_spectrogram.ipynb	52.942	0.88	2026-04-22T07:14:44.264475+00:00	2026-04-22T07:15:37.206294+00:00
+ja/user_guide/tutorials/intro_table.ipynb	4.673	0.08	2026-04-22T07:14:48.343162+00:00	2026-04-22T07:14:53.016406+00:00
+ja/user_guide/tutorials/intro_timeseries.ipynb	889.311	14.82	2026-04-22T07:14:50.835134+00:00	2026-04-22T07:29:40.146186+00:00
+ja/user_guide/tutorials/matrix_frequencyseries.ipynb	188.419	3.14	2026-04-22T07:14:53.464653+00:00	2026-04-22T07:18:01.883546+00:00
+ja/user_guide/tutorials/matrix_spectrogram.ipynb	712.610	11.88	2026-04-22T07:15:00.407899+00:00	2026-04-22T07:26:53.018140+00:00
+ja/user_guide/tutorials/matrix_timeseries.ipynb	1713.005	28.55	2026-04-22T07:15:37.661669+00:00	2026-04-22T07:44:10.667061+00:00
+ja/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb	728.855	12.15	2026-04-22T07:17:36.532118+00:00	2026-04-22T07:29:45.387540+00:00
+ja/user_guide/tutorials/segment_asd_pipeline.ipynb	4.520	0.08	2026-04-22T07:18:02.327554+00:00	2026-04-22T07:18:06.847295+00:00
+ja/user_guide/tutorials/segment_visualization.ipynb	5.258	0.09	2026-04-22T07:18:07.264258+00:00	2026-04-22T07:18:12.522420+00:00
+```

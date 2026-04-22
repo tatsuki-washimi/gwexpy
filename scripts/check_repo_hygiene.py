@@ -45,6 +45,8 @@ NOTEBOOK_HYGIENE_PREFIXES = ("docs/web/", "examples/")
 
 
 class Violation(NamedTuple):
+    """A single repository hygiene violation."""
+
     path: str
     rule: str
     message: str
@@ -71,11 +73,15 @@ def _run_git_command(args: list[str]) -> list[str]:
 
 
 def list_staged_files() -> list[str]:
+    """Return staged paths that should be checked for hygiene regressions."""
     return _run_git_command(["diff", "--cached", "--name-only", "--diff-filter=ACMR"])
 
 
 def list_changed_files(base: str, head: str) -> list[str]:
-    return _run_git_command(["diff", "--name-only", "--diff-filter=ACMR", f"{base}...{head}"])
+    """Return changed paths between two git refs."""
+    return _run_git_command(
+        ["diff", "--name-only", "--diff-filter=ACMR", f"{base}...{head}"]
+    )
 
 
 def _load_notebook(path: Path) -> dict:
@@ -139,7 +145,8 @@ def _check_notebook(
                 Violation(
                     normalized_path,
                     "notebook-execution-count-present",
-                    f"cell[{cell_index}] retains execution_count={cell.get('execution_count')}. "
+                    "cell[{cell_index}] retains "
+                    f"execution_count={cell.get('execution_count')}. "
                     "Clean source notebooks should not keep execution counts.",
                 )
             )
@@ -181,7 +188,8 @@ def _check_notebook(
             Violation(
                 normalized_path,
                 "notebook-total-output-too-large",
-                f"Notebook outputs serialize to {total_output_json_bytes} bytes in total; "
+                "Notebook outputs serialize to "
+                f"{total_output_json_bytes} bytes in total; "
                 f"limit is {max_total_output_json_bytes}.",
             )
         )
@@ -192,8 +200,8 @@ def _check_notebook(
                 normalized_path,
                 "notebook-outputs-present",
                 "Tracked notebooks under 'docs/web/' and 'examples/' must be committed "
-                "clean. Build docs from executed temp trees or generated artifacts, then "
-                "strip notebook outputs before committing source files. Use the "
+                "clean. Build docs from executed temp trees or generated artifacts, "
+                "then strip notebook outputs before committing source files. Use the "
                 f"'{DISPLAY_ONLY_TAG}' tag only for intentional checked-in outputs.",
             )
         )
@@ -208,6 +216,7 @@ def check_paths(
     max_output_json_bytes: int = DEFAULT_MAX_OUTPUT_JSON_BYTES,
     max_total_output_json_bytes: int = DEFAULT_MAX_TOTAL_OUTPUT_JSON_BYTES,
 ) -> list[Violation]:
+    """Check paths for generated artifacts and notebook hygiene violations."""
     violations: list[Violation] = []
     seen_paths: set[str] = set()
 
@@ -222,7 +231,11 @@ def check_paths(
             continue
 
         matched_prefix = next(
-            (prefix for prefix in FORBIDDEN_PREFIXES if normalized_path.startswith(prefix)),
+            (
+                prefix
+                for prefix in FORBIDDEN_PREFIXES
+                if normalized_path.startswith(prefix)
+            ),
             None,
         )
         if matched_prefix:
@@ -230,7 +243,8 @@ def check_paths(
                 Violation(
                     normalized_path,
                     "forbidden-artifact-path",
-                    f"Path is under forbidden generated-artifact prefix '{matched_prefix}'.",
+                    "Path is under forbidden generated-artifact prefix "
+                    f"'{matched_prefix}'.",
                 )
             )
             continue
@@ -249,6 +263,7 @@ def check_paths(
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments for the hygiene check CLI."""
     parser = argparse.ArgumentParser(
         description="Check changed files for repo-hygiene regressions."
     )
@@ -284,6 +299,7 @@ def _resolve_paths(args: argparse.Namespace) -> list[str]:
 
 
 def main() -> int:
+    """Run the hygiene check CLI."""
     args = parse_args()
     paths = _resolve_paths(args)
     if not paths:

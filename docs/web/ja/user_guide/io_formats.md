@@ -13,7 +13,7 @@ myst:
 gwexpy の利用者向け I/O ガイドです。
 このページでは、ユーザーが直接使う `.read()` / `.write()` / `fetch()` 系 API による読み書き・取得だけを扱います。
 
-`to_*()` / `from_*()` による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。質問が「このオブジェクトを別ライブラリや別コンテナへどう変換するか」であれば、それは interop 側の話です。必要な場合は [他ライブラリ連携チュートリアル](tutorials/intro_interop) や [Interop API リファレンス](../reference/api/interop) を参照してください。
+`to_*()` / `from_*()` による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。質問が「このオブジェクトを別ライブラリや別コンテナへどう変換するか」であれば、それは interop 側の話です。必要な場合は [他ライブラリ連携チュートリアル](tutorials/intro_interop.ipynb) や [Interop API リファレンス](../reference/api/interop) を参照してください。
 
 ## このページでわかること
 
@@ -299,7 +299,7 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 
 ## 関連ページ
 
-- [他ライブラリ連携チュートリアル](tutorials/intro_interop)
+- [他ライブラリ連携チュートリアル](tutorials/intro_interop.ipynb)
 - [Interop API リファレンス](../reference/api/interop)
 - [検証と品質の見方](verification_and_quality.md)
 - [インストールガイド](installation)

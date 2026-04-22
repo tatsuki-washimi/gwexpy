@@ -32,6 +32,7 @@ def _is_display_only(notebook: dict) -> bool:
 
 
 def strip_notebook(path: Path) -> bool:
+    """Strip outputs and execution counts from one tracked source notebook."""
     notebook = _load_notebook(path)
     if _is_display_only(notebook):
         return False
@@ -56,6 +57,7 @@ def strip_notebook(path: Path) -> bool:
 
 
 def main(argv: list[str]) -> int:
+    """Strip transient output from tracked notebook paths listed in ``argv``."""
     changed_paths: list[str] = []
 
     for original_path in argv:
