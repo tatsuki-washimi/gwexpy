@@ -189,7 +189,7 @@ myst:
 公開面で先に理解すると効果が大きいのは次です。
 
 - **ROOT**: `io_formats` では EventTable の直 I/O のみ扱い、ROOT object 変換は interop 側で説明する
-- **xarray / Field**: ScalarField / VectorField の主要導線
+- **xarray / Field**: ScalarField / VectorField の主要な機能
 - **Zarr**: direct I/O と interop の境界が混同されやすい
 - **NetCDF4**: xarray 経由のワークフローとの境界整理が必要
 - **ObsPy**: 時系列・地震波形との往復が分かりやすい

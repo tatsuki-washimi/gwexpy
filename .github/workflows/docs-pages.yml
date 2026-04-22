@@ -8,6 +8,7 @@ on:
       - "scripts/check_terms.py"
       - "scripts/check_docs_sync.py"
       - "scripts/run_quickstart_test.py"
+      - "scripts/notebook_gen/prepare_docs_notebook_tree.py"
       - "docs/requirements.txt"
       - "environment.yml"
       - "pyproject.toml"
@@ -78,15 +79,26 @@ jobs:
           python scripts/run_quickstart_test.py --lang ja
           python scripts/run_quickstart_test.py --lang en
 
+      - name: Prepare executed docs source tree
+        id: prepare_docs_tree
+        run: |
+          docs_src="${RUNNER_TEMP}/gwexpy-pages-src"
+          python scripts/notebook_gen/prepare_docs_notebook_tree.py \
+            --output-root "${docs_src}" \
+            --mode full \
+            --jobs 8
+          echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
+
       - name: Build Sphinx HTML
         id: build_docs
         run: |
           html_dir="${RUNNER_TEMP}/gwexpy-pages-html"
           doctree_dir="${RUNNER_TEMP}/gwexpy-pages-doctrees"
+          docs_src="${{ steps.prepare_docs_tree.outputs.docs_src }}"
           sphinx-build -b html -W --keep-going -d "${doctree_dir}" \
             -D nbsphinx_execute=never \
             -D nbsphinx_allow_errors=0 \
-            docs "${html_dir}"
+            "${docs_src}/docs" "${html_dir}"
           echo "html_dir=${html_dir}" >> "${GITHUB_OUTPUT}"
 
       - name: Publish to gh-pages

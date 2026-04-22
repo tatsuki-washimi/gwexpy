@@ -59,7 +59,7 @@
    - :doc:`index` でリファレンス全体の入口に戻る
    - :doc:`api/index` でモジュール・カテゴリ別に API を探す
    - :doc:`../user_guide/tutorials/index` でチュートリアルから学習を始める
-   - :doc:`../user_guide/validated_algorithms` で高度・理論寄りの導線をたどる
+   - :doc:`../user_guide/validated_algorithms` で高度・理論寄りのリンクをたどる
 
 .. toctree::
    :maxdepth: 1

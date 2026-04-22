@@ -57,7 +57,7 @@ def test_clean_notebook_has_no_violations(tmp_path: Path):
     assert violations == []
 
 
-def test_notebook_flags_persisted_outputs_by_default(tmp_path: Path):
+def test_public_docs_notebook_flags_persisted_outputs_by_default(tmp_path: Path):
     module = load_script_module()
     notebook_path = tmp_path / "docs" / "web" / "en" / "user_guide" / "tutorials" / "with_outputs.ipynb"
     write_notebook(
@@ -78,12 +78,36 @@ def test_notebook_flags_persisted_outputs_by_default(tmp_path: Path):
 
     assert len(violations) == 1
     assert violations[0].rule == "notebook-outputs-present"
-    assert "strip notebook outputs" in violations[0].message
+    assert "docs/web/" in violations[0].message
+
+
+def test_example_notebook_flags_persisted_outputs_by_default(tmp_path: Path):
+    module = load_script_module()
+    notebook_path = tmp_path / "examples" / "with_outputs.ipynb"
+    write_notebook(
+        notebook_path,
+        outputs=[
+            {
+                "output_type": "stream",
+                "name": "stdout",
+                "text": "small output\n",
+            }
+        ],
+    )
+
+    violations = module.check_paths(
+        [str(notebook_path.relative_to(tmp_path))],
+        repo_root=tmp_path,
+    )
+
+    assert len(violations) == 1
+    assert violations[0].rule == "notebook-outputs-present"
+    assert "examples/" in violations[0].message
 
 
 def test_display_only_notebook_can_keep_small_outputs(tmp_path: Path):
     module = load_script_module()
-    notebook_path = tmp_path / "docs" / "web" / "en" / "user_guide" / "tutorials" / "display_only.ipynb"
+    notebook_path = tmp_path / "examples" / "display_only.ipynb"
     write_notebook(
         notebook_path,
         tags=["display-only"],
@@ -106,7 +130,7 @@ def test_display_only_notebook_can_keep_small_outputs(tmp_path: Path):
 
 def test_display_only_notebook_still_flags_oversized_output(tmp_path: Path):
     module = load_script_module()
-    notebook_path = tmp_path / "docs" / "web" / "en" / "user_guide" / "tutorials" / "large_display_only.ipynb"
+    notebook_path = tmp_path / "examples" / "large_display_only.ipynb"
     write_notebook(
         notebook_path,
         tags=["display-only"],
@@ -167,7 +191,7 @@ def test_dot_prefixed_forbidden_path_is_reported(tmp_path: Path):
 
 def test_notebook_flags_execution_count_on_clean_source(tmp_path: Path):
     module = load_script_module()
-    notebook_path = tmp_path / "docs" / "web" / "en" / "user_guide" / "tutorials" / "execution_count.ipynb"
+    notebook_path = tmp_path / "examples" / "execution_count.ipynb"
     write_notebook(notebook_path, execution_count=1)
 
     violations = module.check_paths(
@@ -178,6 +202,20 @@ def test_notebook_flags_execution_count_on_clean_source(tmp_path: Path):
     assert len(violations) == 1
     assert violations[0].rule == "notebook-execution-count-present"
     assert "execution_count" in violations[0].message
+
+
+def test_public_docs_notebook_flags_execution_count_on_clean_source(tmp_path: Path):
+    module = load_script_module()
+    notebook_path = tmp_path / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "executed.ipynb"
+    write_notebook(notebook_path, execution_count=1)
+
+    violations = module.check_paths(
+        [str(notebook_path.relative_to(tmp_path))],
+        repo_root=tmp_path,
+    )
+
+    assert len(violations) == 1
+    assert violations[0].rule == "notebook-execution-count-present"
 
 
 def test_non_docs_notebook_is_not_hygiene_checked(tmp_path: Path):

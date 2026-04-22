@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    description: "GWexpy のアーキテクチャ、コンテナ設計、データフロー、Field API と Matrix API の役割、次に辿る理論・リファレンス導線を説明します。"
+    description: "GWexpy のアーキテクチャ、コンテナ設計、データフロー、Field API と Matrix API の役割、次に辿る理論・リファレンスへのリンクを説明します。"
 ---
 
 # アーキテクチャとデータフロー

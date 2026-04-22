@@ -488,3 +488,33 @@ body {
 .wy-breadcrumbs-aside:focus-within {
     opacity: 0.9;
 }
+
+/* --- 6. Layout fixes --- */
+
+/* Fix header overlap: the fixed lang-pill (top: 12px; right: 20px) can overlap
+   the RTD breadcrumb/license row. Push the breadcrumb aside below the pill. */
+.wy-nav-content-wrap .wy-nav-content {
+    padding-top: 1.5em;
+}
+
+.wy-breadcrumbs {
+    padding-right: 160px; /* leave room for the fixed lang-pill */
+}
+
+/* Relax right-side whitespace: RTD default caps content at 800px.
+   Widen it so wide tables and plots are not cramped. */
+.wy-nav-content {
+    max-width: 1100px;
+}
+
+/* Copy button: prevent the button from being clipped when the highlight
+   container has overflow:hidden set by some Sphinx themes. */
+div[class^="highlight"] {
+    overflow: visible;
+}
+
+.copybutton,
+button.copybtn {
+    top: 0.4em !important;
+    right: 0.4em !important;
+}

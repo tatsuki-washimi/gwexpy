@@ -110,7 +110,7 @@ def _check_notebook(
     notebook = _load_notebook(path)
     violations: list[Violation] = []
     tags = _notebook_tags(notebook)
-    is_display_only = DISPLAY_ONLY_TAG in tags
+    allow_committed_outputs = DISPLAY_ONLY_TAG in tags
 
     forbidden_root_keys = sorted(
         key
@@ -133,7 +133,7 @@ def _check_notebook(
         if (
             cell.get("cell_type") == "code"
             and cell.get("execution_count") is not None
-            and not is_display_only
+            and not allow_committed_outputs
         ):
             violations.append(
                 Violation(
@@ -186,12 +186,13 @@ def _check_notebook(
             )
         )
 
-    if saw_outputs and not is_display_only:
+    if saw_outputs and not allow_committed_outputs:
         violations.append(
             Violation(
                 normalized_path,
                 "notebook-outputs-present",
-                "Notebook stores cell outputs. Build docs from executed notebooks, then "
+                "Tracked notebooks under 'docs/web/' and 'examples/' must be committed "
+                "clean. Build docs from executed temp trees or generated artifacts, then "
                 "strip notebook outputs before committing source files. Use the "
                 f"'{DISPLAY_ONLY_TAG}' tag only for intentional checked-in outputs.",
             )

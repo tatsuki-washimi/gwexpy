@@ -76,11 +76,13 @@ Then open `docs/_build/html/docs/index.html` (English/Japanese are under `docs/_
 
 Documentation and examples use Jupyter Notebooks (.ipynb). We categorize them to optimize CI performance:
 
-- **Light** (Default): Fast execution. Tested via `papermill`. Source notebooks under `docs/web/` and `examples/` stay tracked, but their cell outputs are stripped before commit.
-- **Heavy**: Resource intensive or requires special env (GPU/LIGO VPN). Syntax-checked via `nbval`. Metadata tag: `"tags": ["ci-heavy"]`. The same clean-by-default rule applies to tracked docs/example notebooks.
-- **Display-only**: Pre-rendered results are the goal. CI skips execution. Metadata tag: `"tags": ["display-only"]`. This is the explicit exception path for intentionally retained outputs and needs a `.gitattributes` entry to keep them.
+- **Light** (Default): Fast execution. Tested via `papermill`. Tracked notebooks under `docs/web/` and `examples/` are committed in a clean state with outputs stripped.
+- **Heavy**: Resource intensive or requires special env (GPU/LIGO VPN). Syntax-checked via `nbval`. Metadata tag: `"tags": ["ci-heavy"]`. The same clean-source rule applies.
+- **Display-only**: Pre-rendered results are the goal. CI skips execution. Metadata tag: `"tags": ["display-only"]`. Use this only for deliberate checked-in outputs that have been explicitly reviewed.
 
-See [NOTEBOOK_POLICY.md](docs/NOTEBOOK_POLICY.md) for details. We use `nbstripout` via `pre-commit` to keep tracked docs/example notebooks clean by default, while docs can still be generated from executed notebooks during local builds or CI.
+Published docs should be built from a temp executed notebook tree or equivalent generated artifacts, not from output-bearing source notebooks in Git.
+
+See [NOTEBOOK_POLICY.md](docs/NOTEBOOK_POLICY.md) for details. `pre-commit` uses `scripts/strip_example_notebook_outputs.py` to clean tracked notebooks under `docs/web/` and `examples/`, and `scripts/check_repo_hygiene.py` enforces the same policy in CI.
 
 #### Syntax & Indentation
 

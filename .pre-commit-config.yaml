@@ -9,12 +9,6 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
 
-  - repo: https://github.com/kynan/nbstripout
-    rev: 0.7.1
-    hooks:
-      - id: nbstripout
-        files: (docs/web/|examples/).*\.ipynb$
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.4
     hooks:
@@ -24,6 +18,11 @@ repos:
 
   - repo: local
     hooks:
+      - id: strip-tracked-notebook-outputs
+        name: strip-tracked-notebook-outputs
+        entry: python scripts/strip_example_notebook_outputs.py
+        language: python
+        files: ^(docs/web/|examples/).*\.ipynb$
       - id: check-forbidden-artifacts
         name: check-forbidden-artifacts
         entry: python scripts/check_forbidden_artifacts.py

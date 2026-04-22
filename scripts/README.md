@@ -23,6 +23,7 @@ Scripts that programmatically create or run Jupyter notebooks.
 | `make_scalarfield_tutorial.py` | Generate `examples/basic-new-methods/intro_ScalarField.ipynb` |
 | `make_arima_burst_notebook.py` | Generate `docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb` |
 | `check_changed_notebooks.py` | Run CI-style checks only for notebooks changed in the current PR |
+| `prepare_docs_notebook_tree.py` | Copy the repo to a temp tree and execute docs notebooks there for docs builds |
 | `run_all_notebooks.py` | Execute all notebooks under `docs/` via `nbconvert` |
 
 ```bash

@@ -23,16 +23,13 @@ v\ |release| · Python ≥ 3.9 · Last updated: |today|
      </div>
    </div>
 
-.. raw:: html
-
-   <section class="gw-hub-hero">
+..   <section class="gw-hub-hero">
      <div class="gw-hub-panel gw-hub-copy">
        <p class="gw-hub-eyebrow">Documentation Hub</p>
-       <h2 class="gw-hub-title">Choose a workflow, not just a page</h2>
+       <h2 class="gw-hub-title">Explore features by analysis workflow</h2>
        <p class="gw-hub-lede">
-         This top page groups matrix containers, field operations, fitting, and signal-processing
-         paths into task-oriented entry points. Start with Quick Start, or jump directly to the
-         card that matches the analysis you want to run.
+         A goal-oriented entry point for matrices, fields, fitting, and advanced signal processing.
+         Start with the Quick Start, or browse the categories below to find tools that match your analysis task.
        </p>
        <dl class="gw-hub-meta">
          <div>
@@ -45,15 +42,15 @@ v\ |release| · Python ≥ 3.9 · Last updated: |today|
          </div>
          <div>
            <dt>Install</dt>
-           <dd>Git checkout first</dd>
+           <dd>Git checkout recommended</dd>
          </div>
        </dl>
      </div>
      <figure class="gw-hub-panel gw-hub-figure">
-       <img src="/_static/images/phase3/gateway_hero_scientific.png" alt="FrequencySeriesMatrix overview with a resonance fit">
+       <img src="../../_static/images/phase3/gateway_hero_scientific.png" alt="FrequencySeriesMatrix overview with a resonance fit">
        <p>
-         A matrix-level frequency response overview paired with a resonance fit for one extracted
-         channel, showing the container model and analysis workflow in one figure.
+         FrequencySeriesMatrix visualization featuring a Lorentzian fit on a single channel, 
+         demonstrating the integrated container and analysis workflow.
        </p>
      </figure>
    </section>
@@ -62,23 +59,23 @@ v\ |release| · Python ≥ 3.9 · Last updated: |today|
 
    <section class="gw-hub-duo">
      <section class="gw-hub-panel">
-       <p>Quick install</p>
+       <p>Quick installation</p>
        <pre><code>git clone https://github.com/tatsuki-washimi/gwexpy.git
-   cd gwexpy
-   pip install -e .</code></pre>
+    cd gwexpy
+    pip install -e .</code></pre>
      </section>
      <section class="gw-hub-panel">
        <p>3-line demo</p>
        <pre><code>from gwexpy.timeseries import FrequencySeriesMatrix
-   fsmtx = FrequencySeriesMatrix.read("data.hdf5")
-   fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
+    fsmtx = FrequencySeriesMatrix.read("data.hdf5")
+    fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
      </section>
    </section>
 
 .. note::
 
-   **Page Role**: documentation landing page
-   **Audience**: first-time users, GWpy users, and analysts looking for practical workflows
+   **Page Role**: Documentation Landing Page
+   **Audience**: First-time users, GWpy analysts, and developers looking for integrated workflows.
    **Search Hints**: ``quickstart``, ``installation``, ``tutorials``, ``examples``, ``ScalarField``, ``TimeSeriesMatrix``
 
 .. button-ref:: user_guide/quickstart
@@ -87,19 +84,19 @@ v\ |release| · Python ≥ 3.9 · Last updated: |today|
     :shadow:
     :expand:
 
-    🚀 Quick Start (Get started in 5 minutes)
+    🚀 Quick Start (Learn the basics in 5 minutes)
 
 .. _hub-en-workflow-entry:
 
 ----
 
-Find the right guide for you
------------------------------
+Select your guide
+-----------------
 
 .. note::
 
-   `Tutorials` are feature-oriented learning paths that teach one class or capability at a time.
-   `Case Studies` are goal-oriented workflows that combine multiple features around one analysis task.
+   **Tutorials** are feature-oriented paths for learning individual classes or capabilities.
+   **Case Studies** are workflow-oriented examples combining multiple features for practical analysis.
 
 .. grid:: 3
     :gutter: 3
@@ -109,8 +106,8 @@ Find the right guide for you
         :link: user_guide/getting_started
         :link-type: doc
 
-        Learn the basics
-
+        Foundation
+        
         * Installation Guide
         * Feature-oriented Tutorials
 
@@ -118,7 +115,7 @@ Find the right guide for you
         :link: examples/index
         :link-type: doc
 
-        Practical examples
+        Applications
 
         * Goal-oriented Case Studies
         * Advanced Signal Processing
@@ -127,15 +124,15 @@ Find the right guide for you
         :link: user_guide/gwexpy_for_gwpy_users_en
         :link-type: doc
 
-        Migration and compatibility
+        Interoperability
 
-        * Difference recipes and compatibility
-        * Path to the added-API index
+        * Migration recipes
+        * Added API index
 
 ----
 
-Find by what you want to do
-----------------------------
+Browse by category
+------------------
 
 .. grid:: 3
     :gutter: 3
@@ -144,19 +141,19 @@ Find by what you want to do
         :link: user_guide/tutorials/intro_timeseries
         :link-type: doc
 
-        Read, plot, and filter time-series data
+        Load, plot, and filter time-series data.
 
     .. grid-item-card:: 📊 Spectrogram Analysis
         :link: user_guide/tutorials/intro_spectrogram
         :link-type: doc
 
-        STFT, Q-scan, and time-frequency representation
+        STFT, Q-scans, and time-frequency maps.
 
     .. grid-item-card:: 🌊 Field Data Operations
         :link: user_guide/tutorials/field_scalar_intro
         :link-type: doc
 
-        ScalarField / VectorField / TensorField basics
+        ScalarField / VectorField / TensorField logic.
 
 .. grid:: 3
     :gutter: 3
@@ -165,19 +162,19 @@ Find by what you want to do
         :link: user_guide/tutorials/advanced_bruco
         :link-type: doc
 
-        Decompose and visualise noise contributions
+        Decompose and visualize noise contributions.
 
     .. grid-item-card:: 📐 Fitting & MCMC
         :link: user_guide/tutorials/intro_fitting
         :link-type: doc
 
-        GLS, Bayesian fitting, MCMC sampling
+        GLS, Bayesian fitting, and MCMC sampling.
 
-    .. grid-item-card:: 🧮 Pre-processing & ML Pipeline
+    .. grid-item-card:: 🧮 ML Pre-processing
         :link: user_guide/tutorials/ml_preprocessing_methods
         :link-type: doc
 
-        Feature extraction, normalisation, scikit-learn
+        Feature extraction and scikit-learn integration.
 
 .. grid:: 3
     :gutter: 3
@@ -187,24 +184,25 @@ Find by what you want to do
         :link-type: doc
         :class-card: gw-highlight
 
-        HDF5 / GBD / Frame / Zarr and more
+        HDF5 / GBD / Frame / Zarr support.
 
-        **GWexpy differentiator**
+        **Core Strengths**
 
-    .. grid-item-card:: 🔗 Library Interoperability
+    .. grid-item-card:: 🔗 Interoperability
         :link: user_guide/tutorials/case_seismic_obspy
         :link-type: doc
         :class-card: gw-highlight
 
-        ObsPy / LAL / Finesse / PyCBC integration
+        ObsPy / LAL / Finesse / PyCBC tools.
 
-        **GWexpy differentiator**
+        **Core Strengths**
 
     .. grid-item-card:: 🔢 Matrix Operations
         :link: user_guide/tutorials/matrix_timeseries
         :link-type: doc
 
-        TimeSeriesMatrix / FrequencySeriesMatrix batch processing
+        Vectorized processing for TimeSeriesMatrix.
+        TimeSeriesMatrix / FrequencySeriesMatrix batch processing.
 
 ----
 

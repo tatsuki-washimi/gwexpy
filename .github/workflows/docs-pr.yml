@@ -8,6 +8,7 @@ on:
       - "scripts/check_terms.py"
       - "scripts/check_docs_sync.py"
       - "scripts/run_quickstart_test.py"
+      - "scripts/notebook_gen/prepare_docs_notebook_tree.py"
       - "docs/requirements.txt"
       - "environment.yml"
       - "pyproject.toml"
@@ -83,10 +84,22 @@ jobs:
             --base "${{ github.event.pull_request.base.sha }}" \
             --head "${{ github.event.pull_request.head.sha }}"
 
+      - name: Prepare temporary docs source tree
+        id: prepare_docs_tree
+        run: |
+          docs_src="${RUNNER_TEMP}/gwexpy-docs-pr-src"
+          python scripts/notebook_gen/prepare_docs_notebook_tree.py \
+            --output-root "${docs_src}" \
+            --mode changed \
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --head "${{ github.event.pull_request.head.sha }}" \
+            --jobs 4
+          echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
+
       - name: Build Sphinx HTML
         run: |
-          cd docs
+          docs_src="${{ steps.prepare_docs_tree.outputs.docs_src }}"
           sphinx-build -b html -W --keep-going \
             -D nbsphinx_execute=never \
             -D nbsphinx_allow_errors=0 \
-            . _build/html
+            "${docs_src}/docs" "${RUNNER_TEMP}/gwexpy-docs-pr-html"

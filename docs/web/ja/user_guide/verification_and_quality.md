@@ -36,7 +36,7 @@ myst:
 | Notebook チュートリアル | [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) | `Light` / `Heavy` / `Display-only` の分類と、CI がそれぞれをどう扱うか |
 | module / docstring 例 | [Extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) | `tests/` と `gwexpy/` に対して `pytest --doctest-modules` を回している Nightly CI の公開根拠。docstring 例の実行範囲を読む入口です |
 | direct I/O 形式 | [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) | どの公開 format 群に、どのテストファイルが対応づけられているかと、どこに optional backend があるか |
-| アルゴリズム監査 | [検証済みアルゴリズム](validated_algorithms.md) | 数値許容誤差、前提条件、監査証跡への導線 |
+| アルゴリズム監査 | [検証済みアルゴリズム](validated_algorithms.md) | 数値許容誤差、前提条件、監査証跡へのリンク |
 | リポジトリ全体の coverage | [README の codecov バッジ](https://github.com/tatsuki-washimi/gwexpy) と、そのリンク先である [Codecov ダッシュボード](https://codecov.io/gh/tatsuki-washimi/gwexpy) | リポジトリ全体の line coverage がどこで公開されているかを示す入口。feature 単位の証明ではなく、全体傾向のシグナルとして使います |
 
 ## Notebook の検証方針
@@ -50,7 +50,7 @@ myst:
 - **Heavy** notebook は CI 対象ではありますが、全セル実行を常に保証するものではなく、構造確認や収集確認に寄せて扱われます。
 - **Display-only** notebook は整えた出力の保持を重視しており、「CI で毎回全実行される notebook」と同義ではありません。
 - 公開されている [docs PR workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) では、docs Pull Request で変更された notebook に対して `papermill` が実行されます。
-- 公開 notebook の正本は `docs/web/{en,ja}/user_guide/tutorials/` に置かれます。
+- 公開 notebook のメインのは `docs/web/{en,ja}/user_guide/tutorials/` に置かれます。
 
 したがって、「公開 docs に notebook や例がある」こと自体は有益なシグナルですが、それだけで「あらゆる PR / Nightly / release 経路で毎回一律に実行・保証される」とまでは読まない方が安全です。
 
