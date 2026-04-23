@@ -8,7 +8,7 @@ astropy==7.2.0
     # via
     #   gwexpy (pyproject.toml)
     #   gwpy
-astropy-iers-data==0.2026.4.1.15.5.49
+astropy-iers-data==0.2026.4.20.0.58.15
     # via astropy
 asttokens==3.0.1
     # via stack-data
@@ -18,13 +18,13 @@ attrs==26.1.0
     #   referencing
 bottleneck==1.6.0
     # via gwexpy (pyproject.toml)
-certifi==2026.2.25
+certifi==2026.4.22
     # via requests
 cffi==2.0.0
     # via cryptography
-charset-normalizer==3.4.6
+charset-normalizer==3.4.7
     # via requests
-click==8.3.1
+click==8.3.3
     # via dqsegdb2
 comm==0.2.3
     # via ipykernel
@@ -60,7 +60,7 @@ gpstime==0.10.0
     # via gwexpy (pyproject.toml)
 gwdatafind==2.1.1
     # via gwpy
-gwosc==0.8.1
+gwosc==0.8.2
     # via gwpy
 gwpy==4.0.1
     # via gwexpy (pyproject.toml)
@@ -68,7 +68,7 @@ h5py==3.16.0
     # via
     #   gwexpy (pyproject.toml)
     #   gwpy
-idna==3.11
+idna==3.13
     # via requests
 igwn-auth-utils==1.4.0
     # via
@@ -106,7 +106,7 @@ jupyter-core==5.9.1
     #   nbformat
 kiwisolver==1.5.0
     # via matplotlib
-librt==0.8.1
+librt==0.9.0
     # via mypy
 ligotimegps==2.1.0
     # via
@@ -120,7 +120,7 @@ matplotlib-inline==0.2.1
     # via
     #   ipykernel
     #   ipython
-mypy==1.20.0
+mypy==1.20.2
     # via gwexpy (pyproject.toml)
 mypy-extensions==1.1.0
     # via mypy
@@ -134,7 +134,7 @@ nbmake==1.5.5
     # via gwexpy (pyproject.toml)
 nest-asyncio==1.6.0
     # via ipykernel
-numpy==1.26.4
+numpy==2.4.4
     # via
     #   astropy
     #   bottleneck
@@ -146,7 +146,7 @@ numpy==1.26.4
     #   pandas
     #   pyerfa
     #   scipy
-packaging==26.0
+packaging==26.1
     # via
     #   astropy
     #   gwpy
@@ -157,7 +157,7 @@ pandas==3.0.2
     # via gwexpy (pyproject.toml)
 parso==0.8.6
     # via jedi
-pathspec==1.0.4
+pathspec==1.1.0
     # via mypy
 pexpect==4.9.0
     # via ipython
@@ -246,7 +246,7 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.15.8
+ruff==0.15.11
     # via gwexpy (pyproject.toml)
 safe-netrc==1.0.1
     # via igwn-auth-utils
@@ -275,7 +275,7 @@ traitlets==5.14.3
     #   matplotlib-inline
     #   nbclient
     #   nbformat
-types-pyyaml==6.0.12.20250915
+types-pyyaml==6.0.12.20260408
     # via gwexpy (pyproject.toml)
 types-requests==2.33.0.20260408
     # via gwexpy (pyproject.toml)
