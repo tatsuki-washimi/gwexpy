@@ -16,6 +16,7 @@ from scipy.io import wavfile
 
 from gwexpy.io.utils import extract_audio_metadata
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+from gwexpy.timeseries.io.audio import read_timeseriesdict_audio
 
 # Check if tinytag is available
 try:
@@ -177,7 +178,7 @@ def test_audio_metadata_disabled_by_default(tmp_path):
     wav_path = tmp_path / "test.wav"
     _create_minimal_wav_with_metadata(wav_path)
 
-    tsd = TimeSeriesDict.read(wav_path, format="audio")
+    tsd = read_timeseriesdict_audio(wav_path)
 
     # Check provenance does not contain audio metadata fields
     if hasattr(tsd, "attrs"):
@@ -202,7 +203,7 @@ def test_audio_metadata_extraction(tmp_path):
     wav_path = tmp_path / "test.wav"
     expected = _create_minimal_wav_with_metadata(wav_path)
 
-    tsd = TimeSeriesDict.read(wav_path, format="audio", extract_metadata=True)
+    tsd = read_timeseriesdict_audio(wav_path, extract_metadata=True)
 
     # Check provenance contains metadata
     if hasattr(tsd, "attrs"):

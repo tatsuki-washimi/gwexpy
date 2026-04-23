@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -53,6 +54,11 @@ def read_timeseriesdict_sdb(
         Additional compatibility arguments accepted and ignored.
 
     """
+    # gwpy's registry may pass an already-open file object for explicit
+    # ``.read(..., format="sdb")`` calls; sqlite3 needs the underlying path.
+    if hasattr(source, "name"):
+        source = source.name
+
     # Open SQLite connection (Python 3.4+ accepts Path objects)
     conn = sqlite3.connect(source)
 
@@ -102,13 +108,14 @@ def read_timeseriesdict_sdb(
     # TimeSeries expects t0 in GPS. Unix to GPS is roughly +18s (leap seconds).
     # gwpy.time.to_gps handles datetime objects.
     # Convert first timestamp
-    t_start_unix = df["dateTime"].values[0]
+    time_values = np.asarray(df["dateTime"].to_numpy(), dtype=np.float64)
+    t_start_unix = time_values[0]
 
     # Calculate sampling rate/dt
     # Assume regular?
     if len(df) > 1:
         # Check median delta
-        dt_vals = np.diff(df["dateTime"].values)
+        dt_vals = np.diff(time_values)
         dt_median = float(np.median(dt_vals))
         if dt_median == 0:
             dt_median = 1.0  # fallback
@@ -128,7 +135,7 @@ def read_timeseriesdict_sdb(
         if col == "dateTime":
             continue
 
-        data = df[col].values
+        data = np.asarray(df[col].to_numpy(), dtype=np.float64)
         unit = ""
 
         # Apply conversion
@@ -138,7 +145,7 @@ def read_timeseriesdict_sdb(
             if callable(factor):
                 data = factor(data)
             else:
-                data = np.asarray(data) * factor
+                data = data * float(cast(float, factor))
 
         ts = TimeSeries(data, t0=t0_gps, sample_rate=sample_rate, name=col, unit=unit)
         tsd[col] = ts

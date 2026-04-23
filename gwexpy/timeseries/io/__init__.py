@@ -7,6 +7,8 @@ for backward compatibility.
 from __future__ import annotations
 
 # Readers are registered on import
+from gwexpy.timeseries._gwf_io import _sync_gwf_registry_aliases
+
 from . import (
     ats,  # noqa: F401
     audio,  # noqa: F401
@@ -23,5 +25,7 @@ from . import (
     win,  # noqa: F401
     zarr_,  # noqa: F401
 )
+
+_sync_gwf_registry_aliases()
 
 __all__: list[str] = []

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import UTC
+from typing import Any
 
 import numpy as np
 from gwpy.io.registry import default_registry as io_registry
@@ -35,6 +36,15 @@ def _build_epoch(value, timezone):
     if tzinfo is None:
         tzinfo = UTC
     return datetime_to_gps(ensure_datetime(value, tzinfo=tzinfo))
+
+
+def _looks_like_dttxml(source: Any) -> bool:
+    if source is None:
+        return False
+    if hasattr(source, "name"):
+        source = source.name
+    source = str(source).lower()
+    return source.endswith(".xml") or source.endswith(".xml.gz")
 
 
 def read_timeseriesdict_dttxml(
@@ -112,10 +122,12 @@ for _fmt in _DTTXML_FORMATS:
     )
 
 io_registry.register_identifier(
-    "xml.diaggui", TimeSeries, lambda *args, **kwargs: str(args[1]).endswith(".xml")
+    "xml.diaggui",
+    TimeSeries,
+    lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
 )
 io_registry.register_identifier(
     "xml.diaggui",
     TimeSeriesDict,
-    lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+    lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
 )

@@ -25,6 +25,12 @@ from ._analysis import TimeSeriesAnalysisMixin
 
 # Import Core Base
 from ._core import TimeSeriesCore
+from ._gwf_io import (
+    _GWF_BACKENDS,
+    _extract_gwf_read_args,
+    _format_gwf_import_error,
+    _resolve_gwf_format,
+)
 from ._interop import TimeSeriesInteropMixin
 from ._resampling import TimeSeriesResamplingMixin
 from ._signal import TimeSeriesSignalMixin
@@ -132,6 +138,51 @@ class TimeSeries(
                 channel=None)>
 
     """
+
+    @classmethod
+    def read(cls, source, *args, **kwargs):  # type: ignore[override]
+        """Read a `TimeSeries` from a supported source.
+
+        This override adds explicit `.gwf` handling for deterministic behavior
+        when `.read()` is called with positional channel selectors.
+        """
+        gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
+        if gwf_format is not None:
+            from gwpy.io.gwf.core import get_channel_names
+            from gwpy.timeseries.io.gwf.core import read_timeseriesdict
+
+            from gwexpy.interop._registry import ConverterRegistry
+
+            channels, start, end, gwf_kwargs = _extract_gwf_read_args(
+                args,
+                kwargs,
+                allow_multiple_channels=False,
+            )
+            backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
+            try:
+                if channels is None:
+                    channels = get_channel_names(source, backend=backend)
+                    if not channels:
+                        raise ValueError(f"No channels found in GWF source: {source}")
+                channel = channels[0]
+                tsd = read_timeseriesdict(
+                    source,
+                    [channel],
+                    start=start,
+                    end=end,
+                    backend=backend,
+                    series_class=ConverterRegistry.get_constructor("TimeSeries"),
+                    **gwf_kwargs,
+                )
+            except ImportError as exc:
+                raise _format_gwf_import_error(gwf_format, exc)
+            except TypeError as exc:
+                raise ValueError(f"Invalid input for GWF read: {exc}") from exc
+            if not tsd:
+                raise ValueError(f"No data found in {gwf_format} source: {source}")
+            return cls(next(iter(tsd.values())))
+
+        return super().read(source, *args, **kwargs)
 
     def _get_meta_for_constructor(self) -> dict[str, Any]:
         """Reconstruct the object for SignalAnalysisMixin."""

@@ -6,7 +6,7 @@ import pytest
 
 from gwexpy.timeseries import TimeSeries
 
-FIXTURE_DATA = Path(__file__).parent.parent.parent / "fixtures" / "data" / "test.gwf"
+FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
 
 def has_framel():

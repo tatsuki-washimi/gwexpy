@@ -55,6 +55,8 @@ def _trace_to_timeseries(trace, *, unit, timezone, epoch_override):
 
 def _read_obspy_stream(format_name, source, *, pad=np.nan, gap="pad", **kwargs):
     obspy = _import_obspy()
+    if hasattr(source, "name"):
+        source = source.name
     try:
         stream = obspy.read(source, format=format_name, **kwargs)
     except (OSError, TypeError, ValueError) as exc:
@@ -176,13 +178,29 @@ def _adapt_matrix(reader, *args, channels=None, **kwargs):
 # -- Writers (via ObsPy)
 def _write_obspy(tsd, target, format_name, **kwargs):
     """Write a ``TimeSeriesDict`` to file using ObsPy."""
-    from ..interop.obspy_ import to_obspy_trace
+    from gwexpy.interop.obspy_ import to_obspy_trace
 
     obspy = _import_obspy()
 
     stream = obspy.Stream()
     for key, ts in tsd.items():
         tr = to_obspy_trace(ts)
+        if format_name == "GSE2":
+            data = np.asarray(tr.data)
+            if not np.issubdtype(data.dtype, np.integer):
+                rounded = np.rint(data)
+                if not np.allclose(data, rounded, atol=0, rtol=0):
+                    raise ValueError(
+                        "GSE2 writing requires integer-valued samples; "
+                        "round-trip unsafe float data cannot be written."
+                    )
+                if np.any(rounded < np.iinfo(np.int32).min) or np.any(
+                    rounded > np.iinfo(np.int32).max
+                ):
+                    raise ValueError(
+                        "GSE2 writing requires samples that fit in int32 range."
+                    )
+                tr.data = rounded.astype(np.int32)
         stream.append(tr)
 
     stream.write(target, format=format_name, **kwargs)

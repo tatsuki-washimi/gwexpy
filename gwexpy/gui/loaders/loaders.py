@@ -5,6 +5,8 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+from astropy.io.registry.base import IORegistryError
+
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 from gwexpy.io.dttxml_common import load_dttxml_products
 from gwexpy.spectrogram import Spectrogram
@@ -51,6 +53,7 @@ def load_products(filename: str) -> dict:
         ".ats": "ats",
         ".sdb": "sdb",
         ".sqlite": "sdb",
+        ".sqlite3": "sdb",
         ".mseed": "miniseed",
         ".miniseed": "miniseed",
         ".sac": "sac",
@@ -59,7 +62,6 @@ def load_products(filename: str) -> dict:
         ".npy": "npy",
         ".mat": "mat",
         ".fits": "fits",
-        ".pkl": "pickle",
         ".gbd": "gbd",
         ".tdms": "tdms",
     }
@@ -72,7 +74,7 @@ def load_products(filename: str) -> dict:
         ts_dict = TimeSeriesDict.read(filename)
         products["TS"] = {str(k): v for k, v in ts_dict.items()}
         return products
-    except (OSError, RuntimeError, ValueError):
+    except (OSError, RuntimeError, ValueError, IORegistryError):
         logger.debug(
             "Automatic TimeSeriesDict.read failed for %s.", filename, exc_info=True
         )
@@ -111,7 +113,7 @@ def load_products(filename: str) -> dict:
 
                             products["TS"] = {str(k): v for k, v in ts_dict.items()}
                             return products
-                        except (OSError, RuntimeError, ValueError):
+                        except (OSError, RuntimeError, ValueError, IORegistryError):
                             logger.debug(
                                 "GWF read attempt failed with backend %s for %s",
                                 gw_fmt,
@@ -126,7 +128,7 @@ def load_products(filename: str) -> dict:
                 ts_dict = TimeSeriesDict.read(filename, format=fmt)
                 products["TS"] = {str(k): v for k, v in ts_dict.items()}
                 return products
-            except (OSError, RuntimeError, ValueError):
+            except (OSError, RuntimeError, ValueError, IORegistryError):
                 pass
 
     # 2. Try Single TimeSeries
@@ -134,7 +136,7 @@ def load_products(filename: str) -> dict:
         ts = TimeSeries.read(filename)
         products["TS"] = {ts.name or "Channel0": ts}
         return products
-    except (OSError, RuntimeError, ValueError):
+    except (OSError, RuntimeError, ValueError, IORegistryError):
         logger.debug(
             "Automatic TimeSeries.read failed for %s.", filename, exc_info=True
         )
@@ -148,7 +150,7 @@ def load_products(filename: str) -> dict:
                 ts = TimeSeries.read(filename, format=fmt)
                 products["TS"] = {ts.name or "Channel0": ts}
                 return products
-            except (OSError, RuntimeError, ValueError):
+            except (OSError, RuntimeError, ValueError, IORegistryError):
                 pass
 
     # 3. Try FrequencySeries Dict
@@ -156,13 +158,13 @@ def load_products(filename: str) -> dict:
         fs_dict = FrequencySeriesDict.read(filename)
         products["ASD"] = {str(k): v for k, v in fs_dict.items()}
         return products
-    except (OSError, RuntimeError, ValueError):
+    except (OSError, RuntimeError, ValueError, IORegistryError):
         if fmt:
             try:
                 fs_dict = FrequencySeriesDict.read(filename, format=fmt)
                 products["ASD"] = {str(k): v for k, v in fs_dict.items()}
                 return products
-            except (OSError, RuntimeError, ValueError):
+            except (OSError, RuntimeError, ValueError, IORegistryError):
                 pass
 
     # 4. Try Single FrequencySeries
@@ -170,13 +172,13 @@ def load_products(filename: str) -> dict:
         fs = FrequencySeries.read(filename)
         products["ASD"] = {fs.name or "Spectrum0": fs}
         return products
-    except (OSError, RuntimeError, ValueError):
+    except (OSError, RuntimeError, ValueError, IORegistryError):
         if fmt:
             try:
                 fs = FrequencySeries.read(filename, format=fmt)
                 products["ASD"] = {fs.name or "Spectrum0": fs}
                 return products
-            except (OSError, RuntimeError, ValueError):
+            except (OSError, RuntimeError, ValueError, IORegistryError):
                 pass
 
     # 5. Try Spectrogram
@@ -184,13 +186,13 @@ def load_products(filename: str) -> dict:
         spec = Spectrogram.read(filename)
         products["Spectrogram"] = {spec.name or "Spectrogram0": spec}
         return products
-    except (OSError, RuntimeError, ValueError):
+    except (OSError, RuntimeError, ValueError, IORegistryError):
         if fmt:
             try:
                 spec = Spectrogram.read(filename, format=fmt)
                 products["Spectrogram"] = {spec.name or "Spectrogram0": spec}
                 return products
-            except (OSError, RuntimeError, ValueError):
+            except (OSError, RuntimeError, ValueError, IORegistryError):
                 pass
 
     raise RuntimeError(f"Unsupported file format or failed to read file: {filename}")

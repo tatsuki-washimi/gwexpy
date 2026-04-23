@@ -42,6 +42,12 @@ from gwexpy.types.mixin._collection_mixin import (
 )
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
+from ._gwf_io import (
+    _GWF_BACKENDS,
+    _extract_gwf_read_args,
+    _format_gwf_import_error,
+    _resolve_gwf_format,
+)
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
 
 
@@ -121,10 +127,43 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a `TimeSeriesDict` from a supported source."""
         fmt = kwargs.get("format")
+        gwf_format = _resolve_gwf_format(source, fmt)
         try:
             p = Path(source)
         except TypeError:
             p = None
+        if gwf_format is not None:
+            from gwpy.io.gwf.core import get_channel_names
+            from gwpy.timeseries.io.gwf.core import read_timeseriesdict
+
+            channels, start, end, gwf_kwargs = _extract_gwf_read_args(
+                args,
+                kwargs,
+                allow_multiple_channels=True,
+            )
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
+            backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
+            try:
+                if channels is None:
+                    channels = get_channel_names(source, backend=backend)
+                    if not channels:
+                        raise ValueError(f"No channels found in GWF source: {source}")
+                return cls(
+                    read_timeseriesdict(
+                        source,
+                        channels,
+                        start=start,
+                        end=end,
+                        backend=backend,
+                        series_class=TimeSeries,
+                        **gwf_kwargs,
+                    )
+                )
+            except ImportError as exc:
+                raise _format_gwf_import_error(gwf_format, exc)
+            except TypeError as exc:
+                # Keep existing ValueError contract for malformed user inputs.
+                raise ValueError(f"Invalid input for GWF read: {exc}") from exc
         if p is not None and (
             fmt == "zarr" or (fmt is None and str(p).lower().endswith(".zarr"))
         ):

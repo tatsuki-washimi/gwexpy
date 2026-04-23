@@ -1,8 +1,10 @@
 """Shared utilities for parsing DTT XML (Diag GUI XML) files."""
 from __future__ import annotations
 
+import gzip
 import warnings
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from typing import Any, Literal, TypedDict
 
 import numpy as np
@@ -15,6 +17,21 @@ class ChannelInfo(TypedDict):
     active: bool
 
 
+def _open_dttxml_source(source: str):
+    """Open XML or GZip-compressed XML files."""
+    path = Path(source)
+    if path.suffix.lower() == ".gz":
+        return gzip.open(path, "rb")
+    return open(path, "rb")
+
+
+def _parse_dttxml_xml(source: str) -> ET.ElementTree:
+    if str(source).lower().endswith(".gz"):
+        with _open_dttxml_source(source) as handle:
+            return ET.parse(handle)  # nosec B314
+    return ET.parse(source)  # nosec B314
+
+
 def extract_xml_channels(filename: str) -> list[ChannelInfo]:
     """Parse DTT XML and extract channel names with active flags.
 
@@ -22,7 +39,7 @@ def extract_xml_channels(filename: str) -> list[ChannelInfo]:
     """
     channels: list[ChannelInfo] = []
     try:
-        tree = ET.parse(filename)  # nosec B314
+        tree = _parse_dttxml_xml(filename)
     except (ET.ParseError, OSError) as exc:
         warnings.warn(f"XML parsing error in {filename}: {exc}")
         return channels
@@ -196,7 +213,7 @@ def load_dttxml_native(source: str) -> dict:
 
     """
     try:
-        tree = ET.parse(source)  # nosec B314
+        tree = _parse_dttxml_xml(source)
     except (ET.ParseError, OSError) as exc:
         warnings.warn(f"Failed to parse DTT XML: {exc}")
         return {}

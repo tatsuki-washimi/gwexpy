@@ -6,7 +6,7 @@ import pytest
 xr = pytest.importorskip("xarray")
 pytest.importorskip("netCDF4")
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
 class TestNetCDF4Roundtrip:
@@ -47,6 +47,22 @@ class TestNetCDF4Roundtrip:
 
         tsd_in = TimeSeriesDict.read(str(path), format="nc")
         assert set(tsd_in.keys()) >= {"ch1", "ch2"}
+
+    @pytest.mark.parametrize("fmt", ("nc", "netcdf4"))
+    def test_matrix_roundtrip(self, tmp_path, fmt):
+        path = tmp_path / f"matrix_{fmt}.nc"
+        matrix = TimeSeriesMatrix(
+            np.arange(24, dtype=np.float64).reshape(2, 2, 6),
+            t0=1234567890.0,
+            dt=0.25,
+        )
+
+        matrix.write(str(path), format=fmt)
+
+        loaded = TimeSeriesMatrix.read(str(path), format=fmt)
+        np.testing.assert_allclose(loaded.value, matrix.value)
+        assert loaded.shape == matrix.shape
+        assert np.isclose(float(loaded.dt.value), 0.25)
 
     def test_unit_override(self, tmp_path):
         path = tmp_path / "unit.nc"

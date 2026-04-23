@@ -1,0 +1,1159 @@
+{
+    "schema_version": 2,
+    "formats": [
+        {
+            "name": "gwf",
+            "canonical": "gwf",
+            "aliases": [
+                "frame",
+                "framecpp",
+                "framel",
+                "lalframe",
+                "gwf.framecpp",
+                "gwf.framel",
+                "gwf.lalframe"
+            ],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [],
+            "notes": [
+                "Backend aliases resolve through gwpy GWF readers.",
+                "Public direct I/O includes TimeSeries and TimeSeriesDict reads.",
+                "TimeSeriesMatrix reader remains an implementation convenience path until it is published explicitly in the user guide."
+            ]
+        },
+        {
+            "name": "hdf.ndscope",
+            "canonical": "hdf.ndscope",
+            "aliases": [
+                "ndscope-hdf5",
+                "ndscope_hdf5",
+                "ndscopehdf5"
+            ],
+            "public_api": {
+                "read": [
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "ndscope channel groups must preserve rate_hz and gps_start metadata."
+            ],
+            "notes": [
+                "Public direct I/O is collection-first and TimeSeriesDict-only.",
+                "Single-series and matrix registry adapters are implementation convenience paths, not public contract surface."
+            ]
+        },
+        {
+            "name": "hdf5",
+            "canonical": "hdf5",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "TimeSeriesMatrix",
+                    "FrequencySeries",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList",
+                    "Spectrogram",
+                    "SpectrogramDict",
+                    "SpectrogramList",
+                    "Histogram",
+                    "HistogramDict",
+                    "HistogramList",
+                    "EventTable"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "TimeSeriesMatrix",
+                    "FrequencySeries",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList",
+                    "Spectrogram",
+                    "SpectrogramDict",
+                    "SpectrogramList",
+                    "Histogram",
+                    "HistogramDict",
+                    "HistogramList",
+                    "EventTable"
+                ]
+            },
+            "direct_api": {
+                "read": [
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "TimeSeriesMatrix",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList",
+                    "SpectrogramDict",
+                    "SpectrogramList",
+                    "Histogram",
+                    "HistogramDict",
+                    "HistogramList"
+                ],
+                "write": [
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "TimeSeriesMatrix",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList",
+                    "SpectrogramDict",
+                    "SpectrogramList",
+                    "Histogram",
+                    "HistogramDict",
+                    "HistogramList"
+                ]
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "FrequencySeries",
+                    "Spectrogram",
+                    "SegmentList",
+                    "DataQualityFlag",
+                    "DataQualityDict",
+                    "EventTable"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "FrequencySeries",
+                    "Spectrogram",
+                    "SegmentList",
+                    "DataQualityFlag",
+                    "DataQualityDict",
+                    "EventTable"
+                ]
+            },
+            "public_auto_identify": false,
+            "registry_auto_identify": false,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Collection HDF5 files must preserve manifest key maps and entry order for published dict/list families.",
+                "Published readers and writers must round-trip core axis metadata and units needed for reconstruction."
+            ],
+            "notes": [
+                "Published usage should set format=\"hdf5\" explicitly because .h5/.hdf5 overlaps specialized HDF5 families and auto-identification is not uniform across classes.",
+                "Public HDF5 direct I/O covers documented time-series, frequency-series, spectrogram, histogram, and event-table families.",
+                "GWpy segment classes remain part of the broader registry-backed implementation surface, but they are not part of the published HDF5 direct-I/O contract in this slice.",
+                "FrequencySeriesMatrix and SpectrogramMatrix remain outside the published HDF5 contract until matrix-axis serialization is hardened.",
+                "Field classes remain intentionally outside this schema slice pending a dedicated direct-I/O audit."
+            ]
+        },
+        {
+            "name": "xml.diaggui",
+            "canonical": "xml.diaggui",
+            "aliases": [
+                "dttxml"
+            ],
+            "public_api": {
+                "read": [
+                    "TimeSeriesDict"
+                ],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "public_auto_identify": false,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [
+                    "products"
+                ],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [],
+            "notes": [
+                "Public direct I/O is TimeSeriesDict-first because DiagGUI XML is product-driven.",
+                "TimeSeries and TimeSeriesMatrix readers remain registry adapters, but public guidance requires explicit format=\"xml.diaggui\" and products=..."
+            ]
+        },
+        {
+            "name": "csv",
+            "canonical": "csv",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList"
+                ],
+                "write": [
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList"
+                ]
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix",
+                    "FrequencySeries",
+                    "Spectrogram",
+                    "EventTable"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "FrequencySeries",
+                    "Spectrogram",
+                    "EventTable"
+                ]
+            },
+            "public_auto_identify": false,
+            "registry_auto_identify": false,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Manifest-backed collection directories must preserve original entry keys and per-entry unit metadata."
+            ],
+            "notes": [
+                "Published CSV direct I/O is limited to TimeSeries and TimeSeriesDict.",
+                "TimeSeriesDict supports both single-file CSV reads and manifest-backed collection-directory reads and writes.",
+                "Broader registry adapters such as TimeSeriesMatrix, FrequencySeries, Spectrogram, and EventTable remain implementation surface only."
+            ]
+        },
+        {
+            "name": "txt",
+            "canonical": "txt",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList"
+                ],
+                "write": [
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList"
+                ]
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "FrequencySeries"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "FrequencySeries"
+                ]
+            },
+            "public_auto_identify": false,
+            "registry_auto_identify": false,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Manifest-backed collection directories must preserve original entry keys and per-entry unit metadata."
+            ],
+            "notes": [
+                "Published TXT direct I/O is limited to TimeSeries files and TimeSeriesDict collection directories.",
+                "Single-series TXT reads and writes require explicit format=\"txt\".",
+                "Multi-channel TXT direct I/O uses manifest-backed collection directories rather than single text files."
+            ]
+        },
+        {
+            "name": "pickle",
+            "canonical": "pickle",
+            "aliases": [],
+            "public_api": {
+                "read": [],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [],
+                "write": []
+            },
+            "public_auto_identify": false,
+            "registry_auto_identify": false,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": true,
+            "metadata_requirements": [],
+            "notes": [
+                "Pickle compatibility is currently provided through pickle.dumps()/pickle.loads() and shelve, not through published direct .read()/.write() methods.",
+                "Security guidance remains important, but Pickle is intentionally outside the public direct-I/O contract."
+            ]
+        },
+        {
+            "name": "root",
+            "canonical": "root",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "EventTable"
+                ],
+                "write": [
+                    "EventTable"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": [
+                    "TimeSeriesDict",
+                    "TimeSeriesList",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesList",
+                    "SpectrogramDict",
+                    "SpectrogramList",
+                    "HistogramDict",
+                    "HistogramList"
+                ]
+            },
+            "registry_api": {
+                "read": [
+                    "EventTable"
+                ],
+                "write": [
+                    "EventTable"
+                ]
+            },
+            "public_auto_identify": false,
+            "registry_auto_identify": false,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [],
+            "notes": [
+                "Published ROOT direct I/O is intentionally limited to EventTable.",
+                "Collection .write(..., format=\"root\") helpers remain PyROOT-based interop conveniences and are not part of the published direct-I/O contract."
+            ]
+        },
+        {
+            "name": "sdb",
+            "canonical": "sdb",
+            "aliases": [
+                "sqlite",
+                "sqlite3"
+            ],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published SQLite-family reads must preserve weather/archive column names and derived physical units after conversion."
+            ],
+            "notes": [
+                "Published SDB direct I/O is read-only for TimeSeries and TimeSeriesDict.",
+                "The sqlite/sqlite3 tokens are aliases in the same reader family as sdb.",
+                "TimeSeriesMatrix read support remains an implementation convenience path, not a published contract entry."
+            ]
+        },
+        {
+            "name": "wav",
+            "canonical": "wav",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeries"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published WAV direct I/O must preserve sample-rate timing and treat t0=0.0 as a convenience default rather than an absolute timestamp claim."
+            ],
+            "notes": [
+                "Published WAV direct I/O covers TimeSeries read/write and TimeSeriesDict read.",
+                "TimeSeriesMatrix read support remains an implementation convenience path until it is published explicitly.",
+                "WAV write is intentionally single-series only in the current public contract."
+            ]
+        },
+        {
+            "name": "flac",
+            "canonical": "flac",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published compressed-audio direct I/O must preserve sample-rate timing and treat t0=0.0 as a convenience default rather than an absolute timestamp claim."
+            ],
+            "notes": [
+                "Published FLAC direct I/O covers TimeSeries and TimeSeriesDict reads and writes.",
+                "The implementation depends on pydub; some environments also need ffmpeg/libav.",
+                "TimeSeriesMatrix adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "ogg",
+            "canonical": "ogg",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published compressed-audio direct I/O must preserve sample-rate timing and treat t0=0.0 as a convenience default rather than an absolute timestamp claim."
+            ],
+            "notes": [
+                "Published OGG direct I/O covers TimeSeries and TimeSeriesDict reads and writes.",
+                "The implementation depends on pydub; some environments also need ffmpeg/libav.",
+                "TimeSeriesMatrix adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "mp3",
+            "canonical": "mp3",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published compressed-audio direct I/O must preserve sample-rate timing and treat t0=0.0 as a convenience default rather than an absolute timestamp claim."
+            ],
+            "notes": [
+                "Published MP3 direct I/O covers TimeSeries and TimeSeriesDict reads and writes.",
+                "The implementation depends on pydub and typically also requires ffmpeg/libav.",
+                "TimeSeriesMatrix adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "m4a",
+            "canonical": "m4a",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published compressed-audio direct I/O must preserve sample-rate timing and treat t0=0.0 as a convenience default rather than an absolute timestamp claim."
+            ],
+            "notes": [
+                "Published M4A direct I/O covers TimeSeries and TimeSeriesDict reads and writes.",
+                "The implementation depends on pydub and typically also requires ffmpeg/libav.",
+                "TimeSeriesMatrix adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "gbd",
+            "canonical": "gbd",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [
+                    "timezone"
+                ],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published GBD reads must preserve timezone-resolved epoch handling and keep configured digital channels binarized as dimensionless data."
+            ],
+            "notes": [
+                "Published GBD direct I/O is read-only for the TimeSeries family.",
+                "Public reads require timezone=... because the source stores local wall-clock timestamps.",
+                "GUI auto-load is not part of the published GBD contract because it cannot supply timezone implicitly."
+            ]
+        },
+        {
+            "name": "tdms",
+            "canonical": "tdms",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published TDMS reads must preserve group/channel naming and waveform timing from wf_increment or TDMS timestamp properties."
+            ],
+            "notes": [
+                "Published TDMS direct I/O is read-only for the TimeSeries family.",
+                "The implementation depends on nptdms and should raise ImportError with installation guidance when that dependency is unavailable."
+            ]
+        },
+        {
+            "name": "mseed",
+            "canonical": "mseed",
+            "aliases": [
+                "miniseed"
+            ],
+            "public_api": {
+                "read": [
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published MiniSEED reads must preserve gap handling semantics, with NaN padding as the default merge behavior unless gap='raise' is requested."
+            ],
+            "notes": [
+                "Published MiniSEED direct I/O is collection-first through TimeSeriesDict.",
+                "The legacy alias 'miniseed' must remain equivalent to canonical 'mseed'.",
+                "Single-series and matrix registry adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "sac",
+            "canonical": "sac",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published SAC direct I/O must preserve ObsPy-backed timing metadata needed to reconstruct the waveform as a TimeSeriesDict."
+            ],
+            "notes": [
+                "Published SAC direct I/O is collection-first through TimeSeriesDict.",
+                "Single-series and matrix registry adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "gse2",
+            "canonical": "gse2",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeriesDict"
+                ],
+                "write": [
+                    "TimeSeriesDict"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published GSE2 direct I/O must preserve ObsPy-backed timing metadata needed to reconstruct the waveform as a TimeSeriesDict."
+            ],
+            "notes": [
+                "Published GSE2 direct I/O is collection-first through TimeSeriesDict.",
+                "Single-series and matrix registry adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "knet",
+            "canonical": "knet",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeriesDict"
+                ],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published K-NET reads must preserve channel identity and ObsPy-derived timing metadata through the TimeSeriesDict interface."
+            ],
+            "notes": [
+                "Published K-NET direct I/O is read-only and collection-first through TimeSeriesDict.",
+                "Single-series and matrix registry adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "win",
+            "canonical": "win",
+            "aliases": [
+                "win32"
+            ],
+            "public_api": {
+                "read": [
+                    "TimeSeriesDict"
+                ],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published WIN reads must preserve patched delta decoding and the resulting channel/sample-rate metadata through the TimeSeriesDict interface."
+            ],
+            "notes": [
+                "Published WIN direct I/O is read-only and collection-first through TimeSeriesDict.",
+                "The alias 'win32' must remain equivalent to canonical 'win' at the public-contract level.",
+                "Single-series and matrix registry adapters remain implementation conveniences."
+            ]
+        },
+        {
+            "name": "ats",
+            "canonical": "ats",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict"
+                ],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": []
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published ATS reads must preserve header-derived sample rate, epoch handling, and on-disk scaling through the public single-series and dict entrypoints."
+            ],
+            "notes": [
+                "Published ATS direct I/O covers TimeSeries and TimeSeriesDict reads.",
+                "TimeSeriesMatrix read support remains an implementation convenience path."
+            ]
+        },
+        {
+            "name": "ats.mth5",
+            "canonical": "ats.mth5",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries"
+                ],
+                "write": []
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries"
+                ],
+                "write": []
+            },
+            "public_auto_identify": false,
+            "registry_auto_identify": false,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Published ATS.MTH5 reads must remain a narrow single-series path and preserve MTH5-derived timing metadata when the dependency is available."
+            ],
+            "notes": [
+                "Published ATS.MTH5 direct I/O is intentionally limited to TimeSeries.read(..., format='ats.mth5').",
+                "The implementation depends on mth5 and should raise ImportError with installation guidance when that dependency is unavailable."
+            ]
+        },
+        {
+            "name": "nc",
+            "canonical": "nc",
+            "aliases": [
+                "netcdf4"
+            ],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [],
+            "notes": [
+                "Public direct I/O covers the TimeSeries family only.",
+                "The legacy alias 'netcdf4' must remain equivalent to the canonical 'nc' token."
+            ]
+        },
+        {
+            "name": "zarr",
+            "canonical": "zarr",
+            "aliases": [],
+            "public_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "direct_api": {
+                "read": [],
+                "write": []
+            },
+            "registry_api": {
+                "read": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ],
+                "write": [
+                    "TimeSeries",
+                    "TimeSeriesDict",
+                    "TimeSeriesMatrix"
+                ]
+            },
+            "public_auto_identify": true,
+            "registry_auto_identify": true,
+            "required_args": {
+                "read": [],
+                "write": []
+            },
+            "trusted_only": false,
+            "metadata_requirements": [
+                "Each array must store sample_rate or dt timing metadata unless the reader is given an explicit recovery override."
+            ],
+            "notes": [
+                "Public direct I/O covers the TimeSeries family only.",
+                "Legacy stores without timing metadata are recoverable only through explicit sample_rate_override or dt_override."
+            ]
+        }
+    ]
+}

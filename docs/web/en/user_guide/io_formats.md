@@ -38,10 +38,11 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 
 - If you need a **default GW storage format**, start with **HDF5**. For existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / Audio**. For **MTH5**, the current public direct-I/O story is only the single **`ats.mth5`** path. A generic standalone **`format="mth5"`** route is not published yet.
 - **Auto-detect is fine** when the extension uniquely selects one reader.
+- For generic **HDF5**, set **`format="hdf5"` explicitly**. The `.h5` / `.hdf5` extensions overlap multiple HDF5-backed families, and auto-identification is not uniform across classes.
 - **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
 - **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
 - **Read-only / write-only matters**: `○ / ×` means a format can be read but not written.
-- If you need to preserve **Field** objects safely through direct `.read()` / `.write()` style APIs, this page treats **HDF5** and **Pickle** as the baseline. NetCDF4 / Zarr / ROOT object bridges belong to interop, not to this page.
+- For richer direct-I/O objects beyond plain Series, start with **HDF5** for `Spectrogram`, `Histogram`, and `EventTable`. Field-class direct `.read()` / `.write()` is still under audit and is not published as a stable contract on this page.
 
 ## Jump Links
 
@@ -61,7 +62,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 |---|---|---|---|
 | **A. GW Standards** | You want standard GW storage, exchange, or acquisition paths | **HDF5** | GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC |
 | **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **mseed** | mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here) |
-| **C. General Analysis and Exchange** | You need general-purpose storage or external analysis exchange | **CSV / TXT** or **Zarr** | CSV / TXT, NetCDF4, Zarr, Pickle, ROOT |
+| **C. General Analysis and Exchange** | You need general-purpose storage or external analysis exchange | **CSV / TXT** or **Zarr** | CSV / TXT, NetCDF4, Zarr, ROOT |
 | **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
 
 > **Note**: `NDS2` and `GWOSC` are not file formats. They are included in **A. GW Standards** because they are common GW data entry points. In the tables below, they are labeled as `network path`.
@@ -102,19 +103,20 @@ If the main question is whether a format is for a single channel or multiple cha
 
 | Format / Family | Single | Multi | Other classes |
 |---|---|---|---|
-| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
+| **GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
+| **CSV** | `TimeSeries` | `TimeSeriesDict` | `TimeSeriesDict` also supports manifest-backed collection directories |
+| **TXT** | `TimeSeries` | `TimeSeriesDict` | Multi-channel direct I/O uses collection directories |
 | **nc / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
-| **HDF5** | `TimeSeries`, `FrequencySeries`, and related classes | `TimeSeriesDict` and related collections | Also covers `Spectrogram`, `Histogram`, `EventTable`, and `Field` |
+| **HDF5** | `TimeSeries`, `FrequencySeries`, and related classes | `TimeSeriesDict` and related collections | Also covers `Spectrogram`, `Histogram`, and `EventTable` |
 | **hdf.ndscope** | - | `TimeSeriesDict` | ndscope-compatible schema; aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
 | **xml.diaggui** | - | `TimeSeriesDict` | Requires `products`; legacy alias: `dttxml` |
 | **NDS2 / GWOSC** | `TimeSeries` | - | Use `fetch()` / `fetch_open_data()` |
 | **ATS.MTH5** | `TimeSeries` | - | Partial single-path support |
-| **Pickle** | Major classes broadly | Major classes broadly | Use only for trusted data |
 | **ROOT** | `EventTable` | - | Direct I/O is limited to EventTable |
 
 - If you are unsure, start by thinking in terms of `TimeSeries` and `TimeSeriesDict`.
 - `TimeSeriesMatrix` mainly matters for `NetCDF4`, `Zarr`, `GBD`, and `TDMS`.
-- If you need to preserve richer objects beyond Series classes, start with **HDF5** or **Pickle**.
+- If you need to preserve richer objects beyond Series classes, start with **HDF5**.
 
 <a id="io-formats-en-a"></a>
 
@@ -126,7 +128,7 @@ If you are unsure, start with **HDF5**. Use **GWF** when you need external stand
 | Format / Path | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Standard LIGO/KAGRA frame exchange | Standard format, via gwpy |
-| **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `.read(..., format="hdf5")`, `.write(..., format="hdf5")` on major classes | Long-term storage with metadata | Main direct-I/O option for Field objects |
+| **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `.read(..., format="hdf5")`, `.write(..., format="hdf5")` on major classes | Long-term storage with metadata | Prefer explicit `format="hdf5"` |
 | **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
 | **xml.diaggui** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT outputs | `products` is required; legacy alias: `dttxml` |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | Detector data server access | Network path |
@@ -195,10 +197,10 @@ The key rule here is not to mix up “format choice” with “library conversio
 
 | Format | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
-| **CSV / TXT** (`.csv`, `.txt`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Lightweight exchange and inspection | Also supports directory bulk loading |
+| **CSV** (`.csv`) | ○ / ○ | `TimeSeries.read(..., format="csv")`, `TimeSeriesDict.read(..., format="csv")`, `TimeSeriesDict.write(..., format="csv")` | Lightweight exchange and inspection | `TimeSeriesDict` supports single-file reads and collection-directory layouts |
+| **TXT** (`.txt`) | ○ / ○ | `TimeSeries.read(..., format="txt")`, `TimeSeriesDict.read(dir, format="txt")`, `TimeSeriesDict.write(dir, format="txt")` | Plain-text exchange | Multi-channel direct I/O uses collection directories |
 | **nc** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")`, `.write(..., format="nc")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes; legacy alias: `netcdf4` |
 | **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | Chunked storage and parallel workflows | Direct I/O here is centered on TimeSeries classes |
-| **Pickle** (`.pkl`) | ○ / ○ | `.read()` / `.write()` on major classes | Python object snapshots | Only for trusted data |
 | **ROOT** (`.root`) | ○ / ○ | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | EventTable I/O | Direct I/O here is EventTable only |
 
 - Purpose: show the general-purpose direct-I/O routes without mixing them with interop-only bridges
@@ -214,7 +216,9 @@ chunked = TimeSeriesDict.read("data.zarr", format="zarr")
 events = EventTable.read("events.root", format="root")
 ```
 
-- **CSV / TXT** remains useful for inspection and simple interchange.
+- **CSV** remains useful for lightweight exchange and inspection.
+- **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
+- **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop.
 - **Zarr** direct I/O now expects per-array timing metadata explicitly. `sample_rate` is the primary key, `dt` is accepted as a fallback, and reads raise `ValueError` if neither is present unless you intentionally recover a legacy store with `sample_rate_override=...` or `dt_override=...`.
 - **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O.
@@ -228,11 +232,11 @@ Time handling, units, and audio `t0` semantics are the main points to watch.
 
 | Format | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
-| **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd")`, `TimeSeriesDict.read(..., format="gbd")`, `TimeSeriesMatrix.read(..., format="gbd")` | GRAPHTEC loggers | `timezone` is required |
-| **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")`, `TimeSeriesMatrix.read(..., format="tdms")` | National Instruments data | Read-only |
-| **SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`) | ○ / × | `TimeSeries.read(..., format="sdb" / "sqlite" / "sqlite3")`, `TimeSeriesDict.read(...)` | WeeWX and similar archives | Same reader family |
-| **WAV** (`.wav`) | ○ / ○ | `TimeSeries.read(..., format="wav")`, `TimeSeriesDict.read(..., format="wav")`, `.write(..., format="wav")` | Uncompressed audio | Does not preserve absolute time |
-| **MP3 / FLAC / OGG / M4A** | ○ / ○ | `TimeSeries.read(..., format="mp3" / "flac" / "ogg" / "m4a")`, `.write(...)` | Compressed audio | Uses `pydub`; some formats also need `ffmpeg` |
+| **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd", timezone=...)`, `TimeSeriesDict.read(..., format="gbd", timezone=...)`, `TimeSeriesMatrix.read(..., format="gbd", timezone=...)` | GRAPHTEC loggers | `timezone` is required for published reads |
+| **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")`, `TimeSeriesMatrix.read(..., format="tdms")` | National Instruments data | Read-only; requires `nptdms` |
+| **SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`) | ○ / × | `TimeSeries.read(..., format="sdb" / "sqlite" / "sqlite3")`, `TimeSeriesDict.read(..., format="sdb" / "sqlite" / "sqlite3")` | WeeWX and similar archives | Same reader family; public direct I/O is read-only |
+| **WAV** (`.wav`) | ○ / ○ | `TimeSeries.read(..., format="wav")`, `TimeSeriesDict.read(..., format="wav")`, `TimeSeries.write(..., format="wav")` | Uncompressed audio | Public write is single-series only; does not preserve absolute time |
+| **MP3 / FLAC / OGG / M4A** | ○ / ○ | `TimeSeries.read(..., format="mp3" / "flac" / "ogg" / "m4a")`, `TimeSeriesDict.read(..., format=...)`, `.write(...)` | Compressed audio | Uses `pydub`; some formats also need `ffmpeg` |
 
 - Purpose: highlight logger-specific and audio-specific direct-I/O requirements
 - Input: logger data, SQLite-family archives, or audio files
@@ -247,8 +251,10 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 ```
 
 - **GBD** requires `timezone`.
+- **TDMS** requires the optional `nptdms` dependency.
+- **MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. MP3/M4A commonly also need `ffmpeg`.
 - **SDB / SQLite / SQLite3** should all be named explicitly in the public page so users do not need to infer aliases.
-- **WAV / Audio** do not preserve absolute timestamps. Reading with `t0=0.0` is a convenience convention, not a claim that the source had an absolute epoch.
+- **WAV / compressed-audio formats** do not preserve absolute timestamps. Reading with `t0=0.0` is a convenience convention, not a claim that the source had an absolute epoch.
 
 <a id="io-formats-en-dev"></a>
 
@@ -262,7 +268,6 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 | Format | Status | Notes |
 |---|---|---|
 | `hdf.ndscope` | Implemented, not yet prominent | `TimeSeriesDict`-only HDF5 schema. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
-| `SQLite`, `SQLite3` | Implemented, not yet prominent | Aliases in the same family as `SDB` |
 | `ATS.MTH5` | Implemented with partial scope | Current public direct path backed by MTH5 |
 | `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet; not published as public direct I/O |
 

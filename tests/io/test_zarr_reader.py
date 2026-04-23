@@ -9,7 +9,7 @@ zarr = pytest.importorskip("zarr")
 if os.environ.get("GWEXPY_ALLOW_ZARR", "") != "1":
     pytest.skip("zarr tests require GWEXPY_ALLOW_ZARR=1", allow_module_level=True)
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
 class TestZarrRoundtrip:
@@ -121,3 +121,18 @@ class TestZarrRoundtrip:
 
         ts_in = read_timeseries_zarr(str(path))
         assert len(ts_in) == 20
+
+    def test_matrix_roundtrip(self, tmp_path):
+        path = tmp_path / "matrix.zarr"
+        matrix = TimeSeriesMatrix(
+            np.arange(24, dtype=np.float64).reshape(2, 2, 6),
+            t0=1000000000.0,
+            sample_rate=16.0,
+        )
+
+        matrix.write(str(path), format="zarr")
+
+        loaded = TimeSeriesMatrix.read(str(path), format="zarr")
+        np.testing.assert_allclose(loaded.value, matrix.value)
+        assert loaded.shape == matrix.shape
+        assert np.isclose(float(loaded.sample_rate.value), 16.0)

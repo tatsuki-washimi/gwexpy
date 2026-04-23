@@ -78,7 +78,49 @@ jobs:
             --ignore=tests/test_fitting_highlevel.py \
             --ignore=tests/timeseries/test_matrix_analysis.py \
             --ignore=tests/types/test_series_matrix_io.py \
-            tests/ gwexpy/
+            tests/
+
+  io-contract-gate:
+    name: Core I/O contract gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Provision gwexpy environment
+        run: |
+          python -m pip install --upgrade pip build
+          python -m pip install -e . --no-deps
+          python -m pip install PyQt5
+          python -m pip install iminuit
+
+      - name: Generate synthetic test fixtures
+        run: python tests/fixtures/generate_fixtures.py
+
+      - name: Run I/O contract tests
+        run: |
+          pytest -q -m "not network and not nds" \
+            tests/io/test_io_contract.py \
+            tests/io/test_io_docs_contract_sync.py \
+            tests/io/ \
+            tests/segments/ \
+            tests/table/
 
       - name: Build wheel
         run: python -m build --wheel --no-isolation
@@ -90,3 +132,35 @@ jobs:
 
           print(f"gwexpy version: {gwexpy.__version__}")
           PY
+
+  io-optional-gate:
+    name: Optional dependency gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Provision gwexpy environment
+        run: |
+          python -m pip install --upgrade pip build
+          python -m pip install -e . --no-deps
+
+      - name: Run optional dependency guard tests
+        run: |
+          pytest -q tests/io/test_optional_deps.py

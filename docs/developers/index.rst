@@ -8,6 +8,7 @@ Architecture & Design
    :maxdepth: 1
 
    contracts/numerical
+   contracts/public_io_contract
    design/design_data/index
    design/gui/implementation_map
    design/gui/reference_analysis
@@ -32,4 +33,3 @@ Development Guidelines
    guides/coding_standards
    guides/testing
    guides/gui_testing
-

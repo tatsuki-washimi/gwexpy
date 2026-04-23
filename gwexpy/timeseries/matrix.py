@@ -18,6 +18,7 @@ from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.typing import ArrayLike, IndexLike
 
+from ._gwf_io import _resolve_gwf_format
 from .collections import TimeSeriesDict, TimeSeriesList
 from .matrix_analysis import TimeSeriesMatrixAnalysisMixin
 from .matrix_core import TimeSeriesMatrixCoreMixin
@@ -109,6 +110,18 @@ class TimeSeriesMatrix(  # type: ignore[misc]
     default_xunit = "s"
     default_yunit: str | u.Unit | None = None
     _default_plot_method = "plot"
+
+    @classmethod
+    def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
+        """Read a `TimeSeriesMatrix` from a supported source."""
+        gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
+        if gwf_format is not None:
+            tsd = TimeSeriesDict.read(source, *args, **kwargs)
+            if len(tsd) == 0:
+                raise ValueError(f"No data found in {gwf_format} source: {source}")
+            return tsd.to_matrix()
+
+        return super().read(source, *args, **kwargs)
 
     def __new__(
         cls,

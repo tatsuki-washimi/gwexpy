@@ -90,3 +90,38 @@ jobs:
         run: |
           micromamba activate gwexpy
           python -c "import gwexpy, numpy as np; from gwexpy import TimeSeries, FrequencySeries, Spectrogram; ts = TimeSeries(np.random.randn(100), sample_rate=1); fs = FrequencySeries(np.abs(np.random.randn(100)), df=1); sg = Spectrogram(np.random.randn(10, 10), dt=1, df=1); print(gwexpy.__version__, ts.duration, fs.f0, sg.shape)"
+
+  io-network-backend-gate:
+    name: I/O backend and network gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Provision gwexpy environment
+        run: |
+          python -m pip install --upgrade pip build
+          python -m pip install -e . --no-deps
+
+      - name: Generate synthetic test fixtures
+        run: python tests/fixtures/generate_fixtures.py
+
+      - name: Run network/backend I/O tests
+        run: |
+          pytest -q -m "network or nds" tests/io/ tests/nds/ tests/segments/

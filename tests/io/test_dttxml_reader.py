@@ -26,6 +26,30 @@ class TestDttxmlReader:
         with pytest.raises(ValueError, match="products must be specified"):
             TimeSeries.read(str(dummy))
 
+    @pytest.mark.parametrize(
+        "filename",
+        ["dummy.XML", "dummy.Xml"],
+    )
+    def test_auto_detected_xml_format_handles_case_variants(self, tmp_path, filename):
+        dummy = tmp_path / filename
+        dummy.write_text("<dttxml></dttxml>")
+        with pytest.raises(ValueError, match="products must be specified"):
+            TimeSeries.read(str(dummy))
+
+    @pytest.mark.parametrize(
+        "filename",
+        ["dummy.xml.gz", "dummy.XML.GZ"],
+    )
+    def test_auto_detected_xml_format_handles_gz_extensions(self, tmp_path, filename):
+        import gzip
+
+        dummy = tmp_path / filename
+        with gzip.open(dummy, "wb") as fp:
+            fp.write(b"<dttxml></dttxml>")
+
+        with pytest.raises(ValueError, match="products must be specified"):
+            TimeSeries.read(str(dummy))
+
     def test_legacy_alias_resolves_to_canonical_reader(self):
         from gwpy.io.registry import default_registry as io_registry
 
