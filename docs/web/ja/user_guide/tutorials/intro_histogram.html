@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ヒストグラム: 基本 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -184,16 +183,14 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>このページは Jupyter Notebook から生成されました。
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/intro_histogram.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/intro_histogram.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="ヒストグラム:-基本">
@@ -210,7 +207,7 @@
 </ul>
 <p>gwexpy の conda 環境で実行することを推奨します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -218,7 +215,7 @@
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
-<span class="c1"># 環境確認</span>
+<span class="c1"># Environment check</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -238,8 +235,8 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-python 3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:25:55) [GCC 14.3.0]
-numpy 2.2.6
+python 3.11.15 | packaged by conda-forge | (main, Mar  5 2026, 16:45:40) [GCC 14.3.0]
+numpy 2.4.4
 astropy unknown
 </pre></div></div>
 </div>
@@ -251,18 +248,19 @@ astropy unknown
 <li><p>イベント列を <code class="docutils literal notranslate"><span class="pre">.fill()</span></code> で集計して作る（<code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code> の重みをサポート）</p></li>
 </ol>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">])</span>
-<span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1.1 Direct construction from totals</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">])</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">])</span>  <span class="c1"># bin totals</span>
 <span class="n">h</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">edges</span><span class="o">=</span><span class="n">edges</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
 <span class="n">h</span>
 <br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -271,10 +269,11 @@ astropy unknown
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1.2 Creating from events with weights (Quantity)</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
     <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
     <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">1.6</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">120</span><span class="p">),</span>
@@ -287,7 +286,7 @@ astropy unknown
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -299,11 +298,12 @@ astropy unknown
 <section id="2.-可視化">
 <h2>2. 可視化<a class="headerlink" href="#2.-可視化" title="Link to this heading"></a></h2>
 <p>ビンごとの合計（エラーバーあり）と密度（値/ビン幅）を表示します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot counts with errorbars</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
 <span class="n">centers</span> <span class="o">=</span> <span class="n">h2</span><span class="o">.</span><span class="n">bin_centers</span><span class="o">.</span><span class="n">value</span>
 <span class="n">widths</span> <span class="o">=</span> <span class="n">h2</span><span class="o">.</span><span class="n">bin_widths</span><span class="o">.</span><span class="n">value</span>
 <span class="n">counts</span> <span class="o">=</span> <span class="n">h2</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">value</span>
@@ -318,11 +318,19 @@ astropy unknown
 <br/></pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_histogram_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_histogram_7_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">density</span> <span class="o">=</span> <span class="n">h2</span><span class="o">.</span><span class="n">to_density</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Density plot (values / bin width)</span>
+<span class="n">density</span> <span class="o">=</span> <span class="n">h2</span><span class="o">.</span><span class="n">to_density</span><span class="p">()</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">h2</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">density</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">density</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">where</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x [</span><span class="si">{</span><span class="n">h2</span><span class="o">.</span><span class="n">xunit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
@@ -332,12 +340,19 @@ astropy unknown
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_histogram_8_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_histogram_8_0.png" />
+</div>
+</div>
 </section>
 <section id="3.-基本統計">
 <h2>3. 基本統計<a class="headerlink" href="#3.-基本統計" title="Link to this heading"></a></h2>
 <p>平均、中央値、分散、分位を計算します。<code class="docutils literal notranslate"><span class="pre">quantile()</span></code> は平坦ビンに対して安定です。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mean:&#39;</span><span class="p">,</span> <span class="n">h2</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
@@ -365,7 +380,7 @@ quantile(0.25): 1.1348114645471883
 <h2>4. リビン<a class="headerlink" href="#4.-リビン" title="Link to this heading"></a></h2>
 <p>非等間隔ビンへの再ビンと合計保存・共分散伝播を示します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">])</span>
@@ -393,7 +408,7 @@ cov shape rebinned: None
 <h2>5. 積分（誤差伝播）<a class="headerlink" href="#5.-積分（誤差伝播）" title="Link to this heading"></a></h2>
 <p>部分区間の積分とその誤差（共分散/<code class="docutils literal notranslate"><span class="pre">sumw2</span></code> に基づく）を示します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">I</span> <span class="o">=</span> <span class="n">h2</span><span class="o">.</span><span class="n">integral</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">)</span>
@@ -417,11 +432,16 @@ Integral with error: 180.3597019890495 ct 15.17057636890394 ct
 <h2>6. シリアライズ（HDF5 と JSON）<a class="headerlink" href="#6.-シリアライズ（HDF5-と-JSON）" title="Link to this heading"></a></h2>
 <p>HDF5 の読み書きと、JSON 形式の軽量な辞書に変換する例を示します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h2</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;example_hist.h5&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;hist1&#39;</span><span class="p">)</span>
-<span class="n">h_loaded</span> <span class="o">=</span> <span class="n">Histogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;example_hist.h5&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;hist1&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># HDF5 roundtrip</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">hist_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">())</span> <span class="o">/</span> <span class="s1">&#39;gwexpy_example_hist.h5&#39;</span>
+<span class="n">h2</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">hist_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;hist1&#39;</span><span class="p">)</span>
+<span class="n">h_loaded</span> <span class="o">=</span> <span class="n">Histogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">hist_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;hdf5&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;hist1&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;HDF5 roundtrip equal (values):&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">h2</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">h_loaded</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
 <br/></pre></div>
 </div>
@@ -435,7 +455,7 @@ HDF5 roundtrip equal (values): True
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
@@ -486,7 +506,7 @@ JSON roundtrip (values): True
 <h2>7. ROOT との連携（任意）<a class="headerlink" href="#7.-ROOT-との連携（任意）" title="Link to this heading"></a></h2>
 <p>PyROOT は利用環境によっては存在しないため <code class="docutils literal notranslate"><span class="pre">try/except</span></code> で安全に扱います。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.root_</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_root</span><span class="p">,</span> <span class="n">to_th1d</span>
@@ -495,8 +515,9 @@ JSON roundtrip (values): True
     <span class="n">th1</span> <span class="o">=</span> <span class="n">to_th1d</span><span class="p">(</span><span class="n">h2</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;TH1D created:&#39;</span><span class="p">,</span> <span class="n">th1</span><span class="o">.</span><span class="n">GetName</span><span class="p">(),</span> <span class="s1">&#39;nbins:&#39;</span><span class="p">,</span> <span class="n">th1</span><span class="o">.</span><span class="n">GetNbinsX</span><span class="p">())</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ROOT underflow:&#39;</span><span class="p">,</span> <span class="n">th1</span><span class="o">.</span><span class="n">GetBinContent</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="c1"># Optionally convert back if supported</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">h_from_root</span> <span class="o">=</span> <span class="n">from_root</span><span class="p">(</span><span class="n">th1</span><span class="p">)</span>
+        <span class="n">h_from_root</span> <span class="o">=</span> <span class="n">from_root</span><span class="p">(</span><span class="n">th1</span><span class="p">)</span>  <span class="c1"># use from_root from the module</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Back to Histogram:&#39;</span><span class="p">,</span> <span class="n">h_from_root</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Round-trip from ROOT not supported or error:&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
@@ -510,9 +531,7 @@ JSON roundtrip (values): True
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ROOT not available or error: Unable to avoid copy while creating an array as requested.
-If using `np.array(obj, copy=False)` replace it with `np.asarray(obj)` to allow a copy when needed (no behavior change in NumPy 1.x).
-For more details, see https://numpy.org/devdocs/numpy_2_0_migration_guide.html#adapting-to-changes-in-the-copy-keyword.
+ROOT not available or error: The &#39;ROOT&#39; package is required for this feature but is not installed. You can install it via &#39;pip install ROOT&#39; or &#39;pip install &#34;gwexpy[all]&#34;&#39;.
 </pre></div></div>
 </div>
 </section>
@@ -547,7 +566,7 @@ For more details, see https://numpy.org/devdocs/numpy_2_0_migration_guide.html#a
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

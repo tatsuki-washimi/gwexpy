@@ -26,7 +26,7 @@ If you want the shared assumptions and FFT/time conventions first, use [Prerequi
 ## On This Page
 
 - [Choose Your Path](#choose-your-path)
-- [Learning Path](#learning-path)
+- [Learning Path](#en-learning-path)
 - [Next Steps](#next-to-read)
 
 ## Choose Your Path
@@ -49,8 +49,7 @@ Learn the core data structures and GWexpy-specific matrix operations from scratc
 
 For current GWpy users. Start with the migration recipes, then use the [GWpy Difference API Index](gwpy_added_api_index_en.md) when you need a difference-oriented lookup of added APIs.
 
-<a id="learning-path"></a>
-
+(en-learning-path)=
 ## Learning Path
 
 ### 1. Preparation

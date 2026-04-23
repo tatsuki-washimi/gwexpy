@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ARIMA: Time Series Forecasting &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -108,8 +107,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#browse-by-category">Browse by category</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
@@ -187,13 +186,11 @@
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/advanced_arima.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="ARIMA:-Time-Series-Forecasting">
@@ -208,7 +205,7 @@
 <h2>Setup<a class="headerlink" href="#Setup" title="Link to this heading"></a></h2>
 <p>Import the necessary libraries.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -241,7 +238,7 @@
 <h2>Creating Sample Data<a class="headerlink" href="#Creating-Sample-Data" title="Link to this heading"></a></h2>
 <p>To verify the effectiveness of ARIMA models, we create synthetic data that includes a trend, seasonality (periodicity), and noise.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Trend + Seasonality + Noise</span>
@@ -284,7 +281,7 @@
 <h2>1. AR (AutoRegressive) Model<a class="headerlink" href="#1.-AR-(AutoRegressive)-Model" title="Link to this heading"></a></h2>
 <p>The AR model assumes that the current value depends on past values. Use the <code class="docutils literal notranslate"><span class="pre">ts.ar(p)</span></code> method, where <code class="docutils literal notranslate"><span class="pre">p</span></code> is the order.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with order p=3</span>
@@ -313,7 +310,7 @@
 <h2>2. MA (Moving Average) Model<a class="headerlink" href="#2.-MA-(Moving-Average)-Model" title="Link to this heading"></a></h2>
 <p>The MA model assumes that the current value depends on past prediction errors (white noise). Use the <code class="docutils literal notranslate"><span class="pre">ts.ma(q)</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with order q=3</span>
@@ -338,7 +335,7 @@
 <h2>3. ARMA (AutoRegressive Moving Average) Model<a class="headerlink" href="#3.-ARMA-(AutoRegressive-Moving-Average)-Model" title="Link to this heading"></a></h2>
 <p>The ARMA model combines AR and MA. Use the <code class="docutils literal notranslate"><span class="pre">ts.arma(p,</span> <span class="pre">q)</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with p=2, q=2</span>
@@ -363,7 +360,7 @@
 <p>The ARIMA model removes non-stationarity (such as trends) by differencing, then applies the ARMA model.</p>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">ts.arima()</span></code> method. With the <code class="docutils literal notranslate"><span class="pre">auto=True</span></code> option, the <code class="docutils literal notranslate"><span class="pre">pmdarima</span></code> library is used to automatically search for optimal parameters (p, d, q). This is the most recommended approach.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -395,8 +392,8 @@ Searching for optimal ARIMA parameters... (this may take a few seconds)
 ===========================================================================================
 Dep. Variable:                                   y   No. Observations:                  300
 Model:             SARIMAX(1, 1, 2)x(1, 0, [], 50)   Log Likelihood                -404.141
-Date:                             Thu, 26 Feb 2026   AIC                            820.282
-Time:                                     20:48:31   BIC                            842.485
+Date:                             Thu, 23 Apr 2026   AIC                            820.282
+Time:                                     04:10:21   BIC                            842.485
 Sample:                                          0   HQIC                           829.169
                                              - 300
 Covariance Type:                               opg
@@ -432,7 +429,7 @@ Warnings:
 <h2>5. Obtaining Forecast Data<a class="headerlink" href="#5.-Obtaining-Forecast-Data" title="Link to this heading"></a></h2>
 <p>Beyond plotting, you can directly obtain forecast values as a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object using the <code class="docutils literal notranslate"><span class="pre">.forecast()</span></code> method. This also includes confidence intervals.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;model_auto&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
@@ -462,19 +459,19 @@ Warnings:
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Forecast Data:
-TimeSeries([ 9.02063095,  9.60946546, 10.04247608, 10.15366724,
-            10.05259678, 10.38953409, 10.79815095, 10.71027742,
-            11.00660771, 11.18205177, 11.08230487, 11.29883005,
-            10.98339795, 11.34916921, 11.51885662, 11.45196033,
-            11.87327376, 11.52379092, 11.68683663, 11.78939387,
-            11.98098394, 11.6301629 , 11.97773482, 11.84042886,
-            11.72116368, 11.91254849, 11.88390198, 11.78617506,
-            11.8774454 , 11.82552207, 11.89784228, 11.97900471,
-            12.11133126, 11.76628355, 12.22002271, 11.72134704,
-            11.98239983, 12.11216074, 12.11237757, 12.04095272,
-            12.1435007 , 12.16098299, 12.2071204 , 12.45443501,
-            12.45772066, 12.39288272, 12.67001284, 12.66918601,
-            12.8110433 , 12.8657357 ],
+TimeSeries([ 9.02063046,  9.60946522, 10.04247591, 10.15366674,
+            10.05259569, 10.38953303, 10.79815006, 10.71027604,
+            11.0066064 , 11.18205038, 11.08230306, 11.29882826,
+            10.98339548, 11.34916701, 11.51885444, 11.45195786,
+            11.87327169, 11.52378818, 11.68683396, 11.78939118,
+            11.98098138, 11.63015972, 11.97773199, 11.84042572,
+            11.72116026, 11.91254523, 11.88389858, 11.78617143,
+            11.8774418 , 11.82551831, 11.89783853, 11.97900098,
+            12.11132764, 11.76627937, 12.22001908, 11.72134264,
+            11.98239572, 12.11215673, 12.11237349, 12.04094848,
+            12.14349653, 12.16097877, 12.20711617, 12.45443106,
+            12.45771665, 12.39287855, 12.67000899, 12.66918209,
+            12.81103951, 12.86573192],
            unit: V,
            t0: 30.0 s,
            dt: 0.1 s,
@@ -482,19 +479,19 @@ TimeSeries([ 9.02063095,  9.60946546, 10.04247608, 10.15366724,
            channel: None)
 
 Confidence Interval (Upper):
-TimeSeries([ 9.64857296, 10.25546653, 10.7195876 , 10.87456042,
-            10.82818582, 11.22844355, 11.7067511 , 11.69299174,
-            12.06629413, 12.32035964, 12.29997326, 12.59592369,
-            12.35948866, 12.80347361, 13.05033984, 13.05941406,
-            13.55537472, 13.27914473, 13.51401064, 13.68694154,
-            13.94746299, 13.66414849, 14.07782921, 14.0052681 ,
-            13.9494223 , 14.20294246, 14.23519045, 14.19716117,
-            14.34697639, 14.35248881, 14.48117848, 14.61768579,
-            14.80437308, 14.51274095, 15.01898802, 14.57194853,
-            14.88380013, 15.06355532, 15.11299318, 15.09004592,
-            15.24035641, 15.30491312, 15.39746251, 15.69055103,
-            15.73899569, 15.71872387, 16.03984813, 16.08246334,
-            16.26722947, 16.36431549],
+TimeSeries([ 9.64857235, 10.25546616, 10.7195873 , 10.87455976,
+            10.82818454, 11.22844226, 11.70674993, 11.69299002,
+            12.06629242, 12.32035778, 12.29997091, 12.59592128,
+            12.3594855 , 12.80347063, 13.0503368 , 13.05941064,
+            13.55537161, 13.27914087, 13.51400676, 13.68693757,
+            13.94745905, 13.66414386, 14.07782484, 14.00526335,
+            13.9494172 , 14.20293743, 14.2351852 , 14.19715561,
+            14.34697078, 14.35248296, 14.48117257, 14.61767984,
+            14.80436716, 14.5127344 , 15.01898196, 14.57194163,
+            14.88379346, 15.06354868, 15.1129864 , 15.09003891,
+            15.24034942, 15.30490602, 15.39745534, 15.69054408,
+            15.73898862, 15.71871658, 16.0398411 , 16.08245619,
+            16.2672224 , 16.36430837],
            unit: V,
            t0: 30.0 s,
            dt: 0.1 s,
@@ -510,7 +507,7 @@ TimeSeries([ 9.64857296, 10.25546653, 10.7195876 , 10.87456042,
 <h3>Step 1: Generating Colored Noise and Injecting a Signal<a class="headerlink" href="#Step-1:-Generating-Colored-Noise-and-Injecting-a-Signal" title="Link to this heading"></a></h3>
 <p>First, we create colored noise with strong low-frequency components (AR(1) process), and embed a weak signal (sine-Gaussian) that is difficult to distinguish otherwise. Note: We use “strain” as the unit, which is recognizable by Astropy.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -567,7 +564,7 @@ TimeSeries([ 9.64857296, 10.25546653, 10.7195876 , 10.87456042,
 <h3>Step 2: Noise Modeling with ARIMA<a class="headerlink" href="#Step-2:-Noise-Modeling-with-ARIMA" title="Link to this heading"></a></h3>
 <p>Using <code class="docutils literal notranslate"><span class="pre">auto=True</span></code>, we search for the optimal model that expresses the autocorrelation structure of the background noise.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for optimal noise model parameters...&quot;</span><span class="p">)</span>
@@ -589,8 +586,8 @@ Best model order: (5, 1, 0)
 ==============================================================================
 Dep. Variable:                      y   No. Observations:                10240
 Model:               SARIMAX(5, 1, 0)   Log Likelihood              -14694.968
-Date:                Thu, 26 Feb 2026   AIC                          29403.936
-Time:                        20:48:38   BIC                          29454.574
+Date:                Thu, 23 Apr 2026   AIC                          29403.936
+Time:                        04:10:33   BIC                          29454.574
 Sample:                             0   HQIC                         29421.057
                               - 10240
 Covariance Type:                  opg
@@ -620,7 +617,7 @@ Warnings:
 <h3>Step 3: Extracting and Visualizing Residuals<a class="headerlink" href="#Step-3:-Extracting-and-Visualizing-Residuals" title="Link to this heading"></a></h3>
 <p>By subtracting the “stationary noise” predicted by the model, we obtain the residuals <span class="math notranslate nohighlight">\(x_r = x - \hat{x}\)</span>. This is the whitened data.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_whitened</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span>
@@ -654,7 +651,7 @@ Warnings:
 <h3>Step 4: Evaluation in the Frequency Domain<a class="headerlink" href="#Step-4:-Evaluation-in-the-Frequency-Domain" title="Link to this heading"></a></h3>
 <p>We calculate and compare the Power Spectral Density (PSD).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fft_original</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">psd</span><span class="p">()</span>
@@ -714,7 +711,7 @@ Warnings:
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

@@ -2,20 +2,44 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": null,
-   "id": "18e7dd1f",
-   "metadata": {},
+   "execution_count": 1,
+   "id": "6471418a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-04-23T04:01:19.699916Z",
+     "iopub.status.busy": "2026-04-23T04:01:19.699675Z",
+     "iopub.status.idle": "2026-04-23T04:01:19.712450Z",
+     "shell.execute_reply": "2026-04-23T04:01:19.710294Z"
+    },
+    "papermill": {
+     "duration": 0.020077,
+     "end_time": "2026-04-23T04:01:19.713646+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T04:01:19.693569+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
    "outputs": [],
    "source": [
-    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
-    "\n",
-    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+    "# Skipped in CI: Colab/bootstrap dependency install cell.\n"
    ]
   },
   {
    "cell_type": "markdown",
    "id": "36748038",
-   "metadata": {},
+   "metadata": {
+    "papermill": {
+     "duration": 0.003277,
+     "end_time": "2026-04-23T04:01:19.731749+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T04:01:19.728472+00:00",
+     "status": "completed"
+    },
+    "tags": [
+     "lang-ja"
+    ]
+   },
    "source": [
     "# ASD 解析: パイプライン\n",
     "\n",
@@ -26,67 +50,25 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
-   "id": "d6c2909c",
+   "execution_count": 2,
+   "id": "0582901c",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T13:14:09.861828Z",
-     "iopub.status.busy": "2026-04-05T13:14:09.861665Z",
-     "iopub.status.idle": "2026-04-05T13:14:12.187068Z",
-     "shell.execute_reply": "2026-04-05T13:14:12.186526Z"
-    }
-   },
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": []
+     "iopub.execute_input": "2026-04-23T04:01:19.751797Z",
+     "iopub.status.busy": "2026-04-23T04:01:19.751579Z",
+     "iopub.status.idle": "2026-04-23T04:01:26.588394Z",
+     "shell.execute_reply": "2026-04-23T04:01:26.584472Z"
     },
-    {
-     "data": {
-      "text/html": [
-       "<table border=\"1\" class=\"dataframe\">\n",
-       "  <thead>\n",
-       "    <tr style=\"text-align: right;\">\n",
-       "      <th></th>\n",
-       "      <th>span</th>\n",
-       "      <th>raw</th>\n",
-       "    </tr>\n",
-       "  </thead>\n",
-       "  <tbody>\n",
-       "    <tr>\n",
-       "      <th>0</th>\n",
-       "      <td>(0, 16)</td>\n",
-       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <th>1</th>\n",
-       "      <td>(16, 32)</td>\n",
-       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <th>2</th>\n",
-       "      <td>(32, 48)</td>\n",
-       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <th>3</th>\n",
-       "      <td>(48, 64)</td>\n",
-       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "    </tr>\n",
-       "  </tbody>\n",
-       "</table>\n"
-      ],
-      "text/plain": [
-       "SegmentTable(n_rows=4, n_cols=2, payload=1, columns=['span', 'raw'])\n",
-       "span=[0 ... 64]\n"
-      ]
-     },
-     "execution_count": 1,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+    "papermill": {
+     "duration": 6.84745,
+     "end_time": "2026-04-23T04:01:26.589844+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T04:01:19.742394+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
    "source": [
     "import warnings\n",
     "\n",
@@ -116,7 +98,18 @@
   {
    "cell_type": "markdown",
    "id": "a0d335cb",
-   "metadata": {},
+   "metadata": {
+    "papermill": {
+     "duration": 0.005842,
+     "end_time": "2026-04-23T04:01:26.616230+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T04:01:26.610388+00:00",
+     "status": "completed"
+    },
+    "tags": [
+     "lang-ja"
+    ]
+   },
    "source": [
     "## 切り出し (Crop) と ASD 計算\n",
     "\n",
@@ -125,24 +118,25 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
-   "id": "9122edb4",
+   "execution_count": 3,
+   "id": "47993ba5",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T13:14:12.191103Z",
-     "iopub.status.busy": "2026-04-05T13:14:12.190597Z",
-     "iopub.status.idle": "2026-04-05T13:14:12.264118Z",
-     "shell.execute_reply": "2026-04-05T13:14:12.263499Z"
-    }
+     "iopub.execute_input": "2026-04-23T04:01:26.623811Z",
+     "iopub.status.busy": "2026-04-23T04:01:26.623436Z",
+     "iopub.status.idle": "2026-04-23T04:01:26.959169Z",
+     "shell.execute_reply": "2026-04-23T04:01:26.955154Z"
+    },
+    "papermill": {
+     "duration": 0.341548,
+     "end_time": "2026-04-23T04:01:26.960777+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T04:01:26.619229+00:00",
+     "status": "completed"
+    },
+    "tags": []
    },
    "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "  warn(\n"
-     ]
-    },
     {
      "data": {
       "text/html": [
@@ -151,9 +145,11 @@
        "    .dataframe tbody tr th:only-of-type {\n",
        "        vertical-align: middle;\n",
        "    }\n",
+       "\n",
        "    .dataframe tbody tr th {\n",
        "        vertical-align: top;\n",
        "    }\n",
+       "\n",
        "    .dataframe thead th {\n",
        "        text-align: right;\n",
        "    }\n",
@@ -180,49 +176,50 @@
        "      <th>1</th>\n",
        "      <td>(16, 32)</td>\n",
        "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
-       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>2</th>\n",
        "      <td>(32, 48)</td>\n",
        "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
-       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>3</th>\n",
        "      <td>(48, 64)</td>\n",
        "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
-       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
        "    </tr>\n",
        "  </tbody>\n",
        "</table>\n",
-       "</div>\n"
+       "</div>"
       ],
       "text/plain": [
        "       span                         raw                     cropped  \\\n",
        "0   (0, 16)  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
-       "1  (16, 32)  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
-       "2  (32, 48)  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
-       "3  (48, 64)  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
+       "1  (16, 32)  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "2  (32, 48)  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "3  (48, 64)  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "\n",
        "                          asd  \n",
        "0  <frequencyseries: 65 bins>  \n",
-       "1   <frequencyseries: 0 bins>  \n",
-       "2   <frequencyseries: 0 bins>  \n",
-       "3   <frequencyseries: 0 bins>  \n"
+       "1  <frequencyseries: 65 bins>  \n",
+       "2  <frequencyseries: 65 bins>  \n",
+       "3  <frequencyseries: 65 bins>  "
       ]
      },
-     "execution_count": 2,
+     "execution_count": 3,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "# 各セグメントで運転状態がそろうように時間窓を切り出し、状態の異なる区間を混ぜないようにします。\n",
+    "# Cut the data to each segment span so every ASD is computed from intervals that share the same operating state.\n",
     "st_cropped = st.crop(\"raw\", out_col=\"cropped\")\n",
-    "# セグメントごとに ASD を出すことで、グリッチや状態遷移を平均でにじませずに定常雑音床を比較できます。\n",
+    "# Estimate ASD per segment to compare stationary noise floors without smearing glitches or state changes across the whole run.\n",
     "st_asd = st_cropped.asd(\"cropped\", out_col=\"asd\", fftlength=2.0)\n",
     "st_asd.display()\n"
    ]
@@ -230,7 +227,18 @@
   {
    "cell_type": "markdown",
    "id": "bc55025f",
-   "metadata": {},
+   "metadata": {
+    "papermill": {
+     "duration": 0.012219,
+     "end_time": "2026-04-23T04:01:26.992742+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T04:01:26.980523+00:00",
+     "status": "completed"
+    },
+    "tags": [
+     "lang-ja"
+    ]
+   },
    "source": [
     "## 解析結果の集計\n",
     "\n",
@@ -239,15 +247,23 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
-   "id": "eeaf89b3",
+   "execution_count": 4,
+   "id": "6bc3f0a4",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T13:14:12.265735Z",
-     "iopub.status.busy": "2026-04-05T13:14:12.265618Z",
-     "iopub.status.idle": "2026-04-05T13:14:12.272429Z",
-     "shell.execute_reply": "2026-04-05T13:14:12.271683Z"
-    }
+     "iopub.execute_input": "2026-04-23T04:01:27.007333Z",
+     "iopub.status.busy": "2026-04-23T04:01:27.007139Z",
+     "iopub.status.idle": "2026-04-23T04:01:27.043512Z",
+     "shell.execute_reply": "2026-04-23T04:01:27.039242Z"
+    },
+    "papermill": {
+     "duration": 0.043244,
+     "end_time": "2026-04-23T04:01:27.045470+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T04:01:27.002226+00:00",
+     "status": "completed"
+    },
+    "tags": []
    },
    "outputs": [
     {
@@ -258,9 +274,11 @@
        "    .dataframe tbody tr th:only-of-type {\n",
        "        vertical-align: middle;\n",
        "    }\n",
+       "\n",
        "    .dataframe tbody tr th {\n",
        "        vertical-align: top;\n",
        "    }\n",
+       "\n",
        "    .dataframe thead th {\n",
        "        text-align: right;\n",
        "    }\n",
@@ -280,7 +298,7 @@
        "    <tr>\n",
        "      <th>0</th>\n",
        "      <td>(0, 16)</td>\n",
-       "      <td>1.369095</td>\n",
+       "      <td>1.353930</td>\n",
        "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
        "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
        "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
@@ -288,52 +306,53 @@
        "    <tr>\n",
        "      <th>1</th>\n",
        "      <td>(16, 32)</td>\n",
-       "      <td>0.000000</td>\n",
+       "      <td>1.385504</td>\n",
        "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
-       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>2</th>\n",
        "      <td>(32, 48)</td>\n",
-       "      <td>0.000000</td>\n",
+       "      <td>1.389379</td>\n",
        "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
-       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
        "    </tr>\n",
        "    <tr>\n",
        "      <th>3</th>\n",
        "      <td>(48, 64)</td>\n",
-       "      <td>0.000000</td>\n",
+       "      <td>1.410503</td>\n",
        "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
-       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
-       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
        "    </tr>\n",
        "  </tbody>\n",
        "</table>\n",
-       "</div>\n"
+       "</div>"
       ],
       "text/plain": [
        "       span  band_rms                         raw                     cropped  \\\n",
-       "0   (0, 16)  1.369095  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
-       "1  (16, 32)  0.000000  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
-       "2  (32, 48)  0.000000  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
-       "3  (48, 64)  0.000000  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
+       "0   (0, 16)  1.353930  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "1  (16, 32)  1.385504  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "2  (32, 48)  1.389379  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "3  (48, 64)  1.410503  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "\n",
        "                          asd  \n",
        "0  <frequencyseries: 65 bins>  \n",
-       "1   <frequencyseries: 0 bins>  \n",
-       "2   <frequencyseries: 0 bins>  \n",
-       "3   <frequencyseries: 0 bins>  \n"
+       "1  <frequencyseries: 65 bins>  \n",
+       "2  <frequencyseries: 65 bins>  \n",
+       "3  <frequencyseries: 65 bins>  "
       ]
      },
-     "execution_count": 3,
+     "execution_count": 4,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
     "def calc_rms(fs):\n",
-    "    return np.sqrt(np.sum(fs.value**2))  # セグメント間の帯域強度を見比べるための簡易な指標です。\n",
+    "    return np.sqrt(np.sum(fs.value**2))  # Simplified band-integrated amplitude proxy for comparing segment-to-segment loudness.\n",
     "\n",
     "st_asd.map(\"asd\", calc_rms, out_col=\"band_rms\", inplace=True)\n",
     "st_asd.display()\n"
@@ -351,7 +370,19 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.12.12"
+   "version": "3.11.15"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 10.206778,
+   "end_time": "2026-04-23T04:01:28.375063+00:00",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "docs/web/en/user_guide/tutorials/segment_asd_pipeline.ipynb",
+   "output_path": "docs/web/en/user_guide/tutorials/segment_asd_pipeline.executed.ipynb",
+   "parameters": {},
+   "start_time": "2026-04-23T04:01:18.168285+00:00",
+   "version": "2.7.0"
   }
  },
  "nbformat": 4,

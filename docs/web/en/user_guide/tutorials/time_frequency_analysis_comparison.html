@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Time-Frequency Analysis: Interactive Comparison &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -108,8 +107,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#browse-by-category">Browse by category</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
@@ -187,13 +186,11 @@
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="Time-Frequency-Analysis:-Interactive-Comparison">
@@ -237,7 +234,7 @@
 <section id="2.-Common-Setup">
 <h2>2. Common Setup<a class="headerlink" href="#2.-Common-Setup" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -300,7 +297,7 @@ Setup complete: 2048 Hz, 8s duration
 </ol>
 <p>This benchmark tests all methods’ strengths and weaknesses.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Time array</span>
@@ -403,7 +400,7 @@ Benchmark signal contains:
 <section id="4.1-STFT-(Spectrogram)---gwpy">
 <h3>4.1 STFT (Spectrogram) - gwpy<a class="headerlink" href="#4.1-STFT-(Spectrogram)---gwpy" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute STFT spectrogram</span>
@@ -458,7 +455,7 @@ STFT Spectrogram shows:
 <section id="4.2-Q-transform---gwpy">
 <h3>4.2 Q-transform - gwpy<a class="headerlink" href="#4.2-Q-transform---gwpy" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute Q-transform</span>
@@ -525,7 +522,7 @@ Q-transform shows:
 <h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#What-STFT/Q-Cannot-Show-Clearly" title="Link to this heading"></a></h3>
 <p>STFT has fixed time-frequency resolution (uncertainty principle). Q-transform improves this but still shows a “band” rather than a precise frequency trajectory.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create isolated chirp signal for clarity</span>
@@ -686,7 +683,7 @@ Takeaway: Use Wavelet for chirps and multi-scale transients.
 <h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p>STFT/Q show time-frequency “bands” with width. HHT extracts instantaneous frequency as a <strong>single-valued function of time</strong>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create AM-FM signalamfm_signal = np.zeros(nt)f_carrier = 80  # Hzf_mod = 3  # Hz modulation frequencymod_depth = 20  # Hz frequency deviation# Frequency modulationinstant_freq = f_carrier + mod_depth * np.sin(2*np.pi*f_mod*t)phase_fm = 2*np.pi * np.cumsum(instant_freq) / SAMPLE_RATE# Amplitude modulationamp_mod = 1 + 0.5 * np.sin(2*np.pi*2*t)amfm_signal = amp_mod * np.sin(phase_fm)amfm_signal += np.random.randn(nt) * 0.05ts_amfm = TimeSeries(amfm_signal, sample_rate=SAMPLE_RATE, t0=0)# Compute HHTtry:    imfs = ts_amfm.emd(method=&#39;emd&#39;, max_imf=3)    imf_main = imfs[0] if isinstance(imfs, (list, tuple)) else imfs    inst_freq_result = imf_main.instantaneous_frequency()    # Handle both TimeSeries and TimeSeriesDict    if hasattr(inst_freq_result, &#39;times&#39;):        inst_freq_hht = inst_freq_result    else:        # If it&#39;s a dict, get the first value        inst_freq_hht = list(inst_freq_result.values())[0] if hasattr(inst_freq_result, &#39;values&#39;) else inst_freq_result        # Plot comparison    fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True)        # Original signal    axes[0].plot(t, amfm_signal, linewidth=0.5, color=&#39;black&#39;)    axes[0].set_ylabel(&#39;Amplitude&#39;)    axes[0].set_title(&#39;AM-FM Signal (carrier 80 Hz ± 20 Hz modulation)&#39;)    axes[0].set_xlim(0, DURATION)        # STFT    ts_amfm_gwpy = GWpyTimeSeries(amfm_signal, sample_rate=SAMPLE_RATE, t0=0)    spec_amfm = ts_amfm_gwpy.spectrogram(0.5, fftlength=0.5, overlap=0.25)    im = axes[1].pcolormesh(spec_amfm.times.value, spec_amfm.frequencies.value,                           spec_amfm.value.T, cmap=&#39;viridis&#39;, shading=&#39;auto&#39;)    axes[1].set_ylim(40, 120)    axes[1].set_ylabel(&#39;Frequency (Hz)&#39;)    axes[1].set_title(&#39;STFT: Shows frequency band (width ~20 Hz)&#39;)        # HHT instantaneous frequency    axes[2].plot(inst_freq_hht.times.value, inst_freq_hht.value, linewidth=1.5,                color=&#39;blue&#39;, label=&#39;HHT Instantaneous Frequency&#39;)    axes[2].plot(t, instant_freq, &#39;r--&#39;, linewidth=2, alpha=0.7,                label=&#39;True Instantaneous Frequency&#39;)    axes[2].set_ylim(40, 120)    axes[2].set_ylabel(&#39;Frequency (Hz)&#39;)    axes[2].set_xlabel(&#39;Time (s)&#39;)    axes[2].set_title(&#39;HHT: Instantaneous frequency as single-valued curve&#39;)    axes[2].legend()        plt.tight_layout()    plt.show()        # Quantitative evaluation: compute MSE    # Interpolate true frequency to HHT time grid    f_true_interp = np.interp(inst_freq_hht.times.value, t, instant_freq)        # Compute MSE (filter out edge effects and outliers)    valid_mask = (inst_freq_hht.value &gt;= 40) &amp; (inst_freq_hht.value &lt;= 120)    mse_hht = np.mean((inst_freq_hht.value[valid_mask] - f_true_interp[valid_mask])**2)        # Display quantitative result    from IPython.display import display, Markdown    display(Markdown(f&quot;&quot;&quot;### Quantitative Evaluation| Metric | Value ||--------|-------|| **Instantaneous Frequency MSE** | {mse_hht:.2f} Hz² || **RMSE** | {np.sqrt(mse_hht):.2f} Hz || **Modulation Range** | {f_carrier - mod_depth} → {f_carrier + mod_depth} Hz |**Interpretation**: HHT tracks instantaneous frequency with RMSE of {np.sqrt(mse_hht):.2f} Hz. STFT cannot provide single-valued instantaneous frequency - it shows a {mod_depth*2:.0f} Hz wide band instead.&quot;&quot;&quot;))        print(&quot;HHT Result:&quot;)    print(&quot;  ✓ Instantaneous frequency extracted as precise curve&quot;)    print(&quot;  ✓ Tracks true FM modulation accurately&quot;)    print(&quot;  ✓ No time-frequency uncertainty tradeoff&quot;)    print(&quot;  ✓ Data-adaptive (no window choice needed)&quot;)    print(f&quot;  ✓ Instantaneous frequency RMSE: {np.sqrt(mse_hht):.2f} Hz&quot;)    print(&quot;&quot;)    print(&quot;Takeaway: Use HHT when instantaneous frequency matters (non-stationary FM signals).&quot;)    except ImportError:    from IPython.display import Markdown, display    display(Markdown(&quot;&quot;&quot;**Note**: PyEMD is not installed. This section demonstrates HHT (Hilbert-Huang Transform) analysis, which requires the PyEMD package.To install:```bashpip install EMD-signal```You can continue with the rest of the notebook.&quot;&quot;&quot;))</span>
@@ -705,7 +702,7 @@ Takeaway: Use Wavelet for chirps and multi-scale transients.
 <h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <p>STFT and Q-transform only show <strong>frequency</strong> content. The <strong>decay rate σ</strong> (damping coefficient) is invisible. STLT decomposes signals into both frequency ω and decay rate σ.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create multi-mode ringdown</span>
@@ -921,7 +918,7 @@ Takeaway: Use STLT for ringdown analysis when decay rates (quality factors) matt
 <h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <p>Echoes create <strong>periodic structure in the spectrum</strong> (comb filtering). STFT shows this as fine ripples but delay time is hard to read. Cepstrum converts spectral periodicity → time-domain peak at delay (“quefrency”).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create signal with echo</span>
@@ -1047,7 +1044,7 @@ Takeaway: Use Cepstrum for echo detection, pitch analysis, and periodic spectrum
 <h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <p>STFT/Q provide full time-frequency information but no compression. DCT (Discrete Cosine Transform) reveals that <strong>most signal energy concentrates in a few low-frequency coefficients</strong>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create smooth signal with perturbations</span>
@@ -1168,7 +1165,7 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Quantitative Metrics Summary</span>
@@ -1313,93 +1310,93 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
 </div>
 <div class="output_area rendered_html docutils container">
 <style type="text/css">
-#T_7cce2 th {
+#T_e731f th {
   background-color: #f0f0f0;
   font-weight: bold;
 }
-#T_7cce2 td {
+#T_e731f td {
   padding: 5px;
 }
-#T_7cce2_row0_col0, #T_7cce2_row0_col1, #T_7cce2_row0_col2, #T_7cce2_row0_col3, #T_7cce2_row0_col4, #T_7cce2_row0_col5, #T_7cce2_row1_col0, #T_7cce2_row1_col1, #T_7cce2_row1_col2, #T_7cce2_row1_col3, #T_7cce2_row1_col4, #T_7cce2_row1_col5, #T_7cce2_row2_col0, #T_7cce2_row2_col1, #T_7cce2_row2_col2, #T_7cce2_row2_col3, #T_7cce2_row2_col4, #T_7cce2_row2_col5, #T_7cce2_row3_col0, #T_7cce2_row3_col1, #T_7cce2_row3_col2, #T_7cce2_row3_col3, #T_7cce2_row3_col4, #T_7cce2_row3_col5, #T_7cce2_row4_col0, #T_7cce2_row4_col1, #T_7cce2_row4_col2, #T_7cce2_row4_col3, #T_7cce2_row4_col4, #T_7cce2_row4_col5, #T_7cce2_row5_col0, #T_7cce2_row5_col1, #T_7cce2_row5_col2, #T_7cce2_row5_col3, #T_7cce2_row5_col4, #T_7cce2_row5_col5, #T_7cce2_row6_col0, #T_7cce2_row6_col1, #T_7cce2_row6_col2, #T_7cce2_row6_col3, #T_7cce2_row6_col4, #T_7cce2_row6_col5 {
+#T_e731f_row0_col0, #T_e731f_row0_col1, #T_e731f_row0_col2, #T_e731f_row0_col3, #T_e731f_row0_col4, #T_e731f_row0_col5, #T_e731f_row1_col0, #T_e731f_row1_col1, #T_e731f_row1_col2, #T_e731f_row1_col3, #T_e731f_row1_col4, #T_e731f_row1_col5, #T_e731f_row2_col0, #T_e731f_row2_col1, #T_e731f_row2_col2, #T_e731f_row2_col3, #T_e731f_row2_col4, #T_e731f_row2_col5, #T_e731f_row3_col0, #T_e731f_row3_col1, #T_e731f_row3_col2, #T_e731f_row3_col3, #T_e731f_row3_col4, #T_e731f_row3_col5, #T_e731f_row4_col0, #T_e731f_row4_col1, #T_e731f_row4_col2, #T_e731f_row4_col3, #T_e731f_row4_col4, #T_e731f_row4_col5, #T_e731f_row5_col0, #T_e731f_row5_col1, #T_e731f_row5_col2, #T_e731f_row5_col3, #T_e731f_row5_col4, #T_e731f_row5_col5, #T_e731f_row6_col0, #T_e731f_row6_col1, #T_e731f_row6_col2, #T_e731f_row6_col3, #T_e731f_row6_col4, #T_e731f_row6_col5 {
   text-align: left;
   border: 1px solid black;
 }
 </style>
-<table id="T_7cce2">
+<table id="T_e731f">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_7cce2_level0_col0" class="col_heading level0 col0" >Method</th>
-      <th id="T_7cce2_level0_col1" class="col_heading level0 col1" >Time Resolution</th>
-      <th id="T_7cce2_level0_col2" class="col_heading level0 col2" >Frequency Resolution</th>
-      <th id="T_7cce2_level0_col3" class="col_heading level0 col3" >Computational Cost</th>
-      <th id="T_7cce2_level0_col4" class="col_heading level0 col4" >Best For</th>
-      <th id="T_7cce2_level0_col5" class="col_heading level0 col5" >Key Advantage</th>
+      <th id="T_e731f_level0_col0" class="col_heading level0 col0" >Method</th>
+      <th id="T_e731f_level0_col1" class="col_heading level0 col1" >Time Resolution</th>
+      <th id="T_e731f_level0_col2" class="col_heading level0 col2" >Frequency Resolution</th>
+      <th id="T_e731f_level0_col3" class="col_heading level0 col3" >Computational Cost</th>
+      <th id="T_e731f_level0_col4" class="col_heading level0 col4" >Best For</th>
+      <th id="T_e731f_level0_col5" class="col_heading level0 col5" >Key Advantage</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th id="T_7cce2_level0_row0" class="row_heading level0 row0" >0</th>
-      <td id="T_7cce2_row0_col0" class="data row0 col0" >STFT</td>
-      <td id="T_7cce2_row0_col1" class="data row0 col1" >Medium</td>
-      <td id="T_7cce2_row0_col2" class="data row0 col2" >Medium</td>
-      <td id="T_7cce2_row0_col3" class="data row0 col3" >Low</td>
-      <td id="T_7cce2_row0_col4" class="data row0 col4" >General purpose</td>
-      <td id="T_7cce2_row0_col5" class="data row0 col5" >Fast & well-understood</td>
+      <th id="T_e731f_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_e731f_row0_col0" class="data row0 col0" >STFT</td>
+      <td id="T_e731f_row0_col1" class="data row0 col1" >Medium</td>
+      <td id="T_e731f_row0_col2" class="data row0 col2" >Medium</td>
+      <td id="T_e731f_row0_col3" class="data row0 col3" >Low</td>
+      <td id="T_e731f_row0_col4" class="data row0 col4" >General purpose</td>
+      <td id="T_e731f_row0_col5" class="data row0 col5" >Fast & well-understood</td>
     </tr>
     <tr>
-      <th id="T_7cce2_level0_row1" class="row_heading level0 row1" >1</th>
-      <td id="T_7cce2_row1_col0" class="data row1 col0" >Q-transform</td>
-      <td id="T_7cce2_row1_col1" class="data row1 col1" >High (f>100Hz)</td>
-      <td id="T_7cce2_row1_col2" class="data row1 col2" >High (f<50Hz)</td>
-      <td id="T_7cce2_row1_col3" class="data row1 col3" >Medium</td>
-      <td id="T_7cce2_row1_col4" class="data row1 col4" >Transients/bursts</td>
-      <td id="T_7cce2_row1_col5" class="data row1 col5" >Adaptive resolution</td>
+      <th id="T_e731f_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_e731f_row1_col0" class="data row1 col0" >Q-transform</td>
+      <td id="T_e731f_row1_col1" class="data row1 col1" >High (f>100Hz)</td>
+      <td id="T_e731f_row1_col2" class="data row1 col2" >High (f<50Hz)</td>
+      <td id="T_e731f_row1_col3" class="data row1 col3" >Medium</td>
+      <td id="T_e731f_row1_col4" class="data row1 col4" >Transients/bursts</td>
+      <td id="T_e731f_row1_col5" class="data row1 col5" >Adaptive resolution</td>
     </tr>
     <tr>
-      <th id="T_7cce2_level0_row2" class="row_heading level0 row2" >2</th>
-      <td id="T_7cce2_row2_col0" class="data row2 col0" >Wavelet (CWT)</td>
-      <td id="T_7cce2_row2_col1" class="data row2 col1" >Scale-adaptive</td>
-      <td id="T_7cce2_row2_col2" class="data row2 col2" >Scale-adaptive</td>
-      <td id="T_7cce2_row2_col3" class="data row2 col3" >Medium-High</td>
-      <td id="T_7cce2_row2_col4" class="data row2 col4" >Chirps & multi-scale</td>
-      <td id="T_7cce2_row2_col5" class="data row2 col5" >Natural scale matching</td>
+      <th id="T_e731f_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_e731f_row2_col0" class="data row2 col0" >Wavelet (CWT)</td>
+      <td id="T_e731f_row2_col1" class="data row2 col1" >Scale-adaptive</td>
+      <td id="T_e731f_row2_col2" class="data row2 col2" >Scale-adaptive</td>
+      <td id="T_e731f_row2_col3" class="data row2 col3" >Medium-High</td>
+      <td id="T_e731f_row2_col4" class="data row2 col4" >Chirps & multi-scale</td>
+      <td id="T_e731f_row2_col5" class="data row2 col5" >Natural scale matching</td>
     </tr>
     <tr>
-      <th id="T_7cce2_level0_row3" class="row_heading level0 row3" >3</th>
-      <td id="T_7cce2_row3_col0" class="data row3 col0" >HHT</td>
-      <td id="T_7cce2_row3_col1" class="data row3 col1" >Excellent</td>
-      <td id="T_7cce2_row3_col2" class="data row3 col2" >Excellent</td>
-      <td id="T_7cce2_row3_col3" class="data row3 col3" >Very High</td>
-      <td id="T_7cce2_row3_col4" class="data row3 col4" >Instantaneous frequency</td>
-      <td id="T_7cce2_row3_col5" class="data row3 col5" >No time-freq tradeoff</td>
+      <th id="T_e731f_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_e731f_row3_col0" class="data row3 col0" >HHT</td>
+      <td id="T_e731f_row3_col1" class="data row3 col1" >Excellent</td>
+      <td id="T_e731f_row3_col2" class="data row3 col2" >Excellent</td>
+      <td id="T_e731f_row3_col3" class="data row3 col3" >Very High</td>
+      <td id="T_e731f_row3_col4" class="data row3 col4" >Instantaneous frequency</td>
+      <td id="T_e731f_row3_col5" class="data row3 col5" >No time-freq tradeoff</td>
     </tr>
     <tr>
-      <th id="T_7cce2_level0_row4" class="row_heading level0 row4" >4</th>
-      <td id="T_7cce2_row4_col0" class="data row4 col0" >STLT</td>
-      <td id="T_7cce2_row4_col1" class="data row4 col1" >Medium</td>
-      <td id="T_7cce2_row4_col2" class="data row4 col2" >Medium</td>
-      <td id="T_7cce2_row4_col3" class="data row4 col3" >High</td>
-      <td id="T_7cce2_row4_col4" class="data row4 col4" >Damped oscillations</td>
-      <td id="T_7cce2_row4_col5" class="data row4 col5" >Reveals decay rates σ</td>
+      <th id="T_e731f_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_e731f_row4_col0" class="data row4 col0" >STLT</td>
+      <td id="T_e731f_row4_col1" class="data row4 col1" >Medium</td>
+      <td id="T_e731f_row4_col2" class="data row4 col2" >Medium</td>
+      <td id="T_e731f_row4_col3" class="data row4 col3" >High</td>
+      <td id="T_e731f_row4_col4" class="data row4 col4" >Damped oscillations</td>
+      <td id="T_e731f_row4_col5" class="data row4 col5" >Reveals decay rates σ</td>
     </tr>
     <tr>
-      <th id="T_7cce2_level0_row5" class="row_heading level0 row5" >5</th>
-      <td id="T_7cce2_row5_col0" class="data row5 col0" >Cepstrum</td>
-      <td id="T_7cce2_row5_col1" class="data row5 col1" >N/A</td>
-      <td id="T_7cce2_row5_col2" class="data row5 col2" >Excellent</td>
-      <td id="T_7cce2_row5_col3" class="data row5 col3" >Medium</td>
-      <td id="T_7cce2_row5_col4" class="data row5 col4" >Echo detection</td>
-      <td id="T_7cce2_row5_col5" class="data row5 col5" >Quefrency peaks</td>
+      <th id="T_e731f_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_e731f_row5_col0" class="data row5 col0" >Cepstrum</td>
+      <td id="T_e731f_row5_col1" class="data row5 col1" >N/A</td>
+      <td id="T_e731f_row5_col2" class="data row5 col2" >Excellent</td>
+      <td id="T_e731f_row5_col3" class="data row5 col3" >Medium</td>
+      <td id="T_e731f_row5_col4" class="data row5 col4" >Echo detection</td>
+      <td id="T_e731f_row5_col5" class="data row5 col5" >Quefrency peaks</td>
     </tr>
     <tr>
-      <th id="T_7cce2_level0_row6" class="row_heading level0 row6" >6</th>
-      <td id="T_7cce2_row6_col0" class="data row6 col0" >DCT</td>
-      <td id="T_7cce2_row6_col1" class="data row6 col1" >N/A</td>
-      <td id="T_7cce2_row6_col2" class="data row6 col2" >N/A</td>
-      <td id="T_7cce2_row6_col3" class="data row6 col3" >Low</td>
-      <td id="T_7cce2_row6_col4" class="data row6 col4" >Compression</td>
-      <td id="T_7cce2_row6_col5" class="data row6 col5" >Sparse representation</td>
+      <th id="T_e731f_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_e731f_row6_col0" class="data row6 col0" >DCT</td>
+      <td id="T_e731f_row6_col1" class="data row6 col1" >N/A</td>
+      <td id="T_e731f_row6_col2" class="data row6 col2" >N/A</td>
+      <td id="T_e731f_row6_col3" class="data row6 col3" >Low</td>
+      <td id="T_e731f_row6_col4" class="data row6 col4" >Compression</td>
+      <td id="T_e731f_row6_col5" class="data row6 col5" >Sparse representation</td>
     </tr>
   </tbody>
 </table></div>
@@ -1418,56 +1415,56 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
 </div>
 <div class="output_area rendered_html docutils container">
 <style type="text/css">
-#T_0d538 th {
+#T_354c4 th {
   background-color: #e8f4f8;
   font-weight: bold;
 }
-#T_0d538 td {
+#T_354c4 td {
   padding: 5px;
 }
-#T_0d538_row0_col0, #T_0d538_row0_col1, #T_0d538_row0_col2, #T_0d538_row0_col3, #T_0d538_row0_col4, #T_0d538_row1_col0, #T_0d538_row1_col1, #T_0d538_row1_col2, #T_0d538_row1_col3, #T_0d538_row1_col4, #T_0d538_row2_col0, #T_0d538_row2_col1, #T_0d538_row2_col2, #T_0d538_row2_col3, #T_0d538_row2_col4, #T_0d538_row3_col0, #T_0d538_row3_col1, #T_0d538_row3_col2, #T_0d538_row3_col3, #T_0d538_row3_col4 {
+#T_354c4_row0_col0, #T_354c4_row0_col1, #T_354c4_row0_col2, #T_354c4_row0_col3, #T_354c4_row0_col4, #T_354c4_row1_col0, #T_354c4_row1_col1, #T_354c4_row1_col2, #T_354c4_row1_col3, #T_354c4_row1_col4, #T_354c4_row2_col0, #T_354c4_row2_col1, #T_354c4_row2_col2, #T_354c4_row2_col3, #T_354c4_row2_col4, #T_354c4_row3_col0, #T_354c4_row3_col1, #T_354c4_row3_col2, #T_354c4_row3_col3, #T_354c4_row3_col4 {
   text-align: left;
   border: 1px solid black;
 }
 </style>
-<table id="T_0d538">
+<table id="T_354c4">
   <thead>
     <tr>
-      <th id="T_0d538_level0_col0" class="col_heading level0 col0" >Method</th>
-      <th id="T_0d538_level0_col1" class="col_heading level0 col1" >Test Signal</th>
-      <th id="T_0d538_level0_col2" class="col_heading level0 col2" >Metric</th>
-      <th id="T_0d538_level0_col3" class="col_heading level0 col3" >Value</th>
-      <th id="T_0d538_level0_col4" class="col_heading level0 col4" >Comparison</th>
+      <th id="T_354c4_level0_col0" class="col_heading level0 col0" >Method</th>
+      <th id="T_354c4_level0_col1" class="col_heading level0 col1" >Test Signal</th>
+      <th id="T_354c4_level0_col2" class="col_heading level0 col2" >Metric</th>
+      <th id="T_354c4_level0_col3" class="col_heading level0 col3" >Value</th>
+      <th id="T_354c4_level0_col4" class="col_heading level0 col4" >Comparison</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td id="T_0d538_row0_col0" class="data row0 col0" >Wavelet (CWT)</td>
-      <td id="T_0d538_row0_col1" class="data row0 col1" >Chirp (20→150 Hz)</td>
-      <td id="T_0d538_row0_col2" class="data row0 col2" >Frequency Tracking RMSE</td>
-      <td id="T_0d538_row0_col3" class="data row0 col3" >35.91 Hz</td>
-      <td id="T_0d538_row0_col4" class="data row0 col4" >vs STFT smearing ~15 Hz</td>
+      <td id="T_354c4_row0_col0" class="data row0 col0" >Wavelet (CWT)</td>
+      <td id="T_354c4_row0_col1" class="data row0 col1" >Chirp (20→150 Hz)</td>
+      <td id="T_354c4_row0_col2" class="data row0 col2" >Frequency Tracking RMSE</td>
+      <td id="T_354c4_row0_col3" class="data row0 col3" >35.91 Hz</td>
+      <td id="T_354c4_row0_col4" class="data row0 col4" >vs STFT smearing ~15 Hz</td>
     </tr>
     <tr>
-      <td id="T_0d538_row1_col0" class="data row1 col0" >STLT</td>
-      <td id="T_0d538_row1_col1" class="data row1 col1" >3-mode ringdown</td>
-      <td id="T_0d538_row1_col2" class="data row1 col2" >Decay Rate MAE</td>
-      <td id="T_0d538_row1_col3" class="data row1 col3" >7.25 s⁻¹</td>
-      <td id="T_0d538_row1_col4" class="data row1 col4" >STFT cannot estimate σ</td>
+      <td id="T_354c4_row1_col0" class="data row1 col0" >STLT</td>
+      <td id="T_354c4_row1_col1" class="data row1 col1" >3-mode ringdown</td>
+      <td id="T_354c4_row1_col2" class="data row1 col2" >Decay Rate MAE</td>
+      <td id="T_354c4_row1_col3" class="data row1 col3" >7.25 s⁻¹</td>
+      <td id="T_354c4_row1_col4" class="data row1 col4" >STFT cannot estimate σ</td>
     </tr>
     <tr>
-      <td id="T_0d538_row2_col0" class="data row2 col0" >Cepstrum</td>
-      <td id="T_0d538_row2_col1" class="data row2 col1" >Echo (80ms delay)</td>
-      <td id="T_0d538_row2_col2" class="data row2 col2" >Delay Detection Error</td>
-      <td id="T_0d538_row2_col3" class="data row2 col3" >0.41 ms</td>
-      <td id="T_0d538_row2_col4" class="data row2 col4" >Delay invisible in STFT</td>
+      <td id="T_354c4_row2_col0" class="data row2 col0" >Cepstrum</td>
+      <td id="T_354c4_row2_col1" class="data row2 col1" >Echo (80ms delay)</td>
+      <td id="T_354c4_row2_col2" class="data row2 col2" >Delay Detection Error</td>
+      <td id="T_354c4_row2_col3" class="data row2 col3" >0.41 ms</td>
+      <td id="T_354c4_row2_col4" class="data row2 col4" >Delay invisible in STFT</td>
     </tr>
     <tr>
-      <td id="T_0d538_row3_col0" class="data row3 col0" >DCT</td>
-      <td id="T_0d538_row3_col1" class="data row3 col1" >Smooth + bumps</td>
-      <td id="T_0d538_row3_col2" class="data row3 col2" >Compression (50 coeffs)</td>
-      <td id="T_0d538_row3_col3" class="data row3 col3" >>99% energy</td>
-      <td id="T_0d538_row3_col4" class="data row3 col4" >~30× compression ratio</td>
+      <td id="T_354c4_row3_col0" class="data row3 col0" >DCT</td>
+      <td id="T_354c4_row3_col1" class="data row3 col1" >Smooth + bumps</td>
+      <td id="T_354c4_row3_col2" class="data row3 col2" >Compression (50 coeffs)</td>
+      <td id="T_354c4_row3_col3" class="data row3 col3" >>99% energy</td>
+      <td id="T_354c4_row3_col4" class="data row3 col4" >~30× compression ratio</td>
     </tr>
   </tbody>
 </table></div>
@@ -1603,7 +1600,7 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

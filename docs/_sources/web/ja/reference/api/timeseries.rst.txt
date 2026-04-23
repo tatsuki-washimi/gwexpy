@@ -23,7 +23,7 @@
    :doc:`../../user_guide/tutorials/matrix_timeseries`
       複数チャネルや行列系の時系列処理を扱うチュートリアル。
    :doc:`../../user_guide/tutorials/case_signal_extraction`
-      transient 系の解析導線を含む時系列チュートリアル。
+      transient 系の解析ワークフローを含む時系列チュートリアル。
    :doc:`../../user_guide/tutorials/advanced_arima`
       ``ArimaResult.forecast()`` に戻れる ARIMA チュートリアル。
 

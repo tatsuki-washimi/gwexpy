@@ -6,13 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy で notebook、direct I/O、アルゴリズム監査、coverage がどのように公開可視化されているかと、その読み方を整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-20T06:43:44+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>検証と品質の見方 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../_static/icon.svg"/>
@@ -240,7 +239,7 @@
 </tr>
 <tr class="row-odd"><td><p>アルゴリズム監査</p></td>
 <td><p><a class="reference internal" href="validated_algorithms.html"><span class="std std-doc">検証済みアルゴリズム</span></a></p></td>
-<td><p>数値許容誤差、前提条件、監査証跡への導線</p></td>
+<td><p>数値許容誤差、前提条件、監査証跡へのリンク</p></td>
 </tr>
 <tr class="row-even"><td><p>リポジトリ全体の coverage</p></td>
 <td><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy">README の codecov バッジ</a> と、そのリンク先である <a class="reference external" href="https://codecov.io/gh/tatsuki-washimi/gwexpy">Codecov ダッシュボード</a></p></td>
@@ -259,7 +258,7 @@
 <li><p><strong>Heavy</strong> notebook は CI 対象ではありますが、全セル実行を常に保証するものではなく、構造確認や収集確認に寄せて扱われます。</p></li>
 <li><p><strong>Display-only</strong> notebook は整えた出力の保持を重視しており、「CI で毎回全実行される notebook」と同義ではありません。</p></li>
 <li><p>公開されている <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml">docs PR workflow</a> では、docs Pull Request で変更された notebook に対して <code class="docutils literal notranslate"><span class="pre">papermill</span></code> が実行されます。</p></li>
-<li><p>公開 notebook の正本は <code class="docutils literal notranslate"><span class="pre">docs/web/{en,ja}/user_guide/tutorials/</span></code> に置かれます。</p></li>
+<li><p>公開 notebook のメインのは <code class="docutils literal notranslate"><span class="pre">docs/web/{en,ja}/user_guide/tutorials/</span></code> に置かれます。</p></li>
 </ul>
 <p>したがって、「公開 docs に notebook や例がある」こと自体は有益なシグナルですが、それだけで「あらゆる PR / Nightly / release 経路で毎回一律に実行・保証される」とまでは読まない方が安全です。</p>
 </section>
@@ -345,7 +344,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 06:43:44.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Glitch Analysis: Q-Transform and Omega-Scan &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -108,8 +107,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#browse-by-category">Browse by category</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
@@ -185,13 +184,11 @@
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_glitch_analysis.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="Glitch-Analysis:-Q-Transform-and-Omega-Scan">
@@ -215,7 +212,7 @@
 <section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -268,7 +265,7 @@
 </tbody>
 </table>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span>   <span class="o">=</span> <span class="mf">4096.0</span>    <span class="c1"># sample rate [Hz]</span>
@@ -347,7 +344,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">mismatch</span></code> — fractional tile overlap (smaller = finer grid, slower)</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Whiten the data first (Q-transform assumes white noise for SNR normalisation)</span>
@@ -370,25 +367,17 @@
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Q-scan result:
-  Peak SNR      : 4996401.0
+  Peak SNR      : 4565141.5
   Peak time     : t0 + 1.000 s
-  Peak frequency: 99.0 Hz
+  Peak frequency: 97.8 Hz
   Peak Q        : N/A
   Estimated FAR : 0.00e+00 Hz
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-
 </pre></div></div>
 </div>
 </section>
@@ -396,7 +385,7 @@ Q-scan result:
 <h2>3. Time-Frequency Map (Omega Scan Plot)<a class="headerlink" href="#3.-Time-Frequency-Map-(Omega-Scan-Plot)" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">QGram.interpolate()</span></code> resamples the irregular Q tiles onto a regular time-frequency grid suitable for imshow.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Interpolate to a regular (time, freq) grid</span>
@@ -443,7 +432,7 @@ Q-scan result:
 <h2>4. Glitch Characterisation with QTiling<a class="headerlink" href="#4.-Glitch-Characterisation-with-QTiling" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">QTiling</span></code> lets us search a specific Q plane and extract glitch parameters (peak time, frequency, duration, bandwidth) for each candidate event.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Search around each expected glitch location</span>
@@ -490,7 +479,7 @@ Q-scan result:
 <h2>5. Statistical Significance — Rayleigh Test<a class="headerlink" href="#5.-Statistical-Significance-—-Rayleigh-Test" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> measures how non-Gaussian the time-frequency energy distribution is. A p-value below 0.01 in a quiet background suggests the data segment contains a significant non-Gaussian transient.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare a clean segment vs. a glitchy segment</span>
@@ -531,6 +520,7 @@ Q-scan result:
 <div class="highlight"><pre>
 Clean segment  — Rayleigh statistic: 0.4346, p-value: 0.0000
 Glitchy segment — Rayleigh statistic: 0.9220, p-value: 0.000000
+
 Non-Gaussian transient detected (p &lt; 0.01)
 </pre></div></div>
 </div>
@@ -615,7 +605,7 @@ Non-Gaussian transient detected (p &lt; 0.01)
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

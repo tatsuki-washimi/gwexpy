@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>物理妥当性検証：単位・数値床・健全性テスト &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -32,7 +31,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="ARIMA-Based Burst Detection" href="case_arima_burst_search.html" />
+    <link rel="next" title="ARIMA を用いたバーストイベント検出" href="case_arima_burst_search.html" />
     <link rel="prev" title="バッチプロット生成" href="case_segment_analysis.html" />
    
   
@@ -182,16 +181,14 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>このページは Jupyter Notebook から生成されました。
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/case_physics_validation.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_physics_validation.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="物理妥当性検証：単位・数値床・健全性テスト">
@@ -214,7 +211,7 @@
 <section id="セットアップ">
 <h2>セットアップ<a class="headerlink" href="#セットアップ" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -238,14 +235,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.numerics.scaling</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_log_scale</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;数値床の値:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  SAFE_FLOOR        = </span><span class="si">{</span><span class="n">SAFE_FLOOR</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">  （対数演算の絶対フロア）&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  EPS_PSD           = </span><span class="si">{</span><span class="n">EPS_PSD</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">  （Welch 推定量の正則化）&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  EPS_VARIANCE      = </span><span class="si">{</span><span class="n">EPS_VARIANCE</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">  （分散・パワーのフロア）&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  EPS_COHERENCE     = </span><span class="si">{</span><span class="n">EPS_COHERENCE</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">  （コヒーレンス分母クリッピング）&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Numerical floors:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  SAFE_FLOOR        = </span><span class="si">{</span><span class="n">SAFE_FLOOR</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">  (absolute floor for log ops)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  EPS_PSD           = </span><span class="si">{</span><span class="n">EPS_PSD</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">  (Welch estimator regularisation)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  EPS_VARIANCE      = </span><span class="si">{</span><span class="n">EPS_VARIANCE</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">  (variance / power floor)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  EPS_COHERENCE     = </span><span class="si">{</span><span class="n">EPS_COHERENCE</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">  (coherence denominator clip)&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;マシンイプシロン (float64): </span><span class="si">{</span><span class="n">eps_for_dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;マシンイプシロン (float32): </span><span class="si">{</span><span class="n">eps_for_dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Machine epsilon (float64): </span><span class="si">{</span><span class="n">eps_for_dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Machine epsilon (float32): </span><span class="si">{</span><span class="n">eps_for_dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -254,14 +251,14 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-数値床の値:
-  SAFE_FLOOR        = 1.00e-50  （対数演算の絶対フロア）
-  EPS_PSD           = 2.22e-13  （Welch 推定量の正則化）
-  EPS_VARIANCE      = 2.22e-14  （分散・パワーのフロア）
-  EPS_COHERENCE     = 2.22e-15  （コヒーレンス分母クリッピング）
+Numerical floors:
+  SAFE_FLOOR        = 1.00e-50  (absolute floor for log ops)
+  EPS_PSD           = 2.22e-13  (Welch estimator regularisation)
+  EPS_VARIANCE      = 2.22e-14  (variance / power floor)
+  EPS_COHERENCE     = 2.22e-15  (coherence denominator clip)
 
-マシンイプシロン (float64): 2.22e-16
-マシンイプシロン (float32): 1.19e-07
+Machine epsilon (float64): 2.22e-16
+Machine epsilon (float32): 1.19e-07
 </pre></div></div>
 </div>
 </section>
@@ -269,26 +266,33 @@
 <h2>1. GW 歪みに特別な数値的注意が必要な理由<a class="headerlink" href="#1.-GW-歪みに特別な数値的注意が必要な理由" title="Link to this heading"></a></h2>
 <p>倍精度浮動小数点のマシンイプシロンは ~2.2×10⁻¹⁶ です。 GW 歪みは ~10⁻²³ — マシンイプシロンの 7 桁上。 これはつまり、<strong>歪みを二乗して PSD を計算し、ログ変換する操作が 適切なフロアなしに大きなビット損失を引き起こす可能性がある</strong>ことを意味します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h_typical</span> <span class="o">=</span> <span class="mf">1e-23</span>
-<span class="n">h_tiny</span>    <span class="o">=</span> <span class="mf">1e-30</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Demonstrate the problem: strain-scale PSD near machine precision</span>
+<span class="n">h_typical</span> <span class="o">=</span> <span class="mf">1e-23</span>   <span class="c1"># typical strain amplitude</span>
+<span class="n">h_tiny</span>    <span class="o">=</span> <span class="mf">1e-30</span>   <span class="c1"># below any physical source</span>
 
-<span class="n">psd_typical</span> <span class="o">=</span> <span class="n">h_typical</span><span class="o">**</span><span class="mi">2</span>
-<span class="n">psd_tiny</span>    <span class="o">=</span> <span class="n">h_tiny</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">psd_typical</span> <span class="o">=</span> <span class="n">h_typical</span><span class="o">**</span><span class="mi">2</span>   <span class="c1"># 1e-46</span>
+<span class="n">psd_tiny</span>    <span class="o">=</span> <span class="n">h_tiny</span><span class="o">**</span><span class="mi">2</span>      <span class="c1"># 1e-60</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;典型的な PSD : </span><span class="si">{</span><span class="n">psd_typical</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> Hz⁻¹&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;微小な PSD   : </span><span class="si">{</span><span class="n">psd_tiny</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> Hz⁻¹&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SAFE_FLOOR   : </span><span class="si">{</span><span class="n">SAFE_FLOOR</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Typical PSD : </span><span class="si">{</span><span class="n">psd_typical</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> Hz⁻¹&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tiny PSD    : </span><span class="si">{</span><span class="n">psd_tiny</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> Hz⁻¹&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SAFE_FLOOR  : </span><span class="si">{</span><span class="n">SAFE_FLOOR</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
 
+<span class="c1"># Safe log: floor first, then log</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">safe_log10</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="n">SAFE_FLOOR</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">floor</span><span class="p">))</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">safe_log10(psd_typical) = </span><span class="si">{</span><span class="n">safe_log10</span><span class="p">(</span><span class="n">psd_typical</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;safe_log10(psd_tiny)    = </span><span class="si">{</span><span class="n">safe_log10</span><span class="p">(</span><span class="n">psd_tiny</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">  &quot;</span>
-      <span class="sa">f</span><span class="s2">&quot;（</span><span class="si">{</span><span class="n">safe_log10</span><span class="p">(</span><span class="n">SAFE_FLOOR</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> dB にフロア）&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;safe_log10(0.0)         = </span><span class="si">{</span><span class="n">safe_log10</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">  （-inf ではない！）&quot;</span><span class="p">)</span>
+<span class="n">val_typical</span> <span class="o">=</span> <span class="n">safe_log10</span><span class="p">(</span><span class="n">psd_typical</span><span class="p">)</span>
+<span class="n">val_tiny</span>    <span class="o">=</span> <span class="n">safe_log10</span><span class="p">(</span><span class="n">psd_tiny</span><span class="p">)</span>
+<span class="n">val_zero</span>    <span class="o">=</span> <span class="n">safe_log10</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>    <span class="c1"># would be -inf without floor</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;safe_log10(psd_typical) = </span><span class="si">{</span><span class="n">val_typical</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;safe_log10(psd_tiny)    = </span><span class="si">{</span><span class="n">val_tiny</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">  &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(floored to </span><span class="si">{</span><span class="n">safe_log10</span><span class="p">(</span><span class="n">SAFE_FLOOR</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> dB)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;safe_log10(0.0)         = </span><span class="si">{</span><span class="n">val_zero</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">  (not -inf!)&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -297,20 +301,20 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-典型的な PSD : 1.00e-46 Hz⁻¹
-微小な PSD   : 1.00e-60 Hz⁻¹
-SAFE_FLOOR   : 1.00e-50
+Typical PSD : 1.00e-46 Hz⁻¹
+Tiny PSD    : 1.00e-60 Hz⁻¹
+SAFE_FLOOR  : 1.00e-50
 
 safe_log10(psd_typical) = -46.00
-safe_log10(psd_tiny)    = -50.00  （-50.0 dB にフロア）
-safe_log10(0.0)         = -50.00  （-inf ではない！）
+safe_log10(psd_tiny)    = -50.00  (floored to -50.0 dB)
+safe_log10(0.0)         = -50.00  (not -inf!)
 </pre></div></div>
 </div>
 </section>
 <section id="2.-ASD-計算における数値床">
 <h2>2. ASD 計算における数値床<a class="headerlink" href="#2.-ASD-計算における数値床" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span>   <span class="o">=</span> <span class="mf">4096.0</span>
@@ -318,6 +322,7 @@ safe_log10(0.0)         = -50.00  （-inf ではない！）
 <span class="n">N</span>    <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
 <span class="n">rng</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
+<span class="c1"># Create strain-scale data</span>
 <span class="n">freqs_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">fs</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
 <span class="n">asd_model</span> <span class="o">=</span> <span class="mf">1e-23</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs_n</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="o">/</span><span class="n">freqs_n</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 <span class="n">fft</span> <span class="o">=</span> <span class="n">asd_model</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs_n</span><span class="p">)))</span>
@@ -326,21 +331,26 @@ safe_log10(0.0)         = -50.00  （-inf ではない！）
 <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">1_300_000_000</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;K1:LSC-DARM_STRAIN&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
 
+<span class="c1"># Compute ASD</span>
 <span class="n">asd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)</span>
 <span class="n">freqs</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD 範囲: [</span><span class="si">{</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">] strain/rtHz&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD に NaN はあるか: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD range: [</span><span class="si">{</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">] strain/rtHz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Any zeros in ASD? </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Any NaN in ASD?   </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Safe ASD magnitude for log plot</span>
+<span class="n">asd_safe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">SAFE_FLOOR_STRAIN</span><span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ASD&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">asd_model</span><span class="p">[:(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tomato&quot;</span><span class="p">,</span>
-          <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;真の ASD モデル&quot;</span><span class="p">)</span>
+          <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True ASD model&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">SAFE_FLOOR_STRAIN</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SAFE_FLOOR = </span><span class="si">{</span><span class="n">SAFE_FLOOR_STRAIN</span><span class="si">:</span><span class="s2">.0e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;周波数 [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ASD [strain/√Hz]&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;数値床付き歪みスケール ASD&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Strain-scale ASD with numerical floor&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
@@ -353,8 +363,9 @@ safe_log10(0.0)         = -50.00  （-inf ではない！）
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ASD 範囲: [1.17e-28, 2.73e-22] strain/rtHz
-ASD に NaN はあるか: False
+ASD range: [1.17e-28, 2.73e-22] strain/rtHz
+Any zeros in ASD? False
+Any NaN in ASD?   False
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -368,29 +379,36 @@ ASD に NaN はあるか: False
 <section id="3.-astropy.units-による単位一貫性の確認">
 <h2>3. astropy.units による単位一貫性の確認<a class="headerlink" href="#3.-astropy.units-による単位一貫性の確認" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">asd_u</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build unit-aware FrequencySeries</span>
+<span class="n">asd_u</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
     <span class="n">asd</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="o">**</span><span class="mf">0.5</span><span class="p">),</span>
     <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;DARM ASD&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="c1"># PSD = ASD^2</span>
 <span class="n">psd_u</span> <span class="o">=</span> <span class="n">asd_u</span><span class="o">**</span><span class="mi">2</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD 単位: </span><span class="si">{</span><span class="n">asd_u</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PSD 単位: </span><span class="si">{</span><span class="n">psd_u</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD unit : </span><span class="si">{</span><span class="n">asd_u</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PSD unit : </span><span class="si">{</span><span class="n">psd_u</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+<span class="c1"># Integrated power = integral of PSD over frequency = variance</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">integrated_power</span> <span class="o">=</span> <span class="p">(</span><span class="n">psd_u</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="n">rms_from_psd</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">integrated_power</span><span class="p">)</span>
 <span class="n">rms_direct</span>       <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">PSD から RMS  : </span><span class="si">{</span><span class="n">rms_from_psd</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> strain&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;データから RMS : </span><span class="si">{</span><span class="n">rms_direct</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> strain&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;相対誤差       : </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">rms_from_psd</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">rms_direct</span><span class="p">)</span><span class="o">/</span><span class="n">rms_direct</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
-<span class="c1"># Note: RMS from bandlimited PSD may differ from broadband direct RMS</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NOTE: RMS from bandlimited PSD may differ from direct RMS (expected)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">RMS from PSD  : </span><span class="si">{</span><span class="n">rms_from_psd</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> strain&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS from data  : </span><span class="si">{</span><span class="n">rms_direct</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> strain&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relative error : </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">rms_from_psd</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">rms_direct</span><span class="p">)</span><span class="o">/</span><span class="n">rms_direct</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<span class="n">rel_err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rms_from_psd</span> <span class="o">-</span> <span class="n">rms_direct</span><span class="p">)</span> <span class="o">/</span> <span class="n">rms_direct</span>
+<span class="k">if</span> <span class="n">rel_err</span> <span class="o">&lt;</span> <span class="mf">0.15</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PASS: PSD integral is consistent with direct RMS (within 15%)&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NOTE: PSD-derived RMS has </span><span class="si">{</span><span class="n">rel_err</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% deviation from direct RMS.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is expected for bandlimited PSD vs. broadband direct computation.&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -399,49 +417,55 @@ ASD に NaN はあるか: False
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ASD 単位: 1 / Hz(1/2)
-PSD 単位: 1 / Hz
+ASD unit : 1 / Hz(1/2)
+PSD unit : 1 / Hz
 
-PSD から RMS  : 1.5363e-22 strain
-データから RMS : 5.7472e-22 strain
-相対誤差       : 73.27%
-NOTE: RMS from bandlimited PSD may differ from direct RMS (expected)
+RMS from PSD  : 1.5363e-22 strain
+RMS from data  : 5.7472e-22 strain
+Relative error : 73.27%
+NOTE: PSD-derived RMS has 73.3% deviation from direct RMS.
+This is expected for bandlimited PSD vs. broadband direct computation.
 </pre></div></div>
 </div>
 </section>
 <section id="4.-safe_log_scale-による安全な対数スケールプロット">
 <h2>4. safe_log_scale による安全な対数スケールプロット<a class="headerlink" href="#4.-safe_log_scale-による安全な対数スケールプロット" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">noise</span> <span class="o">*</span> <span class="mf">0.6</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-24</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute coherence (some bins will be near zero)</span>
+<span class="n">ts2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">noise</span> <span class="o">*</span> <span class="mf">0.6</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1e-24</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span>
                  <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;witness&quot;</span><span class="p">)</span>
 <span class="n">coh</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
 
+<span class="c1"># Raw log transform (problem: near-zero coherence → -inf)</span>
 <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
     <span class="n">log_raw</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">coh</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
+<span class="c1"># Safe version using gwexpy</span>
 <span class="n">log_safe</span> <span class="o">=</span> <span class="n">safe_log_scale</span><span class="p">(</span><span class="n">coh</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">dynamic_range_db</span><span class="o">=</span><span class="mf">60.0</span><span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
 <span class="n">ax1</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">coh</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">log_raw</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
-             <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tomato&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;生の 10·log₁₀&quot;</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;コヒーレンス [dB]&quot;</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;dB 単位のコヒーレンス — 生 vs. 安全&quot;</span><span class="p">)</span>
+             <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tomato&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;raw 10·log₁₀&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coherence [dB]&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Coherence in dB — raw vs. safe&quot;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 
 <span class="n">ax2</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">coh</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">log_safe</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
-             <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;safe_log_scale（60 dB 範囲）&quot;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;コヒーレンス [dB]&quot;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;周波数 [Hz]&quot;</span><span class="p">)</span>
+             <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;safe_log_scale (60 dB range)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coherence [dB]&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;safe_log_scale 範囲: [</span><span class="si">{</span><span class="n">log_safe</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">log_safe</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">] dB&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;safe_log_scale range: [</span><span class="si">{</span><span class="n">log_safe</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">log_safe</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">] dB&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -457,59 +481,70 @@ NOTE: RMS from bandlimited PSD may differ from direct RMS (expected)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-safe_log_scale 範囲: [-52.0, -0.0] dB
+safe_log_scale range: [-52.0, -0.0] dB
 </pre></div></div>
 </div>
 </section>
 <section id="5.-物理健全性チェックリスト">
 <h2>5. 物理健全性チェックリスト<a class="headerlink" href="#5.-物理健全性チェックリスト" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_asd_pipeline</span><span class="p">(</span><span class="n">ts_data</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ASD&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">asd_check</span> <span class="o">=</span> <span class="n">ts_data</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)</span>
-    <span class="n">vals</span> <span class="o">=</span> <span class="n">asd_check</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">freqs_check</span> <span class="o">=</span> <span class="n">asd_check</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
 
+    <span class="n">asd_check</span> <span class="o">=</span> <span class="n">ts_data</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)</span>
+    <span class="n">freqs_check</span> <span class="o">=</span> <span class="n">asd_check</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">asd_check</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="c1"># --- Test 1: No NaN or Inf ---</span>
     <span class="n">no_nan</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">vals</span><span class="p">))</span>
     <span class="n">no_inf</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">vals</span><span class="p">))</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;NaN なし&quot;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">no_nan</span>  <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">no_nan</span><span class="p">)</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;Inf なし&quot;</span><span class="p">]</span>     <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">no_inf</span>  <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">no_inf</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;no_nan&quot;</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">no_nan</span>  <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">no_nan</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;no_inf&quot;</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">no_inf</span>  <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">no_inf</span><span class="p">)</span>
 
+    <span class="c1"># --- Test 2: All values &gt;= SAFE_FLOOR ---</span>
     <span class="n">above_floor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">vals</span> <span class="o">&gt;=</span> <span class="n">SAFE_FLOOR_STRAIN</span><span class="p">)</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;SAFE_FLOOR 以上&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">above_floor</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">above_floor</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;above_floor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">above_floor</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">above_floor</span><span class="p">)</span>
 
+    <span class="c1"># --- Test 3: PSD integral gives finite RMS ---</span>
     <span class="n">df_check</span> <span class="o">=</span> <span class="n">freqs_check</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">freqs_check</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">rms_psd</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">vals</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">df_check</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">rms_psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">vals</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">df_check</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
     <span class="n">finite_rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">rms_psd</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rms_psd</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;有限な RMS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">finite_rms</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">finite_rms</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;finite_rms&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">finite_rms</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">finite_rms</span><span class="p">)</span>
 
-    <span class="n">rms_data</span>  <span class="o">=</span> <span class="n">ts_data</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
+    <span class="c1"># --- Test 4: RMS from PSD ≈ RMS from data (within 10%) ---</span>
+    <span class="n">rms_data</span> <span class="o">=</span> <span class="n">ts_data</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
     <span class="n">rms_agree</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rms_psd</span> <span class="o">-</span> <span class="n">rms_data</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">rms_data</span> <span class="o">+</span> <span class="n">SAFE_FLOOR</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.10</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;RMS 一致（10% 以内）&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">rms_agree</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">rms_agree</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;rms_agree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">rms_agree</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">rms_agree</span><span class="p">)</span>
 
-    <span class="n">ratio</span>    <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">vals</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">SAFE_FLOOR_STRAIN</span><span class="p">)</span>
+    <span class="c1"># --- Test 5: ASD is monotonically plausible (no &gt; 10x jump bin-to-bin) ---</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">vals</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">SAFE_FLOOR_STRAIN</span><span class="p">)</span>
     <span class="n">no_spike</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">((</span><span class="n">ratio</span> <span class="o">&lt;</span> <span class="mf">20.0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ratio</span> <span class="o">&gt;</span> <span class="mf">0.05</span><span class="p">))</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;急激なスパイクなし&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">no_spike</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">no_spike</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;no_spike&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">no_spike</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">no_spike</span><span class="p">)</span>
 
-    <span class="n">nyq_idx</span>    <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">no_nyq</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nyq_idx</span>
-    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;ナイキスト折り返しなし&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">no_nyq</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">no_nyq</span><span class="p">)</span>
+    <span class="c1"># --- Test 6: Nyquist bin is not dominant (no aliasing) ---</span>
+    <span class="n">nyq_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">peak_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+    <span class="n">no_nyq_alias</span> <span class="o">=</span> <span class="n">peak_idx</span> <span class="o">!=</span> <span class="n">nyq_idx</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;no_nyq_alias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PASS&quot;</span> <span class="k">if</span> <span class="n">no_nyq_alias</span> <span class="k">else</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">,</span> <span class="n">no_nyq_alias</span><span class="p">)</span>
 
+    <span class="c1"># Summary</span>
     <span class="n">n_pass</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== 物理健全性チェックリスト: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> ===&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Physics Sanity Checklist: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> ===&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">test</span><span class="p">,</span> <span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  [</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">test</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  スコア: </span><span class="si">{</span><span class="n">n_pass</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  Score: </span><span class="si">{</span><span class="n">n_pass</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">results</span>
 
 <span class="n">res</span> <span class="o">=</span> <span class="n">check_asd_pipeline</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;K1:LSC-DARM_STRAIN&quot;</span><span class="p">)</span>
 
+<span class="c1"># Demonstrate a failing case: ASD computed from near-zero data</span>
 <span class="n">ts_bad</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-310</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                    <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ゼロ近傍データ&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
-<span class="n">res_bad</span> <span class="o">=</span> <span class="n">check_asd_pipeline</span><span class="p">(</span><span class="n">ts_bad</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ゼロ近傍データ（失敗が期待される）&quot;</span><span class="p">)</span>
+                    <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;near-zero data&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+<span class="n">res_bad</span> <span class="o">=</span> <span class="n">check_asd_pipeline</span><span class="p">(</span><span class="n">ts_bad</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;near-zero data (expected failures)&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -519,27 +554,27 @@ safe_log_scale 範囲: [-52.0, -0.0] dB
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
-=== 物理健全性チェックリスト: K1:LSC-DARM_STRAIN ===
-  [PASS] NaN なし
-  [PASS] Inf なし
-  [PASS] SAFE_FLOOR 以上
-  [PASS] 有限な RMS
-  [FAIL] RMS 一致（10% 以内）
-  [PASS] 急激なスパイクなし
-  [PASS] ナイキスト折り返しなし
+=== Physics Sanity Checklist: K1:LSC-DARM_STRAIN ===
+  [PASS] no_nan
+  [PASS] no_inf
+  [PASS] above_floor
+  [PASS] finite_rms
+  [FAIL] rms_agree
+  [PASS] no_spike
+  [PASS] no_nyq_alias
 
-  スコア: 6/7
+  Score: 6/7
 
-=== 物理健全性チェックリスト: ゼロ近傍データ（失敗が期待される） ===
-  [PASS] NaN なし
-  [PASS] Inf なし
-  [FAIL] SAFE_FLOOR 以上
-  [FAIL] 有限な RMS
-  [PASS] RMS 一致（10% 以内）
-  [FAIL] 急激なスパイクなし
-  [PASS] ナイキスト折り返しなし
+=== Physics Sanity Checklist: near-zero data (expected failures) ===
+  [PASS] no_nan
+  [PASS] no_inf
+  [FAIL] above_floor
+  [FAIL] finite_rms
+  [PASS] rms_agree
+  [FAIL] no_spike
+  [PASS] no_nyq_alias
 
-  スコア: 4/7
+  Score: 4/7
 </pre></div></div>
 </div>
 </section>
@@ -596,14 +631,14 @@ safe_log_scale 範囲: [-52.0, -0.0] dB
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="case_segment_analysis.html" class="btn btn-neutral float-left" title="バッチプロット生成" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="case_arima_burst_search.html" class="btn btn-neutral float-right" title="ARIMA-Based Burst Detection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="case_arima_burst_search.html" class="btn btn-neutral float-right" title="ARIMA を用いたバーストイベント検出" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

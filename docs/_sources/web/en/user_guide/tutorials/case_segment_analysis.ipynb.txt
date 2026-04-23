@@ -2,20 +2,44 @@
  "cells": [
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 1,
    "id": "ca055a44",
-   "metadata": {},
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-04-23T03:57:35.601803Z",
+     "iopub.status.busy": "2026-04-23T03:57:35.600865Z",
+     "iopub.status.idle": "2026-04-23T03:57:35.614094Z",
+     "shell.execute_reply": "2026-04-23T03:57:35.610464Z"
+    },
+    "papermill": {
+     "duration": 0.023307,
+     "end_time": "2026-04-23T03:57:35.614765+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T03:57:35.591458+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
    "outputs": [],
    "source": [
-    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
-    "\n",
-    "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
+    "# Skipped in CI: Colab/bootstrap dependency install cell.\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "3110167a",
-   "metadata": {},
+   "id": "0ee30a2e",
+   "metadata": {
+    "papermill": {
+     "duration": 0.001699,
+     "end_time": "2026-04-23T03:57:35.622848+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T03:57:35.621149+00:00",
+     "status": "completed"
+    },
+    "tags": [
+     "lang-en"
+    ]
+   },
    "source": [
     "import warnings\n",
     "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
@@ -28,62 +52,25 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": 2,
    "id": "698558ad",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T13:10:46.805981Z",
-     "iopub.status.busy": "2026-04-05T13:10:46.805824Z",
-     "iopub.status.idle": "2026-04-05T13:10:49.466544Z",
-     "shell.execute_reply": "2026-04-05T13:10:49.465458Z"
-    }
-   },
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": []
+     "iopub.execute_input": "2026-04-23T03:57:35.658253Z",
+     "iopub.status.busy": "2026-04-23T03:57:35.657966Z",
+     "iopub.status.idle": "2026-04-23T03:57:46.575864Z",
+     "shell.execute_reply": "2026-04-23T03:57:46.574181Z"
     },
-    {
-     "data": {
-      "text/html": [
-       "<table border=\"1\" class=\"dataframe\">\n",
-       "  <thead>\n",
-       "    <tr style=\"text-align: right;\">\n",
-       "      <th></th>\n",
-       "      <th>span</th>\n",
-       "      <th>snr</th>\n",
-       "    </tr>\n",
-       "  </thead>\n",
-       "  <tbody>\n",
-       "    <tr>\n",
-       "      <th>0</th>\n",
-       "      <td>(1234567888.1, 1234567892.1)</td>\n",
-       "      <td>15</td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <th>1</th>\n",
-       "      <td>(1234567893.5, 1234567897.5)</td>\n",
-       "      <td>8</td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <th>2</th>\n",
-       "      <td>(1234567898.2, 1234567902.2)</td>\n",
-       "      <td>22</td>\n",
-       "    </tr>\n",
-       "  </tbody>\n",
-       "</table>\n"
-      ],
-      "text/plain": [
-       "SegmentTable(n_rows=3, n_cols=2, payload=0, columns=['span', 'snr'])\n",
-       "span=[1234567888.1 ... 1234567902.2]\n"
-      ]
-     },
-     "execution_count": 1,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
+    "papermill": {
+     "duration": 10.92708,
+     "end_time": "2026-04-23T03:57:46.576742+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T03:57:35.649662+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
    "source": [
     "import warnings\n",
     "\n",
@@ -115,8 +102,19 @@
   },
   {
    "cell_type": "markdown",
-   "id": "e13ea970",
-   "metadata": {},
+   "id": "f7b200f3",
+   "metadata": {
+    "papermill": {
+     "duration": 0.008152,
+     "end_time": "2026-04-23T03:57:46.591424+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T03:57:46.583272+00:00",
+     "status": "completed"
+    },
+    "tags": [
+     "lang-en"
+    ]
+   },
    "source": [
     "## Batch Plot Generation\n",
     "\n",
@@ -125,15 +123,23 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 3,
    "id": "f0ada25a",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T13:10:49.470710Z",
-     "iopub.status.busy": "2026-04-05T13:10:49.470023Z",
-     "iopub.status.idle": "2026-04-05T13:10:49.477965Z",
-     "shell.execute_reply": "2026-04-05T13:10:49.477392Z"
-    }
+     "iopub.execute_input": "2026-04-23T03:57:46.620760Z",
+     "iopub.status.busy": "2026-04-23T03:57:46.620326Z",
+     "iopub.status.idle": "2026-04-23T03:57:46.686571Z",
+     "shell.execute_reply": "2026-04-23T03:57:46.684290Z"
+    },
+    "papermill": {
+     "duration": 0.080244,
+     "end_time": "2026-04-23T03:57:46.687477+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T03:57:46.607233+00:00",
+     "status": "completed"
+    },
+    "tags": []
    },
    "outputs": [
     {
@@ -144,9 +150,11 @@
        "    .dataframe tbody tr th:only-of-type {\n",
        "        vertical-align: middle;\n",
        "    }\n",
+       "\n",
        "    .dataframe tbody tr th {\n",
        "        vertical-align: top;\n",
        "    }\n",
+       "\n",
        "    .dataframe thead th {\n",
        "        text-align: right;\n",
        "    }\n",
@@ -181,16 +189,16 @@
        "    </tr>\n",
        "  </tbody>\n",
        "</table>\n",
-       "</div>\n"
+       "</div>"
       ],
       "text/plain": [
        "                           span  snr            plot_path\n",
        "0  (1234567888.1, 1234567892.1)   15  outputs/event_0.png\n",
        "1  (1234567893.5, 1234567897.5)    8  outputs/event_1.png\n",
-       "2  (1234567898.2, 1234567902.2)   22  outputs/event_2.png\n"
+       "2  (1234567898.2, 1234567902.2)   22  outputs/event_2.png"
       ]
      },
-     "execution_count": 2,
+     "execution_count": 3,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -213,8 +221,19 @@
   },
   {
    "cell_type": "markdown",
-   "id": "4cf0df57",
-   "metadata": {},
+   "id": "576ba71e",
+   "metadata": {
+    "papermill": {
+     "duration": 0.00202,
+     "end_time": "2026-04-23T03:57:46.700168+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T03:57:46.698148+00:00",
+     "status": "completed"
+    },
+    "tags": [
+     "lang-en"
+    ]
+   },
    "source": [
     "## Result Summary\n",
     "\n",
@@ -223,15 +242,23 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 4,
    "id": "07457193",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T13:10:49.479270Z",
-     "iopub.status.busy": "2026-04-05T13:10:49.479150Z",
-     "iopub.status.idle": "2026-04-05T13:10:49.527401Z",
-     "shell.execute_reply": "2026-04-05T13:10:49.526160Z"
-    }
+     "iopub.execute_input": "2026-04-23T03:57:46.726771Z",
+     "iopub.status.busy": "2026-04-23T03:57:46.726485Z",
+     "iopub.status.idle": "2026-04-23T03:57:46.765601Z",
+     "shell.execute_reply": "2026-04-23T03:57:46.759641Z"
+    },
+    "papermill": {
+     "duration": 0.049808,
+     "end_time": "2026-04-23T03:57:46.767515+00:00",
+     "exception": false,
+     "start_time": "2026-04-23T03:57:46.717707+00:00",
+     "status": "completed"
+    },
+    "tags": []
    },
    "outputs": [
     {
@@ -242,9 +269,11 @@
        "    .dataframe tbody tr th:only-of-type {\n",
        "        vertical-align: middle;\n",
        "    }\n",
+       "\n",
        "    .dataframe tbody tr th {\n",
        "        vertical-align: top;\n",
        "    }\n",
+       "\n",
        "    .dataframe thead th {\n",
        "        text-align: right;\n",
        "    }\n",
@@ -273,15 +302,15 @@
        "    </tr>\n",
        "  </tbody>\n",
        "</table>\n",
-       "</div>\n"
+       "</div>"
       ],
       "text/plain": [
        "                           span  snr            plot_path\n",
        "0  (1234567888.1, 1234567892.1)   15  outputs/event_0.png\n",
-       "1  (1234567898.2, 1234567902.2)   22  outputs/event_2.png\n"
+       "1  (1234567898.2, 1234567902.2)   22  outputs/event_2.png"
       ]
      },
-     "execution_count": 3,
+     "execution_count": 4,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -303,7 +332,19 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.12.12"
+   "version": "3.11.15"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 16.786334,
+   "end_time": "2026-04-23T03:57:49.717702+00:00",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "docs/web/en/user_guide/tutorials/case_segment_analysis.ipynb",
+   "output_path": "docs/web/en/user_guide/tutorials/case_segment_analysis.executed.ipynb",
+   "parameters": {},
+   "start_time": "2026-04-23T03:57:32.931368+00:00",
+   "version": "2.7.0"
   }
  },
  "nbformat": 4,

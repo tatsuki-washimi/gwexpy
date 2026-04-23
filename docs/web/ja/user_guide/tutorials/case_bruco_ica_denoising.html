@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ケーススタディ: Bruco と ICA によるノイズ削減 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -182,21 +181,19 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>このページは Jupyter Notebook から生成されました。
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/case_bruco_ica_denoising.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_bruco_ica_denoising.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="ケーススタディ:-Bruco-と-ICA-によるノイズ削減">
 <h1>ケーススタディ: Bruco と ICA によるノイズ削減<a class="headerlink" href="#ケーススタディ:-Bruco-と-ICA-によるノイズ削減" title="Link to this heading"></a></h1>
-<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bruco_ica_denoising.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_bruco_ica_denoising.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このノートブックでは、実際の干渉計コミッショニングで使われる <strong>エンドツーエンドのノイズ削減ワークフロー</strong> を示します：</p>
 <ol class="arabic simple">
 <li><p><strong>Bruco</strong> — ブルートフォースコヒーレンス スキャンで最相関の補助チャンネルを特定</p></li>
@@ -214,7 +211,7 @@
 <section id="セットアップ">
 <h2>セットアップ<a class="headerlink" href="#セットアップ" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -245,23 +242,23 @@
 </ul>
 <p>4 つの PEM（Physical Environment Monitor）補助チャンネルは、それぞれ異なる割合で同じ 116 Hz ラインを含みます。 これは O4b コミッショニングの実際のケースを模倣しています。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">512</span>        <span class="c1"># サンプルレート [Hz]</span>
-<span class="n">T</span>  <span class="o">=</span> <span class="mf">64.0</span>       <span class="c1"># データ長 [s]</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">512</span>        <span class="c1"># sample rate [Hz]</span>
+<span class="n">T</span>  <span class="o">=</span> <span class="mf">64.0</span>       <span class="c1"># duration [s]</span>
 <span class="n">n</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fs</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
 <span class="n">t</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span>
 
-<span class="n">FREQ_LINE</span> <span class="o">=</span> <span class="mf">116.0</span>  <span class="c1"># Hz — 除去したいラインノイズの周波数</span>
+<span class="n">FREQ_LINE</span> <span class="o">=</span> <span class="mf">116.0</span>  <span class="c1"># Hz — the line noise we want to remove</span>
 
-<span class="c1"># ----- 独立ノイズ源 -----</span>
-<span class="n">src_line</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">FREQ_LINE</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>   <span class="c1"># コヒーレントなラインノイズ</span>
-<span class="n">src_broad</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>                  <span class="c1"># 広帯域フロアノイズ</span>
+<span class="c1"># ----- Independent sources -----</span>
+<span class="n">src_line</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">FREQ_LINE</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>   <span class="c1"># coherent line noise</span>
+<span class="n">src_broad</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>                  <span class="c1"># broadband floor noise</span>
 
-<span class="c1"># ----- DARM: 広帯域 + ラインノイズ漏れ -----</span>
+<span class="c1"># ----- DARM: broadband + line leakage -----</span>
 <span class="n">DARM_LINE_COUPLING</span> <span class="o">=</span> <span class="mf">0.5</span>
 <span class="n">darm_noise</span> <span class="o">=</span> <span class="n">src_broad</span> <span class="o">+</span> <span class="n">DARM_LINE_COUPLING</span> <span class="o">*</span> <span class="n">src_line</span>
 
@@ -270,12 +267,12 @@
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;K1:CAL-CS_PROC_DARM_STRAIN_DBL_DQ&quot;</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># ----- 4 つの補助チャンネル（ライン含有率が異なる）-----</span>
+<span class="c1"># ----- 4 auxiliary channels (different line content) -----</span>
 <span class="n">aux_configs</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;K1:PEM-ACC_PSL_TABLE_PSL1_Y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>  <span class="c1"># 90% ライン、10% ノイズ</span>
+    <span class="s2">&quot;K1:PEM-ACC_PSL_TABLE_PSL1_Y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>  <span class="c1"># 90% line, 10% noise</span>
     <span class="s2">&quot;K1:PEM-ACC_PSL_TABLE_PSL2_X&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
     <span class="s2">&quot;K1:PEM-MIC_PSL_TABLE_PSL1_Z&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-    <span class="s2">&quot;K1:PEM-MIC_PSL_TABLE_PSL2_Z&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>  <span class="c1"># ほぼノイズ</span>
+    <span class="s2">&quot;K1:PEM-MIC_PSL_TABLE_PSL2_Z&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>  <span class="c1"># mostly noise</span>
 <span class="p">}</span>
 
 <span class="n">aux_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">({</span>
@@ -286,8 +283,8 @@
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">a_line</span><span class="p">,</span> <span class="n">a_noise</span><span class="p">)</span> <span class="ow">in</span> <span class="n">aux_configs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">})</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DARM   サンプルレート: </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">sample_rate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;補助チャンネル: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">aux_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DARM   sample rate: </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">sample_rate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Aux channels: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">aux_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -296,28 +293,28 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-DARM   サンプルレート: 512.0 Hz
-補助チャンネル: [&#39;K1:PEM-ACC_PSL_TABLE_PSL1_Y&#39;, &#39;K1:PEM-ACC_PSL_TABLE_PSL2_X&#39;, &#39;K1:PEM-MIC_PSL_TABLE_PSL1_Z&#39;, &#39;K1:PEM-MIC_PSL_TABLE_PSL2_Z&#39;]
+DARM   sample rate: 512.0 Hz
+Aux channels: [&#39;K1:PEM-ACC_PSL_TABLE_PSL1_Y&#39;, &#39;K1:PEM-ACC_PSL_TABLE_PSL2_X&#39;, &#39;K1:PEM-MIC_PSL_TABLE_PSL1_Z&#39;, &#39;K1:PEM-MIC_PSL_TABLE_PSL2_Z&#39;]
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># クリーニング前の ASD で 116 Hz ラインを可視化</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize the line noise in the ASD before cleaning</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">asd</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;DARM（元）&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;DARM (original)&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">aux_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">FREQ_LINE</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz ライン&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">FREQ_LINE</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz line&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;周波数 [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ASD [1/√Hz]&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;クリーニング前の ASD — 116 Hz にラインノイズが見える&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;ASD before cleaning — line noise visible at 116 Hz&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -339,7 +336,7 @@ DARM   サンプルレート: 512.0 Hz
 <div><p><strong>よくある誤り</strong>: 使える補助チャンネルをすべて ICA に投入すること。ここでの Bruco は、116 Hz 汚染を本当に共有していそうなチャンネルへ絞るための物理フィルタです。</p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bruco</span> <span class="o">=</span> <span class="n">Bruco</span><span class="p">(</span><span class="n">target_channel</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">aux_channels</span><span class="o">=</span><span class="p">[])</span>
@@ -349,11 +346,11 @@ DARM   サンプルレート: 512.0 Hz
     <span class="n">overlap</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">target_data</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
     <span class="n">aux_data</span><span class="o">=</span><span class="n">aux_dict</span><span class="p">,</span>
-    <span class="n">top_n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>         <span class="c1"># 各周波数ビンで上位 4 チャンネルを保持</span>
+    <span class="n">top_n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>         <span class="c1"># keep top-4 channels per frequency bin</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bruco スキャン完了&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;結果タイプ: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bruco scan complete.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Result type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -362,15 +359,15 @@ DARM   サンプルレート: 512.0 Hz
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Bruco スキャン完了
-結果タイプ: &lt;class &#39;gwexpy.analysis.bruco.BrucoResult&#39;&gt;
+Bruco scan complete.
+Result type: &lt;class &#39;gwexpy.analysis.bruco.BrucoResult&#39;&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 116 Hz ライン付近の上位チャンネルを表示</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show top channels near the 116 Hz line</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">ranks</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">df_line</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">114</span><span class="p">,</span> <span class="mi">118</span><span class="p">)]</span>
@@ -379,7 +376,7 @@ Bruco スキャン完了
     <span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
     <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;116 Hz 付近の最相関チャンネル:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Top correlated channels near 116 Hz:&quot;</span><span class="p">)</span>
 <span class="n">df_line</span>
 <br/></pre></div>
 </div>
@@ -389,11 +386,11 @@ Bruco スキャン完了
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-116 Hz 付近の最相関チャンネル:
+Top correlated channels near 116 Hz:
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -402,9 +399,11 @@ Bruco スキャン完了
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
+
     .dataframe tbody tr th {
         vertical-align: top;
     }
+
     .dataframe thead th {
         text-align: right;
     }
@@ -506,14 +505,14 @@ Bruco スキャン完了
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># コヒーレンス投影プロット</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Coherence projection plot — shows which channels dominate at each frequency</span>
 <span class="n">result</span><span class="o">.</span><span class="n">plot_projection</span><span class="p">(</span><span class="n">coherence_threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">FREQ_LINE</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Bruco ノイズ投影&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Bruco noise projection&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
 </div>
@@ -542,21 +541,21 @@ Bruco スキャン完了
 <p>もう一つの典型的な失敗は rank deficiency です。ほぼ同一のウィットネスばかりを入れると分解が不安定になり、差し引き係数を信頼しにくくなります。完全に冗長ではないが情報量のある少数チャンネルを選んでください。</p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bruco 結果から上位 2 チャンネルを選択</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pick the top-2 channels from Bruco result</span>
 <span class="n">TOP_CHANNELS</span> <span class="o">=</span> <span class="n">df_line</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">unique</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ICA に使用するチャンネル:&quot;</span><span class="p">,</span> <span class="n">TOP_CHANNELS</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selected channels for ICA:&quot;</span><span class="p">,</span> <span class="n">TOP_CHANNELS</span><span class="p">)</span>
 
-<span class="c1"># DARM + 上位チャンネルを TimeSeriesMatrix に積み上げ（shape: n_ch × 1 × n_samples）</span>
+<span class="c1"># Stack DARM + top channels into a TimeSeriesMatrix  (shape: n_ch × 1 × n_samples)</span>
 <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">aux_dict</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">TOP_CHANNELS</span><span class="p">]</span>
 <span class="n">data_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">ch</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
 
 <span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
     <span class="n">data_3d</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TimeSeriesMatrix の shape: </span><span class="si">{</span><span class="n">tsm</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">  (チャンネル数 × 1 × サンプル数)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TimeSeriesMatrix shape: </span><span class="si">{</span><span class="n">tsm</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">  (n_channels × 1 × n_samples)&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -565,40 +564,44 @@ Bruco スキャン完了
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ICA に使用するチャンネル: [&#39;K1:PEM-ACC_PSL_TABLE_PSL1_Y&#39;, &#39;K1:PEM-ACC_PSL_TABLE_PSL2_X&#39;]
-TimeSeriesMatrix の shape: (3, 1, 32768)  (チャンネル数 × 1 × サンプル数)
+Selected channels for ICA: [&#39;K1:PEM-ACC_PSL_TABLE_PSL1_Y&#39;, &#39;K1:PEM-ACC_PSL_TABLE_PSL2_X&#39;]
+TimeSeriesMatrix shape: (3, 1, 32768)  (n_channels × 1 × n_samples)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ICA の実行</span>
-<span class="n">n_components</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
-<span class="n">ica_sources</span><span class="p">,</span> <span class="n">ica_model</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">ica</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span> <span class="n">return_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
 
-<span class="n">sk</span> <span class="o">=</span> <span class="n">ica_model</span><span class="o">.</span><span class="n">sklearn_model</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ICA は </span><span class="si">{</span><span class="n">sk</span><span class="o">.</span><span class="n">n_iter_</span><span class="si">}</span><span class="s2"> 反復で停止&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;混合行列 A の shape: </span><span class="si">{</span><span class="n">sk</span><span class="o">.</span><span class="n">mixing_</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (n_channels, n_components)</span>
+    <span class="c1"># Run ICA</span>
+    <span class="n">n_components</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+    <span class="n">ica_sources</span><span class="p">,</span> <span class="n">ica_model</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">ica</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span> <span class="n">return_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="c1"># 各 ICA 成分の ASD を周波数領域で可視化</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_components</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n_components</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_components</span><span class="p">):</span>
-    <span class="n">src_ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
-        <span class="n">ica_sources</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span>
-        <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">asd_k</span> <span class="o">=</span> <span class="n">src_ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">asd_k</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_k</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">FREQ_LINE</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ICA 成分 #</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;周波数 [Hz]&quot;</span><span class="p">)</span>
+    <span class="n">sk</span> <span class="o">=</span> <span class="n">ica_model</span><span class="o">.</span><span class="n">sklearn_model</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ICA stopped after </span><span class="si">{</span><span class="n">sk</span><span class="o">.</span><span class="n">n_iter_</span><span class="si">}</span><span class="s2"> iterations&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mixing matrix A shape: </span><span class="si">{</span><span class="n">sk</span><span class="o">.</span><span class="n">mixing_</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (n_channels, n_components)</span>
 
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ASD [任意単位/√Hz]&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;ICA 独立成分 — 1 つが 116 Hz にピークを持つはず&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># Visualize ICA sources in frequency domain</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_components</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">n_components</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_components</span><span class="p">):</span>
+        <span class="n">src_ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+            <span class="n">ica_sources</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">asd_k</span> <span class="o">=</span> <span class="n">src_ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">asd_k</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_k</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">FREQ_LINE</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ICA source #</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ASD [arb/√Hz]&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;ICA independent components — one should peak at 116 Hz&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
 </div>
 </div>
@@ -607,23 +610,15 @@ TimeSeriesMatrix の shape: (3, 1, 32768)  (チャンネル数 × 1 × サンプ
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ICA 収束: 200 反復
-混合行列 A の shape: (3, 3)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-
+ICA stopped after 200 iterations
+Mixing matrix A shape: (3, 3)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_case_bruco_ica_denoising_14_2.png" src="../../../../_images/web_ja_user_guide_tutorials_case_bruco_ica_denoising_14_2.png" />
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_bruco_ica_denoising_14_1.png" src="../../../../_images/web_ja_user_guide_tutorials_case_bruco_ica_denoising_14_1.png" />
 </div>
 </div>
 </section>
@@ -637,19 +632,20 @@ ICA 収束: 200 反復
 <div><p><strong>よくある誤り</strong>: 非ガウスっぽく見える ICA 成分を全部引くこと。スペクトル形状とウィットネス荷重が狙っている結合機構に一致する成分だけを選ばないと、ライン以外の検出器構造まで削ってしまう危険があります。</p>
 </div></blockquote>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ノイズ成分の特定：FREQ_LINE で ASD が最大の成分を選ぶ</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Identify the noise component: the one with the largest ASD at FREQ_LINE</span>
 <span class="n">fftlength</span> <span class="o">=</span> <span class="mf">4.0</span>
 <span class="n">overlap</span>   <span class="o">=</span> <span class="mf">2.0</span>
 <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">fftlength</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span> <span class="n">d</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">line_bin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">freqs</span> <span class="o">-</span> <span class="n">FREQ_LINE</span><span class="p">))</span>
 
 <span class="n">A</span> <span class="o">=</span> <span class="n">sk</span><span class="o">.</span><span class="n">mixing_</span>           <span class="c1"># (n_channels, n_components)</span>
 <span class="n">X_raw</span> <span class="o">=</span> <span class="n">data_3d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>   <span class="c1"># (n_samples, n_channels)</span>
 <span class="n">S</span> <span class="o">=</span> <span class="n">sk</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_raw</span><span class="p">)</span>       <span class="c1"># (n_samples, n_components)</span>
 
-<span class="c1"># 各成分のライン周波数での ASD を計算</span>
+<span class="c1"># ASD of each component at the line frequency</span>
 <span class="n">asd_at_line</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_components</span><span class="p">):</span>
     <span class="n">s_ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">S</span><span class="p">[:,</span> <span class="n">k</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -658,9 +654,9 @@ ICA 収束: 200 反復
     <span class="n">asd_at_line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
 <span class="n">noise_component</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">asd_at_line</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;主ノイズ成分: #</span><span class="si">{</span><span class="n">noise_component</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz での ASD = </span><span class="si">{</span><span class="n">asd_at_line</span><span class="p">[</span><span class="n">noise_component</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dominant noise component: #</span><span class="si">{</span><span class="n">noise_component</span><span class="si">}</span><span class="s2">  (ASD at </span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz = </span><span class="si">{</span><span class="n">asd_at_line</span><span class="p">[</span><span class="n">noise_component</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
-<span class="c1"># DARM（チャンネル index 0）からノイズ成分を差し引く</span>
+<span class="c1"># Subtract noise component from DARM (channel index 0)</span>
 <span class="n">darm_clean</span> <span class="o">=</span> <span class="n">X_raw</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_component</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[:,</span> <span class="n">noise_component</span><span class="p">]</span>
 <span class="n">target_clean</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
     <span class="n">darm_clean</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">,</span>
@@ -674,34 +670,34 @@ ICA 収束: 200 反復
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-主ノイズ成分: #1  (116.0 Hz での ASD = 1.5751)
+Dominant noise component: #0  (ASD at 116.0 Hz = 1.5762)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 元の DARM とクリーン DARM の ASD を比較</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare original vs cleaned ASD</span>
 <span class="n">asd_orig</span>  <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">)</span>
 <span class="n">asd_clean</span> <span class="o">=</span> <span class="n">target_clean</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_orig</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>  <span class="n">asd_orig</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>  <span class="n">label</span><span class="o">=</span><span class="s2">&quot;DARM 元データ&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_clean</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_clean</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;DARM クリーン&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orangered&quot;</span><span class="p">,</span>  <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_orig</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>  <span class="n">asd_orig</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>  <span class="n">label</span><span class="o">=</span><span class="s2">&quot;DARM original&quot;</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_clean</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_clean</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;DARM cleaned&quot;</span><span class="p">,</span>   <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orangered&quot;</span><span class="p">,</span>  <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">FREQ_LINE</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
 
-<span class="c1"># 抑制率を計算</span>
+<span class="c1"># Suppression factor at line frequency</span>
 <span class="n">ratio</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">FREQ_LINE</span><span class="p">,</span> <span class="n">asd_orig</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_orig</span><span class="o">.</span><span class="n">value</span><span class="p">))</span> <span class="o">/</span>         <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">FREQ_LINE</span><span class="p">,</span> <span class="n">asd_clean</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_clean</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;周波数 [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ASD [1/√Hz]&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz でのノイズ削減: </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> 倍抑制&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Noise reduction at </span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz: ×</span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> suppression&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz での抑制率: </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> 倍&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Suppression factor at </span><span class="si">{</span><span class="n">FREQ_LINE</span><span class="si">}</span><span class="s2"> Hz: </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">×&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -717,7 +713,7 @@ ICA 収束: 200 反復
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-116.0 Hz での抑制率: 2.74 倍
+Suppression factor at 116.0 Hz: 2.75×
 </pre></div></div>
 </div>
 </section>
@@ -786,7 +782,7 @@ ICA 収束: 200 反復
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

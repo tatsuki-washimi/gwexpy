@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reading and Using DTT XML Files with gwexpy &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -108,8 +107,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#browse-by-category">Browse by category</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
@@ -185,13 +184,11 @@
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_dttxml_calibration.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="Reading-and-Using-DTT-XML-Files-with-gwexpy">
@@ -208,7 +205,7 @@
 <section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -230,11 +227,12 @@
 <p>A real workflow starts from an existing <code class="docutils literal notranslate"><span class="pre">.xml</span></code> file produced by DTT. For reproducibility we generate a synthetic file that mimics the structure of real KAGRA suspension transfer-function measurements.</p>
 <p>The file contains three measurement products: | Product | Type | Description | |———|——|————-| | PSD | real | Input excitation PSD | | TF | complex | Displacement / Excitation transfer function | | COH | real | Coherence between displacement and excitation |</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">make_synthetic_dttxml</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -295,7 +293,7 @@
     <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Wrote synthetic DTT XML to a temporary file&quot;</span><span class="p">)</span>
 
-<span class="n">xml_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;kagra_sus_itmx.xml&quot;</span><span class="p">)</span>
+<span class="n">xml_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">())</span> <span class="o">/</span> <span class="s2">&quot;gwexpy_kagra_sus_itmx.xml&quot;</span>
 <span class="n">make_synthetic_dttxml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>
 <br/></pre></div>
 </div>
@@ -313,7 +311,7 @@ Wrote synthetic DTT XML to a temporary file
 <h2>2. Inspect Channels<a class="headerlink" href="#2.-Inspect-Channels" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">extract_xml_channels()</span></code> returns a list of channel names and their active status without loading the full data — useful for a quick scan of large files.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span> <span class="o">=</span> <span class="n">extract_xml_channels</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>
@@ -346,7 +344,7 @@ Found 0 channel entries:
 </div>
 <p>Pass <code class="docutils literal notranslate"><span class="pre">native=True</span></code> to use gwexpy’s built-in XML parser instead of the <code class="docutils literal notranslate"><span class="pre">dttxml</span></code> package — this is recommended when the dttxml package is unavailable or when you encounter the known phase-loss bug for complex responses.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">products</span> <span class="o">=</span> <span class="n">load_dttxml_products</span><span class="p">(</span><span class="n">xml_path</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -381,7 +379,7 @@ Product types found: [&#39;PSD&#39;, &#39;ASD&#39;, &#39;TF&#39;, &#39;CSD&#39;]
 <h2>4. Bode Plot — Transfer Function<a class="headerlink" href="#4.-Bode-Plot-—-Transfer-Function" title="Link to this heading"></a></h2>
 <p>Extract the TF product and wrap the data in a <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> to access gwexpy’s plotting and fitting methods.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract the first TF measurement</span>
@@ -441,7 +439,7 @@ Product types found: [&#39;PSD&#39;, &#39;ASD&#39;, &#39;TF&#39;, &#39;CSD&#39;]
 <h2>5. Coherence<a class="headerlink" href="#5.-Coherence" title="Link to this heading"></a></h2>
 <p>The coherence indicates the signal-to-noise quality of the measurement. Values close to 1 mean the output is well explained by the input; values below ~0.9 suggest the measurement is unreliable at those frequencies.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_coh_items</span> <span class="o">=</span> <span class="n">products</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;COH&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CSD&quot;</span><span class="p">,</span> <span class="p">[]))</span>
@@ -484,7 +482,7 @@ Product types found: [&#39;PSD&#39;, &#39;ASD&#39;, &#39;TF&#39;, &#39;CSD&#39;]
 \[H(f) = \frac{A \, f_0^2}{f_0^2 - f^2 + i\, f f_0 / Q}\]</div>
 <p>We use <code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> to extract <span class="math notranslate nohighlight">\(f_0\)</span> (resonance frequency), <span class="math notranslate nohighlight">\(Q\)</span> (quality factor), and <span class="math notranslate nohighlight">\(A\)</span> (gain) directly from the DTT XML data.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_series</span>
@@ -532,7 +530,7 @@ Fitted gain                : 1.000
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">tf_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">freqs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -624,7 +622,7 @@ Fitted gain                : 1.000
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

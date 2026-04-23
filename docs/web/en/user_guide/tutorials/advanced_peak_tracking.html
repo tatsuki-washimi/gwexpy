@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Peak Tracking: Time Evolution &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -108,8 +107,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#browse-by-category">Browse by category</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
@@ -187,13 +186,11 @@
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/advanced_peak_tracking.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="Peak-Tracking:-Time-Evolution">
@@ -208,7 +205,7 @@
 </ul>
 <p><strong>Strategy</strong>: compute a spectrogram → detect peaks per frame → connect with <em>nearest-neighbour</em> algorithm.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -248,7 +245,7 @@
 </tbody>
 </table>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -294,7 +291,7 @@ Line 2   : 120 Hz ± 0.5 Hz (slow wobble)
 <h2>2. Spectrogram Overview<a class="headerlink" href="#2.-Spectrogram-Overview" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ts.spectrogram2(fftlength,</span> <span class="pre">overlap)</span></code> returns a time–frequency power map. The diagonal streak (Line 1 drift) and slightly wavy horizontal stripe (Line 2 wobble) are already visible.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -333,19 +330,11 @@ Time bins : 60  |  Freq bins: 1025
 Freq resolution: 0.2500 Hz
 </pre></div></div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-  plt.tight_layout()
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_6_2.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_6_2.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_6_1.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_6_1.png" />
 </div>
 </div>
 </section>
@@ -353,7 +342,7 @@ Freq resolution: 0.2500 Hz
 <h2>3. Frame-by-Frame Peak Detection<a class="headerlink" href="#3.-Frame-by-Frame-Peak-Detection" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">spec.value[t,</span> <span class="pre">:]</span></code> is the 1-D PSD array at time index <code class="docutils literal notranslate"><span class="pre">t</span></code>. Pass it to <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> with a height threshold and a minimum-distance constraint (in frequency bins).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -423,7 +412,7 @@ for each time frame t:
 </div>
 <p>Updating the seed at each step lets the tracker follow a slowly drifting line rather than locking to the initial frequency.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -517,7 +506,7 @@ Freq range: 58.00 – 62.00 Hz
 <h2>5. Multi-Line Tracking<a class="headerlink" href="#5.-Multi-Line-Tracking" title="Link to this heading"></a></h2>
 <p>Run one tracker per seed frequency and overlay results on the spectrogram for visual verification.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -560,24 +549,24 @@ Freq range: 58.00 – 62.00 Hz
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-  plt.tight_layout()
-</pre></div></div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_12_0.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_12_0.png" />
+</div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_12_1.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_12_1.png" />
-</div>
+<div class="highlight"><pre>
+&lt;Figure size 1200x400 with 0 Axes&gt;
+</pre></div></div>
 </div>
 </section>
 <section id="6.-Frequency-Drift-Visualisation">
 <h2>6. Frequency Drift Visualisation<a class="headerlink" href="#6.-Frequency-Drift-Visualisation" title="Link to this heading"></a></h2>
 <p>Wrap each track in a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> to plot frequency evolution and compute basic drift statistics.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -632,7 +621,18 @@ Freq range: 58.00 – 62.00 Hz
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_14_2.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_14_2.png" />
+<div class="highlight"><pre>
+Line                        min [Hz]   max [Hz]   drift [Hz]
+------------------------------------------------------------
+Line1 (58→62 Hz)              58.000     62.000        4.000
+Line2 (120 Hz)               119.500    120.500        1.000
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_14_3.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_peak_tracking_14_3.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -647,7 +647,7 @@ Line2 (120 Hz)               119.500    120.500        1.000
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
@@ -697,7 +697,7 @@ Peak / Line Tracking — Key Steps
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

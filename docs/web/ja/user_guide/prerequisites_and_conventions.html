@@ -6,13 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy の前提条件、GPS 時刻、FFT 規約、GWpy 互換の考え方を、チュートリアルや API に入る前の共通入口として整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>前提条件と規約 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../_static/icon.svg"/>
@@ -115,8 +114,8 @@
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">前提条件と規約</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">このページでわかること</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">このページの近道</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">このページの概要</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">目次</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#prerequisites-environment-ja">1. 環境前提</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#prerequisites-data-and-time-ja">2. データと時刻の前提</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#fft">3. FFT とスペクトルの規約</a></li>
@@ -180,11 +179,10 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>前提条件と規約<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<p>このページは、GWexpy のガイドやチュートリアルを読む前に把握しておきたい<strong>共通の前提条件</strong>と<strong>規約</strong>の入口です。
-個別アルゴリズムの仮定や数式の詳細は各ページに残し、このページでは「どこを先に確認すべきか」を整理します。</p>
+<p>このページは、GWexpy のガイドやチュートリアルを読む前に把握しておきたい<strong>共通の前提条件</strong>と<strong>規約</strong>をまとめたページです。
+個別アルゴリズムの仮定や数式の詳細は各ページに記載し、このページでは「どこを先に確認すべきか」を案内します。</p>
 <section id="id2">
-<h2>このページでわかること<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<p>以下の表は docs 全体の共有テーブル方針に合わせています。モバイルでは、ページ個別の調整ではなく横スクロール前提で読むのが基本です。</p>
+<h2>このページの概要<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>項目</p></th>
@@ -196,13 +194,13 @@
 <td><p>ガイド</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>対象読者</strong></p></td>
-<td><p>チュートリアルや API を読む前に共通前提を整理したい利用者</p></td>
+<td><p>チュートリアルや API を読む前に共通の前提を整理したい方</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>前提</strong></p></td>
+<tr class="row-even"><td><p><strong>前提知識</strong></p></td>
 <td><p>Python と NumPy の基礎、GWpy / GWexpy の区別をこれから把握する段階</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>こんなときに読む</strong></p></td>
-<td><p>GPS 時刻・FFT 規約・GWpy 互換の前提を先に確認したい</p></td>
+<td><p>GPS 時刻・FFT 規約・GWpy 互換性の前提を確認したい場合</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>検索キーワード</strong></p></td>
 <td><p>prerequisites, conventions, GPS 時刻, FFT, GWpy 互換, フィールド API</p></td>
@@ -211,7 +209,7 @@
 </table>
 </section>
 <section id="id3">
-<h2>このページの近道<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<h2>目次<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>環境前提</p></li>
 <li><p>データと時刻の前提</p></li>
@@ -227,7 +225,7 @@
 <li><p>最低限の前提知識は、<strong>Python の基礎</strong>、<strong>NumPy 配列操作</strong>、必要に応じて <strong>Matplotlib</strong> です。</p></li>
 <li><p>optional dependency によって使える機能が増えます。導入手順は <a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a> を参照してください。</p></li>
 </ul>
-<p>まず全体の学習導線を把握したい場合は <a class="reference internal" href="getting_started.html"><span class="std std-doc">はじめに</span></a> から入るのが最短です。</p>
+<p>全体の学習フローを把握したい場合は、まず <a class="reference internal" href="getting_started.html"><span class="std std-doc">はじめに</span></a> から開始することを推奨します。</p>
 </section>
 <section id="prerequisites-data-and-time-ja">
 <span id="id5"></span><h2>2. データと時刻の前提<a class="headerlink" href="#prerequisites-data-and-time-ja" title="Link to this heading"></a></h2>
@@ -253,9 +251,9 @@
 <ul class="simple">
 <li><p>GWexpy は GWpy の上に構築されており、基本的なデータモデルと操作感を尊重しています。</p></li>
 <li><p>一方で、Matrix 系コンテナ、フィールド API、追加 I/O、解析ユーティリティなど GWpy にはない拡張があります。</p></li>
-<li><p>「GWpy と同じつもりで使ってよい部分」と「GWexpy 固有の追加要素」を分けて確認したい場合は、移行ガイドを見るのが早いです。</p></li>
+<li><p>「GWpy と共通の仕様」と「GWexpy 固有の追加要素」を切り分けて確認したい場合は、移行ガイドを参照してください。</p></li>
 </ul>
-<p>GWpy からの移行観点は <a class="reference internal" href="gwexpy_for_gwpy_users_ja.html"><span class="std std-doc">GWpy からの移行</span></a> と <a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a> を参照してください。</p>
+<p>GWpy からの移行に関する詳細は <a class="reference internal" href="gwexpy_for_gwpy_users_ja.html"><span class="std std-doc">GWpy からの移行</span></a> と <a class="reference internal" href="gwpy_added_api_index_ja.html"><span class="std std-doc">GWpy 差分 API 一覧</span></a> を参照してください。</p>
 </section>
 <section id="prerequisites-reference-bridge-ja">
 <span id="id6"></span><h2>5. どこから読むか<a class="headerlink" href="#prerequisites-reference-bridge-ja" title="Link to this heading"></a></h2>
@@ -291,7 +289,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

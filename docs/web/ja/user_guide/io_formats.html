@@ -6,13 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy の direct I/O ガイドです。対応フォーマット、読み書きの可否、fetch 系の入口、format= を明示すべき場面を整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-20T17:44:56+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ファイル I/O 対応フォーマットガイド &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../_static/icon.svg"/>
@@ -192,7 +191,7 @@
 </div></blockquote>
 <p>gwexpy の利用者向け I/O ガイドです。
 このページでは、ユーザーが直接使う <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> 系 API による読み書き・取得だけを扱います。</p>
-<p><code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。質問が「このオブジェクトを別ライブラリや別コンテナへどう変換するか」であれば、それは interop 側の話です。必要な場合は <a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a> や <a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a> を参照してください。</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。質問が「このオブジェクトを別ライブラリや別コンテナへどう変換するか」であれば、それは interop 側の話です。必要な場合は <a class="reference internal" href="tutorials/intro_interop.html"><span class="std std-doc">他ライブラリ連携チュートリアル</span></a> や <a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a> を参照してください。</p>
 <section id="id1">
 <h2>このページでわかること<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -787,7 +786,7 @@
 <section id="id9">
 <h2>関連ページ<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="std std-doc">他ライブラリ連携チュートリアル</span></a></p></li>
 <li><p><a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a></p></li>
 <li><p><a class="reference internal" href="verification_and_quality.html"><span class="std std-doc">検証と品質の見方</span></a></p></li>
 <li><p><a class="reference internal" href="installation.html"><span class="doc std std-doc">インストールガイド</span></a></p></li>
@@ -823,7 +822,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 17:44:56.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

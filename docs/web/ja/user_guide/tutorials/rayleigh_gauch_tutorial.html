@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>非ガウス雑音解析: Rayleigh と Gaussian-Chi &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -184,16 +183,14 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>このページは Jupyter Notebook から生成されました。
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="非ガウス雑音解析:-Rayleigh-と-Gaussian-Chi">
@@ -210,7 +207,7 @@
 <li><p><strong>Evaluation &amp; Visualization</strong>: ROC curves and composite dashboards.</p></li>
 </ol>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -234,7 +231,7 @@
 <li><p><strong>Model II</strong>: Scattered light noise (stationary non-Gaussianity).</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">duration</span> <span class="o">=</span> <span class="mf">32.0</span>
@@ -251,7 +248,7 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -270,7 +267,7 @@
 <h3>2. Rayleigh Spectrogram<a class="headerlink" href="#2.-Rayleigh-Spectrogram" title="Link to this heading"></a></h3>
 <p>The Rayleigh statistic <span class="math notranslate nohighlight">\(R\)</span> measures the consistency of the ASD distribution with a Rayleigh distribution. We use the <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> method to get a p-value map.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs_p</span> <span class="o">=</span> <span class="n">ts_glitch</span><span class="o">.</span><span class="n">rayleigh_test</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
@@ -280,12 +277,12 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.colorbar.Colorbar at 0x7673aaef7dd0&gt;
+&lt;matplotlib.colorbar.Colorbar at 0x7f3479a176d0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -300,7 +297,7 @@
 <h3>3. GauCh (Modified KS Test)<a class="headerlink" href="#3.-GauCh-(Modified-KS-Test)" title="Link to this heading"></a></h3>
 <p>GauCh is a more sensitive test for non-Gaussianity using a modified Kolmogorov-Smirnov test.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gauch_res</span> <span class="o">=</span> <span class="n">ts_glitch</span><span class="o">.</span><span class="n">gauch</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
@@ -310,12 +307,12 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.colorbar.Colorbar at 0x7673a8891850&gt;
+&lt;matplotlib.colorbar.Colorbar at 0x7f347b0dd410&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -330,7 +327,7 @@
 <h3>4. Student-t Indicator<a class="headerlink" href="#4.-Student-t-Indicator" title="Link to this heading"></a></h3>
 <p>The Student-t indicator fits a Student-t distribution to FFT components and outputs the degree of freedom <span class="math notranslate nohighlight">\(\nu\)</span>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nu_spec</span> <span class="o">=</span> <span class="n">ts_glitch</span><span class="o">.</span><span class="n">student_t_spectrogram</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">frange</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
@@ -340,12 +337,12 @@
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.colorbar.Colorbar at 0x7673a7e10650&gt;
+&lt;matplotlib.colorbar.Colorbar at 0x7f347ae74c90&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -360,7 +357,7 @@
 <h3>5. Data Quality Flags<a class="headerlink" href="#5.-Data-Quality-Flags" title="Link to this heading"></a></h3>
 <p>We can automatically generate veto segments where the p-value is below a threshold.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dq_flag</span> <span class="o">=</span> <span class="n">to_segments</span><span class="p">(</span><span class="n">gauch_res</span><span class="o">.</span><span class="n">pvalue_map</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
@@ -376,12 +373,13 @@
 <div class="highlight"><pre>
 &lt;DataQualityFlag(&#39;non_gaussian_veto&#39;,
                  known=[[3.5 ... 28.5)]
-                 active=[[3.5 ... 16.5)]
-                 description=None)&gt;
+                 active=[[13.5 ... 14.5)
+                        [17.5 ... 28.5)]
+                 description=&#39;None&#39;)&gt;
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -400,7 +398,7 @@
 <h3>6. Composite Dashboard<a class="headerlink" href="#6.-Composite-Dashboard" title="Link to this heading"></a></h3>
 <p>Finally, we can visualize everything in a single dashboard.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plot_gauch_dashboard</span><span class="p">(</span><span class="n">ts_glitch</span><span class="p">,</span> <span class="n">gauch_res</span><span class="p">)</span>
@@ -431,7 +429,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

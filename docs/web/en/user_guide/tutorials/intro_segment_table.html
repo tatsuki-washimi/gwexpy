@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SegmentTable: Basics &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -108,8 +107,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#browse-by-category">Browse by category</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
@@ -187,13 +186,11 @@
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/intro_segment_table.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="SegmentTable:-Basics">
@@ -205,8 +202,8 @@
 <h2>GWpy base classes and gwexpy extensions<a class="headerlink" href="#GWpy-base-classes-and-gwexpy-extensions" title="Link to this heading"></a></h2>
 <p>Segment analysis builds on GWpy types. Each row span is still represented by <code class="docutils literal notranslate"><span class="pre">gwpy.segments.Segment</span></code>, and payload columns can hold GWpy <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> or <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> objects directly.</p>
 <p>On top of that, gwexpy adds <code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code> as an extension of <code class="docutils literal notranslate"><span class="pre">gwpy.table.Table</span></code>, plus lazy payload handling via <code class="docutils literal notranslate"><span class="pre">SegmentCell</span></code>, and table-oriented batch helpers such as <code class="docutils literal notranslate"><span class="pre">apply()</span></code>, <code class="docutils literal notranslate"><span class="pre">map()</span></code>, <code class="docutils literal notranslate"><span class="pre">crop()</span></code>, and <code class="docutils literal notranslate"><span class="pre">asd()</span></code>. In practice, you keep GWpy base classes for the actual data objects while gwexpy adds the workflow layer for processing many segments together.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -231,52 +228,12 @@
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>span</th>
-      <th>label</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>(0, 4)</td>
-      <td>A</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>(4, 8)</td>
-      <td>B</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>(8, 12)</td>
-      <td>C</td>
-    </tr>
-  </tbody>
-</table></div>
-</div>
 </section>
 <section id="Delayed-Loading-with-SegmentCell">
 <h2>Delayed Loading with SegmentCell<a class="headerlink" href="#Delayed-Loading-with-SegmentCell" title="Link to this heading"></a></h2>
 <p>You can add payload columns that are only loaded when needed. This is useful for handling large datasets.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_loader</span><span class="p">():</span>
@@ -292,7 +249,7 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -332,7 +289,7 @@
 <h2>Row-wise Processing<a class="headerlink" href="#Row-wise-Processing" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code> provides an <code class="docutils literal notranslate"><span class="pre">apply()</span></code> method to process each row and collect results into new columns.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_row</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
@@ -345,7 +302,7 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -354,9 +311,11 @@
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
+
     .dataframe tbody tr th {
         vertical-align: top;
     }
+
     .dataframe thead th {
         text-align: right;
     }
@@ -406,7 +365,7 @@
 <h2>Fetch and Conversion<a class="headerlink" href="#Fetch-and-Conversion" title="Link to this heading"></a></h2>
 <p>You can explicitly load lazy cells with <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> or <code class="docutils literal notranslate"><span class="pre">materialize()</span></code>. Converting to pandas gives you a standard DataFrame for meta columns.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">st2</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
@@ -426,7 +385,7 @@ Loading series...
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -435,9 +394,11 @@ Loading series...
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
+
     .dataframe tbody tr th {
         vertical-align: top;
     }
+
     .dataframe thead th {
         text-align: right;
     }
@@ -493,7 +454,7 @@ Loading series...
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

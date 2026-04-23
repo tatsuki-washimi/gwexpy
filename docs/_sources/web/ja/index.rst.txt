@@ -1,7 +1,7 @@
 :orphan:
 
 .. meta::
-   :description: GWexpy ドキュメントの入口ページ。インストール、クイックスタート、チュートリアル、ケーススタディ、リファレンスへの導線をまとめています。
+   :description: GWexpy ドキュメントの入口ページ。インストール、クイックスタート、チュートリアル、ケーススタディ、リファレンスへのリンクをまとめています。
 
 .. _hub-ja-hero:
 
@@ -28,7 +28,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
    <section class="gw-hub-hero">
      <div class="gw-hub-panel gw-hub-copy">
        <p class="gw-hub-eyebrow">Documentation Hub</p>
-       <h2 class="gw-hub-title">どう使うかを、解析導線から選ぶ</h2>
+       <h2 class="gw-hub-title">解析目的から、使いたい機能を選ぶ</h2>
        <p class="gw-hub-lede">
          行列コンテナ、フィールド演算、フィッティング、信号処理を
          目的別の入口にまとめたトップページです。まずはクイックスタートか、
@@ -50,7 +50,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
        </dl>
      </div>
      <figure class="gw-hub-panel gw-hub-figure">
-       <img src="/_static/images/phase3/gateway_hero_scientific.png" alt="FrequencySeriesMatrix と共振フィットの可視化">
+       <img src="../../_static/images/phase3/gateway_hero_scientific.png" alt="FrequencySeriesMatrix と共振フィットの可視化">
        <p>
          FrequencySeriesMatrix の全体像と、抽出した 1 チャンネルに対する共振フィットを同時に表示。
          GWexpy の Matrix 系コンテナと解析ワークフローを一画面で示します。
@@ -98,8 +98,8 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 
 .. note::
 
-   `チュートリアル` は 1 つずつ機能やクラスを学ぶ機能別の学習導線です。
-   `ケーススタディ` は 解析目的に沿って複数機能を組み合わせる目的別の実践導線です。
+   **チュートリアル** は機能やクラスを 1 つずつ学ぶ、機能別の学習ページです。
+   **ケーススタディ** は解析目的に沿って複数機能を組み合わせる、目的別の実践例です。
 
 .. grid:: 3
     :gutter: 3
@@ -130,7 +130,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
         GWpy から移行・併用する方向け
 
         * 差分レシピと互換性の入口
-        * 追加 API 一覧への導線
+        * 追加 API 一覧へのリンク
 
 ----
 
@@ -213,7 +213,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 可視化例（Visual Examples）
 ---------------------------
 
-このカード群は、正本である目的別ケーススタディギャラリーの短い紹介です。
+このカード群は、メインの「目的別ケーススタディギャラリー」から一部を抜粋して紹介するものです。
 
 .. grid:: 3
     :gutter: 3

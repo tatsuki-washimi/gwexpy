@@ -20,14 +20,13 @@ GWexpy を使って、最初の解析図を最短で作成しましょう。
 
 ## このページの近道
 
-- [クイックインストール](#install-command)
-- [3行で最初の図を出す](#quick-demo)
+- [クイックインストール](#ja-quickstart-install-command)
+- [3行で最初の図を出す](#ja-quick-demo)
 - [30分で学べるハンズオン](#30分で学べるハンズオン-interactive-tutorial)
 - [複数チャンネルの解析例](#複数チャンネルの解析例)
 - [次のステップ](#next-to-read)
 
-<a id="install-command"></a>
-
+(ja-quickstart-install-command)=
 ## クイックインストール (Quick Install)
 
 GWexpy は現在開発版で、**PyPI / Conda にはまだ公開されていない**ため、まずは GitHub のソースリポジトリから直接インストールしてください：
@@ -42,8 +41,7 @@ pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
 Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、`pygmt` などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda 前提手順から始めてください。
 
-<a id="quick-demo"></a>
-
+(ja-quick-demo)=
 ## 3行で最初の図を出す (3-line Quickstart)
 
 GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。

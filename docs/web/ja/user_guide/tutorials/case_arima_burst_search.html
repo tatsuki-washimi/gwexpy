@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARIMA-Based Burst Detection &mdash; GWexpy Documentation</title>
+  <title>ARIMA を用いたバーストイベント検出 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -36,7 +35,7 @@
     <link rel="prev" title="物理妥当性検証：単位・数値床・健全性テスト" href="case_physics_validation.html" />
    
   
-  <meta property="og:title" content="ARIMA-Based Burst Detection — GWexpy Documentation" />
+  <meta property="og:title" content="ARIMA を用いたバーストイベント検出 — GWexpy Documentation" />
   
   
   <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
@@ -57,7 +56,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   
   
-  <meta name="twitter:title" content="ARIMA-Based Burst Detection — GWexpy Documentation" />
+  <meta name="twitter:title" content="ARIMA を用いたバーストイベント検出 — GWexpy Documentation" />
   
   
   <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
@@ -169,7 +168,7 @@
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメント</a></li>
           <li class="breadcrumb-item"><a href="../../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
-      <li class="breadcrumb-item active">ARIMA-Based Burst Detection</li>
+      <li class="breadcrumb-item active">ARIMA を用いたバーストイベント検出</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_arima_burst_search.ipynb" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -182,37 +181,35 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>このページは Jupyter Notebook から生成されました。
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/case_arima_burst_search.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
-<section id="ARIMA-Based-Burst-Detection">
-<h1>ARIMA-Based Burst Detection<a class="headerlink" href="#ARIMA-Based-Burst-Detection" title="Link to this heading"></a></h1>
+<section id="ARIMA-を用いたバーストイベント検出">
+<h1>ARIMA を用いたバーストイベント検出<a class="headerlink" href="#ARIMA-を用いたバーストイベント検出" title="Link to this heading"></a></h1>
 </section>
-<section id="Idea-sketch-for-burst-gravitational-wave-searches">
-<h1>Idea sketch for burst gravitational-wave searches<a class="headerlink" href="#Idea-sketch-for-burst-gravitational-wave-searches" title="Link to this heading"></a></h1>
-<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_arima_burst_search.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
-<section id="Introduction">
-<h2>Introduction<a class="headerlink" href="#Introduction" title="Link to this heading"></a></h2>
-<p>Detector data are dominated by approximately stationary background noise, while burst gravitational waves (for example from core-collapse supernovae) appear as short, non-stationary transients embedded in that noise.</p>
-<p>This notebook demonstrates the idea of using an <strong>autoregressive model (ARIMA)</strong> to learn the stationary background and make burst-like residuals stand out. It is a simple example of an unmodeled search strategy that does not rely on waveform templates.</p>
-<section id="References">
-<h3>References<a class="headerlink" href="#References" title="Link to this heading"></a></h3>
+<section id="バースト重力波探索のアイデアスケッチ">
+<h1>バースト重力波探索のアイデアスケッチ<a class="headerlink" href="#バースト重力波探索のアイデアスケッチ" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<section id="はじめに">
+<h2>はじめに<a class="headerlink" href="#はじめに" title="Link to this heading"></a></h2>
+<p>検出器データは近似的に定常な背景ノイズに支配されており、バースト重力波（例：コアコラプス超新星由来）はそのノイズ中に埋め込まれた短時間の非定常過渡現象として現れます。</p>
+<p>本ノートブックでは、<strong>自己回帰モデル（ARIMA）</strong> を用いて定常背景を学習し、バースト的な残差を際立たせるアイデアを示します。これは波形テンプレートに依存しない、アンモデルド探索戦略の基本的な例です。</p>
+<section id="参考文献">
+<h3>参考文献<a class="headerlink" href="#参考文献" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Autoregressive Search of Gravitational Waves: Denoising (ARIMA_DeNoise.pdf)</p></li>
 <li><p>BEACON: Autoregressive Search for Unmodeled transients (BEACON.pdf)</p></li>
 <li><p>Sparkler: Autoregressive Search of Unmodeled GW (Sparkler_1min.pdf)</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -251,11 +248,11 @@
 </div>
 </section>
 </section>
-<section id="1.-Generate-detector-noise">
-<h2>1. Generate detector noise<a class="headerlink" href="#1.-Generate-detector-noise" title="Link to this heading"></a></h2>
-<p>First we simulate detector background noise. When available we use an aLIGO design-sensitivity model; otherwise we fall back to generic colored noise.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<section id="1.-検出器ノイズの生成">
+<h2>1. 検出器ノイズの生成<a class="headerlink" href="#1.-検出器ノイズの生成" title="Link to this heading"></a></h2>
+<p>まず検出器の背景ノイズをシミュレートします。aLIGO 設計感度モデルが利用可能な場合はそれを使用し、利用できない場合は汎用カラードノイズにフォールバックします。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># === Parameters ===</span>
@@ -288,12 +285,28 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Noise model: aLIGO (pygwinc)
+Sample count: 65536, dt=0.000244140625 ss, duration=16s
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_arima_burst_search_4_1.png" src="../../../../_images/web_ja_user_guide_tutorials_case_arima_burst_search_4_1.png" />
+</div>
+</div>
 </section>
-<section id="2.-Inject-a-burst-signal">
-<h2>2. Inject a burst signal<a class="headerlink" href="#2.-Inject-a-burst-signal" title="Link to this heading"></a></h2>
-<p>We inject a sine-Gaussian burst into the second half of the data and use it as the test segment.</p>
+<section id="2.-バースト信号の注入">
+<h2>2. バースト信号の注入<a class="headerlink" href="#2.-バースト信号の注入" title="Link to this heading"></a></h2>
+<p>サイン・ガウスバーストをデータの後半に注入し、それをテストセグメントとして使用します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_sine_gaussian</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t_center</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
@@ -345,11 +358,11 @@
 </div>
 </div>
 </section>
-<section id="3.-Learn-the-background-with-ARIMA">
-<h2>3. Learn the background with ARIMA<a class="headerlink" href="#3.-Learn-the-background-with-ARIMA" title="Link to this heading"></a></h2>
-<p>We fit an ARIMA model on the first 8 seconds, where no burst is present, so that the model captures the stationary background statistics. The data are moderately downsampled to keep the example lightweight.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<section id="3.-ARIMA-による背景学習">
+<h2>3. ARIMA による背景学習<a class="headerlink" href="#3.-ARIMA-による背景学習" title="Link to this heading"></a></h2>
+<p>バーストが存在しない最初の 8 秒間のデータに ARIMA モデルをフィットし、定常背景の統計的特性をモデルが学習できるようにします。例を軽量に保つため、データは適度にダウンサンプリングされます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># === Training Data Preparation ===</span>
@@ -376,12 +389,57 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Training data: 4096 samples, Fs=512.0 Hz Hz
+
+ARIMA Fit Summary (Auto-ARIMA):
+                               SARIMAX Results
+==============================================================================
+Dep. Variable:                      y   No. Observations:                 4096
+Model:                        SARIMAX   Log Likelihood               43573.081
+Date:                Thu, 23 Apr 2026   AIC                         -87142.162
+Time:                        03:55:35   BIC                         -87129.526
+Sample:                             0   HQIC                        -87137.688
+                               - 4096
+Covariance Type:                  opg
+==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+intercept  -4.825e-06   2.55e-14  -1.89e+08      0.000   -4.82e-06   -4.82e-06
+sigma2      1.097e-11   3.01e-11      0.365      0.715    -4.8e-11    6.99e-11
+===================================================================================
+Ljung-Box (L1) (Q):                3397.18   Jarque-Bera (JB):               463.14
+Prob(Q):                              0.00   Prob(JB):                         0.00
+Heteroskedasticity (H):               1.00   Skew:                             0.64
+Prob(H) (two-sided):                  1.00   Kurtosis:                         1.96
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+[2] Covariance matrix is singular or near-singular, with condition number 1.89e+18. Standard errors may be unstable.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/statsmodels/stats/stattools.py:125: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  skew = stats.skew(resids, axis=axis)
+/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/statsmodels/stats/stattools.py:126: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  kurtosis = 3 + stats.kurtosis(resids, axis=axis)
+</pre></div></div>
+</div>
 </section>
-<section id="4.-Compute-residuals-and-detect-anomalies">
-<h2>4. Compute residuals and detect anomalies<a class="headerlink" href="#4.-Compute-residuals-and-detect-anomalies" title="Link to this heading"></a></h2>
-<p>We apply the fitted model to the remaining data and inspect the residuals. Stationary noise should leave small residuals, while an unmodeled burst produces a localized excess.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<section id="4.-残差の計算と異常検出">
+<h2>4. 残差の計算と異常検出<a class="headerlink" href="#4.-残差の計算と異常検出" title="Link to this heading"></a></h2>
+<p>フィットしたモデルを残りのデータに適用し、残差を調べます。定常ノイズでは残差が小さく収まりますが、モデル化されていないバーストが存在すると局所的な過剰が生じます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># === Apply to test data ===</span>
@@ -421,12 +479,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_arima_burst_search_10_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_arima_burst_search_10_0.png" />
+</div>
+</div>
 </section>
-<section id="5.-Evaluate-performance-versus-SNR">
-<h2>5. Evaluate performance versus SNR<a class="headerlink" href="#5.-Evaluate-performance-versus-SNR" title="Link to this heading"></a></h2>
-<p>Finally we repeat the injection for several signal-to-noise ratios to estimate how the residual-based detection responds as the burst becomes weaker.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<section id="5.-SNR-に対する性能評価">
+<h2>5. SNR に対する性能評価<a class="headerlink" href="#5.-SNR-に対する性能評価" title="Link to this heading"></a></h2>
+<p>最後に、さまざまな信号対雑音比でバースト注入を繰り返し、バーストが弱くなるにつれて残差ベースの検出がどのように応答するかを推定します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simple Monte Carlo evaluation</span>
@@ -466,16 +531,31 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Evaluating SNR sensitivity...
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_arima_burst_search_12_1.png" src="../../../../_images/web_ja_user_guide_tutorials_case_arima_burst_search_12_1.png" />
+</div>
+</div>
 </section>
-<section id="Summary">
-<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
-<section id="Key-ideas-behind-ARIMA-based-burst-searches">
-<h3>Key ideas behind ARIMA-based burst searches<a class="headerlink" href="#Key-ideas-behind-ARIMA-based-burst-searches" title="Link to this heading"></a></h3>
+<section id="まとめ">
+<h2>まとめ<a class="headerlink" href="#まとめ" title="Link to this heading"></a></h2>
+<section id="ARIMA-を用いたバースト探索の核心的なアイデア">
+<h3>ARIMA を用いたバースト探索の核心的なアイデア<a class="headerlink" href="#ARIMA-を用いたバースト探索の核心的なアイデア" title="Link to this heading"></a></h3>
 <ol class="arabic simple">
-<li><p><strong>Background suppression</strong>: model and subtract stationary noise to improve the visibility of weak transients.</p></li>
-<li><p><strong>Residual analysis</strong>: monitor deviations from the expected residual distribution to identify unmodeled events.</p></li>
+<li><p><strong>背景抑制</strong>: 定常ノイズをモデル化・差し引きすることで、弱い過渡現象の視認性を向上させる。</p></li>
+<li><p><strong>残差解析</strong>: 期待される残差分布からの逸脱を監視し、モデル化されていないイベントを同定する。</p></li>
 </ol>
-<p>Production pipelines such as BEACON extend this idea to multiple channels and coherence checks, but this notebook captures the core intuition in a compact example.</p>
+<p>BEACON などの本番パイプラインはこのアイデアを複数チャンネルおよびコヒーレンスチェックへと拡張していますが、本ノートブックはその核心的な直観をコンパクトな例で示しています。</p>
 </section>
 </section>
 </section>
@@ -492,7 +572,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

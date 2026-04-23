@@ -91,7 +91,7 @@
 .. seealso::
    次に読むページ:
 
-   - :doc:`../user_guide/tutorials/index` で notebook ベースの学習導線をたどる
+   - :doc:`../user_guide/tutorials/index` で notebook ベースの学習ステップをたどる
    - :doc:`api/index` でカテゴリ別の API 入口を開く
    - :doc:`topics` で理論、規約、補助資料を概念別に探す
 

@@ -6,13 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." name="description" />
 
-    <meta property="article:modified_time" content="2026-04-20T17:44:56+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GWexpy Documentation &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../_static/icon.svg"/>
@@ -98,8 +97,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">GWexpy Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#find-the-right-guide-for-you">Find the right guide for you</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#browse-by-category">Browse by category</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visual-examples">Visual Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#suggested-starting-points">Suggested starting points</a><ul>
@@ -163,7 +162,7 @@
   <section id="gwexpy-documentation">
 <span id="hub-en-hero"></span><h1>GWexpy Documentation<a class="headerlink" href="#gwexpy-documentation" title="Link to this heading"></a></h1>
 <p>GWexpy extends GWpy with new containers and numerical utilities for time-series and frequency-series data analysis.</p>
-<p>v0.1.1 · Python ≥ 3.9 · Last updated: Apr 21, 2026</p>
+<p>v0.1.1 · Python ≥ 3.9 · Last updated: Apr 23, 2026</p>
 <div class="gw-hub-lang-switch">
   <div id="lang-pill">
     <span>🌐</span>
@@ -171,64 +170,33 @@
     <span class="lang-sep">|</span>
     <span class="lang-current">English</span>
   </div>
-</div><section class="gw-hub-hero">
-  <div class="gw-hub-panel gw-hub-copy">
-    <p class="gw-hub-eyebrow">Documentation Hub</p>
-    <h2 class="gw-hub-title">Choose a workflow, not just a page</h2>
-    <p class="gw-hub-lede">
-      This top page groups matrix containers, field operations, fitting, and signal-processing
-      paths into task-oriented entry points. Start with Quick Start, or jump directly to the
-      card that matches the analysis you want to run.
-    </p>
-    <dl class="gw-hub-meta">
-      <div>
-        <dt>Containers</dt>
-        <dd>Matrix / Field / Series</dd>
-      </div>
-      <div>
-        <dt>Analysis</dt>
-        <dd>Fitting, BrUCo, MCMC</dd>
-      </div>
-      <div>
-        <dt>Install</dt>
-        <dd>Git checkout first</dd>
-      </div>
-    </dl>
-  </div>
-  <figure class="gw-hub-panel gw-hub-figure">
-    <img src="/_static/images/phase3/gateway_hero_scientific.png" alt="FrequencySeriesMatrix overview with a resonance fit">
-    <p>
-      A matrix-level frequency response overview paired with a resonance fit for one extracted
-      channel, showing the container model and analysis workflow in one figure.
-    </p>
-  </figure>
-</section><section class="gw-hub-duo">
+</div><section class="gw-hub-duo">
   <section class="gw-hub-panel">
-    <p>Quick install</p>
+    <p>Quick installation</p>
     <pre><code>git clone https://github.com/tatsuki-washimi/gwexpy.git
-cd gwexpy
-pip install -e .</code></pre>
+ cd gwexpy
+ pip install -e .</code></pre>
   </section>
   <section class="gw-hub-panel">
     <p>3-line demo</p>
     <pre><code>from gwexpy.timeseries import FrequencySeriesMatrix
-fsmtx = FrequencySeriesMatrix.read("data.hdf5")
-fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
+ fsmtx = FrequencySeriesMatrix.read("data.hdf5")
+ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
   </section>
 </section><div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><strong>Page Role</strong>: documentation landing page
-<strong>Audience</strong>: first-time users, GWpy users, and analysts looking for practical workflows
+<p><strong>Page Role</strong>: Documentation Landing Page
+<strong>Audience</strong>: First-time users, GWpy analysts, and developers looking for integrated workflows.
 <strong>Search Hints</strong>: <code class="docutils literal notranslate"><span class="pre">quickstart</span></code>, <code class="docutils literal notranslate"><span class="pre">installation</span></code>, <code class="docutils literal notranslate"><span class="pre">tutorials</span></code>, <code class="docutils literal notranslate"><span class="pre">examples</span></code>, <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code></p>
 </div>
-<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-shadow-sm reference internal" href="user_guide/quickstart.html"><span class="doc">🚀 Quick Start (Get started in 5 minutes)</span></a></span></p>
+<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-shadow-sm reference internal" href="user_guide/quickstart.html"><span class="doc">🚀 Quick Start (Learn the basics in 5 minutes)</span></a></span></p>
 <hr class="docutils" id="hub-en-workflow-entry" />
-<section id="find-the-right-guide-for-you">
-<h2>Find the right guide for you<a class="headerlink" href="#find-the-right-guide-for-you" title="Link to this heading"></a></h2>
+<section id="select-your-guide">
+<h2>Select your guide<a class="headerlink" href="#select-your-guide" title="Link to this heading"></a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><cite>Tutorials</cite> are feature-oriented learning paths that teach one class or capability at a time.
-<cite>Case Studies</cite> are goal-oriented workflows that combine multiple features around one analysis task.</p>
+<p><strong>Tutorials</strong> are feature-oriented paths for learning individual classes or capabilities.
+<strong>Case Studies</strong> are workflow-oriented examples combining multiple features for practical analysis.</p>
 </div>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 grid-container docutils">
 <div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
@@ -237,7 +205,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 🎓 New to GWexpy?</div>
-<p class="sd-card-text">Learn the basics</p>
+<p class="sd-card-text">Foundation</p>
 <ul class="simple">
 <li><p class="sd-card-text">Installation Guide</p></li>
 <li><p class="sd-card-text">Feature-oriented Tutorials</p></li>
@@ -250,7 +218,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 🔬 For Analysts</div>
-<p class="sd-card-text">Practical examples</p>
+<p class="sd-card-text">Applications</p>
 <ul class="simple">
 <li><p class="sd-card-text">Goal-oriented Case Studies</p></li>
 <li><p class="sd-card-text">Advanced Signal Processing</p></li>
@@ -263,10 +231,10 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 🔄 For GWpy Users</div>
-<p class="sd-card-text">Migration and compatibility</p>
+<p class="sd-card-text">Interoperability</p>
 <ul class="simple">
-<li><p class="sd-card-text">Difference recipes and compatibility</p></li>
-<li><p class="sd-card-text">Path to the added-API index</p></li>
+<li><p class="sd-card-text">Migration recipes</p></li>
+<li><p class="sd-card-text">Added API index</p></li>
 </ul>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/gwexpy_for_gwpy_users_en.html"><span class="doc">Migration Guide for GWpy Users</span></a></div>
@@ -275,8 +243,8 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 </div>
 </section>
 <hr class="docutils" />
-<section id="find-by-what-you-want-to-do">
-<h2>Find by what you want to do<a class="headerlink" href="#find-by-what-you-want-to-do" title="Link to this heading"></a></h2>
+<section id="browse-by-category">
+<h2>Browse by category<a class="headerlink" href="#browse-by-category" title="Link to this heading"></a></h2>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -284,7 +252,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 📈 Time-Series Analysis</div>
-<p class="sd-card-text">Read, plot, and filter time-series data</p>
+<p class="sd-card-text">Load, plot, and filter time-series data.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/intro_timeseries.html"><span class="doc">TimeSeries: Basics</span></a></div>
 </div>
@@ -293,7 +261,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 📊 Spectrogram Analysis</div>
-<p class="sd-card-text">STFT, Q-scan, and time-frequency representation</p>
+<p class="sd-card-text">STFT, Q-scans, and time-frequency maps.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/intro_spectrogram.html"><span class="doc">Spectrogram: Basics</span></a></div>
 </div>
@@ -302,7 +270,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 🌊 Field Data Operations</div>
-<p class="sd-card-text">ScalarField / VectorField / TensorField basics</p>
+<p class="sd-card-text">ScalarField / VectorField / TensorField logic.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/field_scalar_intro.html"><span class="doc">Field API: ScalarField Basics</span></a></div>
 </div>
@@ -315,7 +283,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 🔧 Noise Budget (BrUCo)</div>
-<p class="sd-card-text">Decompose and visualise noise contributions</p>
+<p class="sd-card-text">Decompose and visualize noise contributions.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/advanced_bruco.html"><span class="doc">Bruco: Basics</span></a></div>
 </div>
@@ -324,7 +292,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 📐 Fitting &amp; MCMC</div>
-<p class="sd-card-text">GLS, Bayesian fitting, MCMC sampling</p>
+<p class="sd-card-text">GLS, Bayesian fitting, and MCMC sampling.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/intro_fitting.html"><span class="doc">Fitting: Basics</span></a></div>
 </div>
@@ -332,8 +300,8 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-🧮 Pre-processing &amp; ML Pipeline</div>
-<p class="sd-card-text">Feature extraction, normalisation, scikit-learn</p>
+🧮 ML Pre-processing</div>
+<p class="sd-card-text">Feature extraction and scikit-learn integration.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/ml_preprocessing_methods.html"><span class="doc">ML Preprocessing: Individual Methods</span></a></div>
 </div>
@@ -346,8 +314,8 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 📁 Multi-Format I/O</div>
-<p class="sd-card-text">HDF5 / GBD / Frame / Zarr and more</p>
-<p class="sd-card-text"><strong>GWexpy differentiator</strong></p>
+<p class="sd-card-text">HDF5 / GBD / Frame / Zarr support.</p>
+<p class="sd-card-text"><strong>Core Strengths</strong></p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/case_gbd_format.html"><span class="doc">Case Study: GBD Format I/O</span></a></div>
 </div>
@@ -355,9 +323,9 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover gw-highlight docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-🔗 Library Interoperability</div>
-<p class="sd-card-text">ObsPy / LAL / Finesse / PyCBC integration</p>
-<p class="sd-card-text"><strong>GWexpy differentiator</strong></p>
+🔗 Interoperability</div>
+<p class="sd-card-text">ObsPy / LAL / Finesse / PyCBC tools.</p>
+<p class="sd-card-text"><strong>Core Strengths</strong></p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/case_seismic_obspy.html"><span class="doc">Case Study: Seismic Analysis with ObsPy</span></a></div>
 </div>
@@ -366,7 +334,8 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 🔢 Matrix Operations</div>
-<p class="sd-card-text">TimeSeriesMatrix / FrequencySeriesMatrix batch processing</p>
+<p class="sd-card-text">Vectorized processing for TimeSeriesMatrix.
+TimeSeriesMatrix / FrequencySeriesMatrix batch processing.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide/tutorials/matrix_timeseries.html"><span class="doc">TimeSeriesMatrix: Matrix Basics</span></a></div>
 </div>
@@ -428,6 +397,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/installation.html">Installation Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html#at-a-glance">At a Glance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html#on-this-page">On This Page</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html#install-commands">Install Commands</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html#installation-steps">1. Installation Steps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html#dependency-troubleshooting">2.1. Dependency Troubleshooting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/installation.html#optional-dependencies-extras-details">3. Optional Dependencies (Extras) Details</a></li>
@@ -658,7 +628,7 @@ fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 17:44:56.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

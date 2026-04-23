@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T11:05:33+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Field API: ScalarField Basics &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -108,8 +107,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-the-right-guide-for-you">Find the right guide for you</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../index.html#find-by-what-you-want-to-do">Find by what you want to do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#browse-by-category">Browse by category</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
@@ -187,13 +186,11 @@
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/field_scalar_intro.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="Field-API:-ScalarField-Basics">
@@ -222,7 +219,7 @@
 <h2>Setup<a class="headerlink" href="#Setup" title="Link to this heading"></a></h2>
 <p>Import the necessary libraries.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Suppress SWIGLAL and other warnings for clean output</span>
@@ -281,7 +278,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -300,7 +297,7 @@
 <h2>1. ScalarField Initialization and Metadata<a class="headerlink" href="#1.-ScalarField-Initialization-and-Metadata" title="Link to this heading"></a></h2>
 <p>Create a <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> object and check its metadata.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create 4D data (10 time points × 8×8×8 spatial grid)</span>
@@ -361,7 +358,7 @@ Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z
 <p>An important feature of <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> is that it <strong>always maintains 4 dimensions even when sliced</strong>. Even when using integer indices, they are automatically converted to length-1 slices.</p>
 <p><strong>Caution:</strong> avoid calling <code class="docutils literal notranslate"><span class="pre">np.squeeze()</span></code> (or any equivalent shape-dropping step) unless you explicitly want to leave the Field API. Keeping singleton axes preserves axis metadata and makes later FFT or plotting steps less error-prone.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Slice with integer index (would become 3D with regular ndarray)</span>
@@ -386,7 +383,7 @@ Axis names preserved: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use integer indices on multiple axes</span>
@@ -412,7 +409,7 @@ Value: [[[[-0.51827022]]]]
 <h2>3. Time-Frequency Transformation (FFT on Axis 0)<a class="headerlink" href="#3.-Time-Frequency-Transformation-(FFT-on-Axis-0)" title="Link to this heading"></a></h2>
 <p>You can transform the time axis to the frequency axis using the <code class="docutils literal notranslate"><span class="pre">fft_time()</span></code> and <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> methods. The same normalization as GWpy’s <code class="docutils literal notranslate"><span class="pre">TimeSeries.fft()</span></code> is adopted.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create ScalarField in time domain (sine wave)</span>
@@ -456,7 +453,7 @@ Axis0 domain changed: time → frequency
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot frequency spectrum (select one point in x,y,z)</span>
@@ -504,7 +501,7 @@ Peak frequency: 10.16 Hz (expected: 10.0 Hz)
 <h3>Inverse FFT (Frequency → Time)<a class="headerlink" href="#Inverse-FFT-(Frequency-→-Time)" title="Link to this heading"></a></h3>
 <p>You can return to the original time domain with <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inverse FFT</span>
@@ -553,7 +550,7 @@ Max reconstruction error: 4.44e-16 V
 <h2>4. Real Space-K Space Transformation (FFT on Spatial Axes)<a class="headerlink" href="#4.-Real-Space-K-Space-Transformation-(FFT-on-Spatial-Axes)" title="Link to this heading"></a></h2>
 <p>You can transform spatial axes to wavenumber space (K-space) using <code class="docutils literal notranslate"><span class="pre">fft_space()</span></code> and <code class="docutils literal notranslate"><span class="pre">ifft_space()</span></code>. Signed FFT with angular wavenumber k = 2π / λ is used.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create data with periodic structure in space</span>
@@ -601,7 +598,7 @@ Axis names: (&#39;t&#39;, &#39;kx&#39;, &#39;y&#39;, &#39;z&#39;)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot K-space spectrum</span>
@@ -647,7 +644,7 @@ Peak wavenumber: 1.57 rad/m (expected: ±1.57 rad/m)
 <h3>Wavelength Calculation<a class="headerlink" href="#Wavelength-Calculation" title="Link to this heading"></a></h3>
 <p>In K-space, you can calculate the wavelength using the <code class="docutils literal notranslate"><span class="pre">wavelength()</span></code> method.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate wavelength</span>
@@ -674,7 +671,7 @@ Calculated wavelengths range: 1.00 - 8.00 m
 <h3>FFT on All Spatial Axes<a class="headerlink" href="#FFT-on-All-Spatial-Axes" title="Link to this heading"></a></h3>
 <p>If you omit the <code class="docutils literal notranslate"><span class="pre">axes</span></code> parameter, you can FFT all spatial axes together.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT on all spatial axes</span>
@@ -710,7 +707,7 @@ Max reconstruction error: 2.29e-16
 <h3>FieldList<a class="headerlink" href="#FieldList" title="Link to this heading"></a></h3>
 <p>Manage multiple fields in list format and apply FFT operations in bulk.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create three ScalarFields with different amplitudes</span>
@@ -747,7 +744,7 @@ Number of fields: 3
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Execute time FFT in bulk</span>
@@ -775,7 +772,7 @@ All fields transformed to frequency domain:
 <h3>FieldDict<a class="headerlink" href="#FieldDict" title="Link to this heading"></a></h3>
 <p>Manage named fields in dictionary format.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create dictionary of named fields</span>
@@ -797,7 +794,7 @@ Field names: [&#39;channel_A&#39;, &#39;channel_B&#39;, &#39;channel_C&#39;]
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Execute spatial FFT in bulk</span>
@@ -830,7 +827,7 @@ channel_C: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;
 <li><p><strong>Coherence map</strong>: Visualize spatial coherence</p></li>
 </ol>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate simulation data</span>
@@ -1138,7 +1135,7 @@ ScalarField([[[[ 0.08684844],
 <h3>Power Spectral Density (PSD)<a class="headerlink" href="#Power-Spectral-Density-(PSD)" title="Link to this heading"></a></h3>
 <p>Calculate the PSD at a specific location and check frequency components.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare PSD at source position (x=1m) and far field (x=4m)</span>
@@ -1189,7 +1186,7 @@ ScalarField([[[[ 0.08684844],
 </div>
 <p>This section will be updated once the visualization API is implemented.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualization method plot_freq_space() will be available in v0.2.0</span>
@@ -1219,7 +1216,7 @@ Note: Frequency-space visualization will be added in a future release
 <h3>Cross-Correlation and Delay Estimation<a class="headerlink" href="#Cross-Correlation-and-Delay-Estimation" title="Link to this heading"></a></h3>
 <p>Calculate cross-correlation between a reference point (source position) and other locations to visualize signal propagation delays.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot_cross_correlation() visualization method will be available in v0.2.0</span>
@@ -1254,7 +1251,7 @@ Note: Cross-correlation visualization will be added in a future release
 <h3>Coherence Map<a class="headerlink" href="#Coherence-Map" title="Link to this heading"></a></h3>
 <p>Display spatial coherence at a specific frequency (here 30Hz).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot_coherence_map() visualization method will be available in v0.2.0</span>
@@ -1292,7 +1289,7 @@ Note: Coherence map visualization will be added in a future release
 <li><p><strong>Related theory</strong>: <a class="reference internal" href="../scalarfield_slicing.html"><span class="doc">Scalar Field Slicing Guide</span></a>, <a class="reference internal" href="../validated_algorithms.html"><span class="doc">Validated Algorithms</span></a></p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Time FFT invariant check: ifft_time(fft_time(f)) ≈ f</span>
@@ -1345,7 +1342,7 @@ Time FFT invariant check: PASSED
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 11:05:33.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

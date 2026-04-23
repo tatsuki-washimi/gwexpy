@@ -4,7 +4,7 @@ GWexpy
 .. raw:: html
 
    <style>
-   /* ゲートウェイ専用: サイドバー非表示・フルワイド化 */
+   /* Gateway Specific: Hide sidebar and make full wide */
    .wy-nav-side          { display: none !important; }
    .wy-nav-content-wrap  { margin-left: 0 !important; }
    .wy-nav-content       { max-width: 900px !important; margin: 0 auto !important; }
@@ -20,8 +20,8 @@ GWexpy
        Extended Python Toolkit for Gravitational-Wave Data Analysis
      </p>
      <p style="font-size:1.05em; color:#777; margin-top:0;">
-       GWpy を拡張する多次元データ解析ライブラリ —
-       行列・フィールド・フィッティング・信号処理を統合
+       A multi-dimensional data analysis library extending GWpy — 
+       integrating matrices, fields, fitting, and advanced signal processing.
      </p>
    </div>
 
@@ -31,65 +31,65 @@ GWexpy
 
    .. grid-item::
 
-      .. button-ref:: web/ja/index
+      .. button-ref:: web/en/index
          :ref-type: doc
          :color: primary
          :shadow:
          :expand:
 
-         📖 日本語で始める
+         📖 English Documentation
 
    .. grid-item::
 
-      .. button-ref:: web/en/index
+      .. button-ref:: web/ja/index
          :ref-type: doc
          :color: secondary
          :shadow:
          :expand:
 
-         📖 English Docs
+         📖 日本語ドキュメント
 
 ----
 
-主な特徴
---------
+Key Features
+------------
 
 .. grid:: 3
    :gutter: 3
 
-   .. grid-item-card:: 🔬 多次元フィールド
+   .. grid-item-card:: 🔬 Multidimensional Fields
       :text-align: center
 
       ``ScalarField`` / ``VectorField`` / ``TensorField``
 
-      空間・時間を跨ぐ多次元データを統一インタフェースで操作
+      Uniform interface for multidimensional data across space and time.
 
-   .. grid-item-card:: ⚡ 数値的安定性
+   .. grid-item-card:: ⚡ Numerical Stability
       :text-align: center
 
-      Safe Log・ゼロ除算防護・NaN 伝播検出
+      Safe Log / Zero-division protection / NaN propagation detection
 
-      科学計算に必要な堅牢な数値処理を自動確保
+      Automatic robustness for mission-critical scientific computing.
 
-   .. grid-item-card:: 📊 統合解析ツール群
+   .. grid-item-card:: 📊 Integrated Analysis Tools
       :text-align: center
 
       BrUCo / ARIMA / Fitting / MCMC
 
-      ノイズ解析から高度なフィッティングまで一貫して提供
+      Seamless transition from noise characterization to advanced fitting.
 
 ----
 
-クイックインストール
---------------------
+Quick Installation
+------------------
 
 .. code-block:: bash
 
    git clone https://github.com/tatsuki-washimi/gwexpy.git
    cd gwexpy && pip install -e .
 
-最短デモ
---------
+Quick Demo
+----------
 
 .. code-block:: python
 
@@ -98,7 +98,7 @@ GWexpy
    fsmtx.fit(model="lorentzian").plot()
 
 .. image:: _static/images/hero_plot.png
-   :alt: FrequencySeriesMatrix Fitting 出力
+   :alt: FrequencySeriesMatrix Fitting Output
    :align: center
    :width: 100%
 

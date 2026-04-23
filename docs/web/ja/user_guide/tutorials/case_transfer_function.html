@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>チュートリアル: 伝達関数の測定 &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -182,27 +181,25 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>このページは Jupyter Notebook から生成されました。
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/case_transfer_function.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_transfer_function.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
-<p><strong>ケース導線:</strong></p>
+<p><strong>ケーススタディのフロー:</strong></p>
 <ul class="simple">
-<li><p>正本ギャラリーに戻る: <a class="reference internal" href="../../examples/index.html"><span class="doc">ケーススタディ一覧</span></a></p></li>
+<li><p>メインのギャラリーに戻る: <a class="reference internal" href="../../examples/index.html"><span class="doc">ケーススタディ一覧</span></a></p></li>
 <li><p>関連リファレンス: <a class="reference internal" href="../../reference/index.html"><span class="doc">リファレンス総合入口</span></a>, <a class="reference internal" href="../../reference/api/frequencyseries.html"><span class="doc">API: 周波数系列</span></a>, <a class="reference internal" href="../../reference/topics.html"><span class="doc">トピック別参照</span></a></p></li>
 <li><p>前後の注目ワークフロー: <a class="reference internal" href="case_noise_budget.html"><span class="doc">ノイズバジェット解析</span></a>, <a class="reference internal" href="case_active_damping.html"><span class="doc">アクティブダンピング</span></a></p></li>
 </ul>
 <section id="チュートリアル:-伝達関数の測定">
 <h1>チュートリアル: 伝達関数の測定<a class="headerlink" href="#チュートリアル:-伝達関数の測定" title="Link to this heading"></a></h1>
-<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_transfer_function.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_transfer_function.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このチュートリアルでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> を使用して測定データからシステムの伝達関数（Transfer Function）を推定し、 物理モデルへのフィッティングを行ってパラメータを同定する流れを解説します。</p>
 <p><strong>シナリオ:</strong> ある機械振動系（または電気回路）に白色雑音を入力し、その応答を測定しました。 この入出力データから、システムの共振周波数 <span class="math notranslate nohighlight">\(f_0\)</span> と Q値 <span class="math notranslate nohighlight">\(Q\)</span> を求めます。</p>
 <p><strong>ワークフロー:</strong></p>
@@ -212,7 +209,7 @@
 <li><p><strong>モデルフィッティング</strong>: 推定した伝達関数に理論モデル（ローレンツ関数など）を当てはめ、パラメータを推定します。</p></li>
 </ol>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -244,35 +241,35 @@
 </ul>
 <p>出力信号には、測定に伴うノイズも付加します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- 設定: 共振周波数と Q を持つ 2 次系を用意し、測定からモード物理量を回収できるか確認します。 ---</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span>  <span class="c1"># サンプルレート [Hz]</span>
-<span class="n">duration</span> <span class="o">=</span> <span class="mf">60.0</span>  <span class="c1"># 記録長 [s]</span>
-<span class="n">f0_true</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># 真の共振周波数 [Hz]</span>
-<span class="n">Q_true</span> <span class="o">=</span> <span class="mf">50.0</span>  <span class="c1"># 真の Q 値</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Parameter Settings: choose a resonator whose f0 and Q mimic a narrow mechanical mode worth identifying from measured data. ---</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span>  <span class="c1"># Sampling frequency [Hz]</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mf">60.0</span>  <span class="c1"># Duration [s]</span>
+<span class="n">f0_true</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># True resonance frequency [Hz]</span>
+<span class="n">Q_true</span> <span class="o">=</span> <span class="mf">50.0</span>  <span class="c1"># True quality factor</span>
 
-<span class="c1"># --- 時間軸と入力信号: 広帯域入力でプラント全体を一度に励振し、共振を測定可能にします。 ---</span>
+<span class="c1"># --- Time axis and input signal: broadband drive excites the plant across frequency so the resonance can be measured in one experiment. ---</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>  <span class="c1"># 白色に近い励振で特定周波数だけに偏らず応答を測ります。</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>  <span class="c1"># Broadband excitation approximates a swept identification drive without privileging one frequency.</span>
 
-<span class="c1"># --- 物理系シミュレーション: 懸架系やアクチュエータに現れる 1 本の機械共振を模擬します。 ---</span>
-<span class="c1"># H(s) の f0 はモード周波数、Q は減衰の弱さを表すので、後でこの 2 つを回収できるかが測定の要点です。</span>
+<span class="c1"># --- Physical System Simulation (using scipy.signal): this second-order plant stands in for a suspension or actuator resonance. ---</span>
+<span class="c1"># H(s) uses f0 for the modal frequency and Q for damping width, so fitting them back out tests whether the measurement preserves the true mode shape.</span>
 <span class="n">w0</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f0_true</span>
 <span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="n">w0</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">den</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">w0</span> <span class="o">/</span> <span class="n">Q_true</span><span class="p">,</span> <span class="n">w0</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">system</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">TransferFunction</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">den</span><span class="p">)</span>
 
-<span class="c1"># 有限長の広帯域励振に対する応答を作り、実測と同じ条件で伝達関数推定を行います。</span>
+<span class="c1"># Simulate the time response to the broadband drive so transfer estimation sees the same finite-duration effects as a real measurement.</span>
 <span class="n">_</span><span class="p">,</span> <span class="n">output_clean</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lsim</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">U</span><span class="o">=</span><span class="n">input_data</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
 
-<span class="c1"># --- 計測雑音を加える: コヒーレンスで「どこまで測定を信じてよいか」を判定できるようにします。 ---</span>
-<span class="c1"># ここではセンサ読み出し雑音を仮定し、応答が小さい帯域ほど推定が不安定になる状況を再現します。</span>
+<span class="c1"># --- Add measurement noise: coherence later tells us whether this readout noise is low enough to trust the estimated transfer function. ---</span>
+<span class="c1"># Treat this as sensor/readout noise, which degrades phase and gain estimates where the plant response is weak.</span>
 <span class="n">measurement_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
 <span class="n">output_data</span> <span class="o">=</span> <span class="n">output_clean</span> <span class="o">+</span> <span class="n">measurement_noise</span>
 
-<span class="c1"># --- gwexpy TimeSeries に包んで、実測チャンネルと同じ API で解析できる形にします。 ---</span>
+<span class="c1"># --- Wrap the drive and response as TimeSeries so the same workflow applies to experimental channels. ---</span>
 <span class="n">ts_input</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 <span class="n">ts_output</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">output_data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Output&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 
@@ -304,29 +301,29 @@ Output data shape: (122880,)
 <p>入出力の時系列データ <code class="docutils literal notranslate"><span class="pre">ts_input</span></code> と <code class="docutils literal notranslate"><span class="pre">ts_output</span></code> から、周波数応答関数（伝達関数）を推定します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code> メソッドを使用します。</p>
 <p>また、測定の信頼性を確認するために<strong>コヒーレンス（Coherence）</strong>も計算します。 コヒーレンスが 1 に近い周波数帯域は、入出力の関係が線形であり、ノイズの影響が少ないことを示します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT 長は 2 秒平均とし、ランダム雑音を抑えつつ 300 Hz 付近の共振を十分に分解します。</span>
-<span class="n">fftlength</span> <span class="o">=</span> <span class="mf">2.0</span>  <span class="c1"># 2 秒ごとに FFT して平均</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT settings: average 2-second segments so random measurement noise is reduced without washing out the 300 Hz resonance.</span>
+<span class="n">fftlength</span> <span class="o">=</span> <span class="mf">2.0</span>  <span class="c1"># FFT every 2 seconds and average</span>
 
-<span class="c1"># Output/Input からプラント応答を求め、どの周波数でどれだけ増幅・位相回転するかを見ます。</span>
+<span class="c1"># Estimate Output/Input so the plant response appears directly in gain and phase.</span>
 <span class="n">tf</span> <span class="o">=</span> <span class="n">ts_input</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">ts_output</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">)</span>
 
-<span class="c1"># コヒーレンスは信頼度指標で、低い帯域では雑音優勢のため TF を鵜呑みにしないようにします。</span>
+<span class="c1"># Coherence is the confidence check: low coherence means the response is noise dominated and the transfer estimate should not be over-interpreted.</span>
 <span class="n">coh</span> <span class="o">=</span> <span class="n">ts_input</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">ts_output</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
 
-<span class="c1"># --- ボード線図とコヒーレンスを並べ、物理的な応答と推定の信頼性を同時に確認します。 ---</span>
+<span class="c1"># --- Plot Bode magnitude, phase, and coherence together so trustworthiness and fitted physics can be read on the same axis. ---</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="c1"># 振幅</span>
+<span class="c1"># Magnitude</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Measured TF&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Gain [V/V]&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Bode Plot: Magnitude&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-<span class="c1"># 位相</span>
+<span class="c1"># Phase</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">degree</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Measured Phase&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
@@ -334,7 +331,7 @@ Output data shape: (122880,)
 <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">181</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-<span class="c1"># コヒーレンス</span>
+<span class="c1"># Coherence</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">coh</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Coherence&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coherence&quot;</span><span class="p">)</span>
@@ -363,31 +360,31 @@ Output data shape: (122880,)
 <div class="math notranslate nohighlight">
 \[H(f) = A \cdot \frac{f_0^2}{f_0^2 - f^2 + i (f f_0 / Q)}\]</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- フィット用モデル: パラメータがそのままモード物理量に対応する共振器モデルを定義します。 ---</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Define a resonator model whose parameters map back to measurable plant physics. ---</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">resonator_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">amp</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
-    <span class="c1"># f: 測定した周波数軸 [Hz]。</span>
-    <span class="c1"># amp は計測系のゲイン、f0 は共振周波数、Q はどれだけ鋭い共振かを決める減衰指標です。</span>
+    <span class="c1"># f: frequency array in Hz where the measured plant response is sampled.</span>
+    <span class="c1"># amp scales the actuator/sensor gain, f0 is the modal resonance, and Q controls how sharply energy stays trapped near that mode.</span>
 
-    <span class="c1"># 振幅だけでなく位相回転も使うため、複素応答のままモデル化します。</span>
+    <span class="c1"># Use the complex response so the fit respects both magnitude and phase, not just the height of the peak.</span>
     <span class="n">numerator</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="p">(</span><span class="n">f0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span><span class="n">f0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">f</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">/</span> <span class="n">Q</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
 
 
-<span class="c1"># --- フィット実行: 共振が支配的な帯域だけに絞ってモード物理量を推定します。 ---</span>
-<span class="c1"># 全帯域を 1 本の 2 次モデルで説明しようとすると、共振外の構造に引っ張られて推定が崩れるため、</span>
-<span class="c1"># 100-500 Hz の共振支配帯域だけを切り出します。</span>
+<span class="c1"># --- Fit only the resonance-dominated band so broadband tails do not bias the modal parameters. ---</span>
+<span class="c1"># Fitting the full band would force one second-order model to explain off-resonance structure it was never meant to capture,</span>
+<span class="c1"># so we isolate 100-500 Hz where the identified mode dominates the response.</span>
 <span class="n">tf_crop</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
 
-<span class="c1"># 初期値は観測されたピーク近傍に置き、物理的な共振から外れた局所解を避けます。</span>
-<span class="c1"># ここでは見えているピークが 300 Hz 付近なので、その近傍を初期値にします。</span>
+<span class="c1"># Seed f0 near the visible peak so the optimizer lands on the physical resonance instead of a spurious local minimum.</span>
+<span class="c1"># The initial guess is intentionally close to the observed resonance around 300 Hz.</span>
 <span class="n">p0</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">}</span>
 
-<span class="c1"># 複素伝達関数をこの帯域でフィットします。</span>
-<span class="c1"># FrequencySeries.fit() は実部・虚部を同時に使うので、減衰推定に必要な位相情報を失いません。</span>
+<span class="c1"># Fit the complex transfer function in this narrowed band.</span>
+<span class="c1"># .fit() uses both real and imaginary parts, which preserves phase information needed to recover damping consistently.</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">tf_crop</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">resonator_model</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
@@ -402,8 +399,8 @@ Output data shape: (122880,)
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                                Migrad                                   │
 ├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 6.175 (χ²/ndof = 0.0)      │              Nfcn = 118              │
-│ EDM = 4.72e-06 (Goal: 0.0002)    │                                      │
+│ FCN = 5.564 (χ²/ndof = 0.0)      │              Nfcn = 118              │
+│ EDM = 4.49e-06 (Goal: 0.0002)    │                                      │
 ├──────────────────────────────────┼──────────────────────────────────────┤
 │          Valid Minimum           │   Below EDM threshold (goal x 10)    │
 ├──────────────────────────────────┼──────────────────────────────────────┤
@@ -415,15 +412,15 @@ Output data shape: (122880,)
 │   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
 ├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
 │ 0 │ amp  │   0.934   │   0.007   │            │            │         │         │       │
-│ 1 │ f0   │  299.994  │   0.021   │            │            │         │         │       │
-│ 2 │ Q    │   49.6    │    0.5    │            │            │         │         │       │
+│ 1 │ f0   │  299.995  │   0.021   │            │            │         │         │       │
+│ 2 │ Q    │   49.5    │    0.5    │            │            │         │         │       │
 └───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
 ┌─────┬────────────────────────────┐
 │     │      amp       f0        Q │
 ├─────┼────────────────────────────┤
-│ amp │ 4.33e-05        0 -2.30e-3 │
-│  f0 │        0 0.000447  -0.1e-3 │
-│   Q │ -2.30e-3  -0.1e-3    0.243 │
+│ amp │ 4.33e-05       -0 -2.29e-3 │
+│  f0 │       -0 0.000451       -0 │
+│   Q │ -2.29e-3       -0    0.241 │
 └─────┴────────────────────────────┘
 </pre></div></div>
 </div>
@@ -432,17 +429,17 @@ Output data shape: (122880,)
 <h2>4. 結果の確認<a class="headerlink" href="#4.-結果の確認" title="Link to this heading"></a></h2>
 <p>フィッティング結果を数値で確認し、測定データに重ねてプロットします。 <code class="docutils literal notranslate"><span class="pre">FitResult.plot()</span></code> メソッドは、複素数データの場合、自動的にボード線図（振幅・位相）を描画します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- 推定結果を真値と比較し、測定からモード物理量を回収できたか確認します。 ---</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Report the recovered modal parameters so they can be compared with the known plant values. ---</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Estimated Parameters ---&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resonance Frequency (f0): </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;f0&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> Hz (True: </span><span class="si">{</span><span class="n">f0_true</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quality Factor (Q): </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;Q&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (True: </span><span class="si">{</span><span class="n">Q_true</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gain (Amp): </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quality Factor (Q):       </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;Q&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">      (True: </span><span class="si">{</span><span class="n">Q_true</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gain (Amp):               </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># --- フィット結果を描き、ピーク高さと位相回転の両方を再現できているか確認します。 ---</span>
-<span class="c1"># 複素応答なので result.plot() は振幅と位相の 2 軸を返し、両方が一致して初めてモデルが妥当と言えます。</span>
+<span class="c1"># --- Plot the fitted response to confirm that both the peak height and phase rotation are captured. ---</span>
+<span class="c1"># result.plot() returns magnitude and phase axes because both observables are needed to judge whether the modal model is credible.</span>
 <span class="n">axes</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <br/></pre></div>
@@ -454,9 +451,9 @@ Output data shape: (122880,)
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 --- Estimated Parameters ---
-Resonance Frequency (f0): 299.9943 Hz (True: 300.0)
-Quality Factor (Q): 49.6456 (True: 50.0)
-Gain (Amp): 0.9340
+Resonance Frequency (f0): 299.9950 Hz (True: 300.0)
+Quality Factor (Q):       49.5190      (True: 50.0)
+Gain (Amp):               0.9345
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -481,7 +478,7 @@ Gain (Amp): 0.9340
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

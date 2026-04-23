@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ケーススタディ: GBD 形式 I/O &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -182,21 +181,19 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>このページは Jupyter Notebook から生成されました。
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/case_gbd_format.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_gbd_format.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="ケーススタディ:-GBD-形式-I/O">
 <h1>ケーススタディ: GBD 形式 I/O<a class="headerlink" href="#ケーススタディ:-GBD-形式-I/O" title="Link to this heading"></a></h1>
-<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_gbd_format.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_gbd_format.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このチュートリアルでは、<strong>GBD</strong> ファイルの読み込みと書き出しについて解説します。GBD は、KAGRA 等の実験において PEM（環境モニタリング）に広く使用されている <strong>GRAPHTEC 製データロガー</strong> (GL シリーズ) のネイティブバイナリ形式です。</p>
 <section id="GBD-とは？">
 <h2>GBD とは？<a class="headerlink" href="#GBD-とは？" title="Link to this heading"></a></h2>
@@ -213,7 +210,7 @@
 <div class="line">詳細は API_MAPPING.md カテゴリ 1 を参照してください。</div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -241,17 +238,17 @@
 </pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_synthetic_gbd</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;最小限の合成 GBD ファイル (GRAPHTEC GL シリーズ形式) を書き出します。&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a minimal synthetic GBD file (GRAPHTEC GL-series format).&quot;&quot;&quot;</span>
     <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span>
 
     <span class="n">ch0</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>   <span class="c1"># 10 Hz</span>
     <span class="n">ch1</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">50.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>   <span class="c1"># 50 Hz</span>
-    <span class="n">ch2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>   <span class="c1"># デジタルトリガー</span>
+    <span class="n">ch2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>   <span class="c1"># digital trigger</span>
 
     <span class="n">local_start</span> <span class="o">=</span> <span class="s2">&quot;2023-05-20 14:30:00.000&quot;</span>
     <span class="n">local_stop</span>  <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;2023-05-20 14:30:</span><span class="si">{</span><span class="n">n_samples</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fs</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -272,20 +269,20 @@
     <span class="p">]</span>
     <span class="n">header_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header_lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span>
     <span class="n">header_bytes</span> <span class="o">=</span> <span class="n">header_str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
-    <span class="c1"># 1024 バイトまでパディング</span>
+    <span class="c1"># Pad to 1024 bytes</span>
     <span class="n">header_bytes</span> <span class="o">=</span> <span class="n">header_bytes</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="c1"># データブロック: インターリーブされた float32 (サンプル数 × チャンネル数)</span>
+    <span class="c1"># Data block: interleaved float32 (N_samples × N_channels)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">ch0</span><span class="p">,</span> <span class="n">ch1</span><span class="p">,</span> <span class="n">ch2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>  <span class="c1"># (N, 3)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header_bytes</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;作成完了: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> KB)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Written: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> KB)&quot;</span><span class="p">)</span>
 
 
-<span class="c1"># 一時ディレクトリに書き出し</span>
+<span class="c1"># Write to a temporary file</span>
 <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">())</span>
 <span class="n">gbd_path</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="s2">&quot;synthetic_pem.gbd&quot;</span>
 <span class="n">make_synthetic_gbd</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span>
@@ -297,7 +294,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-synthetic_pem.gbd を作成しました (118.2 KB)
+Written: /tmp/tmpnri74uuu/synthetic_pem.gbd  (118.2 KB)
 </pre></div></div>
 </div>
 </section>
@@ -305,17 +302,17 @@ synthetic_pem.gbd を作成しました (118.2 KB)
 <h2>2. TimeSeriesDict への読み込み<a class="headerlink" href="#2.-TimeSeriesDict-への読み込み" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> で <code class="docutils literal notranslate"><span class="pre">format='gbd'</span></code> を指定します。GBD 内の時刻はローカルタイムで記録されているため、<code class="docutils literal notranslate"><span class="pre">timezone</span></code> パラメータが必要になります。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 全チャンネルの読み込み</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read all channels</span>
 <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
     <span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span>
     <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
-    <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">,</span>   <span class="c1"># JST (UTC+9) – GPS 時刻への変換に必要</span>
+    <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">,</span>   <span class="c1"># JST (UTC+9) – required for GPS time conversion</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;読み込んだチャンネル:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">tsd</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Channels read:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">tsd</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tsd</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">15s</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">6d</span><span class="si">}</span><span class="s2"> samples, dt=</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2">, unit=</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
@@ -326,25 +323,25 @@ synthetic_pem.gbd を作成しました (118.2 KB)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-読み込んだチャンネル: [&#39;CH0&#39;, &#39;CH1&#39;, &#39;CH2_LOGIC&#39;]
+Channels read: [&#39;CH0&#39;, &#39;CH1&#39;, &#39;CH2_LOGIC&#39;]
   CH0            :  10000 samples, dt=0.001 s, unit=V
   CH1            :  10000 samples, dt=0.001 s, unit=V
   CH2_LOGIC      :  10000 samples, dt=0.001 s, unit=V
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 特定のチャンネルのみ読み込み</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read only specific channels</span>
 <span class="n">tsd_subset</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
     <span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span>
     <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
     <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">,</span>
-    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">,</span> <span class="s1">&#39;CH1&#39;</span><span class="p">],</span>   <span class="c1"># アナログチャンネルのみ</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">,</span> <span class="s1">&#39;CH1&#39;</span><span class="p">],</span>   <span class="c1"># only analog channels</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;フィルタ後のチャンネル:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">tsd_subset</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Subset channels:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">tsd_subset</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
@@ -353,14 +350,14 @@ synthetic_pem.gbd を作成しました (118.2 KB)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-フィルタ後のチャンネル: [&#39;CH0&#39;, &#39;CH1&#39;]
+Subset channels: [&#39;CH0&#39;, &#39;CH1&#39;]
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 単一の TimeSeries として読み込み</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read a single TimeSeries</span>
 <span class="n">ts_ch0</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
     <span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span>
     <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
@@ -394,13 +391,13 @@ CH0: t0=1368595818.000 s, dt=0.001 s, N=10000
 <h2>3. GBD データに対する解析<a class="headerlink" href="#3.-GBD-データに対する解析" title="Link to this heading"></a></h2>
 <p>読み込まれたデータは標準的な gwexpy オブジェクトであるため、すべての解析メソッドが利用可能です。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_ch0</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">]</span>
 <span class="n">ts_ch1</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s1">&#39;CH1&#39;</span><span class="p">]</span>
 
-<span class="c1"># ASD 比較</span>
+<span class="c1"># ASD comparison</span>
 <span class="n">asd_ch0</span> <span class="o">=</span> <span class="n">ts_ch0</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">asd_ch1</span> <span class="o">=</span> <span class="n">ts_ch1</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
@@ -426,10 +423,10 @@ CH0: t0=1368595818.000 s, dt=0.001 s, N=10000
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># スペクトログラム (CH0)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Spectrogram of CH0</span>
 <span class="n">sg</span> <span class="o">=</span> <span class="n">ts_ch0</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -447,20 +444,20 @@ CH0: t0=1368595818.000 s, dt=0.001 s, N=10000
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># デジタル（ロジック）チャンネル: トリガーとして使用</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Digital channel: use as event trigger</span>
 <span class="n">ts_logic</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s1">&#39;CH2_LOGIC&#39;</span><span class="p">]</span>
 
-<span class="c1"># 立ち上がりエッジ (0→1) を検出</span>
+<span class="c1"># Find trigger-on times (0→1 transitions)</span>
 <span class="n">logic_val</span> <span class="o">=</span> <span class="n">ts_logic</span><span class="o">.</span><span class="n">value</span>
-<span class="n">transitions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">logic_val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">transitions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">logic_val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># rising edges</span>
 
 <span class="n">t_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">logic_val</span><span class="p">))</span> <span class="o">*</span> <span class="n">ts_logic</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span>
 <span class="n">trigger_times</span> <span class="o">=</span> <span class="n">t_axis</span><span class="p">[</span><span class="n">transitions</span><span class="p">]</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ロジックトリガー回数: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trigger_times</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logic trigger ON events: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trigger_times</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_axis</span><span class="p">,</span> <span class="n">ts_ch0</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;CH0&#39;</span><span class="p">)</span>
@@ -485,7 +482,7 @@ CH0: t0=1368595818.000 s, dt=0.001 s, N=10000
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ロジックトリガー回数: 10
+Logic trigger ON events: 10
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -500,10 +497,10 @@ CH0: t0=1368595818.000 s, dt=0.001 s, N=10000
 <h2>4. TimeSeriesMatrix による読み込み<a class="headerlink" href="#4.-TimeSeriesMatrix-による読み込み" title="Link to this heading"></a></h2>
 <p>一括分析を行う場合は、<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> に直接読み込むことができます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 全アナログチャンネルを Matrix として読み込み</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read all analog channels as TimeSeriesMatrix</span>
 <span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
     <span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span>
     <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
@@ -513,42 +510,25 @@ CH0: t0=1368595818.000 s, dt=0.001 s, N=10000
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TimeSeriesMatrix shape:&quot;</span><span class="p">,</span> <span class="n">tsm</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (2, 1, N)</span>
 
-<span class="c1"># 全チャンネルの ASD を一括計算（不規則タイムスタンプの場合はチャンネル個別に計算）</span>
+<span class="c1"># ASD of all channels at once</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">asd_all</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
     <span class="n">asd_all</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
-    <span class="c1"># 不規則 x 軸の場合はチャンネルごとに ASD を計算</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;不規則タイムスタンプ検出: チャンネル個別に ASD を計算します&quot;</span><span class="p">)</span>
-    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">ax_i</span><span class="p">,</span> <span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ch</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">,</span> <span class="s1">&#39;CH1&#39;</span><span class="p">])):</span>
-        <span class="n">ts_ch</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span>  <span class="c1"># Use already-loaded dict instead</span>
-        <span class="n">asd_ch</span> <span class="o">=</span> <span class="n">ts_ch</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_ch</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_ch</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">ch</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ASD&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<br/></pre></div>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="c1"># GBD reader may create irregular time axis; fall back to per-channel ASD</span>
+    <span class="n">_asds</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">tsd</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">tsd</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span><span class="mi">2</span><span class="p">]}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Per-channel ASD:&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> Hz/bin&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_asds</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+</pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-TimeSeriesMatrix shape: (2, 1, 10000)
-不規則タイムスタンプ検出: チャンネル個別に ASD を計算します
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_case_gbd_format_14_1.png" src="../../../../_images/web_ja_user_guide_tutorials_case_gbd_format_14_1.png" />
-</div>
+<div class="highlight"><pre>
+TimeSeriesMatrix shape: (2, 1, 10000)
+Per-channel ASD: {&#39;CH0&#39;: &#39;1.0000 Hz/bin&#39;, &#39;CH1&#39;: &#39;1.0000 Hz/bin&#39;}
+</pre></div></div>
 </div>
 </section>
 <section id="5.-タイムゾーンの扱い">
@@ -581,10 +561,10 @@ TimeSeriesMatrix shape: (2, 1, 10000)
 </tbody>
 </table>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># タイムゾーン指定による GPS 時刻の違いを確認</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check GPS start time resulting from timezone conversion</span>
 <span class="n">tsd_jst</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">)</span>
 <span class="n">tsd_utc</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
 
@@ -592,7 +572,7 @@ TimeSeriesMatrix shape: (2, 1, 10000)
 <span class="n">t0_utc</span> <span class="o">=</span> <span class="n">tsd_utc</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;t0 (JST→GPS): </span><span class="si">{</span><span class="n">t0_jst</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;t0 (UTC→GPS): </span><span class="si">{</span><span class="n">t0_utc</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;差分: </span><span class="si">{</span><span class="p">(</span><span class="n">t0_jst</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t0_utc</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s  (期待値: 9×3600 = 32400 s)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Difference: </span><span class="si">{</span><span class="p">(</span><span class="n">t0_jst</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t0_utc</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s  (should be 9×3600 = 32400 s)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -603,7 +583,7 @@ TimeSeriesMatrix shape: (2, 1, 10000)
 <div class="highlight"><pre>
 t0 (JST→GPS): 1368595818.000 s
 t0 (UTC→GPS): 1368628218.000 s
-差分: -32400.0 s  (期待値: 9×3600 = 32400 s)
+Difference: -32400.0 s  (should be 9×3600 = 32400 s)
 </pre></div></div>
 </div>
 </section>
@@ -695,7 +675,7 @@ t0 (UTC→GPS): 1368628218.000 s
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

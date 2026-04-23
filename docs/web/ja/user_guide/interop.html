@@ -6,13 +6,12 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta content="GWexpy の interop ガイドです。保存表現、解析ライブラリ、ML 基盤、分野別ツールへの to_* / from_* 変換経路を整理します。" name="description" />
 
-    <meta property="article:modified_time" content="2026-04-20T17:44:56+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Interop / 変換ガイド &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../_static/icon.svg"/>
@@ -702,7 +701,7 @@
 <p>公開面で先に理解すると効果が大きいのは次です。</p>
 <ul class="simple">
 <li><p><strong>ROOT</strong>: <code class="docutils literal notranslate"><span class="pre">io_formats</span></code> では EventTable の直 I/O のみ扱い、ROOT object 変換は interop 側で説明する</p></li>
-<li><p><strong>xarray / Field</strong>: ScalarField / VectorField の主要導線</p></li>
+<li><p><strong>xarray / Field</strong>: ScalarField / VectorField の主要な機能</p></li>
 <li><p><strong>Zarr</strong>: direct I/O と interop の境界が混同されやすい</p></li>
 <li><p><strong>NetCDF4</strong>: xarray 経由のワークフローとの境界整理が必要</p></li>
 <li><p><strong>ObsPy</strong>: 時系列・地震波形との往復が分かりやすい</p></li>
@@ -712,7 +711,7 @@
 <section id="id6">
 <h2>関連ページ<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a></p></li>
+<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="std std-doc">他ライブラリ連携チュートリアル</span></a></p></li>
 <li><p><a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a></p></li>
 <li><p><a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a></p></li>
 </ul>
@@ -722,7 +721,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a> で <code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code> と <code class="docutils literal notranslate"><span class="pre">obj.write(...)</span></code> を確認する</p></li>
 <li><p><a class="reference internal" href="time_utilities.html"><span class="doc std std-doc">GPS 時刻ユーティリティ</span></a> で GPS 時刻やタイムゾーンの補助関数を確認する</p></li>
-<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="doc std std-doc">他ライブラリ連携チュートリアル</span></a> で具体例を先に見る</p></li>
+<li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="std std-doc">他ライブラリ連携チュートリアル</span></a> で具体例を先に見る</p></li>
 </ul>
 </section>
 </section>
@@ -739,7 +738,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 17:44:56.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

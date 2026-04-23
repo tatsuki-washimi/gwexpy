@@ -5,13 +5,12 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-19T05:09:21+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GWexpy &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="_static/icon.svg"/>
@@ -133,7 +132,7 @@
   <section id="gwexpy">
 <h1>GWexpy<a class="headerlink" href="#gwexpy" title="Link to this heading"></a></h1>
 <style>
-/* ゲートウェイ専用: サイドバー非表示・フルワイド化 */
+/* Gateway Specific: Hide sidebar and make full wide */
 .wy-nav-side          { display: none !important; }
 .wy-nav-content-wrap  { margin-left: 0 !important; }
 .wy-nav-content       { max-width: 900px !important; margin: 0 auto !important; }
@@ -145,31 +144,31 @@
     Extended Python Toolkit for Gravitational-Wave Data Analysis
   </p>
   <p style="font-size:1.05em; color:#777; margin-top:0;">
-    GWpy を拡張する多次元データ解析ライブラリ —
-    行列・フィールド・フィッティング・信号処理を統合
+    A multi-dimensional data analysis library extending GWpy —
+    integrating matrices, fields, fitting, and advanced signal processing.
   </p>
 </div><div class="sd-container-fluid sd-sphinx-override sd-mb-4 gw-cta-grid docutils">
 <div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-column docutils">
-<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-shadow-sm reference internal" href="web/ja/index.html"><span class="doc">📖 日本語で始める</span></a></span></p>
+<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-primary sd-shadow-sm reference internal" href="web/en/index.html"><span class="doc">📖 English Documentation</span></a></span></p>
 </div>
 <div class="sd-col sd-d-flex-column docutils">
-<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-secondary sd-shadow-sm reference internal" href="web/en/index.html"><span class="doc">📖 English Docs</span></a></span></p>
+<p><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-secondary sd-shadow-sm reference internal" href="web/ja/index.html"><span class="doc">📖 日本語ドキュメント</span></a></span></p>
 </div>
 </div>
 </div>
 <hr class="docutils" />
-<section id="id1">
-<h2>主な特徴<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-text-center docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-🔬 多次元フィールド</div>
+🔬 Multidimensional Fields</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> / <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> / <code class="docutils literal notranslate"><span class="pre">TensorField</span></code></p>
-<p class="sd-card-text">空間・時間を跨ぐ多次元データを統一インタフェースで操作</p>
+<p class="sd-card-text">Uniform interface for multidimensional data across space and time.</p>
 </div>
 </div>
 </div>
@@ -177,9 +176,9 @@
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-text-center docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-⚡ 数値的安定性</div>
-<p class="sd-card-text">Safe Log・ゼロ除算防護・NaN 伝播検出</p>
-<p class="sd-card-text">科学計算に必要な堅牢な数値処理を自動確保</p>
+⚡ Numerical Stability</div>
+<p class="sd-card-text">Safe Log / Zero-division protection / NaN propagation detection</p>
+<p class="sd-card-text">Automatic robustness for mission-critical scientific computing.</p>
 </div>
 </div>
 </div>
@@ -187,9 +186,9 @@
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-text-center docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-📊 統合解析ツール群</div>
+📊 Integrated Analysis Tools</div>
 <p class="sd-card-text">BrUCo / ARIMA / Fitting / MCMC</p>
-<p class="sd-card-text">ノイズ解析から高度なフィッティングまで一貫して提供</p>
+<p class="sd-card-text">Seamless transition from noise characterization to advanced fitting.</p>
 </div>
 </div>
 </div>
@@ -197,21 +196,21 @@
 </div>
 </section>
 <hr class="docutils" />
-<section id="id2">
-<h2>クイックインストール<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="quick-installation">
+<h2>Quick Installation<a class="headerlink" href="#quick-installation" title="Link to this heading"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/tatsuki-washimi/gwexpy.git
 <span class="nb">cd</span><span class="w"> </span>gwexpy<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 </section>
-<section id="id3">
-<h2>最短デモ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="quick-demo">
+<h2>Quick Demo<a class="headerlink" href="#quick-demo" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
 <span class="n">fsmtx</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.hdf5&quot;</span><span class="p">)</span>
 <span class="n">fsmtx</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&quot;lorentzian&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/hero_plot.png"><img alt="FrequencySeriesMatrix Fitting 出力" class="align-center" src="_images/hero_plot.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="_images/hero_plot.png"><img alt="FrequencySeriesMatrix Fitting Output" class="align-center" src="_images/hero_plot.png" style="width: 100%;" />
 </a>
 <div class="toctree-wrapper compound">
 </div>
@@ -229,7 +228,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-19 05:09:21.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 

@@ -5,14 +5,13 @@
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-04-20T22:02:49+00:00" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ケーススタディ: Bootstrap PSD と GLS フィッティング &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a4af9253" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
 
   
     <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
@@ -182,21 +181,19 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>このページは Jupyter Notebook から生成されました。
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install gwexpy with pinned versions of core dependencies for reproducibility on Colab</span>
-
-<span class="o">%</span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">q</span> <span class="s2">&quot;gwexpy[all]&quot;</span> <span class="s2">&quot;gwpy&lt;5.0.0&quot;</span> <span class="s2">&quot;numpy&lt;2.0.0&quot;</span> <span class="s2">&quot;scipy&lt;1.13.0&quot;</span> <span class="s2">&quot;astropy&lt;7.0.0&quot;</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skipped in CI: Colab/bootstrap dependency install cell.</span>
+<br/></pre></div>
 </div>
 </div>
 <section id="ケーススタディ:-Bootstrap-PSD-と-GLS-フィッティング">
 <h1>ケーススタディ: Bootstrap PSD と GLS フィッティング<a class="headerlink" href="#ケーススタディ:-Bootstrap-PSD-と-GLS-フィッティング" title="Link to this heading"></a></h1>
-<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このチュートリアルでは、以下の統合的なワークフローを実演します。</p>
 <ol class="arabic simple">
 <li><p><strong>Bootstrap PSD 推定</strong>: VIF（分散膨張因子）およびブロック補正を用いた推定</p></li>
@@ -236,7 +233,7 @@
 <section id="1.1-インポートとパラメータ">
 <h3>1.1 インポートとパラメータ<a class="headerlink" href="#1.1-インポートとパラメータ" title="Link to this heading"></a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -262,22 +259,22 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data generation parameters</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span> <span class="c1"># Sample rate [Hz]</span>
-<span class="n">duration</span> <span class="o">=</span> <span class="mf">512.0</span> <span class="c1"># Duration [s]</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span>              <span class="c1"># Sample rate [Hz]</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mf">512.0</span>         <span class="c1"># Duration [s]</span>
 
 <span class="c1"># Resonance peak parameters (true values)</span>
-<span class="n">peak_freq</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="c1"># Resonance frequency [Hz]</span>
-<span class="n">peak_Q</span> <span class="o">=</span> <span class="mf">20.0</span> <span class="c1"># Quality factor</span>
-<span class="n">peak_amplitude</span> <span class="o">=</span> <span class="mf">5e-21</span> <span class="c1"># ASD amplitude at resonance [1/rtHz]</span>
+<span class="n">peak_freq</span> <span class="o">=</span> <span class="mf">100.0</span>        <span class="c1"># Resonance frequency [Hz]</span>
+<span class="n">peak_Q</span> <span class="o">=</span> <span class="mf">20.0</span>            <span class="c1"># Quality factor</span>
+<span class="n">peak_amplitude</span> <span class="o">=</span> <span class="mf">5e-21</span>   <span class="c1"># ASD amplitude at resonance [1/rtHz]</span>
 
 <span class="c1"># Background noise parameters</span>
-<span class="n">noise_exponent</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="c1"># Power-law exponent (pink noise ~ f^-0.5)</span>
-<span class="n">noise_amp</span> <span class="o">=</span> <span class="mf">1e-22</span> <span class="c1"># Noise amplitude at f_ref</span>
-<span class="n">f_ref</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="c1"># Reference frequency [Hz]</span>
+<span class="n">noise_exponent</span> <span class="o">=</span> <span class="mf">0.5</span>     <span class="c1"># Power-law exponent (pink noise ~ f^-0.5)</span>
+<span class="n">noise_amp</span> <span class="o">=</span> <span class="mf">1e-22</span>        <span class="c1"># Noise amplitude at f_ref</span>
+<span class="n">f_ref</span> <span class="o">=</span> <span class="mf">100.0</span>            <span class="c1"># Reference frequency [Hz]</span>
 <br/></pre></div>
 </div>
 </div>
@@ -290,11 +287,11 @@
 <li><p><strong>信号</strong>: 共振ピークを表す減衰振動</p></li>
 </ol>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate frequency array for ASD</span>
-<span class="n">df</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">duration</span> <span class="c1"># Frequency resolution</span>
+<span class="n">df</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">duration</span>  <span class="c1"># Frequency resolution</span>
 <span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 
 <span class="c1"># Create power-law background ASD</span>
@@ -307,10 +304,10 @@
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Background ASD&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># 合成スペクトルは PSD 空間で作り、後段のフィットモデルと</span>
-<span class="c1"># 注入した線形状・線幅を一致させます。</span>
+<span class="c1"># Build the synthetic spectrum in PSD space so the fitted model matches</span>
+<span class="c1"># the injected line shape and width.</span>
 <span class="n">background_psd</span> <span class="o">=</span> <span class="n">background_asd</span><span class="o">.</span><span class="n">value</span> <span class="o">**</span> <span class="mi">2</span>
-<span class="n">gamma_hwhm</span> <span class="o">=</span> <span class="n">peak_freq</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">peak_Q</span><span class="p">)</span> <span class="c1"># Half-width at half-maximum</span>
+<span class="n">gamma_hwhm</span> <span class="o">=</span> <span class="n">peak_freq</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">peak_Q</span><span class="p">)</span>  <span class="c1"># Half-width at half-maximum</span>
 <span class="n">peak_psd_amplitude</span> <span class="o">=</span> <span class="n">peak_amplitude</span> <span class="o">**</span> <span class="mi">2</span>
 <span class="n">peak_psd</span> <span class="o">=</span> <span class="n">peak_psd_amplitude</span> <span class="o">*</span> <span class="n">gamma_hwhm</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span>
     <span class="p">(</span><span class="n">frequencies</span> <span class="o">-</span> <span class="n">peak_freq</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">gamma_hwhm</span><span class="o">**</span><span class="mi">2</span>
@@ -347,14 +344,14 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Generated TimeSeries: [5.37162147e-21 4.33009695e-21 7.21963683e-21 ... 1.15146116e-21
- 1.66017477e-21 3.00924358e-21]
-Duration: 256.0 s
+Generated TimeSeries: [-1.35411422e-20 -1.31460091e-20 -8.93831178e-21 ...
+ -1.11341810e-20 -1.43936278e-20 -1.18264016e-20]
+Duration: 512.0 s
 Sample rate: 2048 Hz
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize first 2 seconds of the time-series</span>
@@ -408,14 +405,14 @@ Sample rate: 2048 Hz
 <li><p><strong>window</strong>: Hann 窓によりスペクトル漏洩を最小化</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT parameters</span>
-<span class="n">fftlength</span> <span class="o">=</span> <span class="mf">8.0</span> <span class="c1"># [s] -&gt; df = 0.125 Hz</span>
-<span class="n">overlap</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="c1"># [s] -&gt; 50% overlap (Welch averaging within each time-bin)</span>
-<span class="n">overlap_between_bins</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="c1"># [s] -&gt; 50% overlap between time segments</span>
-<span class="n">stride</span> <span class="o">=</span> <span class="n">fftlength</span> <span class="o">-</span> <span class="n">overlap_between_bins</span> <span class="c1"># 4.0 s effective stride</span>
+<span class="n">fftlength</span> <span class="o">=</span> <span class="mf">8.0</span>    <span class="c1"># [s] -&gt; df = 0.125 Hz</span>
+<span class="n">overlap</span> <span class="o">=</span> <span class="mf">4.0</span>      <span class="c1"># [s] -&gt; 50% overlap (Welch averaging within each time-bin)</span>
+<span class="n">overlap_between_bins</span> <span class="o">=</span> <span class="mf">4.0</span>  <span class="c1"># [s] -&gt; 50% overlap between time segments</span>
+<span class="n">stride</span> <span class="o">=</span> <span class="n">fftlength</span> <span class="o">-</span> <span class="n">overlap_between_bins</span>  <span class="c1"># 4.0 s effective stride</span>
 <span class="n">window</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span>
 
 <span class="c1"># Calculate number of segments (approximate)</span>
@@ -441,7 +438,7 @@ Frequency resolution: 0.1250 Hz
 Stride (time between bins): 4.0 s
 Overlap between time bins: 4.0 s (50%)
 Welch overlap (within each bin): 4.0 s (50%)
-Expected time segments: ~63
+Expected time segments: ~127
 Expected frequency bin correlation: ~0.50
 </pre></div></div>
 </div>
@@ -449,7 +446,7 @@ Expected frequency bin correlation: ~0.50
 <section id="2.2-スペクトログラムの生成">
 <h3>2.2 スペクトログラムの生成<a class="headerlink" href="#2.2-スペクトログラムの生成" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate spectrogram with overlapping time segments using scipy</span>
@@ -477,7 +474,7 @@ Expected frequency bin correlation: ~0.50
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span>
 
 <span class="n">spectrogram</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span>
-    <span class="n">Sxx_scipy</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="c1"># Transpose: scipy returns (freq, time), gwpy expects (time, freq)</span>
+    <span class="n">Sxx_scipy</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="c1"># Transpose: scipy returns (freq, time), gwpy expects (time, freq)</span>
     <span class="n">times</span><span class="o">=</span><span class="n">times_scipy</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
     <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs_scipy</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span>
     <span class="n">unit</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">unit</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span>
@@ -497,15 +494,15 @@ Expected frequency bin correlation: ~0.50
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Spectrogram shape: (63, 8193)
-Time bins: 63
+Spectrogram shape: (127, 8193)
+Time bins: 127
 Frequency bins: 8193
 Actual overlap: 50.0% stride
 Expected correlation from overlap: ~0.50
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize spectrogram</span>
@@ -522,7 +519,7 @@ Expected correlation from overlap: ~0.50
     <span class="n">spectrogram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">freq_idx</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
 <span class="p">]</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">spec_plot</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="c1"># Convert PSD to ASD</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">spec_plot</span><span class="o">.</span><span class="n">T</span><span class="p">),</span>  <span class="c1"># Convert PSD to ASD</span>
     <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
     <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
     <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
@@ -579,15 +576,15 @@ Expected correlation from overlap: ~0.50
 <section id="3.2-Bootstrap-パラメータ">
 <h3>3.2 Bootstrap パラメータ<a class="headerlink" href="#3.2-Bootstrap-パラメータ" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bootstrap parameters</span>
-<span class="n">n_boot</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># Number of bootstrap resamples</span>
-<span class="n">block_size</span> <span class="o">=</span> <span class="mi">4</span> <span class="c1"># Block bootstrap (accounts for time correlation)</span>
-<span class="n">ci</span> <span class="o">=</span> <span class="mf">0.68</span> <span class="c1"># Confidence interval (1-sigma equivalent)</span>
-<span class="n">rebin_width</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># No rebinning - preserves frequency correlations</span>
-<span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;median&quot;</span> <span class="c1"># Bootstrap statistic</span>
+<span class="n">n_boot</span> <span class="o">=</span> <span class="mi">300</span>         <span class="c1"># Number of bootstrap resamples</span>
+<span class="n">block_size</span> <span class="o">=</span> <span class="mi">4</span>        <span class="c1"># Block bootstrap (accounts for time correlation)</span>
+<span class="n">ci</span> <span class="o">=</span> <span class="mf">0.68</span>             <span class="c1"># Confidence interval (1-sigma equivalent)</span>
+<span class="n">rebin_width</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># No rebinning - preserves frequency correlations</span>
+<span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;median&quot;</span>     <span class="c1"># Bootstrap statistic</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bootstrap resamples: </span><span class="si">{</span><span class="n">n_boot</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Block size: </span><span class="si">{</span><span class="n">block_size</span><span class="si">}</span><span class="s2"> segments&quot;</span><span class="p">)</span>
@@ -602,7 +599,7 @@ Expected correlation from overlap: ~0.50
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Bootstrap resamples: 2000
+Bootstrap resamples: 300
 Block size: 4 segments
 Confidence interval: 68%
 Rebin width: None (no rebinning)
@@ -618,7 +615,7 @@ Note: No rebinning preserves correlations but increases computation time.
 <li><p><code class="docutils literal notranslate"><span class="pre">cov_map</span></code>: 完全な共分散行列を含む BifrequencyMap</p></li>
 </ul>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run bootstrap PSD estimation</span>
@@ -637,11 +634,11 @@ Note: No rebinning preserves correlations but increases computation time.
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Bootstrap PSD:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Frequency bins: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">psd_boot</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Frequency range: </span><span class="si">{</span><span class="n">psd_boot</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">psd_boot</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Frequency bins: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">psd_boot</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Frequency range: </span><span class="si">{</span><span class="n">psd_boot</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">psd_boot</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Covariance Map:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Shape: </span><span class="si">{</span><span class="n">cov_map</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Unit: </span><span class="si">{</span><span class="n">cov_map</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Shape: </span><span class="si">{</span><span class="n">cov_map</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Unit: </span><span class="si">{</span><span class="n">cov_map</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -652,12 +649,12 @@ Note: No rebinning preserves correlations but increases computation time.
 <div class="highlight"><pre>
 
 Bootstrap PSD:
- Frequency bins: 8193
- Frequency range: 0.00 - 1024.00 Hz
+  Frequency bins: 8193
+  Frequency range: 0.00 - 1024.00 Hz
 
 Covariance Map:
- Shape: (8193, 8193)
- Unit: 1 / Hz2
+  Shape: (8193, 8193)
+  Unit: 1 / Hz2
 </pre></div></div>
 </div>
 </section>
@@ -665,7 +662,7 @@ Covariance Map:
 <h3>3.4 VIF（分散膨張因子）の検証<a class="headerlink" href="#3.4-VIF（分散膨張因子）の検証" title="Link to this heading"></a></h3>
 <p>VIF は、独立セグメントと比較して、オーバーラップするセグメントが分散をどの程度膨張させるかを定量化します。 50% オーバーラップの Hann 窓に対して、VIF は約 1.89 です（Percival &amp; Walden 1993, Eq. 56）。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectral.estimation</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_correlation_factor</span>
@@ -676,7 +673,7 @@ Covariance Map:
     <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
     <span class="n">nperseg</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">fftlength</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span>
     <span class="n">noverlap</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">overlap</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span>
-    <span class="n">n_blocks</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">stride</span> <span class="o">/</span> <span class="p">(</span><span class="n">fftlength</span> <span class="o">-</span> <span class="n">overlap</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># Number of FFTs per time-bin</span>
+    <span class="n">n_blocks</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">stride</span> <span class="o">/</span> <span class="p">(</span><span class="n">fftlength</span> <span class="o">-</span> <span class="n">overlap</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Number of FFTs per time-bin</span>
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Theoretical VIF: </span><span class="si">{</span><span class="n">vif</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -700,7 +697,7 @@ Interpretation: Variance is inflated by factor of 1.01 due to overlap in Welch a
 <section id="3.5-Bootstrap-結果の可視化">
 <h3>3.5 Bootstrap 結果の可視化<a class="headerlink" href="#3.5-Bootstrap-結果の可視化" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -729,7 +726,7 @@ Interpretation: Variance is inflated by factor of 1.01 due to overlap in Welch a
 <span class="n">ax2</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">diag_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">cov_map</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 <span class="n">diag_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">diag_var</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-<span class="n">relative_error</span> <span class="o">=</span> <span class="n">diag_std</span> <span class="o">/</span> <span class="n">psd_boot</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="mi">100</span> <span class="c1"># Percentage</span>
+<span class="n">relative_error</span> <span class="o">=</span> <span class="n">diag_std</span> <span class="o">/</span> <span class="n">psd_boot</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="mi">100</span>  <span class="c1"># Percentage</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">relative_error</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">peak_freq</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
@@ -741,7 +738,7 @@ Interpretation: Variance is inflated by factor of 1.01 due to overlap in Welch a
 <span class="c1"># 3. Covariance matrix (log scale)</span>
 <span class="n">ax3</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 <span class="n">cov_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cov_map</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-<span class="n">cov_abs</span><span class="p">[</span><span class="n">cov_abs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="c1"># Avoid log(0)</span>
+<span class="n">cov_abs</span><span class="p">[</span><span class="n">cov_abs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>  <span class="c1"># Avoid log(0)</span>
 <span class="n">im3</span> <span class="o">=</span> <span class="n">ax3</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
     <span class="n">cov_abs</span><span class="p">,</span>
     <span class="n">norm</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">(),</span>
@@ -758,7 +755,7 @@ Interpretation: Variance is inflated by factor of 1.01 due to overlap in Welch a
 <span class="n">ax4</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="c1"># Convert covariance to correlation</span>
 <span class="n">std_outer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">diag_std</span><span class="p">,</span> <span class="n">diag_std</span><span class="p">)</span>
-<span class="n">std_outer</span><span class="p">[</span><span class="n">std_outer</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># Avoid division by zero</span>
+<span class="n">std_outer</span><span class="p">[</span><span class="n">std_outer</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Avoid division by zero</span>
 <span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">cov_map</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">std_outer</span>
 
 <span class="c1"># Zoom to region around peak</span>
@@ -821,9 +818,9 @@ Interpretation: Variance is inflated by factor of 1.01 due to overlap in Welch a
 <div class="highlight"><pre>
 
 === Correlation Verification ===
-Mean correlation (adjacent bins): 0.247 ± 0.101
+Mean correlation (adjacent bins): 0.249 ± 0.091
 Target correlation: ~0.2
-Range: [-0.161, 0.640]
+Range: [-0.090, 0.559]
 ✓ Target correlation achieved!
 </pre></div></div>
 </div>
@@ -847,11 +844,11 @@ Range: [-0.161, 0.640]
 <li><p><strong>ローレンツ型ピーク</strong>: <span class="math notranslate nohighlight">\(A_{peak} \frac{\gamma^2}{(f-f_0)^2 + \gamma^2}\)</span>（ただし <span class="math notranslate nohighlight">\(\gamma = f_0/(2Q)\)</span>）</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">psd_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">A_bg</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">A_peak</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;PSD モデル: べき乗則バックグラウンド + ローレンツ共振。</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;PSD model: power-law background + Lorentzian resonance.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -886,7 +883,7 @@ Range: [-0.161, 0.640]
 <h3>4.2 フィッティング用データの準備<a class="headerlink" href="#4.2-フィッティング用データの準備" title="Link to this heading"></a></h3>
 <p>ピーク周辺の周波数範囲にクロップし、対応する共分散部分行列を準備します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
@@ -949,21 +946,21 @@ Covariance matrix shape: (720, 720)
 <p>適切な初期推定値を設定することで、最適化が正しい最小値に収束しやすくなります。</p>
 <p>この合成例では中心周波数が 100 Hz 付近だと分かっており、対象は極端に鋭いデルタ線ではなく、ある程度幅を持つ commissioning line です。その事前知識を bounds に入れて、<code class="docutils literal notranslate"><span class="pre">f0</span></code> や <code class="docutils literal notranslate"><span class="pre">Q</span></code> が不自然な端へ逃げることで広帯域構造を説明してしまうのを防ぎます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># True parameter values (for reference)</span>
 <span class="n">true_params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;A_bg&quot;</span><span class="p">:</span> <span class="n">noise_amp</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="c1"># PSD = ASD^2</span>
-    <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">noise_exponent</span><span class="p">,</span> <span class="c1"># PSD exponent = -2 * ASD exponent</span>
-    <span class="s2">&quot;A_peak&quot;</span><span class="p">:</span> <span class="n">peak_amplitude</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="c1"># PSD peak height</span>
+    <span class="s2">&quot;A_bg&quot;</span><span class="p">:</span> <span class="n">noise_amp</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>         <span class="c1"># PSD = ASD^2</span>
+    <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">noise_exponent</span><span class="p">,</span>    <span class="c1"># PSD exponent = -2 * ASD exponent</span>
+    <span class="s2">&quot;A_peak&quot;</span><span class="p">:</span> <span class="n">peak_amplitude</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># PSD peak height</span>
     <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="n">peak_freq</span><span class="p">,</span>
     <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="n">peak_Q</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;True parameters (for validation):&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">true_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -973,15 +970,15 @@ Covariance matrix shape: (720, 720)
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 True parameters (for validation):
- A_bg: 1.000e-44
- alpha: -1.000e+00
- A_peak: 4.000e-42
- f0: 100.000
- Q: 20.000
+  A_bg: 1.000e-44
+  alpha: -1.000e+00
+  A_peak: 2.500e-41
+  f0: 100.000
+  Q: 20.000
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initial guesses (slightly offset from the injected values)</span>
@@ -994,7 +991,7 @@ True parameters (for validation):
 <span class="p">}</span>
 
 <span class="c1"># Parameter bounds</span>
-<span class="c1"># f0 は注入ライン近傍に制限し、Q は物理的に妥当な範囲へ抑える</span>
+<span class="c1"># Keep f0 near the injected commissioning line and cap Q to a physically plausible range</span>
 <span class="n">bounds</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;A_bg&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1e-46</span><span class="p">,</span> <span class="mf">1e-42</span><span class="p">),</span>
     <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
@@ -1015,11 +1012,11 @@ True parameters (for validation):
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Initial guesses:
- A_bg: 1.500e-44
- alpha: -0.800
- A_peak: 5.000e-42
- f0: 98.000
- Q: 15.000
+  A_bg: 1.500e-44
+  alpha: -0.800
+  A_peak: 5.000e-42
+  f0: 99.500
+  Q: 18.000
 </pre></div></div>
 </div>
 </section>
@@ -1028,7 +1025,7 @@ Initial guesses:
 <p><code class="docutils literal notranslate"><span class="pre">cov=BifrequencyMap</span></code> を渡すことで、<code class="docutils literal notranslate"><span class="pre">fit_series</span></code> は完全な共分散構造を考慮した<strong>一般化最小二乗法（GLS）</strong>を自動的に使用します。</p>
 <p>このノートブック規模の例では、GLS は通常数秒で終わります。一方、後半の MCMC は walker 数・step 数・計算機性能に応じて、分単位の実行時間になることがあります。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># GLS fit using full covariance matrix</span>
@@ -1064,11 +1061,11 @@ GLS Fit Results:
         <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
     </tr>
     <tr>
-        <td style="text-align:left" title="Minimum value of function"> FCN = 1.861e+04 (χ²/ndof = 26.0) </td>
-        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 625 </td>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 2265 (χ²/ndof = 3.2) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 446 </td>
     </tr>
     <tr>
-        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 3.27e-07 (Goal: 0.0002) </td>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 8.67e-07 (Goal: 0.0002) </td>
         <td style="text-align:center" title="Total run time of algorithms">  </td>
     </tr>
     <tr>
@@ -1076,7 +1073,7 @@ GLS Fit Results:
         <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
     </tr>
     <tr>
-        <td style="text-align:center;background-color:#FFF79A;color:black"> SOME parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
         <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
     </tr>
     <tr>
@@ -1098,8 +1095,8 @@ GLS Fit Results:
     <tr>
         <th> 0 </th>
         <td> A_bg </td>
-        <td> 5.108e-45 </td>
-        <td> 0.027e-45 </td>
+        <td> 15.0e-45 </td>
+        <td> 2.2e-45 </td>
         <td>  </td>
         <td>  </td>
         <td> 1E-46 </td>
@@ -1109,19 +1106,19 @@ GLS Fit Results:
     <tr>
         <th> 1 </th>
         <td> alpha </td>
-        <td> -0.963 </td>
-        <td> 0.013 </td>
+        <td> -0.8 </td>
+        <td> 0.4 </td>
         <td>  </td>
         <td>  </td>
-        <td> -3 </td>
+        <td> -2 </td>
         <td> 0 </td>
         <td>  </td>
     </tr>
     <tr>
         <th> 2 </th>
         <td> A_peak </td>
-        <td> 1.373e-42 </td>
-        <td> 0.010e-42 </td>
+        <td> 16.19e-42 </td>
+        <td> 0.11e-42 </td>
         <td>  </td>
         <td>  </td>
         <td> 1E-44 </td>
@@ -1131,23 +1128,23 @@ GLS Fit Results:
     <tr>
         <th> 3 </th>
         <td> f0 </td>
-        <td> 99.095 </td>
-        <td> 0.032 </td>
+        <td> 99.948 </td>
+        <td> 0.008 </td>
         <td>  </td>
         <td>  </td>
-        <td> 90 </td>
-        <td> 110 </td>
+        <td> 95 </td>
+        <td> 105 </td>
         <td>  </td>
     </tr>
     <tr>
         <th> 4 </th>
-        <td style="background-color:#FFF79A;color:black"> Q </td>
-        <td> 50.00 </td>
-        <td> 0.01 </td>
+        <td> Q </td>
+        <td> 19.39 </td>
+        <td> 0.09 </td>
         <td>  </td>
         <td>  </td>
-        <td> 5 </td>
-        <td style="background-color:#FFF79A;color:black"> 50 </td>
+        <td> 8 </td>
+        <td> 35 </td>
         <td>  </td>
     </tr>
 </table><table>
@@ -1161,43 +1158,43 @@ GLS Fit Results:
     </tr>
     <tr>
         <th> A_bg </th>
-        <td> 7.34e-94 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 492.7390987966383022467198316007852554321289e-54 <strong>(0.001)</strong> </td>
-        <td style="background-color:rgb(163,163,250);color:black"> -185.5e-93 <strong>(-0.671)</strong> </td>
-        <td style="background-color:rgb(196,196,250);color:black"> -364.8610095143001217365963384509086608886718750e-51 <strong>(-0.418)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 1.7261926603898165577533063697046600282e-57 </td>
+        <td> 4.9e-90 </td>
+        <td style="background-color:rgb(250,151,151);color:black"> 559.277652574819967412622645497322082519531250e-48 <strong>(0.661)</strong> </td>
+        <td style="background-color:rgb(250,207,207);color:black"> 71e-90 <strong>(0.287)</strong> </td>
+        <td style="background-color:rgb(239,239,250);color:black"> -1.446331691205444025527526719088200479745865e-48 <strong>(-0.084)</strong> </td>
+        <td style="background-color:rgb(250,168,168);color:black"> 113.795942738301462782146700192242860794067383e-48 <strong>(0.546)</strong> </td>
     </tr>
     <tr>
         <th> alpha </th>
-        <td style="background-color:rgb(250,250,250);color:black"> 492.7390987966383022467198316007852554321289e-54 <strong>(0.001)</strong> </td>
-        <td> 0.000161 </td>
-        <td style="background-color:rgb(241,241,250);color:black"> -9.1226383235743409017004523775540292263031e-48 <strong>(-0.071)</strong> </td>
-        <td style="background-color:rgb(226,226,250);color:black"> -0.08e-3 <strong>(-0.188)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
+        <td style="background-color:rgb(250,151,151);color:black"> 559.277652574819967412622645497322082519531250e-48 <strong>(0.661)</strong> </td>
+        <td> 0.146 </td>
+        <td style="background-color:rgb(250,222,222);color:black"> 7.948858208794998603252679458819329738616943e-45 <strong>(0.186)</strong> </td>
+        <td style="background-color:rgb(240,240,250);color:black"> -0.23e-3 <strong>(-0.077)</strong> </td>
+        <td style="background-color:rgb(250,201,201);color:black"> 0.012 <strong>(0.328)</strong> </td>
     </tr>
     <tr>
         <th> A_peak </th>
-        <td style="background-color:rgb(163,163,250);color:black"> -185.5e-93 <strong>(-0.671)</strong> </td>
-        <td style="background-color:rgb(241,241,250);color:black"> -9.1226383235743409017004523775540292263031e-48 <strong>(-0.071)</strong> </td>
-        <td> 1.04e-88 </td>
-        <td style="background-color:rgb(250,176,176);color:black"> 162.93441282958622196019859984517097473144531e-48 <strong>(0.496)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 24.68557179381014066166244447231292725e-54 </td>
+        <td style="background-color:rgb(250,207,207);color:black"> 71e-90 <strong>(0.287)</strong> </td>
+        <td style="background-color:rgb(250,222,222);color:black"> 7.948858208794998603252679458819329738616943e-45 <strong>(0.186)</strong> </td>
+        <td> 1.25e-86 </td>
+        <td style="background-color:rgb(250,237,237);color:black"> 78.116725784743863414405495859682559967041e-48 <strong>(0.090)</strong> </td>
+        <td style="background-color:rgb(250,113,113);color:black"> 9.583833450723016511574314790777862071990967e-45 <strong>(0.911)</strong> </td>
     </tr>
     <tr>
         <th> f0 </th>
-        <td style="background-color:rgb(196,196,250);color:black"> -364.8610095143001217365963384509086608886718750e-51 <strong>(-0.418)</strong> </td>
-        <td style="background-color:rgb(226,226,250);color:black"> -0.08e-3 <strong>(-0.188)</strong> </td>
-        <td style="background-color:rgb(250,176,176);color:black"> 162.93441282958622196019859984517097473144531e-48 <strong>(0.496)</strong> </td>
-        <td> 0.00104 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
+        <td style="background-color:rgb(239,239,250);color:black"> -1.446331691205444025527526719088200479745865e-48 <strong>(-0.084)</strong> </td>
+        <td style="background-color:rgb(240,240,250);color:black"> -0.23e-3 <strong>(-0.077)</strong> </td>
+        <td style="background-color:rgb(250,237,237);color:black"> 78.116725784743863414405495859682559967041e-48 <strong>(0.090)</strong> </td>
+        <td> 6.08e-05 </td>
+        <td style="background-color:rgb(250,235,235);color:black"> 0.07e-3 <strong>(0.098)</strong> </td>
     </tr>
     <tr>
         <th> Q </th>
-        <td style="background-color:rgb(250,250,250);color:black"> 1.7261926603898165577533063697046600282e-57 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 24.68557179381014066166244447231292725e-54 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
-        <td> 1.13e-11 </td>
+        <td style="background-color:rgb(250,168,168);color:black"> 113.795942738301462782146700192242860794067383e-48 <strong>(0.546)</strong> </td>
+        <td style="background-color:rgb(250,201,201);color:black"> 0.012 <strong>(0.328)</strong> </td>
+        <td style="background-color:rgb(250,113,113);color:black"> 9.583833450723016511574314790777862071990967e-45 <strong>(0.911)</strong> </td>
+        <td style="background-color:rgb(250,235,235);color:black"> 0.07e-3 <strong>(0.098)</strong> </td>
+        <td> 0.00889 </td>
     </tr>
 </table></div>
 </div>
@@ -1206,7 +1203,7 @@ GLS Fit Results:
 <h3>4.5 フィッティング結果の解析<a class="headerlink" href="#4.5-フィッティング結果の解析" title="Link to this heading"></a></h3>
 <p>commissioning で主要な診断量として重視すべきなのは <code class="docutils literal notranslate"><span class="pre">f0</span></code> と <code class="docutils literal notranslate"><span class="pre">Q</span></code> です。 絶対的な <code class="docutils literal notranslate"><span class="pre">A_peak</span></code> の規格化は、window leakage、bootstrap median のバイアス、PSD/ASD 規約の影響を line center や linewidth より強く受けます。そのため、ここでは厳密な真値一致よりも effective line-strength parameter として読みます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract parameters and errors</span>
@@ -1244,18 +1241,18 @@ Parameter Comparison (GLS Fit):
 ======================================================================
 Parameter  Fitted          Error        True                Pull
 ----------------------------------------------------------------------
-A_bg       5.108e-45       2.709e-47    1.000e-44        -180.54
-alpha      -0.9633         0.0127       -1.0000             2.90
-A_peak     1.373e-42       1.020e-44    4.000e-42        -257.59
-f0         99.0953         0.0322       100.0000          -28.08
-Q          50.0000         0.0101       20.0000          2980.51
+A_bg       1.498e-44       2.212e-45    1.000e-44           2.25
+alpha      -0.8147         0.3731       -1.0000             0.50
+A_peak     1.619e-41       1.116e-43    2.500e-41         -78.95
+f0         99.9485         0.0078       100.0000           -6.61
+Q          19.3873         0.0943       20.0000            -6.50
 ----------------------------------------------------------------------
 
-χ²/ndof = 18611.0 / 715 = 26.029
+χ²/ndof = 2264.5 / 715 = 3.167
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize fit results</span>
@@ -1319,7 +1316,7 @@ Q          50.0000         0.0101       20.0000          2980.51
 <section id="5.1-MCMC-の実行">
 <h3>5.1 MCMC の実行<a class="headerlink" href="#5.1-MCMC-の実行" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># MCMC parameters</span>
@@ -1347,47 +1344,92 @@ Q          50.0000         0.0101       20.0000          2980.51
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Covariance matrix is not positive definite, falling back to pinv.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Running MCMC with 32 walkers, 3000 steps...
 Burn-in: 500 steps
-MCMC requires &#39;emcee&#39; package: Please install &#39;emcee&#39; and &#39;corner&#39; to use MCMC features.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+  0%|          | 0/3000 [00:00&lt;?, ?it/s]/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/emcee/moves/red_blue.py:99: RuntimeWarning: invalid value encountered in scalar subtract
+  lnpdiff = f + nlp - state.log_prob[j]
+100%|██████████| 3000/3000 [00:45&lt;00:00, 65.49it/s]
 </pre></div></div>
 </div>
 </section>
 <section id="5.2-収束診断">
 <h3>5.2 収束診断<a class="headerlink" href="#5.2-収束診断" title="Link to this heading"></a></h3>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">mcmc_available</span><span class="p">:</span>
     <span class="c1"># Acceptance fraction</span>
     <span class="n">acc_frac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sampler</span><span class="o">.</span><span class="n">acceptance_fraction</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">MCMC Diagnostics:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Mean acceptance fraction: </span><span class="si">{</span><span class="n">acc_frac</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; (Optimal range: 0.2 - 0.5)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Mean acceptance fraction: </span><span class="si">{</span><span class="n">acc_frac</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  (Optimal range: 0.2 - 0.5)&quot;</span><span class="p">)</span>
 
     <span class="c1"># Autocorrelation time (if enough samples)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">tau</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_autocorr_time</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Autocorrelation times:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  Autocorrelation times:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params_gls</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">tau</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Effective samples: ~</span><span class="si">{</span><span class="n">n_steps</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">tau</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Effective samples: ~</span><span class="si">{</span><span class="n">n_steps</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; (Autocorrelation time estimation requires more samples)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  (Autocorrelation time estimation requires more samples)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+MCMC Diagnostics:
+  Mean acceptance fraction: 0.000
+  (Optimal range: 0.2 - 0.5)
+
+  Autocorrelation times:
+    A_bg: nan steps
+    alpha: nan steps
+    A_peak: nan steps
+    f0: nan steps
+    Q: nan steps
+  Effective samples: ~nan
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/emcee/autocorr.py:38: RuntimeWarning: invalid value encountered in divide
+  acf /= acf[0]
+</pre></div></div>
 </div>
 </section>
 <section id="5.3-コーナープロットとトレースプロット">
 <h3>5.3 コーナープロットとトレースプロット<a class="headerlink" href="#5.3-コーナープロットとトレースプロット" title="Link to this heading"></a></h3>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">mcmc_available</span><span class="p">:</span>
@@ -1405,19 +1447,43 @@ MCMC requires &#39;emcee&#39; package: Please install &#39;emcee&#39; and &#39;c
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+WARNING:root:Too few points to create valid contours
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_bootstrap_gls_fitting_39_1.png" src="../../../../_images/web_ja_user_guide_tutorials_case_bootstrap_gls_fitting_39_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">mcmc_available</span><span class="p">:</span>
     <span class="c1"># Trace plots</span>
-    <span class="n">samples</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span> <span class="c1"># Shape: (n_steps, n_walkers, n_params)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">get_chain</span><span class="p">()</span>  <span class="c1"># Shape: (n_steps, n_walkers, n_params)</span>
     <span class="n">param_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">params_gls</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
     <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">param_names</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">param_names</span><span class="p">)),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">param_names</span><span class="p">)):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_walkers</span><span class="p">)):</span> <span class="c1"># Plot subset of walkers</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_walkers</span><span class="p">)):</span>  <span class="c1"># Plot subset of walkers</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">samples</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">true_params</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">burn_in</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Burn-in&quot;</span><span class="p">)</span>
@@ -1432,6 +1498,13 @@ MCMC requires &#39;emcee&#39; package: Please install &#39;emcee&#39; and &#39;c
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_bootstrap_gls_fitting_40_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_bootstrap_gls_fitting_40_0.png" />
+</div>
+</div>
 </section>
 </section>
 <section id="6.-GLS-と-OLS-の比較">
@@ -1440,7 +1513,7 @@ MCMC requires &#39;emcee&#39; package: Please install &#39;emcee&#39; and &#39;c
 <h3>6.1 OLS フィッティングの実行（対角共分散のみ）<a class="headerlink" href="#6.1-OLS-フィッティングの実行（対角共分散のみ）" title="Link to this heading"></a></h3>
 <p>OLS（通常最小二乗法）は非対角相関を無視し、対角分散のみを使用します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create diagonal-only covariance (for OLS)</span>
@@ -1488,11 +1561,11 @@ OLS Fit Results:
         <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
     </tr>
     <tr>
-        <td style="text-align:left" title="Minimum value of function"> FCN = 2121 (χ²/ndof = 3.0) </td>
-        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 487 </td>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 443.6 (χ²/ndof = 0.6) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 375 </td>
     </tr>
     <tr>
-        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 5.11e-05 (Goal: 0.0002) </td>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 2.86e-05 (Goal: 0.0002) </td>
         <td style="text-align:center" title="Total run time of algorithms">  </td>
     </tr>
     <tr>
@@ -1500,7 +1573,7 @@ OLS Fit Results:
         <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
     </tr>
     <tr>
-        <td style="text-align:center;background-color:#FFF79A;color:black"> SOME parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
         <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
     </tr>
     <tr>
@@ -1522,8 +1595,8 @@ OLS Fit Results:
     <tr>
         <th> 0 </th>
         <td> A_bg </td>
-        <td> 5.21e-45 </td>
-        <td> 0.08e-45 </td>
+        <td> 6.8e-45 </td>
+        <td> 1.0e-45 </td>
         <td>  </td>
         <td>  </td>
         <td> 1E-46 </td>
@@ -1533,19 +1606,19 @@ OLS Fit Results:
     <tr>
         <th> 1 </th>
         <td> alpha </td>
-        <td> -0.98 </td>
-        <td> 0.04 </td>
+        <td> -0.95 </td>
+        <td> 0.23 </td>
         <td>  </td>
         <td>  </td>
-        <td> -3 </td>
+        <td> -2 </td>
         <td> 0 </td>
         <td>  </td>
     </tr>
     <tr>
         <th> 2 </th>
         <td> A_peak </td>
-        <td> 1.381e-42 </td>
-        <td> 0.029e-42 </td>
+        <td> 16.9e-42 </td>
+        <td> 0.4e-42 </td>
         <td>  </td>
         <td>  </td>
         <td> 1E-44 </td>
@@ -1555,23 +1628,23 @@ OLS Fit Results:
     <tr>
         <th> 3 </th>
         <td> f0 </td>
-        <td> 99.25 </td>
-        <td> 0.09 </td>
+        <td> 99.972 </td>
+        <td> 0.029 </td>
         <td>  </td>
         <td>  </td>
-        <td> 90 </td>
-        <td> 110 </td>
+        <td> 95 </td>
+        <td> 105 </td>
         <td>  </td>
     </tr>
     <tr>
         <th> 4 </th>
-        <td style="background-color:#FFF79A;color:black"> Q </td>
-        <td> 50.00 </td>
-        <td> 0.08 </td>
+        <td> Q </td>
+        <td> 19.80 </td>
+        <td> 0.27 </td>
         <td>  </td>
         <td>  </td>
-        <td> 5 </td>
-        <td style="background-color:#FFF79A;color:black"> 50 </td>
+        <td> 8 </td>
+        <td> 35 </td>
         <td>  </td>
     </tr>
 </table><table>
@@ -1585,43 +1658,43 @@ OLS Fit Results:
     </tr>
     <tr>
         <th> A_bg </th>
-        <td> 5.76e-93 </td>
-        <td style="background-color:rgb(250,249,249);color:black"> 23.538718338166543020406606956385076045989990e-51 <strong>(0.008)</strong> </td>
-        <td style="background-color:rgb(160,160,250);color:black"> -1.520e-90 <strong>(-0.688)</strong> </td>
-        <td style="background-color:rgb(209,209,250);color:black"> -2.188263784668139866340652588405646383762359619e-48 <strong>(-0.317)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -1.369370905640132640712636202806606889e-57 </td>
+        <td> 9.53e-91 </td>
+        <td style="background-color:rgb(250,208,208);color:black"> 63.6393486137489787779486505314707756042480469e-48 <strong>(0.281)</strong> </td>
+        <td style="background-color:rgb(250,215,215);color:black"> 89.4e-90 <strong>(0.231)</strong> </td>
+        <td style="background-color:rgb(250,249,249);color:black"> 115.5956924217102397278722492046654224395752e-51 <strong>(0.004)</strong> </td>
+        <td style="background-color:rgb(250,183,183);color:black"> 118.5572402381772860735509311780333518981933594e-48 <strong>(0.447)</strong> </td>
     </tr>
     <tr>
         <th> alpha </th>
-        <td style="background-color:rgb(250,249,249);color:black"> 23.538718338166543020406606956385076045989990e-51 <strong>(0.008)</strong> </td>
-        <td> 0.00138 </td>
-        <td style="background-color:rgb(237,237,250);color:black"> -111.5864376888553977096307789906859397888184e-48 <strong>(-0.103)</strong> </td>
-        <td style="background-color:rgb(216,216,250);color:black"> -0.0009 <strong>(-0.261)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
+        <td style="background-color:rgb(250,208,208);color:black"> 63.6393486137489787779486505314707756042480469e-48 <strong>(0.281)</strong> </td>
+        <td> 0.0538 </td>
+        <td style="background-color:rgb(250,242,242);color:black"> 4.95834228885052663571286757360212504863739e-45 <strong>(0.054)</strong> </td>
+        <td style="background-color:rgb(223,223,250);color:black"> -1.4e-3 <strong>(-0.211)</strong> </td>
+        <td style="background-color:rgb(250,234,234);color:black"> 0.01 <strong>(0.107)</strong> </td>
     </tr>
     <tr>
         <th> A_peak </th>
-        <td style="background-color:rgb(160,160,250);color:black"> -1.520e-90 <strong>(-0.688)</strong> </td>
-        <td style="background-color:rgb(237,237,250);color:black"> -111.5864376888553977096307789906859397888184e-48 <strong>(-0.103)</strong> </td>
-        <td> 8.46e-88 </td>
-        <td style="background-color:rgb(250,185,185);color:black"> 1.1537582304720352954774398313020355999469757e-45 <strong>(0.437)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 13.0114192724946811097197496565058827e-54 </td>
+        <td style="background-color:rgb(250,215,215);color:black"> 89.4e-90 <strong>(0.231)</strong> </td>
+        <td style="background-color:rgb(250,242,242);color:black"> 4.95834228885052663571286757360212504863739e-45 <strong>(0.054)</strong> </td>
+        <td> 1.57e-85 </td>
+        <td style="background-color:rgb(250,242,242);color:black"> 614.68094481682828700286336243152618408203e-48 <strong>(0.053)</strong> </td>
+        <td style="background-color:rgb(250,107,107);color:black"> 102.93055010025271656104450812563300132751465e-45 <strong>(0.954)</strong> </td>
     </tr>
     <tr>
         <th> f0 </th>
-        <td style="background-color:rgb(209,209,250);color:black"> -2.188263784668139866340652588405646383762359619e-48 <strong>(-0.317)</strong> </td>
-        <td style="background-color:rgb(216,216,250);color:black"> -0.0009 <strong>(-0.261)</strong> </td>
-        <td style="background-color:rgb(250,185,185);color:black"> 1.1537582304720352954774398313020355999469757e-45 <strong>(0.437)</strong> </td>
-        <td> 0.00826 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 0 </td>
+        <td style="background-color:rgb(250,249,249);color:black"> 115.5956924217102397278722492046654224395752e-51 <strong>(0.004)</strong> </td>
+        <td style="background-color:rgb(223,223,250);color:black"> -1.4e-3 <strong>(-0.211)</strong> </td>
+        <td style="background-color:rgb(250,242,242);color:black"> 614.68094481682828700286336243152618408203e-48 <strong>(0.053)</strong> </td>
+        <td> 0.000853 </td>
+        <td style="background-color:rgb(250,238,238);color:black"> 0.6e-3 <strong>(0.077)</strong> </td>
     </tr>
     <tr>
         <th> Q </th>
-        <td style="background-color:rgb(250,250,250);color:black"> -1.369370905640132640712636202806606889e-57 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 13.0114192724946811097197496565058827e-54 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 0 </td>
-        <td> 1.36e-07 </td>
+        <td style="background-color:rgb(250,183,183);color:black"> 118.5572402381772860735509311780333518981933594e-48 <strong>(0.447)</strong> </td>
+        <td style="background-color:rgb(250,234,234);color:black"> 0.01 <strong>(0.107)</strong> </td>
+        <td style="background-color:rgb(250,107,107);color:black"> 102.93055010025271656104450812563300132751465e-45 <strong>(0.954)</strong> </td>
+        <td style="background-color:rgb(250,238,238);color:black"> 0.6e-3 <strong>(0.077)</strong> </td>
+        <td> 0.0739 </td>
     </tr>
 </table></div>
 </div>
@@ -1629,7 +1702,7 @@ OLS Fit Results:
 <section id="6.2-GLS-と-OLS-の結果比較">
 <h3>6.2 GLS と OLS の結果比較<a class="headerlink" href="#6.2-GLS-と-OLS-の結果比較" title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params_ols</span> <span class="o">=</span> <span class="n">result_ols</span><span class="o">.</span><span class="n">params</span>
@@ -1655,7 +1728,7 @@ OLS Fit Results:
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">gls_val</span><span class="si">:</span><span class="s2">&lt;14.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">gls_err</span><span class="si">:</span><span class="s2">&lt;12.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">ols_val</span><span class="si">:</span><span class="s2">&lt;14.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">ols_err</span><span class="si">:</span><span class="s2">&lt;12.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">&gt;8.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">85</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">χ²/ndof: GLS = </span><span class="si">{</span><span class="n">result_gls</span><span class="o">.</span><span class="n">reduced_chi2</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> OLS = </span><span class="si">{</span><span class="n">result_ols</span><span class="o">.</span><span class="n">reduced_chi2</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">χ²/ndof:  GLS = </span><span class="si">{</span><span class="n">result_gls</span><span class="o">.</span><span class="n">reduced_chi2</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">    OLS = </span><span class="si">{</span><span class="n">result_ols</span><span class="o">.</span><span class="n">reduced_chi2</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1669,18 +1742,18 @@ GLS vs OLS Comparison:
 =====================================================================================
 Parameter  GLS Value      GLS Error    OLS Value      OLS Error       Ratio
 -------------------------------------------------------------------------------------
-A_bg       5.108e-45      2.709e-47    5.214e-45      7.589e-47        0.36
-alpha      -0.9633        0.0127       -0.9761        0.0372           0.34
-A_peak     1.373e-42      1.020e-44    1.381e-42      2.909e-44        0.35
-f0         99.0953        0.0322       99.2533        0.0909           0.35
-Q          50.0000        0.0101       50.0000        0.0815           0.12
+A_bg       1.498e-44      2.212e-45    6.784e-45      9.760e-46        2.27
+alpha      -0.8147        0.3731       -0.9548        0.2299           1.62
+A_peak     1.619e-41      1.116e-43    1.693e-41      3.968e-43        0.28
+f0         99.9485        0.0078       99.9719        0.0292           0.27
+Q          19.3873        0.0943       19.8040        0.2719           0.35
 -------------------------------------------------------------------------------------
 
-χ²/ndof: GLS = 26.029 OLS = 2.966
+χ²/ndof:  GLS = 3.167    OLS = 0.620
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualize error ratio comparison</span>
@@ -1795,7 +1868,7 @@ Q          50.0000        0.0101       50.0000        0.0815           0.12
 <h2>付録: BifrequencyMap の操作<a class="headerlink" href="#付録:-BifrequencyMap-の操作" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">BifrequencyMap</span></code> の一般的な操作のクイックリファレンスです。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example BifrequencyMap operations</span>
@@ -1818,7 +1891,7 @@ Q          50.0000        0.0101       50.0000        0.0815           0.12
 
 <span class="c1"># 4. Create from scratch</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">test_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="c1"># Diagonal + small off-diagonal</span>
+<span class="n">test_cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>  <span class="c1"># Diagonal + small off-diagonal</span>
 <span class="n">test_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">50.0</span>
 <span class="n">test_map</span> <span class="o">=</span> <span class="n">BifrequencyMap</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
     <span class="n">test_cov</span><span class="p">,</span>
@@ -1840,7 +1913,7 @@ Inverse shape: (720, 720)
 Inverse unit: Hz2
 
 Diagonal extracted: 720 values
-Correlation range: [-0.469, 1.000]
+Correlation range: [-0.400, 1.000]
 
 Created test BifrequencyMap: (10, 10)
 </pre></div></div>
@@ -1870,7 +1943,7 @@ Created test BifrequencyMap: (10, 10)
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-20 22:02:49.
+      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
       </span></p>
   </div>
 
