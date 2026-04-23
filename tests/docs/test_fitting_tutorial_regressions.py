@@ -16,13 +16,47 @@ from gwexpy.timeseries import TimeSeries
 
 
 def _read_notebook(path: Path) -> dict:
-    return json.loads(path.read_text())
+    return json.loads(_localized_notebook_path(path).read_text())
+
+
+def _localized_notebook_path(path: Path) -> Path:
+    if path.exists():
+        return path
+
+    parts = list(path.parts)
+    try:
+        locale_index = parts.index("ja")
+    except ValueError:
+        return path
+
+    parts[locale_index] = "en"
+    return Path(*parts)
 
 
 def _code_cell_source(nb: dict, index: int) -> str:
     cell = nb["cells"][index]
     assert cell["cell_type"] == "code"
     return "".join(cell.get("source", []))
+
+
+def _find_code_cell_source(nb: dict, *needles: str) -> str:
+    for cell in nb["cells"]:
+        if cell.get("cell_type") != "code":
+            continue
+        source = "".join(cell.get("source", []))
+        if all(needle in source for needle in needles):
+            return source
+    raise AssertionError(f"Could not find code cell containing: {needles!r}")
+
+
+def _find_markdown_source(nb: dict, *needles: str) -> str:
+    for cell in nb["cells"]:
+        if cell.get("cell_type") != "markdown":
+            continue
+        source = "".join(cell.get("source", []))
+        if all(needle in source for needle in needles):
+            return source
+    raise AssertionError(f"Could not find markdown cell containing: {needles!r}")
 
 
 def _gaussian(x: np.ndarray, a: float, mu: float, sigma: float) -> np.ndarray:
@@ -110,8 +144,16 @@ def test_case_violin_mode_tracking_recovers_injected_drift_within_20_percent():
 def test_advanced_fitting_notebooks_include_fit_guardrails(relative_path: Path):
     nb = _read_notebook(TUTORIAL_ROOT / relative_path)
 
-    fit_cell = _code_cell_source(nb, 6)
-    string_fit_cell = _code_cell_source(nb, 10)
+    fit_cell = _find_code_cell_source(
+        nb,
+        "result = ts.fit(",
+        'p0={"a": 8.0, "mu": 0.0, "sigma": 1.0}',
+    )
+    string_fit_cell = _find_code_cell_source(
+        nb,
+        'result_str = ts.fit(',
+        'x_range=(-2.5, 3.5)',
+    )
 
     assert '"mu": (-2.0, 2.0)' in fit_cell
     assert '"sigma": (0.2, 3.0)' in fit_cell
@@ -131,7 +173,12 @@ def test_case_bootstrap_gls_fitting_notebooks_define_peak_center_and_q_limits(
     relative_path: Path,
 ):
     nb = _read_notebook(TUTORIAL_ROOT / relative_path)
-    bounds_cell = _code_cell_source(nb, 28)
+    bounds_cell = _find_code_cell_source(
+        nb,
+        "bounds = {",
+        '"f0": (95.0, 105.0)',
+        '"Q": (8.0, 35.0)',
+    )
 
     assert '"f0": (95.0, 105.0)' in bounds_cell
     assert '"Q": (8.0, 35.0)' in bounds_cell
@@ -147,8 +194,14 @@ def test_case_bootstrap_gls_fitting_notebooks_define_peak_center_and_q_limits(
 )
 def test_case_violin_mode_notebooks_document_resolution_guardrail(relative_path: Path):
     nb = _read_notebook(TUTORIAL_ROOT / relative_path)
-    markdown = "".join(nb["cells"][12].get("source", []))
-    code = _code_cell_source(nb, 13)
+    markdown = _find_markdown_source(nb, "Resolution guardrail")
+    code = _find_code_cell_source(
+        nb,
+        "fftlength = 16.0",
+        "injected_drift_hz = 0.08",
+        "recovered_drift_hz",
+        "relative_error",
+    )
 
     assert "sub-bin" in markdown or "サブビン" in markdown
     assert "fftlength = 16.0" in code

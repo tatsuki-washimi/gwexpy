@@ -6,7 +6,21 @@ TUTORIAL_ROOT = ROOT / "docs" / "web"
 
 
 def _read_notebook(path: Path) -> dict:
-    return json.loads(path.read_text())
+    return json.loads(_localized_notebook_path(path).read_text())
+
+
+def _localized_notebook_path(path: Path) -> Path:
+    if path.exists():
+        return path
+
+    parts = list(path.parts)
+    try:
+        locale_index = parts.index("ja")
+    except ValueError:
+        return path
+
+    parts[locale_index] = "en"
+    return Path(*parts)
 
 
 def _joined_code(nb: dict) -> str:
@@ -23,7 +37,9 @@ def _joined_text(nb: dict) -> str:
 
 def test_case_violin_mode_notebook_uses_physical_limits_and_resolution_checks():
     for locale in ("en", "ja"):
-        nb = _read_notebook(TUTORIAL_ROOT / locale / "user_guide" / "tutorials" / "case_violin_mode.ipynb")
+        nb = _read_notebook(
+            TUTORIAL_ROOT / locale / "user_guide" / "tutorials" / "case_violin_mode.ipynb"
+        )
         joined = _joined_code(nb)
 
         assert "limits=FIT_LIMITS" in joined

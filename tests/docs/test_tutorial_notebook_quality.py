@@ -22,6 +22,24 @@ def _read_notebook(path: Path) -> dict:
     return json.loads(path.read_text())
 
 
+def _localized_tutorial_path(relative_path: Path) -> Path:
+    path = TUTORIAL_ROOT / relative_path
+    if path.exists():
+        return path
+    parts = relative_path.parts
+    if parts and parts[0] == "ja":
+        return TUTORIAL_ROOT / Path("en", *parts[1:])
+    return path
+
+
+def _read_tutorial_notebook(relative_path: Path) -> dict:
+    return _read_notebook(_localized_tutorial_path(relative_path))
+
+
+def _notebook_locale(relative_path: Path) -> str:
+    return relative_path.parts[0]
+
+
 def _code_cell_source_containing(nb: dict, text: str) -> str:
     for cell in nb.get("cells", []):
         if cell.get("cell_type") != "code":
@@ -75,6 +93,28 @@ def _markdown_texts(nb: dict) -> list[str]:
     return texts
 
 
+def _localized_markdown_texts(nb: dict, locale: str) -> list[str]:
+    localized: list[str] = []
+    wanted_tag = f"lang-{locale}"
+    other_i18n_tags = {"lang-en", "lang-ja"} - {wanted_tag}
+    for cell in nb.get("cells", []):
+        if cell.get("cell_type") != "markdown":
+            continue
+        tags = set(cell.get("metadata", {}).get("tags", []))
+        if wanted_tag in tags or not (tags & other_i18n_tags):
+            source = cell.get("source", [])
+            localized.append("".join(source) if isinstance(source, list) else str(source))
+    return localized
+
+
+def _code_text(nb: dict) -> str:
+    return "\n".join(
+        "".join(cell.get("source", []))
+        for cell in nb.get("cells", [])
+        if cell.get("cell_type") == "code"
+    )
+
+
 def test_tutorial_outputs_do_not_expose_local_paths_or_raw_warnings():
     notebooks = sorted(TUTORIAL_ROOT.glob("*/user_guide/tutorials/*.ipynb"))
     offenders: list[str] = []
@@ -98,7 +138,7 @@ def test_tutorial_outputs_do_not_expose_local_paths_or_raw_warnings():
     ],
 )
 def test_intro_interop_uses_explicit_axes_for_pandas_plot(relative_path: Path):
-    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
+    nb = _read_tutorial_notebook(relative_path)
     source = _code_cell_source_containing(nb, 's_pd = ts.to_pandas(index="datetime")')
 
     assert "fig, ax = plt.subplots()" in source
@@ -116,34 +156,29 @@ def test_example_intro_interop_uses_explicit_axes_for_pandas_plot():
 
 
 def test_ja_advanced_coupling_mentions_frequency_range_restriction():
-    nb = _read_notebook(
-        TUTORIAL_ROOT / "ja" / "user_guide" / "tutorials" / "advanced_coupling.ipynb"
-    )
-    joined = "\n".join(_markdown_texts(nb))
+    relative_path = Path("ja/user_guide/tutorials/advanced_coupling.ipynb")
+    nb = _read_tutorial_notebook(relative_path)
+    joined = "\n".join(_localized_markdown_texts(nb, _notebook_locale(relative_path)))
     assert "周波数帯域" in joined or "frange" in joined
 
 
 def test_ja_case_seismic_obspy_includes_multichannel_section():
-    nb = _read_notebook(
-        TUTORIAL_ROOT / "ja" / "user_guide" / "tutorials" / "case_seismic_obspy.ipynb"
-    )
-    joined = "\n".join(_markdown_texts(nb))
+    relative_path = Path("ja/user_guide/tutorials/case_seismic_obspy.ipynb")
+    nb = _read_tutorial_notebook(relative_path)
+    joined = "\n".join(_localized_markdown_texts(nb, _notebook_locale(relative_path)))
     assert "マルチチャンネル" in joined or "3成分" in joined
 
 
 def test_en_case_arima_burst_search_is_actually_english():
-    nb = _read_notebook(
-        TUTORIAL_ROOT / "en" / "user_guide" / "tutorials" / "case_arima_burst_search.ipynb"
-    )
-    first_markdown = _markdown_texts(nb)[0]
+    relative_path = Path("en/user_guide/tutorials/case_arima_burst_search.ipynb")
+    nb = _read_tutorial_notebook(relative_path)
+    first_markdown = _localized_markdown_texts(nb, _notebook_locale(relative_path))[0]
     assert "# ARIMA-Based Burst Detection" in first_markdown
     assert "## Introduction" in first_markdown
 
 
 def test_en_case_arima_burst_search_has_markdown_sections_not_code():
-    nb = _read_notebook(
-        TUTORIAL_ROOT / "en" / "user_guide" / "tutorials" / "case_arima_burst_search.ipynb"
-    )
+    nb = _read_tutorial_notebook(Path("en/user_guide/tutorials/case_arima_burst_search.ipynb"))
     code_texts = [
         "".join(cell.get("source", []))
         for cell in nb.get("cells", [])
@@ -175,26 +210,9 @@ def test_advanced_arima_notebooks_are_tagged_ci_heavy():
         Path("en/user_guide/tutorials/matrix_spectrogram.ipynb"),
         Path("en/user_guide/tutorials/matrix_timeseries.ipynb"),
         Path("en/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb"),
-        Path("ja/user_guide/tutorials/advanced_bruco.ipynb"),
-        Path("ja/user_guide/tutorials/advanced_arima.ipynb"),
-        Path("ja/user_guide/tutorials/advanced_correlation.ipynb"),
-        Path("ja/user_guide/tutorials/advanced_fitting.ipynb"),
-        Path("ja/user_guide/tutorials/advanced_peak_tracking.ipynb"),
-        Path("ja/user_guide/tutorials/advanced_spectrogram_processing.ipynb"),
-        Path("ja/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb"),
-        Path("ja/user_guide/tutorials/case_gbd_format.ipynb"),
-        Path("ja/user_guide/tutorials/case_transfer_function.ipynb"),
-        Path("ja/user_guide/tutorials/intro_interop.ipynb"),
-        Path("ja/user_guide/tutorials/intro_plotting.ipynb"),
-        Path("ja/user_guide/tutorials/intro_timeseries.ipynb"),
-        Path("ja/user_guide/tutorials/matrix_frequencyseries.ipynb"),
-        Path("ja/user_guide/tutorials/matrix_spectrogram.ipynb"),
-        Path("ja/user_guide/tutorials/matrix_timeseries.ipynb"),
-        Path("ja/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb"),
         Path("en/user_guide/tutorials/advanced_decomposition.ipynb"),
-        Path("ja/user_guide/tutorials/advanced_decomposition.ipynb"),
     ):
-        nb = _read_notebook(TUTORIAL_ROOT / relative_path)
+        nb = _read_tutorial_notebook(relative_path)
         tags = nb.get("cells", [{}])[0].get("metadata", {}).get("tags", [])
         assert "ci-heavy" in tags
 
@@ -207,7 +225,7 @@ def test_advanced_arima_notebooks_are_tagged_ci_heavy():
     ],
 )
 def test_intro_table_sample_csv_resolves_from_repo_root(relative_path: Path):
-    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
+    nb = _read_tutorial_notebook(relative_path)
     source = _code_cell_source_containing(nb, "sample_segment_data.csv")
 
     namespace: dict[str, object] = {}
@@ -230,12 +248,8 @@ def test_intro_table_sample_csv_resolves_from_repo_root(relative_path: Path):
 def test_case_bootstrap_gls_fitting_uses_explicit_mappables_for_colorbars(
     relative_path: Path,
 ):
-    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
-    joined = "\n".join(
-        "".join(cell.get("source", []))
-        for cell in nb.get("cells", [])
-        if cell.get("cell_type") == "code"
-    )
+    nb = _read_tutorial_notebook(relative_path)
+    joined = _code_text(nb)
 
     assert "plt.gca().get_images()" not in joined
     assert "plt.gca().collections[-1]" not in joined
@@ -252,12 +266,8 @@ def test_case_bootstrap_gls_fitting_uses_explicit_mappables_for_colorbars(
     ],
 )
 def test_advanced_hht_uses_explicit_mappables_for_colorbars(relative_path: Path):
-    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
-    joined = "\n".join(
-        "".join(cell.get("source", []))
-        for cell in nb.get("cells", [])
-        if cell.get("cell_type") == "code"
-    )
+    nb = _read_tutorial_notebook(relative_path)
+    joined = _code_text(nb)
 
     assert "plt.gca().get_images()" not in joined
     assert "plt.gca().collections[-1]" not in joined
@@ -275,12 +285,8 @@ def test_advanced_hht_uses_explicit_mappables_for_colorbars(relative_path: Path)
     ],
 )
 def test_advanced_hht_spectrogram_example_calls_hht_on_timeseries(relative_path: Path):
-    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
-    joined = "\n".join(
-        "".join(cell.get("source", []))
-        for cell in nb.get("cells", [])
-        if cell.get("cell_type") == "code"
-    )
+    nb = _read_tutorial_notebook(relative_path)
+    joined = _code_text(nb)
 
     assert "spec = data.hht(" not in joined
     assert "spec = ts_norm.hht(" in joined
@@ -307,7 +313,7 @@ def test_advanced_hht_spectrogram_example_calls_hht_on_timeseries(relative_path:
     ],
 )
 def test_non_fitting_tutorials_keep_source_notebooks_clean(relative_path: Path):
-    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
+    nb = _read_tutorial_notebook(relative_path)
     assert not any(
         cell.get("cell_type") == "code"
         and (cell.get("outputs") or cell.get("execution_count") is not None)
@@ -316,24 +322,20 @@ def test_non_fitting_tutorials_keep_source_notebooks_clean(relative_path: Path):
 
 
 def test_ja_advanced_hht_keeps_note_in_markdown_not_code():
-    nb = _read_notebook(TUTORIAL_ROOT / "ja" / "user_guide" / "tutorials" / "advanced_hht.ipynb")
+    relative_path = Path("ja/user_guide/tutorials/advanced_hht.ipynb")
+    nb = _read_tutorial_notebook(relative_path)
     first_code = next(cell for cell in nb.get("cells", []) if cell.get("cell_type") == "code")
-    first_markdown = next(cell for cell in nb.get("cells", []) if cell.get("cell_type") == "markdown")
 
     first_code_source = "".join(first_code.get("source", []))
-    first_markdown_source = "".join(first_markdown.get("source", []))
+    first_markdown_source = _localized_markdown_texts(nb, _notebook_locale(relative_path))[0]
 
     assert "ワークフロー重視" not in first_code_source
     assert "ワークフロー重視" in first_markdown_source
 
 
 def test_ja_advanced_hht_spectrogram_cell_keeps_inline_kwargs():
-    nb = _read_notebook(TUTORIAL_ROOT / "ja" / "user_guide" / "tutorials" / "advanced_hht.ipynb")
-    joined = "\n".join(
-        "".join(cell.get("source", []))
-        for cell in nb.get("cells", [])
-        if cell.get("cell_type") == "code"
-    )
+    nb = _read_tutorial_notebook(Path("ja/user_guide/tutorials/advanced_hht.ipynb"))
+    joined = _code_text(nb)
 
     assert "emd_kwargs=emd_kwargs" not in joined
     assert "hilbert_kwargs=hilbert_kwargs" not in joined
@@ -349,12 +351,8 @@ def test_ja_advanced_hht_spectrogram_cell_keeps_inline_kwargs():
     ],
 )
 def test_intro_frequencyseries_avoids_slow_plot_wrappers(relative_path: Path):
-    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
-    joined = "\n".join(
-        "".join(cell.get("source", []))
-        for cell in nb.get("cells", [])
-        if cell.get("cell_type") == "code"
-    )
+    nb = _read_tutorial_notebook(relative_path)
+    joined = _code_text(nb)
 
     assert "ts.plot(title=ts.name)" not in joined
     assert "red_ts.plot(" not in joined
@@ -363,24 +361,17 @@ def test_intro_frequencyseries_avoids_slow_plot_wrappers(relative_path: Path):
 
 
 @pytest.mark.parametrize(
-    ("relative_path", "expects_spectrogram_mesh"),
+    "relative_path",
     [
-        (Path("en/user_guide/tutorials/case_seismic_obspy.ipynb"), True),
-        (Path("ja/user_guide/tutorials/case_seismic_obspy.ipynb"), False),
+        Path("en/user_guide/tutorials/case_seismic_obspy.ipynb"),
+        Path("ja/user_guide/tutorials/case_seismic_obspy.ipynb"),
     ],
 )
-def test_case_seismic_obspy_avoids_slow_plot_wrappers(
-    relative_path: Path, expects_spectrogram_mesh: bool
-):
-    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
-    joined = "\n".join(
-        "".join(cell.get("source", []))
-        for cell in nb.get("cells", [])
-        if cell.get("cell_type") == "code"
-    )
+def test_case_seismic_obspy_avoids_slow_plot_wrappers(relative_path: Path):
+    nb = _read_tutorial_notebook(relative_path)
+    joined = _code_text(nb)
 
     assert "ts_seismic.plot(" not in joined
     assert "ax.plot(ts_seismic.times.value, ts_seismic.value" in joined
-    if expects_spectrogram_mesh:
-        assert "plot = sg.plot()" not in joined
-        assert "mesh = ax.pcolormesh(" in joined
+    assert "plot = sg.plot()" not in joined
+    assert "mesh = ax.pcolormesh(" in joined

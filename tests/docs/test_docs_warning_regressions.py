@@ -4,6 +4,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def _read_notebook(relative_path: str) -> dict:
+    path = ROOT / relative_path
+    if not path.exists() and "/ja/" in relative_path:
+        path = ROOT / relative_path.replace("/ja/", "/en/", 1)
+    return json.loads(path.read_text())
+
+
+def _cell_source(cell: dict) -> str:
+    source = cell.get("source", [])
+    if isinstance(source, list):
+        return "".join(source)
+    return str(source)
+
+
 def test_interop_autosummary_uses_currentmodule_short_names():
     for rel in (
         "docs/web/en/reference/api/interop.rst",
@@ -23,13 +37,9 @@ def test_io_format_guides_do_not_start_sections_with_transition():
 
 
 def test_time_frequency_comparison_notebook_has_no_transition_only_markdown_cells():
-    nb = json.loads(
-        (ROOT / "docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb").read_text()
-    )
+    nb = _read_notebook("docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb")
     markdown_cells = [
-        "".join(cell.get("source", [])) if isinstance(cell.get("source", []), list) else str(cell.get("source", ""))
-        for cell in nb["cells"]
-        if cell.get("cell_type") == "markdown"
+        _cell_source(cell) for cell in nb["cells"] if cell.get("cell_type") == "markdown"
     ]
     assert all(text.strip() != "---" and not text.strip().startswith("---\n") for text in markdown_cells)
 
@@ -41,8 +51,14 @@ def test_segment_tutorial_setup_cells_define_segment_table_at_top_level():
         "docs/web/en/user_guide/tutorials/segment_asd_pipeline.ipynb",
         "docs/web/ja/user_guide/tutorials/segment_asd_pipeline.ipynb",
     ):
-        nb = json.loads((ROOT / rel).read_text())
-        source = "".join(nb["cells"][2].get("source", []))
+        nb = _read_notebook(rel)
+        setup_cells = [
+            _cell_source(cell)
+            for cell in nb["cells"]
+            if cell.get("cell_type") == "code" and "SegmentTable.from_segments(" in _cell_source(cell)
+        ]
+        assert len(setup_cells) == 1
+        source = setup_cells[0]
         assert "\n    segs =" in source
         assert "\n    st = SegmentTable.from_segments(" in source
         assert "\n    st.add_series_column(" in source

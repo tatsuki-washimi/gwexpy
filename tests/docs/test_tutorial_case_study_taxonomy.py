@@ -22,7 +22,8 @@ def _listed_case_stems(index_path: str) -> set[str]:
 
 
 def _case_notebook_stems(language: str) -> set[str]:
-    tutorial_dir = ROOT / "docs" / "web" / language / "user_guide" / "tutorials"
+    canonical_language = "en" if language == "ja" else language
+    tutorial_dir = ROOT / "docs" / "web" / canonical_language / "user_guide" / "tutorials"
     return {path.stem for path in tutorial_dir.glob("case_*.ipynb")}
 
 
