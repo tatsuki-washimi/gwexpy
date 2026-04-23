@@ -399,8 +399,8 @@ Output data shape: (122880,)
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                                Migrad                                   │
 ├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 5.564 (χ²/ndof = 0.0)      │              Nfcn = 118              │
-│ EDM = 4.49e-06 (Goal: 0.0002)    │                                      │
+│ FCN = 4.798 (χ²/ndof = 0.0)      │              Nfcn = 118              │
+│ EDM = 4.11e-06 (Goal: 0.0002)    │                                      │
 ├──────────────────────────────────┼──────────────────────────────────────┤
 │          Valid Minimum           │   Below EDM threshold (goal x 10)    │
 ├──────────────────────────────────┼──────────────────────────────────────┤
@@ -412,15 +412,15 @@ Output data shape: (122880,)
 │   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
 ├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
 │ 0 │ amp  │   0.934   │   0.007   │            │            │         │         │       │
-│ 1 │ f0   │  299.995  │   0.021   │            │            │         │         │       │
-│ 2 │ Q    │   49.5    │    0.5    │            │            │         │         │       │
+│ 1 │ f0   │  299.997  │   0.021   │            │            │         │         │       │
+│ 2 │ Q    │   49.6    │    0.5    │            │            │         │         │       │
 └───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
 ┌─────┬────────────────────────────┐
 │     │      amp       f0        Q │
 ├─────┼────────────────────────────┤
 │ amp │ 4.33e-05       -0 -2.29e-3 │
-│  f0 │       -0 0.000451       -0 │
-│   Q │ -2.29e-3       -0    0.241 │
+│  f0 │       -0  0.00045  -0.1e-3 │
+│   Q │ -2.29e-3  -0.1e-3    0.241 │
 └─────┴────────────────────────────┘
 </pre></div></div>
 </div>
@@ -451,9 +451,9 @@ Output data shape: (122880,)
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 --- Estimated Parameters ---
-Resonance Frequency (f0): 299.9950 Hz (True: 300.0)
-Quality Factor (Q):       49.5190      (True: 50.0)
-Gain (Amp):               0.9345
+Resonance Frequency (f0): 299.9967 Hz (True: 300.0)
+Quality Factor (Q):       49.5637      (True: 50.0)
+Gain (Amp):               0.9343
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -478,7 +478,7 @@ Gain (Amp):               0.9345
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-23 04:12:31.
+      <span class="lastupdated">Last updated on 2026-04-23 09:00:13.
       </span></p>
   </div>
 
