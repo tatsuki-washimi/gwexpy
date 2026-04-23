@@ -8,6 +8,7 @@ Architecture & Design
    :maxdepth: 1
 
    contracts/numerical
+   contracts/public_interop_contract
    contracts/public_io_contract
    design/design_data/index
    design/gui/implementation_map

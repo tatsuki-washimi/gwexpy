@@ -44,6 +44,7 @@ from .meep_ import from_meep_hdf5
 from .meshio_ import from_fenics_vtk, from_fenics_xdmf, from_meshio
 from .metpy_ import from_metpy_dataarray
 from .mne_ import from_mne, from_mne_raw, to_mne, to_mne_rawarray
+from .mt_ import from_mth5, to_mth5
 from .multitaper_ import from_mtspec, from_mtspec_array
 from .neo_ import from_neo, to_neo
 from .netcdf4_ import from_netcdf4, to_netcdf4
@@ -238,6 +239,9 @@ __all__ = [
     # P2 - simpeg
     "to_simpeg",
     "from_simpeg",
+    # P2 - mth5
+    "to_mth5",
+    "from_mth5",
     # P2 - neo
     "to_neo",
     "from_neo",

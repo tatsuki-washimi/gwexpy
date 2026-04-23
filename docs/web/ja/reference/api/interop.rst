@@ -38,6 +38,7 @@
 
    finesse_
    control_
+   mt_
    obspy_
    lal_
    gwinc_

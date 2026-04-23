@@ -155,7 +155,7 @@ myst:
 | [Finesse](https://finesse.ifosim.org/) | `from_finesse_frequency_response()`, `from_finesse_noise()` | 公開済み | optics / response | [API](../reference/api/gwexpy.interop.finesse_.rst) |
 | [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | 公開済み | FRD / response。`pip install gwexpy[control]` が必要。FRD 変換は `FrequencySeries` / `FrequencySeriesDict` から利用でき、時間応答の取り込みは `TimeSeries.from_control()` / `TimeSeriesDict.from_control()` で行えます。 | [API](../reference/api/gwexpy.interop.control_.rst) |
 | [SimPEG](https://simpeg.xyz/) | `to_simpeg()`, `from_simpeg()` | 実装済み | geophysics | — |
-| [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | 実装済み | magnetotellurics | — |
+| [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | 公開済み | magnetotellurics | [API](../reference/api/gwexpy.interop.mt_.rst) |
 | MTpy | 専用 `to_*()` / `from_*()` API は対応中 | 対応中 | MTH5 周辺との整理が未完 | — |
 | [MNE-Python](https://mne.tools/stable/index.html) | `to_mne()`, `from_mne()`, `to_mne_rawarray()`, `from_mne_raw()` | 実装済み | EEG / biosignal | — |
 | [Neo](https://neo.readthedocs.io/en/latest/) | `to_neo()`, `from_neo()` | 実装済み | electrophysiology | — |

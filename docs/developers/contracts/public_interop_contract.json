@@ -1,0 +1,323 @@
+{
+    "schema_version": 1,
+    "targets": [
+        {
+            "name": "hdf5",
+            "module": "hdf5_",
+            "status": "public",
+            "guide_api": [
+                "to_hdf5",
+                "from_hdf5"
+            ],
+            "row_match_en": "| [HDF5](",
+            "row_match_ja": "| [HDF5](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.hdf5_.rst",
+            "details_link": "../reference/api/gwexpy.interop.hdf5_.rst",
+            "notes": [
+                "Object-level HDF5 helpers are part of the public interop surface."
+            ]
+        },
+        {
+            "name": "json",
+            "module": "json_",
+            "status": "public",
+            "guide_api": [
+                "to_json",
+                "from_json"
+            ],
+            "row_match_en": "| JSON |",
+            "row_match_ja": "| JSON |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.json_.rst",
+            "details_link": "../reference/api/gwexpy.interop.json_.rst",
+            "notes": [
+                "JSON string conversion is public and reference-indexed through json_."
+            ]
+        },
+        {
+            "name": "python-dict",
+            "module": "json_",
+            "status": "public",
+            "guide_api": [
+                "to_dict",
+                "from_dict"
+            ],
+            "row_match_en": "| Python dict |",
+            "row_match_ja": "| Python dict |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.json_.rst",
+            "details_link": null,
+            "notes": [
+                "Python dict conversion shares the json_ reference module."
+            ]
+        },
+        {
+            "name": "zarr",
+            "module": "zarr_",
+            "status": "public",
+            "guide_api": [
+                "to_zarr",
+                "from_zarr"
+            ],
+            "row_match_en": "| [Zarr](",
+            "row_match_ja": "| [Zarr](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.zarr_.rst",
+            "details_link": "../reference/api/gwexpy.interop.zarr_.rst",
+            "notes": [
+                "Zarr is a published interop bridge distinct from direct I/O."
+            ]
+        },
+        {
+            "name": "netcdf4",
+            "module": "netcdf4_",
+            "status": "public",
+            "guide_api": [
+                "to_netcdf4",
+                "from_netcdf4"
+            ],
+            "row_match_en": "| [NetCDF4](",
+            "row_match_ja": "| [NetCDF4](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.netcdf4_.rst",
+            "details_link": "../reference/api/gwexpy.interop.netcdf4_.rst",
+            "notes": [
+                "NetCDF4 interop stays separate from canonical direct-I/O token nc."
+            ]
+        },
+        {
+            "name": "pandas",
+            "module": "pandas_",
+            "status": "public",
+            "guide_api": [
+                "to_pandas_series",
+                "from_pandas_series",
+                "to_pandas_dataframe",
+                "from_pandas_dataframe"
+            ],
+            "row_match_en": "| [pandas](",
+            "row_match_ja": "| [pandas](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.pandas_.rst",
+            "details_link": "../reference/api/gwexpy.interop.pandas_.rst",
+            "notes": [
+                "The public guide describes pandas at the helper-function level."
+            ]
+        },
+        {
+            "name": "xarray",
+            "module": "xarray_",
+            "status": "public",
+            "guide_api": [
+                "to_xarray",
+                "from_xarray"
+            ],
+            "row_match_en": "| [xarray](https://docs.xarray.dev/) |",
+            "row_match_ja": "| [xarray](https://docs.xarray.dev/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.xarray_.rst",
+            "details_link": "../reference/api/gwexpy.interop.xarray_.rst",
+            "notes": [
+                "xarray DataArray and Dataset helpers are part of the public surface."
+            ]
+        },
+        {
+            "name": "xarray-field",
+            "module": "xarray_",
+            "status": "public",
+            "guide_api": [
+                "to_xarray_field",
+                "from_xarray_field"
+            ],
+            "row_match_en": "| [xarray](https://docs.xarray.dev/) Field |",
+            "row_match_ja": "| [xarray](https://docs.xarray.dev/) Field |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.xarray_.rst",
+            "details_link": "../reference/api/gwexpy.interop.xarray_.rst",
+            "notes": [
+                "Field interop is published through the same xarray_ reference module."
+            ]
+        },
+        {
+            "name": "astropy-timeseries",
+            "module": "astropy_",
+            "status": "public",
+            "guide_api": [
+                "to_astropy_timeseries",
+                "from_astropy_timeseries"
+            ],
+            "row_match_en": "| [astropy](",
+            "row_match_ja": "| [astropy](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.astropy_.rst",
+            "details_link": "../reference/api/gwexpy.interop.astropy_.rst",
+            "notes": [
+                "Astropy time-series conversion is published and reference-indexed."
+            ]
+        },
+        {
+            "name": "dask",
+            "module": "dask_",
+            "status": "public",
+            "guide_api": [
+                "to_dask",
+                "from_dask"
+            ],
+            "row_match_en": "| [dask](",
+            "row_match_ja": "| [dask](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.dask_.rst",
+            "details_link": "../reference/api/gwexpy.interop.dask_.rst",
+            "notes": [
+                "Dask helpers are part of the public analysis interop surface."
+            ]
+        },
+        {
+            "name": "root",
+            "module": "root_",
+            "status": "implemented_partial",
+            "guide_api": [
+                "to_tgraph",
+                "to_th1d",
+                "to_th2d",
+                "to_tmultigraph",
+                "from_root",
+                "write_root_file"
+            ],
+            "row_match_en": "| [ROOT](",
+            "row_match_ja": "| [ROOT](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.root_.rst",
+            "details_link": "../reference/api/gwexpy.interop.root_.rst",
+            "notes": [
+                "ROOT stays reference-indexed, but the guide still marks it as only partially complete."
+            ]
+        },
+        {
+            "name": "obspy",
+            "module": "obspy_",
+            "status": "public",
+            "guide_api": [
+                "to_obspy",
+                "from_obspy",
+                "to_obspy_trace",
+                "from_obspy_trace"
+            ],
+            "row_match_en": "| [ObsPy](",
+            "row_match_ja": "| [ObsPy](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.obspy_.rst",
+            "details_link": "../reference/api/gwexpy.interop.obspy_.rst",
+            "notes": [
+                "ObsPy remains one of the highest-value public round-trip bridges."
+            ]
+        },
+        {
+            "name": "lal",
+            "module": "lal_",
+            "status": "public",
+            "guide_api": [
+                "to_lal_timeseries",
+                "from_lal_timeseries",
+                "to_lal_frequencyseries",
+                "from_lal_frequencyseries"
+            ],
+            "row_match_en": "| [LALSuite](",
+            "row_match_ja": "| [LALSuite](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.lal_.rst",
+            "details_link": "../reference/api/gwexpy.interop.lal_.rst",
+            "notes": [
+                "LAL time-domain and frequency-domain helpers are published."
+            ]
+        },
+        {
+            "name": "pycbc",
+            "module": "pycbc_",
+            "status": "public",
+            "guide_api": [
+                "to_pycbc_timeseries",
+                "from_pycbc_timeseries",
+                "to_pycbc_frequencyseries",
+                "from_pycbc_frequencyseries"
+            ],
+            "row_match_en": "| [PyCBC](",
+            "row_match_ja": "| [PyCBC](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.pycbc_.rst",
+            "details_link": "../reference/api/gwexpy.interop.pycbc_.rst",
+            "notes": [
+                "PyCBC helpers are part of the public GW-domain bridge surface."
+            ]
+        },
+        {
+            "name": "gwinc",
+            "module": "gwinc_",
+            "status": "public",
+            "guide_api": [
+                "from_gwinc_budget"
+            ],
+            "row_match_en": "| [GWINC](",
+            "row_match_ja": "| [GWINC](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.gwinc_.rst",
+            "details_link": "../reference/api/gwexpy.interop.gwinc_.rst",
+            "notes": [
+                "GWINC is import-only but still a published public bridge."
+            ]
+        },
+        {
+            "name": "finesse",
+            "module": "finesse_",
+            "status": "public",
+            "guide_api": [
+                "from_finesse_frequency_response",
+                "from_finesse_noise"
+            ],
+            "row_match_en": "| [Finesse](",
+            "row_match_ja": "| [Finesse](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.finesse_.rst",
+            "details_link": "../reference/api/gwexpy.interop.finesse_.rst",
+            "notes": [
+                "Finesse import helpers are published through the interop reference."
+            ]
+        },
+        {
+            "name": "control",
+            "module": "control_",
+            "status": "public",
+            "guide_api": [
+                "to_control_frd",
+                "from_control_frd",
+                "from_control_response"
+            ],
+            "row_match_en": "| [python-control](",
+            "row_match_ja": "| [python-control](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.control_.rst",
+            "details_link": "../reference/api/gwexpy.interop.control_.rst",
+            "notes": [
+                "Control FRD and response import are public even though class wrappers differ by object family."
+            ]
+        },
+        {
+            "name": "mth5",
+            "module": "mt_",
+            "status": "public",
+            "guide_api": [
+                "to_mth5",
+                "from_mth5"
+            ],
+            "row_match_en": "| [MTH5](",
+            "row_match_ja": "| [MTH5](",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.mt_.rst",
+            "details_link": "../reference/api/gwexpy.interop.mt_.rst",
+            "notes": [
+                "MTH5 is promoted to public once the top-level namespace and reference index are wired."
+            ]
+        }
+    ]
+}
