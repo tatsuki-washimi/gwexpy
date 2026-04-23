@@ -71,7 +71,16 @@ Notebook execution is handled separately:
 - `light` notebooks are executed with `papermill`
 - `heavy` notebooks are syntax-checked with `pytest --nbval-lax`
 - publish / release path では `docs/web/` notebook を実行し、clean source とは別の temp tree を生成してから docs build に渡します
+- migration 期間中は、`docs/web/ja/.../*.ipynb` が未配置でも `docs/web/en/.../*.ipynb` を canonical source として temp tree に補完し、日本語 docs build を継続できるようにします
 - `display-only` notebooks are skipped by the changed-notebook execution job and may retain intentional outputs only when explicitly reviewed
+
+### Multilingual notebook proof-of-concept
+
+- 単一ソース notebook を試す場合、コードセルは 1 系統だけ保持し、markdown セルだけを `lang-en` / `lang-ja` タグでペア管理します。
+- build 前処理は temp docs tree 上で notebook path の locale を見て、対応する言語タグの markdown だけを残します。
+- `docs/web/ja/...` に tracked notebook が存在しない場合でも、canonical EN notebook から派生した temp copy を使って JA HTML を build します。
+- 派生ページの notebook download link は canonical source へ向けます。
+- markdown 内で GitHub / Colab の notebook URL を書く場合も、派生 JA path ではなく canonical source path を向けます。
 
 ### Rationale
 

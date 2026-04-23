@@ -1,5 +1,7 @@
+import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import warnings
@@ -72,6 +74,21 @@ def _has_pandoc() -> bool:
 
 def _prefer_remote_intersphinx() -> bool:
     return _env_flag("INTERSPHINX_USE_REMOTE")
+
+
+def _inside_git_work_tree(path: Path) -> bool:
+    result = subprocess.run(
+        ["git", "rev-parse", "--is-inside-work-tree"],
+        cwd=path,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0 and result.stdout.strip() == "true"
+
+
+if not _inside_git_work_tree(DOCS_DIR):
+    extensions.remove("sphinx_last_updated_by_git")
 
 
 def _default_nbsphinx_execute() -> str:
@@ -190,14 +207,17 @@ napoleon_use_admonition_for_notes = True
 
 # Add a consistent download link on notebook pages - language-aware using Jinja2
 nbsphinx_prolog = r"""
+{% set default_download_path = "docs/" ~ (env.doc2path(env.docname, base=None) | string) %}
+{% set derived_notebook_sources = env.config.html_context.get("derived_notebook_sources", {}) %}
+{% set download_path = derived_notebook_sources.get(env.docname, default_download_path) %}
 {% if '/ja/' in env.docname %}
 .. note::
    このページは Jupyter Notebook から生成されました。
-   `ノートブックをダウンロード (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
+   `ノートブックをダウンロード (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/{{ download_path }}>`_
 {% else %}
 .. note::
    This page was generated from a Jupyter Notebook.
-   `Download the notebook (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
+   `Download the notebook (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/{{ download_path }}>`_
 {% endif %}
 """
 
@@ -281,6 +301,7 @@ html_title = BRANDING_SITE_TITLE
 html_short_title = BRANDING_SITE_SHORT_TITLE
 # Keep social images absolute so OGP/Twitter metadata stays valid on GitHub Pages.
 social_og_image = urljoin(html_baseurl, BRANDING_SOCIAL_CARD)
+derived_notebook_source_map = DOCS_DIR / "_derived_notebook_sources.json"
 html_context = {
     "display_github": True,
     "github_user": "tatsuki-washimi",
@@ -297,6 +318,11 @@ html_context = {
     "og_url": "https://tatsuki-washimi.github.io/gwexpy/",
     "og_image": social_og_image,
     "twitter_card": "summary_large_image",
+    "derived_notebook_sources": (
+        json.loads(derived_notebook_source_map.read_text(encoding="utf-8"))
+        if derived_notebook_source_map.exists()
+        else {}
+    ),
 }
 
 # docs/conf.py (add near top or appropriate section)

@@ -140,6 +140,23 @@ def test_copy_repo_tree_uses_tracked_files_only(tmp_path: Path):
     assert (output_root / "docs" / "scratch.txt").exists() is False
 
 
+def test_copy_repo_tree_skips_missing_tracked_files(tmp_path: Path):
+    module = load_script_module()
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    init_git_repo(repo_root)
+
+    tracked_file = repo_root / "doc_fails.json"
+    tracked_file.write_text("{}\n", encoding="utf-8")
+    commit_all(repo_root, "init")
+    tracked_file.unlink()
+
+    output_root = tmp_path / "out"
+    module._copy_repo_tree(repo_root, output_root)
+
+    assert (output_root / "doc_fails.json").exists() is False
+
+
 def test_sanitize_notebook_for_ci_replaces_bootstrap_install_cells(tmp_path: Path):
     module = load_script_module()
     notebook_path = tmp_path / "bootstrap.ipynb"
@@ -169,3 +186,128 @@ def test_sanitize_notebook_for_ci_replaces_bootstrap_install_cells(tmp_path: Pat
     assert rewritten["cells"][0]["source"] == [module.CI_SKIP_BOOTSTRAP_COMMENT]
     assert rewritten["cells"][0]["outputs"] == []
     assert rewritten["cells"][0]["execution_count"] is None
+
+
+def test_materialize_missing_locale_notebooks_copies_en_source_to_ja(tmp_path: Path):
+    module = load_script_module()
+    output_root = tmp_path / "out"
+    en_notebook = output_root.joinpath(*TUTORIALS_ROOT, "shared.ipynb")
+    write_notebook(en_notebook)
+
+    mirror_map = module._materialize_missing_locale_notebooks(output_root)
+    ja_notebook = output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.ipynb"
+
+    assert ja_notebook.exists()
+    assert ja_notebook.read_text(encoding="utf-8") == en_notebook.read_text(encoding="utf-8")
+    assert mirror_map == {
+        "docs/web/en/user_guide/tutorials/shared.ipynb": [
+            "docs/web/ja/user_guide/tutorials/shared.ipynb"
+        ]
+    }
+
+
+def test_materialize_missing_locale_notebooks_skips_existing_ja_wrapper(tmp_path: Path):
+    module = load_script_module()
+    output_root = tmp_path / "out"
+    en_notebook = output_root.joinpath(*TUTORIALS_ROOT, "shared.ipynb")
+    ja_wrapper = output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.md"
+    write_notebook(en_notebook)
+    ja_wrapper.parent.mkdir(parents=True, exist_ok=True)
+    ja_wrapper.write_text("# Wrapper\n", encoding="utf-8")
+
+    mirror_map = module._materialize_missing_locale_notebooks(output_root)
+    ja_notebook = output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.ipynb"
+
+    assert ja_notebook.exists() is False
+    assert mirror_map == {}
+
+
+def test_mirror_executed_notebook_fallbacks_overwrites_materialized_copy(tmp_path: Path):
+    module = load_script_module()
+    output_root = tmp_path / "out"
+    en_notebook = output_root.joinpath(*TUTORIALS_ROOT, "shared.ipynb")
+    ja_notebook = output_root / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "shared.ipynb"
+    write_notebook(en_notebook)
+    write_notebook(ja_notebook)
+    mutate_notebook(en_notebook, "executed")
+
+    module._mirror_executed_notebook_fallbacks(
+        output_root,
+        "docs/web/en/user_guide/tutorials/shared.ipynb",
+        {
+            "docs/web/en/user_guide/tutorials/shared.ipynb": [
+                "docs/web/ja/user_guide/tutorials/shared.ipynb"
+            ]
+        },
+    )
+
+    assert ja_notebook.read_text(encoding="utf-8") == en_notebook.read_text(encoding="utf-8")
+
+
+def test_filter_notebook_markdown_for_locale_keeps_matching_language_cells(tmp_path: Path):
+    module = load_script_module()
+    notebook_path = tmp_path / "localized.ipynb"
+    notebook = {
+        "cells": [
+            {
+                "cell_type": "markdown",
+                "metadata": {"tags": ["lang-en"]},
+                "source": ["# English\n"],
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {"tags": ["lang-ja"]},
+                "source": ["# 日本語\n"],
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": ["# Shared\n"],
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": ["print('ok')\n"],
+            },
+        ],
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    notebook_path.write_text(json.dumps(notebook), encoding="utf-8")
+
+    changed = module._filter_notebook_markdown_for_locale(notebook_path, "ja")
+    localized = json.loads(notebook_path.read_text(encoding="utf-8"))
+
+    assert changed is True
+    assert [cell["cell_type"] for cell in localized["cells"]] == [
+        "markdown",
+        "markdown",
+        "code",
+    ]
+    assert "".join(localized["cells"][0]["source"]) == "# 日本語\n"
+    assert "".join(localized["cells"][1]["source"]) == "# Shared\n"
+
+
+def test_write_derived_notebook_source_map_records_docname_mapping(tmp_path: Path):
+    module = load_script_module()
+    output_root = tmp_path / "out"
+    (output_root / "docs").mkdir(parents=True)
+
+    module._write_derived_notebook_source_map(
+        output_root,
+        {
+            "docs/web/en/user_guide/tutorials/shared.ipynb": [
+                "docs/web/ja/user_guide/tutorials/shared.ipynb"
+            ]
+        },
+    )
+
+    manifest = output_root / "docs" / module.DERIVED_NOTEBOOK_SOURCE_MAP
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+
+    assert data == {
+        "web/ja/user_guide/tutorials/shared": "docs/web/en/user_guide/tutorials/shared.ipynb"
+    }
