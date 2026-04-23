@@ -228,10 +228,11 @@
 <ul class="simple">
 <li><p><strong>まず保存形式を選ぶ</strong>なら、GW 系データは <strong>HDF5</strong>、観測網の既存資産は <strong>MiniSEED / SAC / WIN / ATS</strong>、汎用交換は <strong>CSV / NetCDF4 / Zarr</strong>、ロガー固有データは <strong>GBD / TDMS / SDB / WAV / Audio</strong> を起点に考えると整理しやすいです。<strong>MTH5</strong> については、現時点の public direct-I/O は <strong><code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> の単一路だけ</strong> で、汎用の standalone <strong><code class="docutils literal notranslate"><span class="pre">format=&quot;mth5&quot;</span></code></strong> はまだ公開していません。</p></li>
 <li><p><strong>自動判別でよい</strong>のは、拡張子から reader が一意に決まる場合です。</p></li>
+<li><p>汎用 <strong>HDF5</strong> は <strong><code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code> を明示</strong>してください。<code class="docutils literal notranslate"><span class="pre">.h5</span></code> / <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code> は複数の HDF5 系経路で共有されており、クラスによって自動判別の挙動が揃っていません。</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">format=</span></code> を明示する</strong>のは、<code class="docutils literal notranslate"><span class="pre">.xml</span></code> のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">timezone</span></code> を必ず指定する</strong>のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは <strong>GBD</strong> です。</p></li>
 <li><p><strong>Read only / Write only に注意する</strong>: 表の <code class="docutils literal notranslate"><span class="pre">○</span> <span class="pre">/</span> <span class="pre">×</span></code> は「読めるが書けない」「書けるが読めない」を意味します。</p></li>
-<li><p><strong>Field を安全に保存したい</strong>場合は、direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> 系 API の基準として <strong>HDF5</strong> と <strong>Pickle</strong> を考えてください。NetCDF4 / Zarr / ROOT object への橋渡しは interop 側の話です。</p></li>
+<li><p>Series 以外の direct I/O では、まず <strong>HDF5</strong> の <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> / <code class="docutils literal notranslate"><span class="pre">Histogram</span></code> / <code class="docutils literal notranslate"><span class="pre">EventTable</span></code> を基準に考えてください。Field 系の direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> はまだ監査中で、このページでは安定契約として公開していません。</p></li>
 </ul>
 </section>
 <section id="id3">
@@ -271,7 +272,7 @@
 <tr class="row-even"><td><p><strong>C. 汎用・解析用</strong></p></td>
 <td><p>汎用保存、外部解析、交換をしたい</p></td>
 <td><p><strong>CSV / TXT</strong> または <strong>Zarr</strong></p></td>
-<td><p>CSV / TXT, NetCDF4, Zarr, Pickle, ROOT</p></td>
+<td><p>CSV / TXT, NetCDF4, Zarr, ROOT</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>D. 計測機器・ロガー</strong></p></td>
 <td><p>ロガーや機材固有の時系列を読む</p></td>
@@ -326,10 +327,20 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio</strong></p></td>
+<tr class="row-even"><td><p><strong>GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / SQLite3 / WAV / Audio</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
 <td><p>end-user 向け direct I/O の基本形</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>CSV</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> は manifest 付き collection directory にも対応</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TXT</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
+<td><p>複数チャネルの direct I/O は collection directory を使う</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>nc / Zarr / GBD / TDMS</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
@@ -339,7 +350,7 @@
 <tr class="row-even"><td><p><strong>HDF5</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> など</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> など</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">Histogram</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable</span></code>, <code class="docutils literal notranslate"><span class="pre">Field</span></code> まで含む主保存先</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">Histogram</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable</span></code> を含む主保存先</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>hdf.ndscope</strong></p></td>
 <td><p>-</p></td>
@@ -361,12 +372,7 @@
 <td><p>-</p></td>
 <td><p>一部対応の単一路</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Pickle</strong></p></td>
-<td><p>主要クラス全般</p></td>
-<td><p>主要クラス全般</p></td>
-<td><p>信頼できるデータだけに使用</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>ROOT</strong></p></td>
+<tr class="row-odd"><td><p><strong>ROOT</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">EventTable</span></code></p></td>
 <td><p>-</p></td>
 <td><p>EventTable の直 I/O のみ</p></td>
@@ -376,7 +382,7 @@
 <ul class="simple">
 <li><p><strong>まず迷ったら</strong> <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> と <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> を基準に考えてください。</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> が出てくるのは主に</strong> <code class="docutils literal notranslate"><span class="pre">NetCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">Zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">GBD</span></code>, <code class="docutils literal notranslate"><span class="pre">TDMS</span></code> です。</p></li>
-<li><p><strong>Series 以外もまとめて保持したい</strong> 場合は、まず <strong>HDF5</strong> か <strong>Pickle</strong> を検討してください。</p></li>
+<li><p><strong>Series 以外もまとめて保持したい</strong> 場合は、まず <strong>HDF5</strong> を検討してください。</p></li>
 </ul>
 <p><a id="io-formats-ja-a"></a></p>
 </section>
@@ -404,7 +410,7 @@
 <td class="text-center"><p>○ / ○</p></td>
 <td><p>各クラスの <code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code></p></td>
 <td><p>長期保存、メタデータ保持</p></td>
-<td><p>このページで唯一、Field 系の第一候補</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code> の明示を推奨</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>hdf.ndscope</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -552,29 +558,29 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>CSV / TXT</strong> (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.txt</span></code>)</p></td>
+<tr class="row-even"><td><p><strong>CSV</strong> (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">.write()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.write(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code></p></td>
 <td><p>軽量な交換、目視確認</p></td>
-<td><p>ディレクトリ一括読み込みにも対応</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> は単一 CSV 読み込みと collection directory の両方に対応</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>nc</strong> (<code class="docutils literal notranslate"><span class="pre">.nc</span></code>)</p></td>
+<tr class="row-odd"><td><p><strong>TXT</strong> (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;txt&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(dir,</span> <span class="pre">format=&quot;txt&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.write(dir,</span> <span class="pre">format=&quot;txt&quot;)</span></code></p></td>
+<td><p>プレーンテキスト交換</p></td>
+<td><p>複数チャネルの direct I/O は collection directory を使う</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>nc</strong> (<code class="docutils literal notranslate"><span class="pre">.nc</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code></p></td>
 <td><p>時系列系の科学データ保存</p></td>
 <td><p>direct I/O は TimeSeries 系中心。旧 alias: <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Zarr</strong> (<code class="docutils literal notranslate"><span class="pre">.zarr</span></code>)</p></td>
+<tr class="row-odd"><td><p><strong>Zarr</strong> (<code class="docutils literal notranslate"><span class="pre">.zarr</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code></p></td>
 <td><p>chunked 保存、並列処理</p></td>
 <td><p>direct I/O は TimeSeries 系中心</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Pickle</strong> (<code class="docutils literal notranslate"><span class="pre">.pkl</span></code>)</p></td>
-<td class="text-center"><p>○ / ○</p></td>
-<td><p>各クラスの <code class="docutils literal notranslate"><span class="pre">.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">.write()</span></code></p></td>
-<td><p>Python オブジェクト丸ごと保存</p></td>
-<td><p>信頼できるデータだけに使用</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>ROOT</strong> (<code class="docutils literal notranslate"><span class="pre">.root</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -598,7 +604,9 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>CSV / TXT</strong> は素朴ですが、共有や確認には依然として有用です。</p></li>
+<li><p><strong>CSV</strong> は素朴ですが、共有や確認には依然として有用です。</p></li>
+<li><p><strong>TXT</strong> の direct I/O はより限定的で、単一 series は <code class="docutils literal notranslate"><span class="pre">format=&quot;txt&quot;</span></code> 明示、複数チャネルは collection directory 前提です。</p></li>
+<li><p><strong>Pickle</strong> の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> 形式としては扱いません。</p></li>
 <li><p><strong>NetCDF4 / Zarr</strong> はこのページでは <strong>TimeSeries 系の direct I/O</strong> としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。</p></li>
 <li><p><strong>Zarr</strong> の direct I/O では、配列ごとの timing metadata を明示的に要求します。<code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> を優先し、<code class="docutils literal notranslate"><span class="pre">dt</span></code> は fallback として受け付けます。どちらも無い場合は <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を送出し、legacy store を意図的に救済したい場合だけ <code class="docutils literal notranslate"><span class="pre">sample_rate_override=...</span></code> または <code class="docutils literal notranslate"><span class="pre">dt_override=...</span></code> を指定してください。</p></li>
 <li><p><strong>ROOT</strong> の object-level 変換はここでは扱いません。I/O ガイドでは EventTable の直 I/O のみ扱います。</p></li>
@@ -621,31 +629,31 @@
 <tbody>
 <tr class="row-even"><td><p><strong>GBD</strong> (<code class="docutils literal notranslate"><span class="pre">.gbd</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;gbd&quot;,</span> <span class="pre">timezone=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gbd&quot;,</span> <span class="pre">timezone=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;gbd&quot;,</span> <span class="pre">timezone=...)</span></code></p></td>
 <td><p>GRAPHTEC ロガー</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> 必須</p></td>
+<td><p>public read では <code class="docutils literal notranslate"><span class="pre">timezone</span></code> 必須</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>TDMS</strong> (<code class="docutils literal notranslate"><span class="pre">.tdms</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code></p></td>
 <td><p>National Instruments</p></td>
-<td><p>読み込み専用</p></td>
+<td><p>読み込み専用。<code class="docutils literal notranslate"><span class="pre">nptdms</span></code> が必要</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>SDB / SQLite / SQLite3</strong> (<code class="docutils literal notranslate"><span class="pre">.sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code></p></td>
 <td><p>WeeWX 等の蓄積データ</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sqlite</span></code> / <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> も同系統</p></td>
+<td><p>同系統 reader。public direct I/O は読み込み専用</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>WAV</strong> (<code class="docutils literal notranslate"><span class="pre">.wav</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeries.write(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code></p></td>
 <td><p>非圧縮音声</p></td>
-<td><p>絶対時刻は保持しない</p></td>
+<td><p>public write は単一路のみ。絶対時刻は保持しない</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>MP3 / FLAC / OGG / M4A</strong></p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;mp3&quot;</span> <span class="pre">/</span> <span class="pre">&quot;flac&quot;</span> <span class="pre">/</span> <span class="pre">&quot;ogg&quot;</span> <span class="pre">/</span> <span class="pre">&quot;m4a&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;mp3&quot;</span> <span class="pre">/</span> <span class="pre">&quot;flac&quot;</span> <span class="pre">/</span> <span class="pre">&quot;ogg&quot;</span> <span class="pre">/</span> <span class="pre">&quot;m4a&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...)</span></code></p></td>
 <td><p>圧縮音声</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">pydub</span></code>、一部形式は <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code> が必要</p></td>
 </tr>
@@ -665,8 +673,10 @@
 </div>
 <ul class="simple">
 <li><p><strong>GBD</strong> は <code class="docutils literal notranslate"><span class="pre">timezone</span></code> を省略できません。</p></li>
+<li><p><strong>TDMS</strong> は optional dependency の <code class="docutils literal notranslate"><span class="pre">nptdms</span></code> が必要です。</p></li>
+<li><p><strong>MP3 / FLAC / OGG / M4A</strong> は optional dependency の <code class="docutils literal notranslate"><span class="pre">pydub</span></code> が必要で、MP3/M4A は <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code> も必要になることが多いです。</p></li>
 <li><p><strong>SDB / SQLite / SQLite3</strong> は同系統の reader です。公開ページでは 3 つとも明示して混乱を避けます。</p></li>
-<li><p><strong>WAV / Audio</strong> は絶対時刻を持たないため、読み込み時は便宜上 <code class="docutils literal notranslate"><span class="pre">t0=0.0</span></code> として扱います。「絶対時刻がある」という意味ではありません。</p></li>
+<li><p><strong>WAV / 圧縮音声形式</strong> は絶対時刻を持たないため、読み込み時は便宜上 <code class="docutils literal notranslate"><span class="pre">t0=0.0</span></code> として扱います。「絶対時刻がある」という意味ではありません。</p></li>
 </ul>
 <p><a id="io-formats-ja-dev"></a></p>
 </section>
@@ -688,15 +698,11 @@
 <td><p>実装済み（未掲載）</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> 限定の HDF5 スキーマ。旧 alias は <code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SQLite</span></code>, <code class="docutils literal notranslate"><span class="pre">SQLite3</span></code></p></td>
-<td><p>実装済み（未掲載）</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">SDB</span></code> と同系統の alias</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ATS.MTH5</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ATS.MTH5</span></code></p></td>
 <td><p>実装済み（一部対応）</p></td>
 <td><p>MTH5 経由の current public direct path</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MTH5</span> <span class="pre">standalone</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MTH5</span> <span class="pre">standalone</span></code></p></td>
 <td><p>対応中</p></td>
 <td><p>専用 <code class="docutils literal notranslate"><span class="pre">format=&quot;mth5&quot;</span></code> は未整備。public direct-I/O としては未公開</p></td>
 </tr>
@@ -822,7 +828,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-23 09:00:13.
+      <span class="lastupdated">Last updated on 2026-04-23 14:40:06.
       </span></p>
   </div>
 

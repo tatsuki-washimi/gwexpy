@@ -144,6 +144,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.seriesmatrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">SeriesMatrix</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">IndexLike</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">._gwf_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_resolve_gwf_format</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">TimeSeriesList</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrixAnalysisMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.matrix_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrixCoreMixin</span>
@@ -237,6 +238,21 @@
     <span class="n">default_xunit</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span>
     <span class="n">default_yunit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_default_plot_method</span> <span class="o">=</span> <span class="s2">&quot;plot&quot;</span>
+
+<div class="viewcode-block" id="TimeSeriesMatrix.read">
+<a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.read">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>  <span class="c1"># type: ignore[override]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a `TimeSeriesMatrix` from a supported source.&quot;&quot;&quot;</span>
+        <span class="n">gwf_format</span> <span class="o">=</span> <span class="n">_resolve_gwf_format</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">gwf_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsd</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found in </span><span class="si">{</span><span class="n">gwf_format</span><span class="si">}</span><span class="s2"> source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -484,7 +500,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-23 09:00:13.
+      <span class="lastupdated">Last updated on 2026-04-23 14:40:06.
       </span></p>
   </div>
 

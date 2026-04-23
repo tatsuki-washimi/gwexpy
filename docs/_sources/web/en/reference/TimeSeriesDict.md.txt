@@ -904,6 +904,7 @@ The available built-in formats are:
 ======== ==== ===== =============
      ats  Yes    No           Yes
   dttxml  Yes    No           Yes
+ hdf.ndscope  Yes   Yes          Yes
      gbd  Yes    No           Yes
     gse2  Yes   Yes            No
     knet  Yes    No            No

@@ -151,6 +151,12 @@
 
 <span class="c1"># Import Core Base</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._core</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesCore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._gwf_io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_GWF_BACKENDS</span><span class="p">,</span>
+    <span class="n">_extract_gwf_read_args</span><span class="p">,</span>
+    <span class="n">_format_gwf_import_error</span><span class="p">,</span>
+    <span class="n">_resolve_gwf_format</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesInteropMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._resampling</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesResamplingMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesSignalMixin</span>
@@ -260,6 +266,54 @@
 <span class="sd">                channel=None)&gt;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TimeSeries.read">
+<a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeries.read">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># type: ignore[override]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a `TimeSeries` from a supported source.</span>
+
+<span class="sd">        This override adds explicit `.gwf` handling for deterministic behavior</span>
+<span class="sd">        when `.read()` is called with positional channel selectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gwf_format</span> <span class="o">=</span> <span class="n">_resolve_gwf_format</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">gwf_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.io.gwf.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_channel_names</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries.io.gwf.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_timeseriesdict</span>
+
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+            <span class="n">channels</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">gwf_kwargs</span> <span class="o">=</span> <span class="n">_extract_gwf_read_args</span><span class="p">(</span>
+                <span class="n">args</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="p">,</span>
+                <span class="n">allow_multiple_channels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">backend</span> <span class="o">=</span> <span class="n">gwf_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="n">_GWF_BACKENDS</span><span class="p">[</span><span class="n">gwf_format</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">channels</span> <span class="o">=</span> <span class="n">get_channel_names</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No channels found in GWF source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">channel</span> <span class="o">=</span> <span class="n">channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">tsd</span> <span class="o">=</span> <span class="n">read_timeseriesdict</span><span class="p">(</span>
+                    <span class="n">source</span><span class="p">,</span>
+                    <span class="p">[</span><span class="n">channel</span><span class="p">],</span>
+                    <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                    <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
+                    <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+                    <span class="n">series_class</span><span class="o">=</span><span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">),</span>
+                    <span class="o">**</span><span class="n">gwf_kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">_format_gwf_import_error</span><span class="p">(</span><span class="n">gwf_format</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid input for GWF read: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">tsd</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found in </span><span class="si">{</span><span class="n">gwf_format</span><span class="si">}</span><span class="s2"> source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">tsd</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_meta_for_constructor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reconstruct the object for SignalAnalysisMixin.&quot;&quot;&quot;</span>
@@ -515,7 +569,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-23 09:00:13.
+      <span class="lastupdated">Last updated on 2026-04-23 14:40:06.
       </span></p>
   </div>
 

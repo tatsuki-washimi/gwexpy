@@ -810,7 +810,6 @@ The loaded matrix.</p>
 Format  Read Write Auto-identify
 ======== ==== ===== =============
 ats  Yes    No            No
-dttxml  Yes    No            No
 gbd  Yes    No            No
 gse2  Yes    No            No
 knet  Yes    No            No
@@ -831,6 +830,11 @@ win  Yes    No            No
 win32  Yes    No            No
 wvf  Yes    No            No
 ======== ==== ===== =============</p>
+<p>Public direct-I/O note:
+<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> supports generic HDF5 through <code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">write(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code>, and <code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code>, but collection-first formats such
+as <code class="docutils literal notranslate"><span class="pre">hdf.ndscope</span></code> and <code class="docutils literal notranslate"><span class="pre">xml.diaggui</span></code> are not part of the public matrix direct-I/O
+contract.</p>
 <section id="real">
 <h3><code class="docutils literal notranslate"><span class="pre">real</span></code><a class="headerlink" href="#real" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">real</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1252,7 +1256,7 @@ See gwexpy.timeseries.preprocess.whiten_matrix.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-23 09:00:13.
+      <span class="lastupdated">Last updated on 2026-04-23 14:40:06.
       </span></p>
   </div>
 

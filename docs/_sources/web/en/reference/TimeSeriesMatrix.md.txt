@@ -732,7 +732,6 @@ The available built-in formats are:
  Format  Read Write Auto-identify
 ======== ==== ===== =============
      ats  Yes    No            No
-  dttxml  Yes    No            No
      gbd  Yes    No            No
     gse2  Yes    No            No
     knet  Yes    No            No
@@ -753,6 +752,12 @@ miniseed  Yes    No            No
    win32  Yes    No            No
      wvf  Yes    No            No
 ======== ==== ===== =============
+
+Public direct-I/O note:
+`TimeSeriesMatrix` supports generic HDF5 through `read(..., format="hdf5")`,
+`write(..., format="hdf5")`, and `to_hdf5()`, but collection-first formats such
+as `hdf.ndscope` and `xml.diaggui` are not part of the public matrix direct-I/O
+contract.
 
 ### `real`
 

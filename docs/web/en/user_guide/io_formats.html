@@ -228,10 +228,11 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <ul class="simple">
 <li><p>If you need a <strong>default GW storage format</strong>, start with <strong>HDF5</strong>. For existing seismic or geophysical assets, start with <strong>MiniSEED / SAC / WIN / ATS</strong>. For general interchange, start with <strong>CSV / NetCDF4 / Zarr</strong>. For logger- or device-specific data, start with <strong>GBD / TDMS / SDB / WAV / Audio</strong>. For <strong>MTH5</strong>, the current public direct-I/O story is only the single <strong><code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code></strong> path. A generic standalone <strong><code class="docutils literal notranslate"><span class="pre">format=&quot;mth5&quot;</span></code></strong> route is not published yet.</p></li>
 <li><p><strong>Auto-detect is fine</strong> when the extension uniquely selects one reader.</p></li>
+<li><p>For generic <strong>HDF5</strong>, set <strong><code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code> explicitly</strong>. The <code class="docutils literal notranslate"><span class="pre">.h5</span></code> / <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code> extensions overlap multiple HDF5-backed families, and auto-identification is not uniform across classes.</p></li>
 <li><p><strong>Set <code class="docutils literal notranslate"><span class="pre">format=</span></code> explicitly</strong> for ambiguous extensions such as <code class="docutils literal notranslate"><span class="pre">.xml</span></code>, for custom lab extensions, or whenever auto-detection is unclear.</p></li>
 <li><p><strong>Pass <code class="docutils literal notranslate"><span class="pre">timezone</span></code> explicitly</strong> when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, <strong>GBD</strong> is the main required case.</p></li>
 <li><p><strong>Read-only / write-only matters</strong>: <code class="docutils literal notranslate"><span class="pre">○</span> <span class="pre">/</span> <span class="pre">×</span></code> means a format can be read but not written.</p></li>
-<li><p>If you need to preserve <strong>Field</strong> objects safely through direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> style APIs, this page treats <strong>HDF5</strong> and <strong>Pickle</strong> as the baseline. NetCDF4 / Zarr / ROOT object bridges belong to interop, not to this page.</p></li>
+<li><p>For richer direct-I/O objects beyond plain Series, start with <strong>HDF5</strong> for <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">Histogram</span></code>, and <code class="docutils literal notranslate"><span class="pre">EventTable</span></code>. Field-class direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> is still under audit and is not published as a stable contract on this page.</p></li>
 </ul>
 </section>
 <section id="jump-links">
@@ -271,7 +272,7 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <tr class="row-even"><td><p><strong>C. General Analysis and Exchange</strong></p></td>
 <td><p>You need general-purpose storage or external analysis exchange</p></td>
 <td><p><strong>CSV / TXT</strong> or <strong>Zarr</strong></p></td>
-<td><p>CSV / TXT, NetCDF4, Zarr, Pickle, ROOT</p></td>
+<td><p>CSV / TXT, NetCDF4, Zarr, ROOT</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>D. Loggers and Instrument Formats</strong></p></td>
 <td><p>You are working with device- or logger-specific time series</p></td>
@@ -326,10 +327,20 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio</strong></p></td>
+<tr class="row-even"><td><p><strong>GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / SQLite3 / WAV / Audio</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
 <td><p>Baseline end-user direct I/O pattern</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>CSV</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> also supports manifest-backed collection directories</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TXT</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code></p></td>
+<td><p>Multi-channel direct I/O uses collection directories</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>nc / Zarr / GBD / TDMS</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
@@ -339,7 +350,7 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <tr class="row-even"><td><p><strong>HDF5</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, and related classes</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> and related collections</p></td>
-<td><p>Also covers <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">Histogram</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable</span></code>, and <code class="docutils literal notranslate"><span class="pre">Field</span></code></p></td>
+<td><p>Also covers <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, <code class="docutils literal notranslate"><span class="pre">Histogram</span></code>, and <code class="docutils literal notranslate"><span class="pre">EventTable</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>hdf.ndscope</strong></p></td>
 <td><p>-</p></td>
@@ -361,12 +372,7 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <td><p>-</p></td>
 <td><p>Partial single-path support</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Pickle</strong></p></td>
-<td><p>Major classes broadly</p></td>
-<td><p>Major classes broadly</p></td>
-<td><p>Use only for trusted data</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>ROOT</strong></p></td>
+<tr class="row-odd"><td><p><strong>ROOT</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">EventTable</span></code></p></td>
 <td><p>-</p></td>
 <td><p>Direct I/O is limited to EventTable</p></td>
@@ -376,7 +382,7 @@ This page only covers the public <code class="docutils literal notranslate"><spa
 <ul class="simple">
 <li><p>If you are unsure, start by thinking in terms of <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> mainly matters for <code class="docutils literal notranslate"><span class="pre">NetCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">Zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">GBD</span></code>, and <code class="docutils literal notranslate"><span class="pre">TDMS</span></code>.</p></li>
-<li><p>If you need to preserve richer objects beyond Series classes, start with <strong>HDF5</strong> or <strong>Pickle</strong>.</p></li>
+<li><p>If you need to preserve richer objects beyond Series classes, start with <strong>HDF5</strong>.</p></li>
 </ul>
 <p><a id="io-formats-en-a"></a></p>
 </section>
@@ -404,7 +410,7 @@ If you are unsure, start with <strong>HDF5</strong>. Use <strong>GWF</strong> wh
 <td class="text-center"><p>○ / ○</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code> on major classes</p></td>
 <td><p>Long-term storage with metadata</p></td>
-<td><p>Main direct-I/O option for Field objects</p></td>
+<td><p>Prefer explicit <code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>hdf.ndscope</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -552,29 +558,29 @@ The key rule here is not to mix up “format choice” with “library conversio
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>CSV / TXT</strong> (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.txt</span></code>)</p></td>
+<tr class="row-even"><td><p><strong>CSV</strong> (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code>, <code class="docutils literal notranslate"><span class="pre">.write()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.write(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code></p></td>
 <td><p>Lightweight exchange and inspection</p></td>
-<td><p>Also supports directory bulk loading</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> supports single-file reads and collection-directory layouts</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>nc</strong> (<code class="docutils literal notranslate"><span class="pre">.nc</span></code>)</p></td>
+<tr class="row-odd"><td><p><strong>TXT</strong> (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>)</p></td>
+<td class="text-center"><p>○ / ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;txt&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(dir,</span> <span class="pre">format=&quot;txt&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.write(dir,</span> <span class="pre">format=&quot;txt&quot;)</span></code></p></td>
+<td><p>Plain-text exchange</p></td>
+<td><p>Multi-channel direct I/O uses collection directories</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>nc</strong> (<code class="docutils literal notranslate"><span class="pre">.nc</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code></p></td>
 <td><p>Scientific storage for time-series-oriented data</p></td>
 <td><p>Direct I/O here is centered on TimeSeries classes; legacy alias: <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Zarr</strong> (<code class="docutils literal notranslate"><span class="pre">.zarr</span></code>)</p></td>
+<tr class="row-odd"><td><p><strong>Zarr</strong> (<code class="docutils literal notranslate"><span class="pre">.zarr</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;zarr&quot;)</span></code></p></td>
 <td><p>Chunked storage and parallel workflows</p></td>
 <td><p>Direct I/O here is centered on TimeSeries classes</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Pickle</strong> (<code class="docutils literal notranslate"><span class="pre">.pkl</span></code>)</p></td>
-<td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> on major classes</p></td>
-<td><p>Python object snapshots</p></td>
-<td><p>Only for trusted data</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>ROOT</strong> (<code class="docutils literal notranslate"><span class="pre">.root</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -598,7 +604,9 @@ The key rule here is not to mix up “format choice” with “library conversio
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>CSV / TXT</strong> remains useful for inspection and simple interchange.</p></li>
+<li><p><strong>CSV</strong> remains useful for lightweight exchange and inspection.</p></li>
+<li><p><strong>TXT</strong> direct I/O is more limited: single-series paths are explicit <code class="docutils literal notranslate"><span class="pre">format=&quot;txt&quot;</span></code>, and multi-channel paths use collection directories.</p></li>
+<li><p><strong>Pickle</strong> portability notes still exist in class references, but Pickle is not a published direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> format on this page.</p></li>
 <li><p><strong>NetCDF4 / Zarr</strong> are treated here only as <strong>direct TimeSeries-style I/O</strong>. Field/xarray bridges belong to interop.</p></li>
 <li><p><strong>Zarr</strong> direct I/O now expects per-array timing metadata explicitly. <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> is the primary key, <code class="docutils literal notranslate"><span class="pre">dt</span></code> is accepted as a fallback, and reads raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if neither is present unless you intentionally recover a legacy store with <code class="docutils literal notranslate"><span class="pre">sample_rate_override=...</span></code> or <code class="docutils literal notranslate"><span class="pre">dt_override=...</span></code>.</p></li>
 <li><p><strong>ROOT</strong> object-level export/import belongs to interop. This page only covers EventTable direct I/O.</p></li>
@@ -621,31 +629,31 @@ Time handling, units, and audio <code class="docutils literal notranslate"><span
 <tbody>
 <tr class="row-even"><td><p><strong>GBD</strong> (<code class="docutils literal notranslate"><span class="pre">.gbd</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;gbd&quot;,</span> <span class="pre">timezone=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gbd&quot;,</span> <span class="pre">timezone=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;gbd&quot;,</span> <span class="pre">timezone=...)</span></code></p></td>
 <td><p>GRAPHTEC loggers</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> is required</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> is required for published reads</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>TDMS</strong> (<code class="docutils literal notranslate"><span class="pre">.tdms</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;tdms&quot;)</span></code></p></td>
 <td><p>National Instruments data</p></td>
-<td><p>Read-only</p></td>
+<td><p>Read-only; requires <code class="docutils literal notranslate"><span class="pre">nptdms</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>SDB / SQLite / SQLite3</strong> (<code class="docutils literal notranslate"><span class="pre">.sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code>)</p></td>
 <td class="text-center"><p>○ / ×</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;sdb&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite&quot;</span> <span class="pre">/</span> <span class="pre">&quot;sqlite3&quot;)</span></code></p></td>
 <td><p>WeeWX and similar archives</p></td>
-<td><p>Same reader family</p></td>
+<td><p>Same reader family; public direct I/O is read-only</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>WAV</strong> (<code class="docutils literal notranslate"><span class="pre">.wav</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeries.write(...,</span> <span class="pre">format=&quot;wav&quot;)</span></code></p></td>
 <td><p>Uncompressed audio</p></td>
-<td><p>Does not preserve absolute time</p></td>
+<td><p>Public write is single-series only; does not preserve absolute time</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>MP3 / FLAC / OGG / M4A</strong></p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;mp3&quot;</span> <span class="pre">/</span> <span class="pre">&quot;flac&quot;</span> <span class="pre">/</span> <span class="pre">&quot;ogg&quot;</span> <span class="pre">/</span> <span class="pre">&quot;m4a&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;mp3&quot;</span> <span class="pre">/</span> <span class="pre">&quot;flac&quot;</span> <span class="pre">/</span> <span class="pre">&quot;ogg&quot;</span> <span class="pre">/</span> <span class="pre">&quot;m4a&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...)</span></code></p></td>
 <td><p>Compressed audio</p></td>
 <td><p>Uses <code class="docutils literal notranslate"><span class="pre">pydub</span></code>; some formats also need <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code></p></td>
 </tr>
@@ -665,8 +673,10 @@ Time handling, units, and audio <code class="docutils literal notranslate"><span
 </div>
 <ul class="simple">
 <li><p><strong>GBD</strong> requires <code class="docutils literal notranslate"><span class="pre">timezone</span></code>.</p></li>
+<li><p><strong>TDMS</strong> requires the optional <code class="docutils literal notranslate"><span class="pre">nptdms</span></code> dependency.</p></li>
+<li><p><strong>MP3 / FLAC / OGG / M4A</strong> require the optional <code class="docutils literal notranslate"><span class="pre">pydub</span></code> dependency. MP3/M4A commonly also need <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code>.</p></li>
 <li><p><strong>SDB / SQLite / SQLite3</strong> should all be named explicitly in the public page so users do not need to infer aliases.</p></li>
-<li><p><strong>WAV / Audio</strong> do not preserve absolute timestamps. Reading with <code class="docutils literal notranslate"><span class="pre">t0=0.0</span></code> is a convenience convention, not a claim that the source had an absolute epoch.</p></li>
+<li><p><strong>WAV / compressed-audio formats</strong> do not preserve absolute timestamps. Reading with <code class="docutils literal notranslate"><span class="pre">t0=0.0</span></code> is a convenience convention, not a claim that the source had an absolute epoch.</p></li>
 </ul>
 <p><a id="io-formats-en-dev"></a></p>
 </section>
@@ -688,15 +698,11 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 <td><p>Implemented, not yet prominent</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>-only HDF5 schema. Legacy aliases: <code class="docutils literal notranslate"><span class="pre">ndscope-hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscope_hdf5</span></code>, <code class="docutils literal notranslate"><span class="pre">ndscopehdf5</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SQLite</span></code>, <code class="docutils literal notranslate"><span class="pre">SQLite3</span></code></p></td>
-<td><p>Implemented, not yet prominent</p></td>
-<td><p>Aliases in the same family as <code class="docutils literal notranslate"><span class="pre">SDB</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ATS.MTH5</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ATS.MTH5</span></code></p></td>
 <td><p>Implemented with partial scope</p></td>
 <td><p>Current public direct path backed by MTH5</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MTH5</span> <span class="pre">standalone</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MTH5</span> <span class="pre">standalone</span></code></p></td>
 <td><p>In progress</p></td>
 <td><p>Dedicated <code class="docutils literal notranslate"><span class="pre">format=&quot;mth5&quot;</span></code> is not exposed yet; not published as public direct I/O</p></td>
 </tr>
@@ -822,7 +828,7 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-23 09:00:13.
+      <span class="lastupdated">Last updated on 2026-04-23 14:40:06.
       </span></p>
   </div>
 
