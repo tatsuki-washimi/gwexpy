@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.mt_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/api/gwexpy.interop.mt_.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
+      <script src="../../../../_static/external-links.js?v=5d50874a"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="gwexpy.interop.obspy_" href="gwexpy.interop.obspy_.html" />
+    <link rel="prev" title="gwexpy.interop.control_" href="gwexpy.interop.control_.html" />
+   
+  
+  <meta property="og:title" content="gwexpy.interop.mt_ — GWexpy Documentation" />
+  
+  
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta property="og:type" content="website" />
+  
+  
+  <meta property="og:url" content="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/api/gwexpy.interop.mt_.html" />
+  
+  
+  <meta property="og:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+  
+  <meta property="og:site_name" content="GWexpy Documentation" />
+  
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  
+  <meta name="twitter:title" content="gwexpy.interop.mt_ — GWexpy Documentation" />
+  
+  
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+  
+    
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../ja/reference/api/gwexpy.interop.mt_.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <span class="lang-current">English</span>
+    </div>
+    
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#select-your-guide">Select your guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#browse-by-category">Browse by category</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learn-the-basics-of-gwpy">Learn the basics of GWpy</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#suggested-starting-points">Suggested starting points</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">Installation Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/interop.html">Interop / Conversion Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_en.html">Migration Guide for GWpy Users</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwpy_added_api_index_en.html">GWpy Difference API Index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/index.html">Tutorials (Feature-Oriented Learning)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies (Goal-Oriented Workflows)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">API Reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../classes.html">Class Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../topics.html">Reference Topics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/glossary.html">Glossary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/roadmap.html">Roadmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/verification_and_quality.html">Verification and Quality Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/citation.html">Citation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/changelog.html">Changelog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/license.html">License</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/cli.html">Command-Line Interface (CLI, Experimental)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gui.html">Graphical User Interface (GUI, Experimental)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメント</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="interop.html">Interoperability (gwexpy.interop)</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.mt_</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/reference/api/gwexpy.interop.mt_.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwexpy-interop-mt">
+<h1>gwexpy.interop.mt_<a class="headerlink" href="#gwexpy-interop-mt" title="Link to this heading"></a></h1>
+<p>Interoperate with the MTH5 magnetotelluric HDF5 format.</p>
+<hr class="docutils" />
+<p>Interoperability with MTH5 (Magnetotelluric HDF5) format.</p>
+<p>Provides read/write functionality for magnetotelluric time series data.
+Requires the <cite>mth5</cite> package.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_mth5</span></code>(mth5_obj, station, run, channel[, ...])</p></td>
+<td><p>Read a channel from MTH5 to TimeSeries.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_mth5</span></code>(series, mth5_obj[, station, run, ...])</p></td>
+<td><p>Write a TimeSeries to an MTH5 file.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.mt_.</span></span><span class="sig-name descname"><span class="pre">to_mth5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mth5_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">station</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'electric'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/interop/mt_.html#to_mth5"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Write a TimeSeries to an MTH5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series</strong> (<em>TimeSeries</em>) – Data to write.</p></li>
+<li><p><strong>mth5_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>mth5.mth5.MTH5</em>) – Open MTH5 object or path to HDF5 file.</p></li>
+<li><p><strong>station</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Station name. Defaults to ‘Station01’.</p></li>
+<li><p><strong>run</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Run name. Defaults to ‘Run01’.</p></li>
+<li><p><strong>channel_type</strong> (<em>{'electric'</em><em>, </em><em>'magnetic'</em><em>, </em><em>'auxiliary'}</em><em>, </em><em>optional</em>) – Channel type for metadata. Default is ‘electric’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If mth5 package is not installed.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.mt_</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_mth5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ex&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_mth5</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;data.h5&quot;</span><span class="p">,</span> <span class="n">station</span><span class="o">=</span><span class="s2">&quot;Site01&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s2">&quot;Run01&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.mt_.</span></span><span class="sig-name descname"><span class="pre">from_mth5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mth5_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">station</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">survey</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/interop/mt_.html#from_mth5"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Read a channel from MTH5 to TimeSeries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mth5_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>mth5.mth5.MTH5</em>) – Open MTH5 object or path to HDF5 file.</p></li>
+<li><p><strong>station</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Station name.</p></li>
+<li><p><strong>run</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Run name.</p></li>
+<li><p><strong>channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Channel name to read.</p></li>
+<li><p><strong>survey</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Survey name for MTH5 v0.2.0 files. If omitted, available surveys are searched.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded time series data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>TimeSeries</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If mth5 package is not installed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.14)"><strong>KeyError</strong></a> – If station, run, or channel is not found.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.mt_</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_mth5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">from_mth5</span><span class="p">(</span><span class="s2">&quot;data.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;Site01&quot;</span><span class="p">,</span> <span class="s2">&quot;Run01&quot;</span><span class="p">,</span> <span class="s2">&quot;Ex&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwexpy.interop.control_.html" class="btn btn-neutral float-left" title="gwexpy.interop.control_" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwexpy.interop.obspy_.html" class="btn btn-neutral float-right" title="gwexpy.interop.obspy_" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-23 15:43:17.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

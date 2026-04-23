@@ -155,7 +155,7 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 | [Finesse](https://finesse.ifosim.org/) | `from_finesse_frequency_response()`, `from_finesse_noise()` | Public | optics / response | [API](../reference/api/gwexpy.interop.finesse_.rst) |
 | [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | Public | FRD / response. Requires `pip install gwexpy[control]`. FRD conversion is available from `FrequencySeries` / `FrequencySeriesDict`; time-response import is available via `TimeSeries.from_control()` / `TimeSeriesDict.from_control()`. | [API](../reference/api/gwexpy.interop.control_.rst) |
 | [SimPEG](https://simpeg.xyz/) | `to_simpeg()`, `from_simpeg()` | Implemented | geophysics | — |
-| [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | Implemented | magnetotellurics | — |
+| [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | Public | magnetotellurics | [API](../reference/api/gwexpy.interop.mt_.rst) |
 | MTpy | dedicated `to_*()` / `from_*()` API still in progress | In progress | MTH5-adjacent organization is incomplete | — |
 | [MNE-Python](https://mne.tools/stable/index.html) | `to_mne()`, `from_mne()`, `to_mne_rawarray()`, `from_mne_raw()` | Implemented | EEG / biosignal | — |
 | [Neo](https://neo.readthedocs.io/en/latest/) | `to_neo()`, `from_neo()` | Implemented | electrophysiology | — |

@@ -1,0 +1,455 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.mt_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=99ee3e43" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/icon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/interop/mt_.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../_static/copybutton.js?v=17e82a72"></script>
+      <script src="../../../_static/external-links.js?v=5d50874a"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  
+  <meta property="og:title" content="gwexpy.interop.mt_ — GWexpy Documentation" />
+  
+  
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta property="og:type" content="website" />
+  
+  
+  <meta property="og:url" content="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/interop/mt_.html" />
+  
+  
+  <meta property="og:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+  
+  <meta property="og:site_name" content="GWexpy Documentation" />
+  
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  
+  <meta name="twitter:title" content="gwexpy.interop.mt_ — GWexpy Documentation" />
+  
+  
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+  
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="../../../web/ja/index.html">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="../../../web/en/index.html">English</a>
+    </div>
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメント</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.mt_</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.interop.mt_</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Interoperate with the MTH5 magnetotelluric HDF5 format.</span>
+
+<span class="sd">------------------</span>
+
+<span class="sd">Interoperability with MTH5 (Magnetotelluric HDF5) format.</span>
+
+<span class="sd">Provides read/write functionality for magnetotelluric time series data.</span>
+<span class="sd">Requires the `mth5` package.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;to_mth5&quot;</span><span class="p">,</span> <span class="s2">&quot;from_mth5&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="to_mth5">
+<a class="viewcode-back" href="../../../web/ja/reference/api/interop.html#gwexpy.interop.to_mth5">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_mth5</span><span class="p">(</span>
+    <span class="n">series</span><span class="p">,</span>
+    <span class="n">mth5_obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Any</span><span class="p">,</span>  <span class="c1"># mth5.mth5.MTH5 if available</span>
+    <span class="n">station</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">run</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;electric&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a TimeSeries to an MTH5 file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    series : TimeSeries</span>
+<span class="sd">        Data to write.</span>
+<span class="sd">    mth5_obj : str or mth5.mth5.MTH5</span>
+<span class="sd">        Open MTH5 object or path to HDF5 file.</span>
+<span class="sd">    station : str, optional</span>
+<span class="sd">        Station name. Defaults to &#39;Station01&#39;.</span>
+<span class="sd">    run : str, optional</span>
+<span class="sd">        Run name. Defaults to &#39;Run01&#39;.</span>
+<span class="sd">    channel_type : {&#39;electric&#39;, &#39;magnetic&#39;, &#39;auxiliary&#39;}, optional</span>
+<span class="sd">        Channel type for metadata. Default is &#39;electric&#39;.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If mth5 package is not installed.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.timeseries import TimeSeries</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.interop.mt_ import to_mth5</span>
+<span class="sd">    &gt;&gt;&gt; ts = TimeSeries([1, 2, 3], dt=0.001, name=&quot;Ex&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; to_mth5(ts, &quot;data.h5&quot;, station=&quot;Site01&quot;, run=&quot;Run01&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Handle filename vs open object</span>
+    <span class="n">file_managed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mth5_obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mth5.mth5</span><span class="w"> </span><span class="kn">import</span> <span class="n">MTH5</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">mth5_obj</span>
+        <span class="c1"># Workaround for empty files (e.g. from tempfile.NamedTemporaryFile)</span>
+        <span class="c1"># MTH5 0.5.0 fails to initialize if the file exists but is empty in &#39;a&#39; mode.</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="n">mth5_obj</span> <span class="o">=</span> <span class="n">MTH5</span><span class="p">()</span>
+        <span class="n">mth5_obj</span><span class="o">.</span><span class="n">open_mth5</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="n">file_managed</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Set defaults</span>
+        <span class="n">station</span> <span class="o">=</span> <span class="n">station</span> <span class="ow">or</span> <span class="s2">&quot;Station01&quot;</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="n">run</span> <span class="ow">or</span> <span class="s2">&quot;Run01&quot;</span>
+        <span class="n">survey</span> <span class="o">=</span> <span class="s2">&quot;Survey01&quot;</span>  <span class="c1"># Default for v0.2.0</span>
+
+        <span class="c1"># MTH5 0.5.0 (v0.2.0) has Survey -&gt; Station -&gt; Run hierarchy</span>
+        <span class="k">if</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">file_version</span> <span class="o">==</span> <span class="s2">&quot;0.2.0&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">survey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">surveys_group</span><span class="o">.</span><span class="n">groups_list</span><span class="p">:</span>
+                <span class="n">sur_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">add_survey</span><span class="p">(</span><span class="n">survey</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sur_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">get_survey</span><span class="p">(</span><span class="n">survey</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">station</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sur_group</span><span class="o">.</span><span class="n">stations_group</span><span class="o">.</span><span class="n">groups_list</span><span class="p">:</span>
+                <span class="n">st_group</span> <span class="o">=</span> <span class="n">sur_group</span><span class="o">.</span><span class="n">stations_group</span><span class="o">.</span><span class="n">add_station</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">st_group</span> <span class="o">=</span> <span class="n">sur_group</span><span class="o">.</span><span class="n">stations_group</span><span class="o">.</span><span class="n">get_station</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># v0.1.0 or other versions</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mth5_obj</span><span class="p">,</span> <span class="s2">&quot;station_list&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">station</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">station_list</span><span class="p">:</span>
+                    <span class="n">st_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">add_station</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">st_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">get_station</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Fallback for even older MTH5</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">st_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">get_station</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+                    <span class="n">st_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">add_station</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
+
+        <span class="c1"># Get or create run group</span>
+        <span class="k">if</span> <span class="n">run</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st_group</span><span class="o">.</span><span class="n">groups_list</span><span class="p">:</span>
+            <span class="n">run_group</span> <span class="o">=</span> <span class="n">st_group</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">run</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">run_group</span> <span class="o">=</span> <span class="n">st_group</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">run</span><span class="p">)</span>
+
+        <span class="c1"># Extract TimeSeries metadata</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">series</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;Ex&quot;</span>
+
+        <span class="c1"># Calculate sample rate</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">):</span>
+            <span class="n">sr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">series</span><span class="o">.</span><span class="n">dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dt_sec</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">sr</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt_sec</span> <span class="k">if</span> <span class="n">dt_sec</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sr</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Get start time</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;t0&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">series</span><span class="o">.</span><span class="n">t0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Add channel with data</span>
+        <span class="c1"># MTH5/mt_metadata enforces strict naming patterns:</span>
+        <span class="c1"># electric: e\w+, magnetic: [r,h,b]\w+, auxiliary: \w+</span>
+        <span class="n">comp_lower</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">channel_type</span> <span class="o">==</span> <span class="s2">&quot;electric&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">comp_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">):</span>
+            <span class="n">channel_type</span> <span class="o">=</span> <span class="s2">&quot;auxiliary&quot;</span>
+        <span class="k">elif</span> <span class="n">channel_type</span> <span class="o">==</span> <span class="s2">&quot;magnetic&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">comp_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="n">channel_type</span> <span class="o">=</span> <span class="s2">&quot;auxiliary&quot;</span>
+
+        <span class="n">run_group</span><span class="o">.</span><span class="n">add_channel</span><span class="p">(</span>
+            <span class="n">comp</span><span class="p">,</span>
+            <span class="n">channel_type</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">series</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">sample_rate</span><span class="o">=</span><span class="n">sr</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">file_managed</span><span class="p">:</span>
+            <span class="n">mth5_obj</span><span class="o">.</span><span class="n">close_mth5</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="from_mth5">
+<a class="viewcode-back" href="../../../web/ja/reference/api/interop.html#gwexpy.interop.from_mth5">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_mth5</span><span class="p">(</span>
+    <span class="n">mth5_obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Any</span><span class="p">,</span>  <span class="c1"># mth5.mth5.MTH5 if available</span>
+    <span class="n">station</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">run</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">survey</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a channel from MTH5 to TimeSeries.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mth5_obj : str or mth5.mth5.MTH5</span>
+<span class="sd">        Open MTH5 object or path to HDF5 file.</span>
+<span class="sd">    station : str</span>
+<span class="sd">        Station name.</span>
+<span class="sd">    run : str</span>
+<span class="sd">        Run name.</span>
+<span class="sd">    channel : str</span>
+<span class="sd">        Channel name to read.</span>
+<span class="sd">    survey : str, optional</span>
+<span class="sd">        Survey name for MTH5 v0.2.0 files. If omitted, available surveys are searched.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        The loaded time series data.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If mth5 package is not installed.</span>
+<span class="sd">    KeyError</span>
+<span class="sd">        If station, run, or channel is not found.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.interop.mt_ import from_mth5</span>
+<span class="sd">    &gt;&gt;&gt; ts = from_mth5(&quot;data.h5&quot;, &quot;Site01&quot;, &quot;Run01&quot;, &quot;Ex&quot;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
+
+    <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Handle filename vs open object</span>
+    <span class="n">file_managed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mth5_obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mth5.mth5</span><span class="w"> </span><span class="kn">import</span> <span class="n">MTH5</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">mth5_obj</span>
+        <span class="n">mth5_obj</span> <span class="o">=</span> <span class="n">MTH5</span><span class="p">()</span>
+        <span class="n">mth5_obj</span><span class="o">.</span><span class="n">open_mth5</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">file_managed</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># MTH5 0.5.0 (v0.2.0) requires survey name</span>
+        <span class="k">if</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">file_version</span> <span class="o">==</span> <span class="s2">&quot;0.2.0&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">survey</span><span class="p">:</span>
+                <span class="n">st_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">get_station</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">survey</span><span class="o">=</span><span class="n">survey</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Try to find the station in any of the available surveys</span>
+                <span class="n">st_group</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">available_surveys</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">surveys_group</span><span class="o">.</span><span class="n">groups_list</span>
+                <span class="k">for</span> <span class="n">s_name</span> <span class="ow">in</span> <span class="n">available_surveys</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">st_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">get_station</span><span class="p">(</span><span class="n">station</span><span class="p">,</span> <span class="n">survey</span><span class="o">=</span><span class="n">s_name</span><span class="p">)</span>
+                        <span class="k">break</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">st_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Station </span><span class="si">{</span><span class="n">station</span><span class="si">}</span><span class="s2"> not found in any survey: </span><span class="si">{</span><span class="n">available_surveys</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">st_group</span> <span class="o">=</span> <span class="n">mth5_obj</span><span class="o">.</span><span class="n">get_station</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
+        <span class="n">run_group</span> <span class="o">=</span> <span class="n">st_group</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">run</span><span class="p">)</span>
+        <span class="n">ch_obj</span> <span class="o">=</span> <span class="n">run_group</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+
+        <span class="c1"># Read data from HDF5 dataset</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ch_obj</span><span class="o">.</span><span class="n">hdf5_dataset</span><span class="p">[:]</span>
+
+        <span class="c1"># Extract metadata</span>
+        <span class="n">sr</span> <span class="o">=</span> <span class="n">ch_obj</span><span class="o">.</span><span class="n">sample_rate</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sr</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span> <span class="k">if</span> <span class="n">sr</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+
+        <span class="c1"># Parse start time</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">ch_obj</span><span class="o">.</span><span class="n">start</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">t0</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">gps</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="c1"># Fall back to float interpretation</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">t0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+
+        <span class="c1"># Parse unit</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ch_obj</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ch_obj</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">ch_obj</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">file_managed</span><span class="p">:</span>
+            <span class="n">mth5_obj</span><span class="o">.</span><span class="n">close_mth5</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-23 15:43:17.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
+        <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>
