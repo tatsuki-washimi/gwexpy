@@ -44,7 +44,10 @@ def _decode_netcdf_key(raw):
     if raw is None:
         return None
     try:
-        return json.loads(raw)
+        result = json.loads(raw)
+        if isinstance(result, list):
+            return tuple(result)
+        return result
     except (json.JSONDecodeError, TypeError, ValueError):
         return str(raw)
 
@@ -241,10 +244,16 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
 
         matrix_vars = []
         for var_name, da in ds.data_vars.items():
-            row_key = _decode_netcdf_key(da.attrs.get("gwexpy_row_key"))
-            col_key = _decode_netcdf_key(da.attrs.get("gwexpy_col_key"))
-            if row_key is None or col_key is None or tc not in da.dims:
+            row_raw = da.attrs.get("gwexpy_row_key")
+            col_raw = da.attrs.get("gwexpy_col_key")
+            if row_raw is None or col_raw is None or tc not in da.dims:
                 continue
+            if da.attrs.get("gwexpy_key_format") == "json":
+                row_key = _decode_netcdf_key(row_raw)
+                col_key = _decode_netcdf_key(col_raw)
+            else:
+                row_key = str(row_raw)
+                col_key = str(col_raw)
             matrix_vars.append((row_key, col_key, da))
 
         if not matrix_vars:
@@ -349,6 +358,7 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
         if isinstance(key, tuple) and len(key) == 2:
             attrs["gwexpy_row_key"] = json.dumps(key[0])
             attrs["gwexpy_col_key"] = json.dumps(key[1])
+            attrs["gwexpy_key_format"] = "json"
         data_vars[var_name] = xr.DataArray(
             np.asarray(ts.value, dtype=np.float64),
             dims=["time"],
