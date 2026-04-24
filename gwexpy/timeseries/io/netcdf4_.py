@@ -6,6 +6,7 @@ Reads variables that have a ``time`` dimension and converts them to
 from __future__ import annotations
 
 import logging
+from collections import OrderedDict
 
 import numpy as np
 
@@ -21,6 +22,14 @@ from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from ._registration import register_timeseries_format
 
 logger = logging.getLogger(__name__)
+_MATRIX_VAR_PREFIX = "__gwexpy_matrix__"
+
+
+def _encode_netcdf_var_name(key) -> str:
+    """Convert mapping keys to NetCDF-safe variable names."""
+    if isinstance(key, tuple) and len(key) == 2:
+        return f"{_MATRIX_VAR_PREFIX}{key[0]}__{key[1]}"
+    return str(key)
 
 
 def _import_xarray():
@@ -197,8 +206,91 @@ def read_timeseries_netcdf4(source, **kwargs) -> TimeSeries:
 
 def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
     """Read a NetCDF4 file and convert its channels to a matrix."""
-    tsd = read_timeseriesdict_netcdf4(source, **kwargs)
-    return tsd.to_matrix()
+    xr = _import_xarray()
+
+    if hasattr(source, "name"):
+        source = source.name
+
+    _gwpy_keys = {"start", "end", "pad", "gap", "nproc", "scaled"}
+    xr_kwargs = {k: v for k, v in kwargs.items() if k not in _gwpy_keys}
+    ds = xr.open_dataset(str(source), **xr_kwargs)
+    try:
+        tc = kwargs.get("time_coord") or _time_coord_name(ds)
+        if tc is None:
+            raise ValueError(
+                "No time coordinate found in the NetCDF4 file. "
+                "Specify one explicitly via time_coord='...'."
+            )
+
+        matrix_vars = []
+        for var_name, da in ds.data_vars.items():
+            row_key = da.attrs.get("gwexpy_row_key")
+            col_key = da.attrs.get("gwexpy_col_key")
+            if row_key is None or col_key is None or tc not in da.dims:
+                continue
+            matrix_vars.append((str(row_key), str(col_key), da))
+
+        if not matrix_vars:
+            tsd = read_timeseriesdict_netcdf4(source, **kwargs)
+            return tsd.to_matrix()
+
+        row_keys = list(OrderedDict.fromkeys(row for row, _, _ in matrix_vars))
+        col_keys = list(OrderedDict.fromkeys(col for _, col, _ in matrix_vars))
+
+        first = matrix_vars[0][2]
+        unit = first.attrs.get("units") or first.attrs.get("unit")
+        time_vals = ds[tc].values
+        t0 = float(np.asarray(time_vals, dtype=np.float64)[0]) if not np.issubdtype(
+            np.asarray(time_vals).dtype, np.datetime64
+        ) else None
+
+        if np.issubdtype(np.asarray(time_vals).dtype, np.datetime64):
+            import datetime as _dt
+
+            t0_dt64 = time_vals[0]
+            t0_unix_ns = (t0_dt64 - np.datetime64("1970-01-01T00:00:00", "ns")).astype(
+                np.int64
+            )
+            t0_datetime = _dt.datetime.fromtimestamp(t0_unix_ns / 1e9, tz=_dt.UTC)
+            t0 = datetime_to_gps(t0_datetime)
+            if len(time_vals) > 1:
+                diffs_ns = np.diff(time_vals.astype("datetime64[ns]").astype(np.int64))
+                dt = float(np.median(diffs_ns)) / 1e9
+            else:
+                dt = 1.0
+        else:
+            numeric = np.asarray(time_vals, dtype=np.float64)
+            t0 = float(numeric[0])
+            dt = float(np.median(np.diff(numeric))) if len(numeric) > 1 else 1.0
+
+        data = np.empty((len(row_keys), len(col_keys), first.shape[0]), dtype=np.float64)
+        for row_key, col_key, da in matrix_vars:
+            i = row_keys.index(row_key)
+            j = col_keys.index(col_key)
+            data[i, j, :] = np.asarray(da.values, dtype=np.float64)
+
+        matrix = TimeSeriesMatrix(
+            data,
+            t0=t0,
+            dt=dt,
+            unit=unit,
+        )
+        if row_keys != list(matrix.row_keys()) or col_keys != list(matrix.col_keys()):
+            from gwexpy.types.metadata import MetaData, MetaDataDict
+
+            matrix.rows = MetaDataDict(
+                OrderedDict((key, MetaData()) for key in row_keys),
+                expected_size=len(row_keys),
+                key_prefix="row",
+            )
+            matrix.cols = MetaDataDict(
+                OrderedDict((key, MetaData()) for key in col_keys),
+                expected_size=len(col_keys),
+                key_prefix="col",
+            )
+        return matrix
+    finally:
+        ds.close()
 
 
 # -- Writer --------------------------------------------------------------------
@@ -239,7 +331,11 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
         attrs = {}
         if ts.unit is not None:
             attrs["units"] = str(ts.unit)
-        data_vars[key] = xr.DataArray(
+        var_name = _encode_netcdf_var_name(key)
+        if isinstance(key, tuple) and len(key) == 2:
+            attrs["gwexpy_row_key"] = str(key[0])
+            attrs["gwexpy_col_key"] = str(key[1])
+        data_vars[var_name] = xr.DataArray(
             np.asarray(ts.value, dtype=np.float64),
             dims=["time"],
             attrs=attrs,

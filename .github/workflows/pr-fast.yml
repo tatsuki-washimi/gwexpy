@@ -52,6 +52,7 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install PyQt5
           python -m pip install qtpy
+          python -m pip install pyqtgraph
           python -m pip install iminuit
 
       - name: Run PR-fast gate
@@ -86,6 +87,7 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install PyQt5
           python -m pip install qtpy
+          python -m pip install pyqtgraph
           python -m pip install iminuit
 
       - name: Run I/O contract tests
@@ -120,6 +122,7 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install PyQt5
           python -m pip install qtpy
+          python -m pip install pyqtgraph
           python -m pip install freezegun xarray netCDF4 nptdms pydub tinytag
 
       - name: Run optional dependency tests
@@ -154,6 +157,7 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install PyQt5
           python -m pip install qtpy
+          python -m pip install pyqtgraph
 
       - name: Run interop contract tests
         run: python scripts/ci/run_gate.py interop-contract

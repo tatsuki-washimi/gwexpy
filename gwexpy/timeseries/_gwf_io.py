@@ -180,26 +180,36 @@ def _extract_gwf_read_args(
 
     has_start_kw = "start" in gwf_kwargs
     has_end_kw = "end" in gwf_kwargs
-
-    channel_arg = gwf_kwargs.pop(
-        "channels",
-        gwf_kwargs.pop(
-            "names",
-            gwf_kwargs.pop("channel", gwf_kwargs.pop("name", args[0] if args else None)),
-        ),
+    has_channel_alias_kw = any(
+        key in gwf_kwargs for key in ("channels", "names", "channel", "name")
     )
+
+    if args:
+        channel_arg = args[0]
+        gwf_kwargs.pop("channels", None)
+        gwf_kwargs.pop("names", None)
+        gwf_kwargs.pop("channel", None)
+        gwf_kwargs.pop("name", None)
+    else:
+        channel_arg = gwf_kwargs.pop(
+            "channels",
+            gwf_kwargs.pop(
+                "names",
+                gwf_kwargs.pop("channel", gwf_kwargs.pop("name", None)),
+            ),
+        )
     start = args[1] if len(args) > 1 else None
     end = args[2] if len(args) > 2 else None
 
     if len(args) > 1:
-        if has_start_kw:
+        if has_start_kw and not has_channel_alias_kw:
             raise TypeError("Cannot specify both positional and keyword 'start' for GWF read.")
         start = args[1]
     else:
         start = gwf_kwargs.pop("start", None)
 
     if len(args) > 2:
-        if has_end_kw:
+        if has_end_kw and not has_channel_alias_kw:
             raise TypeError("Cannot specify both positional and keyword 'end' for GWF read.")
         end = args[2]
     else:

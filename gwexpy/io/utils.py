@@ -286,7 +286,7 @@ def extract_audio_metadata(source: str | Path) -> dict[str, Any]:
             stacklevel=3,
         )
         return {}
-    except (OSError, AttributeError, TypeError, ValueError) as e:
+    except Exception as e:
         # Metadata extraction failure should not break file reading
         warnings.warn(
             f"Failed to extract metadata: {e}",
