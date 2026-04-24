@@ -249,6 +249,10 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = fs
                     return out
+        if fmt in ("xml.diaggui", "dttxml"):
+            from .io.dttxml import read_frequencyseriesdict_dttxml
+
+            return read_frequencyseriesdict_dttxml(source, *args, **kwargs)
         from astropy.io import registry
 
         return registry.read(cls, source, *args, **kwargs)

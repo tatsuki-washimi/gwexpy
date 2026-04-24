@@ -246,15 +246,6 @@ for _fmt in _DTTXML_FORMATS:
     )
 
 
-def _adapt_frequencyseries(*args, **kwargs):
-    fsd = read_frequencyseriesdict_dttxml(*args, **kwargs)
-    if not fsd:
-        raise ValueError("No channels found in xml.diaggui")
-    return fsd[next(iter(fsd.keys()))]
-
-for _fmt in _DTTXML_FORMATS:
-    io_registry.register_reader(_fmt, FrequencySeries, _adapt_frequencyseries, force=True)
-
 io_registry.register_identifier(
     "xml.diaggui",
     FrequencySeries,

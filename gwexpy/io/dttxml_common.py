@@ -9,6 +9,7 @@ from typing import Any, Literal, TypedDict, cast
 
 import numpy as np
 
+
 class ChannelInfo(TypedDict):
     """Channel name and enabled state extracted from a DTT XML file."""
 
@@ -43,7 +44,7 @@ def extract_xml_channels(filename: str) -> list[ChannelInfo]:
         warnings.warn(f"XML parsing error in {filename}: {exc}")
         return channels
 
-    root = cast(ET.Element[str], tree.getroot())
+    root = cast(Any, tree.getroot())
 
     # DTT XML typically stores parameters in <Param Name="MeasChn[i]" ...> and <Param Name="MeasActive[i]" ...>
     # or similar structure within <LIGO_LW Name="TestParameters">
@@ -217,7 +218,7 @@ def load_dttxml_native(source: str) -> dict:
         warnings.warn(f"Failed to parse DTT XML: {exc}")
         return {}
 
-    root = cast(ET.Element[str], tree.getroot())
+    root = cast(Any, tree.getroot())
     normalized: dict = {}
 
     # Find all Result blocks

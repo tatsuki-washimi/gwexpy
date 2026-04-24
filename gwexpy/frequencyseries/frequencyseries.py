@@ -8,6 +8,7 @@ enhanced signal analysis, fitting capabilities, and deep metadata propagation.
 from __future__ import annotations
 
 from enum import Enum
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, TypeVar, cast
 
 import numpy as np
@@ -134,6 +135,22 @@ class FrequencySeries(
                      channel=None)>
 
     """
+
+    @classmethod
+    def read(cls, source, *args, **kwargs):  # type: ignore[override]
+        """Read a ``FrequencySeries`` from a supported source."""
+        fmt = kwargs.get("format")
+        source_path = Path(source) if isinstance(source, (str, Path)) else None
+        if fmt in ("xml.diaggui", "dttxml") or (
+            fmt is None and source_path is not None and source_path.suffix.lower() == ".xml"
+        ):
+            from .io.dttxml import read_frequencyseriesdict_dttxml
+
+            fsd = read_frequencyseriesdict_dttxml(source, *args, **kwargs)
+            if not fsd:
+                raise ValueError("No channels found in xml.diaggui")
+            return fsd[next(iter(fsd.keys()))]
+        return super().read(source, *args, **kwargs)
 
     def __new__(
         cls,
@@ -1635,6 +1652,12 @@ class FrequencySeries(
         from gwexpy.interop import from_pyspeckit
 
         return from_pyspeckit(cls, spectrum, **kwargs)
+
+
+# Preserve the inherited Unified I/O docstring structure so Astropy can
+# append format tables during reader/writer registration.
+_frequencyseries_read_func = getattr(FrequencySeries.read, "__func__", FrequencySeries.read)
+_frequencyseries_read_func.__doc__ = BaseFrequencySeries.read.__doc__
 
 
 # =============================

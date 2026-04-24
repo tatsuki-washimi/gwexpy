@@ -20,6 +20,28 @@ from gwexpy.io.utils import datetime_to_gps, filter_by_channels, parse_timezone
 from .csv_config import CSVFormatConfig
 
 
+def _parse_comment_metadata(
+    lines: list[str],
+    comment_char: str,
+) -> dict[str, str]:
+    """Parse simple ``key=value`` metadata from leading comment lines."""
+    metadata: dict[str, str] = {}
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if not stripped.startswith(comment_char):
+            break
+        body = stripped[len(comment_char):].strip()
+        if not body or body.startswith("gwexpy.timeseries.csv"):
+            continue
+        if "=" not in body:
+            continue
+        key, value = body.split("=", 1)
+        metadata[key.strip()] = value.strip()
+    return metadata
+
+
 def _detect_skip_rows(
     lines: list[str], delimiter: str, comment_char: str
 ) -> int:
@@ -251,6 +273,7 @@ def read_timeseriesdict_csv(
         source = Path(source)
         text = source.read_text(encoding=cfg.encoding)
     lines = text.splitlines()
+    metadata = _parse_comment_metadata(lines, cfg.comment_char)
 
     # Auto-detect delimiter if config is default
     delimiter = cfg.delimiter
@@ -329,9 +352,14 @@ def read_timeseriesdict_csv(
     else:
         # Auto-detect: first column = time, rest = data
         gps_times = raw[:, 0]
-        data_columns = [
-            (f"ch{i}", i, None, 1.0) for i in range(1, raw.shape[1])
-        ]
+        if raw.shape[1] == 2:
+            data_columns = [
+                (metadata.get("name", "ch1"), 1, metadata.get("unit"), 1.0),
+            ]
+        else:
+            data_columns = [
+                (f"ch{i}", i, None, 1.0) for i in range(1, raw.shape[1])
+            ]
 
     # --- Build TimeSeriesDict ---
     result: dict[str, Any] = {}
@@ -375,6 +403,49 @@ def read_timeseriesdict_csv(
 
     tsd = TimeSeriesDict(filter_by_channels(result, channels))
     return tsd
+
+
+def read_timeseries_csv(
+    source: str | Path,
+    **kwargs: Any,
+) -> Any:
+    """Read a single ``TimeSeries`` from a CSV source."""
+    tsd = read_timeseriesdict_csv(source, **kwargs)
+    if not tsd:
+        raise ValueError(f"No time-series data found in CSV source: {source}")
+    return next(iter(tsd.values()))
+
+
+def write_timeseries_csv(
+    ts: Any,
+    target: str | Path | Any,
+    *,
+    delimiter: str = ",",
+    **kwargs: Any,
+) -> str | Path | Any:
+    """Write a single ``TimeSeries`` to CSV with minimal metadata comments."""
+    del kwargs
+
+    rows = [
+        f"{float(t):.18e}{delimiter}{float(v):.18e}"
+        for t, v in zip(ts.times.value, ts.value, strict=False)
+    ]
+    header = [
+        "# gwexpy.timeseries.csv v1",
+        f"# name={ts.name}" if ts.name else "",
+        f"# unit={ts.unit}" if str(ts.unit) else "",
+        f"# t0={float(ts.t0.value):.18e}",
+        f"# dt={float(ts.dt.value):.18e}",
+    ]
+    content = "\n".join(line for line in header if line) + "\n" + "\n".join(rows) + "\n"
+
+    if hasattr(target, "write"):
+        target.write(content)
+        return target
+
+    path = Path(target)
+    path.write_text(content, encoding="utf-8")
+    return target
 
 
 # --- Format registration ---
