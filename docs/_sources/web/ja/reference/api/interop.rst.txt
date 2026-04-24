@@ -14,6 +14,7 @@
 
    hdf5_
    json_
+   sqlite_
    zarr_
    netcdf4_
 
@@ -25,9 +26,22 @@
    :nosignatures:
 
    pandas_
+   polars_
    xarray_
    astropy_
    dask_
+
+配列・テンソル系ライブラリ
+--------------------------
+
+.. autosummary::
+   :toctree:
+   :nosignatures:
+
+   torch_
+   tensorflow_
+   jax_
+   cupy_
 
 ドメイン特化ライブラリ
 ----------------------
@@ -38,7 +52,30 @@
 
    finesse_
    control_
+   simpeg_
    mt_
+   mne_
+   neo_
+   quantities_
+   pyroomacoustics_
+   pydub_
+   specutils_
+   pyspeckit_
+   pyspice_
+   skrf_
+   pyoma_
+   multitaper_
+   sdypy_
+   sdynpy_
+   meep_
+   openems_
+   emg3d_
+   meshio_
+   metpy_
+   wrf_
+   harmonica_
+   exudyn_
+   opensees_
    obspy_
    lal_
    gwinc_

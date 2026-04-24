@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.emg3d_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/reference/api/gwexpy.interop.emg3d_.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
+      <script src="../../../../_static/external-links.js?v=5d50874a"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="gwexpy.interop.meshio_" href="gwexpy.interop.meshio_.html" />
+    <link rel="prev" title="gwexpy.interop.openems_" href="gwexpy.interop.openems_.html" />
+   
+  
+  <meta property="og:title" content="gwexpy.interop.emg3d_ — GWexpy Documentation" />
+  
+  
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta property="og:type" content="website" />
+  
+  
+  <meta property="og:url" content="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/reference/api/gwexpy.interop.emg3d_.html" />
+  
+  
+  <meta property="og:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+  
+  <meta property="og:site_name" content="GWexpy Documentation" />
+  
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  
+  <meta name="twitter:title" content="gwexpy.interop.emg3d_ — GWexpy Documentation" />
+  
+  
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+  
+    
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../../en/reference/api/gwexpy.interop.emg3d_.html">English</a>
+    </div>
+    
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメント</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">可視化例（Visual Examples）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/quickstart.html">クイックスタート (Quickstart)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">リファレンス (Reference)</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">API リファレンス (API Reference)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../classes.html">クラス索引 (Class Index)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../topics.html">トピック別参照 (Topics)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/verification_and_quality.html">検証と品質の見方</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメント</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">リファレンス (Reference)</a></li>
+          <li class="breadcrumb-item"><a href="index.html">API リファレンス (API Reference)</a></li>
+          <li class="breadcrumb-item"><a href="interop.html">外部連携 (Interoperability)</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.emg3d_</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/reference/api/gwexpy.interop.emg3d_.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwexpy-interop-emg3d">
+<h1>gwexpy.interop.emg3d_<a class="headerlink" href="#gwexpy-interop-emg3d" title="Link to this heading"></a></h1>
+<p>Interoperate with emg3d electromagnetic modelling fields.</p>
+<hr class="docutils" />
+<p>Interoperability with emg3d electromagnetic modelling fields.</p>
+<p><code class="docutils literal notranslate"><span class="pre">emg3d.fields.Field</span></code> stores electric or magnetic field components on a
+staggered grid (Yee grid).  Each Cartesian component has a slightly different
+shape because it lives on edges (E-field) or faces (H-field).</p>
+<p>GWexpy’s <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> requires all spatial components to share the same
+shape, so this module interpolates each component to the <em>cell centres</em> of the
+<code class="docutils literal notranslate"><span class="pre">TensorMesh</span></code> before packing them into a <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>.  The original
+staggered layout is recorded in the <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> metadata.</p>
+<p>Only the <code class="docutils literal notranslate"><span class="pre">emg3d</span></code> Python package is required; no external C dependencies
+beyond those already installed with emg3d.</p>
+<p class="rubric">References</p>
+<p><a class="reference external" href="https://emg3d.emsig.xyz/">https://emg3d.emsig.xyz/</a></p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_emg3d_field</span></code>(cls, field, *[, component, ...])</p></td>
+<td><p>Convert an <code class="docutils literal notranslate"><span class="pre">emg3d.fields.Field</span></code> to a GWexpy <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_emg3d_h5</span></code>(cls, filepath, *[, name, ...])</p></td>
+<td><p>Load an emg3d field saved via <code class="docutils literal notranslate"><span class="pre">emg3d.save()</span></code> and convert it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_emg3d_field</span></code>(vf, *[, frequency, electric])</p></td>
+<td><p>Convert a GWexpy VectorField back to an <code class="docutils literal notranslate"><span class="pre">emg3d.fields.Field</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.emg3d_.</span></span><span class="sig-name descname"><span class="pre">from_emg3d_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate_to_cell_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ScalarField</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">VectorField</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/interop/emg3d_.html#from_emg3d_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Convert an <code class="docutils literal notranslate"><span class="pre">emg3d.fields.Field</span></code> to a GWexpy <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>.</p>
+<p>The emg3d <code class="docutils literal notranslate"><span class="pre">Field</span></code> stores each Cartesian component (fx, fy, fz) on a
+staggered (Yee) grid where component shapes may differ.  When
+<em>interpolate_to_cell_center</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), each component is
+averaged to the common cell-centre grid so that all three <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>
+objects share the same spatial shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> class.</p></li>
+<li><p><strong>field</strong> (<em>emg3d.fields.Field</em>) – emg3d field object.  Must have attributes <code class="docutils literal notranslate"><span class="pre">fx</span></code>, <code class="docutils literal notranslate"><span class="pre">fy</span></code>, <code class="docutils literal notranslate"><span class="pre">fz</span></code>,
+<code class="docutils literal notranslate"><span class="pre">grid</span></code>, and <code class="docutils literal notranslate"><span class="pre">electric</span></code> (bool).</p></li>
+<li><p><strong>component</strong> (<em>{&quot;x&quot;</em><em>, </em><em>&quot;y&quot;</em><em>, </em><em>&quot;z&quot;}</em><em>, </em><em>optional</em>) – Extract a single Cartesian component and return a <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>.
+<code class="docutils literal notranslate"><span class="pre">None</span></code> returns all three components as a <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>.</p></li>
+<li><p><strong>interpolate_to_cell_center</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default True</em>) – Interpolate staggered-grid components to cell centres.  Setting this
+to <code class="docutils literal notranslate"><span class="pre">False</span></code> raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if the shapes differ.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>ScalarField</em> – When <em>component</em> is specified or <em>cls</em> is <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>.</p></li>
+<li><p><em>VectorField</em> – When <em>component</em> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and <em>cls</em> is <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">interpolate_to_cell_center=False</span></code> and component shapes differ.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorField</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vf</span> <span class="o">=</span> <span class="n">VectorField</span><span class="o">.</span><span class="n">from_emg3d_field</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sf</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="o">.</span><span class="n">from_emg3d_field</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.emg3d_.</span></span><span class="sig-name descname"><span class="pre">from_emg3d_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'field'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate_to_cell_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ScalarField</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">VectorField</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/interop/emg3d_.html#from_emg3d_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Load an emg3d field saved via <code class="docutils literal notranslate"><span class="pre">emg3d.save()</span></code> and convert it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> or <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>.</p></li>
+<li><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the HDF5 / npz / json file written by <code class="docutils literal notranslate"><span class="pre">emg3d.save()</span></code>.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>default &quot;field&quot;</em>) – Key under which the field was saved (kwarg name passed to
+<code class="docutils literal notranslate"><span class="pre">emg3d.save(**{name:</span> <span class="pre">field})</span></code>).</p></li>
+<li><p><strong>component</strong> (<em>{&quot;x&quot;</em><em>, </em><em>&quot;y&quot;</em><em>, </em><em>&quot;z&quot;}</em><em>, </em><em>optional</em>) – Extract a single component.</p></li>
+<li><p><strong>interpolate_to_cell_center</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default True</em>) – See <code class="xref py py-func docutils literal notranslate"><span class="pre">from_emg3d_field()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ScalarField or VectorField</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.emg3d_.</span></span><span class="sig-name descname"><span class="pre">to_emg3d_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorField</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ScalarField</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/interop/emg3d_.html#to_emg3d_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Convert a GWexpy VectorField back to an <code class="docutils literal notranslate"><span class="pre">emg3d.fields.Field</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vf</strong> (<em>VectorField</em><em> or </em><em>ScalarField</em>) – Source field.  For <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>, components <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;y&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;z&quot;</span></code> are expected.  For <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> the single component is
+broadcast as the x-component.</p></li>
+<li><p><strong>frequency</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Field frequency in Hz.  Overrides <code class="docutils literal notranslate"><span class="pre">vf</span></code>’s axis0 value when given.</p></li>
+<li><p><strong>electric</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>default True</em>) – Whether the field is an E-field (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or H-field (<code class="docutils literal notranslate"><span class="pre">False</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reconstructed field object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>emg3d.fields.Field</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">emg3d</span></code> is not installed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the VectorField does not contain exactly 3 components.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwexpy.interop.openems_.html" class="btn btn-neutral float-left" title="gwexpy.interop.openems_" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwexpy.interop.meshio_.html" class="btn btn-neutral float-right" title="gwexpy.interop.meshio_" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-24 03:50:02.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="../../user_guide/license.html">ライセンス / 免責</a> |
+        <a href="../../user_guide/roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

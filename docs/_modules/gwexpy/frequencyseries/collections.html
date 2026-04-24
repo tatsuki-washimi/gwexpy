@@ -394,6 +394,10 @@
                         <span class="n">orig_key</span> <span class="o">=</span> <span class="n">keymap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">grp_name</span><span class="p">,</span> <span class="n">grp_name</span><span class="p">)</span>
                         <span class="n">out</span><span class="p">[</span><span class="n">orig_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
                     <span class="k">return</span> <span class="n">out</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;xml.diaggui&quot;</span><span class="p">,</span> <span class="s2">&quot;dttxml&quot;</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.io.dttxml</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_frequencyseriesdict_dttxml</span>
+
+            <span class="k">return</span> <span class="n">read_frequencyseriesdict_dttxml</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
 
         <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -1358,7 +1362,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-24 02:18:37.
+      <span class="lastupdated">Last updated on 2026-04-24 03:50:02.
       </span></p>
   </div>
 

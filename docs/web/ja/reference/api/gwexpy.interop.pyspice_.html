@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.pyspice_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=99ee3e43" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/icon.svg"/>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/reference/api/gwexpy.interop.pyspice_.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
+      <script src="../../../../_static/external-links.js?v=5d50874a"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="gwexpy.interop.skrf_" href="gwexpy.interop.skrf_.html" />
+    <link rel="prev" title="gwexpy.interop.pyspeckit_" href="gwexpy.interop.pyspeckit_.html" />
+   
+  
+  <meta property="og:title" content="gwexpy.interop.pyspice_ — GWexpy Documentation" />
+  
+  
+  <meta property="og:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta property="og:type" content="website" />
+  
+  
+  <meta property="og:url" content="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/reference/api/gwexpy.interop.pyspice_.html" />
+  
+  
+  <meta property="og:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+  
+  <meta property="og:site_name" content="GWexpy Documentation" />
+  
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  
+  <meta name="twitter:title" content="gwexpy.interop.pyspice_ — GWexpy Documentation" />
+  
+  
+  <meta name="twitter:description" content="GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points." />
+  
+  
+  <meta name="twitter:image" content="https://tatsuki-washimi.github.io/gwexpy/docs/_static/branding/og-card.png" />
+  
+
+</head>
+
+<body class="wy-body-for-nav">
+   
+  
+  
+    
+    
+    
+    <div id="lang-pill">
+      <span>🌐</span>
+      <span class="lang-current">日本語</span>
+      <span class="lang-sep">|</span>
+      <a href="../../../en/reference/api/gwexpy.interop.pyspice_.html">English</a>
+    </div>
+    
+  
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+  
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+              <img src="../../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメント</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">可視化例（Visual Examples）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">インストールガイド (Installation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/quickstart.html">クイックスタート (Quickstart)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_ja.html">GWpy ユーザー向け移行ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwpy_added_api_index_ja.html">GWpy 差分 API 一覧</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/index.html">チュートリアル（機能別）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ（目的別） / Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">リファレンス (Reference)</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">API リファレンス (API Reference)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../classes.html">クラス索引 (Class Index)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../topics.html">トピック別参照 (Topics)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/glossary.html">用語集 (Glossary)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/roadmap.html">ロードマップ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/troubleshooting.html">トラブルシューティング (Troubleshooting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/verification_and_quality.html">検証と品質の見方</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/citation.html">引用方法 (Citation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/changelog.html">更新履歴 (Changelog)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/license.html">ライセンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/cli.html">コマンドラインインターフェース（CLI、試作版）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gui.html">グラフィカルユーザーインターフェース（GUI、試作版）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメント</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">リファレンス (Reference)</a></li>
+          <li class="breadcrumb-item"><a href="index.html">API リファレンス (API Reference)</a></li>
+          <li class="breadcrumb-item"><a href="interop.html">外部連携 (Interoperability)</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.pyspice_</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/reference/api/gwexpy.interop.pyspice_.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwexpy-interop-pyspice">
+<h1>gwexpy.interop.pyspice_<a class="headerlink" href="#gwexpy-interop-pyspice" title="Link to this heading"></a></h1>
+<p>Interoperate with PySpice circuit simulation results.</p>
+<hr class="docutils" />
+<p>Interoperability with PySpice circuit simulation library.</p>
+<p>Provides conversion from PySpice Analysis results (TransientAnalysis,
+AcAnalysis, NoiseAnalysis, DistortionAnalysis) to GWexpy TimeSeries
+and FrequencySeries types.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pyspice_ac</span></code>(cls, analysis, *[, node, ...])</p></td>
+<td><p>Create FrequencySeries or FrequencySeriesDict from a PySpice AcAnalysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pyspice_distortion</span></code>(cls, analysis, *[, ...])</p></td>
+<td><p>Create FrequencySeries or FrequencySeriesDict from a PySpice DistortionAnalysis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pyspice_noise</span></code>(cls, analysis, *[, node, ...])</p></td>
+<td><p>Create FrequencySeries or FrequencySeriesDict from a PySpice NoiseAnalysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pyspice_transient</span></code>(cls, analysis, *[, ...])</p></td>
+<td><p>Create TimeSeries or TimeSeriesDict from a PySpice TransientAnalysis.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.pyspice_.</span></span><span class="sig-name descname"><span class="pre">from_pyspice_transient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/interop/pyspice_.html#from_pyspice_transient"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create TimeSeries or TimeSeriesDict from a PySpice TransientAnalysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The TimeSeries (or TimeSeriesDict) class to instantiate.</p></li>
+<li><p><strong>analysis</strong> (<em>PySpice.Spice.Simulation.TransientAnalysis</em>) – The transient analysis result from a PySpice simulation.</p></li>
+<li><p><strong>node</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Node name to extract (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;out&quot;</span></code>). If <em>None</em> and <em>branch</em> is also
+<em>None</em>, all nodes and branches are returned as a dict.</p></li>
+<li><p><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Branch name to extract (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;vcc&quot;</span></code>). Typically the name of a
+voltage source for current measurement. Cannot be combined with <em>node</em>.</p></li>
+<li><p><strong>unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.units.Unit.html#astropy.units.Unit" title="(in Astropy v7.2)"><em>astropy.units.Unit</em></a><em>, </em><em>optional</em>) – Unit to assign to the result. PySpice waveforms carry unit information
+that is not astropy-compatible, so physical units must be supplied by
+the caller (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;V&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>TimeSeries</em> – When a single <em>node</em> or <em>branch</em> is specified.</p></li>
+<li><p><em>TimeSeriesDict</em> – When neither <em>node</em> nor <em>branch</em> is given; keyed by signal name.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># analysis = simulator.transient(...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_pyspice_transient</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.pyspice_.</span></span><span class="sig-name descname"><span class="pre">from_pyspice_ac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/interop/pyspice_.html#from_pyspice_ac"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create FrequencySeries or FrequencySeriesDict from a PySpice AcAnalysis.</p>
+<p>AC analysis waveforms contain complex-valued frequency responses (transfer
+functions, impedances, etc.) with the frequency axis given by
+<code class="docutils literal notranslate"><span class="pre">analysis.frequency</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The FrequencySeries (or FrequencySeriesDict) class to instantiate.</p></li>
+<li><p><strong>analysis</strong> (<em>PySpice.Spice.Simulation.AcAnalysis</em>) – The AC analysis result from a PySpice simulation.</p></li>
+<li><p><strong>node</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Node name to extract. If <em>None</em> and <em>branch</em> is also <em>None</em>, all
+nodes and branches are returned.</p></li>
+<li><p><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Branch name to extract.</p></li>
+<li><p><strong>unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.units.Unit.html#astropy.units.Unit" title="(in Astropy v7.2)"><em>astropy.units.Unit</em></a><em>, </em><em>optional</em>) – Unit to assign to the result (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;V&quot;</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>FrequencySeries</em> – When a single signal is selected; data is complex.</p></li>
+<li><p><em>FrequencySeriesDict</em> – When no specific signal is selected; keyed by signal name.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># analysis = simulator.ac(...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_pyspice_ac</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.pyspice_.</span></span><span class="sig-name descname"><span class="pre">from_pyspice_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/interop/pyspice_.html#from_pyspice_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create FrequencySeries or FrequencySeriesDict from a PySpice NoiseAnalysis.</p>
+<p>Noise analysis waveforms contain real-valued noise spectral densities
+(e.g. V²/Hz or A²/Hz) as a function of frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The FrequencySeries (or FrequencySeriesDict) class to instantiate.</p></li>
+<li><p><strong>analysis</strong> (<em>PySpice.Spice.Simulation.NoiseAnalysis</em>) – The noise analysis result from a PySpice simulation.</p></li>
+<li><p><strong>node</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Node name to extract (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;onoise&quot;</span></code> for output-referred noise).
+If <em>None</em>, all signals are returned.</p></li>
+<li><p><strong>unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.units.Unit.html#astropy.units.Unit" title="(in Astropy v7.2)"><em>astropy.units.Unit</em></a><em>, </em><em>optional</em>) – Unit to assign to the result (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;V**2/Hz&quot;</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>FrequencySeries</em> – When a single signal is selected; data is real.</p></li>
+<li><p><em>FrequencySeriesDict</em> – When no signal is selected; keyed by signal name.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># analysis = simulator.noise(...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_pyspice_noise</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="s2">&quot;onoise&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.pyspice_.</span></span><span class="sig-name descname"><span class="pre">from_pyspice_distortion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../../../../_modules/gwexpy/interop/pyspice_.html#from_pyspice_distortion"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create FrequencySeries or FrequencySeriesDict from a PySpice DistortionAnalysis.</p>
+<p>Distortion analysis waveforms contain harmonic/intermodulation distortion
+components as a function of frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The FrequencySeries (or FrequencySeriesDict) class to instantiate.</p></li>
+<li><p><strong>analysis</strong> (<em>PySpice.Spice.Simulation.DistortionAnalysis</em>) – The distortion analysis result from a PySpice simulation.</p></li>
+<li><p><strong>node</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Node name to extract. If <em>None</em>, all signals are returned.</p></li>
+<li><p><strong>unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.units.Unit.html#astropy.units.Unit" title="(in Astropy v7.2)"><em>astropy.units.Unit</em></a><em>, </em><em>optional</em>) – Unit to assign to the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>FrequencySeries</em> – When a single signal is selected.</p></li>
+<li><p><em>FrequencySeriesDict</em> – When no signal is selected; keyed by signal name.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># analysis = simulator.distortion(...)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_pyspice_distortion</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwexpy.interop.pyspeckit_.html" class="btn btn-neutral float-left" title="gwexpy.interop.pyspeckit_" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwexpy.interop.skrf_.html" class="btn btn-neutral float-right" title="gwexpy.interop.skrf_" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.
+      <span class="lastupdated">Last updated on 2026-04-24 03:50:02.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="../../user_guide/license.html">ライセンス / 免責</a> |
+        <a href="../../user_guide/roadmap.html">ロードマップ</a>
+      
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      
+    </p>
+  </div>
+   
+
+
+</body>
+</html>

@@ -2492,10 +2492,13 @@ the input as amplitude spectral density.</p></li>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">json_</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zarr_</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqlite_</span></code></p></td>
+<td><p>SQLite interop helpers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zarr_</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">netcdf4_</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">netcdf4_</span></code></p></td>
 <td><p>Object-level NetCDF4 bridge helpers.</p></td>
 </tr>
 </tbody>
@@ -2508,20 +2511,42 @@ the input as amplitude spectral density.</p></li>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas_</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xarray_</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">polars_</span></code></p></td>
+<td><p>Polars interop helpers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xarray_</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">astropy_</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">astropy_</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dask_</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dask_</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="id3">
-<h2>ドメイン特化ライブラリ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<h2>配列・テンソル系ライブラリ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">torch_</span></code></p></td>
+<td><p>Interoperability with PyTorch tensors.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tensorflow_</span></code></p></td>
+<td><p>TensorFlow interop helpers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">jax_</span></code></p></td>
+<td><p>JAX interop helpers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy_</span></code></p></td>
+<td><p>CuPy interop helpers.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h2>ドメイン特化ライブラリ<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">finesse_</span></code></p></td>
@@ -2530,22 +2555,91 @@ the input as amplitude spectral density.</p></li>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">control_</span></code></p></td>
 <td><p>Provide interoperability with the <code class="docutils literal notranslate"><span class="pre">python-control</span></code> library.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mt_</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">simpeg_</span></code></p></td>
+<td><p>SimPEG interop helpers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mt_</span></code></p></td>
 <td><p>Interoperate with the MTH5 magnetotelluric HDF5 format.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">obspy_</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lal_</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">neo_</span></code></p></td>
+<td><p>Neo interop helpers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantities_</span></code></p></td>
+<td><p>quantities interop helpers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyroomacoustics_</span></code></p></td>
+<td><p>Interoperate with pyroomacoustics simulation results.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pydub_</span></code></p></td>
+<td><p>Audio interop helpers for pydub and librosa-oriented exports.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">specutils_</span></code></p></td>
+<td><p>Interoperability with specutils.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyspeckit_</span></code></p></td>
+<td><p>Interoperability with pyspeckit.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyspice_</span></code></p></td>
+<td><p>Interoperate with PySpice circuit simulation results.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">skrf_</span></code></p></td>
+<td><p>Interoperability with scikit-rf for RF and microwave network analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyoma_</span></code></p></td>
+<td><p>Interoperate with pyOMA operational modal analysis results.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">multitaper_</span></code></p></td>
+<td><p>Interoperate with multitaper spectral estimation packages.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sdypy_</span></code></p></td>
+<td><p>Interoperability with SDyPy and pyuff (Universal File Format).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sdynpy_</span></code></p></td>
+<td><p>Interoperability with SDynPy (Structural Dynamics in Python).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">meep_</span></code></p></td>
+<td><p>Interoperate with Meep FDTD simulation output files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">openems_</span></code></p></td>
+<td><p>Interoperate with openEMS field dump HDF5 files.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">emg3d_</span></code></p></td>
+<td><p>Interoperate with emg3d electromagnetic modelling fields.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">meshio_</span></code></p></td>
+<td><p>Interoperate with meshio unstructured-mesh field data.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">metpy_</span></code></p></td>
+<td><p>Interoperate with MetPy xarray data arrays.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrf_</span></code></p></td>
+<td><p>Interoperability with <code class="docutils literal notranslate"><span class="pre">wrf.getvar()</span></code> output from wrf-python.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">harmonica_</span></code></p></td>
+<td><p>Interoperate with Harmonica gravity and magnetic grids.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exudyn_</span></code></p></td>
+<td><p>Interoperate with Exudyn sensor output.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">opensees_</span></code></p></td>
+<td><p>Interoperate with OpenSeesPy recorder output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">obspy_</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lal_</span></code></p></td>
 <td><p>Interoperate with LALSuite time and frequency series.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinc_</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinc_</span></code></p></td>
 <td><p>Interoperate with pygwinc noise budgets.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pycbc_</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pycbc_</span></code></p></td>
 <td><p>Interoperate with PyCBC time and frequency series.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">root_</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">root_</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -2565,7 +2659,7 @@ the input as amplitude spectral density.</p></li>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-24 02:18:37.
+      <span class="lastupdated">Last updated on 2026-04-24 03:50:02.
       </span></p>
   </div>
 
