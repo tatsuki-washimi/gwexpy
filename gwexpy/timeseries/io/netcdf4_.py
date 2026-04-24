@@ -26,6 +26,17 @@ logger = logging.getLogger(__name__)
 _MATRIX_VAR_PREFIX = "__gwexpy_matrix__"
 
 
+def _to_json_native(val):
+    """Convert a value to a JSON-serializable Python native type.
+
+    numpy scalars (int64, float64, bool_) are not JSON-serializable by default.
+    numpy provides .item() which returns the equivalent Python built-in.
+    """
+    if hasattr(val, "item"):
+        return val.item()
+    return val
+
+
 def _encode_netcdf_var_name(key) -> str:
     """Convert mapping keys to NetCDF-safe variable names.
 
@@ -356,8 +367,8 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
             attrs["units"] = str(ts.unit)
         var_name = _encode_netcdf_var_name(key)
         if isinstance(key, tuple) and len(key) == 2:
-            attrs["gwexpy_row_key"] = json.dumps(key[0])
-            attrs["gwexpy_col_key"] = json.dumps(key[1])
+            attrs["gwexpy_row_key"] = json.dumps(_to_json_native(key[0]))
+            attrs["gwexpy_col_key"] = json.dumps(_to_json_native(key[1]))
             attrs["gwexpy_key_format"] = "json"
         data_vars[var_name] = xr.DataArray(
             np.asarray(ts.value, dtype=np.float64),

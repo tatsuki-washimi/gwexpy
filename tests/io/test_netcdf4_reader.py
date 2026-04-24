@@ -104,6 +104,36 @@ class TestNetCDF4Roundtrip:
         with pytest.raises((ValueError, KeyError)):
             TimeSeriesDict.read(str(path), format="nc")
 
+    def test_matrix_roundtrip_numpy_scalar_keys(self, tmp_path):
+        """numpy.int64/float64 row/col keys must be serializable (not raise TypeError)."""
+        from collections import OrderedDict
+
+        from gwexpy.types.metadata import MetaData, MetaDataDict
+
+        path = tmp_path / "matrix_np_keys.nc"
+        data = np.arange(24, dtype=np.float64).reshape(2, 2, 6)
+        matrix = TimeSeriesMatrix(data, t0=1234567890.0, dt=0.25)
+        matrix.rows = MetaDataDict(
+            OrderedDict({np.int64(0): MetaData(), np.int64(1): MetaData()}),
+            expected_size=2,
+            key_prefix="row",
+        )
+        matrix.cols = MetaDataDict(
+            OrderedDict({np.int64(10): MetaData(), np.int64(20): MetaData()}),
+            expected_size=2,
+            key_prefix="col",
+        )
+
+        # Should not raise TypeError for numpy scalar keys
+        matrix.write(str(path), format="nc")
+
+        loaded = TimeSeriesMatrix.read(str(path), format="nc")
+        row_keys = list(loaded.row_keys())
+        col_keys = list(loaded.col_keys())
+        assert row_keys == [0, 1]
+        assert col_keys == [10, 20]
+        np.testing.assert_allclose(loaded.value, data)
+
     def test_matrix_roundtrip_preserves_integer_keys(self, tmp_path):
         """Integer row/col keys must survive a write → read roundtrip."""
         from collections import OrderedDict
