@@ -29,24 +29,32 @@ _MATRIX_VAR_PREFIX = "__gwexpy_matrix__"
 def _to_json_native(val):
     """Convert a value to a JSON-serializable Python native type.
 
-    numpy scalars (int64, float64, bool_) are not JSON-serializable by default.
-    numpy provides .item() which returns the equivalent Python built-in.
+    numpy integer/float/bool scalars expose .item() which maps to the
+    corresponding Python built-in.  Exotic types (datetime64, timedelta64, …)
+    also have .item() but produce objects that json.dumps() still rejects, so
+    we fall back to str() for anything that remains non-serializable.
     """
     if hasattr(val, "item"):
-        return val.item()
+        val = val.item()
+    if not isinstance(val, (bool, int, float, str, type(None))):
+        return str(val)
     return val
 
 
 def _encode_netcdf_var_name(key) -> str:
     """Convert mapping keys to NetCDF-safe variable names.
 
-    Tuple keys are encoded as ``__gwexpy_matrix__{part0}__{part1}`` to avoid
-    illegal characters (parentheses, spaces) in NetCDF4 variable names.  The
-    row/col identity is always stored in ``gwexpy_row_key``/``gwexpy_col_key``
+    For tuple keys the variable name uses a SHA-256 hash of the repr so that
+    the name is always unique, contains only hex characters, and contains no
+    illegal NetCDF4 characters (parentheses, spaces, …).  The true row/col
+    identity is always stored in ``gwexpy_row_key``/``gwexpy_col_key``
     attributes; the variable name itself only needs to be unique and valid.
     """
     if isinstance(key, tuple):
-        return _MATRIX_VAR_PREFIX + "__".join(str(k) for k in key)
+        import hashlib
+
+        h = hashlib.sha256(repr(key).encode()).hexdigest()[:20]
+        return f"{_MATRIX_VAR_PREFIX}{h}"
     return str(key)
 
 
