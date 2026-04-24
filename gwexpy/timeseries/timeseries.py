@@ -12,6 +12,7 @@ This module integrates all Mixins into a single TimeSeries class.
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, SupportsIndex
 
 from astropy import units as u
@@ -143,9 +144,16 @@ class TimeSeries(
     def read(cls, source, *args, **kwargs):  # type: ignore[override]
         """Read a `TimeSeries` from a supported source.
 
-        This override adds explicit `.gwf` handling for deterministic behavior
-        when `.read()` is called with positional channel selectors.
+        This override adds explicit CSV and `.gwf` handling for deterministic
+        behavior when `.read()` is called through the public API.
         """
+        fmt = kwargs.get("format")
+        source_path = Path(source) if isinstance(source, (str, Path)) else None
+        if fmt == "csv" or (fmt is None and source_path is not None and source_path.suffix.lower() == ".csv"):
+            from .io.csv_enhanced import read_timeseries_csv
+
+            return read_timeseries_csv(source, **kwargs)
+
         gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
         if gwf_format is not None:
             from gwpy.io.gwf.core import get_channel_names
@@ -183,6 +191,21 @@ class TimeSeries(
             return cls(next(iter(tsd.values())))
 
         return super().read(source, *args, **kwargs)
+
+    def write(self, target, *args, **kwargs):  # type: ignore[override]
+        """Write a `TimeSeries` to a supported target.
+
+        This override preserves minimal metadata for direct CSV round-trips.
+        """
+        fmt = kwargs.get("format")
+        target_path = Path(target) if isinstance(target, (str, Path)) else None
+        if fmt == "csv" or (fmt is None and target_path is not None and target_path.suffix.lower() == ".csv"):
+            from .io.csv_enhanced import write_timeseries_csv
+
+            write_kwargs = dict(kwargs)
+            write_kwargs.pop("format", None)
+            return write_timeseries_csv(self, target, **write_kwargs)
+        return super().write(target, *args, **kwargs)
 
     def _get_meta_for_constructor(self) -> dict[str, Any]:
         """Reconstruct the object for SignalAnalysisMixin."""

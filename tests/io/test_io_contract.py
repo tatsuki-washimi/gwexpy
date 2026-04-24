@@ -139,6 +139,8 @@ def test_registry_contract_is_registered_in_registry():
         aliases = entry.get("aliases", [])
         read_classes = _api_classes(entry, "registry_api", "read")
         write_classes = _api_classes(entry, "registry_api", "write")
+        if canonical == "gwf" and not _has_gwf_backend():
+            continue
 
         for class_name in read_classes:
             cls = CLASS_MAP[class_name]
