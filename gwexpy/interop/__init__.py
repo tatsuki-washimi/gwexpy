@@ -13,6 +13,9 @@ os.environ.setdefault("LAL_DEBUG_LEVEL", "0")
 # Force JAX to CPU if GPU is not fully setup to avoid warnings
 if "JAX_PLATFORMS" not in os.environ:
     os.environ["JAX_PLATFORMS"] = "cpu"
+# Deprecated compat re-export: not in __all__, but kept importable to avoid ImportError
+# for code that relied on the previously exported symbol.
+from ._optional import require_optional as require_optional
 from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
 from .control_ import from_control_frd, from_control_response, to_control_frd
 from .cupy_ import from_cupy, is_cupy_available, to_cupy
