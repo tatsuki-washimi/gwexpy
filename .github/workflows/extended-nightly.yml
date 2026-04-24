@@ -94,6 +94,7 @@ jobs:
   io-network-backend-gate:
     name: I/O backend and network gate
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     defaults:
       run:
         shell: bash -leo pipefail {0}
@@ -124,4 +125,84 @@ jobs:
 
       - name: Run network/backend I/O tests
         run: |
-          pytest -q -m "network or nds" tests/io/ tests/nds/ tests/segments/
+          pytest -q -m "network or nds" \
+            tests/io/ \
+            tests/nds/ \
+            tests/segments/ \
+            tests/timeseries/test_timeseries.py
+
+      - name: Run Kerberos backend smoke
+        run: pytest -q tests/io/test_kerberos.py
+
+  docs-notebook-gate:
+    name: Docs notebook execution gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+      GWEXPY_RUN_NOTEBOOK_TESTS: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Provision gwexpy environment
+        run: |
+          python -m pip install --upgrade pip build
+          python -m pip install -e . --no-deps
+
+      - name: Generate synthetic test fixtures
+        run: python tests/fixtures/generate_fixtures.py
+
+      - name: Run docs notebook tests
+        run: pytest -q tests/docs/test_docs_notebooks.py
+
+  io-zarr-gate:
+    name: Zarr I/O gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+      GWEXPY_ALLOW_ZARR: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Provision gwexpy environment
+        run: |
+          python -m pip install --upgrade pip build
+          python -m pip install -e . --no-deps
+          python -m pip install zarr
+
+      - name: Generate synthetic test fixtures
+        run: python tests/fixtures/generate_fixtures.py
+
+      - name: Run Zarr I/O tests
+        run: pytest -q tests/io/test_zarr_reader.py

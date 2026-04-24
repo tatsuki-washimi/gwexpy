@@ -68,6 +68,7 @@ jobs:
       - name: Run pytest
         run: |
           pytest -q -m "not network and not nds" \
+            --ignore=tests/docs/test_docs_notebooks.py \
             --ignore=tests/gui/ \
             --ignore=tests/nds/ \
             --ignore=tests/io/ \
@@ -160,10 +161,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip build
           python -m pip install -e . --no-deps
+          python -m pip install freezegun xarray netCDF4 nptdms pydub tinytag
 
-      - name: Run optional dependency guard tests
+      - name: Run optional dependency tests
         run: |
-          pytest -q tests/io/test_optional_deps.py
+          pytest -q \
+            tests/io/test_optional_deps.py \
+            tests/io/test_netcdf4_reader.py \
+            tests/io/test_tdms_reader.py \
+            tests/io/test_audio_metadata.py
 
   interop-contract-gate:
     name: Interop contract gate
