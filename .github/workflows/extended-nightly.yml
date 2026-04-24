@@ -120,19 +120,8 @@ jobs:
           python -m pip install --upgrade pip build
           python -m pip install -e . --no-deps
 
-      - name: Generate synthetic test fixtures
-        run: python tests/fixtures/generate_fixtures.py
-
       - name: Run network/backend I/O tests
-        run: |
-          pytest -q -m "network or nds" \
-            tests/io/ \
-            tests/nds/ \
-            tests/segments/ \
-            tests/timeseries/test_timeseries.py
-
-      - name: Run Kerberos backend smoke
-        run: pytest -q tests/io/test_kerberos.py
+        run: python scripts/ci/run_gate.py io-network-backend
 
   docs-notebook-gate:
     name: Docs notebook execution gate
@@ -164,11 +153,8 @@ jobs:
           python -m pip install --upgrade pip build
           python -m pip install -e . --no-deps
 
-      - name: Generate synthetic test fixtures
-        run: python tests/fixtures/generate_fixtures.py
-
       - name: Run docs notebook tests
-        run: pytest -q tests/docs/test_docs_notebooks.py
+        run: python scripts/ci/run_gate.py docs-notebook
 
   io-zarr-gate:
     name: Zarr I/O gate
@@ -201,8 +187,5 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install zarr
 
-      - name: Generate synthetic test fixtures
-        run: python tests/fixtures/generate_fixtures.py
-
       - name: Run Zarr I/O tests
-        run: pytest -q tests/io/test_zarr_reader.py
+        run: python scripts/ci/run_gate.py io-zarr

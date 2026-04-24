@@ -47,6 +47,22 @@ The exact package names vary by platform. Typical options are:
 python -m pytest
 ```
 
+## Reproducing CI Gates Locally
+
+Gate-equivalent commands are centralized in `scripts/ci/run_gate.py` and are kept in sync with CI jobs.
+
+```bash
+python scripts/ci/run_gate.py pr-fast
+python scripts/ci/run_gate.py io-contract
+python scripts/ci/run_gate.py io-optional
+python scripts/ci/run_gate.py io-network-backend
+python scripts/ci/run_gate.py docs-notebook
+python scripts/ci/run_gate.py io-zarr
+python scripts/ci/run_gate.py interop-contract
+```
+
+Each gate runs the same command set as the corresponding workflow job, so use these for local reproduction before opening a PR.
+
 GUI tests are split into two buckets:
 
 - The default GUI suite is headless-safe and runs under the GUI runner with

@@ -7,10 +7,25 @@ Run all scripts from the **repository root**.
 
 | Directory | Purpose |
 | --- | --- |
+| `ci/` | Local reproduction of GitHub Actions gates |
 | `notebook_gen/` | Generate and execute Jupyter notebooks |
 | `validation/` | Physics validation and numerical robustness checks |
 | `dev_tools/` | Development utilities and dependency management |
 | `benchmarks/` | Performance profiling |
+
+## ci/
+
+Scripts used to reproduce CI gates locally.
+
+- `scripts/ci/run_gate.py`: Run the same command sets as PR Fast and nightly gate jobs.
+
+```bash
+# I/O contract gate
+python scripts/ci/run_gate.py io-contract
+
+# Full PR fast validation gate
+python scripts/ci/run_gate.py pr-fast
+```
 
 ## notebook_gen/
 

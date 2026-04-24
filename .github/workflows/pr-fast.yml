@@ -53,33 +53,8 @@ jobs:
           python -m pip install PyQt5
           python -m pip install iminuit
 
-      - name: Generate synthetic test fixtures
-        run: python tests/fixtures/generate_fixtures.py
-
-      - name: Run Ruff
-        run: ruff check gwexpy tests
-
-      - name: Check forbidden generated artifacts
-        run: python scripts/check_forbidden_artifacts.py
-
-      - name: Run mypy
-        run: mypy gwexpy tests/docs/test_tutorial_notebook_quality.py --ignore-missing-imports
-
-      - name: Run pytest
-        run: |
-          pytest -q -m "not network and not nds" \
-            --ignore=tests/docs/test_docs_notebooks.py \
-            --ignore=tests/gui/ \
-            --ignore=tests/nds/ \
-            --ignore=tests/io/ \
-            --ignore=tests/segments/ \
-            --ignore=tests/table/ \
-            --ignore=tests/test_geomap.py \
-            --ignore=tests/time/test_time.py \
-            --ignore=tests/test_fitting_highlevel.py \
-            --ignore=tests/timeseries/test_matrix_analysis.py \
-            --ignore=tests/types/test_series_matrix_io.py \
-            tests/
+      - name: Run PR-fast gate
+        run: python scripts/ci/run_gate.py pr-fast
 
   io-contract-gate:
     name: Core I/O contract gate
@@ -111,28 +86,8 @@ jobs:
           python -m pip install PyQt5
           python -m pip install iminuit
 
-      - name: Generate synthetic test fixtures
-        run: python tests/fixtures/generate_fixtures.py
-
       - name: Run I/O contract tests
-        run: |
-          pytest -q -m "not network and not nds" \
-            tests/io/test_io_contract.py \
-            tests/io/test_io_docs_contract_sync.py \
-            tests/io/ \
-            tests/segments/ \
-            tests/table/
-
-      - name: Build wheel
-        run: python -m build --wheel --no-isolation
-
-      - name: Import smoke test
-        run: |
-          python - <<'PY'
-          import gwexpy
-
-          print(f"gwexpy version: {gwexpy.__version__}")
-          PY
+        run: python scripts/ci/run_gate.py io-contract
 
   io-optional-gate:
     name: Optional dependency gate
@@ -164,12 +119,7 @@ jobs:
           python -m pip install freezegun xarray netCDF4 nptdms pydub tinytag
 
       - name: Run optional dependency tests
-        run: |
-          pytest -q \
-            tests/io/test_optional_deps.py \
-            tests/io/test_netcdf4_reader.py \
-            tests/io/test_tdms_reader.py \
-            tests/io/test_audio_metadata.py
+        run: python scripts/ci/run_gate.py io-optional
 
   interop-contract-gate:
     name: Interop contract gate
@@ -200,8 +150,4 @@ jobs:
           python -m pip install -e . --no-deps
 
       - name: Run interop contract tests
-        run: |
-          pytest -q \
-            tests/interop/test_interop_contract.py \
-            tests/interop/test_interop_docs_contract_sync.py \
-            tests/interop/test_mt_mock.py
+        run: python scripts/ci/run_gate.py interop-contract
