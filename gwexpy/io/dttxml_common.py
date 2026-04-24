@@ -5,10 +5,9 @@ import gzip
 import warnings
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, TypedDict, cast
 
 import numpy as np
-
 
 class ChannelInfo(TypedDict):
     """Channel name and enabled state extracted from a DTT XML file."""
@@ -25,7 +24,7 @@ def _open_dttxml_source(source: str):
     return open(path, "rb")
 
 
-def _parse_dttxml_xml(source: str) -> ET.ElementTree:
+def _parse_dttxml_xml(source: str) -> Any:
     if str(source).lower().endswith(".gz"):
         with _open_dttxml_source(source) as handle:
             return ET.parse(handle)  # nosec B314
@@ -44,7 +43,7 @@ def extract_xml_channels(filename: str) -> list[ChannelInfo]:
         warnings.warn(f"XML parsing error in {filename}: {exc}")
         return channels
 
-    root = tree.getroot()
+    root = cast(ET.Element[str], tree.getroot())
 
     # DTT XML typically stores parameters in <Param Name="MeasChn[i]" ...> and <Param Name="MeasActive[i]" ...>
     # or similar structure within <LIGO_LW Name="TestParameters">
@@ -218,7 +217,7 @@ def load_dttxml_native(source: str) -> dict:
         warnings.warn(f"Failed to parse DTT XML: {exc}")
         return {}
 
-    root = tree.getroot()
+    root = cast(ET.Element[str], tree.getroot())
     normalized: dict = {}
 
     # Find all Result blocks
