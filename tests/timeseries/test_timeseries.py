@@ -50,9 +50,12 @@ class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
         )
 
     def test_psd_lal_median_mean(self, gw150914):
+        pytest.importorskip("lal")
         return super().test_psd_lal_median_mean(gw150914)
 
+    @pytest.mark.parametrize("library", ["lal", "pycbc"])
     def test_spectrogram_median_mean(self, gw150914, library):
+        pytest.importorskip("lal" if library == "lal" else "pycbc")
         return super().test_spectrogram_median_mean(gw150914, library)
 
     @pytest.mark.skip(reason="Fails due to LDAStools / framecpp dependency issues")
