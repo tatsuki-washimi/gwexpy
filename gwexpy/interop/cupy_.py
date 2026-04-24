@@ -1,6 +1,10 @@
+"""CuPy interop helpers."""
+
 from __future__ import annotations
 
 from ._optional import require_optional
+
+__all__ = ["is_cupy_available", "to_cupy", "from_cupy"]
 
 
 def is_cupy_available():

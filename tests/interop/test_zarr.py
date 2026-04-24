@@ -1,10 +1,14 @@
 """Tests for gwexpy/interop/zarr_.py."""
 from __future__ import annotations
 
+import os
+
 import numpy as np
 import pytest
 
 zarr = pytest.importorskip("zarr")
+if os.environ.get("GWEXPY_ALLOW_ZARR", "") != "1":
+    pytest.skip("zarr tests require GWEXPY_ALLOW_ZARR=1", allow_module_level=True)
 
 from gwexpy.interop.zarr_ import from_zarr, to_zarr
 from gwexpy.timeseries import TimeSeries

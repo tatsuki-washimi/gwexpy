@@ -147,6 +147,7 @@ class TestFromMeshio2DScalar:
     def test_4d_shape(self):
         mesh = _make_2d_tri_mesh()
         sf = from_meshio(ScalarField, mesh, grid_resolution=0.1)
+        assert isinstance(sf, ScalarField)
         assert sf.ndim == 4
         # (1, nx, ny, 1)
         assert sf.shape[0] == 1
@@ -169,6 +170,7 @@ class TestFromMeshio2DScalar:
             field_fn=lambda p: p[:, 0] ** 2 + p[:, 1] ** 2,
         )
         sf = from_meshio(ScalarField, mesh, grid_resolution=0.05)
+        assert isinstance(sf, ScalarField)
         # Centre of domain: (0.5, 0.5) → expected 0.5
         data = np.asarray(sf.value)
         centre_idx = tuple(s // 2 for s in data.shape)
@@ -189,6 +191,7 @@ class TestFromMeshio3DScalar:
     def test_4d_shape_3d(self):
         mesh = _make_3d_tet_mesh(n=5)
         sf = from_meshio(ScalarField, mesh, grid_resolution=0.2, method="nearest")
+        assert isinstance(sf, ScalarField)
         assert sf.ndim == 4
         assert sf.shape[0] == 1  # singleton axis0
 
@@ -215,6 +218,7 @@ class TestFromMeshioOptions:
     def test_custom_unit(self):
         mesh = _make_2d_tri_mesh()
         sf = from_meshio(ScalarField, mesh, grid_resolution=0.1, unit="Pa")
+        assert isinstance(sf, ScalarField)
         assert sf.unit is not None
 
     def test_custom_axis0(self):
@@ -223,6 +227,7 @@ class TestFromMeshioOptions:
         sf = from_meshio(
             ScalarField, mesh, grid_resolution=0.1, axis0=axis0,
         )
+        assert isinstance(sf, ScalarField)
         assert sf.shape[0] == 1  # single snapshot, axis0 stored
 
     def test_grid_resolution_required(self):

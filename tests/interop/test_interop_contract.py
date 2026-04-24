@@ -40,7 +40,8 @@ def test_interop_contract_schema_is_well_formed():
         assert entry["name"] not in names
         names.add(entry["name"])
 
-        assert isinstance(entry["module"], str) and entry["module"]
+        module = entry["module"]
+        assert module is None or isinstance(module, str)
         assert entry["status"] in VALID_STATUSES
         assert isinstance(entry["guide_api"], list)
         assert all(isinstance(name, str) and name for name in entry["guide_api"])
@@ -58,11 +59,19 @@ def test_interop_contract_schema_is_well_formed():
             assert entry["reference_indexed"] is True
             assert reference_page
 
+        if entry["guide_api"] or entry["reference_indexed"]:
+            assert isinstance(module, str) and module
+        else:
+            assert module is None
+
 
 def test_documented_interop_api_is_available_from_public_namespace():
     exported = set(interop.__all__)
 
     for entry in TARGETS:
+        if not entry["guide_api"]:
+            continue
+
         module = importlib.import_module(f"gwexpy.interop.{entry['module']}")
         for func_name in entry["guide_api"]:
             assert hasattr(module, func_name)
@@ -84,6 +93,9 @@ def test_reference_index_matches_contract():
             assert reference_page
             assert (ROOT / "docs/web/en/reference/api" / reference_page).exists()
             assert (ROOT / "docs/web/ja/reference/api" / reference_page).exists()
+        elif module_name:
+            assert f"\n   {module_name}\n" not in en_index
+            assert f"\n   {module_name}\n" not in ja_index
 
 
 def test_mth5_is_importable_from_public_namespace():
@@ -91,3 +103,21 @@ def test_mth5_is_importable_from_public_namespace():
 
     assert callable(from_mth5)
     assert callable(to_mth5)
+
+
+def test_no_helper_backed_implemented_only_targets_remain():
+    helper_backed_implemented = [
+        entry
+        for entry in TARGETS
+        if entry["status"] == "implemented" and entry["guide_api"]
+    ]
+    assert helper_backed_implemented == []
+
+
+def test_non_public_module_backed_targets_are_explicit_exceptions():
+    non_public_module_backed = [
+        entry["name"]
+        for entry in TARGETS
+        if entry["module"] is not None and entry["status"] != "public"
+    ]
+    assert non_public_module_backed == ["root"]

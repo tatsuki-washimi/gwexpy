@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from ._optional import require_optional
 
+__all__ = ["to_specutils", "from_specutils"]
+
 
 def to_specutils(data, **kwargs):
     """Convert a gwexpy object to a specutils object.

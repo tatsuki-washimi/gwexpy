@@ -5,6 +5,8 @@ MetPy to be installed.
 """
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pytest
 
@@ -18,7 +20,7 @@ NT, NX, NY, NZ = 3, 4, 5, 6
 
 def _make_metpy_da(
     nt=NT, nx=NX, ny=NY, nz=NZ, units="kelvin",
-) -> xr.DataArray:
+) -> Any:
     """Simulate a MetPy-dequantified DataArray with _metpy_axis attrs."""
     data = np.random.default_rng(42).random((nt, nx, ny, nz))
     da = xr.DataArray(
@@ -39,7 +41,7 @@ def _make_metpy_da(
     return da
 
 
-def _make_2d_metpy_da(nx=NX, ny=NY) -> xr.DataArray:
+def _make_2d_metpy_da(nx=NX, ny=NY) -> Any:
     data = np.random.default_rng(0).random((nx, ny))
     da = xr.DataArray(
         data,

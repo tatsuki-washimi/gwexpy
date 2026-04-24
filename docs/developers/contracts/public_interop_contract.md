@@ -15,13 +15,16 @@ The public interop contract keeps these surfaces aligned:
 Unlike direct file I/O, the main failure mode here is not registry drift. It is
 documentation claiming that a `to_*()` / `from_*()` path is publicly usable
 when the top-level namespace or reference index does not actually expose it.
+This contract also fixes the opposite failure mode: implemented-only bridges
+silently drifting into or out of the docs without an explicit boundary decision.
 
 ## Schema
 
 Each target entry contains these fields:
 
 - `name`: stable contract key
-- `module`: source module under `gwexpy.interop`
+- `module`: source module under `gwexpy.interop`, or `null` when the guide row
+  intentionally has no dedicated helper module yet
 - `status`: public presentation status used by the guide
 - `guide_api`: `to_*()` / `from_*()` names published for that target
 - `row_match_en`: marker string used to find the English guide row
@@ -39,6 +42,9 @@ Each target entry contains these fields:
 - `reference_indexed = true` requires matching English and Japanese
   `reference/api/interop.rst` entries and matching generated module pages.
 - The guide status label must match the contract in both English and Japanese.
+- `reference_indexed = false` means the module must stay out of the interop
+  reference index until an explicit publication decision is made.
+- Every guide row with an interop status label must appear in this contract.
 
 ## Boundary Decisions
 
@@ -47,13 +53,33 @@ Each target entry contains these fields:
 The contract currently fixes the high-value public surface:
 
 - storage/container bridges such as `hdf5`, `json`, `dict`, `zarr`, `netcdf4`
-- analysis-library bridges such as `pandas`, `xarray`, `xarray-field`,
+- storage-adjacent bridges such as `sqlite`
+- analysis-library bridges such as `pandas`, `polars`, `xarray`, `xarray-field`,
   `astropy`, `dask`
+- array/tensor bridges such as `torch`, `tensorflow`, `jax`, `cupy`
+- geophysics bridges such as `simpeg`
+- biosignal and unit bridges such as `mne`, `neo`, `quantities`
+- audio and acoustics bridges such as `pyroomacoustics`, `pydub`, `librosa`
+- spectral, circuit, and RF bridges such as `specutils`, `pyspeckit`,
+  `pyspice`, `skrf`
+- modal and structural-dynamics bridges such as `pyoma`, `multitaper`,
+  `mtspec`, `sdypy`, `sdynpy`
+- field-simulation bridges such as `meep`, `openems`, `emg3d`
+- mesh, geoscience, and simulation-import bridges such as `meshio`, `metpy`,
+  `wrf`, `harmonica`, `exudyn`, `opensees`
 - major domain bridges such as `obspy`, `lal`, `pycbc`, `gwinc`, `finesse`,
   `control`, and `mth5`
 
 These are the entries where user-facing documentation already implies stable
 public use.
+
+### Implemented-only surface
+
+There are currently no documented helper-backed bridges in this category.
+
+If a future row uses `status = implemented` together with a non-empty
+`guide_api`, it must remain out of the reference index until a deliberate
+publication decision is made.
 
 ### Partial reference entries
 
@@ -64,24 +90,16 @@ Some targets remain reference-indexed but are not fully public.
 Reason: the guide explicitly records an incomplete conversion boundary, and the
 contract must preserve that warning instead of silently upgrading the status.
 
-### Out of scope for this slice
+### No-helper rows
 
-Implemented-only targets that are not yet reference-indexed remain outside this
-contract slice for now.
+Some guide rows intentionally have no dedicated top-level helper family yet.
 
-Examples include:
+- `numpy`
+- `mtpy`
+- `elephant`
 
-- `sqlite`
-- `polars`
-- `simpeg`
-- `mne`
-- `neo`
-- `quantities`
-- `pyroomacoustics`
-- `meshio`
-
-They still have tests, but they are not yet governed by the same
-guide/reference publication rule.
+These use `module = null` and `guide_api = []` so the docs can still be
+tracked without pretending a public helper module exists.
 
 ## Execution Rule
 

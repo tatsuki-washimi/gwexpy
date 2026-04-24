@@ -1,8 +1,12 @@
+"""Audio interop helpers for pydub and librosa-oriented exports."""
+
 from __future__ import annotations
 
 import numpy as np
 
 from ._optional import require_optional
+
+__all__ = ["to_librosa", "to_pydub", "from_pydub"]
 
 
 def to_librosa(ts, y_dtype=np.float32):

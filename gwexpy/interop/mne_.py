@@ -9,6 +9,13 @@ from gwexpy.interop._registry import ConverterRegistry
 
 from ._optional import require_optional
 
+__all__ = [
+    "to_mne_rawarray",
+    "from_mne_raw",
+    "to_mne",
+    "from_mne",
+]
+
 if TYPE_CHECKING:
 
     class _TimeSeriesDictLike(Protocol):

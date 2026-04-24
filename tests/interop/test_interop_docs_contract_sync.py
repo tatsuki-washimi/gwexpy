@@ -43,6 +43,21 @@ def _find_row(text: str, marker: str) -> str:
     raise AssertionError(f"Could not find guide row containing {marker!r}")
 
 
+def _collect_contract_rows(text: str, labels: set[str]) -> set[str]:
+    rows: set[str] = set()
+    for line in text.splitlines():
+        if not line.startswith("| "):
+            continue
+
+        cols = [col.strip() for col in line.strip("|").split("|")]
+        if len(cols) != 5:
+            continue
+
+        if any(cols[2].startswith(label) for label in labels):
+            rows.add(line)
+    return rows
+
+
 def test_english_guide_rows_match_contract():
     guide = _read(EN_GUIDE)
 
@@ -81,3 +96,18 @@ def test_mth5_row_is_now_public_in_both_guides():
     assert "公開済み" in ja_line
     assert "[API](../reference/api/gwexpy.interop.mt_.rst)" in en_line
     assert "[API](../reference/api/gwexpy.interop.mt_.rst)" in ja_line
+
+
+def test_contract_covers_all_documented_interop_rows():
+    contract = _load_contract()
+    en_guide = _read(EN_GUIDE)
+    ja_guide = _read(JA_GUIDE)
+
+    contract_en_rows = {_find_row(en_guide, entry["row_match_en"]) for entry in contract}
+    contract_ja_rows = {_find_row(ja_guide, entry["row_match_ja"]) for entry in contract}
+
+    expected_en_rows = _collect_contract_rows(en_guide, set(STATUS_LABELS_EN.values()))
+    expected_ja_rows = _collect_contract_rows(ja_guide, set(STATUS_LABELS_JA.values()))
+
+    assert contract_en_rows == expected_en_rows
+    assert contract_ja_rows == expected_ja_rows

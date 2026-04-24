@@ -5,6 +5,8 @@ Does NOT require wrf-python to be installed.
 """
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pytest
 
@@ -18,7 +20,7 @@ NT, NZ, NY, NX = 2, 3, 5, 6
 
 def _make_wrf_da(
     nt=NT, nz=NZ, ny=NY, nx=NX,
-) -> xr.DataArray:
+) -> Any:
     """Simulate a wrf.getvar() output with WRF dimension names."""
     data = np.random.default_rng(7).random((nt, nz, ny, nx))
 
@@ -44,7 +46,7 @@ def _make_wrf_da(
     return da
 
 
-def _make_wrf_2d_da(ny=NY, nx=NX) -> xr.DataArray:
+def _make_wrf_2d_da(ny=NY, nx=NX) -> Any:
     """2D WRF variable (e.g. surface pressure)."""
     data = np.random.default_rng(3).random((ny, nx))
     return xr.DataArray(

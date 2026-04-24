@@ -1,6 +1,10 @@
+"""quantities interop helpers."""
+
 from __future__ import annotations
 
 from ._optional import require_optional
+
+__all__ = ["to_quantity", "from_quantity"]
 
 
 def to_quantity(series, units=None):

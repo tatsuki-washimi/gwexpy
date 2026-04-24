@@ -6,6 +6,7 @@ mtspec output.  Does NOT require multitaper or mtspec to be installed.
 from __future__ import annotations
 
 from types import SimpleNamespace
+from typing import Any, cast
 
 import numpy as np
 import pytest
@@ -130,7 +131,7 @@ class TestFromMtspec:
     def test_invalid_quantity_raises(self):
         mt = _make_mtspec_obj(with_ci=False)
         with pytest.raises(ValueError, match="quantity must be"):
-            from_mtspec(FrequencySeries, mt, quantity="invalid")
+            from_mtspec(FrequencySeries, mt, quantity=cast(Any, "invalid"))
 
     def test_empty_freq_raises(self):
         mt = SimpleNamespace(freq=np.array([]), spec=np.array([]))
@@ -222,7 +223,12 @@ class TestFromMtspecArray:
         freq = _make_freq()
         spec = _make_psd(freq)
         with pytest.raises(ValueError, match="quantity must be"):
-            from_mtspec_array(FrequencySeries, spec, freq, quantity="rms")
+            from_mtspec_array(
+                FrequencySeries,
+                spec,
+                freq,
+                quantity=cast(Any, "rms"),
+            )
 
     def test_nonuniform_freq_raises(self):
         freq = np.array([0.0, 1.0, 2.0, 4.0, 5.0])  # gap at index 3

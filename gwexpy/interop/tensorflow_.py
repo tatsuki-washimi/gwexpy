@@ -1,6 +1,10 @@
+"""TensorFlow interop helpers."""
+
 from __future__ import annotations
 
 from ._optional import require_optional
+
+__all__ = ["to_tf", "from_tf"]
 
 
 def to_tf(ts, dtype=None):

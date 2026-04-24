@@ -5,6 +5,8 @@ Does NOT require Harmonica to be installed.
 """
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pytest
 
@@ -16,7 +18,7 @@ from gwexpy.interop.harmonica_ import _guess_harmonica_unit, from_harmonica_grid
 NE, NN = 10, 12  # easting, northing
 
 
-def _make_gravity_grid(ne=NE, nn=NN) -> xr.DataArray:
+def _make_gravity_grid(ne=NE, nn=NN) -> Any:
     """2D Bouguer gravity grid with easting/northing coords."""
     data = np.random.default_rng(0).random((ne, nn))
     return xr.DataArray(
@@ -30,7 +32,7 @@ def _make_gravity_grid(ne=NE, nn=NN) -> xr.DataArray:
     )
 
 
-def _make_3d_grid(ne=NE, nn=NN, nz=5) -> xr.DataArray:
+def _make_3d_grid(ne=NE, nn=NN, nz=5) -> Any:
     """3D grid with easting/northing/upward."""
     data = np.random.default_rng(1).random((ne, nn, nz))
     return xr.DataArray(
@@ -45,7 +47,7 @@ def _make_3d_grid(ne=NE, nn=NN, nz=5) -> xr.DataArray:
     )
 
 
-def _make_dataset(ne=NE, nn=NN) -> xr.Dataset:
+def _make_dataset(ne=NE, nn=NN) -> Any:
     """Dataset with multiple grid variables."""
     data1 = np.random.default_rng(2).random((ne, nn))
     data2 = np.random.default_rng(3).random((ne, nn))
@@ -104,6 +106,7 @@ class TestFromHarmonicaDataArray:
     def test_4d_shape(self):
         da = _make_gravity_grid()
         sf = from_harmonica_grid(ScalarField, da)
+        assert isinstance(sf, ScalarField)
         assert sf.ndim == 4
         # (1, NE, NN, 1) — singleton axis0 and z
         assert sf.shape[0] == 1
@@ -113,17 +116,20 @@ class TestFromHarmonicaDataArray:
     def test_3d_grid(self):
         da = _make_3d_grid()
         sf = from_harmonica_grid(ScalarField, da)
+        assert isinstance(sf, ScalarField)
         assert sf.ndim == 4
         assert sf.shape[0] == 1  # no time dim → singleton
 
     def test_unit_guessed(self):
         da = _make_gravity_grid()
         sf = from_harmonica_grid(ScalarField, da)
+        assert isinstance(sf, ScalarField)
         assert sf.unit is not None
 
     def test_spatial_coords(self):
         da = _make_gravity_grid()
         sf = from_harmonica_grid(ScalarField, da)
+        assert isinstance(sf, ScalarField)
         ax1 = np.asarray(
             sf._axis1_index.value
             if hasattr(sf._axis1_index, "value")

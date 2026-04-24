@@ -1,9 +1,13 @@
+"""SimPEG interop helpers."""
+
 from __future__ import annotations
 
 import numpy as np
 
 from ._optional import require_optional
 from .base import to_plain_array
+
+__all__ = ["to_simpeg", "from_simpeg"]
 
 
 def to_simpeg(

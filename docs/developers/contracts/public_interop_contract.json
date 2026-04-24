@@ -53,6 +53,23 @@
             ]
         },
         {
+            "name": "sqlite",
+            "module": "sqlite_",
+            "status": "public",
+            "guide_api": [
+                "to_sqlite",
+                "from_sqlite"
+            ],
+            "row_match_en": "| [SQLite](https://www.sqlite.org/index.html) |",
+            "row_match_ja": "| [SQLite](https://www.sqlite.org/index.html) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.sqlite_.rst",
+            "details_link": "../reference/api/gwexpy.interop.sqlite_.rst",
+            "notes": [
+                "SQLite is public once the reference page and guide entry are wired."
+            ]
+        },
+        {
             "name": "zarr",
             "module": "zarr_",
             "status": "public",
@@ -87,6 +104,20 @@
             ]
         },
         {
+            "name": "numpy",
+            "module": null,
+            "status": "implemented",
+            "guide_api": [],
+            "row_match_en": "| NumPy |",
+            "row_match_ja": "| NumPy |",
+            "reference_indexed": false,
+            "reference_page": null,
+            "details_link": null,
+            "notes": [
+                "NumPy is documented as infrastructure, not a dedicated helper surface."
+            ]
+        },
+        {
             "name": "pandas",
             "module": "pandas_",
             "status": "public",
@@ -103,6 +134,27 @@
             "details_link": "../reference/api/gwexpy.interop.pandas_.rst",
             "notes": [
                 "The public guide describes pandas at the helper-function level."
+            ]
+        },
+        {
+            "name": "polars",
+            "module": "polars_",
+            "status": "public",
+            "guide_api": [
+                "to_polars_series",
+                "from_polars_series",
+                "to_polars_dataframe",
+                "from_polars_dataframe",
+                "to_polars_dict",
+                "from_polars_dict"
+            ],
+            "row_match_en": "| [polars](https://pola.rs/) |",
+            "row_match_ja": "| [polars](https://pola.rs/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.polars_.rst",
+            "details_link": "../reference/api/gwexpy.interop.polars_.rst",
+            "notes": [
+                "Polars helpers are public once the reference page and guide entry are published."
             ]
         },
         {
@@ -174,6 +226,74 @@
             ]
         },
         {
+            "name": "torch",
+            "module": "torch_",
+            "status": "public",
+            "guide_api": [
+                "to_torch",
+                "from_torch"
+            ],
+            "row_match_en": "| [PyTorch](https://pytorch.org/) |",
+            "row_match_ja": "| [PyTorch](https://pytorch.org/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.torch_.rst",
+            "details_link": "../reference/api/gwexpy.interop.torch_.rst",
+            "notes": [
+                "PyTorch tensor conversion is public once the reference page is published."
+            ]
+        },
+        {
+            "name": "tensorflow",
+            "module": "tensorflow_",
+            "status": "public",
+            "guide_api": [
+                "to_tf",
+                "from_tf"
+            ],
+            "row_match_en": "| [TensorFlow](https://www.tensorflow.org/) |",
+            "row_match_ja": "| [TensorFlow](https://www.tensorflow.org/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.tensorflow_.rst",
+            "details_link": "../reference/api/gwexpy.interop.tensorflow_.rst",
+            "notes": [
+                "TensorFlow tensor conversion is public once the reference page is published."
+            ]
+        },
+        {
+            "name": "jax",
+            "module": "jax_",
+            "status": "public",
+            "guide_api": [
+                "to_jax",
+                "from_jax"
+            ],
+            "row_match_en": "| [JAX](https://jax.readthedocs.io/en/latest/) |",
+            "row_match_ja": "| [JAX](https://jax.readthedocs.io/en/latest/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.jax_.rst",
+            "details_link": "../reference/api/gwexpy.interop.jax_.rst",
+            "notes": [
+                "JAX array conversion is public once the reference page is published."
+            ]
+        },
+        {
+            "name": "cupy",
+            "module": "cupy_",
+            "status": "public",
+            "guide_api": [
+                "to_cupy",
+                "from_cupy"
+            ],
+            "row_match_en": "| [CuPy](https://cupy.dev/) |",
+            "row_match_ja": "| [CuPy](https://cupy.dev/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.cupy_.rst",
+            "details_link": "../reference/api/gwexpy.interop.cupy_.rst",
+            "notes": [
+                "CuPy GPU-array conversion is public once the reference page is published."
+            ]
+        },
+        {
             "name": "root",
             "module": "root_",
             "status": "implemented_partial",
@@ -204,8 +324,8 @@
                 "to_obspy_trace",
                 "from_obspy_trace"
             ],
-            "row_match_en": "| [ObsPy](",
-            "row_match_ja": "| [ObsPy](",
+            "row_match_en": "| [ObsPy](https://docs.obspy.org/) | `to_obspy()`",
+            "row_match_ja": "| [ObsPy](https://docs.obspy.org/) | `to_obspy()`",
             "reference_indexed": true,
             "reference_page": "gwexpy.interop.obspy_.rst",
             "details_link": "../reference/api/gwexpy.interop.obspy_.rst",
@@ -303,6 +423,23 @@
             ]
         },
         {
+            "name": "simpeg",
+            "module": "simpeg_",
+            "status": "public",
+            "guide_api": [
+                "to_simpeg",
+                "from_simpeg"
+            ],
+            "row_match_en": "| [SimPEG](https://simpeg.xyz/) |",
+            "row_match_ja": "| [SimPEG](https://simpeg.xyz/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.simpeg_.rst",
+            "details_link": "../reference/api/gwexpy.interop.simpeg_.rst",
+            "notes": [
+                "SimPEG geophysics helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
             "name": "mth5",
             "module": "mt_",
             "status": "public",
@@ -317,6 +454,445 @@
             "details_link": "../reference/api/gwexpy.interop.mt_.rst",
             "notes": [
                 "MTH5 is promoted to public once the top-level namespace and reference index are wired."
+            ]
+        },
+        {
+            "name": "mtpy",
+            "module": null,
+            "status": "in_progress",
+            "guide_api": [],
+            "row_match_en": "| MTpy |",
+            "row_match_ja": "| MTpy |",
+            "reference_indexed": false,
+            "reference_page": null,
+            "details_link": null,
+            "notes": [
+                "MTpy is documented as organizational work in progress rather than an exposed helper family."
+            ]
+        },
+        {
+            "name": "mne",
+            "module": "mne_",
+            "status": "public",
+            "guide_api": [
+                "to_mne",
+                "from_mne",
+                "to_mne_rawarray",
+                "from_mne_raw"
+            ],
+            "row_match_en": "| [MNE-Python](https://mne.tools/stable/index.html) |",
+            "row_match_ja": "| [MNE-Python](https://mne.tools/stable/index.html) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.mne_.rst",
+            "details_link": "../reference/api/gwexpy.interop.mne_.rst",
+            "notes": [
+                "MNE biosignal helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "neo",
+            "module": "neo_",
+            "status": "public",
+            "guide_api": [
+                "to_neo",
+                "from_neo"
+            ],
+            "row_match_en": "| [Neo](https://neo.readthedocs.io/en/latest/) |",
+            "row_match_ja": "| [Neo](https://neo.readthedocs.io/en/latest/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.neo_.rst",
+            "details_link": "../reference/api/gwexpy.interop.neo_.rst",
+            "notes": [
+                "Neo electrophysiology helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "elephant",
+            "module": null,
+            "status": "in_progress",
+            "guide_api": [],
+            "row_match_en": "| Elephant |",
+            "row_match_ja": "| Elephant |",
+            "reference_indexed": false,
+            "reference_page": null,
+            "details_link": null,
+            "notes": [
+                "Elephant is explicitly documented as still in progress."
+            ]
+        },
+        {
+            "name": "quantities",
+            "module": "quantities_",
+            "status": "public",
+            "guide_api": [
+                "to_quantity",
+                "from_quantity"
+            ],
+            "row_match_en": "| [quantities](https://python-quantities.readthedocs.io/en/latest/) |",
+            "row_match_ja": "| [quantities](https://python-quantities.readthedocs.io/en/latest/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.quantities_.rst",
+            "details_link": "../reference/api/gwexpy.interop.quantities_.rst",
+            "notes": [
+                "quantities bridges are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "pyroomacoustics",
+            "module": "pyroomacoustics_",
+            "status": "public",
+            "guide_api": [
+                "to_pyroomacoustics_source",
+                "to_pyroomacoustics_stft",
+                "from_pyroomacoustics_rir",
+                "from_pyroomacoustics_mic_signals",
+                "from_pyroomacoustics_source",
+                "from_pyroomacoustics_stft",
+                "from_pyroomacoustics_field"
+            ],
+            "row_match_en": "| [pyroomacoustics](https://pyroomacoustics.readthedocs.io/en/stable/) |",
+            "row_match_ja": "| [pyroomacoustics](https://pyroomacoustics.readthedocs.io/en/stable/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.pyroomacoustics_.rst",
+            "details_link": "../reference/api/gwexpy.interop.pyroomacoustics_.rst",
+            "notes": [
+                "pyroomacoustics room-acoustics helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "pydub",
+            "module": "pydub_",
+            "status": "public",
+            "guide_api": [
+                "to_pydub",
+                "from_pydub"
+            ],
+            "row_match_en": "| [pydub](https://www.pydub.com/) |",
+            "row_match_ja": "| [pydub](https://www.pydub.com/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.pydub_.rst",
+            "details_link": "../reference/api/gwexpy.interop.pydub_.rst",
+            "notes": [
+                "pydub audio helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "librosa",
+            "module": "pydub_",
+            "status": "public",
+            "guide_api": [
+                "to_librosa"
+            ],
+            "row_match_en": "| [librosa](https://librosa.org/doc/latest/index.html) |",
+            "row_match_ja": "| [librosa](https://librosa.org/doc/latest/index.html) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.pydub_.rst",
+            "details_link": "../reference/api/gwexpy.interop.pydub_.rst",
+            "notes": [
+                "librosa export stays documented through the shared pydub_ reference module."
+            ]
+        },
+        {
+            "name": "specutils",
+            "module": "specutils_",
+            "status": "public",
+            "guide_api": [
+                "to_specutils",
+                "from_specutils"
+            ],
+            "row_match_en": "| [specutils](https://specutils.readthedocs.io/en/stable/) |",
+            "row_match_ja": "| [specutils](https://specutils.readthedocs.io/en/stable/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.specutils_.rst",
+            "details_link": "../reference/api/gwexpy.interop.specutils_.rst",
+            "notes": [
+                "specutils astronomy-spectrum helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "pyspeckit",
+            "module": "pyspeckit_",
+            "status": "public",
+            "guide_api": [
+                "to_pyspeckit",
+                "from_pyspeckit"
+            ],
+            "row_match_en": "| [pyspeckit](https://pyspeckit.readthedocs.io/en/latest/) |",
+            "row_match_ja": "| [pyspeckit](https://pyspeckit.readthedocs.io/en/latest/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.pyspeckit_.rst",
+            "details_link": "../reference/api/gwexpy.interop.pyspeckit_.rst",
+            "notes": [
+                "pyspeckit spectral-analysis helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "pyspice",
+            "module": "pyspice_",
+            "status": "public",
+            "guide_api": [
+                "from_pyspice_transient",
+                "from_pyspice_ac",
+                "from_pyspice_noise",
+                "from_pyspice_distortion"
+            ],
+            "row_match_en": "| PySpice |",
+            "row_match_ja": "| PySpice |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.pyspice_.rst",
+            "details_link": "../reference/api/gwexpy.interop.pyspice_.rst",
+            "notes": [
+                "PySpice circuit-simulation import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "skrf",
+            "module": "skrf_",
+            "status": "public",
+            "guide_api": [
+                "to_skrf_network",
+                "from_skrf_network",
+                "from_skrf_impulse_response",
+                "from_skrf_step_response"
+            ],
+            "row_match_en": "| [scikit-rf](https://scikit-rf.readthedocs.io/en/latest/) |",
+            "row_match_ja": "| [scikit-rf](https://scikit-rf.readthedocs.io/en/latest/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.skrf_.rst",
+            "details_link": "../reference/api/gwexpy.interop.skrf_.rst",
+            "notes": [
+                "scikit-rf RF-network helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "pyoma",
+            "module": "pyoma_",
+            "status": "public",
+            "guide_api": [
+                "from_pyoma_results"
+            ],
+            "row_match_en": "| [pyOMA](https://py-oma.readthedocs.io/en/latest/) |",
+            "row_match_ja": "| [pyOMA](https://py-oma.readthedocs.io/en/latest/) |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.pyoma_.rst",
+            "details_link": "../reference/api/gwexpy.interop.pyoma_.rst",
+            "notes": [
+                "pyOMA modal-identification import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "multitaper",
+            "module": "multitaper_",
+            "status": "public",
+            "guide_api": [
+                "from_mtspec"
+            ],
+            "row_match_en": "| multitaper |",
+            "row_match_ja": "| multitaper |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.multitaper_.rst",
+            "details_link": "../reference/api/gwexpy.interop.multitaper_.rst",
+            "notes": [
+                "The Prieto-style multitaper bridge is public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "mtspec",
+            "module": "multitaper_",
+            "status": "public",
+            "guide_api": [
+                "from_mtspec_array"
+            ],
+            "row_match_en": "| mtspec |",
+            "row_match_ja": "| mtspec |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.multitaper_.rst",
+            "details_link": "../reference/api/gwexpy.interop.multitaper_.rst",
+            "notes": [
+                "The array-style mtspec bridge is public through the shared multitaper_ reference module."
+            ]
+        },
+        {
+            "name": "sdypy",
+            "module": "sdypy_",
+            "status": "public",
+            "guide_api": [
+                "from_uff_dataset55",
+                "from_uff_dataset58"
+            ],
+            "row_match_en": "| pySDy |",
+            "row_match_ja": "| pySDy |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.sdypy_.rst",
+            "details_link": "../reference/api/gwexpy.interop.sdypy_.rst",
+            "notes": [
+                "pySDy / pyuff import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "sdynpy",
+            "module": "sdynpy_",
+            "status": "public",
+            "guide_api": [
+                "from_sdynpy_frf",
+                "from_sdynpy_shape",
+                "from_sdynpy_timehistory"
+            ],
+            "row_match_en": "| SDynPy |",
+            "row_match_ja": "| SDynPy |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.sdynpy_.rst",
+            "details_link": "../reference/api/gwexpy.interop.sdynpy_.rst",
+            "notes": [
+                "SDynPy modal helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "meep",
+            "module": "meep_",
+            "status": "public",
+            "guide_api": [
+                "from_meep_hdf5"
+            ],
+            "row_match_en": "| Meep |",
+            "row_match_ja": "| Meep |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.meep_.rst",
+            "details_link": "../reference/api/gwexpy.interop.meep_.rst",
+            "notes": [
+                "Meep field-import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "openems",
+            "module": "openems_",
+            "status": "public",
+            "guide_api": [
+                "from_openems_hdf5"
+            ],
+            "row_match_en": "| openEMS |",
+            "row_match_ja": "| openEMS |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.openems_.rst",
+            "details_link": "../reference/api/gwexpy.interop.openems_.rst",
+            "notes": [
+                "openEMS field-dump import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "emg3d",
+            "module": "emg3d_",
+            "status": "public",
+            "guide_api": [
+                "to_emg3d_field",
+                "from_emg3d_field",
+                "from_emg3d_h5"
+            ],
+            "row_match_en": "| emg3d |",
+            "row_match_ja": "| emg3d |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.emg3d_.rst",
+            "details_link": "../reference/api/gwexpy.interop.emg3d_.rst",
+            "notes": [
+                "emg3d field import/export helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "meshio",
+            "module": "meshio_",
+            "status": "public",
+            "guide_api": [
+                "from_meshio",
+                "from_fenics_xdmf",
+                "from_fenics_vtk"
+            ],
+            "row_match_en": "| meshio |",
+            "row_match_ja": "| meshio |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.meshio_.rst",
+            "details_link": "../reference/api/gwexpy.interop.meshio_.rst",
+            "notes": [
+                "meshio and Fenics import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "metpy",
+            "module": "metpy_",
+            "status": "public",
+            "guide_api": [
+                "from_metpy_dataarray"
+            ],
+            "row_match_en": "| MetPy |",
+            "row_match_ja": "| MetPy |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.metpy_.rst",
+            "details_link": "../reference/api/gwexpy.interop.metpy_.rst",
+            "notes": [
+                "MetPy import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "wrf",
+            "module": "wrf_",
+            "status": "public",
+            "guide_api": [
+                "from_wrf_variable"
+            ],
+            "row_match_en": "| WRF |",
+            "row_match_ja": "| WRF |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.wrf_.rst",
+            "details_link": "../reference/api/gwexpy.interop.wrf_.rst",
+            "notes": [
+                "WRF import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "harmonica",
+            "module": "harmonica_",
+            "status": "public",
+            "guide_api": [
+                "from_harmonica_grid"
+            ],
+            "row_match_en": "| Harmonica |",
+            "row_match_ja": "| Harmonica |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.harmonica_.rst",
+            "details_link": "../reference/api/gwexpy.interop.harmonica_.rst",
+            "notes": [
+                "Harmonica grid import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "exudyn",
+            "module": "exudyn_",
+            "status": "public",
+            "guide_api": [
+                "from_exudyn_sensor"
+            ],
+            "row_match_en": "| Exudyn |",
+            "row_match_ja": "| Exudyn |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.exudyn_.rst",
+            "details_link": "../reference/api/gwexpy.interop.exudyn_.rst",
+            "notes": [
+                "Exudyn sensor import helpers are public once the guide and reference page are published."
+            ]
+        },
+        {
+            "name": "opensees",
+            "module": "opensees_",
+            "status": "public",
+            "guide_api": [
+                "from_opensees_recorder"
+            ],
+            "row_match_en": "| OpenSees |",
+            "row_match_ja": "| OpenSees |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.opensees_.rst",
+            "details_link": "../reference/api/gwexpy.interop.opensees_.rst",
+            "notes": [
+                "OpenSees recorder import helpers are public once the guide and reference page are published."
             ]
         }
     ]

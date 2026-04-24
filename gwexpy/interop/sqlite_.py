@@ -1,8 +1,12 @@
+"""SQLite interop helpers."""
+
 from __future__ import annotations
 
 import json
 
 import numpy as np
+
+__all__ = ["to_sqlite", "from_sqlite"]
 
 
 def _ensure_schema(conn):

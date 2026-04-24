@@ -395,6 +395,7 @@ class TestFromOpenemsHdf5SAR:
         p = tmp_path / "sar.h5"
         _make_sar_file(p, n_freq=1)
         sf = from_openems_hdf5(ScalarField, p, dump_type=20)
+        assert isinstance(sf, ScalarField)
         # Unit should be derived from DUMP_TYPE_MAP (W/kg)
         assert sf.unit is not None
 
@@ -402,6 +403,7 @@ class TestFromOpenemsHdf5SAR:
         p = tmp_path / "sar.h5"
         _make_sar_file(p, n_freq=2)
         sf = from_openems_hdf5(ScalarField, p, dump_type=20)
+        assert isinstance(sf, ScalarField)
         assert sf.axis0_domain == "frequency"
 
 

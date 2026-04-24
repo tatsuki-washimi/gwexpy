@@ -1,8 +1,12 @@
+"""JAX interop helpers."""
+
 from __future__ import annotations
 
 import numpy as np
 
 from ._optional import require_optional
+
+__all__ = ["to_jax", "from_jax"]
 
 
 def to_jax(ts, dtype=None):

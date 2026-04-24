@@ -4,6 +4,8 @@ from __future__ import annotations
 from ._optional import require_optional
 from .base import to_plain_array
 
+__all__ = ["to_pyspeckit", "from_pyspeckit"]
+
 
 def to_pyspeckit(data, **kwargs):
     """Convert a gwexpy object to a pyspeckit Spectrum.
