@@ -5,6 +5,7 @@ Reads variables that have a ``time`` dimension and converts them to
 """
 from __future__ import annotations
 
+import json
 import logging
 from collections import OrderedDict
 
@@ -26,10 +27,26 @@ _MATRIX_VAR_PREFIX = "__gwexpy_matrix__"
 
 
 def _encode_netcdf_var_name(key) -> str:
-    """Convert mapping keys to NetCDF-safe variable names."""
-    if isinstance(key, tuple) and len(key) == 2:
-        return f"{_MATRIX_VAR_PREFIX}{key[0]}__{key[1]}"
+    """Convert mapping keys to NetCDF-safe variable names.
+
+    Tuple keys are encoded as ``__gwexpy_matrix__{part0}__{part1}`` to avoid
+    illegal characters (parentheses, spaces) in NetCDF4 variable names.  The
+    row/col identity is always stored in ``gwexpy_row_key``/``gwexpy_col_key``
+    attributes; the variable name itself only needs to be unique and valid.
+    """
+    if isinstance(key, tuple):
+        return _MATRIX_VAR_PREFIX + "__".join(str(k) for k in key)
     return str(key)
+
+
+def _decode_netcdf_key(raw):
+    """Deserialize a key stored as JSON; fall back to str for legacy files."""
+    if raw is None:
+        return None
+    try:
+        return json.loads(raw)
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return str(raw)
 
 
 def _import_xarray():
@@ -224,11 +241,11 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
 
         matrix_vars = []
         for var_name, da in ds.data_vars.items():
-            row_key = da.attrs.get("gwexpy_row_key")
-            col_key = da.attrs.get("gwexpy_col_key")
+            row_key = _decode_netcdf_key(da.attrs.get("gwexpy_row_key"))
+            col_key = _decode_netcdf_key(da.attrs.get("gwexpy_col_key"))
             if row_key is None or col_key is None or tc not in da.dims:
                 continue
-            matrix_vars.append((str(row_key), str(col_key), da))
+            matrix_vars.append((row_key, col_key, da))
 
         if not matrix_vars:
             tsd = read_timeseriesdict_netcdf4(source, **kwargs)
@@ -240,9 +257,6 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
         first = matrix_vars[0][2]
         unit = first.attrs.get("units") or first.attrs.get("unit")
         time_vals = ds[tc].values
-        t0 = float(np.asarray(time_vals, dtype=np.float64)[0]) if not np.issubdtype(
-            np.asarray(time_vals).dtype, np.datetime64
-        ) else None
 
         if np.issubdtype(np.asarray(time_vals).dtype, np.datetime64):
             import datetime as _dt
@@ -263,7 +277,7 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
             t0 = float(numeric[0])
             dt = float(np.median(np.diff(numeric))) if len(numeric) > 1 else 1.0
 
-        data = np.empty((len(row_keys), len(col_keys), first.shape[0]), dtype=np.float64)
+        data = np.empty((len(row_keys), len(col_keys), len(time_vals)), dtype=np.float64)
         for row_key, col_key, da in matrix_vars:
             i = row_keys.index(row_key)
             j = col_keys.index(col_key)
@@ -333,8 +347,8 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
             attrs["units"] = str(ts.unit)
         var_name = _encode_netcdf_var_name(key)
         if isinstance(key, tuple) and len(key) == 2:
-            attrs["gwexpy_row_key"] = str(key[0])
-            attrs["gwexpy_col_key"] = str(key[1])
+            attrs["gwexpy_row_key"] = json.dumps(key[0])
+            attrs["gwexpy_col_key"] = json.dumps(key[1])
         data_vars[var_name] = xr.DataArray(
             np.asarray(ts.value, dtype=np.float64),
             dims=["time"],

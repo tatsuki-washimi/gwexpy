@@ -103,3 +103,35 @@ class TestNetCDF4Roundtrip:
         ds.to_netcdf(str(path))
         with pytest.raises((ValueError, KeyError)):
             TimeSeriesDict.read(str(path), format="nc")
+
+    def test_matrix_roundtrip_preserves_integer_keys(self, tmp_path):
+        """Integer row/col keys must survive a write → read roundtrip."""
+        from collections import OrderedDict
+
+        from gwexpy.types.metadata import MetaData, MetaDataDict
+
+        path = tmp_path / "matrix_int_keys.nc"
+        data = np.arange(24, dtype=np.float64).reshape(2, 2, 6)
+        matrix = TimeSeriesMatrix(data, t0=1234567890.0, dt=0.25)
+        matrix.rows = MetaDataDict(
+            OrderedDict({0: MetaData(), 1: MetaData()}),
+            expected_size=2,
+            key_prefix="row",
+        )
+        matrix.cols = MetaDataDict(
+            OrderedDict({10: MetaData(), 20: MetaData()}),
+            expected_size=2,
+            key_prefix="col",
+        )
+
+        matrix.write(str(path), format="nc")
+
+        loaded = TimeSeriesMatrix.read(str(path), format="nc")
+        row_keys = list(loaded.row_keys())
+        col_keys = list(loaded.col_keys())
+
+        assert row_keys == [0, 1], f"Expected [0, 1], got {row_keys}"
+        assert col_keys == [10, 20], f"Expected [10, 20], got {col_keys}"
+        assert all(isinstance(k, int) for k in row_keys), "Row keys should be int"
+        assert all(isinstance(k, int) for k in col_keys), "Col keys should be int"
+        np.testing.assert_allclose(loaded.value, data)

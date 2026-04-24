@@ -222,11 +222,6 @@ def _extract_gwf_read_args(
     if not allow_multiple_channels and channels is not None and len(channels) > 1:
         raise ValueError("Single-channel GWF read accepts exactly one channel.")
 
-    if has_start_kw and "start" in gwf_kwargs:
-        gwf_kwargs.pop("start")
-    if has_end_kw and "end" in gwf_kwargs:
-        gwf_kwargs.pop("end")
-
     return channels, start, end, gwf_kwargs
 
 
