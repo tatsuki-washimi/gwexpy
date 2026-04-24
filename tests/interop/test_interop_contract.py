@@ -65,6 +65,25 @@ def test_interop_contract_schema_is_well_formed():
             assert module is None
 
 
+def test_public_namespace_is_fully_covered_by_contract():
+    """Reverse-direction check: every symbol in interop.__all__ must appear in the contract.
+
+    Prevents __all__ from growing beyond what the contract explicitly tracks.
+    """
+    contract_symbols: set[str] = set()
+    for entry in TARGETS:
+        contract_symbols.update(entry.get("guide_api", []))
+
+    exported = set(interop.__all__)
+    unregistered = sorted(exported - contract_symbols)
+
+    assert unregistered == [], (
+        f"Symbols in interop.__all__ not registered in any contract entry's guide_api: "
+        f"{unregistered}\n"
+        f"Either add them to the contract or remove from __all__."
+    )
+
+
 def test_documented_interop_api_is_available_from_public_namespace():
     exported = set(interop.__all__)
 

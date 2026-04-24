@@ -49,7 +49,7 @@ from .multitaper_ import from_mtspec, from_mtspec_array
 from .neo_ import from_neo, to_neo
 from .netcdf4_ import from_netcdf4, to_netcdf4
 from .obspy_ import from_obspy, from_obspy_trace, to_obspy, to_obspy_trace
-from .openems_ import from_openems_hdf5
+from .openems_ import DUMP_TYPE_MAP, from_openems_hdf5
 from .opensees_ import from_opensees_recorder
 from .pandas_ import (
     from_pandas_dataframe,
@@ -168,8 +168,6 @@ __all__ = [
     # sqlite
     "to_sqlite",
     "from_sqlite",
-    # optional
-    "require_optional",
     # frequency series
     "to_pandas_frequencyseries",
     "from_pandas_frequencyseries",
@@ -259,6 +257,7 @@ __all__ = [
     "from_meep_hdf5",
     # openems
     "from_openems_hdf5",
+    "DUMP_TYPE_MAP",
     # emg3d
     "from_emg3d_field",
     "from_emg3d_h5",
