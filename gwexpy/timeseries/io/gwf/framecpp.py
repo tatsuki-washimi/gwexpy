@@ -1,47 +1,11 @@
 from __future__ import annotations
 
-from gwpy.timeseries.io.gwf.framecpp import (
-    FRAME_LIBRARY,
-    FRERR_NO_CHANNEL_OF_TYPE,
-    FRERR_NO_FRAME_AT_NUM,
-    LIGOTimeGPS,
-    Segment,
-    TimeSeries,
-    ceil,
-    channel_dict_kwarg,
-    file_list,
-    frameCPP,
-    io_framecpp,
-    io_gwf,
-    numpy,
-    re,
-    read,
-    read_frdata,
-    read_frvect,
-    read_gwf,
-    to_gps,
-    write,
-)
+import gwpy.timeseries.io.gwf.framecpp as _gwpy_framecpp
 
-__all__ = [
-    "FRAME_LIBRARY",
-    "FRERR_NO_CHANNEL_OF_TYPE",
-    "FRERR_NO_FRAME_AT_NUM",
-    "LIGOTimeGPS",
-    "Segment",
-    "TimeSeries",
-    "ceil",
-    "channel_dict_kwarg",
-    "file_list",
-    "frameCPP",
-    "io_framecpp",
-    "io_gwf",
-    "numpy",
-    "re",
-    "read",
-    "read_frdata",
-    "read_frvect",
-    "read_gwf",
-    "to_gps",
-    "write",
+_PUBLIC = getattr(_gwpy_framecpp, "__all__", None) or [
+    name for name in dir(_gwpy_framecpp) if not name.startswith("_")
 ]
+
+globals().update({name: getattr(_gwpy_framecpp, name) for name in _PUBLIC})
+
+__all__ = list(_PUBLIC)

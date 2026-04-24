@@ -11,6 +11,11 @@ def test_gwf_lalframe_reexports_gwpy():
 
     exported = getattr(gwpy_mod, "__all__", [])
     if not exported:
-        pytest.skip("gwpy.timeseries.io.gwf.lalframe.__all__ is empty")
+        gwpy_attrs = [a for a in dir(gwpy_mod) if not a.startswith("_")]
+        if not gwpy_attrs:
+            pytest.skip(
+                "gwpy.timeseries.io.gwf.lalframe has no public exports (upstream issue)"
+            )
+        exported = gwpy_attrs
     for name in exported:
         assert getattr(gwexpy_mod, name) is getattr(gwpy_mod, name)

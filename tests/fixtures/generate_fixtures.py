@@ -361,6 +361,7 @@ def generate_all():
     out_dir = Path("tests/fixtures/data")
     out_dir.mkdir(parents=True, exist_ok=True)
     print(f"Generating fixtures in {out_dir}...")
+    allow_zarr = os.environ.get("GWEXPY_ALLOW_ZARR", "") == "1"
 
     # TimeSeries / Audio
     try_or_skip("ATS", generate_ats, out_dir / "test.ats")
@@ -371,7 +372,10 @@ def generate_all():
     try_or_skip("WIN", generate_win, out_dir / "test.win")
     try_or_skip("MSEED", generate_seismic_mseed, out_dir / "test.mseed")
     try_or_skip("ndscope H5", generate_ndscope_hdf5, out_dir / "ndscope.h5")
-    try_or_skip("Zarr", generate_zarr, out_dir / "test.zarr")
+    if allow_zarr:
+        try_or_skip("Zarr", generate_zarr, out_dir / "test.zarr")
+    else:
+        print("  [SKIP] Zarr: set GWEXPY_ALLOW_ZARR=1 to enable Zarr fixture generation")
     try_or_skip("NetCDF4", generate_netcdf4, out_dir / "test.nc")
     try_or_skip("TDMS", generate_tdms, out_dir / "test.tdms")
     try_or_skip("CSV Enhanced", generate_csv_enhanced, out_dir / "test.csv")

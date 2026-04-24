@@ -55,7 +55,7 @@ def _trace_to_timeseries(trace, *, unit, timezone, epoch_override):
 
 def _read_obspy_stream(format_name, source, *, pad=np.nan, gap="pad", **kwargs):
     obspy = _import_obspy()
-    if hasattr(source, "name"):
+    if not isinstance(source, (str, bytes)) and not hasattr(source, "__fspath__") and hasattr(source, "name"):
         source = source.name
     try:
         stream = obspy.read(source, format=format_name, **kwargs)

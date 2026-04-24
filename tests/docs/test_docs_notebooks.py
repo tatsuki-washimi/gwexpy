@@ -8,6 +8,19 @@ from nbclient import NotebookClient
 # Base directory for tutorials
 NB_DIR = Path(__file__).parent.parent.parent / "docs/web/en/user_guide/tutorials"
 
+RUN_NOTEBOOK_EXECUTION = (
+    os.environ.get("GITHUB_ACTIONS", "").lower() == "true"
+    or os.environ.get("GWEXPY_RUN_NOTEBOOK_TESTS", "") == "1"
+)
+
+pytestmark = pytest.mark.skipif(
+    not RUN_NOTEBOOK_EXECUTION,
+    reason=(
+        "Notebook execution tests are CI-only by default; "
+        "set GWEXPY_RUN_NOTEBOOK_TESTS=1 to enable locally."
+    ),
+)
+
 # List of notebooks to test
 NOTEBOOKS = [
     "intro_table.ipynb",

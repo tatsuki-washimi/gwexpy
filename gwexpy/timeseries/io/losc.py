@@ -1,53 +1,11 @@
 from __future__ import annotations
 
-from gwpy.timeseries.io.losc import (
-    DQMASK_CHANNEL_REGEX,
-    GWOSC_LOCATE_KWARGS,
-    STRAIN_CHANNEL_REGEX,
-    Quantity,
-    Segment,
-    StateVector,
-    TimeSeries,
-    bool_env,
-    ceil,
-    fetch_gwosc_data,
-    file_path,
-    file_segment,
-    get_readable_fileobj,
-    get_urls,
-    io_gwf,
-    io_hdf5,
-    parse_unit,
-    read_gwosc_hdf5,
-    read_gwosc_hdf5_state,
-    registry,
-    sieve_cache,
-    to_gps,
-    urlparse,
-)
+import gwpy.timeseries.io.losc as _gwpy_losc
 
-__all__ = [
-    "DQMASK_CHANNEL_REGEX",
-    "GWOSC_LOCATE_KWARGS",
-    "STRAIN_CHANNEL_REGEX",
-    "Quantity",
-    "Segment",
-    "StateVector",
-    "TimeSeries",
-    "bool_env",
-    "ceil",
-    "fetch_gwosc_data",
-    "file_path",
-    "file_segment",
-    "get_readable_fileobj",
-    "get_urls",
-    "io_gwf",
-    "io_hdf5",
-    "parse_unit",
-    "read_gwosc_hdf5",
-    "read_gwosc_hdf5_state",
-    "registry",
-    "sieve_cache",
-    "to_gps",
-    "urlparse",
+_PUBLIC = getattr(_gwpy_losc, "__all__", None) or [
+    name for name in dir(_gwpy_losc) if not name.startswith("_")
 ]
+
+globals().update({name: getattr(_gwpy_losc, name) for name in _PUBLIC})
+
+__all__ = list(_PUBLIC)

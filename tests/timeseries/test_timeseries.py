@@ -1,8 +1,4 @@
-"""
-Tests inherited from gwpy.timeseries.tests.test_timeseries.
-
-Some tests may be marked as xfail due to upstream API changes.
-"""
+"""Tests inherited from ``gwpy.timeseries.tests.test_timeseries``."""
 
 import socket
 
@@ -13,7 +9,7 @@ from gwpy.timeseries.tests.test_timeseries import *  # noqa: F401,F403
 
 # Override failing tests that expect warnings no longer emitted by newer gwpy versions
 class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
-    """Extended TestTimeSeries with xfail markers for known upstream issues."""
+    """Extended ``TestTimeSeries`` with local environment guards."""
 
     @staticmethod
     def _require_host(host: str, reason: str) -> None:
@@ -53,19 +49,11 @@ class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
             "GWOSC/lalframe-backed L1 fixture segfaults in CI when pytest runs under PR Fast"
         )
 
-    @pytest.mark.xfail(
-        reason="gwpy no longer emits UserWarning for median_mean with lal",
-        strict=True,
-    )
-    def test_psd_lal_median_mean(self, *args, **kwargs):
-        return super().test_psd_lal_median_mean(*args, **kwargs)
+    def test_psd_lal_median_mean(self, gw150914):
+        return super().test_psd_lal_median_mean(gw150914)
 
-    @pytest.mark.xfail(
-        reason="gwpy no longer emits DeprecationWarning for median_mean with lal",
-        strict=True,
-    )
-    def test_spectrogram_median_mean(self, *args, **kwargs):
-        return super().test_spectrogram_median_mean(*args, **kwargs)
+    def test_spectrogram_median_mean(self, gw150914, library):
+        return super().test_spectrogram_median_mean(gw150914, library)
 
     @pytest.mark.skip(reason="Fails due to LDAStools / framecpp dependency issues")
     def test_write_gwf_type(self, *args, **kwargs):

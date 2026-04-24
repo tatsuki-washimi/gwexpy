@@ -109,13 +109,13 @@ def test_extract_gwf_read_args_rejects_positional_keyword_overlap():
 
 def test_read_gwf_timeseries_with_single_channel_by_format_gwf():
     from gwpy.io.gwf.core import get_channel_names
-    from gwpy.timeseries.io.gwf.core import read_timeseriesdict
 
     if not has_gwf_backend():
         pytest.skip("gwf backend not available")
 
-    expected = get_channel_names(FIXTURE_DATA, backend="frameCPP")
-    if not expected:
+    try:
+        expected = get_channel_names(FIXTURE_DATA, backend="frameCPP")
+    except (ImportError, ModuleNotFoundError, OSError, RuntimeError, ValueError):
         expected = get_channel_names(FIXTURE_DATA)
     ts = TimeSeries.read(FIXTURE_DATA, CHANNEL, format="gwf.framel")
     assert isinstance(ts, TimeSeries)

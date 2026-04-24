@@ -132,6 +132,42 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             p = Path(source)
         except TypeError:
             p = None
+        if fmt in {
+            "mseed",
+            "miniseed",
+            "sac",
+            "gse2",
+            "knet",
+            "win",
+            "win32",
+            "ats",
+            "ats.mth5",
+            "gbd",
+            "tdms",
+            "xml.diaggui",
+            "dttxml",
+        }:
+            direct_readers = {
+                "mseed": ("gwexpy.timeseries.io.seismic", "read_miniseed_timeseriesdict"),
+                "miniseed": ("gwexpy.timeseries.io.seismic", "read_miniseed_timeseriesdict"),
+                "sac": ("gwexpy.timeseries.io.seismic", "read_sac_timeseriesdict"),
+                "gse2": ("gwexpy.timeseries.io.seismic", "read_gse2_timeseriesdict"),
+                "knet": ("gwexpy.timeseries.io.seismic", "read_knet_timeseriesdict"),
+                "win": ("gwexpy.timeseries.io.win", "read_win_file"),
+                "win32": ("gwexpy.timeseries.io.win", "read_win_file"),
+                "ats": ("gwexpy.timeseries.io.ats", "read_timeseriesdict_ats"),
+                "ats.mth5": ("gwexpy.timeseries.io.ats", "read_timeseriesdict_ats"),
+                "gbd": ("gwexpy.timeseries.io.gbd", "read_timeseriesdict_gbd"),
+                "tdms": ("gwexpy.timeseries.io.tdms", "read_timeseriesdict_tdms"),
+                "xml.diaggui": ("gwexpy.timeseries.io.dttxml", "read_timeseriesdict_dttxml"),
+                "dttxml": ("gwexpy.timeseries.io.dttxml", "read_timeseriesdict_dttxml"),
+            }
+            module_name, func_name = direct_readers[fmt]
+            module = __import__(module_name, fromlist=[func_name])
+            reader = getattr(module, func_name)
+            reader_kwargs = dict(kwargs)
+            reader_kwargs.pop("format", None)
+            return cls(reader(source, *args, **reader_kwargs))
         if gwf_format is not None:
             from gwpy.io.gwf.core import get_channel_names
             from gwpy.timeseries.io.gwf.core import read_timeseriesdict
