@@ -65,7 +65,9 @@ def test_english_guide_rows_match_contract():
         line = _find_row(guide, entry["row_match_en"])
         assert STATUS_LABELS_EN[entry["status"]] in line
         for func_name in entry["guide_api"]:
-            assert f"`{func_name}()`" in line
+            assert (
+                f"`{func_name}()`" in line or f"`{func_name}`" in line
+            ), f"Expected `{func_name}` (with or without ()) in guide row: {line!r}"
         details_link = entry.get("details_link")
         if details_link:
             assert f"[API]({details_link})" in line
@@ -78,7 +80,9 @@ def test_japanese_guide_rows_match_contract():
         line = _find_row(guide, entry["row_match_ja"])
         assert STATUS_LABELS_JA[entry["status"]] in line
         for func_name in entry["guide_api"]:
-            assert f"`{func_name}()`" in line
+            assert (
+                f"`{func_name}()`" in line or f"`{func_name}`" in line
+            ), f"Expected `{func_name}` (with or without ()) in guide row: {line!r}"
         details_link = entry.get("details_link")
         if details_link:
             assert f"[API]({details_link})" in line

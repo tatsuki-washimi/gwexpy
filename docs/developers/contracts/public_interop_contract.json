@@ -19,6 +19,23 @@
             ]
         },
         {
+            "name": "hdf5-frequencyseries",
+            "module": "frequency",
+            "status": "public",
+            "guide_api": [
+                "to_hdf5_frequencyseries",
+                "from_hdf5_frequencyseries"
+            ],
+            "row_match_en": "| HDF5 FrequencySeries |",
+            "row_match_ja": "| HDF5 FrequencySeries |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.frequency.rst",
+            "details_link": "../reference/api/gwexpy.interop.frequency.rst",
+            "notes": [
+                "FrequencySeries-specific HDF5 helpers."
+            ]
+        },
+        {
             "name": "json",
             "module": "json_",
             "status": "public",
@@ -137,6 +154,23 @@
             ]
         },
         {
+            "name": "pandas-frequencyseries",
+            "module": "frequency",
+            "status": "public",
+            "guide_api": [
+                "to_pandas_frequencyseries",
+                "from_pandas_frequencyseries"
+            ],
+            "row_match_en": "| pandas FrequencySeries |",
+            "row_match_ja": "| pandas FrequencySeries |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.frequency.rst",
+            "details_link": "../reference/api/gwexpy.interop.frequency.rst",
+            "notes": [
+                "FrequencySeries-to-pandas conversion helpers."
+            ]
+        },
+        {
             "name": "polars",
             "module": "polars_",
             "status": "public",
@@ -145,6 +179,7 @@
                 "from_polars_series",
                 "to_polars_dataframe",
                 "from_polars_dataframe",
+                "to_polars_frequencyseries",
                 "to_polars_dict",
                 "from_polars_dict"
             ],
@@ -189,6 +224,23 @@
             "details_link": "../reference/api/gwexpy.interop.xarray_.rst",
             "notes": [
                 "Field interop is published through the same xarray_ reference module."
+            ]
+        },
+        {
+            "name": "xarray-frequencyseries",
+            "module": "frequency",
+            "status": "public",
+            "guide_api": [
+                "to_xarray_frequencyseries",
+                "from_xarray_frequencyseries"
+            ],
+            "row_match_en": "| xarray FrequencySeries |",
+            "row_match_ja": "| xarray FrequencySeries |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.frequency.rst",
+            "details_link": "../reference/api/gwexpy.interop.frequency.rst",
+            "notes": [
+                "FrequencySeries-to-xarray DataArray helpers."
             ]
         },
         {
@@ -243,6 +295,24 @@
             ]
         },
         {
+            "name": "torch-dataset",
+            "module": "torch_dataset",
+            "status": "public",
+            "guide_api": [
+                "TimeSeriesWindowDataset",
+                "to_torch_dataset",
+                "to_torch_dataloader"
+            ],
+            "row_match_en": "| [PyTorch](https://pytorch.org/) Dataset |",
+            "row_match_ja": "| [PyTorch](https://pytorch.org/) Dataset |",
+            "reference_indexed": true,
+            "reference_page": "gwexpy.interop.torch_dataset.rst",
+            "details_link": "../reference/api/gwexpy.interop.torch_dataset.rst",
+            "notes": [
+                "Windowed dataset and DataLoader helpers for training loops."
+            ]
+        },
+        {
             "name": "tensorflow",
             "module": "tensorflow_",
             "status": "public",
@@ -282,7 +352,8 @@
             "status": "public",
             "guide_api": [
                 "to_cupy",
-                "from_cupy"
+                "from_cupy",
+                "is_cupy_available"
             ],
             "row_match_en": "| [CuPy](https://cupy.dev/) |",
             "row_match_ja": "| [CuPy](https://cupy.dev/) |",
@@ -768,7 +839,8 @@
             "module": "openems_",
             "status": "public",
             "guide_api": [
-                "from_openems_hdf5"
+                "from_openems_hdf5",
+                "DUMP_TYPE_MAP"
             ],
             "row_match_en": "| openEMS |",
             "row_match_ja": "| openEMS |",

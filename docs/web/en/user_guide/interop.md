@@ -92,6 +92,7 @@ Use it when the question is “what storage representation do I bridge to?”
 | Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
 | [HDF5](https://www.hdfgroup.org/solutions/hdf5/) | `to_hdf5()`, `from_hdf5()` | Public | object-level conversion | [API](../reference/api/gwexpy.interop.hdf5_.rst) |
+| HDF5 FrequencySeries | `to_hdf5_frequencyseries()`, `from_hdf5_frequencyseries()` | Public | FrequencySeries HDF5 helpers | [API](../reference/api/gwexpy.interop.frequency.rst) |
 | JSON | `to_json()`, `from_json()` | Public | JSON string conversion | [API](../reference/api/gwexpy.interop.json_.rst) |
 | Python dict | `to_dict()`, `from_dict()` | Public | dict conversion | — |
 | [SQLite](https://www.sqlite.org/index.html) | `to_sqlite()`, `from_sqlite()` | Public | object-level bridge | [API](../reference/api/gwexpy.interop.sqlite_.rst) |
@@ -112,9 +113,11 @@ Use it when the question is “which analysis-library object do I bridge to?”
 | --- | --- | --- | --- | --- |
 | NumPy | no dedicated `to_*()` / `from_*()` API | Implemented as infrastructure | widely used as the internal array basis | — |
 | [pandas](https://pandas.pydata.org/) | `to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, `from_pandas_dataframe()` | Public | Series / DataFrame | [API](../reference/api/gwexpy.interop.pandas_.rst) |
-| [polars](https://pola.rs/) | `to_polars_series()`, `from_polars_series()`, `to_polars_dataframe()`, `from_polars_dataframe()`, `to_polars_dict()`, `from_polars_dict()` | Public | Series / DataFrame / dict | [API](../reference/api/gwexpy.interop.polars_.rst) |
+| pandas FrequencySeries | `to_pandas_frequencyseries()`, `from_pandas_frequencyseries()` | Public | FrequencySeries ⇔ pandas.Series | [API](../reference/api/gwexpy.interop.frequency.rst) |
+| [polars](https://pola.rs/) | `to_polars_series()`, `from_polars_series()`, `to_polars_dataframe()`, `from_polars_dataframe()`, `to_polars_frequencyseries()`, `to_polars_dict()`, `from_polars_dict()` | Public | Series / DataFrame / dict / FrequencySeries | [API](../reference/api/gwexpy.interop.polars_.rst) |
 | [xarray](https://docs.xarray.dev/) | `to_xarray()`, `from_xarray()` | Public | DataArray / Dataset | [API](../reference/api/gwexpy.interop.xarray_.rst) |
 | [xarray](https://docs.xarray.dev/) Field | `to_xarray_field()`, `from_xarray_field()` | Public | ScalarField / VectorField | [API](../reference/api/gwexpy.interop.xarray_.rst) |
+| xarray FrequencySeries | `to_xarray_frequencyseries()`, `from_xarray_frequencyseries()` | Public | FrequencySeries ⇔ xarray.DataArray | [API](../reference/api/gwexpy.interop.frequency.rst) |
 | [astropy](https://www.astropy.org/) | `to_astropy_timeseries()`, `from_astropy_timeseries()` | Public | `astropy.timeseries.TimeSeries` | [API](../reference/api/gwexpy.interop.astropy_.rst) |
 | [dask](https://www.dask.org/) | `to_dask()`, `from_dask()` | Public | dask array bridge | [API](../reference/api/gwexpy.interop.dask_.rst) |
 
@@ -131,9 +134,10 @@ Check whether only the array payload moves, or whether metadata can also be reco
 | Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
 | [PyTorch](https://pytorch.org/) | `to_torch()`, `from_torch()` | Public | tensor conversion | [API](../reference/api/gwexpy.interop.torch_.rst) |
+| [PyTorch](https://pytorch.org/) Dataset | `TimeSeriesWindowDataset`, `to_torch_dataset()`, `to_torch_dataloader()` | Public | windowed dataset for training | [API](../reference/api/gwexpy.interop.torch_dataset.rst) |
 | [TensorFlow](https://www.tensorflow.org/) | `to_tf()`, `from_tf()` | Public | tensor conversion | [API](../reference/api/gwexpy.interop.tensorflow_.rst) |
 | [JAX](https://jax.readthedocs.io/en/latest/) | `to_jax()`, `from_jax()` | Public | JAX array conversion | [API](../reference/api/gwexpy.interop.jax_.rst) |
-| [CuPy](https://cupy.dev/) | `to_cupy()`, `from_cupy()` | Public | GPU array conversion | [API](../reference/api/gwexpy.interop.cupy_.rst) |
+| [CuPy](https://cupy.dev/) | `to_cupy()`, `from_cupy()`, `is_cupy_available()` | Public | GPU array conversion | [API](../reference/api/gwexpy.interop.cupy_.rst) |
 
 (interop-en-domain-conversion)=
 ## D. Physics and Domain-Specific Libraries
@@ -174,7 +178,7 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 | pySDy | `from_uff_dataset55()`, `from_uff_dataset58()` | Public | mainly import | [API](../reference/api/gwexpy.interop.sdypy_.rst) |
 | SDynPy | `from_sdynpy_frf()`, `from_sdynpy_shape()`, `from_sdynpy_timehistory()` | Public | mainly import | [API](../reference/api/gwexpy.interop.sdynpy_.rst) |
 | Meep | `from_meep_hdf5()` | Public | mainly import | [API](../reference/api/gwexpy.interop.meep_.rst) |
-| openEMS | `from_openems_hdf5()` | Public | mainly import | [API](../reference/api/gwexpy.interop.openems_.rst) |
+| openEMS | `from_openems_hdf5()`, `DUMP_TYPE_MAP` | Public | mainly import | [API](../reference/api/gwexpy.interop.openems_.rst) |
 | emg3d | `to_emg3d_field()`, `from_emg3d_field()`, `from_emg3d_h5()` | Public | EM field import/export | [API](../reference/api/gwexpy.interop.emg3d_.rst) |
 | meshio | `from_meshio()`, `from_fenics_xdmf()`, `from_fenics_vtk()` | Public | mainly import | [API](../reference/api/gwexpy.interop.meshio_.rst) |
 | MetPy | `from_metpy_dataarray()` | Public | mainly import | [API](../reference/api/gwexpy.interop.metpy_.rst) |

@@ -215,17 +215,18 @@ def _extract_gwf_read_args(
     else:
         end = gwf_kwargs.pop("end", None)
 
+    # When positional start/end override keyword start/end (allowed when a channel alias
+    # keyword is also present), the keyword values are still in gwf_kwargs.  Remove them
+    # so callers that pass start= and end= explicitly don't get "multiple values" errors.
+    gwf_kwargs.pop("start", None)
+    gwf_kwargs.pop("end", None)
+
     channels = _normalize_gwf_channels(channel_arg)
     if channels is not None and len(channels) == 0:
         raise ValueError("No channels selected for GWF read.")
 
     if not allow_multiple_channels and channels is not None and len(channels) > 1:
         raise ValueError("Single-channel GWF read accepts exactly one channel.")
-
-    if has_start_kw and "start" in gwf_kwargs:
-        gwf_kwargs.pop("start")
-    if has_end_kw and "end" in gwf_kwargs:
-        gwf_kwargs.pop("end")
 
     return channels, start, end, gwf_kwargs
 
