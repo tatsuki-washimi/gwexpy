@@ -522,7 +522,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     def rebin(
         self, dt: float | u.Quantity | None = None, df: float | u.Quantity | None = None
-    ) -> Spectrogram:
+    ) -> Self:
         """Rebin the spectrogram in time and/or frequency.
 
         Rebinning averages only complete bins. If the time or frequency axis
@@ -538,7 +538,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Returns
         -------
-        Spectrogram
+        Self
             The rebinned spectrogram.
 
         """
@@ -691,7 +691,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         reference: Any | None = None,
         *,
         percentile: float = 50.0,
-    ) -> Spectrogram:
+    ) -> Self:
         """Normalize the spectrogram along the time axis.
 
         Parameters
@@ -720,7 +720,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Returns
         -------
-        Spectrogram
+        Self
             Normalized spectrogram. Unit is set to dimensionless for ratio
             methods.
 
@@ -780,7 +780,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         persistence_threshold: float = 0.8,
         amplitude_threshold: float = 3.0,
         return_mask: bool = False,
-    ) -> Spectrogram | tuple[Spectrogram, np.ndarray]:
+    ) -> Self | tuple[Self, np.ndarray]:
         """Clean the spectrogram by removing artifacts.
 
         Parameters
@@ -813,7 +813,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Returns
         -------
-        Spectrogram
+        Self
             Cleaned spectrogram.
         mask : ndarray, optional
             Boolean mask where True = pixel was cleaned. Only returned when
