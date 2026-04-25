@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -22,7 +23,12 @@ BOOTSTRAP_PATTERNS = (
 BOOTSTRAP_HINTS = ("gwexpy[all]", "colab", "scipy<", "numpy<", "astropy<", "gwpy<")
 
 
-def run_command(cmd: list[str], *, capture_output: bool = False) -> subprocess.CompletedProcess[str]:
+def run_command(
+    cmd: list[str],
+    *,
+    capture_output: bool = False,
+    env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
     """Run a subprocess from the repository root."""
     return subprocess.run(
         cmd,
@@ -30,6 +36,7 @@ def run_command(cmd: list[str], *, capture_output: bool = False) -> subprocess.C
         check=False,
         text=True,
         capture_output=capture_output,
+        env=env,
     )
 
 
@@ -159,9 +166,24 @@ def run_light_notebooks(paths: list[Path], output_dir: Path, kernel: str) -> Non
 def run_heavy_notebooks(paths: list[Path]) -> None:
     """Check heavy notebooks with nbval-lax."""
     rel_paths = [str(path.relative_to(REPO_ROOT)) for path in paths]
-    cmd = [sys.executable, "-m", "pytest", "--nbval-lax", "-v", "-q", *rel_paths]
+    env = os.environ.copy()
+    # Keep unrelated pytest plugins, such as pytest-qt, out of nbval-only checks.
+    env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
+    cmd = [
+        sys.executable,
+        "-m",
+        "pytest",
+        "-p",
+        "no:qt",
+        "-p",
+        "nbval.plugin",
+        "--nbval-lax",
+        "-v",
+        "-q",
+        *rel_paths,
+    ]
     print("\n[heavy] Running nbval syntax checks")
-    result = run_command(cmd)
+    result = run_command(cmd, env=env)
     if result.returncode != 0:
         raise SystemExit(result.returncode)
 
