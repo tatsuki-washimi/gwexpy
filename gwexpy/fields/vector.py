@@ -1,4 +1,5 @@
 """Vector-valued field implementation using ScalarField components."""
+
 from __future__ import annotations
 
 from typing import Literal
@@ -60,7 +61,13 @@ class VectorField(FieldDict):
             if arr.ndim != 5:
                 raise ValueError(f"VectorField expected 5D array, got {arr.ndim}D")
             n_comp = arr.shape[-1]
-            labels = ["x", "y", "z"][:n_comp] or [str(i) for i in range(n_comp)]
+            if n_comp not in (1, 2, 3):
+                raise ValueError(
+                    "VectorField ndarray input requires a component axis with "
+                    "1, 2, or 3 entries; "
+                    f"got {n_comp}"
+                )
+            labels = ["x", "y", "z"][:n_comp]
 
             # Use dictionary comprehension to create components
             # We need valid ScalarField objects. For simplicity, we create them
