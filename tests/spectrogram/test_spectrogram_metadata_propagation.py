@@ -54,6 +54,32 @@ def test_rebin_same_grid_preserves_metadata_without_ignored_x0_warning(
     assert result.unit == explicit_axis_spectrogram.unit
 
 
+def test_rebin_actual_bins_updates_axes_without_ignored_x0_warning(
+    explicit_axis_spectrogram: Spectrogram,
+) -> None:
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        result = explicit_axis_spectrogram.rebin(dt=2 * u.s, df=2 * u.Hz)
+
+    _assert_no_ignored_x0_warning(caught)
+    assert result.shape == (2, 2)
+    np.testing.assert_allclose(result.value, [[3.5, 5.5], [11.5, 13.5]])
+    np.testing.assert_allclose(result.times.to_value(u.s), [0.5, 2.5])
+    np.testing.assert_allclose(result.frequencies.to_value(u.Hz), [10.5, 12.5])
+    assert result.dt == 2 * u.s
+    assert result.df == 2 * u.Hz
+    assert result.name == explicit_axis_spectrogram.name
+    assert result.channel == explicit_axis_spectrogram.channel
+    assert result.epoch.gps == pytest.approx(0.5)
+    assert result.unit == explicit_axis_spectrogram.unit
+
+
+def test_rebin_axis_step_value_accepts_unitless_and_quantity_spacing() -> None:
+    assert Spectrogram._axis_step_value(2.0, "Hz") == 2.0
+    assert Spectrogram._axis_step_value(2 * u.Hz, "Hz") == 2.0
+    assert Spectrogram._axis_step_value(2000 * u.ms, "s") == 2.0
+
+
 def test_normalize_preserves_metadata_without_ignored_x0_warning(
     explicit_axis_spectrogram: Spectrogram,
 ) -> None:
