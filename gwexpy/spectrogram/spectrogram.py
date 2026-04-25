@@ -506,7 +506,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             The rebinned spectrogram.
 
         """
-        data = self.value
+        data = self.value.copy()
         times = self.times
         freqs = self.frequencies
 
