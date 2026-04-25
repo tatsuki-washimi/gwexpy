@@ -9,6 +9,7 @@ import warnings
 from typing import Any, cast
 
 import numpy as np
+import numpy.typing as npt
 from astropy import units as u
 from scipy import stats
 
@@ -590,6 +591,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         idx = np.floor(s / dx).astype(int)
         idx = np.clip(idx, 0, m - 1)
 
+        hist: npt.NDArray[Any]
         if d == 1:
             hist = np.zeros((m,), dtype=float)
             np.add.at(hist, idx[:, 0], 1.0)
@@ -694,7 +696,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         else:
             controls_list = list(controls)
 
-        controls_arrays = []
+        controls_arrays: list[npt.NDArray[Any]] = []
         for ctrl in controls_list:
             if hasattr(ctrl, "sample_rate"):
                 if self.sample_rate != ctrl.sample_rate:

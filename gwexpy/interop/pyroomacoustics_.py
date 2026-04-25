@@ -400,6 +400,7 @@ def from_pyroomacoustics_field(
     fs = float(room.fs)
 
     # Collect data: shape (n_mics, n_samples)
+    data_2d: Any
     if mode == "rir":
         rir = room.rir
         if rir is None:
@@ -441,7 +442,7 @@ def from_pyroomacoustics_field(
 
     nx, ny, nz = grid_3d
     # (n_mics, nt) → (nx, ny, nz, nt)
-    data_4d = data_2d.reshape(nx, ny, nz, nt)
+    data_4d: Any = data_2d.reshape(nx, ny, nz, nt)
     # → (nt, nx, ny, nz)
     data_4d = np.moveaxis(data_4d, -1, 0)
 

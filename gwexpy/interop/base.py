@@ -16,7 +16,9 @@ def to_plain_array(data: Any, copy: bool = False) -> np.ndarray:
     if isinstance(data, Quantity):
         data = data.value
 
-    return np.array(data, copy=copy)
+    if copy:
+        return np.array(data, copy=True)
+    return np.asarray(data)
 
 
 def from_plain_array(

@@ -725,7 +725,7 @@ def _impute_1d(
         except ImportError:
             val_1d[:] = _ffill_numpy(val_1d, limit=limit)
         else:
-            val_1d[:] = pd.Series(val_1d).ffill(limit=limit).values
+            val_1d[:] = np.asarray(pd.Series(val_1d).ffill(limit=limit).values)
         apply_limit_mask = False
     elif method == "bfill":
         try:
@@ -733,7 +733,7 @@ def _impute_1d(
         except ImportError:
             val_1d[:] = _bfill_numpy(val_1d, limit=limit)
         else:
-            val_1d[:] = pd.Series(val_1d).bfill(limit=limit).values
+            val_1d[:] = np.asarray(pd.Series(val_1d).bfill(limit=limit).values)
         apply_limit_mask = False
     elif method == "mean":
         mean_val = float(np.nanmean(cast(Any, val_1d)))

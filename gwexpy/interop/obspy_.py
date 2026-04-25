@@ -211,6 +211,7 @@ def _stream_to_spec(cls, st, unit=None, name_policy="id", **kwargs):
     data = np.stack(data_list).T  # (n_times, n_freqs)
 
     # If frequencies were not stored, create dummy
+    freqs_out: np.ndarray
     if all(f == 0.0 for f in freqs):
         freqs_out = np.arange(len(freqs), dtype=float)
     else:

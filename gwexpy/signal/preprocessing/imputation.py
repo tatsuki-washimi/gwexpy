@@ -1,7 +1,10 @@
 """Missing value imputation algorithms for signal processing."""
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
+import numpy.typing as npt
 
 
 def _coerce_times(times, n):
@@ -150,7 +153,7 @@ def impute(
        restored to NaN (forward direction).
 
     """
-    val = np.asarray(values).copy()
+    val: npt.NDArray[Any] = np.asarray(values).copy()
     nans = np.isnan(val)
 
     if not np.any(nans):
@@ -201,7 +204,7 @@ def impute(
             val = _ffill_numpy(val, limit=limit)
         else:
             s = Series(val)
-            val = s.ffill(limit=limit).values.copy()
+            val = np.asarray(s.ffill(limit=limit).values).copy()
 
     elif method == "bfill":
         try:
@@ -210,7 +213,7 @@ def impute(
             val = _bfill_numpy(val, limit=limit)
         else:
             s = Series(val)
-            val = s.bfill(limit=limit).values.copy()
+            val = np.asarray(s.bfill(limit=limit).values).copy()
 
     elif method == "mean":
         val[nans] = np.nanmean(val)

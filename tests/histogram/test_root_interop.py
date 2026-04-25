@@ -6,14 +6,15 @@ from astropy import units as u
 
 from gwexpy.histogram import Histogram, HistogramDict
 
-try:
-    import ROOT
-except ImportError:
-    ROOT = None
+pytestmark = pytest.mark.root
 
 
-@pytest.mark.skipif(ROOT is None, reason="ROOT not installed")
+def _root():
+    return pytest.importorskip("ROOT")
+
+
 def test_histogram_to_th1d():
+    _root()
     values = [10.0, 20.0, 30.0]
     edges = np.array([0.0, 1.0, 2.0, 5.0])
     h = Histogram(values, edges, unit="ct", xunit="m", name="test_hist")
@@ -28,8 +29,8 @@ def test_histogram_to_th1d():
     assert np.isclose(th1.GetXaxis().GetBinUpEdge(3), edges[3])
 
 
-@pytest.mark.skipif(ROOT is None, reason="ROOT not installed")
 def test_histogram_from_root():
+    ROOT = _root()
     edges = np.array([0.0, 1.0, 3.0, 10.0])
     th1 = ROOT.TH1D("h_root", "h_root", 3, edges)
     th1.SetBinContent(1, 100)
@@ -52,8 +53,8 @@ def test_histogram_from_root():
     assert np.allclose(h.sumw2.value, [100, 400, 900])
 
 
-@pytest.mark.skipif(ROOT is None, reason="ROOT not installed")
 def test_histogram_dict_write_root(tmp_path):
+    ROOT = _root()
     h1 = Histogram([10, 20], [0, 1, 2], name="h1")
     hd = HistogramDict({"a": h1})
 
