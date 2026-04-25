@@ -73,11 +73,11 @@ def _decode_netcdf_key(raw):
 
 def _import_xarray():
     try:
-        xr = ensure_dependency("xarray")
+        xr = ensure_dependency("xarray", extra="netcdf4")
     except ImportError as exc:
         raise ImportError(
             "xarray is required for reading/writing NetCDF4 files. "
-            "Install with `pip install xarray netcdf4`."
+            "Install with `pip install 'gwexpy[netcdf4]'`."
         ) from exc
     return xr
 

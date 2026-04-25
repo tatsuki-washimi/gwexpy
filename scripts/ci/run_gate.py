@@ -154,6 +154,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "tests/io/test_netcdf4_reader.py",
                 "tests/io/test_tdms_reader.py",
                 "tests/io/test_audio_metadata.py",
+                "tests/io/test_seismic_public_io.py",
             ]
         )
         return

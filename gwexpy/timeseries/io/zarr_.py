@@ -30,11 +30,11 @@ from ._registration import register_timeseries_format
 
 def _import_zarr():
     try:
-        zarr = ensure_dependency("zarr")
+        zarr = ensure_dependency("zarr", extra="zarr")
     except ImportError as exc:
         raise ImportError(
             "zarr is required for reading/writing Zarr stores. "
-            "Install with `pip install zarr`."
+            "Install with `pip install 'gwexpy[zarr]'`."
         ) from exc
     return zarr
 

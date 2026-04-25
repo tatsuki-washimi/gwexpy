@@ -217,9 +217,10 @@ def ensure_dependency(
         name = import_name or package_name
         return importlib.import_module(name)
     except ImportError as exc:
-        install_cmd = f"pip install {package_name}"
         if extra:
-            install_cmd += f"[{extra}]"
+            install_cmd = f"pip install 'gwexpy[{extra}]'"
+        else:
+            install_cmd = f"pip install {package_name}"
         msg = f"{package_name} is required. Install with: {install_cmd}"
         raise ImportError(msg) from exc
 

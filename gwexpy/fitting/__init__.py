@@ -50,7 +50,8 @@ def __getattr__(name: str) -> Any:
             from .core import FitResult, Fitter, fit_series
         except ImportError as exc:  # pragma: no cover
             raise ImportError(
-                "gwexpy.fitting requires optional dependencies (e.g. iminuit) and a working numba setup."
+                "gwexpy.fitting requires optional dependencies. "
+                "Install with: pip install 'gwexpy[fitting]'"
             ) from exc
         if name == "fit_series":
             return fit_series
@@ -62,7 +63,8 @@ def __getattr__(name: str) -> Any:
             from .gls import GLS, GeneralizedLeastSquares
         except ImportError as exc:  # pragma: no cover
             raise ImportError(
-                "gwexpy.fitting requires optional dependencies (e.g. iminuit)."
+                "gwexpy.fitting requires optional dependencies. "
+                "Install with: pip install 'gwexpy[fitting]'"
             ) from exc
         return GeneralizedLeastSquares if name == "GeneralizedLeastSquares" else GLS
     if name == "fit_bootstrap_spectrum":
@@ -70,7 +72,8 @@ def __getattr__(name: str) -> Any:
             from .highlevel import fit_bootstrap_spectrum
         except ImportError as exc:  # pragma: no cover
             raise ImportError(
-                "gwexpy.fitting.highlevel requires optional dependencies."
+                "gwexpy.fitting requires optional dependencies. "
+                "Install with: pip install 'gwexpy[fitting]'"
             ) from exc
         return fit_bootstrap_spectrum
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

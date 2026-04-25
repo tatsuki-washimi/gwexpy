@@ -18,11 +18,11 @@ from ._registration import register_timeseries_format
 
 def _import_obspy():
     try:
-        obspy = ensure_dependency("obspy")
+        obspy = ensure_dependency("obspy", extra="seismic")
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError(
             "ObsPy is required for reading seismic files. "
-            "Install with `pip install obspy`."
+            "Install with `pip install 'gwexpy[seismic]'`."
         ) from exc
     return obspy
 

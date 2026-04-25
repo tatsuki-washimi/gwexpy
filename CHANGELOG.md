@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Packaging & Optional Dependencies (issue #251)
+
+- **packaging**: Added `netcdf4` extra (`netCDF4`, `xarray`) and `zarr` extra (`zarr`) to `pyproject.toml`; both are now included in the `all` convenience extra.
+- **packaging**: Removed hand-edited tail from `requirements-dev.txt`; `analysis` extras are now managed exclusively through `pyproject.toml`.
+- **interop**: Fixed `_optional.py` `_EXTRA_MAP` — phantom extras (`interop`, `bio`, `stats`, `eda`) replaced with `None` entries that fall back to bare `pip install <package>`; `netCDF4`/`xarray` now point to `netcdf4` extra; `zarr` points to `zarr` extra.
+- **io**: `ensure_dependency()` error hint corrected to `pip install 'gwexpy[<extra>]'` instead of `pip install <pkg>[<extra>]`.
+- **io**: `_import_pydub`, `_import_obspy`, `_import_nptdms`, `_import_zarr`, `_import_xarray` error messages now include `pip install 'gwexpy[<extra>]'` hints.
+- **fitting**: `gwexpy.fitting.__getattr__` error messages now suggest `pip install 'gwexpy[fitting]'`.
+- **ci**: `io-optional` gate extended with `test_seismic_public_io.py`; `test_optional_deps.py` augmented with `gwexpy[extra]` hint assertions and `TestSeismicImportGuard`.
+- **docs**: Installation guide updated with `netcdf4`, `zarr` extras and clarified `gui` is not in `all`.
+
 ### Infrastructure & CI
 
 - **ci**: Comprehensive stabilization of the CI pipeline, resolving all `ModuleNotFoundError` and `SyntaxError` regressions.
