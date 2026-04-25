@@ -13,6 +13,7 @@
    :nosignatures:
 
    hdf5_
+   frequency
    json_
    sqlite_
    zarr_
@@ -39,6 +40,7 @@
    :nosignatures:
 
    torch_
+   torch_dataset
    tensorflow_
    jax_
    cupy_
