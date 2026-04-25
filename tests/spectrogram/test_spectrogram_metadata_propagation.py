@@ -1,4 +1,5 @@
 """Regression tests for Spectrogram metadata propagation."""
+
 from __future__ import annotations
 
 import warnings
