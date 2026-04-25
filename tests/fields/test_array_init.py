@@ -25,6 +25,11 @@ def test_vectorfield_array_init():
     with pytest.raises(ValueError, match="expected 5D array"):
         VectorField(np.ones((2, 3, 4, 5)))
 
+
+def test_vectorfield_array_init_rejects_more_than_three_components():
+    with pytest.raises(ValueError, match="supports 1, 2, or 3 components"):
+        VectorField(np.ones((2, 3, 4, 5, 4)))
+
 def test_tensorfield_array_init():
     # 6D array initialization
     arr = np.ones((2, 3, 4, 5, 3, 3))
