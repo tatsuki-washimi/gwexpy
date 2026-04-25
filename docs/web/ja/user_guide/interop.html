@@ -321,31 +321,37 @@
 <td><p>object-level 変換</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.hdf5_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>JSON</p></td>
+<tr class="row-odd"><td><p>HDF5 FrequencySeries</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_hdf5_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_hdf5_frequencyseries()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>FrequencySeries HDF5 ヘルパー</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.frequency.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>JSON</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_json()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_json()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>JSON 文字列との相互変換</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.json_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p>Python dict</p></td>
+<tr class="row-odd"><td><p>Python dict</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dict()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>dict との相互変換</p></td>
 <td><p>—</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://www.sqlite.org/index.html">SQLite</a></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.sqlite.org/index.html">SQLite</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sqlite()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>object-level bridge</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.sqlite_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://zarr.readthedocs.io/en/stable/">Zarr</a></p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://zarr.readthedocs.io/en/stable/">Zarr</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_zarr()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>array/store bridge</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.zarr_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://unidata.github.io/netcdf4-python/">NetCDF4</a></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://unidata.github.io/netcdf4-python/">NetCDF4</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_netcdf4()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>object-level bridge</p></td>
@@ -385,23 +391,35 @@
 <td><p>Series / DataFrame</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.pandas_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://pola.rs/">polars</a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">to_polars_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_dict()</span></code></p></td>
+<tr class="row-even"><td><p>pandas FrequencySeries</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pandas_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pandas_frequencyseries()</span></code></p></td>
 <td><p>公開済み</p></td>
-<td><p>Series / DataFrame / dict</p></td>
+<td><p>FrequencySeries ⇔ pandas.Series</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.frequency.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://pola.rs/">polars</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_polars_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_series()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_dataframe()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_polars_dict()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_polars_dict()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>Series / DataFrame / dict / FrequencySeries</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.polars_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://docs.xarray.dev/">xarray</a></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://docs.xarray.dev/">xarray</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>DataArray / Dataset</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.xarray_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://docs.xarray.dev/">xarray</a> Field</p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://docs.xarray.dev/">xarray</a> Field</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_xarray_field()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray_field()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>ScalarField / VectorField</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.xarray_.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>xarray FrequencySeries</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_xarray_frequencyseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_xarray_frequencyseries()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>FrequencySeries ⇔ xarray.DataArray</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.frequency.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://www.astropy.org/">astropy</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_astropy_timeseries()</span></code></p></td>
@@ -443,20 +461,26 @@
 <td><p>Tensor 変換</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.torch_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a></p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://pytorch.org/">PyTorch</a> Dataset</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesWindowDataset</span></code>, <code class="docutils literal notranslate"><span class="pre">to_torch_dataset()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_torch_dataloader()</span></code></p></td>
+<td><p>公開済み</p></td>
+<td><p>トレーニングループ用ウィンドウデータセット</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.torch_dataset.html"><span class="std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_tf()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_tf()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>Tensor 変換</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.tensorflow_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://jax.readthedocs.io/en/latest/">JAX</a></p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://jax.readthedocs.io/en/latest/">JAX</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_jax()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_jax()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>JAX array 変換</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.jax_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://cupy.dev/">CuPy</a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">to_cupy()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_cupy()</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://cupy.dev/">CuPy</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_cupy()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_cupy()</span></code>, <code class="docutils literal notranslate"><span class="pre">is_cupy_available()</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>GPU array 変換</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.cupy_.html"><span class="std std-doc">API</span></a></p></td>
@@ -646,7 +670,7 @@
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.meep_.html"><span class="std std-doc">API</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>openEMS</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">from_openems_hdf5()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from_openems_hdf5()</span></code>, <code class="docutils literal notranslate"><span class="pre">DUMP_TYPE_MAP</span></code></p></td>
 <td><p>公開済み</p></td>
 <td><p>import 中心</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.openems_.html"><span class="std std-doc">API</span></a></p></td>
@@ -738,7 +762,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-24 03:50:02.
+      <span class="lastupdated">Last updated on 2026-04-25 01:00:30.
       </span></p>
   </div>
 
