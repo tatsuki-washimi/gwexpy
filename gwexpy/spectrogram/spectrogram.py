@@ -138,7 +138,11 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     @staticmethod
     def _axis_step_value(value: Any, unit: str) -> float:
-        """Return an axis spacing as a float, preserving unitless GWpy fallback."""
+        """Return an axis spacing as a float.
+
+        GWpy normally exposes Spectrogram ``dt``/``df`` as Quantities, but the
+        scalar fallback keeps older objects and subclasses compatible.
+        """
         if hasattr(value, "to"):
             return float(value.to(unit).value)
         return float(value)
