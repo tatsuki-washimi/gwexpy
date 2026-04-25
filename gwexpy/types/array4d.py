@@ -1,4 +1,5 @@
 """4D Array with explicit axis management."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -89,21 +90,41 @@ class Array4D(Array):
             obj._axis0_index = np.arange(obj.shape[0]) * dimensionless_unscaled
         else:
             obj._axis0_index = coerce_1d_quantity(axis0)
+            if len(obj._axis0_index) != obj.shape[0]:
+                raise ValueError(
+                    f"axis0 length {len(obj._axis0_index)} does not match "
+                    f"data shape[0]={obj.shape[0]}"
+                )
 
         if axis1 is None:
             obj._axis1_index = np.arange(obj.shape[1]) * dimensionless_unscaled
         else:
             obj._axis1_index = coerce_1d_quantity(axis1)
+            if len(obj._axis1_index) != obj.shape[1]:
+                raise ValueError(
+                    f"axis1 length {len(obj._axis1_index)} does not match "
+                    f"data shape[1]={obj.shape[1]}"
+                )
 
         if axis2 is None:
             obj._axis2_index = np.arange(obj.shape[2]) * dimensionless_unscaled
         else:
             obj._axis2_index = coerce_1d_quantity(axis2)
+            if len(obj._axis2_index) != obj.shape[2]:
+                raise ValueError(
+                    f"axis2 length {len(obj._axis2_index)} does not match "
+                    f"data shape[2]={obj.shape[2]}"
+                )
 
         if axis3 is None:
             obj._axis3_index = np.arange(obj.shape[3]) * dimensionless_unscaled
         else:
             obj._axis3_index = coerce_1d_quantity(axis3)
+            if len(obj._axis3_index) != obj.shape[3]:
+                raise ValueError(
+                    f"axis3 length {len(obj._axis3_index)} does not match "
+                    f"data shape[3]={obj.shape[3]}"
+                )
 
         # Update generic axis_names if present
         if getattr(obj, "_axis_names", None) is not None:

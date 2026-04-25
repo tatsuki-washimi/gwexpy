@@ -23,14 +23,19 @@ class TensorField(FieldDict):
 
     Parameters
     ----------
-    components : dict[tuple, ScalarField], optional
-        Mapping of index tuples to field objects.
+    components : dict[tuple, ScalarField] or numpy.ndarray, optional
+        Mapping of index tuples to ScalarField objects, or a 6-D numpy array
+        of shape ``(n0, n1, n2, n3, i, j)`` representing a rank-2 tensor field.
+        When a numpy array is supplied the last two dimensions are the tensor
+        indices and each ``(n0, n1, n2, n3)`` slice becomes a ScalarField with
+        default ``arange`` coordinate axes.  Axis metadata (units, custom
+        coordinates) must be assigned after construction when using this path.
 
     rank : int, optional
         The tensor rank. If None, it is inferred from keys.
 
     validate : bool, optional
-        If True (default), validates component consistency.
+        If True (default), validates component consistency (shape, units, axes).
 
     Notes
     -----
@@ -58,7 +63,9 @@ class TensorField(FieldDict):
         if isinstance(components, np.ndarray):
             arr = components
             if arr.ndim != 6:
-                raise ValueError(f"TensorField rank-2 expects 6D array, got {arr.ndim}D")
+                raise ValueError(
+                    f"TensorField rank-2 expects 6D array, got {arr.ndim}D"
+                )
 
             dim_i, dim_j = arr.shape[-2:]
             new_components: dict[tuple[int, ...], ScalarField] = {}
