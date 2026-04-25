@@ -60,6 +60,28 @@ def test_metadatamatrix_channels_setter_size_mismatch_raises():
         mat.channels = np.array(["H1:X"])  # 1 != 6
 
 
+def test_metadatamatrix_names_setter_wrong_2d_shape_raises():
+    """(3, 2) input into a (2, 3) matrix must raise, not silently reorder."""
+    mat = MetaDataMatrix(shape=(2, 3))
+    with pytest.raises(ValueError, match="names"):
+        mat.names = np.array([["a", "b"], ["c", "d"], ["e", "f"]])  # shape (3,2)
+
+
+def test_metadatamatrix_units_setter_wrong_2d_shape_raises():
+    mat = MetaDataMatrix(shape=(2, 3))
+    wrong = np.empty((3, 2), dtype=object)
+    wrong.flat[:] = [u.m, u.s, u.Hz, u.kg, u.Pa, u.J]
+    with pytest.raises(ValueError, match="units"):
+        mat.units = wrong
+
+
+def test_metadatamatrix_channels_setter_wrong_2d_shape_raises():
+    mat = MetaDataMatrix(shape=(2, 3))
+    wrong = np.array([["H1:A", "L1:B"], ["H1:C", "L1:D"], ["H1:E", "L1:F"]])
+    with pytest.raises(ValueError, match="channels"):
+        mat.channels = wrong
+
+
 def test_metadatamatrix_names_setter_flat_array_reshapes():
     """A flat array whose size matches is accepted and applied in row-major order."""
     mat = MetaDataMatrix(shape=(2, 3))

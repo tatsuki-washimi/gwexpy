@@ -664,16 +664,22 @@ class MetaDataMatrix(np.ndarray):
         Parameters
         ----------
         value : array-like
-            Must contain exactly ``self.size`` elements. A flat array of the
-            correct size is accepted and reshaped; any other size mismatch
-            raises ``ValueError``.
+            Must either match the matrix shape exactly or be a 1-D flat array
+            of ``self.size`` elements (which is then reshaped in row-major
+            order).  Any other shape raises ``ValueError`` to prevent silent
+            element reordering.
 
         """
         value = np.asarray(value)
-        if value.size != self.size:
+        if value.shape == self.shape:
+            pass
+        elif value.ndim == 1 and value.size == self.size:
+            value = value.reshape(self.shape)
+        else:
             raise ValueError(
-                f"Cannot set names: got {value.size} value(s), "
-                f"expected {self.size} (matrix shape {self.shape})"
+                f"Cannot set names: shape {value.shape} is incompatible with "
+                f"matrix shape {self.shape}. Provide an exact-shape array or "
+                f"a 1-D flat array of size {self.size}."
             )
         flat_iter = cast(Iterable[MetaData], self.reshape(-1))
         value_iter = cast(Iterable[object], value.reshape(-1))
@@ -693,16 +699,22 @@ class MetaDataMatrix(np.ndarray):
         Parameters
         ----------
         value : array-like
-            Must contain exactly ``self.size`` elements. A flat array of the
-            correct size is accepted and reshaped; any other size mismatch
-            raises ``ValueError``.
+            Must either match the matrix shape exactly or be a 1-D flat array
+            of ``self.size`` elements (which is then reshaped in row-major
+            order).  Any other shape raises ``ValueError`` to prevent silent
+            element reordering.
 
         """
         value = np.asarray(value)
-        if value.size != self.size:
+        if value.shape == self.shape:
+            pass
+        elif value.ndim == 1 and value.size == self.size:
+            value = value.reshape(self.shape)
+        else:
             raise ValueError(
-                f"Cannot set units: got {value.size} value(s), "
-                f"expected {self.size} (matrix shape {self.shape})"
+                f"Cannot set units: shape {value.shape} is incompatible with "
+                f"matrix shape {self.shape}. Provide an exact-shape array or "
+                f"a 1-D flat array of size {self.size}."
             )
         flat_iter = cast(Iterable[MetaData], self.reshape(-1))
         value_iter = cast(Iterable[object], value.reshape(-1))
@@ -722,16 +734,22 @@ class MetaDataMatrix(np.ndarray):
         Parameters
         ----------
         value : array-like
-            Must contain exactly ``self.size`` elements. A flat array of the
-            correct size is accepted and reshaped; any other size mismatch
-            raises ``ValueError``.
+            Must either match the matrix shape exactly or be a 1-D flat array
+            of ``self.size`` elements (which is then reshaped in row-major
+            order).  Any other shape raises ``ValueError`` to prevent silent
+            element reordering.
 
         """
         value = np.asarray(value)
-        if value.size != self.size:
+        if value.shape == self.shape:
+            pass
+        elif value.ndim == 1 and value.size == self.size:
+            value = value.reshape(self.shape)
+        else:
             raise ValueError(
-                f"Cannot set channels: got {value.size} value(s), "
-                f"expected {self.size} (matrix shape {self.shape})"
+                f"Cannot set channels: shape {value.shape} is incompatible with "
+                f"matrix shape {self.shape}. Provide an exact-shape array or "
+                f"a 1-D flat array of size {self.size}."
             )
         flat_iter = cast(Iterable[MetaData], self.reshape(-1))
         value_iter = cast(Iterable[object], value.reshape(-1))
