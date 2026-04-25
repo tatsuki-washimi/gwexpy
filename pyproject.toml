@@ -127,6 +127,7 @@ gui = [
 
 # Development tools
 dev = [
+  "build",
   "ruff",
   "mypy",
   "pytest",
@@ -185,6 +186,13 @@ all = [
 [tool.setuptools.package-data]
 gwexpy = [
   "py.typed",
+]
+
+[tool.setuptools.exclude-package-data]
+"*" = [
+  "__pycache__/*",
+  "*.pyc",
+  "*.pyo",
 ]
 
 [tool.setuptools.packages.find]
@@ -316,6 +324,7 @@ markers = [
     "long: long running tests",
     "flaky: mark test as flaky (used by gwpy)",
     "network: tests requiring external network access (GWOSC, DataFind, etc.)",
+    "root: tests requiring optional PyROOT/ROOT native bindings",
     "pyautogui: GUI tests that require PyAutoGUI pointer injection",
 ]
 filterwarnings = [

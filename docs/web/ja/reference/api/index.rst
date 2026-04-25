@@ -35,7 +35,7 @@ API リファレンス (API Reference)
      - 安定
      - バッチ処理向けコンテナ群
    * - フィールド (Fields)
-     - 安定
+     - 実験的
      - Field 系クラスと演算 API
    * - スペクトル解析 (Spectral)
      - 安定

@@ -35,7 +35,7 @@ This index groups the main modules by topic. If you're unsure where to start, be
      - Stable
      - Batch-style container classes
    * - Fields
-     - Stable
+     - Experimental
      - Field classes and field-specific operations
    * - Spectral
      - Stable

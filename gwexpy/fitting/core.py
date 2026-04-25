@@ -6,6 +6,7 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from astropy import units as u
 from iminuit import Minuit
 from iminuit.util import describe
@@ -1076,6 +1077,7 @@ def fit_series(
 
     # Handle errors / uncertainty
     original_len = len(series)
+    dy: npt.NDArray[Any]
     sigma_full_for_plot: np.ndarray | float | None = None
     if sigma is None:
         # Unweighted least squares (cost function internally uses 1.0)
@@ -1088,7 +1090,7 @@ def fit_series(
             dy = np.full(len(y), sigma_val)
             sigma_full_for_plot = sigma_val
         else:
-            sigma_arr = np.asarray(sigma)
+            sigma_arr: npt.NDArray[Any] = np.asarray(sigma)
             sigma_full_for_plot = sigma_arr if len(sigma_arr) == original_len else None
             if len(sigma_arr) == original_len and x_range is not None:
                 # Crop sigma by x range using the full x array

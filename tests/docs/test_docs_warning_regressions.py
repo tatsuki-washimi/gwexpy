@@ -1,8 +1,10 @@
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_DOC_SUFFIXES = {".ipynb", ".md", ".rst"}
+PUBLIC_DOC_LINK_RE = re.compile(r"\]\(([^)]+\.(?:md|rst)(?:#[^)]*)?)\)")
 
 
 def _read_notebook(relative_path: str) -> dict:
@@ -50,6 +52,36 @@ def test_public_docs_do_not_link_internal_artifacts():
     ]
 
     assert not offenders, "Internal artifact links found:\n" + "\n".join(offenders)
+
+
+def test_public_docs_do_not_reference_internal_api_mapping():
+    offenders = [
+        str(path.relative_to(ROOT))
+        for path, text in _iter_public_doc_texts()
+        if "API_MAPPING.md" in text
+    ]
+
+    assert not offenders, "Internal API_MAPPING.md references found:\n" + "\n".join(offenders)
+
+
+def test_public_docs_relative_markdown_links_exist():
+    offenders: list[str] = []
+
+    for path, text in _iter_public_doc_texts():
+        for match in PUBLIC_DOC_LINK_RE.finditer(text):
+            raw_target = match.group(1)
+            target = raw_target.split("#", 1)[0]
+            if "://" in target or target.startswith(("#", "mailto:")):
+                continue
+            resolved = (path.parent / target).resolve()
+            try:
+                resolved.relative_to((ROOT / "docs" / "web").resolve())
+            except ValueError:
+                continue
+            if not resolved.is_file():
+                offenders.append(f"{path.relative_to(ROOT)} -> {raw_target}")
+
+    assert not offenders, "Broken public docs links found:\n" + "\n".join(offenders)
 
 
 def test_io_format_guides_do_not_start_sections_with_transition():

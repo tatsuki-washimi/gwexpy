@@ -115,6 +115,7 @@ def from_sdynpy_frf(
         freq = abscissa
 
     # Reshape ordinate to (n_resp, n_ref, n_freq) if needed
+    frf_data: Any
     if ordinate.ndim == 1:
         frf_data = ordinate.reshape(1, 1, -1)
     elif ordinate.ndim == 2:

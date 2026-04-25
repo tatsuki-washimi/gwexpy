@@ -9,11 +9,12 @@ FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
 
 
-def has_gwf_backend() -> bool:
+def has_gwf_backend(backend: str | None = None) -> bool:
     try:
         from gwpy.io.gwf.core import get_channel_names
 
-        return bool(get_channel_names(FIXTURE_DATA))
+        kwargs = {"backend": backend} if backend is not None else {}
+        return bool(get_channel_names(FIXTURE_DATA, **kwargs))
     except (ImportError, ModuleNotFoundError, OSError, RuntimeError, ValueError):
         return False
 
@@ -89,6 +90,29 @@ def test_extract_gwf_read_args_rejects_empty_channel_inputs():
         _extract_gwf_read_args(((),), {"format": "gwf"})
 
 
+def test_extract_gwf_read_args_no_start_end_leak_with_channel_alias():
+    """start/end must be absent from gwf_kwargs when overridden by positional args.
+
+    When positional start/end coexist with a channel alias keyword, the keyword
+    start/end values must still be removed from gwf_kwargs so callers that forward
+    start= and end= explicitly don't receive 'multiple values' TypeError.
+    """
+    channels, start, end, kw = _extract_gwf_read_args(
+        (CHANNEL, 10.0, 20.0),
+        {
+            "format": "gwf",
+            "name": "ignored",
+            "start": 100.0,
+            "end": 200.0,
+        },
+    )
+    assert channels == [CHANNEL]
+    assert start == 10.0
+    assert end == 20.0
+    assert "start" not in kw, f"'start' should not remain in gwf_kwargs, got {kw}"
+    assert "end" not in kw, f"'end' should not remain in gwf_kwargs, got {kw}"
+
+
 def test_extract_gwf_read_args_rejects_positional_keyword_overlap():
     with pytest.raises(
         TypeError, match="Cannot specify both positional and keyword 'start' for GWF read"
@@ -110,8 +134,8 @@ def test_extract_gwf_read_args_rejects_positional_keyword_overlap():
 def test_read_gwf_timeseries_with_single_channel_by_format_gwf():
     from gwpy.io.gwf.core import get_channel_names
 
-    if not has_gwf_backend():
-        pytest.skip("gwf backend not available")
+    if not has_gwf_backend("framel"):
+        pytest.skip("framel gwf backend not available")
 
     try:
         expected = get_channel_names(FIXTURE_DATA, backend="frameCPP")
