@@ -10,11 +10,14 @@ MARKDOWN_REFERENCE_LINK_RE = re.compile(r"^\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
 HTML_LINK_ATTR_RE = re.compile(r"""\b(?:href|src)=["']([^"']+)["']""")
 RST_INLINE_LINK_RE = re.compile(r"`[^`<]*<([^>]+)>`_{1,2}")
 RST_ROLE_LINK_RE = re.compile(r":[a-zA-Z0-9_-]+:`[^`<]*<([^>]+)>`")
+MYST_ROLE_LINK_RE = re.compile(r"\{[a-zA-Z0-9_-]+\}`([^`]+)`")
 RST_HYPERLINK_TARGET_RE = re.compile(r"^\s*\.\.\s+_[^:]+:\s*(\S+)", re.MULTILINE)
 RST_DIRECTIVE_TARGET_RE = re.compile(
     r"^\s*\.\.\s+(?:image|figure|include|literalinclude)::\s*(\S+)",
     re.MULTILINE,
 )
+MARKDOWN_FENCE_RE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
+EXPLICIT_TARGET_RE = re.compile(r"<([^>]+)>")
 
 
 def _read_notebook(relative_path: str) -> dict:
@@ -51,23 +54,37 @@ def _iter_public_doc_link_targets(path: Path, text: str):
 def _strip_fenced_code_blocks(text: str) -> str:
     lines: list[str] = []
     in_fence = False
-    fence_marker = ""
+    fence_char = ""
+    fence_len = 0
 
     for line in text.splitlines():
-        stripped = line.lstrip()
-        starts_fence = stripped.startswith(("```", "~~~"))
-        if starts_fence and not in_fence:
+        fence_match = MARKDOWN_FENCE_RE.match(line)
+        if fence_match and not in_fence:
             in_fence = True
-            fence_marker = stripped[:3]
+            fence = fence_match.group(1)
+            fence_char = fence[0]
+            fence_len = len(fence)
             continue
         if in_fence:
-            if stripped.startswith(fence_marker):
+            if (
+                fence_match
+                and fence_match.group(1)[0] == fence_char
+                and len(fence_match.group(1)) >= fence_len
+            ):
                 in_fence = False
-                fence_marker = ""
+                fence_char = ""
+                fence_len = 0
             continue
         lines.append(line)
 
     return "\n".join(lines)
+
+
+def _normalize_link_target(target: str) -> str:
+    explicit_target = EXPLICIT_TARGET_RE.search(target)
+    if explicit_target:
+        return explicit_target.group(1)
+    return target
 
 
 def _iter_text_link_targets(text: str):
@@ -78,11 +95,12 @@ def _iter_text_link_targets(text: str):
         HTML_LINK_ATTR_RE,
         RST_INLINE_LINK_RE,
         RST_ROLE_LINK_RE,
+        MYST_ROLE_LINK_RE,
         RST_HYPERLINK_TARGET_RE,
         RST_DIRECTIVE_TARGET_RE,
     ):
         for match in pattern.finditer(text):
-            yield match.group(1)
+            yield _normalize_link_target(match.group(1))
 
 
 def test_interop_autosummary_uses_currentmodule_short_names():
@@ -112,13 +130,18 @@ def test_public_docs_do_not_link_internal_artifacts():
     assert not offenders, "Internal artifact links found:\n" + "\n".join(offenders)
 
 
-def test_public_doc_internal_artifact_scan_ignores_non_link_mentions():
+def test_public_doc_internal_artifact_scan_strips_fenced_code_blocks():
     text = "\n".join(
         (
             "Mention docs/developers/ as prose, not as a link target.",
-            "```",
+            "````python",
             "[example](../../docs_internal/report.md)",
             "```",
+            "[still code](../../docs_internal/too-short-close.md)",
+            "````",
+            "~~~",
+            "{doc}`code <../../docs/developers/code.md>`",
+            "~~~",
         )
     )
 
@@ -133,6 +156,8 @@ def test_public_doc_internal_artifact_scan_reads_link_targets():
             "[markdown](../../docs_internal/report.md)",
             "`rst link <../../docs/developers/plan.md>`_",
             ':download:`agent notes <../../.agent/notes.md>`',
+            "{doc}`harness docs <../../.harness/README.md>`",
+            "{doc}`../../docs/superpowers/index.md`",
         )
     )
 
@@ -141,6 +166,8 @@ def test_public_doc_internal_artifact_scan_reads_link_targets():
     assert "../../docs_internal/report.md" in targets
     assert "../../docs/developers/plan.md" in targets
     assert "../../.agent/notes.md" in targets
+    assert "../../.harness/README.md" in targets
+    assert "../../docs/superpowers/index.md" in targets
 
 
 def test_public_docs_do_not_reference_internal_api_mapping():
