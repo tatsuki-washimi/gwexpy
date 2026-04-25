@@ -1,14 +1,14 @@
 # `.harness/` ポリシー計画
 
-**作成日:** 2026-04-25  
-**関連 issue:** #190  
+**作成日:** 2026-04-25
+**関連 issue:** #190
 **ステータス:** 草案（人間レビュー待ち）
 
 ---
 
 ## 背景
 
-`.harness/` は AI エージェント向けのガイドライン・スキル・フック・ルールなどを格納するプロジェクト標準ディレクトリである。  
+`.harness/` は AI エージェント向けのガイドライン・スキル・フック・ルールなどを格納するプロジェクト標準ディレクトリである。
 PR #189 で絶対パス露出を最小修正した上で、本プランではファイルの追跡方針を整理する。
 
 ---
@@ -67,8 +67,8 @@ PR #189 で絶対パス露出を最小修正した上で、本プランではフ
 └── agents/              ← 個人実験用エージェント定義
 ```
 
-- `.harness.local/` は `setup_symlinks.sh` が認識し、存在すれば追加シンボリックリンクを設定する（実装は後続 PR）
-- 現時点では `gitignore` への追加のみ行い、実装は保留
+- `.harness.local/` は `setup_symlinks.sh` が認識し、存在すれば `.harness/` より優先してシンボリックリンクを設定する
+- `.harness.local/` は `.gitignore` 対象であり、個人設定ファイルはコミットしない
 
 ---
 
@@ -89,7 +89,7 @@ PR #189 で絶対パス露出を最小修正した上で、本プランではフ
 
 1. `hooks.json` 編集時は `git diff .harness/hooks/hooks.json` で絶対パスが含まれていないことを確認する
 2. `setup_symlinks.sh` は相対パスのみ使用し、絶対パスを引数に取らない設計を維持する
-3. `.harness/rules/common/` に「harness ファイル編集ガイドライン」を追記する（後続作業）
+3. `.harness/rules/common/harness-editing.md` のチェックリストで、PR 前に `.harness/` への個人設定混入を確認する
 
 ---
 
@@ -102,8 +102,8 @@ PR #189 で絶対パス露出を最小修正した上で、本プランではフ
 - [x] `.gitignore` 更新案の提示
 - [x] 将来の個人設定分離（`.harness.local/`）の設計方針提示
 
-後続 issue / PR として切り出すもの：
+本 PR で完了：
 
-- [ ] `.gitignore` への `.harness.local/` 追加（軽微、単独 PR）
-- [ ] `setup_symlinks.sh` の `.harness.local/` 対応実装
-- [ ] `.harness/rules/common/` への harness 編集ガイドライン追記
+- [x] `.gitignore` への `.harness.local/` 追加
+- [x] `setup_symlinks.sh` の `.harness.local/` 対応実装
+- [x] `.harness/rules/common/` への harness 編集ガイドライン追記

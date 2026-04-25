@@ -1,6 +1,6 @@
 # .harness/ ファイル編集ガイドライン
 
-このドキュメントは `.harness/` 配下のファイルを編集する際のルールを定める。  
+このドキュメントは `.harness/` 配下のファイルを編集する際のルールを定める。
 方針の背景は `docs/developers/plans/harness_policy_plan.md`（issue #190）を参照。
 
 ---
