@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, SupportsIndex
+from typing import TYPE_CHECKING, Any, Self, SupportsIndex
 
 import numpy as np
 from astropy import units as u
@@ -118,8 +118,15 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         times: Any,
         frequencies: Any,
         unit: Any,
-    ) -> Spectrogram:
-        """Build a Spectrogram from explicit axes without redundant x0 metadata."""
+    ) -> Self:
+        """Build a Spectrogram from explicit axes without redundant x0 metadata.
+
+        GWpy derives Spectrogram epoch/x0 from explicit ``times``. Passing
+        ``epoch`` at the same time is redundant and can trigger ignored-x0
+        warnings. The series-list conversion methods keep passing epoch because
+        their one-dimensional TimeSeries/FrequencySeries constructors use it as
+        part of the output series metadata.
+        """
         return self.__class__(
             data,
             times=times,
@@ -128,6 +135,13 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             name=self.name,
             channel=self.channel,
         )
+
+    @staticmethod
+    def _axis_step_value(value: Any, unit: str) -> float:
+        """Return an axis spacing as a float, preserving unitless GWpy fallback."""
+        if hasattr(value, "to"):
+            return float(value.to(unit).value)
+        return float(value)
 
     def bootstrap(
         self,
@@ -530,9 +544,8 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         # Frequency rebinning
         if df is not None:
-            if hasattr(df, "to"):
-                df = df.to("Hz").value
-            orig_df = self.df.to("Hz").value
+            df = self._axis_step_value(df, "Hz")
+            orig_df = self._axis_step_value(self.df, "Hz")
             bin_size = int(round(df / orig_df))
             if bin_size > 1:
                 nt, nf = data.shape
@@ -548,9 +561,8 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         # Time rebinning
         if dt is not None:
-            if hasattr(dt, "to"):
-                dt = dt.to("s").value
-            orig_dt = self.dt.to("s").value
+            dt = self._axis_step_value(dt, "s")
+            orig_dt = self._axis_step_value(self.dt, "s")
             bin_size = int(round(dt / orig_dt))
             if bin_size > 1:
                 nt, nf = data.shape
