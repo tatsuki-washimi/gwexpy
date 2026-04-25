@@ -48,16 +48,16 @@ myst:
 (validated-ja-objective-evidence)=
 ## 客観的証拠 (Objective Evidence)
 
-このページの要約は、直接参照できるリポジトリ内の検証資料に基づいています。
+このページの要約は、このページ内に整理した公開向けの検証証跡に基づいています。
 
 この証拠表は監査証跡を 1 ページにまとめるため、列数を多めに保っています。モバイルでは共有 CSS に合わせた横スクロール前提で読むのが自然です。
 
-| 証拠の種類 | 資料 | 何を示すか |
+| 証拠の種類 | 公開資料 | 何を示すか |
 | :--- | :--- | :--- |
-| 監査スコープ | [ALGORITHM_CONTEXT](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md) | どのアルゴリズムを、どの観点で点検したか |
-| 統合結果 | [merged_validation_report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md) | 独立監査の統合所見、重大度、合意度 |
-| 修正履歴 | [algorithm_fix_report_20260201](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md) | 指摘後に何を修正したか |
-| Field 系の物理レビュー | [scalarfield_physics_review_20260120](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md) | `ScalarField` の FFT と軸整合性に関するレビュー |
+| 監査スコープ | {ref}`検証サマリ <validated-algorithms-summary-table-ja>` | どのアルゴリズムを、どの観点で点検したか |
+| 統合結果 | {ref}`アルゴリズム別セクション <validated-ja-k-space>` | 独立監査の統合所見、重大度、合意度 |
+| 修正履歴 | {ref}`監査証跡 <validated-algorithms-audit-trail-ja>` | 指摘後に何を修正したか |
+| Field 系の物理レビュー | {ref}`k-space 計算 <validated-ja-k-space>` | `ScalarField` の FFT と軸整合性に関するレビュー |
 
 (validated-ja-source-references)=
 ## 参照元一覧 (Source References)
@@ -256,14 +256,9 @@ MCMC の対数尤度計算では、複素残差に対してもエルミート形
 (validated-algorithms-audit-trail-ja)=
 ## 監査証跡 (Audit Trail)
 
-以下のリンクは、このページの要約を支える監査スコープ・統合所見・修正履歴を指しています。
-
-- [ALGORITHM_CONTEXT](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md) - 検証対象アルゴリズムの全体像
-- [merged_validation_report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md) - 独立監査を統合した重大度・合意度の一覧
-- [check_claude_antigravity](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/check_claude_antigravity.md) - VIF / GLS / `_fft_transient` の監査メモ
-- [algorithm_fix_report_20260201](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md) - ARIMA や MCMC 周辺の修正履歴
-- [scalarfield_physics_review_20260120](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md) - `ScalarField` の FFT と軸整合性に関する物理レビュー
-- [report_scalarfield_physics_verification_20260122_222000](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/archive/reports/report_scalarfield_physics_verification_20260122_222000.md) - Field FFT 挙動の追検証メモ
+公開向けの監査証跡は、開発者向け・履歴管理用のレビュー資料へ直接誘導せず、
+このページ内に要約しています。上の検証サマリ表で対象アルゴリズム群を示し、
+各アルゴリズム別セクションで公開向けの前提、実装状況、関連理論への導線を記録しています。
 
 (validated-algorithms-related-documents-ja)=
 ## 検証向け関連ドキュメント
