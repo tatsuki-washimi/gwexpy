@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+PUBLIC_DOC_SUFFIXES = {".ipynb", ".md", ".rst"}
 
 
 def _read_notebook(relative_path: str) -> dict:
@@ -18,6 +19,12 @@ def _cell_source(cell: dict) -> str:
     return str(source)
 
 
+def _iter_public_doc_texts():
+    for path in sorted((ROOT / "docs" / "web").rglob("*")):
+        if path.is_file() and path.suffix in PUBLIC_DOC_SUFFIXES:
+            yield path, path.read_text(encoding="utf-8")
+
+
 def test_interop_autosummary_uses_currentmodule_short_names():
     for rel in (
         "docs/web/en/reference/api/interop.rst",
@@ -25,6 +32,16 @@ def test_interop_autosummary_uses_currentmodule_short_names():
     ):
         text = (ROOT / rel).read_text()
         assert "gwexpy.interop." not in text
+
+
+def test_public_docs_do_not_reference_internal_api_mapping():
+    offenders = [
+        str(path.relative_to(ROOT))
+        for path, text in _iter_public_doc_texts()
+        if "API_MAPPING.md" in text
+    ]
+
+    assert not offenders, "Internal API_MAPPING.md references found:\n" + "\n".join(offenders)
 
 
 def test_io_format_guides_do_not_start_sections_with_transition():
