@@ -10,8 +10,10 @@ from __future__ import annotations
 import argparse
 import os
 import platform
+import shutil
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 
@@ -22,6 +24,39 @@ def run_cmd(cmd: list[str], *, cwd: Path | None = None) -> None:
     completed = subprocess.run(cmd, check=False, cwd=cwd)
     if completed.returncode:
         raise SystemExit(completed.returncode)
+
+
+def remove_generated_build_artifacts(repo_root: Path) -> None:
+    """Remove generated artifacts that must not leak into wheel builds."""
+    shutil.rmtree(repo_root / "build", ignore_errors=True)
+    for pycache_dir in (repo_root / "gwexpy").rglob("__pycache__"):
+        shutil.rmtree(pycache_dir, ignore_errors=True)
+    for bytecode in (repo_root / "gwexpy").rglob("*.py[co]"):
+        bytecode.unlink(missing_ok=True)
+
+
+def assert_wheel_has_no_bytecode(repo_root: Path) -> None:
+    """Fail if the latest wheel contains interpreter cache artifacts."""
+    wheels = sorted(
+        (repo_root / "dist").glob("*.whl"), key=lambda path: path.stat().st_mtime
+    )
+    if not wheels:
+        raise SystemExit("No wheel artifact found in dist/.")
+
+    wheel = wheels[-1]
+    with zipfile.ZipFile(wheel) as archive:
+        forbidden = [
+            name
+            for name in archive.namelist()
+            if "__pycache__/" in name or name.endswith((".pyc", ".pyo"))
+        ]
+
+    if forbidden:
+        preview = "\n".join(f"  - {name}" for name in forbidden[:20])
+        extra = (
+            "" if len(forbidden) <= 20 else f"\n  ... and {len(forbidden) - 20} more"
+        )
+        raise SystemExit(f"Wheel contains bytecode/cache artifacts:\n{preview}{extra}")
 
 
 def run_gate(gate: str, with_fixtures: bool) -> None:
@@ -86,6 +121,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "tests/table/",
             ]
         )
+        remove_generated_build_artifacts(repo_root)
         run_cmd(
             [
                 "python",
@@ -97,11 +133,12 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
             ],
             cwd=repo_root.parent,
         )
+        assert_wheel_has_no_bytecode(repo_root)
         run_cmd(
             [
                 "python",
                 "-c",
-                "import gwexpy\nprint(f\"gwexpy version: {gwexpy.__version__}\")",
+                'import gwexpy\nprint(f"gwexpy version: {gwexpy.__version__}")',
             ],
         )
         return
@@ -174,15 +211,18 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("gate", choices=[
-        "pr-fast",
-        "io-contract",
-        "io-optional",
-        "io-network-backend",
-        "docs-notebook",
-        "io-zarr",
-        "interop-contract",
-    ])
+    parser.add_argument(
+        "gate",
+        choices=[
+            "pr-fast",
+            "io-contract",
+            "io-optional",
+            "io-network-backend",
+            "docs-notebook",
+            "io-zarr",
+            "interop-contract",
+        ],
+    )
     parser.add_argument(
         "--fixtures",
         default=True,

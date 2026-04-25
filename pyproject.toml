@@ -188,6 +188,13 @@ gwexpy = [
   "py.typed",
 ]
 
+[tool.setuptools.exclude-package-data]
+"*" = [
+  "__pycache__/*",
+  "*.pyc",
+  "*.pyo",
+]
+
 [tool.setuptools.packages.find]
 include = ["gwexpy*"]
 exclude = ["typings*", "tests*", "docs*", "examples*"]
