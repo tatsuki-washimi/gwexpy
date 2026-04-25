@@ -6,12 +6,20 @@
 #
 # This script is copied to <project>/.harness/scripts/setup_symlinks.sh
 # and executed from the project root.
+#
+# .harness.local/ support:
+#   If .harness.local/ exists alongside .harness/, its subdirectories take
+#   precedence over the corresponding .harness/ subdirectories for Claude.
+#   This allows per-developer overrides (e.g. different conda env names in
+#   hooks.json) without committing local settings to the repository.
+#   .harness.local/ is listed in .gitignore and must never be committed.
 set -euo pipefail
 
 # Resolve project root (two levels up from this script's location: .harness/scripts/)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 HARNESS_DIR="$PROJECT_ROOT/.harness"
+HARNESS_LOCAL_DIR="$PROJECT_ROOT/.harness.local"
 DRY_RUN=false
 TOOLS="claude,codex,cursor,gemini"
 
@@ -75,10 +83,22 @@ make_symlink() {
 setup_claude() {
     log_ok "Setting up Claude symlinks..."
     local base="$PROJECT_ROOT/.claude"
-    [[ -d "$HARNESS_DIR/hooks" ]]     && make_symlink "../../.harness/hooks"     "$base/hooks"
-    [[ -d "$HARNESS_DIR/agents" ]]    && make_symlink "../../.harness/agents"    "$base/agents"
-    [[ -d "$HARNESS_DIR/workflows" ]] && make_symlink "../../.harness/workflows" "$base/workflows"
-    [[ -d "$HARNESS_DIR/rules" ]]     && make_symlink "../../.harness/rules"     "$base/rules"
+
+    # .harness.local/ takes precedence when a subdirectory exists there.
+    _claude_link() {
+        local subdir="$1"
+        if [[ -d "$HARNESS_LOCAL_DIR/$subdir" ]]; then
+            make_symlink "../../.harness.local/$subdir" "$base/$subdir"
+            log_warn "  Using local override: .harness.local/$subdir"
+        elif [[ -d "$HARNESS_DIR/$subdir" ]]; then
+            make_symlink "../../.harness/$subdir" "$base/$subdir"
+        fi
+    }
+
+    _claude_link hooks
+    _claude_link agents
+    _claude_link workflows
+    _claude_link rules
 }
 
 setup_codex() {
