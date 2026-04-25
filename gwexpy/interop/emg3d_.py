@@ -21,6 +21,7 @@ References
 https://emg3d.emsig.xyz/
 
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -242,7 +243,7 @@ def from_emg3d_field(
                 "Set interpolate_to_cell_center=True to align them."
             )
         fx_c, fy_c, fz_c = fx, fy, fz
-        cx, cy, cz = _build_node_coords(mesh)
+        cx, cy, cz = _build_cell_center_coords(mesh)
         metadata = {}
 
     # Add singleton axis0 dimension

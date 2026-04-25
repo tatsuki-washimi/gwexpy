@@ -2,6 +2,7 @@
 
 Uses synthetic meshio.Mesh objects (no dolfinx or real mesh files needed).
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -166,7 +167,8 @@ class TestFromMeshio2DScalar:
     def test_interpolation_accuracy_linear(self):
         """Known parabolic function: f(x,y) = x^2 + y^2."""
         mesh = _make_2d_tri_mesh(
-            nx=20, ny=20,
+            nx=20,
+            ny=20,
             field_fn=lambda p: p[:, 0] ** 2 + p[:, 1] ** 2,
         )
         sf = from_meshio(ScalarField, mesh, grid_resolution=0.05)
@@ -223,12 +225,16 @@ class TestFromMeshioOptions:
 
     def test_custom_axis0(self):
         mesh = _make_2d_tri_mesh()
-        axis0 = np.array([0.0, 0.5, 1.0])
+        axis0 = np.array([0.5])  # single timestamp matching the single snapshot
         sf = from_meshio(
-            ScalarField, mesh, grid_resolution=0.1, axis0=axis0,
+            ScalarField,
+            mesh,
+            grid_resolution=0.1,
+            axis0=axis0,
         )
         assert isinstance(sf, ScalarField)
-        assert sf.shape[0] == 1  # single snapshot, axis0 stored
+        assert sf.shape[0] == 1  # single snapshot
+        assert sf._axis0_index.value[0] == pytest.approx(0.5)
 
     def test_grid_resolution_required(self):
         """grid_resolution is mandatory — missing it should raise TypeError."""
@@ -246,11 +252,13 @@ class TestFromMeshioCellData:
     def test_cell_data_only_raises(self):
         """cell_data without point_data must raise ValueError (unsupported interpolation)."""
         mesh = MagicMock()
-        mesh.points = np.column_stack([
-            np.linspace(0, 1, 100),
-            np.linspace(0, 1, 100),
-            np.zeros(100),
-        ])
+        mesh.points = np.column_stack(
+            [
+                np.linspace(0, 1, 100),
+                np.linspace(0, 1, 100),
+                np.zeros(100),
+            ]
+        )
         mesh.point_data = {}
         # Realistic mesh: 50 cells != 100 points
         mesh.cell_data = {"sigma": [np.ones(30), np.ones(20)]}
