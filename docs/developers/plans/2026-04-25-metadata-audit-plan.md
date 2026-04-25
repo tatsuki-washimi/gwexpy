@@ -1,7 +1,7 @@
 # MetaData / MetaDataMatrix 監査・修正計画
 
-**Issue:** #243 — Audit MetaData and MetaDataMatrix unit propagation and shape semantics  
-**作成日:** 2026-04-25  
+**Issue:** #243 — Audit MetaData and MetaDataMatrix unit propagation and shape semantics
+**作成日:** 2026-04-25
 **対象ブランチ:** `claude/plan-metadata-work-nDtXw`
 
 ---
@@ -31,9 +31,9 @@ def names(self, value):
         value = value.reshape(self.shape)  # ← サイレントリシェイプ！
 ```
 
-`units.setter`、`channels.setter` も同様。  
-**問題:** サイズが合わない配列を渡しても `reshape` が例外を吸収し、要素の対応がずれたまま設定される可能性がある。  
-**修正方針:** サイズが一致しない場合は `ValueError` を上げる。  
+`units.setter`、`channels.setter` も同様。
+**問題:** サイズが合わない配列を渡しても `reshape` が例外を吸収し、要素の対応がずれたまま設定される可能性がある。
+**修正方針:** サイズが一致しない場合は `ValueError` を上げる。
 サイズが一致する場合のみ reshape を許可する（フラット配列 → 行列への変換は有用なため残す）。
 
 ### 2-B. floor_divide の unit 意味論が未ドキュメント
@@ -43,22 +43,22 @@ def names(self, value):
 _UFUNC_MULT_DIV = {np.multiply, np.divide, np.floor_divide}
 ```
 
-`floor_divide` は整数割り算だが、unit は `lhs_unit / rhs_unit` として伝播される。  
-これは物理的に正しい（次元は同じ）が、docstring に記載がない。  
+`floor_divide` は整数割り算だが、unit は `lhs_unit / rhs_unit` として伝播される。
+これは物理的に正しい（次元は同じ）が、docstring に記載がない。
 **修正方針:** `_UFUNC_MULT_DIV` の意味論を docstring に追記。コード変更は不要。
 
 ### 2-C. CSV ラウンドトリップのテストが存在しない
 
-`MetaDataMatrix.write()` / `read()` および `MetaDataDict.write()` / `read()` のテストがない。  
+`MetaDataMatrix.write()` / `read()` および `MetaDataDict.write()` / `read()` のテストがない。
 実装は `MetaData` コンストラクタが string unit を受け付けるため動作するはずだが、
 `MetaDataDict.to_dataframe()` が astropy `Unit` オブジェクトをそのまま DataFrame に入れるため、
-`to_csv()` 時に `str(unit)` が呼ばれる挙動に依存している。  
+`to_csv()` 時に `str(unit)` が呼ばれる挙動に依存している。
 **修正方針:** `to_dataframe()` 内で `unit` を明示的に `str()` 変換してから格納し、round-trip テストを追加。
 
 ### 2-D. MetaDataDict には names/units/channels セッターが存在しない
 
 現在は getter のみ。Issue の "setters" チェックは主に `MetaDataMatrix` を指しているが、
-`MetaDataDict` についても同様のセッターが有用である可能性を確認する。  
+`MetaDataDict` についても同様のセッターが有用である可能性を確認する。
 **修正方針:** 今回は `MetaDataMatrix` セッターの修正に集中。`MetaDataDict` へのセッター追加は scope 外とし、
 issue コメントで明示する。
 
@@ -72,8 +72,8 @@ def as_meta(self, obj):
     return MetaData(name=self.name, channel=self.channel, unit=get_unit(obj))
 ```
 
-number や Quantity を渡した時、channel は `self.channel` を引き継ぐ。  
-これは現状テスト済みの挙動だが、仕様として docstring に明記されていない。  
+number や Quantity を渡した時、channel は `self.channel` を引き継ぐ。
+これは現状テスト済みの挙動だが、仕様として docstring に明記されていない。
 **修正方針:** docstring に "name and channel are inherited from self" と明記。
 
 ---
