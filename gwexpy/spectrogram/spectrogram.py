@@ -489,6 +489,10 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     ) -> Spectrogram:
         """Rebin the spectrogram in time and/or frequency.
 
+        Rebinning averages only complete bins. If the time or frequency axis
+        length is not divisible by the requested bin size, trailing samples that
+        do not form a complete bin are discarded.
+
         Parameters
         ----------
         dt : float or Quantity, optional
