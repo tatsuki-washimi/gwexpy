@@ -55,7 +55,7 @@ myst:
 | 証拠の種類 | 公開資料 | 何を示すか |
 | :--- | :--- | :--- |
 | 監査スコープ | {ref}`検証サマリ <validated-algorithms-summary-table-ja>` | どのアルゴリズムを、どの観点で点検したか |
-| 統合結果 | {ref}`アルゴリズム別セクション <validated-ja-k-space>` | 独立監査の統合所見、重大度、合意度 |
+| 統合結果 | {ref}`アルゴリズム別セクション <validated-algorithms-detail-sections-ja>` | 独立監査の統合所見、重大度、合意度 |
 | 修正履歴 | {ref}`監査証跡 <validated-algorithms-audit-trail-ja>` | 指摘後に何を修正したか |
 | Field 系の物理レビュー | {ref}`k-space 計算 <validated-ja-k-space>` | `ScalarField` の FFT と軸整合性に関するレビュー |
 

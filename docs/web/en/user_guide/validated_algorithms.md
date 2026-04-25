@@ -55,7 +55,7 @@ The evidence table is intentionally column-dense so the audit trail stays on one
 | Evidence type | Public source | What it shows |
 | :--- | :--- | :--- |
 | Audit scope | {ref}`Validation summary <validated-algorithms-summary-table>` | Which algorithms were reviewed and which numerical questions were checked |
-| Consolidated findings | {ref}`Per-algorithm sections <validated-en-k-space>` | Cross-reviewed findings, severity, and agreement across independent audits |
+| Consolidated findings | {ref}`Per-algorithm sections <validated-algorithms-detail-sections>` | Cross-reviewed findings, severity, and agreement across independent audits |
 | Fix history | {ref}`Audit Trail <validated-algorithms-audit-trail>` | What changed after the review findings were merged and addressed |
 | Field-specific physics review | {ref}`k-space calculation <validated-en-k-space>` | Physics and axis-consistency review for `ScalarField` FFT behavior |
 
