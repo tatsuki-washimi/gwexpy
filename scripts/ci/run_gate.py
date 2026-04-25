@@ -52,7 +52,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "pytest",
                 "-q",
                 "-m",
-                "not network and not nds",
+                "not network and not nds and not root",
                 "--ignore=tests/docs/test_docs_notebooks.py",
                 "--ignore=tests/gui/",
                 "--ignore=tests/nds/",

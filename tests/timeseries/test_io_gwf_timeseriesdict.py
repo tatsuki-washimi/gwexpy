@@ -9,11 +9,12 @@ FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
 
 
-def has_gwf_backend() -> bool:
+def has_gwf_backend(backend: str | None = None) -> bool:
     try:
         from gwpy.io.gwf.core import get_channel_names
 
-        return bool(get_channel_names(FIXTURE_DATA))
+        kwargs = {"backend": backend} if backend is not None else {}
+        return bool(get_channel_names(FIXTURE_DATA, **kwargs))
     except (ImportError, ModuleNotFoundError, OSError, RuntimeError, ValueError):
         return False
 
@@ -110,8 +111,8 @@ def test_extract_gwf_read_args_rejects_positional_keyword_overlap():
 def test_read_gwf_timeseries_with_single_channel_by_format_gwf():
     from gwpy.io.gwf.core import get_channel_names
 
-    if not has_gwf_backend():
-        pytest.skip("gwf backend not available")
+    if not has_gwf_backend("framel"):
+        pytest.skip("framel gwf backend not available")
 
     try:
         expected = get_channel_names(FIXTURE_DATA, backend="frameCPP")

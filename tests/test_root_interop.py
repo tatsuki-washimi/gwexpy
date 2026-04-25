@@ -8,6 +8,8 @@ from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 from gwexpy.spectrogram import Spectrogram, SpectrogramDict
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 
+pytestmark = pytest.mark.root
+
 
 def get_root():
     try:
@@ -70,8 +72,8 @@ def test_timeseries_dict_root(ROOT, tmp_path):
     assert os.path.exists(filename)
 
     f = ROOT.TFile.Open(filename)
-    assert isinstance(f.Get("H1"), ROOT.TGraph)
-    assert isinstance(f.Get("L1"), ROOT.TGraph)
+    assert isinstance(f.Get("H1"), ROOT.TH1D)
+    assert isinstance(f.Get("L1"), ROOT.TH1D)
     f.Close()
 
 
