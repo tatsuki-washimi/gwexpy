@@ -48,16 +48,16 @@ Algorithms labeled as "Validated" meet the following standards and achieve speci
 (validated-en-objective-evidence)=
 ## Objective Evidence
 
-The summaries on this page are backed by repository artifacts you can inspect directly.
+The summaries on this page are backed by the public evidence trail collected here.
 
 The evidence table is intentionally column-dense so the audit trail stays on one page. On mobile, horizontal scrolling is expected and should align with the shared table CSS used across the docs.
 
-| Evidence type | Source | What it shows |
+| Evidence type | Public source | What it shows |
 | :--- | :--- | :--- |
-| Audit scope | [ALGORITHM_CONTEXT](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md) | Which algorithms were reviewed and which numerical questions were checked |
-| Consolidated findings | [merged_validation_report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md) | Cross-reviewed findings, severity, and agreement across independent audits |
-| Fix history | [algorithm_fix_report_20260201](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md) | What changed after the review findings were merged and addressed |
-| Field-specific physics review | [scalarfield_physics_review_20260120](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md) | Physics and axis-consistency review for `ScalarField` FFT behavior |
+| Audit scope | {ref}`Validation summary <validated-algorithms-summary-table>` | Which algorithms were reviewed and which numerical questions were checked |
+| Consolidated findings | {ref}`Per-algorithm sections <validated-algorithms-detail-sections>` | Cross-reviewed findings, severity, and agreement across independent audits |
+| Fix history | {ref}`Audit Trail <validated-algorithms-audit-trail>` | What changed after the review findings were merged and addressed |
+| Field-specific physics review | {ref}`k-space calculation <validated-en-k-space>` | Physics and axis-consistency review for `ScalarField` FFT behavior |
 
 (validated-en-source-references)=
 ## Source References
@@ -256,14 +256,10 @@ Adaptive whitening uses an automatically chosen stabilization parameter so that 
 (validated-algorithms-audit-trail)=
 ## Audit Trail
 
-The links below point to the audit scope, merged findings, and fix history used to support the summaries on this page.
-
-- [ALGORITHM_CONTEXT](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md) - Overview of the audited algorithms
-- [merged_validation_report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md) - Consolidated severity and agreement across independent audit passes
-- [check_claude_antigravity](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/check_claude_antigravity.md) - Audit notes for VIF, GLS, and `_fft_transient`
-- [algorithm_fix_report_20260201](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md) - Change history around ARIMA and MCMC behavior
-- [scalarfield_physics_review_20260120](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md) - Physics and FFT review notes for `ScalarField`
-- [report_scalarfield_physics_verification_20260122_222000](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/archive/reports/report_scalarfield_physics_verification_20260122_222000.md) - Archived follow-up verification notes for field FFT behavior
+The public audit trail is summarized on this page so readers do not need to follow
+developer-only or historical review artifacts. The validation summary table above
+records the reviewed algorithm families, while each per-algorithm section records
+the public-facing assumptions, implementation status, and related theory links.
 
 (validated-algorithms-related-documents)=
 ## Related Documents for Validation

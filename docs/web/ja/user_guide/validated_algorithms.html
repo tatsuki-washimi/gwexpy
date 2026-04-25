@@ -225,30 +225,30 @@
 </section>
 <section id="objective-evidence">
 <span id="validated-ja-objective-evidence"></span><h2>客観的証拠 (Objective Evidence)<a class="headerlink" href="#objective-evidence" title="Link to this heading"></a></h2>
-<p>このページの要約は、直接参照できるリポジトリ内の検証資料に基づいています。</p>
+<p>このページの要約は、このページ内に整理した公開向けの検証証跡に基づいています。</p>
 <p>この証拠表は監査証跡を 1 ページにまとめるため、列数を多めに保っています。モバイルでは共有 CSS に合わせた横スクロール前提で読むのが自然です。</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head text-left"><p>証拠の種類</p></th>
-<th class="head text-left"><p>資料</p></th>
+<th class="head text-left"><p>公開資料</p></th>
 <th class="head text-left"><p>何を示すか</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-left"><p>監査スコープ</p></td>
-<td class="text-left"><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md">ALGORITHM_CONTEXT</a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-algorithms-summary-table-ja"><span class="std std-ref">検証サマリ</span></a></p></td>
 <td class="text-left"><p>どのアルゴリズムを、どの観点で点検したか</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>統合結果</p></td>
-<td class="text-left"><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md">merged_validation_report</a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-algorithms-detail-sections-ja"><span class="std std-ref">アルゴリズム別セクション</span></a></p></td>
 <td class="text-left"><p>独立監査の統合所見、重大度、合意度</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p>修正履歴</p></td>
-<td class="text-left"><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md">algorithm_fix_report_20260201</a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-algorithms-audit-trail-ja"><span class="std std-ref">監査証跡</span></a></p></td>
 <td class="text-left"><p>指摘後に何を修正したか</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p>Field 系の物理レビュー</p></td>
-<td class="text-left"><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md">scalarfield_physics_review_20260120</a></p></td>
+<td class="text-left"><p><a class="reference internal" href="#validated-ja-k-space"><span class="std std-ref">k-space 計算</span></a></p></td>
 <td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の FFT と軸整合性に関するレビュー</p></td>
 </tr>
 </tbody>
@@ -515,15 +515,9 @@
 </section>
 <section id="audit-trail">
 <span id="validated-algorithms-audit-trail-ja"></span><h2>監査証跡 (Audit Trail)<a class="headerlink" href="#audit-trail" title="Link to this heading"></a></h2>
-<p>以下のリンクは、このページの要約を支える監査スコープ・統合所見・修正履歴を指しています。</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md">ALGORITHM_CONTEXT</a> - 検証対象アルゴリズムの全体像</p></li>
-<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md">merged_validation_report</a> - 独立監査を統合した重大度・合意度の一覧</p></li>
-<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/check_claude_antigravity.md">check_claude_antigravity</a> - VIF / GLS / <code class="docutils literal notranslate"><span class="pre">_fft_transient</span></code> の監査メモ</p></li>
-<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md">algorithm_fix_report_20260201</a> - ARIMA や MCMC 周辺の修正履歴</p></li>
-<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md">scalarfield_physics_review_20260120</a> - <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の FFT と軸整合性に関する物理レビュー</p></li>
-<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/archive/reports/report_scalarfield_physics_verification_20260122_222000.md">report_scalarfield_physics_verification_20260122_222000</a> - Field FFT 挙動の追検証メモ</p></li>
-</ul>
+<p>公開向けの監査証跡は、開発者向け・履歴管理用のレビュー資料へ直接誘導せず、
+このページ内に要約しています。上の検証サマリ表で対象アルゴリズム群を示し、
+各アルゴリズム別セクションで公開向けの前提、実装状況、関連理論への導線を記録しています。</p>
 </section>
 <section id="validated-algorithms-related-documents-ja">
 <span id="id7"></span><h2>検証向け関連ドキュメント<a class="headerlink" href="#validated-algorithms-related-documents-ja" title="Link to this heading"></a></h2>
@@ -562,7 +556,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-25 13:38:36.
+      <span class="lastupdated">Last updated on 2026-04-25 15:01:50.
       </span></p>
   </div>
 
