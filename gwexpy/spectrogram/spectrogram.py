@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, SupportsIndex
+from typing import TYPE_CHECKING, Any, Self, SupportsIndex
 
 import numpy as np
 from astropy import units as u
@@ -110,6 +110,42 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         from gwexpy.io.pickle_compat import spectrogram_reduce_args
 
         return spectrogram_reduce_args(self)
+
+    def _new_with_explicit_axes(
+        self,
+        data: Any,
+        *,
+        times: Any,
+        frequencies: Any,
+        unit: Any,
+    ) -> Self:
+        """Build a Spectrogram from explicit axes without redundant x0 metadata.
+
+        GWpy derives Spectrogram epoch/x0 from explicit ``times``. Passing
+        ``epoch`` at the same time is redundant and can trigger ignored-x0
+        warnings. The series-list conversion methods keep passing epoch because
+        their one-dimensional TimeSeries/FrequencySeries constructors use it as
+        part of the output series metadata.
+        """
+        return self.__class__(
+            data,
+            times=times,
+            frequencies=frequencies,
+            unit=unit,
+            name=self.name,
+            channel=self.channel,
+        )
+
+    @staticmethod
+    def _axis_step_value(value: Any, unit: str) -> float:
+        """Return an axis spacing as a float.
+
+        GWpy normally exposes Spectrogram ``dt``/``df`` as Quantities, but the
+        scalar fallback keeps older objects and subclasses compatible.
+        """
+        if hasattr(value, "to"):
+            return float(value.to(unit).value)
+        return float(value)
 
     def bootstrap(
         self,
@@ -486,7 +522,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     def rebin(
         self, dt: float | u.Quantity | None = None, df: float | u.Quantity | None = None
-    ) -> Spectrogram:
+    ) -> Self:
         """Rebin the spectrogram in time and/or frequency.
 
         Rebinning averages only complete bins. If the time or frequency axis
@@ -502,7 +538,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Returns
         -------
-        Spectrogram
+        Self
             The rebinned spectrogram.
 
         """
@@ -512,9 +548,8 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         # Frequency rebinning
         if df is not None:
-            if hasattr(df, "to"):
-                df = df.to("Hz").value
-            orig_df = self.df.to("Hz").value if hasattr(self.df, "to") else self.df
+            df = self._axis_step_value(df, "Hz")
+            orig_df = self._axis_step_value(self.df, "Hz")
             bin_size = int(round(df / orig_df))
             if bin_size > 1:
                 nt, nf = data.shape
@@ -530,9 +565,8 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         # Time rebinning
         if dt is not None:
-            if hasattr(dt, "to"):
-                dt = dt.to("s").value
-            orig_dt = self.dt.to("s").value if hasattr(self.dt, "to") else self.dt
+            dt = self._axis_step_value(dt, "s")
+            orig_dt = self._axis_step_value(self.dt, "s")
             bin_size = int(round(dt / orig_dt))
             if bin_size > 1:
                 nt, nf = data.shape
@@ -546,14 +580,11 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                     times[: nt_new * bin_size].reshape(nt_new, bin_size).mean(axis=1)
                 )
 
-        return self.__class__(
+        return self._new_with_explicit_axes(
             data,
             times=times,
             frequencies=freqs,
             unit=self.unit,
-            name=self.name,
-            channel=self.channel,
-            epoch=self.epoch,
         )
 
     def imshow(self, **kwargs):
@@ -660,7 +691,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         reference: Any | None = None,
         *,
         percentile: float = 50.0,
-    ) -> Spectrogram:
+    ) -> Self:
         """Normalize the spectrogram along the time axis.
 
         Parameters
@@ -689,7 +720,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Returns
         -------
-        Spectrogram
+        Self
             Normalized spectrogram. Unit is set to dimensionless for ratio
             methods.
 
@@ -732,14 +763,11 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             result = data / ref[np.newaxis, :]
             result[~np.isfinite(result)] = np.nan
 
-        return self.__class__(
+        return self._new_with_explicit_axes(
             result,
             times=self.times,
             frequencies=self.frequencies,
             unit=u.dimensionless_unscaled,
-            name=self.name,
-            channel=self.channel,
-            epoch=self.epoch,
         )
 
     def clean(
@@ -752,7 +780,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         persistence_threshold: float = 0.8,
         amplitude_threshold: float = 3.0,
         return_mask: bool = False,
-    ) -> Spectrogram | tuple[Spectrogram, np.ndarray]:
+    ) -> Self | tuple[Self, np.ndarray]:
         """Clean the spectrogram by removing artifacts.
 
         Parameters
@@ -785,7 +813,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Returns
         -------
-        Spectrogram
+        Self
             Cleaned spectrogram.
         mask : ndarray, optional
             Boolean mask where True = pixel was cleaned. Only returned when
@@ -834,14 +862,11 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                 "Choose from 'threshold', 'rolling_median', 'line_removal', 'combined'."
             )
 
-        result = self.__class__(
+        result = self._new_with_explicit_axes(
             cleaned,
             times=self.times,
             frequencies=self.frequencies,
             unit=self.unit,
-            name=self.name,
-            channel=self.channel,
-            epoch=self.epoch,
         )
 
         if return_mask:
