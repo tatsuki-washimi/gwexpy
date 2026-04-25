@@ -2,7 +2,7 @@
 
 <!-- reference-summary:start -->
 
-**Stability:** Stable
+**Stability:** Experimental
 
 ## What it is
 
