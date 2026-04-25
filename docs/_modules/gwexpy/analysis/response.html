@@ -1007,8 +1007,8 @@
         <span class="n">spec_bkg_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">st_data</span><span class="p">[</span><span class="s2">&quot;tgt_asd_bkg&quot;</span><span class="p">]])</span>
         <span class="n">freq_axis</span> <span class="o">=</span> <span class="n">st_data</span><span class="p">[</span><span class="s2">&quot;tgt_asd_inj&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xindex</span>
         <span class="n">step_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">st_data</span><span class="p">[</span><span class="s2">&quot;span&quot;</span><span class="p">]])</span>
-        <span class="n">cf_vals</span> <span class="o">=</span> <span class="n">st_data</span><span class="p">[</span><span class="s2">&quot;cf&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">inj_freqs</span> <span class="o">=</span> <span class="n">st_data</span><span class="p">[</span><span class="s2">&quot;injected_freq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">cf_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">st_data</span><span class="p">[</span><span class="s2">&quot;cf&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">inj_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">st_data</span><span class="p">[</span><span class="s2">&quot;injected_freq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
         <span class="n">unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;dimensionless&quot;</span>
         <span class="n">sg_inj</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span><span class="n">spec_inj_data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">step_times</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freq_axis</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Inj&quot;</span><span class="p">)</span>
@@ -1096,7 +1096,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-25 09:18:23.
+      <span class="lastupdated">Last updated on 2026-04-25 13:38:36.
       </span></p>
   </div>
 

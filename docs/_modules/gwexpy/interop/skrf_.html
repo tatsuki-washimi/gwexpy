@@ -356,6 +356,7 @@
     <span class="n">nfreq</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
 
     <span class="c1"># Determine shape of s-matrix</span>
+    <span class="n">s</span><span class="p">:</span> <span class="n">Any</span>
     <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># 1-port: (nfreq,) → (nfreq, 1, 1)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nfreq</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -669,7 +670,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-25 09:18:23.
+      <span class="lastupdated">Last updated on 2026-04-25 13:38:36.
       </span></p>
   </div>
 

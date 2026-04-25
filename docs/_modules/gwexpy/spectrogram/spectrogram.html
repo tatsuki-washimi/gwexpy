@@ -655,6 +655,10 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rebin the spectrogram in time and/or frequency.</span>
 
+<span class="sd">        Rebinning averages only complete bins. If the time or frequency axis</span>
+<span class="sd">        length is not divisible by the requested bin size, trailing samples that</span>
+<span class="sd">        do not form a complete bin are discarded.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dt : float or Quantity, optional</span>
@@ -668,7 +672,7 @@
 <span class="sd">            The rebinned spectrogram.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span>
         <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span>
 
@@ -1202,7 +1206,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-25 09:18:23.
+      <span class="lastupdated">Last updated on 2026-04-25 13:38:36.
       </span></p>
   </div>
 

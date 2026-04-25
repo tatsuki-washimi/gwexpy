@@ -246,6 +246,7 @@
         <span class="n">freq</span> <span class="o">=</span> <span class="n">abscissa</span>
 
     <span class="c1"># Reshape ordinate to (n_resp, n_ref, n_freq) if needed</span>
+    <span class="n">frf_data</span><span class="p">:</span> <span class="n">Any</span>
     <span class="k">if</span> <span class="n">ordinate</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">frf_data</span> <span class="o">=</span> <span class="n">ordinate</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ordinate</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -373,7 +374,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-25 09:18:23.
+      <span class="lastupdated">Last updated on 2026-04-25 13:38:36.
       </span></p>
   </div>
 
