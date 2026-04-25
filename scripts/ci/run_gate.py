@@ -15,11 +15,11 @@ import sys
 from pathlib import Path
 
 
-def run_cmd(cmd: list[str]) -> None:
+def run_cmd(cmd: list[str], *, cwd: Path | None = None) -> None:
     """Run one command and fail fast."""
     quoted = " ".join(cmd)
     print(f"\n$ {quoted}")
-    completed = subprocess.run(cmd, check=False)
+    completed = subprocess.run(cmd, check=False, cwd=cwd)
     if completed.returncode:
         raise SystemExit(completed.returncode)
 
@@ -33,6 +33,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
     print(f"Platform: {platform.platform()}")
     print(f"Git root: {Path.cwd()}")
     print(f"with_fixtures: {with_fixtures}")
+    repo_root = Path.cwd().resolve()
 
     if gate == "pr-fast":
         run_cmd(["ruff", "check", "gwexpy", "tests"])
@@ -85,7 +86,17 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "tests/table/",
             ]
         )
-        run_cmd(["python", "-m", "build", "--wheel", "--no-isolation"])
+        run_cmd(
+            [
+                "python",
+                "-m",
+                "build",
+                str(repo_root),
+                "--wheel",
+                "--no-isolation",
+            ],
+            cwd=repo_root.parent,
+        )
         run_cmd(
             [
                 "python",
