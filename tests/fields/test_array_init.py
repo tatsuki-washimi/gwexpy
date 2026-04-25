@@ -11,24 +11,26 @@ def test_vectorfield_array_init():
     v = VectorField(arr)
 
     # Check components created successfully (x, y, z)
-    assert set(v.keys()) == {'x', 'y', 'z'}
-    assert v['x'].shape == (2, 3, 4, 5)
+    assert set(v.keys()) == {"x", "y", "z"}
+    assert v["x"].shape == (2, 3, 4, 5)
 
     # Value check
-    assert np.allclose(v['y'].value, 1.0)
+    assert np.allclose(v["y"].value, 1.0)
 
     # Dictionary initialization should still work (backward compatibility)
-    v2 = VectorField({'x': ScalarField(np.ones((2, 3, 4, 5)))})
-    assert set(v2.keys()) == {'x'}
+    v2 = VectorField({"x": ScalarField(np.ones((2, 3, 4, 5)))})
+    assert set(v2.keys()) == {"x"}
 
     # Invalid dimension -> ValueError
     with pytest.raises(ValueError, match="expected 5D array"):
         VectorField(np.ones((2, 3, 4, 5)))
 
 
-def test_vectorfield_array_init_rejects_more_than_three_components():
-    with pytest.raises(ValueError, match="supports 1, 2, or 3 components"):
-        VectorField(np.ones((2, 3, 4, 5, 4)))
+@pytest.mark.parametrize("n_comp", [0, 4])
+def test_vectorfield_array_init_rejects_invalid_component_count(n_comp):
+    with pytest.raises(ValueError, match=rf"1, 2, or 3 entries; got {n_comp}"):
+        VectorField(np.ones((2, 3, 4, 5, n_comp)))
+
 
 def test_tensorfield_array_init():
     # 6D array initialization

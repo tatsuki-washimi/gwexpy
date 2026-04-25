@@ -1,4 +1,5 @@
 """Vector-valued field implementation using ScalarField components."""
+
 from __future__ import annotations
 
 from typing import Literal
@@ -62,7 +63,8 @@ class VectorField(FieldDict):
             n_comp = arr.shape[-1]
             if n_comp not in (1, 2, 3):
                 raise ValueError(
-                    "VectorField ndarray input supports 1, 2, or 3 components; "
+                    "VectorField ndarray input requires a component axis with "
+                    "1, 2, or 3 entries; "
                     f"got {n_comp}"
                 )
             labels = ["x", "y", "z"][:n_comp]
