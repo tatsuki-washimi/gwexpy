@@ -5,7 +5,9 @@ from unittest import mock
 
 import pytest
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+import gwexpy
+
+gwexpy.register_all()
 
 
 class TestZarrImportGuard:
@@ -68,7 +70,7 @@ class TestSeismicImportGuard:
     def test_obspy_import_error(self):
         with mock.patch.dict(sys.modules, {"obspy": None}):
             from gwexpy.timeseries.io import seismic as seismic_mod
-            with pytest.raises(ImportError, match="[Oo]bspy|obspy"):
+            with pytest.raises(ImportError, match="(?i)obspy"):
                 seismic_mod._import_obspy()
 
     def test_obspy_error_mentions_extra(self):

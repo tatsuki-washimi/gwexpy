@@ -124,7 +124,7 @@ Tasks:
   - If the block is inside a function: replace with `require_optional(name)`.
 - [ ] 3.2 Ensure no optional import causes `ImportError` at `import gwexpy` time. Verify with:
   ```
-  python -c "import gwexpy" --no site
+  PYTHONNOUSERSITE=1 python -c "import gwexpy"
   ```
   in a minimal venv that has only the core dependencies.
 - [ ] 3.3 For GUI modules: `gwexpy/gui/` imports are already norecursedirs for pytest and

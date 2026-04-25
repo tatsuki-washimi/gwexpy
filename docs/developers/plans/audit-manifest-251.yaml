@@ -11,6 +11,8 @@ agent_model: claude-sonnet-4-6
 commands_executed:
   - cmd: "ruff check gwexpy/ tests/"
     result: "All checks passed"
+  - cmd: "PYTHONNOUSERSITE=1 python -c 'import gwexpy; print(gwexpy.__version__)'"
+    result: "0.1.1"
   - cmd: "python -c 'import gwexpy; print(...)'"
     result: "import gwexpy: OK"
   - cmd: "python -c (manual guard verification)"
@@ -30,6 +32,24 @@ commands_executed:
       xarray -> [netcdf4] hint: PASS
       nptdms -> [io] hint: PASS
       iminuit -> [fitting] hint: PASS
+  - cmd: "python scripts/ci/run_gate.py io-optional --no-fixtures"
+    result: "21 passed, 8 skipped"
+  - cmd: "python scripts/ci/run_gate.py io-contract --no-fixtures"
+    result: "746 passed, 26 skipped; wheel smoke OK; import gwexpy OK"
+  - cmd: "pytest -q tests/interop/test_errors_and_optional.py tests/interop/test_optional.py"
+    result: "26 passed, 1 skipped"
+  - cmd: "ruff check gwexpy/ tests/"
+    result: "All checks passed"
+
+follow_up_fixes:
+  - date: 2026-04-26
+    agent: Codex
+    summary: |
+      Addressed PR review findings for optional dependency install hints:
+      updated ensure_dependency() contract tests, fixed the ObsPy guard regex,
+      separated import names from pip distribution names for require_optional(),
+      stopped suggesting gwexpy[all] for the gui extra, and corrected the
+      plan's import smoke-test command.
 
 verify_physics: not_required
   # No changes to gwexpy/fields/, gwexpy/signal/, or gwexpy/spectrogram/
@@ -70,3 +90,5 @@ files_changed:
     change: "Added netcdf4, zarr rows; noted gui not in all"
   - path: docs/developers/plans/2026-04-25-optional-backend-packaging-plan.md
     change: "Implementation plan document (added earlier)"
+  - path: tests/interop/test_errors_and_optional.py
+    change: "Added coverage for require_optional() install hints: all-extra suggestions, gui exclusion from all, bare installs, and dask.array distribution name"
