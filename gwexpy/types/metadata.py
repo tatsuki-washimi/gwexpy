@@ -165,14 +165,48 @@ class MetaData(dict):
     def as_meta(self, obj):
         """Coerce an object into a MetaData instance.
 
-        If the object is already a MetaData instance, it is returned as-is.
-        Otherwise, it is converted using the current metadata as a template.
+        If *obj* is already a ``MetaData`` instance it is returned unchanged.
+        Otherwise a new ``MetaData`` is constructed whose **name** and
+        **channel** are inherited from ``self`` and whose **unit** is inferred
+        from *obj* via :func:`get_unit`.
+
+        Parameters
+        ----------
+        obj : MetaData, astropy.Quantity, numeric, or any object with a .unit
+            The object to coerce.
+
+        Returns
+        -------
+        MetaData
+
         """
         if isinstance(obj, MetaData):
             return obj
         return MetaData(name=self.name, channel=self.channel, unit=get_unit(obj))
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        """NumPy ufunc protocol for unit propagation.
+
+        Unit-checking policy
+        --------------------
+        * **Strict** (raises ``UnitConversionError``):
+          - ``add`` / ``subtract``: both operands must be dimensionally compatible.
+          - Transcendental functions (``exp``, ``sin``, ``cos``, ``log``): input
+            must be dimensionless.
+          - Comparison ufuncs: operands must be dimensionally compatible.
+          - ``power``: exponent must be dimensionless (numeric scalar or
+            dimensionless ``Quantity``).
+        * **Flexible** (unit derived algebraically, no compatibility check):
+          - ``multiply``, ``divide``, ``floor_divide``: result unit is
+            ``lhs_unit * rhs_unit`` or ``lhs_unit / rhs_unit`` respectively.
+            ``floor_divide`` carries the same dimensional result as ``divide``;
+            the integer truncation applies only to the numeric value, not the
+            unit.
+          - ``sqrt``, ``square``: result unit is ``lhs_unit ** 0.5`` or
+            ``lhs_unit ** 2``.
+          - Unary ``abs``, ``negative``, ``positive``, ``real``, ``imag``,
+            ``conjugate``: unit is preserved unchanged.
+        """
         if method != "__call__":
             return NotImplemented
 
@@ -408,10 +442,17 @@ class MetaDataDict(OrderedDict[str, MetaData]):
         return [entry.unit for entry in self.values()]
 
     def to_dataframe(self):
-        """Convert the metadata collection to a pandas DataFrame."""
+        """Convert the metadata collection to a pandas DataFrame.
+
+        The ``unit`` column is serialised as a string so that the DataFrame
+        can be written to CSV and read back without loss of unit information.
+        """
         if pd is None:
             raise ImportError("pandas is required for to_dataframe()")
-        data = [{**entry, "key": key} for key, entry in self.items()]
+        data = [
+            {**{k: (str(v) if k == "unit" else v) for k, v in entry.items()}, "key": key}
+            for key, entry in self.items()
+        ]
         df = pd.DataFrame(data).set_index("key")
         return df
 
@@ -618,9 +659,22 @@ class MetaDataMatrix(np.ndarray):
 
     @names.setter
     def names(self, value):
+        """Set names for all elements.
+
+        Parameters
+        ----------
+        value : array-like
+            Must contain exactly ``self.size`` elements. A flat array of the
+            correct size is accepted and reshaped; any other size mismatch
+            raises ``ValueError``.
+
+        """
         value = np.asarray(value)
-        if value.shape != self.shape:
-            value = value.reshape(self.shape)
+        if value.size != self.size:
+            raise ValueError(
+                f"Cannot set names: got {value.size} value(s), "
+                f"expected {self.size} (matrix shape {self.shape})"
+            )
         flat_iter = cast(Iterable[MetaData], self.reshape(-1))
         value_iter = cast(Iterable[object], value.reshape(-1))
         for m, name in zip(flat_iter, value_iter):
@@ -634,9 +688,22 @@ class MetaDataMatrix(np.ndarray):
 
     @units.setter
     def units(self, value):
+        """Set units for all elements.
+
+        Parameters
+        ----------
+        value : array-like
+            Must contain exactly ``self.size`` elements. A flat array of the
+            correct size is accepted and reshaped; any other size mismatch
+            raises ``ValueError``.
+
+        """
         value = np.asarray(value)
-        if value.shape != self.shape:
-            value = value.reshape(self.shape)
+        if value.size != self.size:
+            raise ValueError(
+                f"Cannot set units: got {value.size} value(s), "
+                f"expected {self.size} (matrix shape {self.shape})"
+            )
         flat_iter = cast(Iterable[MetaData], self.reshape(-1))
         value_iter = cast(Iterable[object], value.reshape(-1))
         for m, unit in zip(flat_iter, value_iter):
@@ -650,9 +717,22 @@ class MetaDataMatrix(np.ndarray):
 
     @channels.setter
     def channels(self, value):
+        """Set channels for all elements.
+
+        Parameters
+        ----------
+        value : array-like
+            Must contain exactly ``self.size`` elements. A flat array of the
+            correct size is accepted and reshaped; any other size mismatch
+            raises ``ValueError``.
+
+        """
         value = np.asarray(value)
-        if value.shape != self.shape:
-            value = value.reshape(self.shape)
+        if value.size != self.size:
+            raise ValueError(
+                f"Cannot set channels: got {value.size} value(s), "
+                f"expected {self.size} (matrix shape {self.shape})"
+            )
         flat_iter = cast(Iterable[MetaData], self.reshape(-1))
         value_iter = cast(Iterable[object], value.reshape(-1))
         for m, channel in zip(flat_iter, value_iter):
