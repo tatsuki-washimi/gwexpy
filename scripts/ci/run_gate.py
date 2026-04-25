@@ -29,6 +29,7 @@ def run_cmd(cmd: list[str], *, cwd: Path | None = None) -> None:
 def remove_generated_build_artifacts(repo_root: Path) -> None:
     """Remove generated artifacts that must not leak into wheel builds."""
     shutil.rmtree(repo_root / "build", ignore_errors=True)
+    shutil.rmtree(repo_root / "dist", ignore_errors=True)
     for pycache_dir in (repo_root / "gwexpy").rglob("__pycache__"):
         shutil.rmtree(pycache_dir, ignore_errors=True)
     for bytecode in (repo_root / "gwexpy").rglob("*.py[co]"):
@@ -36,14 +37,15 @@ def remove_generated_build_artifacts(repo_root: Path) -> None:
 
 
 def assert_wheel_has_no_bytecode(repo_root: Path) -> None:
-    """Fail if the latest wheel contains interpreter cache artifacts."""
-    wheels = sorted(
-        (repo_root / "dist").glob("*.whl"), key=lambda path: path.stat().st_mtime
-    )
+    """Fail if the built wheel contains interpreter cache artifacts."""
+    wheels = sorted((repo_root / "dist").glob("*.whl"))
     if not wheels:
         raise SystemExit("No wheel artifact found in dist/.")
+    if len(wheels) != 1:
+        wheel_list = "\n".join(f"  - {wheel.name}" for wheel in wheels)
+        raise SystemExit(f"Expected exactly one wheel artifact in dist/:\n{wheel_list}")
 
-    wheel = wheels[-1]
+    wheel = wheels[0]
     with zipfile.ZipFile(wheel) as archive:
         forbidden = [
             name
@@ -68,7 +70,6 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
     print(f"Platform: {platform.platform()}")
     print(f"Git root: {Path.cwd()}")
     print(f"with_fixtures: {with_fixtures}")
-    repo_root = Path.cwd().resolve()
 
     if gate == "pr-fast":
         run_cmd(["ruff", "check", "gwexpy", "tests"])
@@ -106,6 +107,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         return
 
     if gate == "io-contract":
+        repo_root = Path.cwd().resolve()
         if with_fixtures:
             run_cmd(["python", "tests/fixtures/generate_fixtures.py"])
         run_cmd(
