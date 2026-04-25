@@ -111,6 +111,24 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         return spectrogram_reduce_args(self)
 
+    def _new_with_explicit_axes(
+        self,
+        data: Any,
+        *,
+        times: Any,
+        frequencies: Any,
+        unit: Any,
+    ) -> Spectrogram:
+        """Build a Spectrogram from explicit axes without redundant x0 metadata."""
+        return self.__class__(
+            data,
+            times=times,
+            frequencies=frequencies,
+            unit=unit,
+            name=self.name,
+            channel=self.channel,
+        )
+
     def bootstrap(
         self,
         n_boot=1000,
@@ -514,7 +532,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         if df is not None:
             if hasattr(df, "to"):
                 df = df.to("Hz").value
-            orig_df = self.df.to("Hz").value if hasattr(self.df, "to") else self.df
+            orig_df = self.df.to("Hz").value
             bin_size = int(round(df / orig_df))
             if bin_size > 1:
                 nt, nf = data.shape
@@ -532,7 +550,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         if dt is not None:
             if hasattr(dt, "to"):
                 dt = dt.to("s").value
-            orig_dt = self.dt.to("s").value if hasattr(self.dt, "to") else self.dt
+            orig_dt = self.dt.to("s").value
             bin_size = int(round(dt / orig_dt))
             if bin_size > 1:
                 nt, nf = data.shape
@@ -546,14 +564,11 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                     times[: nt_new * bin_size].reshape(nt_new, bin_size).mean(axis=1)
                 )
 
-        return self.__class__(
+        return self._new_with_explicit_axes(
             data,
             times=times,
             frequencies=freqs,
             unit=self.unit,
-            name=self.name,
-            channel=self.channel,
-            epoch=self.epoch,
         )
 
     def imshow(self, **kwargs):
@@ -732,14 +747,11 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             result = data / ref[np.newaxis, :]
             result[~np.isfinite(result)] = np.nan
 
-        return self.__class__(
+        return self._new_with_explicit_axes(
             result,
             times=self.times,
             frequencies=self.frequencies,
             unit=u.dimensionless_unscaled,
-            name=self.name,
-            channel=self.channel,
-            epoch=self.epoch,
         )
 
     def clean(
@@ -834,14 +846,11 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                 "Choose from 'threshold', 'rolling_median', 'line_removal', 'combined'."
             )
 
-        result = self.__class__(
+        result = self._new_with_explicit_axes(
             cleaned,
             times=self.times,
             frequencies=self.frequencies,
             unit=self.unit,
-            name=self.name,
-            channel=self.channel,
-            epoch=self.epoch,
         )
 
         if return_mask:
