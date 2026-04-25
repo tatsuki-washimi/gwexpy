@@ -15,6 +15,58 @@ import pytest
 from astropy import units as u
 
 # =============================================================================
+# 0. Tests for Spectrogram.rebin()
+# =============================================================================
+
+
+class TestSpectrogramRebin:
+    """Test Spectrogram.rebin() data and axis semantics."""
+
+    def test_rebin_truncates_incomplete_time_and_frequency_bins(self):
+        """rebin() should average complete bins and discard trailing remainders."""
+        from gwexpy.spectrogram import Spectrogram
+
+        data = np.arange(35.0).reshape(5, 7)
+        spec = Spectrogram(
+            data,
+            times=np.arange(5) * u.s,
+            frequencies=np.arange(7) * u.Hz,
+            unit=u.V,
+            name="odd_grid",
+        )
+        original_data = data.copy()
+
+        result = spec.rebin(dt=2 * u.s, df=3 * u.Hz)
+
+        np.testing.assert_array_equal(spec.value, original_data)
+        assert result.shape == (2, 2)
+        np.testing.assert_allclose(result.value, [[4.5, 7.5], [18.5, 21.5]])
+        np.testing.assert_allclose(result.times.value, [0.5, 2.5])
+        np.testing.assert_allclose(result.frequencies.value, [1.0, 4.0])
+        assert result.unit == u.V
+        assert result.name == "odd_grid"
+
+    def test_rebin_same_bin_width_does_not_share_data(self):
+        """rebin() should not share data with the source when bin sizes are unchanged."""
+        from gwexpy.spectrogram import Spectrogram
+
+        data = np.arange(12.0).reshape(3, 4)
+        spec = Spectrogram(
+            data,
+            times=np.arange(3) * u.s,
+            frequencies=np.arange(4) * u.Hz,
+            unit=u.V,
+            name="same_grid",
+        )
+
+        result = spec.rebin(dt=1 * u.s, df=1 * u.Hz)
+        result.value[0, 0] = -1.0
+
+        np.testing.assert_array_equal(spec.value, data)
+        assert result.value[0, 0] == -1.0
+
+
+# =============================================================================
 # 1. Tests for Spectrogram.radian() / Spectrogram.degree()
 # =============================================================================
 
