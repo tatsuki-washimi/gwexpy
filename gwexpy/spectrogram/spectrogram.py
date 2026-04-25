@@ -516,9 +516,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         """
         from gwexpy.interop import to_pyroomacoustics_stft
 
-        return to_pyroomacoustics_stft(
-            self, hop=hop, analysis_window=analysis_window
-        )
+        return to_pyroomacoustics_stft(self, hop=hop, analysis_window=analysis_window)
 
     def rebin(
         self, dt: float | u.Quantity | None = None, df: float | u.Quantity | None = None
