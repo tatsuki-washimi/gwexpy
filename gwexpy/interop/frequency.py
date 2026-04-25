@@ -59,7 +59,7 @@ def from_pandas_frequencyseries(
         vals,
         frequencies=freq_axis,
         unit=unit or getattr(series, "unit", None),
-        name=series.name,
+        name=str(series.name) if series.name is not None else None,
         epoch=epoch,
     )
 

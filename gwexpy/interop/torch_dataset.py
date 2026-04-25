@@ -33,6 +33,8 @@ class TimeSeriesWindowDataset:
         self.torch = torch
         self.device = device
         self.dtype = dtype
+        self.data: Any
+        self.label_array: Any
         self.window = int(window)
         self.stride = int(stride)
         self.horizon = int(horizon)

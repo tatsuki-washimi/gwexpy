@@ -225,6 +225,7 @@ def to_skrf_network(
     nfreq = len(freqs)
 
     # Determine shape of s-matrix
+    s: Any
     if data.ndim == 1:
         # 1-port: (nfreq,) → (nfreq, 1, 1)
         s = data.reshape(nfreq, 1, 1)

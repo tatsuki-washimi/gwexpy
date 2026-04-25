@@ -856,8 +856,8 @@ class ResponseFunctionAnalysis:
         spec_bkg_data = np.stack([v.value for v in st_data["tgt_asd_bkg"]])
         freq_axis = st_data["tgt_asd_inj"][0].xindex
         step_times = np.array([s[0] for s in st_data["span"]])
-        cf_vals = st_data["cf"].values
-        inj_freqs = st_data["injected_freq"].values
+        cf_vals = np.asarray(st_data["cf"].values)
+        inj_freqs = np.asarray(st_data["injected_freq"].values)
 
         unit = getattr(target, "unit", None) or "dimensionless"
         sg_inj = Spectrogram(spec_inj_data, times=step_times, frequencies=freq_axis, unit=unit, name="Inj")
