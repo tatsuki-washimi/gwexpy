@@ -174,6 +174,8 @@ def run_heavy_notebooks(paths: list[Path]) -> None:
         "-m",
         "pytest",
         "-p",
+        "no:qt",
+        "-p",
         "nbval.plugin",
         "--nbval-lax",
         "-v",
