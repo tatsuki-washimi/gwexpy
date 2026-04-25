@@ -1,8 +1,12 @@
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_DOC_SUFFIXES = {".ipynb", ".md", ".rst"}
+MIGRATION_GUIDE_LINK_RE = re.compile(
+    r"\]\(([^)]*(?:gwexpy_for_gwpy_users|gwpy_added_api_index)_[a-z]{2}\.md)\)"
+)
 
 
 def _read_notebook(relative_path: str) -> dict:
@@ -42,6 +46,21 @@ def test_public_docs_do_not_reference_internal_api_mapping():
     ]
 
     assert not offenders, "Internal API_MAPPING.md references found:\n" + "\n".join(offenders)
+
+
+def test_public_docs_migration_guide_links_exist():
+    offenders: list[str] = []
+
+    for path, text in _iter_public_doc_texts():
+        for match in MIGRATION_GUIDE_LINK_RE.finditer(text):
+            target = match.group(1)
+            if "://" in target or target.startswith("#"):
+                continue
+            resolved = (path.parent / target).resolve()
+            if not resolved.is_file():
+                offenders.append(f"{path.relative_to(ROOT)} -> {target}")
+
+    assert not offenders, "Broken migration guide links found:\n" + "\n".join(offenders)
 
 
 def test_io_format_guides_do_not_start_sections_with_transition():

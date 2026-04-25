@@ -167,6 +167,7 @@ def run_heavy_notebooks(paths: list[Path]) -> None:
     """Check heavy notebooks with nbval-lax."""
     rel_paths = [str(path.relative_to(REPO_ROOT)) for path in paths]
     env = os.environ.copy()
+    # Keep unrelated pytest plugins, such as pytest-qt, out of nbval-only checks.
     env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
     cmd = [
         sys.executable,

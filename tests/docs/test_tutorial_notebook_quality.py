@@ -130,19 +130,6 @@ def test_tutorial_outputs_do_not_expose_local_paths_or_raw_warnings():
     assert not offenders, "Forbidden notebook output found:\n" + "\n".join(offenders)
 
 
-def test_public_tutorials_do_not_reference_internal_api_mapping():
-    notebooks = sorted(TUTORIAL_ROOT.glob("*/user_guide/tutorials/*.ipynb"))
-    offenders: list[str] = []
-
-    for path in notebooks:
-        nb = _read_notebook(path)
-        joined = "\n".join(_markdown_texts(nb))
-        if "API_MAPPING.md" in joined:
-            offenders.append(str(path.relative_to(ROOT)))
-
-    assert not offenders, "Internal API_MAPPING.md references found:\n" + "\n".join(offenders)
-
-
 @pytest.mark.parametrize(
     "relative_path",
     [
