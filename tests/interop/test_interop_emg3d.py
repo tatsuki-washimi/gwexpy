@@ -4,6 +4,7 @@ These tests use mock emg3d objects to avoid requiring the emg3d package in the
 test environment.  The staggered-grid interpolation helpers are tested with
 plain NumPy arrays.
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
@@ -94,8 +95,10 @@ def _make_complex_efield() -> MagicMock:
     field.frequency = 1e6
 
     rng = np.random.default_rng(13)
+
     def _cpx(shape):
         return rng.random(shape) + 1j * rng.random(shape)
+
     field.fx = _cpx((NCX, NNY, NNZ))
     field.fy = _cpx((NNX, NCY, NNZ))
     field.fz = _cpx((NNX, NNY, NCZ))
@@ -277,6 +280,31 @@ class TestFromEmg3dNoInterp:
         assert isinstance(vf, VectorField)
         for sf in vf.values():
             assert sf.shape == (1, NCX, NCY, NCZ)
+            assert len(sf._axis1_index) == NCX
+            assert len(sf._axis2_index) == NCY
+            assert len(sf._axis3_index) == NCZ
+
+    def test_ok_when_node_shapes_equal(self):
+        """No-interpolation node-grid inputs must keep node coordinates."""
+        mesh = _make_mesh()
+        field = MagicMock()
+        field.grid = mesh
+        field.electric = True
+        field.frequency = 1.0
+        rng = np.random.default_rng(1)
+        shape = (NNX, NNY, NNZ)
+        field.fx = rng.random(shape)
+        field.fy = rng.random(shape)
+        field.fz = rng.random(shape)
+
+        vf = from_emg3d_field(VectorField, field, interpolate_to_cell_center=False)
+
+        assert isinstance(vf, VectorField)
+        for sf in vf.values():
+            assert sf.shape == (1, NNX, NNY, NNZ)
+            np.testing.assert_array_equal(sf._axis1_index.value, mesh.nodes_x)
+            np.testing.assert_array_equal(sf._axis2_index.value, mesh.nodes_y)
+            np.testing.assert_array_equal(sf._axis3_index.value, mesh.nodes_z)
 
 
 # ---------------------------------------------------------------------------

@@ -127,6 +127,26 @@ def _build_node_coords(
     )
 
 
+def _coords_for_component_shape(
+    mesh: Any,
+    shape: tuple[int, ...],
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return mesh coordinates whose lengths match a raw component shape."""
+    cell_coords = _build_cell_center_coords(mesh)
+    if shape == tuple(len(axis) for axis in cell_coords):
+        return cell_coords
+
+    node_coords = _build_node_coords(mesh)
+    if shape == tuple(len(axis) for axis in node_coords):
+        return node_coords
+
+    raise ValueError(
+        f"Component shape {shape} does not match cell-center coordinate lengths "
+        f"{tuple(len(axis) for axis in cell_coords)} or node coordinate lengths "
+        f"{tuple(len(axis) for axis in node_coords)}."
+    )
+
+
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
@@ -243,7 +263,7 @@ def from_emg3d_field(
                 "Set interpolate_to_cell_center=True to align them."
             )
         fx_c, fy_c, fz_c = fx, fy, fz
-        cx, cy, cz = _build_cell_center_coords(mesh)
+        cx, cy, cz = _coords_for_component_shape(mesh, fx_c.shape)
         metadata = {}
 
     # Add singleton axis0 dimension
