@@ -77,6 +77,10 @@ Mode: audit-first only; no runtime behavior changes in this pass.
   - `gwexpy.signal.normalization` exposes SciPy-standard and DTT-style helper
     factors, but these helpers are not wired into the main `TimeSeries.psd`
     wrappers.
+  - `get_window_normalized()` is documented as returning both `w` and `enbw`,
+    but the implementation currently returns only the raw SciPy window `w`.
+    Treat the docstring/API mismatch as an observed contract gap before relying
+    on it in public normalization guidance.
 - Finite/zero handling:
   - Transient FFT does not explicitly reject NaN/Inf input.
   - `laplace` guards sigma-induced exponential overflow.
@@ -279,36 +283,49 @@ Mode: audit-first only; no runtime behavior changes in this pass.
    preservation, and per-element metadata consistency in line with the #244
    SeriesMatrix invariants and #246 `to_matrix()` axis/unit contract.
 
-4. Bruco coherence reference tests.
+4. Matrix spectral ASD mutation and cleanup follow-up.
+   `_vectorized_asd()` mutates the PSD object in place via
+   `psd.value[:] = asd_data` before returning it, and contains duplicate dead
+   code after the first `return`. Add a focused follow-up test or cleanup PR to
+   decide whether ASD should return a freshly constructed object, document any
+   intentional mutation contract, and remove the unreachable duplicate block.
+
+5. `get_window_normalized()` return-contract test.
+   The docstring promises both `w` and `enbw`, while the implementation returns
+   only `w`. Add a test or documentation-only follow-up that either changes the
+   documented return contract to one value or restores the advertised ENBW
+   return after confirming the intended API.
+
+6. Bruco coherence reference tests.
    Add tests comparing `FastCoherenceEngine` against `scipy.signal.coherence` or
    a documented reference on simple signals, including DC/Nyquist expectations
    and coherence bounds.
 
-5. Resampling boundary tests.
+7. Resampling boundary tests.
    Add tests for zero/negative time-bin rules, `agg="count"` if intended, Inf
    propagation, and metadata preservation through numeric GWpy delegated
    `resample()`.
 
-6. Transfer-function edge tests.
+8. Transfer-function edge tests.
    Add tests for documented zero-denominator cases, non-finite denominator
    behavior, epsilon validation expectations, unit ratio, and transient
    downsample/intersection metadata.
 
-7. Imputation/preprocessing docs and tests for Inf and Quantity times.
+9. Imputation/preprocessing docs and tests for Inf and Quantity times.
    State whether Inf is valid data or missing data. Add tests that Quantity times
    with `max_gap` are converted consistently and inverse transforms intentionally
    return arrays.
 
-8. Whitening epsilon validation.
+10. Whitening epsilon validation.
    Either route `whiten()` through `_resolve_eps()` or document why explicit
    negative/non-finite `eps` is accepted. Add direct tests for the chosen
    contract.
 
-9. Fitting sigma/covariance validation docs.
+11. Fitting sigma/covariance validation docs.
    Add tests/docs for sigma zero, non-finite sigma, singular covariance, and
    shape/axis behavior after `x_range` cropping.
 
-10. `SpectralStats.significance()` zero-sigma behavior.
+12. `SpectralStats.significance()` zero-sigma behavior.
    Add a contract and tests for sigma zero/non-finite bins. This can be
    documentation-only first, then behavior if approved.
 
@@ -316,16 +333,20 @@ Mode: audit-first only; no runtime behavior changes in this pass.
 
 1. P0 docs/test-only: codify PSD/ASD/CSD/spectrogram wrapper contracts,
    transient FFT axis/unit metadata, and non-second `dt` frequency-axis tests
-   for scalar and matrix spectral paths. Low risk, no behavior change.
+   for scalar and matrix spectral paths, including the matrix ASD mutation/dead
+   code cleanup question. Low risk, no behavior change.
 2. P0 docs/test-only with physics review notes: add Bruco reference tests that
    quantify current normalization and DC/Nyquist behavior without changing it.
 3. P1 docs/test-only: add transfer-function edge-case tests for the already
    documented zero/epsilon/unit behavior.
 4. P1 docs/test-only: resampling/preprocessing boundary contract tests
    (`target_dt <= 0`, Inf policy, Quantity `max_gap`, metadata).
-5. P1 docs/test-only: fitting/statistics numerical contract tests for sigma,
+5. P1 docs/test-only: normalization helper return-contract tests/docs for
+   `get_window_normalized()` before presenting ENBW helper behavior as public
+   API.
+6. P1 docs/test-only: fitting/statistics numerical contract tests for sigma,
    covariance, and zero-sigma significance.
-6. P2 implementation PRs, only after review: Bruco normalization/clipping,
+7. P2 implementation PRs, only after review: Bruco normalization/clipping,
    transfer epsilon validation, whitening `_resolve_eps()` adoption, and GLS
    covariance diagnostics.
 
