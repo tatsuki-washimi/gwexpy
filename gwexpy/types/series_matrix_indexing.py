@@ -36,6 +36,8 @@ def _as_position_list(key: Any, axis_len: int) -> list[int]:
     arr = np.asarray(key)
     if arr.ndim != 1:
         raise IndexError("SeriesMatrix row/column selectors must be 1-dimensional")
+    if arr.size == 0:
+        return []
     if arr.dtype == np.bool_:
         if arr.size != axis_len:
             raise IndexError(
@@ -234,8 +236,8 @@ class SeriesMatrixIndexingMixin:
         base_value = _to_base(value) if hasattr(value, "shape") else value
 
         if _is_advanced_axis_selector(ri) and _is_advanced_axis_selector(ci):
-            ri_pos = np.asarray(_as_position_list(ri, self.shape[0]))
-            ci_pos = np.asarray(_as_position_list(ci, self.shape[1]))
+            ri_pos = np.asarray(_as_position_list(ri, self.shape[0]), dtype=int)
+            ci_pos = np.asarray(_as_position_list(ci, self.shape[1]), dtype=int)
             self.view(np.ndarray)[ri_pos[:, np.newaxis], ci_pos[np.newaxis, :], s] = (
                 base_value
             )

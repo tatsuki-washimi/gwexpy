@@ -194,6 +194,31 @@ class TestGetItemLabelBased:
         expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
         np.testing.assert_array_equal(result.value, expected)
 
+    @pytest.mark.parametrize(
+        ("row_selector", "col_selector", "expected_shape"),
+        [
+            ([], [1, 3], (0, 2, 5)),
+            ([0, 2], [], (2, 0, 5)),
+            (np.array([], dtype=int), np.array([1, 3]), (0, 2, 5)),
+        ],
+    )
+    def test_empty_integer_row_or_col_list_returns_empty_cartesian_submatrix(
+        self, row_selector, col_selector, expected_shape
+    ):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[row_selector, col_selector, :]
+
+        assert result.shape == expected_shape
+        expected = data[np.ix_(list(row_selector), list(col_selector), np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+
     def test_wrong_length_boolean_mask_raises(self):
         sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
 
@@ -269,6 +294,24 @@ class TestSetItem:
         np.testing.assert_array_equal(sm.value[2, 1], values[1, 0])
         np.testing.assert_array_equal(sm.value[2, 3], values[1, 1])
         assert np.all(sm.value[1, :, :] == 0.0)
+
+    @pytest.mark.parametrize(
+        ("row_selector", "col_selector"),
+        [
+            ([], [1, 3]),
+            ([0, 2], []),
+            (np.array([], dtype=int), np.array([1, 3])),
+        ],
+    )
+    def test_setitem_empty_integer_row_or_col_list_is_noop(
+        self, row_selector, col_selector
+    ):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(data.copy(), xindex=np.arange(5))
+
+        sm[row_selector, col_selector, :] = -1.0
+
+        np.testing.assert_array_equal(sm.value, data)
 
     def test_setitem_wrong_length_boolean_mask_raises(self):
         sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
