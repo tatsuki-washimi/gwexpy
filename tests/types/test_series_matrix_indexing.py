@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/series_matrix_indexing.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -6,6 +7,7 @@ import pytest
 from astropy import units as u
 
 from gwexpy.timeseries import TimeSeriesMatrix
+from gwexpy.types.metadata import MetaData, MetaDataMatrix
 from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
@@ -17,6 +19,7 @@ def _make_tsm(n_rows=2, n_cols=3, n_t=10):
 # ---------------------------------------------------------------------------
 # __getitem__ — single cell access
 # ---------------------------------------------------------------------------
+
 
 class TestGetItemSingleCell:
     def test_single_cell_int_int(self):
@@ -47,6 +50,7 @@ class TestGetItemSingleCell:
 # ---------------------------------------------------------------------------
 # __getitem__ — slice / non-scalar selection
 # ---------------------------------------------------------------------------
+
 
 class TestGetItemSlice:
     def test_row_slice(self):
@@ -106,6 +110,7 @@ class TestGetItemSlice:
 # __getitem__ — label-based (string) indexing
 # ---------------------------------------------------------------------------
 
+
 class TestGetItemLabelBased:
     def test_row_string_indexing(self):
         # String row key → row_index lookup (lines 102-103)
@@ -135,10 +140,136 @@ class TestGetItemLabelBased:
         result = tsm[:, keys, :]
         assert result.shape == (2, 2, 10)
 
+    def test_int_row_list_and_int_col_list_are_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[[0, 2], [1, 3], :]
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+        assert result.row_keys() == ("r0", "r2")
+        assert result.col_keys() == ("c1", "c3")
+
+    def test_label_row_list_and_label_col_list_are_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[["r0", "r2"], ["c1", "c3"], :]
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+        assert result.row_keys() == ("r0", "r2")
+        assert result.col_keys() == ("c1", "c3")
+
+    def test_ndarray_integer_row_list_and_col_list_are_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(data, xindex=np.arange(5))
+
+        result = sm[np.array([0, 2]), np.array([1, 3]), ...]
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+
+    def test_ndarray_boolean_row_mask_and_col_mask_are_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(data, xindex=np.arange(5))
+
+        result = sm[np.array([True, False, True]), np.array([False, True, False, True])]
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+
+    def test_boolean_row_mask_with_col_slice_preserves_metadata(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[[True, False, True], :, :]
+
+        assert result.shape == (2, 4, 5)
+        np.testing.assert_array_equal(result.value, data[[True, False, True], :, :])
+        assert result.row_keys() == ("r0", "r2")
+        assert result.col_keys() == ("c0", "c1", "c2", "c3")
+
+    def test_boolean_col_mask_with_row_slice_preserves_metadata(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[:, [False, True, False, True], :]
+
+        assert result.shape == (3, 2, 5)
+        np.testing.assert_array_equal(
+            result.value, data[:, [False, True, False, True], :]
+        )
+        assert result.row_keys() == ("r0", "r1", "r2")
+        assert result.col_keys() == ("c1", "c3")
+
+    @pytest.mark.parametrize(
+        ("row_selector", "col_selector", "expected_shape"),
+        [
+            ([], [1, 3], (0, 2, 5)),
+            ([0, 2], [], (2, 0, 5)),
+            (np.array([], dtype=int), np.array([1, 3]), (0, 2, 5)),
+        ],
+    )
+    def test_empty_integer_row_or_col_list_returns_empty_cartesian_submatrix(
+        self, row_selector, col_selector, expected_shape
+    ):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[row_selector, col_selector, :]
+
+        assert result.shape == expected_shape
+        expected = data[np.ix_(list(row_selector), list(col_selector), np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+
+    def test_wrong_length_boolean_mask_raises(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+
+        with pytest.raises(IndexError, match="selector length mismatch"):
+            sm[[True, False], [1, 3], :]
+
+    def test_non_integer_numeric_selector_raises(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+
+        with pytest.raises(TypeError, match="integer positions"):
+            sm[[0.0, 2.0], [1, 3], :]
+
 
 # ---------------------------------------------------------------------------
 # __setitem__
 # ---------------------------------------------------------------------------
+
 
 class TestSetItem:
     def test_setitem_plain_value(self):
@@ -174,10 +305,65 @@ class TestSetItem:
         tsm[row_key, col_key, :] = 99.0
         assert np.all(tsm.view(np.ndarray)[0, 0, :] == 99.0)
 
+    def test_setitem_row_list_and_col_list_scalar_is_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(data.copy(), xindex=np.arange(5))
+
+        sm[[0, 2], [1, 3], :] = -1.0
+
+        expected = data.copy()
+        expected[
+            np.array([0, 2])[:, np.newaxis], np.array([1, 3])[np.newaxis, :], :
+        ] = -1.0
+        np.testing.assert_array_equal(sm.value, expected)
+
+    def test_setitem_row_list_and_col_list_shaped_value_is_cartesian(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+        values = np.arange(2 * 2 * 5, dtype=float).reshape(2, 2, 5)
+
+        sm[[0, 2], [1, 3], :] = values
+
+        np.testing.assert_array_equal(sm.value[0, 1], values[0, 0])
+        np.testing.assert_array_equal(sm.value[0, 3], values[0, 1])
+        np.testing.assert_array_equal(sm.value[2, 1], values[1, 0])
+        np.testing.assert_array_equal(sm.value[2, 3], values[1, 1])
+        assert np.all(sm.value[1, :, :] == 0.0)
+
+    @pytest.mark.parametrize(
+        ("row_selector", "col_selector"),
+        [
+            ([], [1, 3]),
+            ([0, 2], []),
+            (np.array([], dtype=int), np.array([1, 3])),
+        ],
+    )
+    def test_setitem_empty_integer_row_or_col_list_is_noop(
+        self, row_selector, col_selector
+    ):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(data.copy(), xindex=np.arange(5))
+
+        sm[row_selector, col_selector, :] = -1.0
+
+        np.testing.assert_array_equal(sm.value, data)
+
+    def test_setitem_wrong_length_boolean_mask_raises(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+
+        with pytest.raises(IndexError, match="selector length mismatch"):
+            sm[[True, False], [1, 3], :] = 1.0
+
+    def test_setitem_non_integer_numeric_selector_raises(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+
+        with pytest.raises(TypeError, match="integer positions"):
+            sm[[0.0, 2.0], [1, 3], :] = 1.0
+
 
 # ---------------------------------------------------------------------------
 # loc property
 # ---------------------------------------------------------------------------
+
 
 class TestLoc:
     def test_loc_getitem(self):
@@ -201,20 +387,43 @@ class TestLoc:
 # submatrix
 # ---------------------------------------------------------------------------
 
+
 class TestSubmatrix:
-    def test_submatrix_code_path(self):
-        # submatrix normalizes single string to list, then calls row_index
-        # Test the string normalization (lines 235-238)
-        tsm = _make_tsm()
-        row_key = tsm.row_keys()[0]   # e.g. 'row0'
-        col_key = tsm.col_keys()[0]   # e.g. 'col0'
-        # submatrix(['row0'], ['col0']) → ri=[0], ci=[0] → self[[0], [0], :]
-        # But self[[0], [0], :] triggers list branch in __getitem__ which calls row_index(0) → error
-        # Just test single-string normalization by checking it runs the normalize path
-        try:
-            tsm.submatrix(row_key, col_key)
-        except (KeyError, TypeError):
-            pass  # known issue with integer list fallback in __getitem__
+    def test_submatrix_label_selection_preserves_cartesian_shape_and_metadata(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        meta_arr = np.empty((3, 4), dtype=object)
+        for i in range(3):
+            for j in range(4):
+                meta_arr[i, j] = MetaData(unit=u.m, name=f"elem-{i}-{j}")
+        sm = SeriesMatrix(
+            data,
+            xindex=u.Quantity(np.arange(5, dtype=float), u.s),
+            meta=MetaDataMatrix(meta_arr),
+            rows={
+                "r0": {"name": "row zero"},
+                "r1": {"name": "row one"},
+                "r2": {"name": "row two"},
+            },
+            cols={
+                "c0": {"name": "col zero"},
+                "c1": {"name": "col one"},
+                "c2": {"name": "col two"},
+                "c3": {"name": "col three"},
+            },
+        )
+
+        result = sm.submatrix(["r0", "r2"], ["c1", "c3"])
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+        np.testing.assert_array_equal(result.xindex.value, np.arange(5, dtype=float))
+        assert result.xindex.unit == u.s
+        assert result.row_keys() == ("r0", "r2")
+        assert result.col_keys() == ("c1", "c3")
+        assert result.rows["r2"].name == "row two"
+        assert result.cols["c3"].name == "col three"
+        assert result.meta[1, 1].name == "elem-2-3"
 
     def test_getitem_non_array_result(self):
         # Line 121 — result not np.ndarray → return early

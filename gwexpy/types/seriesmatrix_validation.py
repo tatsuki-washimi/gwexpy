@@ -210,8 +210,8 @@ def _expand_key(key, ndim):
     if not isinstance(key, tuple):
         key = (key,)
     key_list = list(key)
-    if Ellipsis in key_list:
-        ell_idx = key_list.index(Ellipsis)
+    ell_idx = next((idx for idx, item in enumerate(key_list) if item is Ellipsis), None)
+    if ell_idx is not None:
         n_missing = ndim - (len(key_list) - 1)
         key_list = (
             key_list[:ell_idx] + [slice(None)] * n_missing + key_list[ell_idx + 1 :]
@@ -227,7 +227,11 @@ def _slice_metadata_dict(meta_dict, key, prefix):
     if isinstance(key, slice):
         subset = items[key]
     elif isinstance(key, (list, np.ndarray, tuple)):
-        subset = [items[int(i)] for i in key]
+        key_arr = np.asarray(key)
+        if key_arr.dtype == np.bool_:
+            subset = [items[int(i)] for i in np.nonzero(key_arr)[0]]
+        else:
+            subset = [items[int(i)] for i in key]
     elif isinstance(key, (int, np.integer)):
         subset = [items[int(key)]]
     else:
@@ -730,7 +734,20 @@ def _handle_seriesmatrix(data, units, names, channels, shape, xindex, dx, x0, xu
         name_default=data.names.copy(),
         channel_default=data.channels.copy(),
     )
-    return arr, _pack_attrs(unit_arr, name_arr, channel_arr), None
+    if units is not None:
+        arr = arr.astype(np.result_type(arr, float), copy=True)
+        N, M = data.units.shape
+        for i in range(N):
+            for j in range(M):
+                try:
+                    arr[i, j] = u.Quantity(arr[i, j], data.units[i, j]).to_value(
+                        unit_arr[i, j]
+                    )
+                except (u.UnitConversionError, TypeError, ValueError) as e:
+                    raise u.UnitConversionError(
+                        f"Unit conversion failed at ({i},{j}): {e}"
+                    )
+    return arr, _pack_attrs(unit_arr, name_arr, channel_arr), data.xindex
 
 
 # ---------------------------------------------------------------------------
@@ -804,17 +821,17 @@ def _normalize_input(
         where attr_dict contains per-cell unit/name/channel arrays.
 
     """
-    type_key = _detect_input_type(data)
+    from .seriesmatrix import SeriesMatrix
+
+    if isinstance(data, SeriesMatrix):
+        type_key = "seriesmatrix"
+    else:
+        type_key = _detect_input_type(data)
 
     # SeriesMatrix requires a lazy import, so handle the "unknown" fallback
     # and the explicit SeriesMatrix check here.
     if type_key == "unknown":
-        from .seriesmatrix import SeriesMatrix
-
-        if isinstance(data, SeriesMatrix):
-            type_key = "seriesmatrix"
-        else:
-            raise TypeError(f"Unsupported data type for SeriesMatrix: {type(data)}")
+        raise TypeError(f"Unsupported data type for SeriesMatrix: {type(data)}")
 
     handler = _NORMALIZE_HANDLERS[type_key]
     return handler(data, units, names, channels, shape, xindex, dx, x0, xunit)

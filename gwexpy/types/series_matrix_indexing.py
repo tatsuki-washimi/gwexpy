@@ -13,6 +13,50 @@ if TYPE_CHECKING:
     from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
 
+def _resolve_label_key(key: Any, resolver: Any) -> Any:
+    """Resolve string labels while leaving integer positions unchanged."""
+    if isinstance(key, str):
+        return resolver(key)
+    if isinstance(key, (list, tuple)):
+        return [resolver(item) if isinstance(item, str) else item for item in key]
+    if isinstance(key, np.ndarray) and key.dtype.kind in "US":
+        return [resolver(item) for item in key.tolist()]
+    return key
+
+
+def _is_advanced_axis_selector(key: Any) -> bool:
+    """Return True for list-like row/column selectors."""
+    if isinstance(key, np.ndarray):
+        return key.ndim > 0
+    return isinstance(key, (list, tuple))
+
+
+def _as_position_list(key: Any, axis_len: int) -> list[int]:
+    """Normalize a list-like row/column selector into integer positions."""
+    arr = np.asarray(key)
+    if arr.ndim != 1:
+        raise IndexError("SeriesMatrix row/column selectors must be 1-dimensional")
+    if arr.size == 0:
+        return []
+    if arr.dtype == np.bool_:
+        if arr.size != axis_len:
+            raise IndexError(
+                "boolean row/column selector length mismatch: "
+                f"expected {axis_len}, got {arr.size}"
+            )
+        return np.nonzero(arr)[0].tolist()
+    if arr.dtype.kind not in "iu":
+        raise TypeError("SeriesMatrix row/column selectors must be integer positions")
+    positions = [int(item) for item in arr.tolist()]
+    for pos in positions:
+        if pos < -axis_len or pos >= axis_len:
+            raise IndexError(
+                f"SeriesMatrix row/column selector index {pos} is out of bounds "
+                f"for axis with size {axis_len}"
+            )
+    return positions
+
+
 class SeriesMatrixIndexingMixin:
     """Mixin for SeriesMatrix indexing and slicing operations."""
 
@@ -93,27 +137,21 @@ class SeriesMatrixIndexingMixin:
             return series_cls(result, **kwargs)
 
         # 3. Handle label-based slicing for rows/cols
-        ri = r
-        if isinstance(r, (str, list)) or (
-            isinstance(r, np.ndarray) and r.dtype.kind in "US"
-        ):
-            if isinstance(r, str):
-                ri = self.row_index(r)
-            else:
-                ri = [self.row_index(k) for k in r]
-
-        ci = c
-        if isinstance(c, (str, list)) or (
-            isinstance(c, np.ndarray) and c.dtype.kind in "US"
-        ):
-            if isinstance(c, str):
-                ci = self.col_index(c)
-            else:
-                ci = [self.col_index(k) for k in c]
+        ri = _resolve_label_key(r, self.row_index)
+        ci = _resolve_label_key(c, self.col_index)
 
         # 4. Perform actual ndarray slicing
-        new_key = (ri, ci, s)
-        result = cast(Any, super()).__getitem__(new_key)
+        if _is_advanced_axis_selector(ri) and _is_advanced_axis_selector(ci):
+            ri_pos = _as_position_list(ri, self.shape[0])
+            ci_pos = _as_position_list(ci, self.shape[1])
+            result = self.view(np.ndarray)[np.ix_(ri_pos, ci_pos)][:, :, s]
+            meta_ri: Any = ri_pos
+            meta_ci: Any = ci_pos
+        else:
+            new_key = (ri, ci, s)
+            result = cast(Any, super()).__getitem__(new_key)
+            meta_ri = ri
+            meta_ci = ci
 
         if not isinstance(result, np.ndarray):
             return result
@@ -138,20 +176,28 @@ class SeriesMatrixIndexingMixin:
                 result = result.view(np.ndarray).reshape(new_shape).view(type(self))
 
         # 5. Slice internal metadata
-        new_meta = self.meta[ri, ci]
+        if _is_advanced_axis_selector(meta_ri) and _is_advanced_axis_selector(meta_ci):
+            new_meta = self.meta[
+                np.ix_(
+                    _as_position_list(meta_ri, self.shape[0]),
+                    _as_position_list(meta_ci, self.shape[1]),
+                )
+            ]
+        else:
+            new_meta = self.meta[meta_ri, meta_ci]
 
         # Restore metadata dimensions
         if new_meta.ndim < 2:
             meta_shape = list(new_meta.shape)
-            if isinstance(ci, (int, np.integer)):
+            if isinstance(meta_ci, (int, np.integer)):
                 meta_shape.insert(1, 1)
-            if isinstance(ri, (int, np.integer)):
+            if isinstance(meta_ri, (int, np.integer)):
                 meta_shape.insert(0, 1)
 
             if len(meta_shape) != new_meta.ndim:
                 new_meta = new_meta.reshape(meta_shape)
-        new_rows = _slice_metadata_dict(self.rows, ri, "row")
-        new_cols = _slice_metadata_dict(self.cols, ci, "col")
+        new_rows = _slice_metadata_dict(self.rows, meta_ri, "row")
+        new_cols = _slice_metadata_dict(self.cols, meta_ci, "col")
 
         # 6. Slice xindex
         if self.xindex is not None:
@@ -185,29 +231,18 @@ class SeriesMatrixIndexingMixin:
         expanded_key = _expand_key(key, 3)
         r, c, s = expanded_key
 
-        ri = r
-        if isinstance(r, (str, list)) or (
-            isinstance(r, np.ndarray) and r.dtype.kind in "US"
-        ):
-            if isinstance(r, str):
-                ri = self.row_index(r)
-            else:
-                ri = [self.row_index(k) for k in r]
+        ri = _resolve_label_key(r, self.row_index)
+        ci = _resolve_label_key(c, self.col_index)
+        base_value = _to_base(value) if hasattr(value, "shape") else value
 
-        ci = c
-        if isinstance(c, (str, list)) or (
-            isinstance(c, np.ndarray) and c.dtype.kind in "US"
-        ):
-            if isinstance(c, str):
-                ci = self.col_index(c)
-            else:
-                ci = [self.col_index(k) for k in c]
-
-        if hasattr(value, "shape"):
-            # If value is a Series or Matrix, ensure compatibility
-            self.view(np.ndarray)[ri, ci, s] = _to_base(value)
+        if _is_advanced_axis_selector(ri) and _is_advanced_axis_selector(ci):
+            ri_pos = np.asarray(_as_position_list(ri, self.shape[0]), dtype=int)
+            ci_pos = np.asarray(_as_position_list(ci, self.shape[1]), dtype=int)
+            self.view(np.ndarray)[ri_pos[:, np.newaxis], ci_pos[np.newaxis, :], s] = (
+                base_value
+            )
         else:
-            self.view(np.ndarray)[ri, ci, s] = value
+            self.view(np.ndarray)[ri, ci, s] = base_value
 
     @property
     def loc(self):
@@ -236,5 +271,5 @@ class SeriesMatrixIndexingMixin:
         ri = [self.row_index(k) for k in row_keys]
         ci = [self.col_index(k) for k in col_keys]
 
-        # Use __getitem__ logic
+        # Direct row/column list selection is Cartesian for SeriesMatrix.
         return self[ri, ci, :]
