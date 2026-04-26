@@ -82,9 +82,10 @@ Reference file sets are paired between EN and JA for the checked `.md` / `.rst`
 paths. Tutorial file sets are intentionally asymmetric: EN owns the notebook
 files, while the JA tutorial directory mostly contains index and Markdown pages.
 Many EN notebooks contain both `lang-en` and `lang-ja` cells, but the JA tutorial
-index still describes local `.ipynb` download paths under
-`docs/web/ja/user_guide/tutorials/`. That source policy should be clarified
-before copying notebooks or changing paths.
+tree currently has no local `.ipynb` files while several JA pages either instruct
+users to fetch notebooks from `docs/web/ja/user_guide/tutorials/` or link/refer
+to local `.ipynb` names there. That source policy should be clarified before
+copying notebooks or changing paths.
 
 ## Internal-Only Link Audit
 
@@ -105,9 +106,9 @@ to internal-only planning or mapping surfaces.
 
 ### Stale mappable / plot object patterns
 
-These notebooks still use fragile `plt.gca()` image/collection lookup patterns
-or older plot-wrapper assumptions that are not covered by the current quality
-test allowlist:
+These notebooks still use fragile `plt.gca()` image/collection/child lookup
+patterns or older plot-wrapper assumptions that are not covered by the current
+quality test allowlist:
 
 - `docs/web/en/user_guide/tutorials/advanced_correlation.ipynb`
   - Uses `plt.gca().get_images()[-1]` / `plt.gca().collections[-1]` for a
@@ -116,12 +117,23 @@ test allowlist:
   - Uses `plot = sg.plot()`.
   - Uses `plt.gca().get_images()[-1]` / `plt.gca().collections[-1]` for a
     colorbar mappable.
+- `docs/web/en/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb`
+  - Uses `plt.gca().get_children()` with `hasattr(c, 'get_clim')` to discover
+    colorbar mappables in three cells.
 - `docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb`
   - Uses the same `plt.gca()` image/collection fallback pattern in two cells.
 
 These should be fixed in a focused notebook API drift PR, ideally with an
 extension to `tests/docs/test_tutorial_notebook_quality.py` so the pattern does
 not reappear.
+
+### Dead / collapsed example cells
+
+- `docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb`
+  - The AM-FM/HHT example under section 5.2 is present as one flattened source
+    string beginning `# Create AM-FM signalamfm_signal...`.
+  - Because the line starts as a comment and the rest of the example is not split
+    into executable statements, this cell is effectively dead.
 
 ### Potential stale status labels
 
@@ -140,9 +152,22 @@ cleanup.
 - Reference `.md` / `.rst` structure is paired for the audited file set.
 - Tutorial structure differs by design: EN has executable notebooks; JA mostly
   has indexes and Markdown pages.
-- The JA tutorial index presents `.ipynb` downloads as if notebook files live
-  under `docs/web/ja/user_guide/tutorials/`. In this checkout, those notebook
-  files are not present there.
+- The JA `.ipynb` path issue is broader than index wording. The JA tutorial
+  directory contains no local notebook files, but current JA pages include
+  multiple local or JA-local notebook references. Examples:
+  - `field_scalar_signal.md` links to `field_scalar_intro.ipynb`.
+  - `field_vector_intro.md` and `field_tensor_intro.md` link to
+    `field_scalar_intro.ipynb`.
+  - `time_frequency_analysis_comparison.md` links GitHub to the missing
+    `docs/web/ja/user_guide/tutorials/time_frequency_analysis_comparison.ipynb`
+    path.
+  - `time_frequency_comparison.md` links to `intro_spectrogram.ipynb` and
+    `advanced_hht.ipynb`.
+  - `advanced_linear_algebra.md` links to `matrix_timeseries.ipynb`,
+    `case_noise_budget.ipynb`, and `advanced_correlation.ipynb`.
+  - `field_advanced_integration.md` links to `field_scalar_intro.ipynb`,
+    `advanced_hht.ipynb`, and `matrix_timeseries.ipynb`.
+  - `ml_preprocessing_methods.md` links locally to `advanced_correlation.ipynb`.
 - The current `scripts/check_docs_sync.py` intentionally skips
   `user_guide/tutorials/` and `reference/` heading synchronization checks, so it
   does not detect tutorial/reference content drift inside this issue scope.
@@ -155,8 +180,8 @@ readiness.
 
 Summary for 59 EN notebooks:
 
-- Smoke-testable: 26
-- Optional dependency required: 15
+- Smoke-testable: 24
+- Optional dependency required: 17
 - Network or external data required: 18
 - Docs-only narrative notebooks: 0
 
@@ -169,7 +194,7 @@ Summary for 59 EN notebooks:
 | `advanced_control_modeling.ipynb` | Optional dependency required | `control`, `ci-heavy` |
 | `advanced_correlation.ipynb` | Optional dependency required | `analysis`, `fitting`, stale mappable pattern, `ci-heavy` |
 | `advanced_coupling.ipynb` | Smoke-testable |  |
-| `advanced_decomposition.ipynb` | Smoke-testable | `ci-heavy` |
+| `advanced_decomposition.ipynb` | Optional dependency required | PCA/ICA via `scikit-learn`, `ci-heavy` |
 | `advanced_field_analysis.ipynb` | Smoke-testable |  |
 | `advanced_fitting.ipynb` | Optional dependency required | `fitting`, `ci-heavy` |
 | `advanced_hht.ipynb` | Optional dependency required | `analysis` |
@@ -181,7 +206,7 @@ Summary for 59 EN notebooks:
 | `case_arima_burst_search.ipynb` | Network or external data required | `analysis` |
 | `case_bootstrap_gls_fitting.ipynb` | Network or external data required | `fitting`, `ci-heavy` |
 | `case_bruco_advanced.ipynb` | Smoke-testable | real-data placeholder |
-| `case_bruco_ica_denoising.ipynb` | Smoke-testable | real-data placeholder |
+| `case_bruco_ica_denoising.ipynb` | Optional dependency required | ICA via `scikit-learn`, real-data placeholder |
 | `case_calibration_pipeline.ipynb` | Smoke-testable | real-data placeholder |
 | `case_coupling_analysis.ipynb` | Network or external data required | `ci-heavy` |
 | `case_dttxml_calibration.ipynb` | Network or external data required | real-data placeholder |
@@ -217,10 +242,10 @@ Summary for 59 EN notebooks:
 | `matrix_frequencyseries.ipynb` | Smoke-testable | `ci-heavy` |
 | `matrix_spectrogram.ipynb` | Optional dependency required | external package, `ci-heavy` |
 | `matrix_timeseries.ipynb` | Optional dependency required | external package, `ci-heavy` |
-| `rayleigh_gauch_tutorial.ipynb` | Smoke-testable | `ci-heavy` |
+| `rayleigh_gauch_tutorial.ipynb` | Smoke-testable | stale mappable child lookup pattern, `ci-heavy` |
 | `segment_asd_pipeline.ipynb` | Smoke-testable |  |
 | `segment_visualization.ipynb` | Smoke-testable |  |
-| `time_frequency_analysis_comparison.ipynb` | Optional dependency required | `analysis`, stale mappable pattern |
+| `time_frequency_analysis_comparison.ipynb` | Optional dependency required | `analysis`, stale mappable pattern, dead HHT AM-FM cell |
 
 ## Test Coverage Observations
 
@@ -232,16 +257,23 @@ Summary for 59 EN notebooks:
   skips unless explicitly enabled.
 - Current checks do not encode a central classification of notebooks by smoke
   testability, optional dependency, external data, or narrative-only status.
+- Current checks do not catch dead/collapsed notebook code cells where a large
+  code example has been flattened into a commented source line.
 - Several non-smoke notebooks are not currently covered by the fixed `ci-heavy`
   metadata list. That may be intentional, but it should be made explicit.
 
 ## Prioritized Small PR Candidates
 
-1. Notebook plotting API drift guard
+1. Notebook plotting and HHT API drift guard
    - Fix stale `plt.gca().get_images()` / `collections[-1]` mappable patterns in
      `advanced_correlation.ipynb`, `case_gbd_format.ipynb`, and
      `time_frequency_analysis_comparison.ipynb`.
-   - Add a regression assertion to `tests/docs/test_tutorial_notebook_quality.py`.
+   - Fix the `plt.gca().get_children()` colorbar lookup pattern in
+     `rayleigh_gauch_tutorial.ipynb`.
+   - Restore the collapsed AM-FM/HHT example in
+     `time_frequency_analysis_comparison.ipynb` as executable code, or remove it
+     if the example should stay out of this tutorial.
+   - Add regression assertions to `tests/docs/test_tutorial_notebook_quality.py`.
 
 2. Notebook execution classification metadata
    - Add a small manifest or test fixture that records notebook classifications:
@@ -253,7 +285,8 @@ Summary for 59 EN notebooks:
 3. JA tutorial notebook source-policy clarification
    - Clarify whether JA pages should link to EN-owned bilingual notebooks, use
      generated JA wrappers, or receive copied notebook files.
-   - Make only the minimal index wording/path fix after that policy is confirmed.
+   - Fix the current local/missing `.ipynb` references across JA tutorial pages,
+     not only `index.rst`, after that policy is confirmed.
 
 4. Public-doc internal-link guard
    - Add a targeted test that fails when public tutorial/reference docs mention
@@ -265,4 +298,3 @@ Summary for 59 EN notebooks:
      rendered outputs.
    - Review reference `Stable` / `Experimental` labels for fields, GUI, and CLI
      pages against the current release policy before editing.
-
