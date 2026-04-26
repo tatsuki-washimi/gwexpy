@@ -129,14 +129,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#id4">クイック判定表</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#read-write-fetch"><code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> / <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> の基本</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#io-formats-ja-supported-classes">対応クラスの早見表</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">オプション依存関係の対応表</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#a-gw">A. GW標準</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#b">B. 地震・地球物理観測</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c">C. 汎用・解析用</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#d">D. 計測機器・ロガー</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">開発者向け補足</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id9">関連ページ</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id10">次に読む</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id11">ページ末尾ナビゲーション</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">開発者向け補足</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">関連ページ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11">次に読む</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">ページ末尾ナビゲーション</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス (Reference)</a></li>
@@ -384,6 +385,61 @@
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> が出てくるのは主に</strong> <code class="docutils literal notranslate"><span class="pre">NetCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">Zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">GBD</span></code>, <code class="docutils literal notranslate"><span class="pre">TDMS</span></code> です。</p></li>
 <li><p><strong>Series 以外もまとめて保持したい</strong> 場合は、まず <strong>HDF5</strong> を検討してください。</p></li>
 </ul>
+</section>
+<section id="id6">
+<h2>オプション依存関係の対応表<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>多くの direct I/O 経路は GWexpy の基本インストールで利用できます。次の形式は optional package または optional metadata helper に依存します。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>形式 / 系統</p></th>
+<th class="head"><p>オプション依存関係</p></th>
+<th class="head"><p>GWexpy extra</p></th>
+<th class="head"><p>未導入時の挙動</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>WAV metadata</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tinytag</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">audio</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">extract_metadata=True)</span></code> は <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。通常の WAV 読み書きは利用できます。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>MP3 / FLAC / OGG / M4A</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pydub</span></code>, <code class="docutils literal notranslate"><span class="pre">tinytag</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">audio</span></code></p></td>
+<td><p>音声の読み書きは <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。一部 codec は外部の <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code> / <code class="docutils literal notranslate"><span class="pre">libav</span></code> も必要です。</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TDMS</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nptdms</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">io</span></code></p></td>
+<td><p>reader は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[io]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>mseed / SAC / GSE2 / K-NET</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">seismic</span></code></p></td>
+<td><p>登録済みの reader / writer は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[seismic]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>WIN / WIN32</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">seismic</span></code></p></td>
+<td><p>条件付き登録です。ObsPy がない環境では <code class="docutils literal notranslate"><span class="pre">win</span></code> / <code class="docutils literal notranslate"><span class="pre">win32</span></code> の registry entry 自体が存在しない場合があります。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ATS.MTH5</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mth5</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">seismic</span></code></p></td>
+<td><p>reader は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[seismic]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>nc / NetCDF4</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
+<td><p>reader / writer は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[netcdf4]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Zarr</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code></p></td>
+<td><p>reader / writer は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[zarr]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+</tr>
+</tbody>
+</table>
 <p><a id="io-formats-ja-a"></a></p>
 </section>
 <section id="a-gw">
@@ -680,12 +736,12 @@
 </ul>
 <p><a id="io-formats-ja-dev"></a></p>
 </section>
-<section id="id6">
-<h2>開発者向け補足<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id7">
+<h2>開発者向け補足<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
 <p>通常の利用ではこの節は読み飛ばして構いません。
 未掲載実装や placeholder をまとめて確認したい場合だけ見てください。</p>
-<section id="id7">
-<h3>設計上は管理するが、公開ページでは主表示しないもの<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id8">
+<h3>設計上は管理するが、公開ページでは主表示しないもの<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>形式</p></th>
@@ -745,8 +801,8 @@
 </tbody>
 </table>
 </section>
-<section id="id8">
-<h4>周波数系列 stub<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<section id="id9">
+<h4>周波数系列 stub<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>形式</p></th>
@@ -789,8 +845,8 @@
 </section>
 </section>
 </section>
-<section id="id9">
-<h2>関連ページ<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<section id="id10">
+<h2>関連ページ<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="std std-doc">他ライブラリ連携チュートリアル</span></a></p></li>
 <li><p><a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a></p></li>
@@ -798,16 +854,16 @@
 <li><p><a class="reference internal" href="installation.html"><span class="doc std std-doc">インストールガイド</span></a></p></li>
 </ul>
 </section>
-<section id="id10">
-<h2>次に読む<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<section id="id11">
+<h2>次に読む<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="interop.html"><span class="doc std std-doc">Interop / 変換ガイド</span></a> で <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> による橋渡しを確認する</p></li>
 <li><p><a class="reference internal" href="time_utilities.html"><span class="doc std std-doc">GPS 時刻ユーティリティ</span></a> で時刻文字列やタイムゾーンの扱いを確認する</p></li>
 <li><p><a class="reference internal" href="installation.html"><span class="doc std std-doc">インストールガイド</span></a> で形式ごとの依存関係を確認する</p></li>
 </ul>
 </section>
-<section id="id11">
-<h2>ページ末尾ナビゲーション<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<section id="id12">
+<h2>ページ末尾ナビゲーション<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a href="#io-formats-ja-quick">クイック判定表へ戻る</a></p></li>
 <li><p><a href="#io-formats-ja-basic">基本的な使い方へ戻る</a></p></li>
@@ -828,7 +884,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-26 09:56:59.
+      <span class="lastupdated">Last updated on 2026-04-26 13:14:28.
       </span></p>
   </div>
 

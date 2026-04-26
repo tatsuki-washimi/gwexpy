@@ -119,6 +119,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#jump-links">Jump Links</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#how-to-read-this-page">How to Read This Page</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#status-labels">Status Labels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#optional-dependency-policy">Optional Dependency Policy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#a-storage-formats-and-container-conversion">A. Storage Formats and Container Conversion</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#b-analysis-library-and-object-conversion">B. Analysis Library and Object Conversion</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c-machine-learning-acceleration-and-array-backends">C. Machine Learning, Acceleration, and Array Backends</a></li>
@@ -295,6 +296,43 @@ Legacy aliases remain supported during the transition, but new examples should p
 <li><p><code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">progress</span></code>: the implementation or the public presentation is not finished yet</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Planned</span></code>: explicitly in scope, but not implemented yet</p></li>
 </ul>
+</section>
+<section id="optional-dependency-policy">
+<h2>Optional Dependency Policy<a class="headerlink" href="#optional-dependency-policy" title="Link to this heading"></a></h2>
+<p>Interop bridges import optional runtime backends lazily. If a runtime backend is
+missing, the bridge raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with installation guidance instead of
+importing the backend at <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">gwexpy</span></code> time.</p>
+<p>Some import-only adapters consume objects or dictionaries that were produced by
+external packages, but do not import those producer packages themselves. For
+example, <code class="docutils literal notranslate"><span class="pre">from_pyoma_results()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mtspec()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mtspec_array()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">from_uff_dataset55()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_uff_dataset58()</span></code>, the <code class="docutils literal notranslate"><span class="pre">from_sdynpy_*()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">from_metpy_dataarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_wrf_variable()</span></code>, and <code class="docutils literal notranslate"><span class="pre">from_harmonica_grid()</span></code>
+helpers accept caller-supplied pyOMA, multitaper, mtspec, pyuff, SDynPy-style,
+MetPy-enhanced, wrf-python, or Harmonica objects. Install those packages when
+you need to create the source objects, not because the adapter imports them
+directly.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Policy</p></th>
+<th class="head"><p>Dependencies</p></th>
+<th class="head"><p>Install guidance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Declared GWexpy extras</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">obspy</span></code>, <code class="docutils literal notranslate"><span class="pre">mth5</span></code>, <code class="docutils literal notranslate"><span class="pre">lalsuite</span></code>, <code class="docutils literal notranslate"><span class="pre">gwinc</span></code>, <code class="docutils literal notranslate"><span class="pre">control</span></code>, <code class="docutils literal notranslate"><span class="pre">pydub</span></code></p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[zarr]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[netcdf4]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[seismic]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[gw]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[control]'</span></code>, or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[audio]'</span></code> as appropriate.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bare package installs</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code>, <code class="docutils literal notranslate"><span class="pre">polars</span></code>, <code class="docutils literal notranslate"><span class="pre">dask</span></code>, <code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>, <code class="docutils literal notranslate"><span class="pre">jax</span></code>, <code class="docutils literal notranslate"><span class="pre">cupy</span></code>, <code class="docutils literal notranslate"><span class="pre">pycbc</span></code>, <code class="docutils literal notranslate"><span class="pre">finesse</span></code>, <code class="docutils literal notranslate"><span class="pre">simpeg</span></code>, <code class="docutils literal notranslate"><span class="pre">mne</span></code>, <code class="docutils literal notranslate"><span class="pre">neo</span></code>, <code class="docutils literal notranslate"><span class="pre">quantities</span></code>, <code class="docutils literal notranslate"><span class="pre">pyroomacoustics</span></code>, <code class="docutils literal notranslate"><span class="pre">specutils</span></code>, <code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code>, <code class="docutils literal notranslate"><span class="pre">PySpice</span></code>, <code class="docutils literal notranslate"><span class="pre">skrf</span></code>, <code class="docutils literal notranslate"><span class="pre">pyOMA</span></code>, <code class="docutils literal notranslate"><span class="pre">multitaper</span></code>, <code class="docutils literal notranslate"><span class="pre">mtspec</span></code>, <code class="docutils literal notranslate"><span class="pre">pyuff</span></code>, <code class="docutils literal notranslate"><span class="pre">sdynpy</span></code>, <code class="docutils literal notranslate"><span class="pre">metpy</span></code>, <code class="docutils literal notranslate"><span class="pre">wrf-python</span></code>, <code class="docutils literal notranslate"><span class="pre">harmonica</span></code>, <code class="docutils literal notranslate"><span class="pre">emg3d</span></code>, <code class="docutils literal notranslate"><span class="pre">meshio</span></code></p></td>
+<td><p>Install the named backend directly when the bridge imports it or when you need it to create accepted source objects.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The xarray-backed interop bridges list the <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> extra because GWexpy does
+not currently publish a standalone <code class="docutils literal notranslate"><span class="pre">xarray</span></code> extra. If you only need in-memory
+xarray conversion and want to avoid installing <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, install <code class="docutils literal notranslate"><span class="pre">xarray</span></code>
+directly.</p>
 </section>
 <section id="a-storage-formats-and-container-conversion">
 <span id="interop-en-storage-conversion"></span><h2>A. Storage Formats and Container Conversion<a class="headerlink" href="#a-storage-formats-and-container-conversion" title="Link to this heading"></a></h2>
@@ -762,7 +800,7 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-26 09:56:59.
+      <span class="lastupdated">Last updated on 2026-04-26 13:14:28.
       </span></p>
   </div>
 

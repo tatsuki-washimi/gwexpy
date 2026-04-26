@@ -120,13 +120,14 @@
 <li class="toctree-l4"><a class="reference internal" href="#id2">セクション移動</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interop-ja-how-to-read">まず最初に: 読み方</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interop-ja-status-labels">状態ラベル</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">オプション依存関係の方針</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#a">A. 保存形式・コンテナ変換</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#b">B. 解析ライブラリ・オブジェクト変換</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#c">C. 機械学習・高速化・配列基盤</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#d">D. 物理・ドメイン特化ライブラリ</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interop-ja-priorities">優先的に見るべき対象</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">関連ページ</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id7">次に読む</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">関連ページ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">次に読む</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
@@ -295,6 +296,30 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">対応中</span></code>: 専用の実装面または公開面の整理が未完</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">対応予定</span></code>: 設計対象として明示するが、まだ実装がない</p></li>
 </ul>
+</section>
+<section id="id5">
+<h2>オプション依存関係の方針<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>Interop bridge は runtime optional backend を遅延 import します。runtime backend が未導入の場合、<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">gwexpy</span></code> の時点ではなく、該当 bridge を呼び出した時点でインストール案内付きの <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p>
+<p>import 中心の adapter の一部は、外部 package が生成した object や dict を受け取りますが、その producer package 自体は import しません。たとえば <code class="docutils literal notranslate"><span class="pre">from_pyoma_results()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mtspec()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_mtspec_array()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_uff_dataset55()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_uff_dataset58()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_sdynpy_*()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_metpy_dataarray()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_wrf_variable()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_harmonica_grid()</span></code> は、呼び出し側が渡す pyOMA, multitaper, mtspec, pyuff, SDynPy, MetPy, wrf-python, Harmonica 形式の object を消費します。これらの package は source object を作る必要がある場合に導入してください。adapter が直接 import するためではありません。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方針</p></th>
+<th class="head"><p>依存関係</p></th>
+<th class="head"><p>インストール案内</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GWexpy extras で宣言済み</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>, <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">obspy</span></code>, <code class="docutils literal notranslate"><span class="pre">mth5</span></code>, <code class="docutils literal notranslate"><span class="pre">lalsuite</span></code>, <code class="docutils literal notranslate"><span class="pre">gwinc</span></code>, <code class="docutils literal notranslate"><span class="pre">control</span></code>, <code class="docutils literal notranslate"><span class="pre">pydub</span></code></p></td>
+<td><p>必要に応じて <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[zarr]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[netcdf4]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[seismic]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[gw]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[control]'</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[audio]'</span></code> を使います。</p></td>
+</tr>
+<tr class="row-odd"><td><p>個別 package install</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code>, <code class="docutils literal notranslate"><span class="pre">polars</span></code>, <code class="docutils literal notranslate"><span class="pre">dask</span></code>, <code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>, <code class="docutils literal notranslate"><span class="pre">jax</span></code>, <code class="docutils literal notranslate"><span class="pre">cupy</span></code>, <code class="docutils literal notranslate"><span class="pre">pycbc</span></code>, <code class="docutils literal notranslate"><span class="pre">finesse</span></code>, <code class="docutils literal notranslate"><span class="pre">simpeg</span></code>, <code class="docutils literal notranslate"><span class="pre">mne</span></code>, <code class="docutils literal notranslate"><span class="pre">neo</span></code>, <code class="docutils literal notranslate"><span class="pre">quantities</span></code>, <code class="docutils literal notranslate"><span class="pre">pyroomacoustics</span></code>, <code class="docutils literal notranslate"><span class="pre">specutils</span></code>, <code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code>, <code class="docutils literal notranslate"><span class="pre">PySpice</span></code>, <code class="docutils literal notranslate"><span class="pre">skrf</span></code>, <code class="docutils literal notranslate"><span class="pre">pyOMA</span></code>, <code class="docutils literal notranslate"><span class="pre">multitaper</span></code>, <code class="docutils literal notranslate"><span class="pre">mtspec</span></code>, <code class="docutils literal notranslate"><span class="pre">pyuff</span></code>, <code class="docutils literal notranslate"><span class="pre">sdynpy</span></code>, <code class="docutils literal notranslate"><span class="pre">metpy</span></code>, <code class="docutils literal notranslate"><span class="pre">wrf-python</span></code>, <code class="docutils literal notranslate"><span class="pre">harmonica</span></code>, <code class="docutils literal notranslate"><span class="pre">emg3d</span></code>, <code class="docutils literal notranslate"><span class="pre">meshio</span></code></p></td>
+<td><p>bridge が直接 import する場合、または受け渡す source object を作る必要がある場合に、該当 backend を個別に導入してください。</p></td>
+</tr>
+</tbody>
+</table>
+<p>xarray 系の interop bridge は、GWexpy が独立した <code class="docutils literal notranslate"><span class="pre">xarray</span></code> extra を公開していないため <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> extra を案内します。メモリ上の xarray 変換だけが必要で <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code> を入れたくない場合は、<code class="docutils literal notranslate"><span class="pre">xarray</span></code> を個別に導入してください。</p>
 </section>
 <section id="a">
 <span id="interop-ja-storage-conversion"></span><h2>A. 保存形式・コンテナ変換<a class="headerlink" href="#a" title="Link to this heading"></a></h2>
@@ -721,7 +746,7 @@
 </table>
 </section>
 <section id="interop-ja-priorities">
-<span id="id5"></span><h2>優先的に見るべき対象<a class="headerlink" href="#interop-ja-priorities" title="Link to this heading"></a></h2>
+<span id="id6"></span><h2>優先的に見るべき対象<a class="headerlink" href="#interop-ja-priorities" title="Link to this heading"></a></h2>
 <p>公開面で先に理解すると効果が大きいのは次です。</p>
 <ul class="simple">
 <li><p><strong>ROOT</strong>: <code class="docutils literal notranslate"><span class="pre">io_formats</span></code> では EventTable の直 I/O のみ扱い、ROOT object 変換は interop 側で説明する</p></li>
@@ -732,16 +757,16 @@
 <li><p><strong>pandas / polars / astropy</strong>: 解析ワークフローの入口として頻出</p></li>
 </ul>
 </section>
-<section id="id6">
-<h2>関連ページ<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id7">
+<h2>関連ページ<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="tutorials/intro_interop.html"><span class="std std-doc">他ライブラリ連携チュートリアル</span></a></p></li>
 <li><p><a class="reference internal" href="../reference/api/interop.html"><span class="doc std std-doc">Interop API リファレンス</span></a></p></li>
 <li><p><a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a></p></li>
 </ul>
 </section>
-<section id="id7">
-<h2>次に読む<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="id8">
+<h2>次に読む<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="io_formats.html"><span class="doc std std-doc">ファイル I/O 対応フォーマットガイド</span></a> で <code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code> と <code class="docutils literal notranslate"><span class="pre">obj.write(...)</span></code> を確認する</p></li>
 <li><p><a class="reference internal" href="time_utilities.html"><span class="doc std std-doc">GPS 時刻ユーティリティ</span></a> で GPS 時刻やタイムゾーンの補助関数を確認する</p></li>
@@ -762,7 +787,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-26 09:56:59.
+      <span class="lastupdated">Last updated on 2026-04-26 13:14:28.
       </span></p>
   </div>
 
