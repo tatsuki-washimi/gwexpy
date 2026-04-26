@@ -147,6 +147,7 @@
 <span class="sd">https://emg3d.emsig.xyz/</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -249,6 +250,26 @@
         <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes_x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
         <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes_y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
         <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes_z</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_coords_for_component_shape</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return mesh coordinates whose lengths match a raw component shape.&quot;&quot;&quot;</span>
+    <span class="n">cell_coords</span> <span class="o">=</span> <span class="n">_build_cell_center_coords</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">cell_coords</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">cell_coords</span>
+
+    <span class="n">node_coords</span> <span class="o">=</span> <span class="n">_build_node_coords</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">node_coords</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">node_coords</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Component shape </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2"> does not match cell-center coordinate lengths &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">axis</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">cell_coords</span><span class="p">)</span><span class="si">}</span><span class="s2"> or node coordinate lengths &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">axis</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">node_coords</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
     <span class="p">)</span>
 
 
@@ -370,7 +391,7 @@
                 <span class="s2">&quot;Set interpolate_to_cell_center=True to align them.&quot;</span>
             <span class="p">)</span>
         <span class="n">fx_c</span><span class="p">,</span> <span class="n">fy_c</span><span class="p">,</span> <span class="n">fz_c</span> <span class="o">=</span> <span class="n">fx</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">fz</span>
-        <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">cz</span> <span class="o">=</span> <span class="n">_build_node_coords</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">cz</span> <span class="o">=</span> <span class="n">_coords_for_component_shape</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">fx_c</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Add singleton axis0 dimension</span>
@@ -616,7 +637,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-26 05:18:15.
+      <span class="lastupdated">Last updated on 2026-04-26 09:26:34.
       </span></p>
   </div>
 

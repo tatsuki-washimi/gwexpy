@@ -151,14 +151,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    components : dict[tuple, ScalarField], optional</span>
-<span class="sd">        Mapping of index tuples to field objects.</span>
+<span class="sd">    components : dict[tuple, ScalarField] or numpy.ndarray, optional</span>
+<span class="sd">        Mapping of index tuples to ScalarField objects, or a 6-D numpy array</span>
+<span class="sd">        of shape ``(n0, n1, n2, n3, i, j)`` representing a rank-2 tensor field.</span>
+<span class="sd">        When a numpy array is supplied the last two dimensions are the tensor</span>
+<span class="sd">        indices and each ``(n0, n1, n2, n3)`` slice becomes a ScalarField with</span>
+<span class="sd">        default ``arange`` coordinate axes.  Axis metadata (units, custom</span>
+<span class="sd">        coordinates) must be assigned after construction when using this path.</span>
 
 <span class="sd">    rank : int, optional</span>
 <span class="sd">        The tensor rank. If None, it is inferred from keys.</span>
 
 <span class="sd">    validate : bool, optional</span>
-<span class="sd">        If True (default), validates component consistency.</span>
+<span class="sd">        If True (default), validates component consistency (shape, units, axes).</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -186,7 +191,9 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">components</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">arr</span> <span class="o">=</span> <span class="n">components</span>
             <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">6</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TensorField rank-2 expects 6D array, got </span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;TensorField rank-2 expects 6D array, got </span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D&quot;</span>
+                <span class="p">)</span>
 
             <span class="n">dim_i</span><span class="p">,</span> <span class="n">dim_j</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
             <span class="n">new_components</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">ScalarField</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -612,7 +619,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-26 05:18:15.
+      <span class="lastupdated">Last updated on 2026-04-26 09:26:34.
       </span></p>
   </div>
 

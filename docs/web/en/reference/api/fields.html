@@ -1883,9 +1883,14 @@ out independently at each grid point.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>components</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>ScalarField</em><em>]</em><em>, </em><em>optional</em>) – Mapping of index tuples to field objects.</p></li>
+<li><p><strong>components</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>ScalarField</em><em>] or </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><em>numpy.ndarray</em></a><em>, </em><em>optional</em>) – Mapping of index tuples to ScalarField objects, or a 6-D numpy array
+of shape <code class="docutils literal notranslate"><span class="pre">(n0,</span> <span class="pre">n1,</span> <span class="pre">n2,</span> <span class="pre">n3,</span> <span class="pre">i,</span> <span class="pre">j)</span></code> representing a rank-2 tensor field.
+When a numpy array is supplied the last two dimensions are the tensor
+indices and each <code class="docutils literal notranslate"><span class="pre">(n0,</span> <span class="pre">n1,</span> <span class="pre">n2,</span> <span class="pre">n3)</span></code> slice becomes a ScalarField with
+default <code class="docutils literal notranslate"><span class="pre">arange</span></code> coordinate axes.  Axis metadata (units, custom
+coordinates) must be assigned after construction when using this path.</p></li>
 <li><p><strong>rank</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – The tensor rank. If None, it is inferred from keys.</p></li>
-<li><p><strong>validate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True (default), validates component consistency.</p></li>
+<li><p><strong>validate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If True (default), validates component consistency (shape, units, axes).</p></li>
 </ul>
 </dd>
 </dl>
@@ -2008,7 +2013,7 @@ Shape (N0, N1, N2, N3, dim1, dim2) if order=’last’.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-26 05:18:15.
+      <span class="lastupdated">Last updated on 2026-04-26 09:26:34.
       </span></p>
   </div>
 
