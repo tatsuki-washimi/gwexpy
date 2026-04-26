@@ -47,7 +47,13 @@ _ADD_SUB_COMPARISON_UFUNCS = {
     np.greater,
     np.greater_equal,
 }
-_UNSET = object()
+
+
+class _UnsetType:
+    """Sentinel type for omitted constructor arguments."""
+
+
+_UNSET = _UnsetType()
 
 
 def _copy_xindex(xindex: Any) -> Any:
@@ -111,9 +117,9 @@ class SeriesMatrix(  # type: ignore[misc]
         dx: u.Quantity | None = None,
         x0: u.Quantity | None = None,
         xunit: UnitLike = None,
-        name: str | object = _UNSET,
-        epoch: float | object = _UNSET,
-        attrs: dict[str, Any] | None | object = _UNSET,
+        name: str | _UnsetType = _UNSET,
+        epoch: float | _UnsetType = _UNSET,
+        attrs: dict[str, Any] | None | _UnsetType = _UNSET,
     ) -> SeriesMatrix:
         """Create a SeriesMatrix with normalized inputs and metadata."""
         if unit is not None:
@@ -227,9 +233,7 @@ class SeriesMatrix(  # type: ignore[misc]
             cols = OrderedDict(cols)
         if name is _UNSET:
             name = (
-                getattr(source_matrix, "name", "")
-                if source_matrix is not None
-                else ""
+                getattr(source_matrix, "name", "") if source_matrix is not None else ""
             )
         if epoch is _UNSET:
             epoch = (

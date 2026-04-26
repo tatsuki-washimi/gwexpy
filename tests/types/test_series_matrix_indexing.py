@@ -194,6 +194,40 @@ class TestGetItemLabelBased:
         expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
         np.testing.assert_array_equal(result.value, expected)
 
+    def test_boolean_row_mask_with_col_slice_preserves_metadata(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[[True, False, True], :, :]
+
+        assert result.shape == (2, 4, 5)
+        np.testing.assert_array_equal(result.value, data[[True, False, True], :, :])
+        assert result.row_keys() == ("r0", "r2")
+        assert result.col_keys() == ("c0", "c1", "c2", "c3")
+
+    def test_boolean_col_mask_with_row_slice_preserves_metadata(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[:, [False, True, False, True], :]
+
+        assert result.shape == (3, 2, 5)
+        np.testing.assert_array_equal(
+            result.value, data[:, [False, True, False, True], :]
+        )
+        assert result.row_keys() == ("r0", "r1", "r2")
+        assert result.col_keys() == ("c1", "c3")
+
     @pytest.mark.parametrize(
         ("row_selector", "col_selector", "expected_shape"),
         [

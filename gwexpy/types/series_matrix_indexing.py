@@ -271,6 +271,5 @@ class SeriesMatrixIndexingMixin:
         ri = [self.row_index(k) for k in row_keys]
         ci = [self.col_index(k) for k in col_keys]
 
-        # Apply row and column lists separately to get the Cartesian submatrix,
-        # not NumPy's pairwise advanced-indexing result.
-        return self[ri, :, :][:, ci, :]
+        # Direct row/column list selection is Cartesian for SeriesMatrix.
+        return self[ri, ci, :]
