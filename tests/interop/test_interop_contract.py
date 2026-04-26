@@ -8,6 +8,7 @@ import tomllib
 from pathlib import Path
 
 import gwexpy.interop as interop
+from gwexpy.interop._optional import _EXTRA_MAP
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_interop_contract.json"
@@ -245,4 +246,17 @@ def test_declared_extras_contain_runtime_dependencies():
             assert missing_dependencies == [], (
                 f"{entry['name']} declares extra {extra!r}, but that extra does not "
                 f"install runtime dependencies: {missing_dependencies}"
+            )
+
+
+def test_contract_entries_without_extras_do_not_map_runtime_deps_to_extra():
+    """Runtime packages for extras: [] entries must use bare install hints."""
+    for entry in TARGETS:
+        if entry["extras"]:
+            continue
+
+        for dependency in entry["optional_dependencies"]:
+            assert _EXTRA_MAP.get(dependency) is None, (
+                f"{entry['name']} has extras: [] but {dependency!r} maps to "
+                f"GWexpy extra {_EXTRA_MAP[dependency]!r}"
             )
