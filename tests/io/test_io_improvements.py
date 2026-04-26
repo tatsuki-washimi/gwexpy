@@ -28,7 +28,7 @@ def test_ensure_dependency_extra():
     # nonexistent with extra
     with pytest.raises(ImportError) as excinfo:
         ensure_dependency("nonexistent", extra="gui")
-    assert "pip install nonexistent[gui]" in str(excinfo.value)
+    assert "pip install 'gwexpy[gui]'" in str(excinfo.value)
 
 def test_register_timeseries_format_auto_adapt(tmp_path):
     # Mock reader that returns a TimeSeriesDict

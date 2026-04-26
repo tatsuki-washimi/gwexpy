@@ -26,12 +26,12 @@ from ._registration import register_timeseries_format
 
 def _import_pydub():
     try:
-        pydub = ensure_dependency("pydub")
+        pydub = ensure_dependency("pydub", extra="audio")
         return pydub.AudioSegment
     except ImportError as exc:
         raise ImportError(
             "pydub is required for reading audio files (MP3, FLAC, OGG, M4A). "
-            "Install with `pip install pydub`. "
+            "Install with `pip install 'gwexpy[audio]'`. "
             "MP3/M4A encoding also requires ffmpeg (`apt install ffmpeg` or equivalent)."
         ) from exc
 

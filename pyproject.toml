@@ -106,6 +106,17 @@ io = [
   "nptdms",
 ]
 
+# NetCDF4 / xarray time-series I/O
+netcdf4 = [
+  "netCDF4",
+  "xarray",
+]
+
+# Zarr store I/O
+zarr = [
+  "zarr",
+]
+
 # Advanced plotting
 plotting = [
   "pygmt",
@@ -176,6 +187,11 @@ all = [
   "ligo.skymap",
   # io
   "nptdms",
+  # netcdf4
+  "netCDF4",
+  "xarray",
+  # zarr
+  "zarr",
   # plotting
   "pygmt",
   # audio

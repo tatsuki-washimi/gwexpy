@@ -20,12 +20,12 @@ from ._registration import register_timeseries_format
 
 def _import_nptdms():
     try:
-        nptdms = ensure_dependency("nptdms")
+        nptdms = ensure_dependency("nptdms", extra="io")
         return nptdms.TdmsFile
     except ImportError as exc:
         raise ImportError(
             "npTDMS is required for reading TDMS files. "
-            "Install with `pip install nptdms`."
+            "Install with `pip install 'gwexpy[io]'`."
         ) from exc
 
 

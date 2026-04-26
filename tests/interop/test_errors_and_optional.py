@@ -103,6 +103,48 @@ class TestRequireOptional:
         with pytest.raises(ImportError):
             require_optional("_unknown_package_abc_123_")
 
+    def test_declared_extra_suggests_gwexpy_extra_and_all(self):
+        """Packages in extras included by all suggest both install paths."""
+        with patch.dict(sys.modules, {"xarray": None}):
+            with pytest.raises(ImportError) as excinfo:
+                require_optional("xarray")
+
+        msg = str(excinfo.value)
+        assert "pip install 'gwexpy[netcdf4]'" in msg
+        assert 'pip install "gwexpy[all]"' in msg
+
+    def test_gui_extra_does_not_suggest_all(self):
+        """The gui extra is intentionally excluded from gwexpy[all]."""
+        with patch.dict(sys.modules, {"PyQt5": None}):
+            with pytest.raises(ImportError) as excinfo:
+                require_optional("PyQt5")
+
+        msg = str(excinfo.value)
+        assert "pip install 'gwexpy[gui]'" in msg
+        assert "gwexpy[all]" not in msg
+
+    @pytest.mark.parametrize("name", ["librosa", "pyroomacoustics"])
+    def test_undeclared_audio_neighbors_use_bare_install(self, name):
+        """Packages without declared extras should not suggest gwexpy[audio]."""
+        with patch.dict(sys.modules, {name: None}):
+            with pytest.raises(ImportError) as excinfo:
+                require_optional(name)
+
+        msg = str(excinfo.value)
+        assert f"pip install {name}" in msg
+        assert "gwexpy[audio]" not in msg
+        assert "gwexpy[all]" not in msg
+
+    def test_dask_array_uses_distribution_name_in_install_hint(self):
+        """dask.array is an import namespace; users install the dask package."""
+        with patch.dict(sys.modules, {"dask": None, "dask.array": None}):
+            with pytest.raises(ImportError) as excinfo:
+                require_optional("dask.array")
+
+        msg = str(excinfo.value)
+        assert "pip install dask" in msg
+        assert "pip install dask.array" not in msg
+
     def test_returns_already_imported_module(self):
         """Calling twice returns the same module object."""
         mod1 = require_optional("scipy")

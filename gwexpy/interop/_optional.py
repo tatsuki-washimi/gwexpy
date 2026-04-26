@@ -52,6 +52,95 @@ _OPTIONAL_DEPENDENCIES = {
     "mtspec": "mtspec",
 }
 
+_INSTALL_PACKAGE_NAMES = {
+    # Import namespace differs from the package users must install.
+    "dask.array": "dask",
+}
+
+_EXTRA_MAP: dict[str, str | None] = {
+    # analysis: Signal analysis and statistics
+    "scikit-learn": "analysis",
+    "sklearn": "analysis",
+    "statsmodels": "analysis",
+    "pmdarima": "analysis",
+    "dcor": "analysis",
+    "hurst": "analysis",
+    "hurst-exponent": "analysis",
+    "exp-hurst": "analysis",
+    "EMD-signal": "analysis",
+    "PyEMD": "analysis",
+    "PyWavelets": "analysis",
+    "pywt": "analysis",
+    # fitting: Curve fitting and MCMC
+    "iminuit": "fitting",
+    "emcee": "fitting",
+    "corner": "fitting",
+    # control: Control systems
+    "control": "control",
+    # seismic: Seismic and magnetotelluric data
+    "obspy": "seismic",
+    "mth5": "seismic",
+    "mtpy": "seismic",
+    "mt_metadata": "seismic",
+    # gw: Gravitational wave data access and tools
+    "lalsuite": "gw",
+    "lal": "gw",
+    "pycbc": "gw",
+    "gwdatafind": "gw",
+    "gwosc": "gw",
+    "dqsegdb2": "gw",
+    "dttxml": "gw",
+    "gwinc": "gw",
+    "finesse": "gw",
+    "ligo.skymap": "gw",
+    # io: Experimental data I/O
+    "nptdms": "io",
+    # netcdf4: NetCDF4 / xarray time-series I/O
+    "netCDF4": "netcdf4",
+    "xarray": "netcdf4",
+    # zarr: Zarr store I/O
+    "zarr": "zarr",
+    # plotting: Advanced plotting
+    "pygmt": "plotting",
+    # audio: Audio processing
+    "pydub": "audio",
+    "tinytag": "audio",
+    # gui: GUI components
+    "PyQt5": "gui",
+    "pyqtgraph": "gui",
+    "qtpy": "gui",
+    "sounddevice": "gui",
+    # No declared extra — install these packages directly
+    "PySpice": None,
+    "skrf": None,
+    "torch": None,
+    "torchaudio": None,
+    "tensorflow": None,
+    "jax": None,
+    "dask": None,
+    "dask.array": None,
+    "cupy": None,
+    "mne": None,
+    "neo": None,
+    "polars": None,
+    "joblib": None,
+    "librosa": None,
+    "pyroomacoustics": None,
+}
+
+_EXTRAS_INCLUDED_IN_ALL = {
+    "analysis",
+    "fitting",
+    "control",
+    "seismic",
+    "gw",
+    "io",
+    "netcdf4",
+    "zarr",
+    "plotting",
+    "audio",
+}
+
 
 def require_optional(name: str) -> Any:
     """Import an optional dependency or raise an informative ImportError.
@@ -78,88 +167,28 @@ def require_optional(name: str) -> Any:
     else:
         pkg_name = _OPTIONAL_DEPENDENCIES[name]
 
-    # Map package name to help message for installation
-    # Aligned with pyproject.toml [project.optional-dependencies]
-    _EXTRA_MAP = {
-        # analysis: Signal analysis and statistics
-        "scikit-learn": "analysis",
-        "sklearn": "analysis",
-        "statsmodels": "analysis",
-        "pmdarima": "analysis",
-        "dcor": "analysis",
-        "hurst": "analysis",
-        "hurst-exponent": "analysis",
-        "exp-hurst": "analysis",
-        "EMD-signal": "analysis",
-        "PyEMD": "analysis",
-        "PyWavelets": "analysis",
-        "pywt": "analysis",
-        # fitting: Curve fitting and MCMC
-        "iminuit": "fitting",
-        "emcee": "fitting",
-        "corner": "fitting",
-        # control: Control systems
-        "control": "control",
-        # seismic: Seismic and magnetotelluric data
-        "obspy": "seismic",
-        "mth5": "seismic",
-        "mtpy": "seismic",
-        "mt_metadata": "seismic",
-        # gw: Gravitational wave data access and tools
-        "lalsuite": "gw",
-        "lal": "gw",
-        "pycbc": "gw",
-        "gwdatafind": "gw",
-        "gwosc": "gw",
-        "dqsegdb2": "gw",
-        "dttxml": "gw",
-        "gwinc": "gw",
-        "finesse": "gw",
-        "ligo.skymap": "gw",
-        "PySpice": "eda",
-        "skrf": "eda",
-        # io: Experimental data I/O
-        "nptdms": "io",
-        # plotting: Advanced plotting
-        "pygmt": "plotting",
-        # audio: Audio processing
-        "pydub": "audio",
-        "tinytag": "audio",
-        "librosa": "audio",
-        "pyroomacoustics": "audio",
-        # gui: GUI components
-        "PyQt5": "gui",
-        "pyqtgraph": "gui",
-        "qtpy": "gui",
-        "sounddevice": "gui",
-        # Future/interop: Deep Learning & Big Data frameworks (not in pyproject.toml yet)
-        "torch": "interop",
-        "torchaudio": "audio",
-        "tensorflow": "interop",
-        "jax": "interop",
-        "dask": "interop",
-        "zarr": "interop",
-        "cupy": "interop",
-        "xarray": "interop",
-        "netCDF4": "seismic",
-        # Future/bio: Bioscience (not in pyproject.toml yet)
-        "mne": "bio",
-        "neo": "bio",
-        # Future/stats: Statistical analysis (not in pyproject.toml yet)
-        "polars": "stats",
-        "joblib": "stats",
-    }
-
     try:
         return importlib.import_module(pkg_name)
     except ImportError as e:
-        extra = _EXTRA_MAP.get(name) or _EXTRA_MAP.get(pkg_name)
+        # Prefer name lookup; fall back to pkg_name only if name is not explicitly mapped.
+        _SENTINEL = object()
+        _raw = _EXTRA_MAP.get(name, _SENTINEL)
+        if _raw is _SENTINEL:
+            _raw = _EXTRA_MAP.get(pkg_name)
+        extra = _raw  # may be a string or None
+
         if extra:
             install_cmd = f"pip install 'gwexpy[{extra}]'"
+            if extra in _EXTRAS_INCLUDED_IN_ALL:
+                also_all = ' or \'pip install "gwexpy[all]"\''
+            else:
+                also_all = ""
         else:
-            install_cmd = f"pip install {pkg_name}"
+            install_name = _INSTALL_PACKAGE_NAMES.get(name, pkg_name)
+            install_cmd = f"pip install {install_name}"
+            also_all = ""
 
         raise ImportError(
             f"The '{name}' package is required for this feature but is not installed. "
-            f"You can install it via '{install_cmd}' or 'pip install \"gwexpy[all]\"'."
+            f"You can install it via '{install_cmd}'{also_all}."
         ) from e
