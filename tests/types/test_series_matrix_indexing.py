@@ -6,6 +6,7 @@ import pytest
 from astropy import units as u
 
 from gwexpy.timeseries import TimeSeriesMatrix
+from gwexpy.types.metadata import MetaData, MetaDataMatrix
 from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
@@ -202,19 +203,41 @@ class TestLoc:
 # ---------------------------------------------------------------------------
 
 class TestSubmatrix:
-    def test_submatrix_code_path(self):
-        # submatrix normalizes single string to list, then calls row_index
-        # Test the string normalization (lines 235-238)
-        tsm = _make_tsm()
-        row_key = tsm.row_keys()[0]   # e.g. 'row0'
-        col_key = tsm.col_keys()[0]   # e.g. 'col0'
-        # submatrix(['row0'], ['col0']) → ri=[0], ci=[0] → self[[0], [0], :]
-        # But self[[0], [0], :] triggers list branch in __getitem__ which calls row_index(0) → error
-        # Just test single-string normalization by checking it runs the normalize path
-        try:
-            tsm.submatrix(row_key, col_key)
-        except (KeyError, TypeError):
-            pass  # known issue with integer list fallback in __getitem__
+    def test_submatrix_label_selection_preserves_cartesian_shape_and_metadata(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        meta_arr = np.empty((3, 4), dtype=object)
+        for i in range(3):
+            for j in range(4):
+                meta_arr[i, j] = MetaData(unit=u.m, name=f"elem-{i}-{j}")
+        sm = SeriesMatrix(
+            data,
+            xindex=u.Quantity(np.arange(5, dtype=float), u.s),
+            meta=MetaDataMatrix(meta_arr),
+            rows={
+                "r0": {"name": "row zero"},
+                "r1": {"name": "row one"},
+                "r2": {"name": "row two"},
+            },
+            cols={
+                "c0": {"name": "col zero"},
+                "c1": {"name": "col one"},
+                "c2": {"name": "col two"},
+                "c3": {"name": "col three"},
+            },
+        )
+
+        result = sm.submatrix(["r0", "r2"], ["c1", "c3"])
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+        np.testing.assert_array_equal(result.xindex.value, np.arange(5, dtype=float))
+        assert result.xindex.unit == u.s
+        assert result.row_keys() == ("r0", "r2")
+        assert result.col_keys() == ("c1", "c3")
+        assert result.rows["r2"].name == "row two"
+        assert result.cols["c3"].name == "col three"
+        assert result.meta[1, 1].name == "elem-2-3"
 
     def test_getitem_non_array_result(self):
         # Line 121 — result not np.ndarray → return early

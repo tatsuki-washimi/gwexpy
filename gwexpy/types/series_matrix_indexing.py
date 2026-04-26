@@ -13,6 +13,17 @@ if TYPE_CHECKING:
     from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
 
+def _resolve_label_key(key: Any, resolver: Any) -> Any:
+    """Resolve string labels while leaving integer positions unchanged."""
+    if isinstance(key, str):
+        return resolver(key)
+    if isinstance(key, (list, tuple)):
+        return [resolver(item) if isinstance(item, str) else item for item in key]
+    if isinstance(key, np.ndarray) and key.dtype.kind in "US":
+        return [resolver(item) for item in key.tolist()]
+    return key
+
+
 class SeriesMatrixIndexingMixin:
     """Mixin for SeriesMatrix indexing and slicing operations."""
 
@@ -93,23 +104,8 @@ class SeriesMatrixIndexingMixin:
             return series_cls(result, **kwargs)
 
         # 3. Handle label-based slicing for rows/cols
-        ri = r
-        if isinstance(r, (str, list)) or (
-            isinstance(r, np.ndarray) and r.dtype.kind in "US"
-        ):
-            if isinstance(r, str):
-                ri = self.row_index(r)
-            else:
-                ri = [self.row_index(k) for k in r]
-
-        ci = c
-        if isinstance(c, (str, list)) or (
-            isinstance(c, np.ndarray) and c.dtype.kind in "US"
-        ):
-            if isinstance(c, str):
-                ci = self.col_index(c)
-            else:
-                ci = [self.col_index(k) for k in c]
+        ri = _resolve_label_key(r, self.row_index)
+        ci = _resolve_label_key(c, self.col_index)
 
         # 4. Perform actual ndarray slicing
         new_key = (ri, ci, s)
@@ -185,23 +181,8 @@ class SeriesMatrixIndexingMixin:
         expanded_key = _expand_key(key, 3)
         r, c, s = expanded_key
 
-        ri = r
-        if isinstance(r, (str, list)) or (
-            isinstance(r, np.ndarray) and r.dtype.kind in "US"
-        ):
-            if isinstance(r, str):
-                ri = self.row_index(r)
-            else:
-                ri = [self.row_index(k) for k in r]
-
-        ci = c
-        if isinstance(c, (str, list)) or (
-            isinstance(c, np.ndarray) and c.dtype.kind in "US"
-        ):
-            if isinstance(c, str):
-                ci = self.col_index(c)
-            else:
-                ci = [self.col_index(k) for k in c]
+        ri = _resolve_label_key(r, self.row_index)
+        ci = _resolve_label_key(c, self.col_index)
 
         if hasattr(value, "shape"):
             # If value is a Series or Matrix, ensure compatibility
@@ -236,5 +217,6 @@ class SeriesMatrixIndexingMixin:
         ri = [self.row_index(k) for k in row_keys]
         ci = [self.col_index(k) for k in col_keys]
 
-        # Use __getitem__ logic
-        return self[ri, ci, :]
+        # Apply row and column lists separately to get the Cartesian submatrix,
+        # not NumPy's pairwise advanced-indexing result.
+        return self[ri, :, :][:, ci, :]

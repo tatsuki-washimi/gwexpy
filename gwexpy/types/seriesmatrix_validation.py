@@ -730,7 +730,7 @@ def _handle_seriesmatrix(data, units, names, channels, shape, xindex, dx, x0, xu
         name_default=data.names.copy(),
         channel_default=data.channels.copy(),
     )
-    return arr, _pack_attrs(unit_arr, name_arr, channel_arr), None
+    return arr, _pack_attrs(unit_arr, name_arr, channel_arr), data.xindex
 
 
 # ---------------------------------------------------------------------------
@@ -804,17 +804,17 @@ def _normalize_input(
         where attr_dict contains per-cell unit/name/channel arrays.
 
     """
-    type_key = _detect_input_type(data)
+    from .seriesmatrix import SeriesMatrix
+
+    if isinstance(data, SeriesMatrix):
+        type_key = "seriesmatrix"
+    else:
+        type_key = _detect_input_type(data)
 
     # SeriesMatrix requires a lazy import, so handle the "unknown" fallback
     # and the explicit SeriesMatrix check here.
     if type_key == "unknown":
-        from .seriesmatrix import SeriesMatrix
-
-        if isinstance(data, SeriesMatrix):
-            type_key = "seriesmatrix"
-        else:
-            raise TypeError(f"Unsupported data type for SeriesMatrix: {type(data)}")
+        raise TypeError(f"Unsupported data type for SeriesMatrix: {type(data)}")
 
     handler = _NORMALIZE_HANDLERS[type_key]
     return handler(data, units, names, channels, shape, xindex, dx, x0, xunit)

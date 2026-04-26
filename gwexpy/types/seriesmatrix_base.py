@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import warnings
 from collections import OrderedDict
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Optional, cast
 
 import numpy as np
@@ -46,6 +47,30 @@ _ADD_SUB_COMPARISON_UFUNCS = {
     np.greater,
     np.greater_equal,
 }
+_UNSET = object()
+
+
+def _copy_xindex(xindex: Any) -> Any:
+    """Copy an x-axis index without assuming a specific index implementation."""
+    if xindex is None:
+        return None
+    try:
+        return xindex.copy()
+    except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+        return deepcopy(xindex)
+
+
+def _copy_metadata_matrix(meta: MetaDataMatrix) -> MetaDataMatrix:
+    """Deep-copy a metadata matrix and its per-cell metadata entries."""
+    return MetaDataMatrix(deepcopy(np.asarray(meta, dtype=object)))
+
+
+def _copy_metadata_dict(meta: MetaDataDict, key_prefix: str) -> MetaDataDict:
+    """Deep-copy row or column metadata while preserving keys."""
+    items = OrderedDict()
+    for key, value in meta.items():
+        items[key] = MetaData(**dict(value))
+    return MetaDataDict(items, expected_size=len(items), key_prefix=key_prefix)
 
 
 class PerformanceWarning(RuntimeWarning):
@@ -86,15 +111,20 @@ class SeriesMatrix(  # type: ignore[misc]
         dx: u.Quantity | None = None,
         x0: u.Quantity | None = None,
         xunit: UnitLike = None,
-        name: str = "",
-        epoch: float = 0.0,
-        attrs: dict[str, Any] | None = None,
+        name: str | object = _UNSET,
+        epoch: float | object = _UNSET,
+        attrs: dict[str, Any] | None | object = _UNSET,
     ) -> SeriesMatrix:
         """Create a SeriesMatrix with normalized inputs and metadata."""
         if unit is not None:
             if units is not None:
                 raise ValueError("give only one of unit or units")
             units = unit
+
+        source_matrix = data if isinstance(data, SeriesMatrix) else None
+        explicit_units = units is not None
+        explicit_names = names is not None
+        explicit_channels = channels is not None
 
         if xindex is not None and xunit is not None:
             try:
@@ -116,39 +146,52 @@ class SeriesMatrix(  # type: ignore[misc]
             xunit=xunit,
         )
 
-        if meta is not None:
-            if not isinstance(meta, MetaDataMatrix):
-                try:
-                    meta = MetaDataMatrix(meta)
-                except (TypeError, ValueError) as e:
-                    raise TypeError(
-                        "meta must be a MetaDataMatrix or a 2D array-like of MetaData/dict"
-                    ) from e
-            if units is None:
-                data_attrs["unit"] = None
-            if names is None:
-                data_attrs["name"] = None
-            if channels is None:
-                data_attrs["channel"] = None
-            _check_attribute_consistency(data_attrs=data_attrs, meta=meta)
-            units_arr, names_arr, channels_arr = _fill_missing_attributes(
-                data_attrs=data_attrs, meta=meta
-            )
+        if meta is None and source_matrix is not None:
+            meta_matrix = _copy_metadata_matrix(source_matrix.meta)
+            if explicit_units:
+                meta_matrix.units = data_attrs["unit"]
+            if explicit_names:
+                meta_matrix.names = data_attrs["name"]
+            if explicit_channels:
+                meta_matrix.channels = data_attrs["channel"]
         else:
-            units_arr = data_attrs.get("unit", None)
-            names_arr = data_attrs.get("name", None)
-            channels_arr = data_attrs.get("channel", None)
+            if meta is not None:
+                if not isinstance(meta, MetaDataMatrix):
+                    try:
+                        meta = MetaDataMatrix(meta)
+                    except (TypeError, ValueError) as e:
+                        raise TypeError(
+                            "meta must be a MetaDataMatrix or a 2D array-like of MetaData/dict"
+                        ) from e
+                if units is None:
+                    data_attrs["unit"] = None
+                if names is None:
+                    data_attrs["name"] = None
+                if channels is None:
+                    data_attrs["channel"] = None
+                _check_attribute_consistency(data_attrs=data_attrs, meta=meta)
+                units_arr, names_arr, channels_arr = _fill_missing_attributes(
+                    data_attrs=data_attrs, meta=meta
+                )
+            else:
+                units_arr = data_attrs.get("unit", None)
+                names_arr = data_attrs.get("name", None)
+                channels_arr = data_attrs.get("channel", None)
 
-        meta_matrix = _make_meta_matrix(
-            shape=value_array.shape[:2],
-            units=units_arr,
-            names=names_arr,
-            channels=channels_arr,
-        )
+            meta_matrix = _make_meta_matrix(
+                shape=value_array.shape[:2],
+                units=units_arr,
+                names=names_arr,
+                channels=channels_arr,
+            )
 
         if xindex is None:
             if detected_xindex is not None:
-                xindex = detected_xindex
+                xindex = (
+                    _copy_xindex(detected_xindex)
+                    if source_matrix is not None
+                    else detected_xindex
+                )
             else:
                 if value_array.shape[2] == 0 and dx is None and x0 is None:
                     xindex = np.asarray([])
@@ -173,16 +216,41 @@ class SeriesMatrix(  # type: ignore[misc]
 
         obj.meta = meta_matrix
         N, M = value_array.shape[:2]
+        if source_matrix is not None:
+            if rows is None and getattr(source_matrix, "rows", None) is not None:
+                rows = _copy_metadata_dict(source_matrix.rows, "row")
+            if cols is None and getattr(source_matrix, "cols", None) is not None:
+                cols = _copy_metadata_dict(source_matrix.cols, "col")
         if isinstance(rows, dict) and not isinstance(rows, OrderedDict):
             rows = OrderedDict(rows)
         if isinstance(cols, dict) and not isinstance(cols, OrderedDict):
             cols = OrderedDict(cols)
+        if name is _UNSET:
+            name = (
+                getattr(source_matrix, "name", "")
+                if source_matrix is not None
+                else ""
+            )
+        if epoch is _UNSET:
+            epoch = (
+                getattr(source_matrix, "epoch", 0.0)
+                if source_matrix is not None
+                else 0.0
+            )
+        if attrs is _UNSET:
+            attrs = (
+                deepcopy(getattr(source_matrix, "attrs", {}))
+                if source_matrix is not None
+                else {}
+            )
+        elif attrs is None:
+            attrs = {}
         obj.rows = MetaDataDict(cast(Any, rows), expected_size=N, key_prefix="row")
         obj.cols = MetaDataDict(cast(Any, cols), expected_size=M, key_prefix="col")
         obj.xindex = xindex
-        obj.name = name
-        obj.epoch = epoch
-        obj.attrs = attrs or {}
+        obj.name = cast(str, name)
+        obj.epoch = cast(float, epoch)
+        obj.attrs = cast(dict[str, Any], attrs) or {}
 
         return obj
 

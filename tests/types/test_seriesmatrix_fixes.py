@@ -114,6 +114,80 @@ def test_basic_import_and_instantiation():
     assert sm.name == "test_matrix", f"Name incorrect: {sm.name}"
 
 
+def test_constructor_from_seriesmatrix_preserves_axis_and_metadata():
+    """Constructing from SeriesMatrix preserves axis and metadata invariants."""
+    data = np.arange(24, dtype=float).reshape(2, 3, 4)
+    xindex = u.Quantity([10.0, 20.0, 30.0, 40.0], u.s)
+    meta_arr = np.empty((2, 3), dtype=object)
+    for i in range(2):
+        for j in range(3):
+            meta_arr[i, j] = MetaData(
+                unit=u.m,
+                name=f"elem-{i}-{j}",
+                channel=f"H1:TEST_{i}_{j}",
+            )
+
+    source = SeriesMatrix(
+        data,
+        xindex=xindex,
+        meta=MetaDataMatrix(meta_arr),
+        rows={
+            "north": {"name": "north row", "unit": u.m, "role": "sensor"},
+            "south": {"name": "south row", "unit": u.m, "role": "witness"},
+        },
+        cols={
+            "inphase": {"name": "I", "unit": u.V, "role": "signal"},
+            "quadrature": {"name": "Q", "unit": u.V, "role": "signal"},
+            "null": {"name": "N", "unit": u.V, "role": "control"},
+        },
+        name="source-matrix",
+        epoch=123.5,
+        attrs={"nested": {"version": 1}},
+    )
+    for i in range(2):
+        for j in range(3):
+            source.meta[i, j]["tag"] = f"tag-{i}-{j}"
+
+    cloned = SeriesMatrix(source)
+
+    np.testing.assert_allclose(cloned.value, source.value)
+    np.testing.assert_allclose(cloned.xindex.value, xindex.value)
+    assert cloned.xindex.unit == u.s
+    assert cloned.row_keys() == ("north", "south")
+    assert cloned.col_keys() == ("inphase", "quadrature", "null")
+    assert cloned.rows["north"]["role"] == "sensor"
+    assert cloned.cols["null"]["role"] == "control"
+    assert cloned.meta[1, 2].unit == u.m
+    assert cloned.meta[1, 2].name == "elem-1-2"
+    assert cloned.meta[1, 2]["tag"] == "tag-1-2"
+    assert cloned.name == "source-matrix"
+    assert cloned.epoch == 123.5
+    assert cloned.attrs == {"nested": {"version": 1}}
+
+    cloned.meta[1, 2]["tag"] = "changed"
+    cloned.rows["north"]["role"] = "changed"
+    cloned.attrs["nested"]["version"] = 2
+    assert source.meta[1, 2]["tag"] == "tag-1-2"
+    assert source.rows["north"]["role"] == "sensor"
+    assert source.attrs["nested"]["version"] == 1
+
+
+def test_constructor_from_seriesmatrix_allows_explicit_xindex_override():
+    """An explicit xindex overrides the source SeriesMatrix sample axis."""
+    data = np.ones((1, 1, 3), dtype=float)
+    meta = MetaDataMatrix([[MetaData(unit=u.m, name="source")]])
+    source = SeriesMatrix(data, xindex=u.Quantity([0, 1, 2], u.s), meta=meta)
+    source.meta[0, 0]["tag"] = "kept"
+    override_xindex = u.Quantity([0, 100, 200], u.ms)
+
+    cloned = SeriesMatrix(source, xindex=override_xindex, name="override")
+
+    np.testing.assert_allclose(cloned.xindex.value, override_xindex.value)
+    assert cloned.xindex.unit == u.ms
+    assert cloned.meta[0, 0]["tag"] == "kept"
+    assert cloned.name == "override"
+
+
 def test_array_ufunc_comparison_returns_bool():
     """Ensure comparison ufunc results use boolean dtype."""
     data = np.arange(6, dtype=float).reshape(1, 2, 3)
