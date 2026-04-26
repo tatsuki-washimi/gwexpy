@@ -136,6 +136,40 @@ class TestGetItemLabelBased:
         result = tsm[:, keys, :]
         assert result.shape == (2, 2, 10)
 
+    def test_int_row_list_and_int_col_list_are_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[[0, 2], [1, 3], :]
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+        assert result.row_keys() == ("r0", "r2")
+        assert result.col_keys() == ("c1", "c3")
+
+    def test_label_row_list_and_label_col_list_are_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(
+            data,
+            xindex=np.arange(5),
+            rows={"r0": {}, "r1": {}, "r2": {}},
+            cols={"c0": {}, "c1": {}, "c2": {}, "c3": {}},
+        )
+
+        result = sm[["r0", "r2"], ["c1", "c3"], :]
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+        assert result.row_keys() == ("r0", "r2")
+        assert result.col_keys() == ("c1", "c3")
+
 
 # ---------------------------------------------------------------------------
 # __setitem__

@@ -24,6 +24,21 @@ def _resolve_label_key(key: Any, resolver: Any) -> Any:
     return key
 
 
+def _is_advanced_axis_selector(key: Any) -> bool:
+    """Return True for list-like row/column selectors."""
+    if isinstance(key, np.ndarray):
+        return key.ndim > 0
+    return isinstance(key, (list, tuple))
+
+
+def _as_position_list(key: Any) -> list[int]:
+    """Normalize a list-like row/column selector into integer positions."""
+    arr = np.asarray(key)
+    if arr.dtype == np.bool_:
+        return np.nonzero(arr)[0].tolist()
+    return [int(item) for item in arr.tolist()]
+
+
 class SeriesMatrixIndexingMixin:
     """Mixin for SeriesMatrix indexing and slicing operations."""
 
@@ -108,8 +123,17 @@ class SeriesMatrixIndexingMixin:
         ci = _resolve_label_key(c, self.col_index)
 
         # 4. Perform actual ndarray slicing
-        new_key = (ri, ci, s)
-        result = cast(Any, super()).__getitem__(new_key)
+        if _is_advanced_axis_selector(ri) and _is_advanced_axis_selector(ci):
+            ri_pos = _as_position_list(ri)
+            ci_pos = _as_position_list(ci)
+            result = self.view(np.ndarray)[np.ix_(ri_pos, ci_pos)][:, :, s]
+            meta_ri: Any = ri_pos
+            meta_ci: Any = ci_pos
+        else:
+            new_key = (ri, ci, s)
+            result = cast(Any, super()).__getitem__(new_key)
+            meta_ri = ri
+            meta_ci = ci
 
         if not isinstance(result, np.ndarray):
             return result
@@ -134,20 +158,25 @@ class SeriesMatrixIndexingMixin:
                 result = result.view(np.ndarray).reshape(new_shape).view(type(self))
 
         # 5. Slice internal metadata
-        new_meta = self.meta[ri, ci]
+        if _is_advanced_axis_selector(meta_ri) and _is_advanced_axis_selector(meta_ci):
+            new_meta = self.meta[
+                np.ix_(_as_position_list(meta_ri), _as_position_list(meta_ci))
+            ]
+        else:
+            new_meta = self.meta[meta_ri, meta_ci]
 
         # Restore metadata dimensions
         if new_meta.ndim < 2:
             meta_shape = list(new_meta.shape)
-            if isinstance(ci, (int, np.integer)):
+            if isinstance(meta_ci, (int, np.integer)):
                 meta_shape.insert(1, 1)
-            if isinstance(ri, (int, np.integer)):
+            if isinstance(meta_ri, (int, np.integer)):
                 meta_shape.insert(0, 1)
 
             if len(meta_shape) != new_meta.ndim:
                 new_meta = new_meta.reshape(meta_shape)
-        new_rows = _slice_metadata_dict(self.rows, ri, "row")
-        new_cols = _slice_metadata_dict(self.cols, ci, "col")
+        new_rows = _slice_metadata_dict(self.rows, meta_ri, "row")
+        new_cols = _slice_metadata_dict(self.cols, meta_ci, "col")
 
         # 6. Slice xindex
         if self.xindex is not None:

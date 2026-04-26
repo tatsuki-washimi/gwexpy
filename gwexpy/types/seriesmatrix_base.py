@@ -69,7 +69,7 @@ def _copy_metadata_dict(meta: MetaDataDict, key_prefix: str) -> MetaDataDict:
     """Deep-copy row or column metadata while preserving keys."""
     items = OrderedDict()
     for key, value in meta.items():
-        items[key] = MetaData(**dict(value))
+        items[key] = MetaData(**deepcopy(dict(value)))
     return MetaDataDict(items, expected_size=len(items), key_prefix=key_prefix)
 
 

@@ -227,7 +227,11 @@ def _slice_metadata_dict(meta_dict, key, prefix):
     if isinstance(key, slice):
         subset = items[key]
     elif isinstance(key, (list, np.ndarray, tuple)):
-        subset = [items[int(i)] for i in key]
+        key_arr = np.asarray(key)
+        if key_arr.dtype == np.bool_:
+            subset = [items[int(i)] for i in np.nonzero(key_arr)[0]]
+        else:
+            subset = [items[int(i)] for i in key]
     elif isinstance(key, (int, np.integer)):
         subset = [items[int(key)]]
     else:
@@ -730,6 +734,19 @@ def _handle_seriesmatrix(data, units, names, channels, shape, xindex, dx, x0, xu
         name_default=data.names.copy(),
         channel_default=data.channels.copy(),
     )
+    if units is not None:
+        arr = arr.astype(np.result_type(arr, float), copy=True)
+        N, M = data.units.shape
+        for i in range(N):
+            for j in range(M):
+                try:
+                    arr[i, j] = u.Quantity(arr[i, j], data.units[i, j]).to_value(
+                        unit_arr[i, j]
+                    )
+                except (u.UnitConversionError, TypeError, ValueError) as e:
+                    raise u.UnitConversionError(
+                        f"Unit conversion failed at ({i},{j}): {e}"
+                    )
     return arr, _pack_attrs(unit_arr, name_arr, channel_arr), data.xindex
 
 

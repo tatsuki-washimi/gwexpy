@@ -172,6 +172,50 @@ def test_constructor_from_seriesmatrix_preserves_axis_and_metadata():
     assert source.attrs["nested"]["version"] == 1
 
 
+def test_constructor_from_seriesmatrix_converts_explicit_unit_override():
+    """Explicit unit overrides convert values instead of only relabeling metadata."""
+    source = SeriesMatrix(
+        np.array([[[1.0, 2.0], [3.0, 4.0]]]),
+        xindex=np.array([0.0, 1.0]),
+        units=[[u.m, u.m]],
+    )
+
+    cloned = SeriesMatrix(source, units=[[u.cm, u.cm]])
+
+    np.testing.assert_allclose(cloned.value, [[[100.0, 200.0], [300.0, 400.0]]])
+    assert cloned.meta[0, 0].unit == u.cm
+    assert cloned.meta[0, 1].unit == u.cm
+
+
+def test_constructor_from_seriesmatrix_rejects_incompatible_unit_override():
+    """Explicit unit overrides must be convertible from the source cell units."""
+    source = SeriesMatrix(
+        np.array([[[1.0, 2.0]]]),
+        xindex=np.array([0.0, 1.0]),
+        units=[[u.m]],
+    )
+
+    with pytest.raises(u.UnitConversionError):
+        SeriesMatrix(source, units=[[u.s]])
+
+
+def test_constructor_from_seriesmatrix_deep_copies_nested_row_col_metadata():
+    """Nested row/column metadata payloads are isolated on clone."""
+    source = SeriesMatrix(
+        np.zeros((1, 1, 2)),
+        xindex=np.array([0.0, 1.0]),
+        rows={"r0": {"payload": {"tags": ["source"]}}},
+        cols={"c0": {"payload": {"limits": {"low": 1}}}},
+    )
+
+    cloned = SeriesMatrix(source)
+    cloned.rows["r0"]["payload"]["tags"].append("clone")
+    cloned.cols["c0"]["payload"]["limits"]["low"] = 99
+
+    assert source.rows["r0"]["payload"]["tags"] == ["source"]
+    assert source.cols["c0"]["payload"]["limits"]["low"] == 1
+
+
 def test_constructor_from_seriesmatrix_allows_explicit_xindex_override():
     """An explicit xindex overrides the source SeriesMatrix sample axis."""
     data = np.ones((1, 1, 3), dtype=float)
