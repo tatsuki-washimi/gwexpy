@@ -53,6 +53,22 @@ CLASS_MAP = {
     "EventTable": EventTable,
 }
 
+VALID_EXTRAS = {
+    "audio",
+    "io",
+    "netcdf4",
+    "seismic",
+    "zarr",
+}
+
+VALID_UNAVAILABLE_BEHAVIORS = {
+    "available_in_base_install",
+    "conditional_registration",
+    "not_public",
+    "raises_import_error",
+    "raises_import_error_for_optional_metadata",
+}
+
 
 def _load_contracts():
     import json
@@ -100,8 +116,21 @@ def test_public_contract_schema_is_well_formed():
         assert isinstance(entry["trusted_only"], bool)
         assert isinstance(entry.get("metadata_requirements", []), list)
         assert isinstance(entry.get("notes", []), list)
+        assert isinstance(entry["optional_dependencies"], list)
+        assert isinstance(entry["extras"], list)
+        assert set(entry["unavailable_behavior"]) == {"read", "write"}
         assert set(entry["required_args"]) == {"read", "write"}
         assert set(entry["direct_api"]) == {"read", "write"}
+
+        optional_dependencies = entry["optional_dependencies"]
+        extras = entry["extras"]
+        assert all(
+            isinstance(dependency, str) and dependency
+            for dependency in optional_dependencies
+        )
+        assert all(extra in VALID_EXTRAS for extra in extras)
+        assert len(optional_dependencies) == len(set(optional_dependencies))
+        assert len(extras) == len(set(extras))
 
         public_read = set(_api_classes(entry, "public_api", "read"))
         public_write = set(_api_classes(entry, "public_api", "write"))
@@ -127,8 +156,12 @@ def test_public_contract_schema_is_well_formed():
 
         for operation in ("read", "write"):
             required_args = entry["required_args"][operation]
+            unavailable_behavior = entry["unavailable_behavior"][operation]
             assert isinstance(required_args, list)
             assert all(isinstance(arg, str) and arg for arg in required_args)
+            assert unavailable_behavior in VALID_UNAVAILABLE_BEHAVIORS
+            if not entry["public_api"][operation]:
+                assert unavailable_behavior == "not_public"
 
 
 def test_registry_contract_is_registered_in_registry():
@@ -146,6 +179,8 @@ def test_registry_contract_is_registered_in_registry():
             cls = CLASS_MAP[class_name]
             canonical_reader = _reader_callable(canonical, cls)
             if canonical_reader is None:
+                assert entry["unavailable_behavior"]["read"] == "conditional_registration"
+                assert entry["optional_dependencies"]
                 continue
             for alias in aliases:
                 alias_reader = _reader_callable(alias, cls)
@@ -169,6 +204,8 @@ def test_registry_contract_is_registered_in_registry():
             cls = CLASS_MAP[class_name]
             canonical_writer = _writer_callable(canonical, cls)
             if canonical_writer is None:
+                assert entry["unavailable_behavior"]["write"] == "conditional_registration"
+                assert entry["optional_dependencies"]
                 continue
             for alias in aliases:
                 alias_writer = _writer_callable(alias, cls)
@@ -420,6 +457,9 @@ def test_current_public_boundary_decisions_are_recorded():
     ]
     assert _api_classes(entries["win"], "registry_api", "write") == []
     assert entries["win"]["aliases"] == ["win32"]
+    assert entries["win"]["optional_dependencies"] == ["obspy"]
+    assert entries["win"]["extras"] == ["seismic"]
+    assert entries["win"]["unavailable_behavior"]["read"] == "conditional_registration"
     assert entries["win"]["metadata_requirements"]
     assert _api_classes(entries["ats"], "public_api", "read") == [
         "TimeSeries",
@@ -439,6 +479,11 @@ def test_current_public_boundary_decisions_are_recorded():
     assert _api_classes(entries["ats.mth5"], "registry_api", "write") == []
     assert entries["ats.mth5"]["public_auto_identify"] is False
     assert entries["ats.mth5"]["registry_auto_identify"] is False
+    assert entries["ats.mth5"]["optional_dependencies"] == ["mth5"]
+    assert entries["ats.mth5"]["extras"] == ["seismic"]
+    assert (
+        entries["ats.mth5"]["unavailable_behavior"]["read"] == "raises_import_error"
+    )
     assert entries["ats.mth5"]["metadata_requirements"]
     assert _api_classes(entries["root"], "public_api", "read") == ["EventTable"]
     assert _api_classes(entries["root"], "public_api", "write") == ["EventTable"]

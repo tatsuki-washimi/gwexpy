@@ -21,6 +21,21 @@ VALID_STATUSES = {
     "planned",
 }
 
+VALID_EXTRAS = {
+    "audio",
+    "control",
+    "gw",
+    "netcdf4",
+    "seismic",
+    "zarr",
+}
+
+VALID_UNAVAILABLE_BEHAVIORS = {
+    "available_in_base_install",
+    "not_applicable",
+    "raises_import_error",
+}
+
 
 def _load_contract() -> list[dict]:
     data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
@@ -45,6 +60,17 @@ def test_interop_contract_schema_is_well_formed():
         assert entry["status"] in VALID_STATUSES
         assert isinstance(entry["guide_api"], list)
         assert all(isinstance(name, str) and name for name in entry["guide_api"])
+        assert isinstance(entry["optional_dependencies"], list)
+        assert all(
+            isinstance(name, str) and name for name in entry["optional_dependencies"]
+        )
+        assert len(entry["optional_dependencies"]) == len(
+            set(entry["optional_dependencies"])
+        )
+        assert isinstance(entry["extras"], list)
+        assert all(extra in VALID_EXTRAS for extra in entry["extras"])
+        assert len(entry["extras"]) == len(set(entry["extras"]))
+        assert entry["unavailable_behavior"] in VALID_UNAVAILABLE_BEHAVIORS
         assert isinstance(entry["row_match_en"], str) and entry["row_match_en"]
         assert isinstance(entry["row_match_ja"], str) and entry["row_match_ja"]
         assert isinstance(entry["reference_indexed"], bool)
@@ -63,6 +89,7 @@ def test_interop_contract_schema_is_well_formed():
             assert isinstance(module, str) and module
         else:
             assert module is None
+            assert entry["unavailable_behavior"] == "not_applicable"
 
 
 def test_public_namespace_is_fully_covered_by_contract():

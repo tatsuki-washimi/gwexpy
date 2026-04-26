@@ -30,6 +30,12 @@ Each format entry contains these fields:
 - `registry_auto_identify`: whether the current implementation can identify the format automatically
 - `required_args`: operation-specific required keyword arguments
 - `trusted_only`: whether the format must be restricted to trusted data
+- `optional_dependencies`: optional import/package names used by the published
+  route, or an empty list when the base install is sufficient
+- `extras`: declared GWexpy extras that install those optional dependencies, or
+  an empty list for base-install or bare-package policy
+- `unavailable_behavior`: operation-specific behavior when the optional backend
+  is unavailable
 - `metadata_requirements`: extra metadata rules that are part of the public contract
 - `notes`: short rationale and boundary notes
 
@@ -38,6 +44,12 @@ Rules:
 - `public_api` must be a subset of `registry_api ∪ direct_api`.
 - `public_auto_identify` may be stricter than `registry_auto_identify`.
 - `required_args` and `metadata_requirements` are contract items, not optional commentary.
+- `unavailable_behavior` uses a small vocabulary:
+  `available_in_base_install`, `raises_import_error`,
+  `raises_import_error_for_optional_metadata`, `conditional_registration`, or
+  `not_public`.
+- Public registry entries may be absent only when
+  `unavailable_behavior.<operation> = conditional_registration`.
 - A registry adapter alone is not enough to publish a new direct-I/O surface.
 - A class-level direct implementation alone is not enough to publish a new direct-I/O surface.
 
@@ -134,6 +146,10 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
 - Public contract: `TimeSeriesDict` read only.
 - Registry surface: `TimeSeries` and `TimeSeriesMatrix` read adapters may
   exist.
+- Optional dependency: `obspy` from the `seismic` extra.
+- `win` / `win32` use conditional registration: when ObsPy is unavailable, the
+  registry entry may be absent instead of a registered reader raising
+  `ImportError`.
 - Reason: these formats are intentionally documented as collection-first and
   read-only.
 
@@ -148,8 +164,9 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
 ### `ats.mth5`
 
 - Public contract: `TimeSeries` read only.
-- Optional dependency: published reads require `mth5`; missing dependency
-  should raise a format-specific `ImportError`.
+- Optional dependency: published reads require `mth5`, available through the
+  `seismic` extra; missing dependency should raise a format-specific
+  `ImportError`.
 - Reason: this is the only currently published MTH5-backed direct path and it
   remains intentionally narrow.
 

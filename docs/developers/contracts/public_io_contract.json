@@ -50,7 +50,13 @@
                 "Backend aliases resolve through gwpy GWF readers.",
                 "Public direct I/O includes TimeSeries and TimeSeriesDict reads.",
                 "TimeSeriesMatrix reader remains an implementation convenience path until it is published explicitly in the user guide."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "available_in_base_install"
+            }
         },
         {
             "name": "hdf.ndscope",
@@ -97,7 +103,13 @@
             "notes": [
                 "Public direct I/O is collection-first and TimeSeriesDict-only.",
                 "Single-series and matrix registry adapters are implementation convenience paths, not public contract surface."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "available_in_base_install"
+            }
         },
         {
             "name": "hdf5",
@@ -202,7 +214,13 @@
                 "GWpy segment classes remain part of the broader registry-backed implementation surface, but they are not part of the published HDF5 direct-I/O contract in this slice.",
                 "FrequencySeriesMatrix and SpectrogramMatrix remain outside the published HDF5 contract until matrix-axis serialization is hardened.",
                 "Field classes remain intentionally outside this schema slice pending a dedicated direct-I/O audit."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "available_in_base_install"
+            }
         },
         {
             "name": "xml.diaggui",
@@ -241,7 +259,13 @@
             "notes": [
                 "Public direct I/O is TimeSeriesDict-first because DiagGUI XML is product-driven.",
                 "TimeSeries and TimeSeriesMatrix readers remain registry adapters, but public guidance requires explicit format=\"xml.diaggui\" and products=..."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "not_public"
+            }
         },
         {
             "name": "csv",
@@ -301,7 +325,13 @@
                 "Published CSV direct I/O is limited to TimeSeries and TimeSeriesDict.",
                 "TimeSeriesDict supports both single-file CSV reads and manifest-backed collection-directory reads and writes.",
                 "Broader registry adapters such as TimeSeriesMatrix, FrequencySeries, Spectrogram, and EventTable remain implementation surface only."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "available_in_base_install"
+            }
         },
         {
             "name": "txt",
@@ -355,7 +385,13 @@
                 "Published TXT direct I/O is limited to TimeSeries files and TimeSeriesDict collection directories.",
                 "Single-series TXT reads and writes require explicit format=\"txt\".",
                 "Multi-channel TXT direct I/O uses manifest-backed collection directories rather than single text files."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "available_in_base_install"
+            }
         },
         {
             "name": "pickle",
@@ -384,7 +420,13 @@
             "notes": [
                 "Pickle compatibility is currently provided through pickle.dumps()/pickle.loads() and shelve, not through published direct .read()/.write() methods.",
                 "Security guidance remains important, but Pickle is intentionally outside the public direct-I/O contract."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "not_public",
+                "write": "not_public"
+            }
         },
         {
             "name": "root",
@@ -430,7 +472,13 @@
             "notes": [
                 "Published ROOT direct I/O is intentionally limited to EventTable.",
                 "Collection .write(..., format=\"root\") helpers remain PyROOT-based interop conveniences and are not part of the published direct-I/O contract."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "available_in_base_install"
+            }
         },
         {
             "name": "sdb",
@@ -472,7 +520,13 @@
                 "Published SDB direct I/O is read-only for TimeSeries and TimeSeriesDict.",
                 "The sqlite/sqlite3 tokens are aliases in the same reader family as sdb.",
                 "TimeSeriesMatrix read support remains an implementation convenience path, not a published contract entry."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "not_public"
+            }
         },
         {
             "name": "wav",
@@ -515,7 +569,17 @@
                 "Published WAV direct I/O covers TimeSeries read/write and TimeSeriesDict read.",
                 "TimeSeriesMatrix read support remains an implementation convenience path until it is published explicitly.",
                 "WAV write is intentionally single-series only in the current public contract."
-            ]
+            ],
+            "optional_dependencies": [
+                "tinytag"
+            ],
+            "extras": [
+                "audio"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error_for_optional_metadata",
+                "write": "available_in_base_install"
+            }
         },
         {
             "name": "flac",
@@ -561,7 +625,18 @@
                 "Published FLAC direct I/O covers TimeSeries and TimeSeriesDict reads and writes.",
                 "The implementation depends on pydub; some environments also need ffmpeg/libav.",
                 "TimeSeriesMatrix adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "pydub",
+                "tinytag"
+            ],
+            "extras": [
+                "audio"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         },
         {
             "name": "ogg",
@@ -607,7 +682,18 @@
                 "Published OGG direct I/O covers TimeSeries and TimeSeriesDict reads and writes.",
                 "The implementation depends on pydub; some environments also need ffmpeg/libav.",
                 "TimeSeriesMatrix adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "pydub",
+                "tinytag"
+            ],
+            "extras": [
+                "audio"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         },
         {
             "name": "mp3",
@@ -653,7 +739,18 @@
                 "Published MP3 direct I/O covers TimeSeries and TimeSeriesDict reads and writes.",
                 "The implementation depends on pydub and typically also requires ffmpeg/libav.",
                 "TimeSeriesMatrix adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "pydub",
+                "tinytag"
+            ],
+            "extras": [
+                "audio"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         },
         {
             "name": "m4a",
@@ -699,7 +796,18 @@
                 "Published M4A direct I/O covers TimeSeries and TimeSeriesDict reads and writes.",
                 "The implementation depends on pydub and typically also requires ffmpeg/libav.",
                 "TimeSeriesMatrix adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "pydub",
+                "tinytag"
+            ],
+            "extras": [
+                "audio"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         },
         {
             "name": "gbd",
@@ -741,7 +849,13 @@
                 "Published GBD direct I/O is read-only for the TimeSeries family.",
                 "Public reads require timezone=... because the source stores local wall-clock timestamps.",
                 "GUI auto-load is not part of the published GBD contract because it cannot supply timezone implicitly."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "not_public"
+            }
         },
         {
             "name": "tdms",
@@ -780,7 +894,17 @@
             "notes": [
                 "Published TDMS direct I/O is read-only for the TimeSeries family.",
                 "The implementation depends on nptdms and should raise ImportError with installation guidance when that dependency is unavailable."
-            ]
+            ],
+            "optional_dependencies": [
+                "nptdms"
+            ],
+            "extras": [
+                "io"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "not_public"
+            }
         },
         {
             "name": "mseed",
@@ -825,7 +949,17 @@
                 "Published MiniSEED direct I/O is collection-first through TimeSeriesDict.",
                 "The legacy alias 'miniseed' must remain equivalent to canonical 'mseed'.",
                 "Single-series and matrix registry adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "obspy"
+            ],
+            "extras": [
+                "seismic"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         },
         {
             "name": "sac",
@@ -867,7 +1001,17 @@
             "notes": [
                 "Published SAC direct I/O is collection-first through TimeSeriesDict.",
                 "Single-series and matrix registry adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "obspy"
+            ],
+            "extras": [
+                "seismic"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         },
         {
             "name": "gse2",
@@ -909,7 +1053,17 @@
             "notes": [
                 "Published GSE2 direct I/O is collection-first through TimeSeriesDict.",
                 "Single-series and matrix registry adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "obspy"
+            ],
+            "extras": [
+                "seismic"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         },
         {
             "name": "knet",
@@ -946,7 +1100,17 @@
             "notes": [
                 "Published K-NET direct I/O is read-only and collection-first through TimeSeriesDict.",
                 "Single-series and matrix registry adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "obspy"
+            ],
+            "extras": [
+                "seismic"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "not_public"
+            }
         },
         {
             "name": "win",
@@ -986,7 +1150,17 @@
                 "Published WIN direct I/O is read-only and collection-first through TimeSeriesDict.",
                 "The alias 'win32' must remain equivalent to canonical 'win' at the public-contract level.",
                 "Single-series and matrix registry adapters remain implementation conveniences."
-            ]
+            ],
+            "optional_dependencies": [
+                "obspy"
+            ],
+            "extras": [
+                "seismic"
+            ],
+            "unavailable_behavior": {
+                "read": "conditional_registration",
+                "write": "not_public"
+            }
         },
         {
             "name": "ats",
@@ -1024,7 +1198,13 @@
             "notes": [
                 "Published ATS direct I/O covers TimeSeries and TimeSeriesDict reads.",
                 "TimeSeriesMatrix read support remains an implementation convenience path."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": {
+                "read": "available_in_base_install",
+                "write": "not_public"
+            }
         },
         {
             "name": "ats.mth5",
@@ -1059,7 +1239,17 @@
             "notes": [
                 "Published ATS.MTH5 direct I/O is intentionally limited to TimeSeries.read(..., format='ats.mth5').",
                 "The implementation depends on mth5 and should raise ImportError with installation guidance when that dependency is unavailable."
-            ]
+            ],
+            "optional_dependencies": [
+                "mth5"
+            ],
+            "extras": [
+                "seismic"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "not_public"
+            }
         },
         {
             "name": "nc",
@@ -1106,7 +1296,18 @@
             "notes": [
                 "Public direct I/O covers the TimeSeries family only.",
                 "The legacy alias 'netcdf4' must remain equivalent to the canonical 'nc' token."
-            ]
+            ],
+            "optional_dependencies": [
+                "xarray",
+                "netCDF4"
+            ],
+            "extras": [
+                "netcdf4"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         },
         {
             "name": "zarr",
@@ -1153,7 +1354,17 @@
             "notes": [
                 "Public direct I/O covers the TimeSeries family only.",
                 "Legacy stores without timing metadata are recoverable only through explicit sample_rate_override or dt_override."
-            ]
+            ],
+            "optional_dependencies": [
+                "zarr"
+            ],
+            "extras": [
+                "zarr"
+            ],
+            "unavailable_behavior": {
+                "read": "raises_import_error",
+                "write": "raises_import_error"
+            }
         }
     ]
 }

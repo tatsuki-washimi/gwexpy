@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_io_contract.json"
 EN_GUIDE = ROOT / "docs/web/en/user_guide/io_formats.md"
 JA_GUIDE = ROOT / "docs/web/ja/user_guide/io_formats.md"
+EN_INSTALL = ROOT / "docs/web/en/user_guide/installation.md"
+JA_INSTALL = ROOT / "docs/web/ja/user_guide/installation.md"
 
 
 def _load_contract() -> dict[str, dict]:
@@ -75,3 +77,29 @@ def test_docs_seismic_table_matches_current_public_boundary():
     assert contract["ats.mth5"]["public_api"]["read"] == ["TimeSeries"]
     assert "The only direct path today is `ats.mth5`" in en
     assert "使える direct path は `ats.mth5` のみ" in ja
+
+
+def test_optional_dependency_matrix_matches_contract():
+    contract = _load_contract()
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+    en_install = _read(EN_INSTALL)
+    ja_install = _read(JA_INSTALL)
+
+    for entry in contract.values():
+        for dependency in entry["optional_dependencies"]:
+            assert f"`{dependency}`" in en
+            assert f"`{dependency}`" in ja
+        for extra in entry["extras"]:
+            assert f"`{extra}`" in en_install
+            assert f"`{extra}`" in ja_install
+
+    win = contract["win"]
+    assert win["unavailable_behavior"]["read"] == "conditional_registration"
+    assert "conditional registration" in en
+    assert "条件付き登録" in ja
+
+    ats_mth5 = contract["ats.mth5"]
+    assert ats_mth5["extras"] == ["seismic"]
+    assert "pip install 'gwexpy[seismic]'" in en
+    assert "pip install 'gwexpy[seismic]'" in ja

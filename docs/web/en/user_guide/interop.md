@@ -79,6 +79,17 @@ Legacy aliases remain supported during the transition, but new examples should p
 - `In progress`: the implementation or the public presentation is not finished yet
 - `Planned`: explicitly in scope, but not implemented yet
 
+## Optional Dependency Policy
+
+Interop bridges import optional backends lazily. If a backend is missing, the
+bridge raises `ImportError` with installation guidance instead of importing the
+backend at `import gwexpy` time.
+
+| Policy | Dependencies | Install guidance |
+| --- | --- | --- |
+| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `finesse`, `control`, `pydub` | Use `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, or `pip install 'gwexpy[audio]'` as appropriate. |
+| Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `emg3d`, `meshio` | Install the named backend directly when the bridge you are using requires it. |
+
 (interop-en-storage-conversion)=
 ## A. Storage Formats and Container Conversion
 

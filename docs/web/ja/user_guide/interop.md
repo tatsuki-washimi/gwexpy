@@ -79,6 +79,15 @@ myst:
 - `対応中`: 専用の実装面または公開面の整理が未完
 - `対応予定`: 設計対象として明示するが、まだ実装がない
 
+## オプション依存関係の方針
+
+Interop bridge は optional backend を遅延 import します。backend が未導入の場合、`import gwexpy` の時点ではなく、該当 bridge を呼び出した時点でインストール案内付きの `ImportError` を送出します。
+
+| 方針 | 依存関係 | インストール案内 |
+| --- | --- | --- |
+| GWexpy extras で宣言済み | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `finesse`, `control`, `pydub` | 必要に応じて `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, `pip install 'gwexpy[audio]'` を使います。 |
+| 個別 package install | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `emg3d`, `meshio` | 利用する bridge が必要とする backend を個別に導入してください。 |
+
 (interop-ja-storage-conversion)=
 ## A. 保存形式・コンテナ変換
 

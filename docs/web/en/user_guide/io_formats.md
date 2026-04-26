@@ -118,6 +118,22 @@ If the main question is whether a format is for a single channel or multiple cha
 - `TimeSeriesMatrix` mainly matters for `NetCDF4`, `Zarr`, `GBD`, and `TDMS`.
 - If you need to preserve richer objects beyond Series classes, start with **HDF5**.
 
+## Optional Dependency Matrix
+
+Most direct-I/O routes work in a base GWexpy install. The formats below depend
+on optional packages or optional metadata helpers.
+
+| Format / family | Optional dependency | GWexpy extra | Missing-dependency behavior |
+|---|---|---|---|
+| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` raises `ImportError`; basic WAV read/write remains available. |
+| **MP3 / FLAC / OGG / M4A** | `pydub`, `tinytag` | `audio` | Audio read/write raises `ImportError`; some codecs also need an external `ffmpeg`/`libav` binary. |
+| **TDMS** | `nptdms` | `io` | Reader raises `ImportError` with `pip install 'gwexpy[io]'` guidance. |
+| **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | Registered reader/writer raises `ImportError` with `pip install 'gwexpy[seismic]'` guidance. |
+| **WIN / WIN32** | `obspy` | `seismic` | Uses conditional registration: when ObsPy is unavailable, the `win` / `win32` registry entries may be absent. |
+| **ATS.MTH5** | `mth5` | `seismic` | Reader raises `ImportError` with `pip install 'gwexpy[seismic]'` guidance. |
+| **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | Reader/writer raises `ImportError` with `pip install 'gwexpy[netcdf4]'` guidance. |
+| **Zarr** | `zarr` | `zarr` | Reader/writer raises `ImportError` with `pip install 'gwexpy[zarr]'` guidance. |
+
 <a id="io-formats-en-a"></a>
 
 ## A. GW Standards
