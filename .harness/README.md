@@ -12,7 +12,7 @@ gwexpy プロジェクトにおける AI エージェント（Claude, Codex, Cur
 │   └── hooks.json          ← Claude Code プロジェクトフック（自動品質チェック）
 ├── agents/                 ← プロジェクト固有のサブエージェント定義（9件）
 ├── workflows/              ← 作業種別ごとの標準手順（8件）
-├── rules/common/           ← プロジェクト固有のルール集（7件）
+├── rules/common/           ← プロジェクト固有のルール集（8件）
 ├── skills/                 ← 専門タスク向けスキルパッケージ（38件）
 ├── config/
 │   └── quality-gates/      ← verify-changed-files 用マニフェスト

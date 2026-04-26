@@ -6,12 +6,20 @@
 #
 # This script is copied to <project>/.harness/scripts/setup_symlinks.sh
 # and executed from the project root.
+#
+# .harness.local/ support:
+#   If .harness.local/ exists alongside .harness/, its subdirectories take
+#   precedence over the corresponding .harness/ subdirectories for Claude.
+#   This allows per-developer overrides (e.g. different conda env names in
+#   hooks.json) without committing local settings to the repository.
+#   .harness.local/ is listed in .gitignore and must never be committed.
 set -euo pipefail
 
 # Resolve project root (two levels up from this script's location: .harness/scripts/)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 HARNESS_DIR="$PROJECT_ROOT/.harness"
+HARNESS_LOCAL_DIR="$PROJECT_ROOT/.harness.local"
 DRY_RUN=false
 TOOLS="claude,codex,cursor,gemini"
 
@@ -40,7 +48,7 @@ log_dry()  { echo -e "${YELLOW}[DRY]${NC}  $1"; }
 log_err()  { echo -e "${RED}[ERR]${NC}  $1"; }
 
 # make_symlink TARGET LINK
-#   TARGET: relative path from LINK's parent directory (e.g. "../../.harness/hooks")
+#   TARGET: relative path from LINK's parent directory (e.g. "../.harness/hooks")
 #   LINK:   absolute path to the symlink to create
 make_symlink() {
     local target="$1"
@@ -75,10 +83,22 @@ make_symlink() {
 setup_claude() {
     log_ok "Setting up Claude symlinks..."
     local base="$PROJECT_ROOT/.claude"
-    [[ -d "$HARNESS_DIR/hooks" ]]     && make_symlink "../../.harness/hooks"     "$base/hooks"
-    [[ -d "$HARNESS_DIR/agents" ]]    && make_symlink "../../.harness/agents"    "$base/agents"
-    [[ -d "$HARNESS_DIR/workflows" ]] && make_symlink "../../.harness/workflows" "$base/workflows"
-    [[ -d "$HARNESS_DIR/rules" ]]     && make_symlink "../../.harness/rules"     "$base/rules"
+
+    # .harness.local/ takes precedence when a subdirectory exists there.
+    _claude_link() {
+        local subdir="$1"
+        if [[ -d "$HARNESS_LOCAL_DIR/$subdir" ]]; then
+            make_symlink "../.harness.local/$subdir" "$base/$subdir"
+            log_warn "  Using local override: .harness.local/$subdir"
+        elif [[ -d "$HARNESS_DIR/$subdir" ]]; then
+            make_symlink "../.harness/$subdir" "$base/$subdir"
+        fi
+    }
+
+    _claude_link hooks
+    _claude_link agents
+    _claude_link workflows
+    _claude_link rules
 }
 
 setup_codex() {
@@ -88,8 +108,8 @@ setup_codex() {
         return 0
     fi
     log_ok "Setting up Codex symlinks..."
-    [[ -d "$HARNESS_DIR/hooks" ]]  && make_symlink "../../.harness/hooks"  "$base/hooks"
-    [[ -d "$HARNESS_DIR/agents" ]] && make_symlink "../../.harness/agents" "$base/agents"
+    [[ -d "$HARNESS_DIR/hooks" ]]  && make_symlink "../.harness/hooks"  "$base/hooks"
+    [[ -d "$HARNESS_DIR/agents" ]] && make_symlink "../.harness/agents" "$base/agents"
 }
 
 setup_cursor() {
@@ -99,7 +119,7 @@ setup_cursor() {
         return 0
     fi
     log_ok "Setting up Cursor symlinks..."
-    [[ -d "$HARNESS_DIR/agents" ]] && make_symlink "../../.harness/agents" "$base/agents"
+    [[ -d "$HARNESS_DIR/agents" ]] && make_symlink "../.harness/agents" "$base/agents"
 }
 
 setup_gemini() {
@@ -109,30 +129,55 @@ setup_gemini() {
         return 0
     fi
     log_ok "Setting up Gemini symlinks..."
-    [[ -d "$HARNESS_DIR/agents" ]] && make_symlink "../../.harness/agents" "$base/agents"
+    [[ -d "$HARNESS_DIR/agents" ]] && make_symlink "../.harness/agents" "$base/agents"
+}
+
+verify_symlink() {
+    local link="$1"
+    local expected_target="$2"
+    local source_dir="$3"
+    local actual_target
+
+    if [[ ! -d "$source_dir" ]]; then
+        log_skip "No source dir for $link (skipped during setup)"
+        return 0
+    fi
+
+    if [[ ! -L "$link" ]]; then
+        log_warn "Missing symlink: $link"
+        return 1
+    fi
+
+    actual_target="$(readlink "$link")"
+    if [[ "$actual_target" != "$expected_target" ]]; then
+        log_warn "Wrong target: $link -> $actual_target (expected $expected_target)"
+        return 1
+    fi
+
+    if [[ ! -e "$link" ]]; then
+        log_warn "Broken symlink: $link -> $actual_target"
+        return 1
+    fi
+
+    log_ok "OK: $link -> $actual_target"
+    return 0
 }
 
 verify_all() {
     echo ""
     echo "Verifying symlinks..."
     local all_ok=true
-    local targets=(
-        "$PROJECT_ROOT/.claude/hooks:../.harness/hooks"
-        "$PROJECT_ROOT/.claude/agents:../.harness/agents"
-        "$PROJECT_ROOT/.claude/workflows:../.harness/workflows"
-    )
-    for entry in "${targets[@]}"; do
-        local link="${entry%%:*}"
-        local expected_target="${entry##*:}"
-        if [[ -L "$link" ]]; then
-            log_ok "OK: $link -> $(readlink "$link")"
-        elif [[ ! -d "${link%/*}/.harness/${link##*/.harness/}" ]]; then
-            log_skip "No source dir for $link (skipped during setup)"
-        else
-            log_warn "Missing symlink: $link"
-            all_ok=false
+
+    for subdir in hooks agents workflows rules; do
+        local source_dir="$HARNESS_DIR/$subdir"
+        local expected_target="../.harness/$subdir"
+        if [[ -d "$HARNESS_LOCAL_DIR/$subdir" ]]; then
+            source_dir="$HARNESS_LOCAL_DIR/$subdir"
+            expected_target="../.harness.local/$subdir"
         fi
+        verify_symlink "$PROJECT_ROOT/.claude/$subdir" "$expected_target" "$source_dir" || all_ok=false
     done
+
     echo ""
     if [[ "$all_ok" == true ]]; then
         log_ok "All symlinks verified."
