@@ -210,8 +210,8 @@ def _expand_key(key, ndim):
     if not isinstance(key, tuple):
         key = (key,)
     key_list = list(key)
-    if Ellipsis in key_list:
-        ell_idx = key_list.index(Ellipsis)
+    ell_idx = next((idx for idx, item in enumerate(key_list) if item is Ellipsis), None)
+    if ell_idx is not None:
         n_missing = ndim - (len(key_list) - 1)
         key_list = (
             key_list[:ell_idx] + [slice(None)] * n_missing + key_list[ell_idx + 1 :]

@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/series_matrix_indexing.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -18,6 +19,7 @@ def _make_tsm(n_rows=2, n_cols=3, n_t=10):
 # ---------------------------------------------------------------------------
 # __getitem__ — single cell access
 # ---------------------------------------------------------------------------
+
 
 class TestGetItemSingleCell:
     def test_single_cell_int_int(self):
@@ -48,6 +50,7 @@ class TestGetItemSingleCell:
 # ---------------------------------------------------------------------------
 # __getitem__ — slice / non-scalar selection
 # ---------------------------------------------------------------------------
+
 
 class TestGetItemSlice:
     def test_row_slice(self):
@@ -106,6 +109,7 @@ class TestGetItemSlice:
 # ---------------------------------------------------------------------------
 # __getitem__ — label-based (string) indexing
 # ---------------------------------------------------------------------------
+
 
 class TestGetItemLabelBased:
     def test_row_string_indexing(self):
@@ -170,10 +174,43 @@ class TestGetItemLabelBased:
         assert result.row_keys() == ("r0", "r2")
         assert result.col_keys() == ("c1", "c3")
 
+    def test_ndarray_integer_row_list_and_col_list_are_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(data, xindex=np.arange(5))
+
+        result = sm[np.array([0, 2]), np.array([1, 3]), ...]
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+
+    def test_ndarray_boolean_row_mask_and_col_mask_are_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(data, xindex=np.arange(5))
+
+        result = sm[np.array([True, False, True]), np.array([False, True, False, True])]
+
+        assert result.shape == (2, 2, 5)
+        expected = data[np.ix_([0, 2], [1, 3], np.arange(5))]
+        np.testing.assert_array_equal(result.value, expected)
+
+    def test_wrong_length_boolean_mask_raises(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+
+        with pytest.raises(IndexError, match="selector length mismatch"):
+            sm[[True, False], [1, 3], :]
+
+    def test_non_integer_numeric_selector_raises(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+
+        with pytest.raises(TypeError, match="integer positions"):
+            sm[[0.0, 2.0], [1, 3], :]
+
 
 # ---------------------------------------------------------------------------
 # __setitem__
 # ---------------------------------------------------------------------------
+
 
 class TestSetItem:
     def test_setitem_plain_value(self):
@@ -209,10 +246,47 @@ class TestSetItem:
         tsm[row_key, col_key, :] = 99.0
         assert np.all(tsm.view(np.ndarray)[0, 0, :] == 99.0)
 
+    def test_setitem_row_list_and_col_list_scalar_is_cartesian(self):
+        data = np.arange(3 * 4 * 5, dtype=float).reshape(3, 4, 5)
+        sm = SeriesMatrix(data.copy(), xindex=np.arange(5))
+
+        sm[[0, 2], [1, 3], :] = -1.0
+
+        expected = data.copy()
+        expected[
+            np.array([0, 2])[:, np.newaxis], np.array([1, 3])[np.newaxis, :], :
+        ] = -1.0
+        np.testing.assert_array_equal(sm.value, expected)
+
+    def test_setitem_row_list_and_col_list_shaped_value_is_cartesian(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+        values = np.arange(2 * 2 * 5, dtype=float).reshape(2, 2, 5)
+
+        sm[[0, 2], [1, 3], :] = values
+
+        np.testing.assert_array_equal(sm.value[0, 1], values[0, 0])
+        np.testing.assert_array_equal(sm.value[0, 3], values[0, 1])
+        np.testing.assert_array_equal(sm.value[2, 1], values[1, 0])
+        np.testing.assert_array_equal(sm.value[2, 3], values[1, 1])
+        assert np.all(sm.value[1, :, :] == 0.0)
+
+    def test_setitem_wrong_length_boolean_mask_raises(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+
+        with pytest.raises(IndexError, match="selector length mismatch"):
+            sm[[True, False], [1, 3], :] = 1.0
+
+    def test_setitem_non_integer_numeric_selector_raises(self):
+        sm = SeriesMatrix(np.zeros((3, 4, 5)), xindex=np.arange(5))
+
+        with pytest.raises(TypeError, match="integer positions"):
+            sm[[0.0, 2.0], [1, 3], :] = 1.0
+
 
 # ---------------------------------------------------------------------------
 # loc property
 # ---------------------------------------------------------------------------
+
 
 class TestLoc:
     def test_loc_getitem(self):
@@ -235,6 +309,7 @@ class TestLoc:
 # ---------------------------------------------------------------------------
 # submatrix
 # ---------------------------------------------------------------------------
+
 
 class TestSubmatrix:
     def test_submatrix_label_selection_preserves_cartesian_shape_and_metadata(self):
