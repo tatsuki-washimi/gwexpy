@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import importlib
 import json
+import tomllib
 from pathlib import Path
 
 import gwexpy.interop as interop
+from gwexpy.interop._optional import _EXTRA_MAP
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_interop_contract.json"
+PYPROJECT_PATH = ROOT / "pyproject.toml"
 EN_REF_INDEX = ROOT / "docs/web/en/reference/api/interop.rst"
 JA_REF_INDEX = ROOT / "docs/web/ja/reference/api/interop.rst"
 
@@ -21,10 +24,39 @@ VALID_STATUSES = {
     "planned",
 }
 
+VALID_EXTRAS = {
+    "audio",
+    "control",
+    "gw",
+    "netcdf4",
+    "seismic",
+    "zarr",
+}
+
+VALID_UNAVAILABLE_BEHAVIORS = {
+    "available_in_base_install",
+    "not_applicable",
+    "raises_import_error",
+}
+
 
 def _load_contract() -> list[dict]:
     data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
     return data["targets"]
+
+
+def _package_name(requirement: str) -> str:
+    return (
+        requirement.split(";", maxsplit=1)[0]
+        .split("[", maxsplit=1)[0]
+        .split(">", maxsplit=1)[0]
+        .split("<", maxsplit=1)[0]
+        .split("=", maxsplit=1)[0]
+        .split("!", maxsplit=1)[0]
+        .split("~", maxsplit=1)[0]
+        .strip()
+        .lower()
+    )
 
 
 TARGETS = _load_contract()
@@ -45,6 +77,21 @@ def test_interop_contract_schema_is_well_formed():
         assert entry["status"] in VALID_STATUSES
         assert isinstance(entry["guide_api"], list)
         assert all(isinstance(name, str) and name for name in entry["guide_api"])
+        assert isinstance(entry["optional_dependencies"], list)
+        assert all(
+            isinstance(name, str) and name for name in entry["optional_dependencies"]
+        )
+        assert len(entry["optional_dependencies"]) == len(
+            set(entry["optional_dependencies"])
+        )
+        source_dependencies = entry.get("source_dependencies", [])
+        assert isinstance(source_dependencies, list)
+        assert all(isinstance(name, str) and name for name in source_dependencies)
+        assert len(source_dependencies) == len(set(source_dependencies))
+        assert isinstance(entry["extras"], list)
+        assert all(extra in VALID_EXTRAS for extra in entry["extras"])
+        assert len(entry["extras"]) == len(set(entry["extras"]))
+        assert entry["unavailable_behavior"] in VALID_UNAVAILABLE_BEHAVIORS
         assert isinstance(entry["row_match_en"], str) and entry["row_match_en"]
         assert isinstance(entry["row_match_ja"], str) and entry["row_match_ja"]
         assert isinstance(entry["reference_indexed"], bool)
@@ -63,6 +110,7 @@ def test_interop_contract_schema_is_well_formed():
             assert isinstance(module, str) and module
         else:
             assert module is None
+            assert entry["unavailable_behavior"] == "not_applicable"
 
 
 def test_public_namespace_is_fully_covered_by_contract():
@@ -140,3 +188,75 @@ def test_non_public_module_backed_targets_are_explicit_exceptions():
         if entry["module"] is not None and entry["status"] != "public"
     ]
     assert non_public_module_backed == ["root"]
+
+
+def test_import_only_source_packages_are_not_runtime_dependencies():
+    entries = {entry["name"]: entry for entry in TARGETS}
+
+    expected_source_dependencies = {
+        "pyoma": ["pyOMA"],
+        "multitaper": ["multitaper"],
+        "mtspec": ["mtspec"],
+        "sdypy": ["pyuff"],
+        "sdynpy": ["sdynpy"],
+    }
+
+    for name, source_dependencies in expected_source_dependencies.items():
+        entry = entries[name]
+        assert entry["source_dependencies"] == source_dependencies
+        assert entry["optional_dependencies"] == []
+        assert entry["extras"] == []
+        assert entry["unavailable_behavior"] == "available_in_base_install"
+
+
+def test_xarray_source_adapters_distinguish_runtime_from_producer_packages():
+    entries = {entry["name"]: entry for entry in TARGETS}
+
+    expected_source_dependencies = {
+        "metpy": ["metpy"],
+        "wrf": ["wrf-python"],
+        "harmonica": ["harmonica"],
+    }
+
+    for name, source_dependencies in expected_source_dependencies.items():
+        entry = entries[name]
+        assert entry["source_dependencies"] == source_dependencies
+        assert entry["optional_dependencies"] == ["xarray"]
+        assert entry["extras"] == ["netcdf4"]
+        assert entry["unavailable_behavior"] == "raises_import_error"
+
+
+def test_declared_extras_contain_runtime_dependencies():
+    """Contract extras must install the runtime packages they advertise."""
+    pyproject = tomllib.loads(PYPROJECT_PATH.read_text(encoding="utf-8"))
+    optional_dependency_groups = pyproject["project"]["optional-dependencies"]
+    normalized_extras = {
+        extra: {_package_name(requirement) for requirement in requirements}
+        for extra, requirements in optional_dependency_groups.items()
+    }
+
+    for entry in TARGETS:
+        for extra in entry["extras"]:
+            installed_packages = normalized_extras[extra]
+            missing_dependencies = [
+                dependency
+                for dependency in entry["optional_dependencies"]
+                if dependency.lower() not in installed_packages
+            ]
+            assert missing_dependencies == [], (
+                f"{entry['name']} declares extra {extra!r}, but that extra does not "
+                f"install runtime dependencies: {missing_dependencies}"
+            )
+
+
+def test_contract_entries_without_extras_do_not_map_runtime_deps_to_extra():
+    """Runtime packages for extras: [] entries must use bare install hints."""
+    for entry in TARGETS:
+        if entry["extras"]:
+            continue
+
+        for dependency in entry["optional_dependencies"]:
+            assert _EXTRA_MAP.get(dependency) is None, (
+                f"{entry['name']} has extras: [] but {dependency!r} maps to "
+                f"GWexpy extra {_EXTRA_MAP[dependency]!r}"
+            )

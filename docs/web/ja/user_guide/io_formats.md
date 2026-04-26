@@ -118,6 +118,21 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 - **`TimeSeriesMatrix` が出てくるのは主に** `NetCDF4`, `Zarr`, `GBD`, `TDMS` です。
 - **Series 以外もまとめて保持したい** 場合は、まず **HDF5** を検討してください。
 
+## オプション依存関係の対応表
+
+多くの direct I/O 経路は GWexpy の基本インストールで利用できます。次の形式は optional package または optional metadata helper に依存します。
+
+| 形式 / 系統 | オプション依存関係 | GWexpy extra | 未導入時の挙動 |
+|---|---|---|---|
+| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` は `ImportError` を送出します。通常の WAV 読み書きは利用できます。 |
+| **MP3 / FLAC / OGG / M4A** | `pydub`, `tinytag` | `audio` | 音声の読み書きは `ImportError` を送出します。一部 codec は外部の `ffmpeg` / `libav` も必要です。 |
+| **TDMS** | `nptdms` | `io` | reader は `pip install 'gwexpy[io]'` の案内付きで `ImportError` を送出します。 |
+| **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | 登録済みの reader / writer は `pip install 'gwexpy[seismic]'` の案内付きで `ImportError` を送出します。 |
+| **WIN / WIN32** | `obspy` | `seismic` | 条件付き登録です。ObsPy がない環境では `win` / `win32` の registry entry 自体が存在しない場合があります。 |
+| **ATS.MTH5** | `mth5` | `seismic` | reader は `pip install 'gwexpy[seismic]'` の案内付きで `ImportError` を送出します。 |
+| **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | reader / writer は `pip install 'gwexpy[netcdf4]'` の案内付きで `ImportError` を送出します。 |
+| **Zarr** | `zarr` | `zarr` | reader / writer は `pip install 'gwexpy[zarr]'` の案内付きで `ImportError` を送出します。 |
+
 <a id="io-formats-ja-a"></a>
 
 ## A. GW標準

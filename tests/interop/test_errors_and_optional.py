@@ -135,6 +135,18 @@ class TestRequireOptional:
         assert "gwexpy[audio]" not in msg
         assert "gwexpy[all]" not in msg
 
+    @pytest.mark.parametrize("name", ["finesse", "pycbc"])
+    def test_contract_bare_install_interop_packages_use_bare_install(self, name):
+        """Interop packages with extras: [] should not suggest a GWexpy extra."""
+        with patch.dict(sys.modules, {name: None}):
+            with pytest.raises(ImportError) as excinfo:
+                require_optional(name)
+
+        msg = str(excinfo.value)
+        assert f"pip install {name}" in msg
+        assert "gwexpy[gw]" not in msg
+        assert "gwexpy[all]" not in msg
+
     def test_dask_array_uses_distribution_name_in_install_hint(self):
         """dask.array is an import namespace; users install the dask package."""
         with patch.dict(sys.modules, {"dask": None, "dask.array": None}):

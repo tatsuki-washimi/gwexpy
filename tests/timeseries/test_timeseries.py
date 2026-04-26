@@ -31,6 +31,10 @@ class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
         return super().test_fetch_open_data_error(*args, **kwargs)
 
     @pytest.mark.network
+    def test_get_gwosc_kwargs(self, gw150914):
+        return super().test_get_gwosc_kwargs(gw150914)
+
+    @pytest.mark.network
     def test_find_datafind_httperror(self, *args, **kwargs):
         self._require_host(
             "datafind.gwosc.org", "network unavailable for datafind tests"

@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_interop_contract.json"
 EN_GUIDE = ROOT / "docs/web/en/user_guide/interop.md"
 JA_GUIDE = ROOT / "docs/web/ja/user_guide/interop.md"
+EN_INSTALL = ROOT / "docs/web/en/user_guide/installation.md"
+JA_INSTALL = ROOT / "docs/web/ja/user_guide/installation.md"
 
 STATUS_LABELS_EN = {
     "public": "Public",
@@ -115,3 +117,28 @@ def test_contract_covers_all_documented_interop_rows():
 
     assert contract_en_rows == expected_en_rows
     assert contract_ja_rows == expected_ja_rows
+
+
+def test_optional_dependency_policy_matches_contract():
+    contract = _load_contract()
+    en_docs = _read(EN_GUIDE)
+    ja_docs = _read(JA_GUIDE)
+    en_install = _read(EN_INSTALL)
+    ja_install = _read(JA_INSTALL)
+
+    for entry in contract:
+        for dependency in entry.get("source_dependencies", []):
+            assert f"`{dependency}`" in en_docs
+            assert f"`{dependency}`" in ja_docs
+        for dependency in entry["optional_dependencies"]:
+            assert f"`{dependency}`" in en_docs
+            assert f"`{dependency}`" in ja_docs
+        for extra in entry["extras"]:
+            assert f"`{extra}`" in en_install
+            assert f"`{extra}`" in ja_install
+
+    mth5 = {entry["name"]: entry for entry in contract}["mth5"]
+    assert mth5["optional_dependencies"] == ["mth5"]
+    assert mth5["extras"] == ["seismic"]
+    assert "pip install 'gwexpy[seismic]'" in en_docs
+    assert "pip install 'gwexpy[seismic]'" in ja_docs

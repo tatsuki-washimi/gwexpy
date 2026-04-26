@@ -27,6 +27,16 @@ Each target entry contains these fields:
   intentionally has no dedicated helper module yet
 - `status`: public presentation status used by the guide
 - `guide_api`: `to_*()` / `from_*()` names published for that target
+- `source_dependencies`: optional package names that commonly produce accepted
+  source objects for import-only adapters, but are not imported by the bridge
+  itself
+- `optional_dependencies`: optional import/package names needed at bridge
+  runtime, or an empty list when the base install is sufficient or the row has
+  no helper surface
+- `extras`: declared GWexpy extras that satisfy those dependencies, or an empty
+  list when users must install the backend directly
+- `unavailable_behavior`: expected behavior when the optional backend is
+  unavailable
 - `row_match_en`: marker string used to find the English guide row
 - `row_match_ja`: marker string used to find the Japanese guide row
 - `reference_indexed`: whether the module must appear in `reference/api/interop.rst`
@@ -45,6 +55,13 @@ Each target entry contains these fields:
 - `reference_indexed = false` means the module must stay out of the interop
   reference index until an explicit publication decision is made.
 - Every guide row with an interop status label must appear in this contract.
+- `unavailable_behavior` is one of `available_in_base_install`,
+  `raises_import_error`, or `not_applicable`.
+- Helper-backed bridges with optional dependencies should raise `ImportError`
+  with install guidance when the dependency is unavailable.
+- Import-only adapters that consume caller-supplied objects or dictionaries
+  should list producer packages in `source_dependencies`, not in
+  `optional_dependencies`, when the adapter does not import those packages.
 
 ## Boundary Decisions
 

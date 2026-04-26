@@ -16,7 +16,10 @@
             "details_link": "../reference/api/gwexpy.interop.hdf5_.rst",
             "notes": [
                 "Object-level HDF5 helpers are part of the public interop surface."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "hdf5-frequencyseries",
@@ -33,7 +36,10 @@
             "details_link": "../reference/api/gwexpy.interop.frequency.rst",
             "notes": [
                 "FrequencySeries-specific HDF5 helpers."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "json",
@@ -50,7 +56,10 @@
             "details_link": "../reference/api/gwexpy.interop.json_.rst",
             "notes": [
                 "JSON string conversion is public and reference-indexed through json_."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "python-dict",
@@ -67,7 +76,10 @@
             "details_link": null,
             "notes": [
                 "Python dict conversion shares the json_ reference module."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "sqlite",
@@ -84,7 +96,10 @@
             "details_link": "../reference/api/gwexpy.interop.sqlite_.rst",
             "notes": [
                 "SQLite is public once the reference page and guide entry are wired."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "zarr",
@@ -101,7 +116,14 @@
             "details_link": "../reference/api/gwexpy.interop.zarr_.rst",
             "notes": [
                 "Zarr is a published interop bridge distinct from direct I/O."
-            ]
+            ],
+            "optional_dependencies": [
+                "zarr"
+            ],
+            "extras": [
+                "zarr"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "netcdf4",
@@ -118,7 +140,15 @@
             "details_link": "../reference/api/gwexpy.interop.netcdf4_.rst",
             "notes": [
                 "NetCDF4 interop stays separate from canonical direct-I/O token nc."
-            ]
+            ],
+            "optional_dependencies": [
+                "netCDF4",
+                "xarray"
+            ],
+            "extras": [
+                "netcdf4"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "numpy",
@@ -132,7 +162,10 @@
             "details_link": null,
             "notes": [
                 "NumPy is documented as infrastructure, not a dedicated helper surface."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "not_applicable"
         },
         {
             "name": "pandas",
@@ -151,7 +184,10 @@
             "details_link": "../reference/api/gwexpy.interop.pandas_.rst",
             "notes": [
                 "The public guide describes pandas at the helper-function level."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "pandas-frequencyseries",
@@ -168,7 +204,10 @@
             "details_link": "../reference/api/gwexpy.interop.frequency.rst",
             "notes": [
                 "FrequencySeries-to-pandas conversion helpers."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "polars",
@@ -190,7 +229,12 @@
             "details_link": "../reference/api/gwexpy.interop.polars_.rst",
             "notes": [
                 "Polars helpers are public once the reference page and guide entry are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "polars"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "xarray",
@@ -207,7 +251,14 @@
             "details_link": "../reference/api/gwexpy.interop.xarray_.rst",
             "notes": [
                 "xarray DataArray and Dataset helpers are part of the public surface."
-            ]
+            ],
+            "optional_dependencies": [
+                "xarray"
+            ],
+            "extras": [
+                "netcdf4"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "xarray-field",
@@ -224,7 +275,14 @@
             "details_link": "../reference/api/gwexpy.interop.xarray_.rst",
             "notes": [
                 "Field interop is published through the same xarray_ reference module."
-            ]
+            ],
+            "optional_dependencies": [
+                "xarray"
+            ],
+            "extras": [
+                "netcdf4"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "xarray-frequencyseries",
@@ -241,7 +299,14 @@
             "details_link": "../reference/api/gwexpy.interop.frequency.rst",
             "notes": [
                 "FrequencySeries-to-xarray DataArray helpers."
-            ]
+            ],
+            "optional_dependencies": [
+                "xarray"
+            ],
+            "extras": [
+                "netcdf4"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "astropy-timeseries",
@@ -258,7 +323,10 @@
             "details_link": "../reference/api/gwexpy.interop.astropy_.rst",
             "notes": [
                 "Astropy time-series conversion is published and reference-indexed."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "dask",
@@ -275,7 +343,12 @@
             "details_link": "../reference/api/gwexpy.interop.dask_.rst",
             "notes": [
                 "Dask helpers are part of the public analysis interop surface."
-            ]
+            ],
+            "optional_dependencies": [
+                "dask"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "torch",
@@ -292,7 +365,12 @@
             "details_link": "../reference/api/gwexpy.interop.torch_.rst",
             "notes": [
                 "PyTorch tensor conversion is public once the reference page is published."
-            ]
+            ],
+            "optional_dependencies": [
+                "torch"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "torch-dataset",
@@ -310,7 +388,12 @@
             "details_link": "../reference/api/gwexpy.interop.torch_dataset.rst",
             "notes": [
                 "Windowed dataset and DataLoader helpers for training loops."
-            ]
+            ],
+            "optional_dependencies": [
+                "torch"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "tensorflow",
@@ -327,7 +410,12 @@
             "details_link": "../reference/api/gwexpy.interop.tensorflow_.rst",
             "notes": [
                 "TensorFlow tensor conversion is public once the reference page is published."
-            ]
+            ],
+            "optional_dependencies": [
+                "tensorflow"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "jax",
@@ -344,7 +432,12 @@
             "details_link": "../reference/api/gwexpy.interop.jax_.rst",
             "notes": [
                 "JAX array conversion is public once the reference page is published."
-            ]
+            ],
+            "optional_dependencies": [
+                "jax"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "cupy",
@@ -362,7 +455,12 @@
             "details_link": "../reference/api/gwexpy.interop.cupy_.rst",
             "notes": [
                 "CuPy GPU-array conversion is public once the reference page is published."
-            ]
+            ],
+            "optional_dependencies": [
+                "cupy"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "root",
@@ -383,7 +481,12 @@
             "details_link": "../reference/api/gwexpy.interop.root_.rst",
             "notes": [
                 "ROOT stays reference-indexed, but the guide still marks it as only partially complete."
-            ]
+            ],
+            "optional_dependencies": [
+                "ROOT"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "obspy",
@@ -402,7 +505,14 @@
             "details_link": "../reference/api/gwexpy.interop.obspy_.rst",
             "notes": [
                 "ObsPy remains one of the highest-value public round-trip bridges."
-            ]
+            ],
+            "optional_dependencies": [
+                "obspy"
+            ],
+            "extras": [
+                "seismic"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "lal",
@@ -421,7 +531,14 @@
             "details_link": "../reference/api/gwexpy.interop.lal_.rst",
             "notes": [
                 "LAL time-domain and frequency-domain helpers are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "lalsuite"
+            ],
+            "extras": [
+                "gw"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "pycbc",
@@ -440,7 +557,12 @@
             "details_link": "../reference/api/gwexpy.interop.pycbc_.rst",
             "notes": [
                 "PyCBC helpers are part of the public GW-domain bridge surface."
-            ]
+            ],
+            "optional_dependencies": [
+                "pycbc"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "gwinc",
@@ -456,7 +578,14 @@
             "details_link": "../reference/api/gwexpy.interop.gwinc_.rst",
             "notes": [
                 "GWINC is import-only but still a published public bridge."
-            ]
+            ],
+            "optional_dependencies": [
+                "gwinc"
+            ],
+            "extras": [
+                "gw"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "finesse",
@@ -472,8 +601,14 @@
             "reference_page": "gwexpy.interop.finesse_.rst",
             "details_link": "../reference/api/gwexpy.interop.finesse_.rst",
             "notes": [
-                "Finesse import helpers are published through the interop reference."
-            ]
+                "Finesse import helpers are published through the interop reference.",
+                "Finesse is not included in a GWexpy extra; install finesse directly when needed."
+            ],
+            "optional_dependencies": [
+                "finesse"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "control",
@@ -491,7 +626,14 @@
             "details_link": "../reference/api/gwexpy.interop.control_.rst",
             "notes": [
                 "Control FRD and response import are public even though class wrappers differ by object family."
-            ]
+            ],
+            "optional_dependencies": [
+                "control"
+            ],
+            "extras": [
+                "control"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "simpeg",
@@ -508,7 +650,12 @@
             "details_link": "../reference/api/gwexpy.interop.simpeg_.rst",
             "notes": [
                 "SimPEG geophysics helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "simpeg"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "mth5",
@@ -525,7 +672,14 @@
             "details_link": "../reference/api/gwexpy.interop.mt_.rst",
             "notes": [
                 "MTH5 is promoted to public once the top-level namespace and reference index are wired."
-            ]
+            ],
+            "optional_dependencies": [
+                "mth5"
+            ],
+            "extras": [
+                "seismic"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "mtpy",
@@ -539,7 +693,10 @@
             "details_link": null,
             "notes": [
                 "MTpy is documented as organizational work in progress rather than an exposed helper family."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "not_applicable"
         },
         {
             "name": "mne",
@@ -558,7 +715,12 @@
             "details_link": "../reference/api/gwexpy.interop.mne_.rst",
             "notes": [
                 "MNE biosignal helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "mne"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "neo",
@@ -575,7 +737,12 @@
             "details_link": "../reference/api/gwexpy.interop.neo_.rst",
             "notes": [
                 "Neo electrophysiology helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "neo"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "elephant",
@@ -589,7 +756,10 @@
             "details_link": null,
             "notes": [
                 "Elephant is explicitly documented as still in progress."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "not_applicable"
         },
         {
             "name": "quantities",
@@ -606,7 +776,12 @@
             "details_link": "../reference/api/gwexpy.interop.quantities_.rst",
             "notes": [
                 "quantities bridges are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "quantities"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "pyroomacoustics",
@@ -628,7 +803,12 @@
             "details_link": "../reference/api/gwexpy.interop.pyroomacoustics_.rst",
             "notes": [
                 "pyroomacoustics room-acoustics helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "pyroomacoustics"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "pydub",
@@ -645,7 +825,14 @@
             "details_link": "../reference/api/gwexpy.interop.pydub_.rst",
             "notes": [
                 "pydub audio helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "pydub"
+            ],
+            "extras": [
+                "audio"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "librosa",
@@ -661,7 +848,10 @@
             "details_link": "../reference/api/gwexpy.interop.pydub_.rst",
             "notes": [
                 "librosa export stays documented through the shared pydub_ reference module."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "specutils",
@@ -678,7 +868,12 @@
             "details_link": "../reference/api/gwexpy.interop.specutils_.rst",
             "notes": [
                 "specutils astronomy-spectrum helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "specutils"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "pyspeckit",
@@ -695,7 +890,12 @@
             "details_link": "../reference/api/gwexpy.interop.pyspeckit_.rst",
             "notes": [
                 "pyspeckit spectral-analysis helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "pyspeckit"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "pyspice",
@@ -714,7 +914,12 @@
             "details_link": "../reference/api/gwexpy.interop.pyspice_.rst",
             "notes": [
                 "PySpice circuit-simulation import helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "PySpice"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "skrf",
@@ -733,7 +938,12 @@
             "details_link": "../reference/api/gwexpy.interop.skrf_.rst",
             "notes": [
                 "scikit-rf RF-network helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "skrf"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "pyoma",
@@ -748,8 +958,14 @@
             "reference_page": "gwexpy.interop.pyoma_.rst",
             "details_link": "../reference/api/gwexpy.interop.pyoma_.rst",
             "notes": [
-                "pyOMA modal-identification import helpers are public once the guide and reference page are published."
-            ]
+                "pyOMA modal-identification import helpers consume pyOMA-style result dictionaries; they do not import pyOMA at runtime."
+            ],
+            "source_dependencies": [
+                "pyOMA"
+            ],
+            "extras": [],
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "multitaper",
@@ -764,8 +980,14 @@
             "reference_page": "gwexpy.interop.multitaper_.rst",
             "details_link": "../reference/api/gwexpy.interop.multitaper_.rst",
             "notes": [
-                "The Prieto-style multitaper bridge is public once the guide and reference page are published."
-            ]
+                "The Prieto-style multitaper bridge consumes MTSpec/MTSine-like objects; it does not import multitaper at runtime."
+            ],
+            "source_dependencies": [
+                "multitaper"
+            ],
+            "extras": [],
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "mtspec",
@@ -780,8 +1002,14 @@
             "reference_page": "gwexpy.interop.multitaper_.rst",
             "details_link": "../reference/api/gwexpy.interop.multitaper_.rst",
             "notes": [
-                "The array-style mtspec bridge is public through the shared multitaper_ reference module."
-            ]
+                "The array-style mtspec bridge consumes spectrum/frequency arrays; it does not import mtspec at runtime."
+            ],
+            "source_dependencies": [
+                "mtspec"
+            ],
+            "extras": [],
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "sdypy",
@@ -797,8 +1025,14 @@
             "reference_page": "gwexpy.interop.sdypy_.rst",
             "details_link": "../reference/api/gwexpy.interop.sdypy_.rst",
             "notes": [
-                "pySDy / pyuff import helpers are public once the guide and reference page are published."
-            ]
+                "pySDy / pyuff import helpers consume UFF dataset dictionaries; they do not import pyuff or pySDy at runtime."
+            ],
+            "source_dependencies": [
+                "pyuff"
+            ],
+            "extras": [],
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "sdynpy",
@@ -815,8 +1049,14 @@
             "reference_page": "gwexpy.interop.sdynpy_.rst",
             "details_link": "../reference/api/gwexpy.interop.sdynpy_.rst",
             "notes": [
-                "SDynPy modal helpers are public once the guide and reference page are published."
-            ]
+                "SDynPy modal helpers consume SDynPy-like array objects; they do not import sdynpy at runtime."
+            ],
+            "source_dependencies": [
+                "sdynpy"
+            ],
+            "extras": [],
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "meep",
@@ -832,7 +1072,10 @@
             "details_link": "../reference/api/gwexpy.interop.meep_.rst",
             "notes": [
                 "Meep field-import helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "openems",
@@ -849,7 +1092,10 @@
             "details_link": "../reference/api/gwexpy.interop.openems_.rst",
             "notes": [
                 "openEMS field-dump import helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "emg3d",
@@ -867,7 +1113,12 @@
             "details_link": "../reference/api/gwexpy.interop.emg3d_.rst",
             "notes": [
                 "emg3d field import/export helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "emg3d"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "meshio",
@@ -885,7 +1136,12 @@
             "details_link": "../reference/api/gwexpy.interop.meshio_.rst",
             "notes": [
                 "meshio and Fenics import helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [
+                "meshio"
+            ],
+            "extras": [],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "metpy",
@@ -900,8 +1156,19 @@
             "reference_page": "gwexpy.interop.metpy_.rst",
             "details_link": "../reference/api/gwexpy.interop.metpy_.rst",
             "notes": [
-                "MetPy import helpers are public once the guide and reference page are published."
-            ]
+                "MetPy import helpers are public once the guide and reference page are published.",
+                "The adapter consumes MetPy-enhanced xarray objects but does not import metpy at runtime."
+            ],
+            "source_dependencies": [
+                "metpy"
+            ],
+            "optional_dependencies": [
+                "xarray"
+            ],
+            "extras": [
+                "netcdf4"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "wrf",
@@ -916,8 +1183,19 @@
             "reference_page": "gwexpy.interop.wrf_.rst",
             "details_link": "../reference/api/gwexpy.interop.wrf_.rst",
             "notes": [
-                "WRF import helpers are public once the guide and reference page are published."
-            ]
+                "WRF import helpers are public once the guide and reference page are published.",
+                "The adapter consumes wrf-python xarray output but does not import wrf-python at runtime."
+            ],
+            "source_dependencies": [
+                "wrf-python"
+            ],
+            "optional_dependencies": [
+                "xarray"
+            ],
+            "extras": [
+                "netcdf4"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "harmonica",
@@ -932,8 +1210,19 @@
             "reference_page": "gwexpy.interop.harmonica_.rst",
             "details_link": "../reference/api/gwexpy.interop.harmonica_.rst",
             "notes": [
-                "Harmonica grid import helpers are public once the guide and reference page are published."
-            ]
+                "Harmonica grid import helpers are public once the guide and reference page are published.",
+                "The adapter consumes Harmonica xarray grids but does not import harmonica at runtime."
+            ],
+            "source_dependencies": [
+                "harmonica"
+            ],
+            "optional_dependencies": [
+                "xarray"
+            ],
+            "extras": [
+                "netcdf4"
+            ],
+            "unavailable_behavior": "raises_import_error"
         },
         {
             "name": "exudyn",
@@ -949,7 +1238,10 @@
             "details_link": "../reference/api/gwexpy.interop.exudyn_.rst",
             "notes": [
                 "Exudyn sensor import helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "opensees",
@@ -965,7 +1257,10 @@
             "details_link": "../reference/api/gwexpy.interop.opensees_.rst",
             "notes": [
                 "OpenSees recorder import helpers are public once the guide and reference page are published."
-            ]
+            ],
+            "optional_dependencies": [],
+            "extras": [],
+            "unavailable_behavior": "available_in_base_install"
         }
     ]
 }

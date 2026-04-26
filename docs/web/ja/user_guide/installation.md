@@ -113,8 +113,10 @@ pip install -e ".[dev,all]"
 | `fitting` | `iminuit`, `emcee`, `corner` | 最小二乗法、MCMC 解析。 |
 | `gw` | `lalsuite`, `gwosc`, `gwinc`, `ligo.skymap` | 重力波データ検索、感度計算、スカイマップ描画。 |
 | `io` | `nptdms` | LabVIEW TDMS 形式の読み込み。 |
+| `netcdf4` | `netCDF4`, `xarray` | xarray 経由の NetCDF4 時系列ファイルの読み書き。 |
+| `zarr` | `zarr` | Zarr array store の読み書き。 |
 | `plotting` | `pygmt` | 高精度な地図投影（GeoMap）。 |
-| `audio` | `pydub` | 音声書き出し、オーディオ解析。 |
+| `audio` | `pydub`, `tinytag` | 音声書き出し、オーディオ解析、任意のメタデータ抽出。 |
 | `seismic` | `obspy`, `mth5`, `mtpy` | 地震・地磁気データ解析。 |
 | `control` | `control` (python-control) | 制御系モデル・伝達関数解析。 |
 | `gui` | `PyQt5`, `pyqtgraph` | グラフィカルインターフェース（試作段階）。 |

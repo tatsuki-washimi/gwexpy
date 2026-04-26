@@ -85,13 +85,11 @@ _EXTRA_MAP: dict[str, str | None] = {
     # gw: Gravitational wave data access and tools
     "lalsuite": "gw",
     "lal": "gw",
-    "pycbc": "gw",
     "gwdatafind": "gw",
     "gwosc": "gw",
     "dqsegdb2": "gw",
     "dttxml": "gw",
     "gwinc": "gw",
-    "finesse": "gw",
     "ligo.skymap": "gw",
     # io: Experimental data I/O
     "nptdms": "io",
@@ -122,6 +120,8 @@ _EXTRA_MAP: dict[str, str | None] = {
     "cupy": None,
     "mne": None,
     "neo": None,
+    "pycbc": None,
+    "finesse": None,
     "polars": None,
     "joblib": None,
     "librosa": None,

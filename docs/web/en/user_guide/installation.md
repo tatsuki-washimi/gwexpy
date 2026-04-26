@@ -116,7 +116,7 @@ pip install -e ".[dev,all]"
 | `netcdf4` | `netCDF4`, `xarray` | Reading and writing NetCDF4 time-series files via xarray. |
 | `zarr` | `zarr` | Reading and writing Zarr array stores. |
 | `plotting` | `pygmt` | High-precision geographic mapping (GeoMap). |
-| `audio` | `pydub` | Audio export and processing. |
+| `audio` | `pydub`, `tinytag` | Audio export, processing, and optional metadata extraction. |
 | `seismic` | `obspy`, `mth5`, `mtpy` | Seismic and magnetotelluric data. |
 | `control` | `control` (python-control) | Control systems and transfer functions. |
 | `gui` | `PyQt5`, `pyqtgraph` | Graphical interface (prototype stage). Not included in `all`. |
