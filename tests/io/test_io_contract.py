@@ -91,6 +91,8 @@ def _writer_callable(fmt: str, cls):
 
 
 def _resolved_alias_for_contract(canonical: str, alias: str) -> str:
+    # Only GWF aliases use format-token normalization. Other declared aliases
+    # must remain registered as their own public tokens when canonical exists.
     if canonical == "gwf":
         return _normalize_gwf_format(alias) or alias
     return alias

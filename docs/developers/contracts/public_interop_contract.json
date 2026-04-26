@@ -601,14 +601,13 @@
             "reference_page": "gwexpy.interop.finesse_.rst",
             "details_link": "../reference/api/gwexpy.interop.finesse_.rst",
             "notes": [
-                "Finesse import helpers are published through the interop reference."
+                "Finesse import helpers are published through the interop reference.",
+                "Finesse is not included in a GWexpy extra; install finesse directly when needed."
             ],
             "optional_dependencies": [
                 "finesse"
             ],
-            "extras": [
-                "gw"
-            ],
+            "extras": [],
             "unavailable_behavior": "raises_import_error"
         },
         {
@@ -1157,7 +1156,11 @@
             "reference_page": "gwexpy.interop.metpy_.rst",
             "details_link": "../reference/api/gwexpy.interop.metpy_.rst",
             "notes": [
-                "MetPy import helpers are public once the guide and reference page are published."
+                "MetPy import helpers are public once the guide and reference page are published.",
+                "The adapter consumes MetPy-enhanced xarray objects but does not import metpy at runtime."
+            ],
+            "source_dependencies": [
+                "metpy"
             ],
             "optional_dependencies": [
                 "xarray"
@@ -1180,7 +1183,11 @@
             "reference_page": "gwexpy.interop.wrf_.rst",
             "details_link": "../reference/api/gwexpy.interop.wrf_.rst",
             "notes": [
-                "WRF import helpers are public once the guide and reference page are published."
+                "WRF import helpers are public once the guide and reference page are published.",
+                "The adapter consumes wrf-python xarray output but does not import wrf-python at runtime."
+            ],
+            "source_dependencies": [
+                "wrf-python"
             ],
             "optional_dependencies": [
                 "xarray"
@@ -1203,7 +1210,11 @@
             "reference_page": "gwexpy.interop.harmonica_.rst",
             "details_link": "../reference/api/gwexpy.interop.harmonica_.rst",
             "notes": [
-                "Harmonica grid import helpers are public once the guide and reference page are published."
+                "Harmonica grid import helpers are public once the guide and reference page are published.",
+                "The adapter consumes Harmonica xarray grids but does not import harmonica at runtime."
+            ],
+            "source_dependencies": [
+                "harmonica"
             ],
             "optional_dependencies": [
                 "xarray"

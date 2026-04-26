@@ -88,15 +88,22 @@ importing the backend at `import gwexpy` time.
 Some import-only adapters consume objects or dictionaries that were produced by
 external packages, but do not import those producer packages themselves. For
 example, `from_pyoma_results()`, `from_mtspec()`, `from_mtspec_array()`,
-`from_uff_dataset55()`, `from_uff_dataset58()`, and the `from_sdynpy_*()`
-helpers accept caller-supplied pyOMA, multitaper, mtspec, pyuff, or SDynPy-style
-objects. Install those packages when you need to create the source objects, not
-because the adapter imports them directly.
+`from_uff_dataset55()`, `from_uff_dataset58()`, the `from_sdynpy_*()`,
+`from_metpy_dataarray()`, `from_wrf_variable()`, and `from_harmonica_grid()`
+helpers accept caller-supplied pyOMA, multitaper, mtspec, pyuff, SDynPy-style,
+MetPy-enhanced, wrf-python, or Harmonica objects. Install those packages when
+you need to create the source objects, not because the adapter imports them
+directly.
 
 | Policy | Dependencies | Install guidance |
 | --- | --- | --- |
-| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `finesse`, `control`, `pydub` | Use `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, or `pip install 'gwexpy[audio]'` as appropriate. |
-| Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `emg3d`, `meshio` | Install the named backend directly when the bridge imports it or when you need it to create accepted source objects. |
+| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | Use `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, or `pip install 'gwexpy[audio]'` as appropriate. |
+| Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `finesse`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `metpy`, `wrf-python`, `harmonica`, `emg3d`, `meshio` | Install the named backend directly when the bridge imports it or when you need it to create accepted source objects. |
+
+The xarray-backed interop bridges list the `netcdf4` extra because GWexpy does
+not currently publish a standalone `xarray` extra. If you only need in-memory
+xarray conversion and want to avoid installing `netCDF4`, install `xarray`
+directly.
 
 (interop-en-storage-conversion)=
 ## A. Storage Formats and Container Conversion

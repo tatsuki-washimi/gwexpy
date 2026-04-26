@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import importlib
 import json
+import tomllib
 from pathlib import Path
 
 import gwexpy.interop as interop
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "docs/developers/contracts/public_interop_contract.json"
+PYPROJECT_PATH = ROOT / "pyproject.toml"
 EN_REF_INDEX = ROOT / "docs/web/en/reference/api/interop.rst"
 JA_REF_INDEX = ROOT / "docs/web/ja/reference/api/interop.rst"
 
@@ -40,6 +42,20 @@ VALID_UNAVAILABLE_BEHAVIORS = {
 def _load_contract() -> list[dict]:
     data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
     return data["targets"]
+
+
+def _package_name(requirement: str) -> str:
+    return (
+        requirement.split(";", maxsplit=1)[0]
+        .split("[", maxsplit=1)[0]
+        .split(">", maxsplit=1)[0]
+        .split("<", maxsplit=1)[0]
+        .split("=", maxsplit=1)[0]
+        .split("!", maxsplit=1)[0]
+        .split("~", maxsplit=1)[0]
+        .strip()
+        .lower()
+    )
 
 
 TARGETS = _load_contract()
@@ -190,3 +206,43 @@ def test_import_only_source_packages_are_not_runtime_dependencies():
         assert entry["optional_dependencies"] == []
         assert entry["extras"] == []
         assert entry["unavailable_behavior"] == "available_in_base_install"
+
+
+def test_xarray_source_adapters_distinguish_runtime_from_producer_packages():
+    entries = {entry["name"]: entry for entry in TARGETS}
+
+    expected_source_dependencies = {
+        "metpy": ["metpy"],
+        "wrf": ["wrf-python"],
+        "harmonica": ["harmonica"],
+    }
+
+    for name, source_dependencies in expected_source_dependencies.items():
+        entry = entries[name]
+        assert entry["source_dependencies"] == source_dependencies
+        assert entry["optional_dependencies"] == ["xarray"]
+        assert entry["extras"] == ["netcdf4"]
+        assert entry["unavailable_behavior"] == "raises_import_error"
+
+
+def test_declared_extras_contain_runtime_dependencies():
+    """Contract extras must install the runtime packages they advertise."""
+    pyproject = tomllib.loads(PYPROJECT_PATH.read_text(encoding="utf-8"))
+    optional_dependency_groups = pyproject["project"]["optional-dependencies"]
+    normalized_extras = {
+        extra: {_package_name(requirement) for requirement in requirements}
+        for extra, requirements in optional_dependency_groups.items()
+    }
+
+    for entry in TARGETS:
+        for extra in entry["extras"]:
+            installed_packages = normalized_extras[extra]
+            missing_dependencies = [
+                dependency
+                for dependency in entry["optional_dependencies"]
+                if dependency.lower() not in installed_packages
+            ]
+            assert missing_dependencies == [], (
+                f"{entry['name']} declares extra {extra!r}, but that extra does not "
+                f"install runtime dependencies: {missing_dependencies}"
+            )

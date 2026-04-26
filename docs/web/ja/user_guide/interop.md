@@ -83,12 +83,14 @@ myst:
 
 Interop bridge は runtime optional backend を遅延 import します。runtime backend が未導入の場合、`import gwexpy` の時点ではなく、該当 bridge を呼び出した時点でインストール案内付きの `ImportError` を送出します。
 
-import 中心の adapter の一部は、外部 package が生成した object や dict を受け取りますが、その producer package 自体は import しません。たとえば `from_pyoma_results()`, `from_mtspec()`, `from_mtspec_array()`, `from_uff_dataset55()`, `from_uff_dataset58()`, `from_sdynpy_*()` は、呼び出し側が渡す pyOMA, multitaper, mtspec, pyuff, SDynPy 形式の object を消費します。これらの package は source object を作る必要がある場合に導入してください。adapter が直接 import するためではありません。
+import 中心の adapter の一部は、外部 package が生成した object や dict を受け取りますが、その producer package 自体は import しません。たとえば `from_pyoma_results()`, `from_mtspec()`, `from_mtspec_array()`, `from_uff_dataset55()`, `from_uff_dataset58()`, `from_sdynpy_*()`, `from_metpy_dataarray()`, `from_wrf_variable()`, `from_harmonica_grid()` は、呼び出し側が渡す pyOMA, multitaper, mtspec, pyuff, SDynPy, MetPy, wrf-python, Harmonica 形式の object を消費します。これらの package は source object を作る必要がある場合に導入してください。adapter が直接 import するためではありません。
 
 | 方針 | 依存関係 | インストール案内 |
 | --- | --- | --- |
-| GWexpy extras で宣言済み | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `finesse`, `control`, `pydub` | 必要に応じて `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, `pip install 'gwexpy[audio]'` を使います。 |
-| 個別 package install | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `emg3d`, `meshio` | bridge が直接 import する場合、または受け渡す source object を作る必要がある場合に、該当 backend を個別に導入してください。 |
+| GWexpy extras で宣言済み | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | 必要に応じて `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, `pip install 'gwexpy[audio]'` を使います。 |
+| 個別 package install | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `finesse`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `metpy`, `wrf-python`, `harmonica`, `emg3d`, `meshio` | bridge が直接 import する場合、または受け渡す source object を作る必要がある場合に、該当 backend を個別に導入してください。 |
+
+xarray 系の interop bridge は、GWexpy が独立した `xarray` extra を公開していないため `netcdf4` extra を案内します。メモリ上の xarray 変換だけが必要で `netCDF4` を入れたくない場合は、`xarray` を個別に導入してください。
 
 (interop-ja-storage-conversion)=
 ## A. 保存形式・コンテナ変換
