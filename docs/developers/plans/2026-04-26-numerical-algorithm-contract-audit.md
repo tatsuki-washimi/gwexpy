@@ -29,7 +29,7 @@ Mode: audit-first only; no runtime behavior changes in this pass.
 
 | Area | Implementation files | Existing test coverage seen | Contract documentation seen |
 | --- | --- | --- | --- |
-| FFT / PSD / ASD / CSD / spectrogram | `gwexpy/timeseries/_spectral.py`, `_spectral_fourier.py`, `_spectral_special.py`, `gwexpy/signal/normalization.py`, `gwexpy/signal/spectral/*` | `tests/timeseries/test_fft.py`, `test_fft_param_compat.py`, `test_laplace.py`, `test_hht*.py`, `test_spectral_matrix.py`, `tests/signal/test_normalization.py`, `test_spectral_*` | FFT conventions, numerical contract, algorithm context |
+| FFT / PSD / ASD / CSD / spectrogram | `gwexpy/timeseries/_spectral.py`, `_spectral_fourier.py`, `_spectral_special.py`, `gwexpy/timeseries/matrix_spectral.py`, `gwexpy/signal/normalization.py`, `gwexpy/signal/spectral/*` | `tests/timeseries/test_fft.py`, `test_fft_param_compat.py`, `test_laplace.py`, `test_hht*.py`, `test_spectral_matrix.py`, `tests/signal/test_normalization.py`, `test_spectral_*` | FFT conventions, numerical contract, algorithm context |
 | Filtering / resampling | `gwexpy/timeseries/_resampling.py`, `gwexpy/signal/filter_design.py`, `gwexpy/signal/window.py`, GWpy delegated filters | `tests/timeseries/test_resampling.py`, `tests/signal/test_filter_design.py`, `test_window.py` | Numerical contract, GWpy compatibility docs |
 | Coherence / coupling / transfer functions | `gwexpy/analysis/bruco.py`, `coupling.py`, `response.py`, `stats.py`, `gwexpy/timeseries/_signal.py` | `tests/signal/test_coherence.py`, `tests/timeseries/test_transfer_function_compat.py`, matrix coherence tests | Algorithm context, physics models, fitting/reference docs |
 | Imputation / preprocessing | `gwexpy/timeseries/preprocess.py`, `gwexpy/signal/preprocessing/{imputation,standardization,whitening,ml}.py` | `tests/timeseries/test_preprocess_*.py`, `tests/signal/test_imputation.py`, `test_preprocessing.py`, `test_whitening.py` | Numerical stability, preprocessing reference |
@@ -52,8 +52,20 @@ Mode: audit-first only; no runtime behavior changes in this pass.
     `weight="ia"` returns `input_unit`.
 - Axis/domain assumptions:
   - FFT, Laplace, CWT, STLT and Hilbert/HHT paths require regular sampling.
-  - Transient FFT frequency bins use `np.fft.rfftfreq(target_nfft, dt)` and are
-    one-sided real FFT bins.
+  - Transient FFT frequency bins are intended to use one-sided real FFT bins,
+    but the implementation passes `self.dt.value` directly to
+    `np.fft.rfftfreq(target_nfft, d=...)` and then labels the result as Hz.
+    This is only correct when `dt.value` is expressed in seconds. For example,
+    `dt=1*u.ms` would be passed as `d=1` instead of `d=0.001`, producing bins
+    that are off by a factor of 1000 while still carrying `u.Hz`.
+  - `TimeSeriesMatrix` vectorized spectral paths in
+    `gwexpy/timeseries/matrix_spectral.py` repeat the same raw-`dt.value`
+    assumption. `_vectorized_fft()` uses it in `np.fft.rfftfreq(...)`, while
+    `_vectorized_psd()`, `_vectorized_csd()`, and `_vectorized_coherence()`
+    derive SciPy's `fs` as `1.0 / self.dt.value`; `_vectorized_asd()` inherits
+    the PSD axis and normalization. Non-second `dt` units therefore risk wrong
+    frequency axes and sample-rate-dependent PSD/ASD/CSD/coherence scaling in
+    matrix outputs.
   - `cepstrum` stores quefrency values in the `frequencies` field with
     `axis_type="quefrency"`, which is a non-standard axis encoding that should
     be explicitly documented wherever exposed.
@@ -78,6 +90,10 @@ Mode: audit-first only; no runtime behavior changes in this pass.
   - Wrappers generally preserve `epoch`, `name`, `channel`, `unit`, and frequency
     axes. Special transforms add local metadata attributes, but coverage is not
     uniform across all outputs.
+  - Matrix spectral outputs preserve matrix-level rows/cols/meta, but the
+    vectorized FFT/PSD/ASD/CSD/coherence paths set `freqs * u.Hz` from raw
+    `.dt.value`/`fs` calculations. That makes the numerical frequency axis part
+    of the same matrix axis and metadata contract tracked in #244 and #246.
 
 ### Filtering / Resampling
 
@@ -250,43 +266,57 @@ Mode: audit-first only; no runtime behavior changes in this pass.
    Add focused tests that assert GWpy-equivalent units, frequency axes, epoch,
    and density/spectrum units for `psd`, `asd`, `csd`, and `spectrogram` wrappers.
 
-2. Bruco coherence reference tests.
+2. Transient FFT non-second `dt` axis tests.
+   Add an explicit regression candidate for `TimeSeries.fft(mode="transient")`
+   with `dt=1*u.ms` or another non-second time unit. The expected frequency bins
+   should match `np.fft.rfftfreq(nfft, d=dt.to_value(u.s)) * u.Hz`, not
+   `np.fft.rfftfreq(nfft, d=dt.value) * u.Hz`.
+
+3. Matrix spectral non-second `dt` axis and metadata tests.
+   Add focused tests for `TimeSeriesMatrix.fft()`, `psd()`, `asd()`, `csd()`,
+   and `coherence()` covering non-second `dt` units. The checks should verify
+   frequency bins/sample-rate-derived normalization, rows/cols/meta
+   preservation, and per-element metadata consistency in line with the #244
+   SeriesMatrix invariants and #246 `to_matrix()` axis/unit contract.
+
+4. Bruco coherence reference tests.
    Add tests comparing `FastCoherenceEngine` against `scipy.signal.coherence` or
    a documented reference on simple signals, including DC/Nyquist expectations
    and coherence bounds.
 
-3. Resampling boundary tests.
+5. Resampling boundary tests.
    Add tests for zero/negative time-bin rules, `agg="count"` if intended, Inf
    propagation, and metadata preservation through numeric GWpy delegated
    `resample()`.
 
-4. Transfer-function edge tests.
+6. Transfer-function edge tests.
    Add tests for documented zero-denominator cases, non-finite denominator
    behavior, epsilon validation expectations, unit ratio, and transient
    downsample/intersection metadata.
 
-5. Imputation/preprocessing docs and tests for Inf and Quantity times.
+7. Imputation/preprocessing docs and tests for Inf and Quantity times.
    State whether Inf is valid data or missing data. Add tests that Quantity times
    with `max_gap` are converted consistently and inverse transforms intentionally
    return arrays.
 
-6. Whitening epsilon validation.
+8. Whitening epsilon validation.
    Either route `whiten()` through `_resolve_eps()` or document why explicit
    negative/non-finite `eps` is accepted. Add direct tests for the chosen
    contract.
 
-7. Fitting sigma/covariance validation docs.
+9. Fitting sigma/covariance validation docs.
    Add tests/docs for sigma zero, non-finite sigma, singular covariance, and
    shape/axis behavior after `x_range` cropping.
 
-8. `SpectralStats.significance()` zero-sigma behavior.
+10. `SpectralStats.significance()` zero-sigma behavior.
    Add a contract and tests for sigma zero/non-finite bins. This can be
    documentation-only first, then behavior if approved.
 
 ## Recommended PR Order After Issue #249
 
-1. P0 docs/test-only: codify PSD/ASD/CSD/spectrogram wrapper contracts and
-   transient FFT axis/unit metadata. Low risk, no behavior change.
+1. P0 docs/test-only: codify PSD/ASD/CSD/spectrogram wrapper contracts,
+   transient FFT axis/unit metadata, and non-second `dt` frequency-axis tests
+   for scalar and matrix spectral paths. Low risk, no behavior change.
 2. P0 docs/test-only with physics review notes: add Bruco reference tests that
    quantify current normalization and DC/Nyquist behavior without changing it.
 3. P1 docs/test-only: add transfer-function edge-case tests for the already
@@ -303,4 +333,5 @@ Mode: audit-first only; no runtime behavior changes in this pass.
 
 - This file intentionally records observed behavior and gaps only.
 - No code behavior was changed as part of this audit.
-- Existing review-waiting PRs #256, #257, #258, and #259 were not modified.
+- Related PRs #256, #257, #258, and #259 are now merged; no follow-up runtime
+  code from those PRs was modified as part of this audit.
