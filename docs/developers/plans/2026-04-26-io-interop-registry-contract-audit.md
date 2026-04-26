@@ -39,6 +39,9 @@ Mode: audit-first only; no runtime behavior changes in this pass.
 - `tests/interop/`
 - `scripts/ci/run_gate.py`
 
+All repository paths listed above were present in the checked tree. This audit
+does not add a CI guard for future path-list drift.
+
 ## Existing Contract Strengths
 
 - `public_io_contract.json` already distinguishes `public_api`, `direct_api`,
@@ -50,22 +53,44 @@ Mode: audit-first only; no runtime behavior changes in this pass.
   `tests/interop/test_interop_contract.py`, and
   `tests/interop/test_interop_docs_contract_sync.py` prevent a large class of
   docs/registry/name drift.
-- The remaining weakness is not the existence of contracts, but the lack of a
-  full docs-vs-code optional-dependency matrix.
+- Optional dependency behavior is no longer an untracked policy area for the
+  high-value paths covered by PR #257: declared extras, bare-package fallbacks,
+  and missing-dependency `ImportError` behavior are represented across the
+  package extras, helper maps, contract notes, user docs, and targeted tests.
+- The remaining weakness is not the existence of optional-dependency policy,
+  but that some details are still split across code, contract prose, docs, and
+  tests rather than normalized into one machine-readable field set.
 
-## Missing Matrix Fields
+## Current Matrix Coverage And Residual Gaps
 
-The current contract files mostly cover names and public surfaces. They do not
-centrally encode:
+The current contract matrix already records the public/registry/direct boundary
+for I/O and the public namespace/reference/docs boundary for interop. Optional
+dependency and install behavior is also represented for the current baseline:
 
-- owning optional package,
-- owning gwexpy extra,
-- unavailable-dependency error message,
-- whether install guidance should be bare package install or
-  `pip install 'gwexpy[extra]'`,
-- whether a missing dependency causes a registered reader to raise `ImportError`
-  or prevents registration entirely,
-- whether registry-only behavior is intentionally unpublished.
+- package extras in `pyproject.toml` include `seismic`, `io`, `audio`,
+  `netcdf4`, `zarr`, `control`, `gw`, and `all`;
+- `gwexpy.interop._optional` distinguishes declared-extra and bare-package
+  dependency hints plus extras included in `gwexpy[all]`; source-only and
+  HDF5-backed bridge behavior is represented by contract notes and bridge
+  implementations rather than by one central optional-helper policy;
+- direct I/O import guards now emit `gwexpy[extra]` hints for the covered
+  optional backends, and tests cover those user-facing errors;
+- `public_io_contract.md` and contract notes record important unavailable
+  behavior for TDMS and `ats.mth5`;
+- docs-sync tests cover the current public I/O and interop row boundaries.
+
+Remaining gaps are narrower:
+
+- the machine-readable JSON schemas still rely on notes/prose for dependency
+  behavior instead of normalized fields, so future drift is easier to introduce
+  than for names and public APIs;
+- direct I/O docs-sync tests assert selected support rows and snippets, not
+  every optional-dependency phrase in `io_formats.md` and `installation.md`;
+- interop docs-sync tests validate status/API/reference rows, but do not yet
+  verify that tutorial install cells and guide notes avoid implying broader
+  `gwexpy[all]` coverage than the extras actually provide;
+- audio metadata install text still has stale `tinytag` guidance even though
+  `tinytag` is now part of the `audio` extra.
 
 ## Direct I/O Findings
 
@@ -75,8 +100,8 @@ centrally encode:
 | `hdf.ndscope` | Registry exposes several adapters, while public contract is TimeSeriesDict-focused | HDF5 stack | Public-vs-registry boundary is encoded. |
 | `xml.diaggui` / `dttxml` | TimeSeriesDict public path plus frequency-domain registry readers | `dttxml` optional for some parser paths; native parser also exists | Public docs mostly show TimeSeriesDict. Frequency-domain support should be explicitly public or registry-only. |
 | `mseed` / `sac` / `gse2` / `knet` | TimeSeries, TimeSeriesDict, and TimeSeriesMatrix registry read support | ObsPy | PR #257 covers clearer `gwexpy[seismic]` hints for this family. Public tables can still read broader than the contract. |
-| `win` / `win32` | Registered only if ObsPy imports successfully | conditional registration, not a reader-level install hint | Docs list WIN/WIN32 as read-only but do not say registration depends on ObsPy. This is not fully covered by #257. |
-| `ats` / `ats.mth5` | Native ATS read plus optional MTH5 path | `mth5` for `ats.mth5` | Direct ATS docs match; `ats.mth5` install guidance remains more generic than the `seismic` extra policy. |
+| `win` / `win32` | Registered only if ObsPy imports successfully | conditional registration through the ObsPy-backed implementation | Current contract/docs/tests encode the public read-only, collection-first boundary and `win32` alias. The conditional registration detail is covered enough for this audit unless maintainers later want a normalized machine-readable dependency field. |
+| `ats` / `ats.mth5` | Native ATS read plus optional MTH5 path | `mth5`, included in the `seismic` extra | Current contract/docs/tests encode the narrow `ats.mth5` public path and missing-`mth5` `ImportError` behavior. No separate docs-only follow-up is needed for `mth5`/`seismic` in this audit. |
 | `tdms` | TimeSeries, TimeSeriesDict, and TimeSeriesMatrix read | `nptdms` | PR #257 covers the improved optional-dependency hint. |
 | `nc` / `netcdf4` | Direct TimeSeries, Dict, Matrix read/write and interop bridge | `xarray` and usually `netCDF4` | PR #257 adds the extra and install hint. |
 | `zarr` | Direct TimeSeries, Dict, Matrix read/write and interop bridge | `zarr` | PR #257 adds the extra and install hint. |
@@ -88,18 +113,29 @@ centrally encode:
 
 - `gwexpy.interop.__all__` is contract-covered, which is a strong guard against
   undocumented public namespace drift.
-- The interop guide publishes many bridges as public, but only some rows include
-  install guidance.
-- PR #257 fixed central optional-helper issues, including phantom extras and
-  import-name versus package-name hints for the covered dependency set.
-- Remaining long-tail public interop targets still need an install policy:
-  `ROOT`, `specutils`, `pyspeckit`, `quantities`, `simpeg`, `meshio`, `metpy`,
-  `wrf`, `harmonica`, `exudyn`, `openseespy`, `openEMS`/`h5py`, `meep`/`h5py`,
-  `emg3d`, `sdynpy`, `pyuff`, `pyOMA`, `multitaper`, and `mtspec`.
+- The interop guide publishes many bridges as public, and the current
+  contract/helper/implementation baseline now distinguishes the major install
+  categories instead of leaving lower-traffic bridges policy-free:
+  - declared-extra dependencies such as `xarray`, `zarr`, `obspy`, `mth5`,
+    `control`, `pycbc`, `gwinc`, `finesse`, and `pydub` are covered by
+    optional-helper extra hints;
+  - bare-package dependencies such as `specutils`, `pyspeckit`, `quantities`,
+    `simpeg`, `meshio`, `metpy`, `wrf`, `harmonica`, `exudyn`, `openseespy`,
+    `emg3d`, `sdynpy`, `pyuff`, `pyOMA`, `multitaper`, and `mtspec` are covered
+    by optional-helper package hints;
+  - source-output bridges where the source application is not required at
+    runtime, such as `openEMS`/`h5py` and `meep`/`h5py`, are represented by the
+    bridge implementations and contract notes rather than optional-helper
+    install policy;
+  - base-install behavior for bridges backed by core dependencies or already
+    installed scientific stack components.
+- PR #257 fixed central optional-helper issues, including phantom extras,
+  declared-extra hints, bare-package hints, and import-name versus package-name
+  hints for the covered dependency set.
 - `intro_interop.ipynb` uses a broad `%pip install -q "gwexpy[all]" ...` setup
   pattern, but the notebook demonstrates many packages that are not guaranteed
   to be installed by `all`. PR #257 adds netcdf4 and zarr to `all`, but not the
-  broader long-tail public interop set.
+  broader public interop examples.
 
 ## Already Covered By PR #257
 
@@ -117,41 +153,39 @@ Avoid duplicating these optional-backend changes in #248 follow-ups:
 
 ## Test Gaps
 
-- No single machine-readable docs-vs-code matrix records
+- No single machine-readable docs-vs-code matrix normalizes
   `format/converter -> owner -> public API -> registry API -> optional
-  dependency -> extra -> unavailable behavior`.
-- `public_io_contract.json` has no `optional_dependencies`, `extras`, or
-  `unavailable_behavior` fields.
-- `public_interop_contract.json` tracks public namespace and guide rows, but not
-  dependency names, extras, or missing-package behavior.
+  dependency -> extra/bare install -> unavailable behavior`, even though the
+  current policy is represented across existing sources.
+- The JSON contract files encode dependency behavior through notes and
+  surrounding contract docs rather than structured fields, so tests cannot
+  exhaustively compare dependency/install guidance the way they compare API
+  names and public rows.
 - `tests/io/test_io_contract.py` can allow a canonical reader to be absent by
-  continuing when `get_reader()` returns `None`; this can hide conditional
-  registration gaps such as `win`/`win32`.
+  continuing when `get_reader()` returns `None`; this remains acceptable for the
+  current optional-backend baseline but would need a structured policy if the
+  project wants to make conditional registration a first-class contract field.
 - `tests/io/test_io_docs_contract_sync.py` checks selected snippets rather than
   every public table row and support cell in `io_formats.md`.
-- `tests/interop/test_interop_docs_contract_sync.py` verifies status/API/reference
-  rows, but not install guidance or optional dependency text.
+- `tests/interop/test_interop_docs_contract_sync.py` verifies
+  status/API/reference rows, but not tutorial bootstrap cells or every optional
+  dependency note.
 - Optional backend tests are split across markers and many `pytest.importorskip`
   calls. Skipped tests do not by themselves verify clear user-facing errors.
 
 ## Recommended Next PRs
 
-1. Contract schema PR: add `optional_dependencies`, `extras`, and
-   `unavailable_behavior` fields to both public contract JSON files, then extend
-   docs-sync tests to assert those fields are represented in user docs or
-   installation docs.
-2. Direct I/O follow-up after #257: cover `win` conditional registration,
-   `ats.mth5` install guidance, and stale `tinytag` install text in audio
-   metadata helpers.
-3. Interop optional-dependency matrix PR: decide which long-tail public interop
-   targets get declared extras, which remain bare-install only, and which should
-   stay public without being in `gwexpy[all]`.
-4. Registry contract test PR: public registry entries should not silently
-   disappear when optional dependencies are unavailable unless conditional
-   registration is encoded explicitly.
-5. Interop docs/notebook PR: update `intro_interop.ipynb` and/or `interop.md` so
+1. Audio metadata docs follow-up: update `extract_audio_metadata()` docstring and
+   warning text so `tinytag` points to `pip install 'gwexpy[audio]'` or
+   `pip install "gwexpy[all]"` where appropriate, instead of stale bare-package
+   / "coming soon" guidance.
+2. Interop docs/notebook PR: update `intro_interop.ipynb` and/or `interop.md` so
    `gwexpy[all]` does not imply every demonstrated public converter is installed.
-6. Frequency-domain DTTXML decision PR: decide whether FrequencySeries
+3. Optional policy normalization spike: only if maintainers want stronger
+   machine-readable enforcement, prototype narrow structured fields for the
+   remaining dependency/install/unavailable-behavior cases already represented
+   in prose and tests.
+4. Frequency-domain DTTXML decision PR: decide whether FrequencySeries
    `xml.diaggui` support is public. If yes, publish it in `io_formats.md` and
    contract JSON; if no, mark it registry-only/internal.
 
