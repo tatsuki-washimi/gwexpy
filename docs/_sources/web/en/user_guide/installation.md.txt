@@ -113,11 +113,13 @@ pip install -e ".[dev,all]"
 | `fitting` | `iminuit`, `emcee`, `corner` | Least-squares fitting and MCMC analysis. |
 | `gw` | `lalsuite`, `gwosc`, `gwinc`, `ligo.skymap` | Data discovery, sensitivity calculations, and sky mapping. |
 | `io` | `nptdms` | Reading LabVIEW TDMS formats. |
+| `netcdf4` | `netCDF4`, `xarray` | Reading and writing NetCDF4 time-series files via xarray. |
+| `zarr` | `zarr` | Reading and writing Zarr array stores. |
 | `plotting` | `pygmt` | High-precision geographic mapping (GeoMap). |
 | `audio` | `pydub` | Audio export and processing. |
 | `seismic` | `obspy`, `mth5`, `mtpy` | Seismic and magnetotelluric data. |
 | `control` | `control` (python-control) | Control systems and transfer functions. |
-| `gui` | `PyQt5`, `pyqtgraph` | Graphical interface (prototype stage). |
+| `gui` | `PyQt5`, `pyqtgraph` | Graphical interface (prototype stage). Not included in `all`. |
 
 ---
 

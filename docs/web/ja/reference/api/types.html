@@ -274,8 +274,18 @@ with the multiplied units.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">as_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/types/metadata.html#MetaData.as_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Coerce an object into a MetaData instance.</p>
-<p>If the object is already a MetaData instance, it is returned as-is.
-Otherwise, it is converted using the current metadata as a template.</p>
+<p>If <em>obj</em> is already a <code class="docutils literal notranslate"><span class="pre">MetaData</span></code> instance it is returned unchanged.
+Otherwise a new <code class="docutils literal notranslate"><span class="pre">MetaData</span></code> is constructed whose <strong>name</strong> and
+<strong>channel</strong> are inherited from <code class="docutils literal notranslate"><span class="pre">self</span></code> and whose <strong>unit</strong> is inferred
+from <em>obj</em> via <code class="xref py py-func docutils literal notranslate"><span class="pre">get_unit()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>MetaData</em><em>, </em><em>astropy.Quantity</em><em>, </em><em>numeric</em><em>, or </em><em>any object with a .unit</em>) – The object to coerce.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>MetaData</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -310,6 +320,8 @@ SeriesMatrix and related classes.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/types/metadata.html#MetaDataDict.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Convert the metadata collection to a pandas DataFrame.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">unit</span></code> column is serialised as a string so that the DataFrame
+can be written to CSV and read back without loss of unit information.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -789,7 +801,7 @@ objects, used for row/column metadata in SeriesMatrix.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-25 15:01:50.
+      <span class="lastupdated">Last updated on 2026-04-26 05:18:15.
       </span></p>
   </div>
 

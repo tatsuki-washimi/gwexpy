@@ -179,7 +179,8 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">FitResult</span><span class="p">,</span> <span class="n">Fitter</span><span class="p">,</span> <span class="n">fit_series</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s2">&quot;gwexpy.fitting requires optional dependencies (e.g. iminuit) and a working numba setup.&quot;</span>
+                <span class="s2">&quot;gwexpy.fitting requires optional dependencies. &quot;</span>
+                <span class="s2">&quot;Install with: pip install &#39;gwexpy[fitting]&#39;&quot;</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;fit_series&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">fit_series</span>
@@ -191,7 +192,8 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">.gls</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLS</span><span class="p">,</span> <span class="n">GeneralizedLeastSquares</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s2">&quot;gwexpy.fitting requires optional dependencies (e.g. iminuit).&quot;</span>
+                <span class="s2">&quot;gwexpy.fitting requires optional dependencies. &quot;</span>
+                <span class="s2">&quot;Install with: pip install &#39;gwexpy[fitting]&#39;&quot;</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
         <span class="k">return</span> <span class="n">GeneralizedLeastSquares</span> <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;GeneralizedLeastSquares&quot;</span> <span class="k">else</span> <span class="n">GLS</span>
     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;fit_bootstrap_spectrum&quot;</span><span class="p">:</span>
@@ -199,7 +201,8 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">.highlevel</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_bootstrap_spectrum</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-                <span class="s2">&quot;gwexpy.fitting.highlevel requires optional dependencies.&quot;</span>
+                <span class="s2">&quot;gwexpy.fitting requires optional dependencies. &quot;</span>
+                <span class="s2">&quot;Install with: pip install &#39;gwexpy[fitting]&#39;&quot;</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
         <span class="k">return</span> <span class="n">fit_bootstrap_spectrum</span>
     <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> has no attribute </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -217,7 +220,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-25 15:01:50.
+      <span class="lastupdated">Last updated on 2026-04-26 05:18:15.
       </span></p>
   </div>
 
