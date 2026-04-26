@@ -959,13 +959,14 @@
             "reference_page": "gwexpy.interop.pyoma_.rst",
             "details_link": "../reference/api/gwexpy.interop.pyoma_.rst",
             "notes": [
-                "pyOMA modal-identification import helpers are public once the guide and reference page are published."
+                "pyOMA modal-identification import helpers consume pyOMA-style result dictionaries; they do not import pyOMA at runtime."
             ],
-            "optional_dependencies": [
+            "source_dependencies": [
                 "pyOMA"
             ],
             "extras": [],
-            "unavailable_behavior": "raises_import_error"
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "multitaper",
@@ -980,13 +981,14 @@
             "reference_page": "gwexpy.interop.multitaper_.rst",
             "details_link": "../reference/api/gwexpy.interop.multitaper_.rst",
             "notes": [
-                "The Prieto-style multitaper bridge is public once the guide and reference page are published."
+                "The Prieto-style multitaper bridge consumes MTSpec/MTSine-like objects; it does not import multitaper at runtime."
             ],
-            "optional_dependencies": [
+            "source_dependencies": [
                 "multitaper"
             ],
             "extras": [],
-            "unavailable_behavior": "raises_import_error"
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "mtspec",
@@ -1001,13 +1003,14 @@
             "reference_page": "gwexpy.interop.multitaper_.rst",
             "details_link": "../reference/api/gwexpy.interop.multitaper_.rst",
             "notes": [
-                "The array-style mtspec bridge is public through the shared multitaper_ reference module."
+                "The array-style mtspec bridge consumes spectrum/frequency arrays; it does not import mtspec at runtime."
             ],
-            "optional_dependencies": [
+            "source_dependencies": [
                 "mtspec"
             ],
             "extras": [],
-            "unavailable_behavior": "raises_import_error"
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "sdypy",
@@ -1023,13 +1026,14 @@
             "reference_page": "gwexpy.interop.sdypy_.rst",
             "details_link": "../reference/api/gwexpy.interop.sdypy_.rst",
             "notes": [
-                "pySDy / pyuff import helpers are public once the guide and reference page are published."
+                "pySDy / pyuff import helpers consume UFF dataset dictionaries; they do not import pyuff or pySDy at runtime."
             ],
-            "optional_dependencies": [
+            "source_dependencies": [
                 "pyuff"
             ],
             "extras": [],
-            "unavailable_behavior": "raises_import_error"
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "sdynpy",
@@ -1046,13 +1050,14 @@
             "reference_page": "gwexpy.interop.sdynpy_.rst",
             "details_link": "../reference/api/gwexpy.interop.sdynpy_.rst",
             "notes": [
-                "SDynPy modal helpers are public once the guide and reference page are published."
+                "SDynPy modal helpers consume SDynPy-like array objects; they do not import sdynpy at runtime."
             ],
-            "optional_dependencies": [
+            "source_dependencies": [
                 "sdynpy"
             ],
             "extras": [],
-            "unavailable_behavior": "raises_import_error"
+            "optional_dependencies": [],
+            "unavailable_behavior": "available_in_base_install"
         },
         {
             "name": "meep",

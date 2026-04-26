@@ -81,14 +81,22 @@ Legacy aliases remain supported during the transition, but new examples should p
 
 ## Optional Dependency Policy
 
-Interop bridges import optional backends lazily. If a backend is missing, the
-bridge raises `ImportError` with installation guidance instead of importing the
-backend at `import gwexpy` time.
+Interop bridges import optional runtime backends lazily. If a runtime backend is
+missing, the bridge raises `ImportError` with installation guidance instead of
+importing the backend at `import gwexpy` time.
+
+Some import-only adapters consume objects or dictionaries that were produced by
+external packages, but do not import those producer packages themselves. For
+example, `from_pyoma_results()`, `from_mtspec()`, `from_mtspec_array()`,
+`from_uff_dataset55()`, `from_uff_dataset58()`, and the `from_sdynpy_*()`
+helpers accept caller-supplied pyOMA, multitaper, mtspec, pyuff, or SDynPy-style
+objects. Install those packages when you need to create the source objects, not
+because the adapter imports them directly.
 
 | Policy | Dependencies | Install guidance |
 | --- | --- | --- |
 | Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `finesse`, `control`, `pydub` | Use `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, or `pip install 'gwexpy[audio]'` as appropriate. |
-| Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `emg3d`, `meshio` | Install the named backend directly when the bridge you are using requires it. |
+| Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `emg3d`, `meshio` | Install the named backend directly when the bridge imports it or when you need it to create accepted source objects. |
 
 (interop-en-storage-conversion)=
 ## A. Storage Formats and Container Conversion

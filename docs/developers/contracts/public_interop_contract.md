@@ -27,9 +27,12 @@ Each target entry contains these fields:
   intentionally has no dedicated helper module yet
 - `status`: public presentation status used by the guide
 - `guide_api`: `to_*()` / `from_*()` names published for that target
-- `optional_dependencies`: optional import/package names needed by that bridge,
-  or an empty list when the base install is sufficient or the row has no helper
-  surface
+- `source_dependencies`: optional package names that commonly produce accepted
+  source objects for import-only adapters, but are not imported by the bridge
+  itself
+- `optional_dependencies`: optional import/package names needed at bridge
+  runtime, or an empty list when the base install is sufficient or the row has
+  no helper surface
 - `extras`: declared GWexpy extras that satisfy those dependencies, or an empty
   list when users must install the backend directly
 - `unavailable_behavior`: expected behavior when the optional backend is
@@ -56,6 +59,9 @@ Each target entry contains these fields:
   `raises_import_error`, or `not_applicable`.
 - Helper-backed bridges with optional dependencies should raise `ImportError`
   with install guidance when the dependency is unavailable.
+- Import-only adapters that consume caller-supplied objects or dictionaries
+  should list producer packages in `source_dependencies`, not in
+  `optional_dependencies`, when the adapter does not import those packages.
 
 ## Boundary Decisions
 

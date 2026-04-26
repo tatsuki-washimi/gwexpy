@@ -67,6 +67,10 @@ def test_interop_contract_schema_is_well_formed():
         assert len(entry["optional_dependencies"]) == len(
             set(entry["optional_dependencies"])
         )
+        source_dependencies = entry.get("source_dependencies", [])
+        assert isinstance(source_dependencies, list)
+        assert all(isinstance(name, str) and name for name in source_dependencies)
+        assert len(source_dependencies) == len(set(source_dependencies))
         assert isinstance(entry["extras"], list)
         assert all(extra in VALID_EXTRAS for extra in entry["extras"])
         assert len(entry["extras"]) == len(set(entry["extras"]))
@@ -167,3 +171,22 @@ def test_non_public_module_backed_targets_are_explicit_exceptions():
         if entry["module"] is not None and entry["status"] != "public"
     ]
     assert non_public_module_backed == ["root"]
+
+
+def test_import_only_source_packages_are_not_runtime_dependencies():
+    entries = {entry["name"]: entry for entry in TARGETS}
+
+    expected_source_dependencies = {
+        "pyoma": ["pyOMA"],
+        "multitaper": ["multitaper"],
+        "mtspec": ["mtspec"],
+        "sdypy": ["pyuff"],
+        "sdynpy": ["sdynpy"],
+    }
+
+    for name, source_dependencies in expected_source_dependencies.items():
+        entry = entries[name]
+        assert entry["source_dependencies"] == source_dependencies
+        assert entry["optional_dependencies"] == []
+        assert entry["extras"] == []
+        assert entry["unavailable_behavior"] == "available_in_base_install"

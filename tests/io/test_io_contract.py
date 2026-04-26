@@ -90,6 +90,12 @@ def _writer_callable(fmt: str, cls):
         return None
 
 
+def _resolved_alias_for_contract(canonical: str, alias: str) -> str:
+    if canonical == "gwf":
+        return _normalize_gwf_format(alias) or alias
+    return alias
+
+
 def _has_gwf_backend() -> bool:
     try:
         from gwpy.io.gwf.core import get_channel_names
@@ -184,8 +190,7 @@ def test_registry_contract_is_registered_in_registry():
                 continue
             for alias in aliases:
                 alias_reader = _reader_callable(alias, cls)
-                normalized = _normalize_gwf_format(alias)
-                resolved = normalized if normalized is not None else canonical
+                resolved = _resolved_alias_for_contract(canonical, alias)
                 if alias_reader is None:
                     if resolved == canonical:
                         continue
@@ -209,8 +214,7 @@ def test_registry_contract_is_registered_in_registry():
                 continue
             for alias in aliases:
                 alias_writer = _writer_callable(alias, cls)
-                normalized = _normalize_gwf_format(alias)
-                resolved = normalized if normalized is not None else canonical
+                resolved = _resolved_alias_for_contract(canonical, alias)
                 if alias_writer is None:
                     if resolved == canonical:
                         continue

@@ -127,6 +127,9 @@ def test_optional_dependency_policy_matches_contract():
     ja_install = _read(JA_INSTALL)
 
     for entry in contract:
+        for dependency in entry.get("source_dependencies", []):
+            assert f"`{dependency}`" in en_docs
+            assert f"`{dependency}`" in ja_docs
         for dependency in entry["optional_dependencies"]:
             assert f"`{dependency}`" in en_docs
             assert f"`{dependency}`" in ja_docs
