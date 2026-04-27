@@ -44,6 +44,8 @@ def test_axis_api_isel_preserves_axis_names_units_and_sliced_coordinates():
 
 
 def test_metadata_dict_and_matrix_deepcopy_isolates_entries():
+    # Build the containers from independent MetaData objects so each deepcopy
+    # isolation check covers that container directly.
     metadata = MetaDataDict(
         {"h1": MetaData(name="strain", channel="H1:STRAIN", unit=u.m)}
     )
@@ -117,7 +119,10 @@ def test_metadata_csv_roundtrip_preserves_channels_units_and_names(tmp_path):
 
 @pytest.mark.xfail(
     strict=True,
-    reason="MetaDataMatrix CSV missing channel/unit cells currently reload as pandas NaN",
+    reason=(
+        "MetaDataMatrix CSV missing channel/unit cells currently reload as "
+        "pandas NaN (follow-up #291)"
+    ),
 )
 def test_metadata_matrix_csv_roundtrip_normalizes_missing_values(tmp_path):
     matrix = MetaDataMatrix(
