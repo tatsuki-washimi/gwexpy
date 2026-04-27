@@ -218,9 +218,10 @@ Net outcome:
 - Wave 3 now has a reusable numerical baseline before behavior-changing work.
 - #285 and #286 have initial docs/test-only coverage but remain open because
   both issues intentionally require smaller follow-up slices.
-- The next #285 slices should cover special transforms, Q-transform,
-  spectrogram cleaning, and field/space transform workflows before the issue is
-  closed.
+- The planned follow-up slices after Batch 1 were special transforms,
+  Q-transform, spectrogram cleaning, and field/space transform workflows.
+  #307-#309 now cover the first three; field/space transform workflows remain
+  before the issue is closed.
 
 #### Wave 3 #285 Follow-Up Progress
 
@@ -230,11 +231,11 @@ docs/test-only transform slices.
 | Slice | PR | Merged | Merge commit | Result |
 | --- | --- | --- | --- | --- |
 | Special transforms | #307 `[AGENT:validation] Add special transform contract coverage` | 2026-04-27 20:27 JST | `4a8de43` | Added DCT, cepstrum, Laplace, STLT, CWT, EMD, and HHT contract coverage for axes, units, metadata, scaling, and optional dependency behavior. Runtime behavior unchanged. |
+| Q-transform | #308 `[AGENT:validation] Add Q-transform contract coverage` | 2026-04-27 20:42 JST | `ba20d70` | Added direct TimeSeries Q-transform passthrough contracts, TimeSeriesList/Dict/Matrix container contracts, and documented current metadata loss plus the irregular-sampling gap. Runtime behavior unchanged. |
+| Spectrogram cleaning | #309 `[AGENT:validation] Add spectrogram cleaning contract coverage` | Open as of 2026-04-27 | N/A | Adds `Spectrogram.clean()` threshold, fill-mode, line-removal, rolling-median, combined-mask, metadata-preservation, and source-immutability contracts. Runtime behavior unchanged; gate details are recorded in `audit-manifest-285-spectrogram-cleaning.yaml`. |
 
-Remaining #285 slices:
+Remaining #285 work not covered by #307-#309:
 
-- Q-transform passthrough/container contracts.
-- Spectrogram cleaning contracts.
 - Field/space transform workflow contracts.
 - PyEMD-dependent HHT numerical contracts, only after optional dependency and
   physics-review expectations are explicit.
