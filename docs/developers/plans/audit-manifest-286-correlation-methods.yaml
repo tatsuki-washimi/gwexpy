@@ -56,6 +56,16 @@ test_results:
   mypy: not_run
   docs_build: not_run
 
+review_follow_ups:
+  - reviewer_finding: "Optional-dependency mock tests for MIC and distance correlation did not actually exercise positional cropping because both series had equal length."
+    fix_commit: "0842c7c720044bac22612ef8c5af761bf70eb58b"
+    fix_summary: "Updated the mocked minepy and dcor contract tests to pass unequal-length other series and assert the optional-dependency calls receive y cropped to len(x)."
+    verification:
+      - cmd: "rtk proxy pytest tests/statistics/test_correlation_method_contracts.py -q"
+        result: "14 passed"
+      - cmd: "rtk git diff --check"
+        result: "Clean"
+
 files_changed:
   - path: tests/statistics/test_correlation_method_contracts.py
     change: "Added scalar TimeSeries correlation and partial-correlation contract coverage."
