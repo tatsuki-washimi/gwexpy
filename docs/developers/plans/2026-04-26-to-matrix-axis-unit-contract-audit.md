@@ -1,7 +1,7 @@
 # to_matrix Axis And Per-Element Unit Contract Audit
 
 Date: 2026-04-26
-Issue: #246, "Audit to_matrix axis and per-element unit contracts across core containers"
+Issue: #270, "Define and test family-specific to_matrix contracts"
 Mode: audit-first only; no runtime behavior changes in this pass.
 
 ## Constraints
@@ -16,7 +16,7 @@ Mode: audit-first only; no runtime behavior changes in this pass.
 
 ## Inputs Reviewed
 
-- Issue #246 body.
+- Issue #270 scope and reviewer blockers for family-specific contract docs/tests.
 - The latest #244 SeriesMatrix audit findings.
 - The merged #243 / #258 MetaData and MetaDataMatrix audit plan.
 - `gwexpy/timeseries/collections.py`
@@ -47,6 +47,30 @@ families:
 This split may be intentional, but it should be documented as a family-specific
 contract and tested accordingly.
 
+## Developer Contract Table
+
+This table records the current family-specific contract that downstream code
+can rely on until a later, physics-reviewed runtime change explicitly narrows
+or broadens it.
+
+| Family | Supported collection entry point | Axis comparison and alignment | Resampling and tolerance | Per-element value-unit policy | Global matrix-unit policy | Row/column metadata and round trip |
+| --- | --- | --- | --- | --- | --- | --- |
+| `TimeSeries` | `TimeSeriesDict.to_matrix()` and `TimeSeriesList.to_matrix()` | Aligns every series onto a common time grid through `align_timeseries_collection()`; axes do not need exact equality when the requested overlap/alignment succeeds. | `align="intersection"` is the default. Alignment kwargs, including resampling tolerance where supported by the helper, are delegated to `align_timeseries_collection()`. There is no SeriesMatrix-style exact time-axis comparison at collection conversion time. | Source `TimeSeries.unit` values are not written into `MetaDataMatrix`; reconstructed elements from `to_dict()`/`to_list()` are dimensionless under the current path. Source channels are likewise not preserved in per-cell metadata. | No explicit global matrix unit is set by collection conversion. | Dict keys are written to per-cell names through `channel_names`, but row keys remain generated (`row0`, `row1`, ...), so `to_matrix().to_dict()` does not preserve original dict keys as dictionary keys. List element names become per-cell names when available; list rows are generated. |
+| `FrequencySeries` | `FrequencySeriesDict.to_matrix()` only | Requires equal sample length only. Frequency coordinate values and frequency-axis units are not compared; the output frequency axis is taken from the first element. | No resampling and no tolerance parameter. Same-length, different frequency coordinates are accepted under the current contract. | Each element's `unit`, `name`, and `channel` are stored in `MetaDataMatrix` and restored by `to_dict()`/`to_list()`. | No explicit global matrix unit is set by collection conversion. | Dict keys become row keys and survive `to_matrix().to_dict()`. The single column is named `value`; `to_list()` flattens rows in insertion order. `FrequencySeriesList` currently has no `to_matrix()` method. |
+| `Spectrogram` | `SpectrogramDict.to_matrix()` and `SpectrogramList.to_matrix()` | Requires identical shape, identical times after conversion to the first time-axis unit, and identical frequencies after conversion to the first frequency-axis unit. | No resampling and no tolerance parameter; axis values are compared with exact equality after unit conversion. | Each element's `unit`, `name`, and `channel` are stored in `MetaDataMatrix` and restored by `to_dict()`/`to_list()`. | The matrix `unit` is the first element unit only when all element units are equal; mixed units set the global matrix unit to `None`. | Dict keys become row keys and survive `to_matrix().to_dict()`. List rows are generated (`batch0`, `batch1`, ... for 3D matrices), while `to_list()` preserves element metadata in flattened order. |
+| Field containers | No SeriesMatrix-style collection `to_matrix()` API | `FieldList`/`FieldDict` validation uses field-specific axis compatibility rather than SeriesMatrix conversion. | Field validation uses field tolerances for coordinate values; this is separate from collection `to_matrix()` semantics. | Component units remain on fields; `VectorField.to_array()`/`TensorField.to_array()` return raw arrays without a `MetaDataMatrix`. | Not applicable. | Not applicable to SeriesMatrix round trips. |
+
+Current contract decisions for this audit pass:
+
+- `TimeSeries` source value units and channels are documented as not preserved
+  in `MetaDataMatrix` by collection `to_matrix()` today. Preserving them would
+  be a runtime/data-model change and should be handled in a separate
+  physics-reviewed PR.
+- `FrequencySeriesDict.to_matrix()` is documented and tested as length-only
+  today. Enforcing frequency-axis equality after unit conversion would be a
+  runtime behavior change and should be split from this documentation/test
+  contract PR.
+
 ## Current Contract Summary
 
 ### TimeSeriesDict And TimeSeriesList
@@ -55,6 +79,9 @@ contract and tested accordingly.
   `align_timeseries_collection()`. That helper computes a common time grid,
   standardizes time-like axes to seconds/common units, and can resample through
   `TimeSeries.asfreq(..., tolerance=tolerance)`.
+- For mixed sampling steps, `align_timeseries_collection()` selects the
+  coarsest available grid (`max(dt)`) as the target time grid before
+  resampling.
 - This is an alignment contract, not strict equality. Different but overlapping
   axes may succeed after alignment.
 - Mismatch errors exist for empty input, no overlap, incompatible or non-time-like
@@ -75,6 +102,8 @@ contract and tested accordingly.
 - Axis behavior: `FrequencySeriesDict.to_matrix()` checks only
   `len(fs) == n_samp`. It does not compare `fs.frequencies` values or frequency
   units between elements.
+- HIGH RISK: same-length but different frequency coordinates are silently
+  accepted today; this should be prioritized in the next contract PR.
 - The output uses the first series' frequency axis unconditionally.
 - Length mismatch raises a clear `ValueError`; same-length but different
   frequency coordinates or convertible units are silently accepted.
@@ -207,6 +236,8 @@ contract and tested accordingly.
 ## Audit Notes
 
 - This file records source/test inspection and current contract risks only.
-- No runtime code, tests, or public docs behavior changed in this pass.
+- No runtime code behavior changed in this pass.
+- This pass updates public/docs contract coverage and adds focused contract tests
+  in `tests/types/test_to_matrix_family_contracts.py`.
 - Later behavior changes should be split by container family so tests can encode
   the intended contract before broadening guarantees.
