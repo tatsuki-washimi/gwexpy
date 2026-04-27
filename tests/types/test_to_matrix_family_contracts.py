@@ -5,6 +5,7 @@ import pytest
 from astropy import units as u
 
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+from gwexpy.frequencyseries.collections import FrequencySeriesList
 from gwexpy.spectrogram import Spectrogram, SpectrogramDict, SpectrogramList
 from gwexpy.timeseries import TimeSeries
 from gwexpy.timeseries.collections import TimeSeriesDict, TimeSeriesList
@@ -125,6 +126,7 @@ def test_timeseriesdict_to_matrix_tolerance_controls_shifted_grid_matching():
         tolerance=0.02,
     )
 
+    assert strict.value[0, 0].shape == (3,)
     assert np.isnan(strict.value[0, 0]).all()
     assert np.array_equal(tolerant.times.to_value(u.s), [1.01, 2.01, 3.01])
     assert np.array_equal(tolerant.value[0, 0], [2.0, 3.0, 4.0])
@@ -170,6 +172,10 @@ def test_frequencyseriesdict_to_matrix_is_length_only_and_preserves_metadata_rou
     ]
     assert [series.name for series in restored_list] == ["freq-a", "freq-b"]
     assert [series.unit for series in restored_list] == [u.V, u.A]
+
+
+def test_frequencyserieslist_has_no_to_matrix_contract():
+    assert not hasattr(FrequencySeriesList, "to_matrix")
 
 
 def test_spectrogramdict_to_matrix_roundtrip_preserves_row_keys_units_and_channels():
