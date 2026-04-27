@@ -6,13 +6,14 @@
 skill:
   - test-driven-development
   - executing-plans
+  - receiving-code-review
 issue: 286
 branch: codex/wave3-286-correlation-method-contracts
 agent_role: Worker Correlation
 agent_model: Codex session default
 
 commands_executed:
-  - cmd: "rtk sed -n '1,220p' /home/washimi/.codex/RTK.md"
+  - cmd: "rtk sed -n '1,220p' <user-level RTK instruction file>"
     result: "Confirmed shell commands must be prefixed with rtk."
   - cmd: "rtk sed -n '1,240p' .agent/AGENTS.md"
     result: "Reviewed project agent guidance; referenced .agent skill files were absent in this checkout."
@@ -79,6 +80,20 @@ review_follow_ups:
         result: "1 file already formatted"
       - cmd: "rtk git diff --check"
         result: "Clean"
+  - reviewer_finding: "Claude top-level review on PR #311 at ca28ee745 requested minor test annotations, looser fastmi NaN wording, public-safe manifest path wording, precision control-cropping coverage or deferral, and deferred-policy notes."
+    fix_commit: "Claude review follow-up after ca28ee745; final HEAD intentionally not self-recorded in manifest."
+    fix_summary: "Restored the three test return annotations, relaxed fastmi NaN assertions away from a specific internal exception, generalized the user-level RTK instruction path, added precision-method control-cropping coverage, and recorded the no-controls unknown-method fallback as a deferred policy decision."
+    verification:
+      - cmd: "rtk proxy pytest tests/statistics/test_correlation_method_contracts.py -q"
+        result: "14 passed"
+      - cmd: "rtk proxy pytest tests/test_correlation.py tests/timeseries/test_statistics.py tests/statistics/test_correlation_method_contracts.py -q"
+        result: "25 passed, 1 skipped"
+      - cmd: "rtk ruff check tests/statistics/test_correlation_method_contracts.py"
+        result: "No issues found"
+      - cmd: "rtk ruff format --check tests/statistics/test_correlation_method_contracts.py"
+        result: "1 file already formatted"
+      - cmd: "rtk git diff --check"
+        result: "Clean"
 
 files_changed:
   - path: tests/statistics/test_correlation_method_contracts.py
@@ -93,7 +108,7 @@ contracts_covered:
   - "Alias parity for pcc, ktau, fastmi, and distance_correlation with optional dependencies mocked."
   - "Input preparation positional cropping, sample-rate mismatch warning/resampling, scalar-only construction, and no t0 alignment."
   - "Constant Pearson warning/nan behavior and current method-specific NaN behavior."
-  - "Scalar partial_correlation no-controls fallback, residual method, precision method, control cropping, and invalid-method error."
+  - "Scalar partial_correlation no-controls fallback, residual method, precision method, residual/precision control cropping, and invalid-method error."
 
 deferred_follow_ups:
   - "Audit TimeSeriesMatrix.correlation_vector DataFrame, dtype, sorting, label, and optional-dependency contracts."
@@ -101,3 +116,4 @@ deferred_follow_ups:
   - "Decide whether to add Spearman support."
   - "Decide whether timestamp/t0 alignment should replace or supplement positional cropping."
   - "Decide NaN, constant-input, fastmi warning, optional-dependency, and covariance regularization policies."
+  - "Decide whether partial_correlation(method=unknown, controls=None) should continue silently falling back to Pearson."

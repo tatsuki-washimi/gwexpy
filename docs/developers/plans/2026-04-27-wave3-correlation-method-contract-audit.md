@@ -65,8 +65,9 @@ changes can update one contract baseline deliberately.
   statistic. Exception-vs-`nan` policy is deferred to a statistics-policy
   follow-up.
 - Kendall with NaN input currently returns `nan`.
-- fastmi with NaN input currently emits NumPy runtime cast warnings before
-  raising `IndexError` from the grid lookup path.
+- fastmi with NaN input is not handled by gwexpy-side finite filtering. It
+  currently emits NumPy runtime warnings and fails inside the estimator; the
+  exact internal exception type and message are not part of this contract.
 
 ### Scalar Partial Correlation
 
@@ -78,7 +79,9 @@ changes can update one contract baseline deliberately.
 - `method="precision"` stacks `self`, `other`, and controls, computes
   covariance, inverts or pseudo-inverts it, and returns the precision-matrix
   partial correlation.
-- Controls are cropped by position together with `self` and `other`.
+- Controls are cropped by position together with `self` and `other`; the
+  contract covers both residual and precision scalar methods for the narrow
+  finite case in this slice.
 - Unknown partial-correlation methods raise `ValueError` only once controls are
   present.
 
@@ -98,6 +101,8 @@ These are intentionally not included in this docs/test-only slice:
 - fastmi estimator interpretation, NaN handling, warning policy, grid behavior,
   or output scaling.
 - Partial-correlation covariance regularization or invalid-method ordering.
+- Whether `partial_correlation(method=unknown, controls=None)` should keep
+  silently falling back to Pearson or reject the unknown method before fallback.
 
 ## Verification
 

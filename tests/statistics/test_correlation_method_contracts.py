@@ -143,19 +143,23 @@ def test_nan_policy_records_current_method_specific_behavior() -> None:
     else:
         assert np.isnan(pearson)
     assert np.isnan(x.ktau(y))
-    with pytest.warns(RuntimeWarning, match="invalid value encountered in cast"):
-        with pytest.raises(IndexError, match="out of bounds"):
+    with pytest.warns(RuntimeWarning):
+        with pytest.raises(Exception):
             x.fastmi(y, grid_size=16)
 
 
-def test_partial_correlation_no_controls_falls_back_to_pearson_even_for_unknown_method():
+def test_partial_correlation_no_controls_falls_back_to_pearson_even_for_unknown_method() -> (
+    None
+):
     x, y = _linear_pair()
 
     assert x.partial_correlation(y) == pytest.approx(x.pcc(y))
     assert x.partial_correlation(y, method="not-a-method") == pytest.approx(x.pcc(y))
 
 
-def test_partial_correlation_residual_and_precision_methods_match_current_formulae():
+def test_partial_correlation_residual_and_precision_methods_match_current_formulae() -> (
+    None
+):
     control_values = np.arange(8, dtype=float)
     x_values = 2.0 * control_values + np.array(
         [0.0, 1.0, 0.0, -1.0, 0.0, 1.0, 0.0, -1.0]
@@ -193,13 +197,21 @@ def test_partial_correlation_crops_controls_by_position() -> None:
         _residualize(x_values[:6], control_values),
         _residualize(y_values[:6], control_values),
     )[0]
+    data = np.column_stack([x_values[:6], y_values[:6], control_values])
+    precision = np.linalg.inv(np.cov(data, rowvar=False))
+    precision_expected = -precision[0, 1] / np.sqrt(precision[0, 0] * precision[1, 1])
 
     assert x.partial_correlation(
         y, controls=control, method="residual"
     ) == pytest.approx(expected)
+    assert x.partial_correlation(
+        y, controls=control, method="precision"
+    ) == pytest.approx(precision_expected)
 
 
-def test_partial_correlation_unknown_method_errors_only_after_controls_are_present():
+def test_partial_correlation_unknown_method_errors_only_after_controls_are_present() -> (
+    None
+):
     x, y = _linear_pair()
     control = TimeSeries([0.0, 1.0, 0.0, 1.0], dt=1)
 
