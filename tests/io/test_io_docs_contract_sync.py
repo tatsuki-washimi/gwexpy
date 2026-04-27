@@ -85,8 +85,8 @@ def test_docs_mark_frequency_dttxml_as_implementation_only():
     ja = _read(JA_GUIDE)
 
     assert contract["xml.diaggui"]["public_api"]["read"] == ["TimeSeriesDict"]
-    assert "Frequency-domain DTTXML readers are implementation-only" in en
-    assert "周波数領域の DTTXML reader は implementation-only" in ja
+    assert "Frequency-domain DTTXML direct shims and registry adapters are implementation-only" in en
+    assert "周波数領域の DTTXML direct shim と registry adapter は implementation-only" in ja
 
 
 def test_optional_dependency_matrix_matches_contract():

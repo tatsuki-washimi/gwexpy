@@ -612,9 +612,12 @@ def test_current_public_boundary_decisions_are_recorded():
     ]
     assert entries["xml.diaggui"]["required_args"]["read"] == ["products"]
     xml_notes = " ".join(entries["xml.diaggui"]["notes"])
-    assert "FrequencySeries" in xml_notes
-    assert "implementation-only" in xml_notes
-    assert "not part of the public direct-I/O contract" in xml_notes
+    assert (
+        "FrequencySeries and FrequencySeriesDict DTTXML direct shims, and "
+        "FrequencySeriesDict / FrequencySeriesMatrix registry adapters, are "
+        "implementation-only and not part of the public direct-I/O contract."
+        in xml_notes
+    )
     assert _api_classes(entries["nc"], "public_api", "read") == [
         "TimeSeries",
         "TimeSeriesDict",

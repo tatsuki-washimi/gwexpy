@@ -73,8 +73,10 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
   `FrequencySeriesDict` shims may exist for compatibility.
 - Reason: the file is product-driven and `.xml` is ambiguous, so public guidance
   must stay explicit even if the registry can infer the identifier.
-- Frequency-domain DTTXML readers are implementation-only and not part of the
-  public direct-I/O contract.
+- Frequency-domain DTTXML direct shims (`FrequencySeries` /
+  `FrequencySeriesDict`) and registry adapters (`FrequencySeriesDict` /
+  `FrequencySeriesMatrix`) are implementation-only and not part of the public
+  direct-I/O contract.
 
 ### `root`
 
