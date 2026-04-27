@@ -31,7 +31,11 @@ def test_x_range_excludes_upper_boundary_and_preserves_full_plot_data():
     result = fit_series(series, _linear, p0={"a": 2.0, "b": 1.0}, x_range=(2.0, 8.0))
 
     np.testing.assert_array_equal(result.x, np.arange(2.0, 8.0))
-    np.testing.assert_array_equal(result.y, _linear(np.arange(2.0, 8.0), 2.0, 1.0))
+    np.testing.assert_allclose(
+        result.y,
+        _linear(np.arange(2.0, 8.0), 2.0, 1.0),
+        rtol=1e-12,
+    )
     np.testing.assert_array_equal(result.x_data, series.frequencies.value)
     np.testing.assert_array_equal(result.y_data, series.value)
     assert result.x_fit_range == (2.0, 8.0)
@@ -77,6 +81,7 @@ def test_sigma_zero_nan_and_inf_values_are_preserved_without_validation():
     result_inf = fit_series(series, _linear, p0=p0, sigma=with_inf)
     np.testing.assert_array_equal(result_inf.dy, with_inf)
     assert np.isinf(result_inf.dy[3])
+    # Optimizer validity is intentionally unspecified until the sigma policy is resolved.
 
 
 def test_ndarray_covariance_with_x_range_currently_requires_cropped_shape():

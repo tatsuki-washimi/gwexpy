@@ -12,11 +12,11 @@ agent_role: Implementation worker
 agent_model: Codex session default
 
 commands_executed:
-  - cmd: "rtk sed -n '1,220p' /home/washimi/.codex/RTK.md"
+  - cmd: "rtk sed -n '1,220p' <agent-runtime>/RTK.md"
     result: "Confirmed shell commands must be prefixed with rtk."
-  - cmd: "rtk sed -n '1,260p' /tmp/gwexpy-277/.agent/AGENTS.md"
+  - cmd: "rtk sed -n '1,260p' .agent/AGENTS.md"
     result: "Reviewed project agent guidance, physics standards, verification expectations, and audit manifest requirement."
-  - cmd: "rtk sed -n '1,260p' /tmp/gwexpy-277/.agent/skills_index.md"
+  - cmd: "rtk sed -n '1,260p' .agent/skills_index.md"
     result: "Confirmed this checkout has a skills index rather than individual .agent skill directories."
   - cmd: "rtk git status --short --branch"
     result: "Confirmed worktree branch codex/wave3-277-fitting-contracts."
