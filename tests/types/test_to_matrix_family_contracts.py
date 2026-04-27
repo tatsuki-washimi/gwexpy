@@ -12,6 +12,7 @@ from gwexpy.timeseries.collections import TimeSeriesDict, TimeSeriesList
 
 
 def _channel_text(channel) -> str:
+    # channel may be a Channel object; normalize to string for comparisons.
     return str(channel)
 
 
@@ -127,6 +128,7 @@ def test_timeseriesdict_to_matrix_tolerance_controls_shifted_grid_matching():
     )
 
     assert strict.value[0, 0].shape == (3,)
+    # method=None does not interpolate outside the shifted grid, so values stay NaN.
     assert np.isnan(strict.value[0, 0]).all()
     assert np.array_equal(tolerant.times.to_value(u.s), [1.01, 2.01, 3.01])
     assert np.array_equal(tolerant.value[0, 0], [2.0, 3.0, 4.0])

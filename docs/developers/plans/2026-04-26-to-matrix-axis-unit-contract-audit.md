@@ -79,6 +79,9 @@ Current contract decisions for this audit pass:
   `align_timeseries_collection()`. That helper computes a common time grid,
   standardizes time-like axes to seconds/common units, and can resample through
   `TimeSeries.asfreq(..., tolerance=tolerance)`.
+- For mixed sampling steps, `align_timeseries_collection()` selects the
+  coarsest available grid (`max(dt)`) as the target time grid before
+  resampling.
 - This is an alignment contract, not strict equality. Different but overlapping
   axes may succeed after alignment.
 - Mismatch errors exist for empty input, no overlap, incompatible or non-time-like
@@ -99,6 +102,8 @@ Current contract decisions for this audit pass:
 - Axis behavior: `FrequencySeriesDict.to_matrix()` checks only
   `len(fs) == n_samp`. It does not compare `fs.frequencies` values or frequency
   units between elements.
+- HIGH RISK: same-length but different frequency coordinates are silently
+  accepted today; this should be prioritized in the next contract PR.
 - The output uses the first series' frequency axis unconditionally.
 - Length mismatch raises a clear `ValueError`; same-length but different
   frequency coordinates or convertible units are silently accepted.
