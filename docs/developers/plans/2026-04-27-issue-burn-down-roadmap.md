@@ -202,6 +202,26 @@ clear review boundary for physics-sensitive changes.
 - Known numerical limitations are either fixed with tests or recorded as release
   notes / follow-up issues.
 
+#### Wave 3 Batch 1 Completion Report
+
+Status as of 2026-04-27: the first Wave 3 contract-test batch has been
+completed and merged. All PR heads were green in GitHub CI before merge.
+
+| Issue | PR | Merged | Merge commit | Result |
+| --- | --- | --- | --- | --- |
+| #273 | #304 `[AGENT:validation] Add Wave 3 numerical contract baseline` | 2026-04-27 19:45 JST | `cce2b5a` | Added the numerical contract baseline for TimeSeries FFT axes, matrix spectral behavior, normalization, interpolation, and fitting/error-surface defaults. Runtime behavior unchanged. Known non-second transient FFT behavior remains a strict xfail. |
+| #285 | #305 `[AGENT:validation] Add transform axis contract coverage` | 2026-04-27 19:56 JST | `ad31432` | Added the first transform-axis slice for transient FFT, regular-sampling failure behavior, matrix FFT/PSD/ASD, CSD/coherence, and matrix spectrogram contracts. Runtime behavior unchanged. #285 remains open for follow-up transform slices. |
+| #286 | #306 `[AGENT:validation] Add numerical primitive contract coverage` | 2026-04-27 20:07 JST | `6684e85` | Added statistical bound and numerical primitive contracts for correlation/coherence-style values, weighted means, error handling, tolerance behavior, and stable shape/unit expectations. Runtime behavior unchanged. #286 remains open for follow-up slices. |
+
+Net outcome:
+
+- Wave 3 now has a reusable numerical baseline before behavior-changing work.
+- #285 and #286 have initial docs/test-only coverage but remain open because
+  both issues intentionally require smaller follow-up slices.
+- The next #285 slices should cover special transforms, Q-transform,
+  spectrogram cleaning, and field/space transform workflows before the issue is
+  closed.
+
 ### Wave 4: Plot, GUI, And Public Docs Synchronization
 
 **Issues:** #275 -> #283 -> #274
