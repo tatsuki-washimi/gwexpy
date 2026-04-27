@@ -168,25 +168,29 @@ def test_non_gaussian_transient_psd_argument_is_currently_ignored() -> None:
         unit="m2 / Hz",
     )
 
-    np.random.seed(20260428)
-    without_psd = transient_gaussian_noise(
-        duration=2.0,
-        sample_rate=24.0,
-        A1=0.5,
-        psd=None,
-        unit="m",
-        name="transient",
-    )
+    rng_state = np.random.get_state()
+    try:
+        np.random.seed(20260428)
+        without_psd = transient_gaussian_noise(
+            duration=2.0,
+            sample_rate=24.0,
+            A1=0.5,
+            psd=None,
+            unit="m",
+            name="transient",
+        )
 
-    np.random.seed(20260428)
-    with_psd = transient_gaussian_noise(
-        duration=2.0,
-        sample_rate=24.0,
-        A1=0.5,
-        psd=psd,
-        unit="m",
-        name="transient",
-    )
+        np.random.seed(20260428)
+        with_psd = transient_gaussian_noise(
+            duration=2.0,
+            sample_rate=24.0,
+            A1=0.5,
+            psd=psd,
+            unit="m",
+            name="transient",
+        )
+    finally:
+        np.random.set_state(rng_state)
 
     np.testing.assert_allclose(with_psd.value, without_psd.value)
     assert with_psd.unit == without_psd.unit == u.m
