@@ -8,6 +8,18 @@ base_alignment:
   head: f47717b7d9f36fe58b1e9358db436d6f4235e6e3
   main: f47717b7d9f36fe58b1e9358db436d6f4235e6e3
   status: aligned_to_current_main
+  commands_executed:
+    - cmd: "rtk git rev-parse HEAD"
+      result: "f47717b7d9f36fe58b1e9358db436d6f4235e6e3"
+    - cmd: "rtk git rev-parse main"
+      result: "f47717b7d9f36fe58b1e9358db436d6f4235e6e3"
+
+slice_verification:
+  commit: f172c404c0da30a137055a1071af7f5c35cd75bf
+  note: >
+    The command log below records verification after the field/space transform
+    contract slice existed on this branch. Base-alignment commands are recorded
+    separately above to avoid implying tests were run before the slice existed.
 
 scope:
   mode: docs_and_tests_only
@@ -31,9 +43,7 @@ physics_review_reason: >
 
 commands_executed:
   - cmd: "rtk git rev-parse HEAD"
-    result: "f47717b7d9f36fe58b1e9358db436d6f4235e6e3"
-  - cmd: "rtk git rev-parse main"
-    result: "f47717b7d9f36fe58b1e9358db436d6f4235e6e3"
+    result: "f172c404c0da30a137055a1071af7f5c35cd75bf"
   - cmd: "rtk proxy python -c \"... ScalarField public metadata probe ...\""
     result: "Confirmed ScalarField exposes public name, channel, epoch, and unit metadata for this contract snapshot."
   - cmd: "rtk proxy pytest tests/fields/test_space_transform_contracts.py -q"
