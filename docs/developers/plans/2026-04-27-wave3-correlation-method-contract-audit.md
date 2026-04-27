@@ -58,8 +58,12 @@ changes can update one contract baseline deliberately.
 
 - Constant Pearson input returns `nan` and emits SciPy
   `ConstantInputWarning`.
-- Pearson with NaN input currently raises SciPy's
-  `ValueError("array must not contain infs or NaNs")`.
+- Pearson with NaN input is delegated to SciPy without gwexpy-side finite
+  filtering or regularization. The exact SciPy outcome is environment
+  dependent in current supported environments: some versions raise a
+  NaN/non-finite `ValueError`, while others return a non-finite Pearson
+  statistic. Exception-vs-`nan` policy is deferred to a statistics-policy
+  follow-up.
 - Kendall with NaN input currently returns `nan`.
 - fastmi with NaN input currently emits NumPy runtime cast warnings before
   raising `IndexError` from the grid lookup path.

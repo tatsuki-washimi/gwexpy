@@ -65,6 +65,20 @@ review_follow_ups:
         result: "14 passed"
       - cmd: "rtk git diff --check"
         result: "Clean"
+  - reviewer_finding: "CI SciPy returned a non-finite Pearson result for NaN input instead of raising the local SciPy ValueError, so the Pearson NaN contract was over-specified."
+    fix_commit: "CI follow-up in this branch; final HEAD intentionally not self-recorded in manifest."
+    fix_summary: "Changed the Pearson NaN assertion to record gwexpy delegation without finite filtering and accept either SciPy NaN/non-finite ValueError wording or a non-finite Pearson result."
+    verification:
+      - cmd: "rtk proxy pytest tests/statistics/test_correlation_method_contracts.py -q"
+        result: "14 passed"
+      - cmd: "rtk proxy pytest tests/test_correlation.py tests/timeseries/test_statistics.py tests/statistics/test_correlation_method_contracts.py -q"
+        result: "25 passed, 1 skipped"
+      - cmd: "rtk ruff check tests/statistics/test_correlation_method_contracts.py"
+        result: "No issues found"
+      - cmd: "rtk ruff format --check tests/statistics/test_correlation_method_contracts.py"
+        result: "1 file already formatted"
+      - cmd: "rtk git diff --check"
+        result: "Clean"
 
 files_changed:
   - path: tests/statistics/test_correlation_method_contracts.py

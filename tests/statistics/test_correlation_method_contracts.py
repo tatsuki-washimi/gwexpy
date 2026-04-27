@@ -133,8 +133,15 @@ def test_nan_policy_records_current_method_specific_behavior() -> None:
     x = TimeSeries([1.0, np.nan, 3.0, 4.0], dt=1)
     y = TimeSeries([1.0, 2.0, 3.0, 4.0], dt=1)
 
-    with pytest.raises(ValueError, match="array must not contain infs or NaNs"):
-        x.pcc(y)
+    try:
+        pearson = x.pcc(y)
+    except ValueError as exc:
+        assert any(
+            token in str(exc).lower()
+            for token in ("nan", "non-finite", "nonfinite", "inf")
+        )
+    else:
+        assert np.isnan(pearson)
     assert np.isnan(x.ktau(y))
     with pytest.warns(RuntimeWarning, match="invalid value encountered in cast"):
         with pytest.raises(IndexError, match="out of bounds"):
