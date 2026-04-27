@@ -46,12 +46,13 @@ def test_mic_dispatch_uses_minepy_when_mocked(monkeypatch: pytest.MonkeyPatch) -
             return 0.82
 
     monkeypatch.setitem(sys.modules, "minepy", SimpleNamespace(MINE=FakeMINE))
-    x, y = _linear_pair()
+    x, _ = _linear_pair()
+    y = TimeSeries([2.0, 4.0, 6.0, 8.0, -100.0, -200.0], dt=1)
 
     assert x.correlation(y, method="mic", alpha=0.7, c=9, est="mic_e") == 0.82
     assert calls["init"] == {"alpha": 0.7, "c": 9, "est": "mic_e"}
     np.testing.assert_array_equal(calls["score"][0], x.value)
-    np.testing.assert_array_equal(calls["score"][1], y.value)
+    np.testing.assert_array_equal(calls["score"][1], y.value[: len(x)])
 
 
 def test_distance_dispatch_and_alias_use_dcor_when_mocked(
@@ -68,13 +69,15 @@ def test_distance_dispatch_and_alias_use_dcor_when_mocked(
         "dcor",
         SimpleNamespace(distance_correlation=fake_distance_correlation),
     )
-    x, y = _linear_pair()
+    x, _ = _linear_pair()
+    y = TimeSeries([2.0, 4.0, 6.0, 8.0, -100.0, -200.0], dt=1)
 
     assert x.correlation(y, method="distance") == 0.75
     assert x.distance_correlation(y) == 0.75
     assert len(calls) == 2
-    np.testing.assert_array_equal(calls[0][0], x.value)
-    np.testing.assert_array_equal(calls[0][1], y.value)
+    for call_x, call_y in calls:
+        np.testing.assert_array_equal(call_x, x.value)
+        np.testing.assert_array_equal(call_y, y.value[: len(x)])
 
 
 def test_aliases_match_their_correlation_methods() -> None:
