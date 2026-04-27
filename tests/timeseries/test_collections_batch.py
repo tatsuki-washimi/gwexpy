@@ -38,13 +38,17 @@ def test_timeserieslist_value_at_returns_list():
     assert res[1].to_value(u.m) == pytest.approx(5.0)
 
 
-def test_timeseriesdict_to_matrix_shape():
-    ts1 = _make_series([0, 1, 2, 3, 4])
-    ts2 = _make_series([10, 11, 12, 13, 14])
-    td = TimeSeriesDict({"a": ts1, "b": ts2})
+def test_timeseriesdict_to_matrix_shape_and_key_order_contract():
+    ts1 = _make_series([0, 1, 2, 3, 4], unit=u.m)
+    ts2 = _make_series([10, 11, 12, 13, 14], unit=u.s)
+    td = TimeSeriesDict({"beta": ts1, "alpha": ts2})
 
     mat = td.to_matrix()
     assert mat.shape == (2, 1, 5)
+    assert list(mat.channel_names) == ["beta", "alpha"]
+    assert mat.row_keys() == ("row0", "row1")
+    assert mat.col_keys() == ("col0",)
+    assert all(unit == u.dimensionless_unscaled for unit in mat.units.ravel())
 
 
 # --- TimeSeriesDict: statistical methods via to_matrix ---
@@ -99,6 +103,8 @@ def test_timeseriesdict_crop():
     td = TimeSeriesDict({"a": ts1, "b": ts2})
 
     cropped = td.crop(start=2, end=7)
+    assert cropped is not td
+    assert list(cropped) == ["a", "b"]
     assert cropped["a"].shape[0] == 5
     assert cropped["b"].shape[0] == 5
 
@@ -150,12 +156,14 @@ def test_timeseriesdict_resample_signal():
 # --- TimeSeriesList: to_matrix ---
 
 def test_timeserieslist_to_matrix_shape():
-    tl = TimeSeriesList([
-        _make_series([1.0, 2.0, 3.0]),
-        _make_series([4.0, 5.0, 6.0]),
-    ])
+    ts1 = _make_series([1.0, 2.0, 3.0])
+    ts2 = _make_series([4.0, 5.0, 6.0])
+    ts1.name = "first"
+    ts2.name = "second"
+    tl = TimeSeriesList([ts1, ts2])
     mat = tl.to_matrix()
     assert mat.shape == (2, 1, 3)
+    assert list(mat.channel_names) == ["first", "second"]
 
 
 # --- TimeSeriesList: crop ---
@@ -166,6 +174,7 @@ def test_timeserieslist_crop():
         _make_series(np.arange(10.0) * 2, t0=0, dt=1),
     ])
     cropped = tl.crop(start=3, end=7)
+    assert cropped is not tl
     assert cropped[0].shape[0] == 4
     assert cropped[1].shape[0] == 4
 

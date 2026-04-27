@@ -58,6 +58,32 @@ def test_frequencyseriesdict_crop_maps_to_elements_and_returns_dict():
         d.crop(0, 1, unexpected=True)
 
 
+def test_frequencyseriesdict_to_matrix_preserves_key_order_and_metadata():
+    fs1 = FrequencySeries(
+        [1, 2, 3],
+        frequencies=[10, 20, 30] * u.Hz,
+        unit=u.m,
+        name="n1",
+    )
+    fs2 = FrequencySeries(
+        [4, 5, 6],
+        frequencies=[1, 2, 3] * u.kHz,
+        unit=u.s,
+        name="n2",
+    )
+    d = FrequencySeriesDict({"zeta": fs1, "alpha": fs2})
+
+    matrix = d.to_matrix()
+
+    assert matrix.shape == (2, 1, 3)
+    assert matrix.row_keys() == ("zeta", "alpha")
+    assert matrix.col_keys() == ("value",)
+    assert list(matrix.channel_names) == ["n1", "n2"]
+    assert matrix.units[0, 0] == u.m
+    assert matrix.units[1, 0] == u.s
+    assert np.array_equal(matrix.frequencies.value, fs1.frequencies.value)
+
+
 def test_frequencyseriesdict_plot_separate_axes_count_matches():
     d = FrequencySeriesDict(
         {"a": _make_frequencyseries(), "b": _make_frequencyseries(2.0)}
@@ -81,6 +107,26 @@ def test_frequencyserieslist_slice_returns_same_type():
     sliced = fsl[:1]
     assert isinstance(sliced, FrequencySeriesList)
     assert len(sliced) == 1
+
+
+def test_frequencyserieslist_crop_preserves_list_order_and_container_type():
+    fsl = FrequencySeriesList(
+        _make_frequencyseries(name="first"),
+        _make_frequencyseries(2.0, name="second"),
+    )
+
+    cropped = fsl.crop(2, 5)
+
+    assert isinstance(cropped, FrequencySeriesList)
+    assert cropped is not fsl
+    assert [item.name for item in cropped] == ["first", "second"]
+    assert [len(item) for item in cropped] == [3, 3]
+
+
+def test_frequencyserieslist_has_no_to_matrix_contract():
+    fsl = FrequencySeriesList(_make_frequencyseries())
+
+    assert not hasattr(fsl, "to_matrix")
 
 
 def test_frequencyserieslist_copy_deepcopy_value_not_shared():
