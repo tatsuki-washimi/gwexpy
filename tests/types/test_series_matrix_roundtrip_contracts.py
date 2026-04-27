@@ -146,6 +146,19 @@ def test_pickle_roundtrip_preserves_matrix_metadata_contract(matrix_cls):
 
 
 @pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
+def test_setstate_backward_compat_without_metadata_dict(matrix_cls):
+    matrix = _make_matrix(matrix_cls)
+    reconstruct, args, state = matrix.__reduce__()
+    old_state = state[:-1]
+
+    restored = reconstruct(*args)
+    restored.__setstate__(old_state)
+
+    assert isinstance(restored, matrix_cls)
+    np.testing.assert_array_equal(restored.view(np.ndarray), matrix.view(np.ndarray))
+
+
+@pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
 def test_hdf5_roundtrip_preserves_matrix_metadata_contract(tmp_path, matrix_cls):
     pytest.importorskip("h5py")
     matrix = _make_matrix(matrix_cls)
