@@ -177,6 +177,26 @@ foundation contracts are stable.
 - Field, table, histogram, segment, detector, and time APIs do not rely on
   implicit or undocumented passthrough behavior for public contracts.
 
+#### Wave 2 Batch 1 Completion Report
+
+Status as of 2026-04-27: the first Wave 2 public-surface batch has been
+completed and merged. The PR head was green in GitHub CI before merge and was
+reviewed for contract wording before merge.
+
+| Issue | PR | Merged | Merge commit | Result |
+| --- | --- | --- | --- | --- |
+| #272 | #302 `[AGENT:docs] Finish I/O interop follow-ups` | 2026-04-27 18:58 JST | `122ad2f` | Updated audio metadata install guidance to the published `gwexpy[audio]` / `gwexpy[all]` paths, clarified that `gwexpy[all]` does not install every public interop backend, and recorded the `xml.diaggui` / DTTXML boundary. Public DTTXML direct I/O remains `TimeSeriesDict.read(..., format="xml.diaggui", products=...)`; frequency-domain DTTXML direct shims and registry adapters are implementation-only. The WAV metadata contract now matches the existing warning-and-skip behavior when `tinytag` is missing. |
+
+Net outcome:
+
+- #272 is closed through PR #302.
+- I/O residual documentation, install guidance, and public contract JSON now
+  agree with current implementation behavior.
+- `gwexpy[all]` is documented as a convenience bundle for declared extras, not
+  as an exhaustive installer for every public interop backend.
+- Wave 2 still needs the remaining public-surface audits: #279, #280, #281,
+  #276, #290, and #287.
+
 ### Wave 3: Numerical And Analysis Contracts
 
 **Issues:** #273 -> #285 / #286 -> #277 / #278 / #284 / #288 / #282
