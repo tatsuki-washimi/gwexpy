@@ -24,6 +24,18 @@ If you want the migration entry point first, go back to the [Migration Guide for
 | Conversion method | `FrequencySeriesDict.to_matrix()` -> `FrequencySeriesMatrix` | Stable | turns collections of frequency-series objects into a container suited for pairwise and batch analysis | [FrequencySeriesDict](../reference/FrequencySeriesDict.md), [FrequencySeriesMatrix](../reference/FrequencySeriesMatrix.md) |
 | Conversion method | `SpectrogramDict.to_matrix()` / `SpectrogramList.to_matrix()` -> `SpectrogramMatrix` | Stable | lets time-frequency collections move into a matrix-style container for downstream processing | [SpectrogramDict](../reference/SpectrogramDict.md), [SpectrogramList](../reference/SpectrogramList.md), [SpectrogramMatrix](../reference/SpectrogramMatrix.md) |
 
+#### Family-specific `to_matrix()` contract (current stable behavior)
+
+`to_matrix()` is intentionally family-specific today. Use this table as the
+public contract for what conversion checks and metadata guarantees are applied.
+
+| Family | Collection entry points | Axis policy | Resampling / tolerance | Unit policy | Label / round-trip notes |
+| --- | --- | --- | --- | --- | --- |
+| `TimeSeries` | `TimeSeriesDict.to_matrix()` and `TimeSeriesList.to_matrix()` | Aligns onto a common time grid through `align_timeseries_collection()`; exact axis equality is not required when alignment succeeds. | `align="intersection"` default; forwards alignment kwargs (including `method` and `tolerance`) to the alignment helper. | Source `TimeSeries.unit` is not carried into per-cell matrix metadata by this conversion path; reconstructed elements are dimensionless unless metadata is set separately. | Dict keys are written into element names; generated row keys (`row0`, `row1`, ...) are used for round-trip dict keys. |
+| `FrequencySeries` | `FrequencySeriesDict.to_matrix()` | Checks sample length equality only; frequency coordinate values are taken from the first element. | No resampling and no tolerance parameter. | Per-element `unit` / `name` / `channel` are preserved in matrix metadata and restored by round trip. | Dict keys are preserved as row keys; single output column is `value`. |
+| `Spectrogram` | `SpectrogramDict.to_matrix()` and `SpectrogramList.to_matrix()` | Requires equal shape plus equal time/frequency axes after conversion to the first axis unit. | No resampling and no tolerance parameter; comparisons are exact after unit conversion. | Per-element `unit` / `name` / `channel` are preserved; global matrix unit is set only when all elements share the same unit. | Dict keys are preserved as row keys; list rows are generated (`batch0`, `batch1`, ...). |
+| Fields | No SeriesMatrix `to_matrix()` collection API | Uses `FieldList` / `FieldDict` validation rules instead of SeriesMatrix conversion. | Field validation has its own axis tolerance checks. | Units stay on field objects; `to_array()` returns raw arrays. | Not a SeriesMatrix round-trip path. |
+
 ### Added Methods
 
 | API Kind | Representative API | Stability | What it adds relative to GWpy | Details |
