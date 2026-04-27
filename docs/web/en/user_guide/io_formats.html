@@ -402,7 +402,7 @@ on optional packages or optional metadata helpers.</p>
 <tr class="row-even"><td><p><strong>WAV metadata</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">tinytag</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">audio</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">extract_metadata=True)</span></code> raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code>; basic WAV read/write remains available.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">extract_metadata=True)</span></code> warns and skips metadata when <code class="docutils literal notranslate"><span class="pre">tinytag</span></code> is missing; install with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[audio]'</span></code> or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[all]&quot;</span></code>. Basic WAV read/write remains available.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>MP3 / FLAC / OGG / M4A</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">pydub</span></code>, <code class="docutils literal notranslate"><span class="pre">tinytag</span></code></p></td>
@@ -511,7 +511,8 @@ If you are unsure, start with <strong>HDF5</strong>. Use <strong>GWF</strong> wh
 </div>
 <ul class="simple">
 <li><p><strong>HDF5</strong> is the safest general recommendation for structured GW data.</p></li>
-<li><p><strong>DTTXML</strong> changes behavior depending on <code class="docutils literal notranslate"><span class="pre">products</span></code>. For complex transfer functions, prefer <code class="docutils literal notranslate"><span class="pre">native=True</span></code> on the frequency-domain side.</p></li>
+<li><p><strong>DTTXML</strong> changes behavior depending on <code class="docutils literal notranslate"><span class="pre">products</span></code>. Keep public direct reads on <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;xml.diaggui&quot;,</span> <span class="pre">products=...)</span></code>.</p></li>
+<li><p>Frequency-domain DTTXML direct shims and registry adapters are implementation-only, not part of the public direct-I/O contract. Advanced internal users handling complex transfer functions can prefer <code class="docutils literal notranslate"><span class="pre">native=True</span></code> there.</p></li>
 <li><p><strong>NDS2 / GWOSC</strong> are shown inside group A, but explicitly marked as <code class="docutils literal notranslate"><span class="pre">network</span> <span class="pre">path</span></code> rather than file formats.</p></li>
 </ul>
 <p><a id="io-formats-en-b"></a></p>
@@ -885,7 +886,7 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-27 08:09:14.
+      <span class="lastupdated">Last updated on 2026-04-27 10:20:10.
       </span></p>
   </div>
 

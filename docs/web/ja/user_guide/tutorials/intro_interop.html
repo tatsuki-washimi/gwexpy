@@ -197,6 +197,7 @@
 <h1>相互運用: 基本<a class="headerlink" href="#相互運用:-基本" title="Link to this heading"></a></h1>
 <p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_interop.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された新しい相互運用機能 (Interoperability Features) を紹介します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、Pandas, Xarray, PyTorch, Astropy などの一般的なデータサイエンス・ライブラリとの間で、シームレスにデータを変換することができます。</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy[all]</span></code> はチュートリアル環境で使う宣言済み extra をまとめて導入しますが、すべての public interop backend を導入するものではありません。ROOT, torch, TensorFlow, JAX, PyCBC, Finesse などの個別 backend は、その bridge を使うときに直接導入してください。</p>
 <section id="目次">
 <h2>目次<a class="headerlink" href="#目次" title="Link to this heading"></a></h2>
 <ul>
@@ -2050,7 +2051,7 @@ cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#3
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-27 08:09:14.
+      <span class="lastupdated">Last updated on 2026-04-27 10:20:10.
       </span></p>
   </div>
 

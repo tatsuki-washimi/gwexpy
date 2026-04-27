@@ -319,6 +319,10 @@
 </tr>
 </tbody>
 </table>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy[all]</span></code> は GWexpy が宣言している extra をまとめて導入するための
+convenience bundle です。すべての public interop backend を導入するもの
+ではありません。個別 package install の行にある backend は、bridge が直接
+import する場合や受け渡す source object を作る場合に、個別に導入してください。</p>
 <p>xarray 系の interop bridge は、GWexpy が独立した <code class="docutils literal notranslate"><span class="pre">xarray</span></code> extra を公開していないため <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> extra を案内します。メモリ上の xarray 変換だけが必要で <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code> を入れたくない場合は、<code class="docutils literal notranslate"><span class="pre">xarray</span></code> を個別に導入してください。</p>
 </section>
 <section id="a">
@@ -787,7 +791,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-27 08:09:14.
+      <span class="lastupdated">Last updated on 2026-04-27 10:20:10.
       </span></p>
   </div>
 
