@@ -84,20 +84,20 @@ def _assert_metadata_contract(restored: SeriesMatrix, expected: SeriesMatrix) ->
 
     assert list(restored.rows.keys()) == list(expected.rows.keys())
     assert list(restored.cols.keys()) == list(expected.cols.keys())
-    assert restored.rows["rowA"].name == "row_a"
-    assert restored.rows["rowA"].unit == u.m
-    assert str(restored.rows["rowA"].channel) == "H1:ROW_A"
-    assert restored.cols["colY"].name == "col_y"
-    assert restored.cols["colY"].unit == u.kg
-    assert str(restored.cols["colY"].channel) == "L1:COL_Y"
+    assert restored.rows["rowA"].name == expected.rows["rowA"].name
+    assert restored.rows["rowA"].unit == expected.rows["rowA"].unit
+    assert str(restored.rows["rowA"].channel) == str(expected.rows["rowA"].channel)
+    assert restored.cols["colY"].name == expected.cols["colY"].name
+    assert restored.cols["colY"].unit == expected.cols["colY"].unit
+    assert str(restored.cols["colY"].channel) == str(expected.cols["colY"].channel)
 
     assert restored.meta.shape == expected.meta.shape
-    assert restored.meta[0, 0].name == "elem_r0c0"
-    assert restored.meta[0, 0].unit == u.m
-    assert str(restored.meta[0, 0].channel) == "H1:E00"
-    assert restored.meta[1, 1].name == "elem_r1c1"
-    assert restored.meta[1, 1].unit == u.kg
-    assert str(restored.meta[1, 1].channel) == "L1:E11"
+    assert restored.meta[0, 0].name == expected.meta[0, 0].name
+    assert restored.meta[0, 0].unit == expected.meta[0, 0].unit
+    assert str(restored.meta[0, 0].channel) == str(expected.meta[0, 0].channel)
+    assert restored.meta[1, 1].name == expected.meta[1, 1].name
+    assert restored.meta[1, 1].unit == expected.meta[1, 1].unit
+    assert str(restored.meta[1, 1].channel) == str(expected.meta[1, 1].channel)
 
 
 def _xindex_values(matrix: SeriesMatrix) -> np.ndarray:
@@ -156,6 +156,27 @@ def test_setstate_backward_compat_without_metadata_dict(matrix_cls):
 
     assert isinstance(restored, matrix_cls)
     np.testing.assert_array_equal(restored.view(np.ndarray), matrix.view(np.ndarray))
+    assert restored.xindex is None
+    assert not hasattr(restored, "meta")
+    assert not hasattr(restored, "rows")
+    assert not hasattr(restored, "cols")
+    assert not hasattr(restored, "name")
+    assert not hasattr(restored, "epoch")
+    assert not hasattr(restored, "attrs")
+
+
+def test_pickle_ignores_runtime_gwex_attributes_not_in_metadata_contract():
+    matrix = _make_matrix(SeriesMatrix)
+
+    def callback() -> None:
+        return None
+
+    matrix._gwex_runtime_callback = callback
+
+    restored = pickle.loads(pickle.dumps(matrix))
+
+    _assert_metadata_contract(restored, matrix)
+    assert not hasattr(restored, "_gwex_runtime_callback")
 
 
 @pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)

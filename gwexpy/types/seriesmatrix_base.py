@@ -37,6 +37,16 @@ from .seriesmatrix_validation import (
 
 logger = logging.getLogger(__name__)
 
+_SERIESMATRIX_PICKLE_METADATA_FIELDS = (
+    "_xindex",
+    "meta",
+    "rows",
+    "cols",
+    "name",
+    "epoch",
+    "attrs",
+)
+
 _ADD_SUB_COMPARISON_UFUNCS = {
     np.add,
     np.subtract,
@@ -285,8 +295,13 @@ class SeriesMatrix(  # type: ignore[misc]
     def __reduce__(self) -> tuple[Any, ...]:
         """Include SeriesMatrix metadata in ndarray-subclass pickle state."""
         picked = list(super().__reduce__())
-        matrix_state = {k: v for k, v in self.__dict__.items() if k != "_value"}
-        picked[2] = picked[2] + (matrix_state,)
+        matrix_state = {
+            key: value
+            for key, value in self.__dict__.items()
+            if key in _SERIESMATRIX_PICKLE_METADATA_FIELDS
+        }
+        base_state = picked[2] if isinstance(picked[2], tuple) else ()
+        picked[2] = base_state + (matrix_state,)
         return tuple(picked)
 
     def __setstate__(self, state: tuple[Any, ...]) -> None:
