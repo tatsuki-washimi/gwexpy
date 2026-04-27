@@ -14,6 +14,15 @@ from gwexpy.types import MetaData, MetaDataDict, MetaDataMatrix, SeriesMatrix
 MATRIX_CLASSES = (SeriesMatrix, TimeSeriesMatrix, FrequencySeriesMatrix)
 
 
+class Protocol5Only:
+    """Pickle helper that cannot be serialized below protocol 5."""
+
+    def __reduce_ex__(self, protocol):
+        if protocol < 5:
+            raise TypeError("Protocol5Only requires pickle protocol 5")
+        return (Protocol5Only, ())
+
+
 def _metadata_matrix() -> MetaDataMatrix:
     return MetaDataMatrix(
         [
@@ -143,6 +152,40 @@ def test_pickle_roundtrip_preserves_matrix_metadata_contract(matrix_cls):
 
     assert isinstance(restored, matrix_cls)
     _assert_metadata_contract(restored, matrix)
+
+
+@pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
+def test_pickle_roundtrip_filters_non_picklable_attrs_entries(matrix_cls):
+    matrix = _make_matrix(matrix_cls)
+
+    def callback() -> None:
+        return None
+
+    matrix.attrs["runtime_callback"] = callback
+    matrix.attrs["nested"] = {"labels": ["H1", "L1"], "active": True}
+    expected = matrix.copy()
+    del expected.attrs["runtime_callback"]
+
+    restored = pickle.loads(pickle.dumps(matrix))
+
+    assert matrix.attrs["runtime_callback"] is callback
+    assert isinstance(restored, matrix_cls)
+    _assert_metadata_contract(restored, expected)
+    assert "runtime_callback" not in restored.attrs
+    assert restored.attrs["nested"] == {"labels": ["H1", "L1"], "active": True}
+
+
+@pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
+def test_default_pickle_filters_attrs_unsafe_for_default_protocol(matrix_cls):
+    matrix = _make_matrix(matrix_cls)
+    matrix.attrs["default_protocol_unsafe"] = Protocol5Only()
+    matrix.attrs["default_protocol_safe"] = "kept"
+
+    restored = pickle.loads(pickle.dumps(matrix))
+
+    assert "default_protocol_unsafe" in matrix.attrs
+    assert "default_protocol_unsafe" not in restored.attrs
+    assert restored.attrs["default_protocol_safe"] == "kept"
 
 
 @pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
