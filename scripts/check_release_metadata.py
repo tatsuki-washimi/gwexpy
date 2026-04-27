@@ -14,14 +14,34 @@ def get_version_from_py():
     match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', content)
     return match.group(1) if match else None
 
+
 def get_version_from_cff():
     cff_file = Path("CITATION.cff")
     if not cff_file.exists():
         print(f"Warning: {cff_file} not found")
         return None
-    content = cff_file.read_text()
-    match = re.search(r'^version:\s*["\']?([^"\']+)["\']?', content, re.MULTILINE)
-    return match.group(1) if match else None
+    for line in cff_file.read_text().splitlines():
+        if not line.startswith("version:"):
+            continue
+        value = line.partition(":")[2].strip()
+        if value.startswith(("'", '"')):
+            quote = value[0]
+            end = value.find(quote, 1)
+            if end != -1:
+                parsed = value[1:end].strip()
+                if not parsed:
+                    print("Error: Malformed CITATION.cff version: empty value")
+                    return ""
+                return parsed
+            print("Error: Malformed CITATION.cff version: unterminated quote")
+            return ""
+        parsed = value.split("#", 1)[0].strip()
+        if not parsed:
+            print("Error: Malformed CITATION.cff version: empty value")
+            return ""
+        return parsed
+    return None
+
 
 def get_version_from_zenodo():
     zenodo_file = Path(".zenodo.json")
@@ -35,6 +55,7 @@ def get_version_from_zenodo():
         print(f"Error parsing .zenodo.json: {e}")
         return None
 
+
 def check_changelog(version):
     changelog_file = Path("CHANGELOG.md")
     if not changelog_file.exists():
@@ -42,11 +63,12 @@ def check_changelog(version):
         return True
     content = changelog_file.read_text()
     # Look for [X.Y.Z] or ## [X.Y.Z]
-    pattern = rf'\[{re.escape(version)}\]'
+    pattern = rf"\[{re.escape(version)}\]"
     if re.search(pattern, content):
         return True
     print(f"Error: Version {version} not found in CHANGELOG.md")
     return False
+
 
 def main():
     py_version = get_version_from_py()
@@ -61,14 +83,18 @@ def main():
 
     errors = 0
 
-    if cff_version and cff_version != py_version:
+    if cff_version is not None and cff_version != py_version:
         print(f"Error: Version mismatch in CITATION.cff: {cff_version} != {py_version}")
         errors += 1
-    else:
+    elif cff_version == py_version:
         print("OK: CITATION.cff version matches.")
+    else:
+        print("Warning: CITATION.cff version not checked.")
 
     if zenodo_version and zenodo_version != py_version:
-        print(f"Error: Version mismatch in .zenodo.json: {zenodo_version} != {py_version}")
+        print(
+            f"Error: Version mismatch in .zenodo.json: {zenodo_version} != {py_version}"
+        )
         errors += 1
     else:
         print("OK: .zenodo.json version matches.")
@@ -83,6 +109,7 @@ def main():
         sys.exit(1)
 
     print("\nMetadata consistency check passed!")
+
 
 if __name__ == "__main__":
     main()
