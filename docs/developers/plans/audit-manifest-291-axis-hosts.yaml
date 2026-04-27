@@ -1,0 +1,63 @@
+issue: 291
+branch: codex/wave4-291-axis-host-contracts
+date: 2026-04-28
+agent: Codex
+skills:
+  - pytest-tdd
+  - superpowers:test-driven-development
+  - superpowers:verification-before-completion
+scope:
+  summary: "Record low-level axis host return-class contracts and public/internal helper boundaries."
+  runtime_code_changed: false
+  physics_behavior_changed: false
+  metadata_behavior_changed: false
+commands:
+  - cmd: "rtk gh issue view 291 --json number,title,body,comments,labels,url"
+    result: "Reviewed issue scope and prior #295 partial audit context."
+  - cmd: "rtk sed -n '1,240p' docs/developers/plans/2026-04-27-types-foundation-contract-audit.md"
+    result: "Reviewed existing #291 foundation audit and recommended next PRs."
+  - cmd: "rtk sed -n '1,260p' tests/types/test_types_foundation_contracts.py"
+    result: "Reviewed merged #295 regression coverage to avoid duplicate tests."
+  - cmd: "rtk sed -n '1,260p' gwexpy/types/axis_api.py"
+    result: "Reviewed shared axis API delegation semantics."
+  - cmd: "rtk sed -n '1,260p' gwexpy/types/array.py"
+    result: "Reviewed generic Array axis-name behavior."
+  - cmd: "rtk sed -n '1,280p' gwexpy/types/array2d.py"
+    result: "Reviewed Array2D xindex/yindex axis host behavior."
+  - cmd: "rtk sed -n '1,280p' gwexpy/types/plane2d.py"
+    result: "Reviewed Plane2D semantic axis aliases and swap behavior."
+  - cmd: "rtk sed -n '1,560p' gwexpy/types/array3d.py"
+    result: "Reviewed Array3D pure-slice, Plane2D extraction, and dimension-dropping behavior."
+  - cmd: "rtk sed -n '1,320p' gwexpy/types/array4d.py"
+    result: "Reviewed Array4D pure-slice and dimension-dropping behavior."
+changed_files:
+  - path: docs/developers/plans/2026-04-28-types-axis-host-contracts.md
+    change: "Added public axis host matrix, shared AxisApiMixin contract, internal helper boundary, and follow-up candidates."
+  - path: tests/types/test_axis_host_contract_docs.py
+    change: "Added docs drift guards for public axis host rows and internal helper boundary rows."
+  - path: docs/developers/plans/audit-manifest-291-axis-hosts.yaml
+    change: "Recorded scope, commands, validation, and deferred runtime decisions."
+validation:
+  red:
+    - cmd: "rtk pytest -q tests/types/test_axis_host_contract_docs.py -p no:cacheprovider"
+      result: "0 passed, 2 failed before the contract document existed."
+  completed:
+    - cmd: "rtk pytest -q tests/types/test_axis_host_contract_docs.py -p no:cacheprovider"
+      result: "2 passed"
+    - cmd: "rtk ruff check tests/types/test_axis_host_contract_docs.py"
+      result: "clean after import-order fix"
+    - cmd: "rtk ruff format --check tests/types/test_axis_host_contract_docs.py"
+      result: "already formatted after ruff format"
+    - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/audit-manifest-291-axis-hosts.yaml').read_text())\""
+      result: "parsed successfully"
+    - cmd: "rtk rg -n \"[ \\t]$\" <changed-files>"
+      result: "no trailing-whitespace matches"
+    - cmd: "rtk rg -n \"<local-absolute-path-patterns>\" <changed-files>"
+      result: "no local absolute path matches"
+human_review:
+  required: false
+  reason: "Docs/test-only contract inventory; no runtime, physics, statistical, or metadata behavior changed."
+deferred:
+  - "Decide whether Array4D dimension-dropping should return Array3D/Plane2D in a separate runtime behavior PR."
+  - "Decide whether AxisApiMixin.sel(method=...) should reject unsupported methods or implement exact/tolerance semantics."
+  - "Add downstream TimeSeries/FrequencySeries/Spectrogram smoke tests only after low-level axis host contracts are accepted."
