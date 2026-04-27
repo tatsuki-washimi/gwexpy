@@ -147,6 +147,25 @@ class TestMatMul:
         with pytest.raises(ValueError, match="Sample axis length mismatch"):
             square_matrix_2x2 @ other
 
+    def test_matmul_xindex_mismatch_raises(self, square_matrix_2x2):
+        """Same sample length is not enough; sample-axis coordinates must match."""
+        other = SeriesMatrix(np.random.randn(2, 2, 10), xindex=np.linspace(1, 10, 10))
+        with pytest.raises(ValueError, match="xindex mismatch"):
+            square_matrix_2x2 @ other
+
+    def test_matmul_accepts_xindex_equal_after_unit_conversion(self):
+        """Equivalent sample-axis coordinates with different units are compatible."""
+        left = SeriesMatrix(np.ones((2, 2, 3)), xindex=np.array([0.0, 1.0, 2.0]) * u.s)
+        right = SeriesMatrix(
+            np.ones((2, 2, 3)),
+            xindex=np.array([0.0, 1000.0, 2000.0]) * u.ms,
+        )
+
+        result = left @ right
+
+        np.testing.assert_array_equal(result.xindex.to_value(u.s), [0.0, 1.0, 2.0])
+        np.testing.assert_array_equal(result._value, np.full((2, 2, 3), 2.0))
+
 
 class TestDeterminant:
     """Tests for det() method."""

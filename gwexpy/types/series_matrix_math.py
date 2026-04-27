@@ -104,6 +104,26 @@ class SeriesMatrixMathMixin:
             inv_stack[idx] = cls._invert_with_rescale(mat)
         return inv_stack
 
+    @staticmethod
+    def _xindex_equal(left: Any, right: Any) -> bool:
+        """Return True when two sample axes represent the same coordinates."""
+        if left is None or right is None:
+            return left is right
+
+        base_unit = getattr(left, "unit", None)
+        if base_unit is None:
+            base_unit = getattr(right, "unit", None)
+
+        def _axis_values(axis: Any) -> Any:
+            if base_unit is not None and hasattr(axis, "to_value"):
+                return axis.to_value(base_unit)
+            return np.asarray(axis)
+
+        try:
+            return bool(np.array_equal(_axis_values(left), _axis_values(right)))
+        except (u.UnitConversionError, TypeError, ValueError, AttributeError):
+            return False
+
     def __matmul__(self, other):
         """Perform matrix multiplication while broadcasting over the sample axis."""
         if not isinstance(other, type(self)):
@@ -112,6 +132,8 @@ class SeriesMatrixMathMixin:
 
         if self._value.shape[2] != other._value.shape[2]:
             raise ValueError("Sample axis length mismatch in matrix multiplication")
+        if not self._xindex_equal(self.xindex, other.xindex):
+            raise ValueError("xindex mismatch in matrix multiplication")
         if self._value.shape[1] != other._value.shape[0]:
             raise ValueError(
                 f"Matrix dimension mismatch: ({self._value.shape[0]}, {self._value.shape[1]}) @ ({other._value.shape[0]}, {other._value.shape[1]})"
