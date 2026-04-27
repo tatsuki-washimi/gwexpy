@@ -117,7 +117,7 @@ and merged. All PR heads were green in GitHub CI before merge.
 | --- | --- | --- | --- | --- |
 | #291 | #295 `[AGENT:validation] Add types foundation contract audit coverage` | 2026-04-27 11:32 JST | `ae31d88` | Added low-level types, axis, metadata-container, and `as_series` contract coverage. Runtime behavior unchanged. Known `MetaDataMatrix` CSV blank channel/unit xfail remains documented. |
 | #270 | #296 `[AGENT:docs] Define to_matrix family contracts` | 2026-04-27 11:32 JST | `1f59c6e` | Documented and tested family-specific `to_matrix()` contracts for `TimeSeries`, `FrequencySeries`, and `Spectrogram`. Also classified the GWOSC segment fetch test as network-only so non-network CI gates stay deterministic. Runtime behavior unchanged. |
-| #269 | #298 `[AGENT:validation] Enforce SeriesMatrix matmul xindex equality` | 2026-04-27 11:33 JST | `acf87e7` | Hardened `SeriesMatrix.__matmul__` so same sample length is no longer enough when sample-axis coordinates differ. Near-equal numeric axes use `rtol=1e-9, atol=0.0`; one-sided missing axes still raise. Physics-sensitive behavior was reviewed before merge. |
+| #269 | #298 `[AGENT:validation] Enforce SeriesMatrix matmul xindex equality` | 2026-04-27 11:33 JST | `acf87e7` | Hardened `SeriesMatrix.__matmul__` so same sample length is no longer enough when sample-axis coordinates differ. Near-equal numeric axes use `rtol=1e-9, atol=0.0`; one-sided missing axes still raise. Physics-sensitive behavior was reviewed before merge. This closed the matrix-multiplication slice, not every #269 follow-up. |
 | #271 | #297 `[AGENT:validation] Preserve SeriesMatrix round-trip metadata` | 2026-04-27 12:19 JST | `5eab91a` | Preserved `SeriesMatrix` metadata through pickle, added metadata round-trip tests, filtered non-picklable `attrs` entries per active pickle protocol, and preserved subclass pickle reducers such as `SpectrogramMatrix.__reduce__`. |
 
 Net outcome:
@@ -133,6 +133,16 @@ Net outcome:
 - Wave 1 Batch 1 left #289 and #292 as the remaining Lane A targets; those
   were closed by the Batch 2 follow-up below.
 
+##### SeriesMatrix xindex tolerance residual
+
+#269 remains open for the post-#298 tolerance decision: the merged matmul slice
+prevents silent multiplication on mismatched sample axes, while a later deep
+dive identified that exact `xindex` equality can reject physically acceptable
+sub-sample timestamp jitter. No runtime tolerance policy changes in this
+roadmap update. Any move from exact equality to a tolerance such as a
+sample-period-relative `np.allclose` policy needs physics review before code or
+contract tests make that behavior normative.
+
 #### Wave 1 Batch 2 Completion Report
 
 Status as of 2026-04-27: the second autonomous Wave 1 batch has been completed
@@ -145,8 +155,9 @@ and merged. All PR heads were green in GitHub CI before merge.
 
 Net outcome:
 
-- Wave 1 foundation issues #291, #269, #270, #271, #289, and #292 are now
-  closed through merged PRs.
+- Wave 1 foundation issues #291, #270, #271, #289, and #292 are now closed
+  through merged PRs. #269 has a merged matmul invariant slice and remains open
+  for the xindex tolerance policy decision above.
 - Foundation contracts now cover low-level types, SeriesMatrix invariants,
   family-specific `to_matrix()` behavior, metadata persistence, collection API
   behavior, and standalone frequency/spectrogram class behavior.
