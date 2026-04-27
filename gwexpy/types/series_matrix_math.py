@@ -113,7 +113,8 @@ class SeriesMatrixMathMixin:
         Unit-aware axes are compared after conversion to a shared unit. If one
         side is unitless, its raw numeric values are compared with the other
         side's values in that side's unit. Numeric axes use a relative
-        tolerance of 1e-9 with no absolute tolerance; two missing axes skip the
+        tolerance of 1e-9 with no absolute tolerance, so zero-valued
+        coordinates still require exact equality; two missing axes skip the
         check.
         """
         if left is None or right is None:
