@@ -86,6 +86,7 @@ def test_convert_scipy_to_dtt():
 # get_enbw — zero window
 # ---------------------------------------------------------------------------
 
+
 def test_get_enbw_zero_window_standard():
     window = np.zeros(100)
     assert get_enbw(window, fs=100.0, mode="standard") == 0.0
@@ -99,6 +100,7 @@ def test_get_enbw_zero_window_dtt():
 # ---------------------------------------------------------------------------
 # get_psd_normalization_factor
 # ---------------------------------------------------------------------------
+
 
 def test_get_psd_normalization_factor_standard():
     window = np.ones(100)
@@ -124,6 +126,7 @@ def test_get_psd_normalization_factor_zero_window():
 
 def test_get_psd_normalization_factor_hann():
     from scipy.signal import windows
+
     w = windows.hann(256)
     factor = get_psd_normalization_factor(w, fs=256.0, mode="standard")
     assert factor > 0
@@ -132,6 +135,7 @@ def test_get_psd_normalization_factor_hann():
 # ---------------------------------------------------------------------------
 # convert_scipy_to_dtt — zero window passthrough
 # ---------------------------------------------------------------------------
+
 
 def test_convert_scipy_to_dtt_zero_window_passthrough():
     psd = np.array([1.0, 2.0, 3.0])
@@ -144,10 +148,20 @@ def test_convert_scipy_to_dtt_zero_window_passthrough():
 # get_window_normalized
 # ---------------------------------------------------------------------------
 
+
 def test_get_window_normalized_returns_array():
     w = get_window_normalized("hann", 64)
     assert isinstance(w, np.ndarray)
     assert len(w) == 64
+
+
+def test_get_window_normalized_current_contract_returns_raw_window_only():
+    from scipy.signal import get_window
+
+    w = get_window_normalized("hann", 16, mode="dtt")
+
+    assert not isinstance(w, tuple)
+    np.testing.assert_allclose(w, get_window("hann", 16))
 
 
 def test_get_window_normalized_dtt_mode():
