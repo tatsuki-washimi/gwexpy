@@ -321,6 +321,9 @@ class SeriesMatrix(  # type: ignore[misc]
 
     def __reduce_ex__(self, protocol: SupportsIndex) -> tuple[Any, ...]:
         """Include SeriesMatrix metadata using the active pickle protocol."""
+        reducer = type(self).__reduce__
+        if reducer is not SeriesMatrix.__reduce__:
+            return cast(Any, reducer)(self)
         return self._reduce_with_protocol(protocol.__index__())
 
     def __reduce__(self) -> tuple[Any, ...]:
