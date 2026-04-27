@@ -176,10 +176,34 @@ Mode: audit-first only; no runtime behavior changes in this pass.
 - #246 defines the `to_matrix()` axis/unit/per-element metadata contract before
   round-trip paths can promise preservation of those converted objects.
 
+## Wave 1 Contract Test Update
+
+Date: 2026-04-27
+Issue: #271
+
+- Added focused SeriesMatrix-family contract tests for `SeriesMatrix`,
+  `TimeSeriesMatrix`, and `FrequencySeriesMatrix` copy, typed view, pickle,
+  HDF5, pandas DataFrame, and CSV paths.
+- The tests assert the metadata-preserving paths keep values, sample-axis
+  values/units, matrix `name`, `epoch`, JSON attrs, per-element
+  units/names/channels, and row/column metadata.
+- The tests explicitly mark typed views as metadata-preserving but aliased:
+  values and metadata remain available, while `meta`, `rows`, `cols`, and
+  `attrs` are shared by reference.
+- The tests explicitly mark `to_pandas()` and CSV writes as value exports:
+  numeric values, sample index values, and row/column keys are preserved in
+  tabular form, while element metadata, row/column metadata payloads, `attrs`,
+  `epoch`, and reconstructable sample-axis unit metadata are intentionally
+  absent.
+- A narrow `SeriesMatrix` pickle state fix now preserves the same metadata
+  contract for `SeriesMatrix`, `TimeSeriesMatrix`, and `FrequencySeriesMatrix`
+  without changing public file I/O behavior.
+
 ## Audit Notes
 
-- This file records source/test inspection and current contract risks only.
+- The original 2026-04-26 audit content records source/test inspection and
+  current contract risks only.
 - No runtime code, tests, public docs, commits, or behavior changed as part of
-  the audit content.
+  the original audit content; later sections may record follow-up PR work.
 - Follow-up changes should explicitly mark intentional metadata loss versus
   regression candidates.

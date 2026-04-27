@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import logging
+import pickle
 import warnings
 from collections import OrderedDict
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, Optional, SupportsIndex, cast
 
 import numpy as np
 from astropy import units as u
@@ -36,6 +37,16 @@ from .seriesmatrix_validation import (
 )
 
 logger = logging.getLogger(__name__)
+
+_SERIESMATRIX_PICKLE_METADATA_FIELDS = (
+    "_xindex",
+    "meta",
+    "rows",
+    "cols",
+    "name",
+    "epoch",
+    "attrs",
+)
 
 _ADD_SUB_COMPARISON_UFUNCS = {
     np.add,
@@ -77,6 +88,20 @@ def _copy_metadata_dict(meta: MetaDataDict, key_prefix: str) -> MetaDataDict:
     for key, value in meta.items():
         items[key] = MetaData(**deepcopy(dict(value)))
     return MetaDataDict(items, expected_size=len(items), key_prefix=key_prefix)
+
+
+def _pickle_safe_attrs(attrs: Any, protocol: int) -> dict[str, Any]:
+    """Return attrs entries that can be serialized by pickle."""
+    if not isinstance(attrs, dict):
+        return {}
+    safe_attrs = {}
+    for key, value in attrs.items():
+        try:
+            pickle.dumps((key, value), protocol=protocol)
+        except Exception:
+            continue
+        safe_attrs[key] = value
+    return safe_attrs
 
 
 class PerformanceWarning(RuntimeWarning):
@@ -281,6 +306,41 @@ class SeriesMatrix(  # type: ignore[misc]
         for key, val in getattr(obj, "__dict__", {}).items():
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
+
+    def _reduce_with_protocol(self, protocol: int) -> tuple[Any, ...]:
+        """Include SeriesMatrix metadata in ndarray-subclass pickle state."""
+        picked = list(np.ndarray.__reduce__(self))
+        matrix_state = {
+            key: _pickle_safe_attrs(value, protocol) if key == "attrs" else value
+            for key, value in self.__dict__.items()
+            if key in _SERIESMATRIX_PICKLE_METADATA_FIELDS
+        }
+        base_state = picked[2] if isinstance(picked[2], tuple) else ()
+        picked[2] = base_state + (matrix_state,)
+        return tuple(picked)
+
+    def __reduce_ex__(self, protocol: SupportsIndex) -> tuple[Any, ...]:
+        """Include SeriesMatrix metadata using the active pickle protocol."""
+        reducer = type(self).__reduce__
+        if reducer is not SeriesMatrix.__reduce__:
+            return cast(Any, reducer)(self)
+        return self._reduce_with_protocol(protocol.__index__())
+
+    def __reduce__(self) -> tuple[Any, ...]:
+        """Include SeriesMatrix metadata for legacy pickle callers."""
+        return self._reduce_with_protocol(pickle.DEFAULT_PROTOCOL)
+
+    def __setstate__(self, state: tuple[Any, ...]) -> None:
+        """Restore SeriesMatrix metadata from pickle state."""
+        if state and isinstance(state[-1], dict):
+            matrix_state = state[-1]
+            ndarray_state = state[:-1]
+        else:
+            matrix_state = {}
+            ndarray_state = state
+        super().__setstate__(ndarray_state)
+        self.__dict__.update(matrix_state)
+        self._value = self.view(np.ndarray)
 
     def __array_ufunc__(
         self, ufunc: Any, method: str, *inputs: Any, **kwargs: Any
