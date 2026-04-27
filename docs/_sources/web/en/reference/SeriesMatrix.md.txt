@@ -43,6 +43,20 @@ The detailed generated API continues below on this page.
 
 <!-- reference-summary:end -->
 
+## Round-Trip Metadata Contract
+
+Use `copy()`, Python pickle, or `to_hdf5()` / `read(..., format="hdf5")` when a
+`SeriesMatrix`-family object must preserve matrix values, the sample axis,
+per-element units/names/channels, row and column metadata, `name`, `epoch`, and
+JSON-serializable `attrs`.
+
+`to_pandas()` and `write(..., format="csv")` / `write(..., format="parquet")`
+are value exports. They preserve the numeric values, sample index values, and
+row/column keys flattened into tabular labels, but they do not preserve
+per-element metadata, row/column metadata payloads, `attrs`, `epoch`, or the
+sample-axis unit as reconstructable object metadata. Prefer HDF5 for
+metadata-preserving interchange.
+
 
 **Inherits from:** RegularityMixin, InteropMixin, SeriesMatrixCoreMixin, SeriesMatrixIndexingMixin, SeriesMatrixIOMixin, SeriesMatrixMathMixin, SeriesMatrixAnalysisMixin, SeriesMatrixStructureMixin, SeriesMatrixVisualizationMixin, SeriesMatrixValidationMixin, StatisticalMethodsMixin, ndarray
 
@@ -532,6 +546,11 @@ to_hdf5(self, filepath, **kwargs)
 
 Write matrix to HDF5 file.
 
+This is the preferred metadata-preserving file path for `SeriesMatrix` objects:
+values, sample-axis values and unit, element metadata, row/column metadata,
+`name`, `epoch`, and JSON-serializable `attrs` are part of the round-trip
+contract.
+
 ### `to_jax`
 
 ```python
@@ -554,7 +573,12 @@ Convert matrix to an appropriate collection list (e.g. TimeSeriesList).
 to_pandas(self, format='wide')
 ```
 
-Convert matrix to a pandas DataFrame.
+Convert matrix values to a pandas DataFrame.
+
+This is a value export, not an object metadata round-trip. The DataFrame keeps
+numeric values, sample index values, and row/column keys in wide or long form,
+but drops element metadata, row/column metadata payloads, `attrs`, `epoch`, and
+reconstructable sample-axis unit metadata.
 
 ### `to_series_1Dlist`
 
@@ -662,6 +686,10 @@ write(self, target, format=None, **kwargs)
 
 Write matrix to file.
 
+`format="hdf5"` preserves the object metadata contract described above. CSV and
+parquet writes use `to_pandas(format="wide")` and should be treated as
+value-only exports.
+
 ### `x0`
 
 Starting value of the sample axis.
@@ -681,4 +709,3 @@ Full extent of the sample axis as a tuple (start, end).
 ### `xunit`
 
 _No documentation available._
-

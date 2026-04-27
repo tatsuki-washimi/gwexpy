@@ -218,6 +218,19 @@
 <h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h2>
 <p>The detailed generated API continues below on this page.</p>
 <!-- reference-summary:end -->
+</section>
+<section id="round-trip-metadata-contract">
+<h2>Round-Trip Metadata Contract<a class="headerlink" href="#round-trip-metadata-contract" title="Link to this heading"></a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">copy()</span></code>, Python pickle, or <code class="docutils literal notranslate"><span class="pre">to_hdf5()</span></code> / <code class="docutils literal notranslate"><span class="pre">read(...,</span> <span class="pre">format=&quot;hdf5&quot;)</span></code> when a
+<code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code>-family object must preserve matrix values, the sample axis,
+per-element units/names/channels, row and column metadata, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, and
+JSON-serializable <code class="docutils literal notranslate"><span class="pre">attrs</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> and <code class="docutils literal notranslate"><span class="pre">write(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code> / <code class="docutils literal notranslate"><span class="pre">write(...,</span> <span class="pre">format=&quot;parquet&quot;)</span></code>
+are value exports. They preserve the numeric values, sample index values, and
+row/column keys flattened into tabular labels, but they do not preserve
+per-element metadata, row/column metadata payloads, <code class="docutils literal notranslate"><span class="pre">attrs</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, or the
+sample-axis unit as reconstructable object metadata. Prefer HDF5 for
+metadata-preserving interchange.</p>
 <p><strong>Inherits from:</strong> RegularityMixin, InteropMixin, SeriesMatrixCoreMixin, SeriesMatrixIndexingMixin, SeriesMatrixIOMixin, SeriesMatrixMathMixin, SeriesMatrixAnalysisMixin, SeriesMatrixStructureMixin, SeriesMatrixVisualizationMixin, SeriesMatrixValidationMixin, StatisticalMethodsMixin, ndarray</p>
 </section>
 <section id="methods">
@@ -644,6 +657,10 @@ Follows the matrix structure (row, col) unless it’s a 1-column matrix.</p>
 </pre></div>
 </div>
 <p>Write matrix to HDF5 file.</p>
+<p>This is the preferred metadata-preserving file path for <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> objects:
+values, sample-axis values and unit, element metadata, row/column metadata,
+<code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, and JSON-serializable <code class="docutils literal notranslate"><span class="pre">attrs</span></code> are part of the round-trip
+contract.</p>
 </section>
 <section id="to-jax">
 <h3><code class="docutils literal notranslate"><span class="pre">to_jax</span></code><a class="headerlink" href="#to-jax" title="Link to this heading"></a></h3>
@@ -664,7 +681,11 @@ Follows the matrix structure (row, col) unless it’s a 1-column matrix.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;wide&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Convert matrix to a pandas DataFrame.</p>
+<p>Convert matrix values to a pandas DataFrame.</p>
+<p>This is a value export, not an object metadata round-trip. The DataFrame keeps
+numeric values, sample index values, and row/column keys in wide or long form,
+but drops element metadata, row/column metadata payloads, <code class="docutils literal notranslate"><span class="pre">attrs</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, and
+reconstructable sample-axis unit metadata.</p>
 </section>
 <section id="to-series-1dlist">
 <h3><code class="docutils literal notranslate"><span class="pre">to_series_1Dlist</span></code><a class="headerlink" href="#to-series-1dlist" title="Link to this heading"></a></h3>
@@ -757,6 +778,9 @@ Follows the matrix structure (row, col) unless it’s a 1-column matrix.</p>
 </pre></div>
 </div>
 <p>Write matrix to file.</p>
+<p><code class="docutils literal notranslate"><span class="pre">format=&quot;hdf5&quot;</span></code> preserves the object metadata contract described above. CSV and
+parquet writes use <code class="docutils literal notranslate"><span class="pre">to_pandas(format=&quot;wide&quot;)</span></code> and should be treated as
+value-only exports.</p>
 </section>
 <section id="x0">
 <h3><code class="docutils literal notranslate"><span class="pre">x0</span></code><a class="headerlink" href="#x0" title="Link to this heading"></a></h3>
@@ -793,7 +817,7 @@ Follows the matrix structure (row, col) unless it’s a 1-column matrix.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-27 02:55:41.
+      <span class="lastupdated">Last updated on 2026-04-27 03:37:55.
       </span></p>
   </div>
 
