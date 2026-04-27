@@ -106,7 +106,12 @@ class SeriesMatrixMathMixin:
 
     @staticmethod
     def _xindex_equal(left: Any, right: Any) -> bool:
-        """Return True when two sample axes represent the same coordinates."""
+        """Return True when two sample axes represent the same coordinates.
+
+        Unit-aware axes are compared after conversion to a shared unit. If one
+        side is unitless, its raw numeric values are compared with the other
+        side's values in that side's unit; two missing axes skip the check.
+        """
         if left is None or right is None:
             return left is right
 
