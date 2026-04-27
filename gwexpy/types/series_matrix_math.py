@@ -7,6 +7,8 @@ from astropy import units as u
 
 from .metadata import MetaData, MetaDataMatrix
 
+_XINDEX_RTOL = 1e-9
+
 
 class SeriesMatrixMathMixin:
     """Mixin for SeriesMatrix math operations (linear algebra)."""
@@ -110,7 +112,9 @@ class SeriesMatrixMathMixin:
 
         Unit-aware axes are compared after conversion to a shared unit. If one
         side is unitless, its raw numeric values are compared with the other
-        side's values in that side's unit; two missing axes skip the check.
+        side's values in that side's unit. Numeric axes use a relative
+        tolerance of 1e-9 with no absolute tolerance; two missing axes skip the
+        check.
         """
         if left is None or right is None:
             return left is right
@@ -125,9 +129,35 @@ class SeriesMatrixMathMixin:
             return np.asarray(axis)
 
         try:
-            return bool(np.array_equal(_axis_values(left), _axis_values(right)))
+            left_values = np.asarray(_axis_values(left))
+            right_values = np.asarray(_axis_values(right))
+            if left_values.shape != right_values.shape:
+                return False
+            return bool(
+                np.allclose(
+                    left_values,
+                    right_values,
+                    rtol=_XINDEX_RTOL,
+                    atol=0.0,
+                )
+            )
         except (u.UnitConversionError, TypeError, ValueError, AttributeError):
             return False
+
+    @staticmethod
+    def _xindex_summary(axis: Any) -> str:
+        """Return a compact diagnostic summary for a sample axis."""
+        if axis is None:
+            return "None"
+        unit = getattr(axis, "unit", None)
+        unit_text = f", unit={unit}" if unit is not None else ""
+        try:
+            values = np.asarray(axis)
+            preview = np.ravel(values)[:3]
+            length = len(values)
+        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+            return repr(axis)
+        return f"starts with {preview!r} (len={length}{unit_text})"
 
     def __matmul__(self, other):
         """Perform matrix multiplication while broadcasting over the sample axis."""
@@ -138,7 +168,11 @@ class SeriesMatrixMathMixin:
         if self._value.shape[2] != other._value.shape[2]:
             raise ValueError("Sample axis length mismatch in matrix multiplication")
         if not self._xindex_equal(self.xindex, other.xindex):
-            raise ValueError("xindex mismatch in matrix multiplication")
+            raise ValueError(
+                "xindex mismatch in matrix multiplication: "
+                f"left xindex {self._xindex_summary(self.xindex)}, "
+                f"right xindex {self._xindex_summary(other.xindex)}"
+            )
         if self._value.shape[1] != other._value.shape[0]:
             raise ValueError(
                 f"Matrix dimension mismatch: ({self._value.shape[0]}, {self._value.shape[1]}) @ ({other._value.shape[0]}, {other._value.shape[1]})"

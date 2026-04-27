@@ -150,7 +150,25 @@ class TestMatMul:
     def test_matmul_xindex_mismatch_raises(self, square_matrix_2x2):
         """Same sample length is not enough; sample-axis coordinates must match."""
         other = SeriesMatrix(np.random.randn(2, 2, 10), xindex=np.linspace(1, 10, 10))
-        with pytest.raises(ValueError, match="xindex mismatch"):
+        with pytest.raises(ValueError, match="left xindex .* right xindex"):
+            square_matrix_2x2 @ other
+
+    def test_matmul_accepts_nearly_equal_floating_xindex(self, square_matrix_2x2):
+        """Small relative floating differences should not reject matching axes."""
+        xindex = np.linspace(0, 9, 10)
+        xindex[1:] += xindex[1:] * 1e-12
+        other = SeriesMatrix(np.random.randn(2, 2, 10), xindex=xindex)
+
+        result = square_matrix_2x2 @ other
+
+        np.testing.assert_allclose(result.xindex, square_matrix_2x2.xindex)
+
+    def test_matmul_raises_when_one_xindex_is_none(self, square_matrix_2x2):
+        """A missing sample axis on only one operand is a mismatch."""
+        other = SeriesMatrix(np.random.randn(2, 2, 10), xindex=np.linspace(0, 9, 10))
+        other.xindex = None
+
+        with pytest.raises(ValueError, match="right xindex None"):
             square_matrix_2x2 @ other
 
     def test_matmul_accepts_xindex_equal_after_unit_conversion(self):
@@ -164,6 +182,7 @@ class TestMatMul:
         result = left @ right
 
         np.testing.assert_array_equal(result.xindex.to_value(u.s), [0.0, 1.0, 2.0])
+        assert result.xindex is left.xindex
         np.testing.assert_array_equal(result._value, np.full((2, 2, 3), 2.0))
 
 
