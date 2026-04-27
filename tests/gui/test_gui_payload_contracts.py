@@ -3,11 +3,21 @@ from __future__ import annotations
 from collections import deque
 
 import numpy as np
-
-from gwexpy.gui.engine import Engine
-from gwexpy.gui.streaming import SpectralAccumulator
+import pytest
 
 _METADATA_KEYS = {"unit", "name", "channel", "metadata"}
+
+
+@pytest.fixture
+def gui_payload_classes():
+    pytest.importorskip(
+        "PyQt5",
+        reason="gwexpy.gui package imports PyQt5 while loading GUI submodules",
+    )
+    from gwexpy.gui.engine import Engine
+    from gwexpy.gui.streaming import SpectralAccumulator
+
+    return Engine, SpectralAccumulator
 
 
 class _Value:
@@ -47,7 +57,8 @@ def _active_trace(graph_type: str) -> dict[str, object]:
     }
 
 
-def test_engine_time_series_payload_is_tuple_without_metadata_keys():
+def test_engine_time_series_payload_is_tuple_without_metadata_keys(gui_payload_classes):
+    Engine, _ = gui_payload_classes
     engine = Engine()
     payload = engine.compute(
         {"H1:TEST": _FakeTimeSeries()},
@@ -63,7 +74,10 @@ def test_engine_time_series_payload_is_tuple_without_metadata_keys():
     assert not isinstance(payload, dict)
 
 
-def test_engine_spectrogram_payload_has_current_four_key_shape_only():
+def test_engine_spectrogram_payload_has_current_four_key_shape_only(
+    gui_payload_classes,
+):
+    Engine, _ = gui_payload_classes
     engine = Engine()
     engine.configure(
         {
@@ -90,7 +104,10 @@ def test_engine_spectrogram_payload_has_current_four_key_shape_only():
     assert np.allclose(payload["value"], [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
 
 
-def test_spectral_accumulator_time_series_payload_is_tuple_without_metadata_keys():
+def test_spectral_accumulator_time_series_payload_is_tuple_without_metadata_keys(
+    gui_payload_classes,
+):
+    _, SpectralAccumulator = gui_payload_classes
     accumulator = SpectralAccumulator()
     accumulator.active_traces = [_active_trace("Time Series")]
     accumulator.display_history = {"H1:TEST": deque([1.0, 2.0, 3.0])}
@@ -106,7 +123,10 @@ def test_spectral_accumulator_time_series_payload_is_tuple_without_metadata_keys
     assert not isinstance(payload, dict)
 
 
-def test_spectral_accumulator_spectrogram_payload_has_current_four_key_shape_only():
+def test_spectral_accumulator_spectrogram_payload_has_current_four_key_shape_only(
+    gui_payload_classes,
+):
+    _, SpectralAccumulator = gui_payload_classes
     accumulator = SpectralAccumulator()
     accumulator.active_traces = [_active_trace("Spectrogram")]
     accumulator.spectrogram_history = {

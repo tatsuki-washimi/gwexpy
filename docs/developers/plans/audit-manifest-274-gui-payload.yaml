@@ -62,3 +62,28 @@ review_sensitive_follow_ups:
 notes:
   - "Runtime gwexpy code was intentionally not changed."
   - "Tests avoid Qt, live GUI display, NDS, network access, and expensive spectral computation."
+
+review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Guard module-level GUI imports so missing PyQt5 produces an explicit skip instead of collection failure."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Moved gwexpy.gui Engine and SpectralAccumulator imports into a pytest fixture guarded by pytest.importorskip('PyQt5')."
+  commands_executed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "4 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "Clean after targeted import-order fix."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal python /tmp/check_gui_payload_pyqt5_skip.py"
+      result: "Synthetic no-PyQt5 harness confirmed 4 skipped with pytest-qt disabled; the first harness attempt without disabling pytest-qt exited before collection because pytest-qt itself requires a Qt binding."
+  test_results:
+    focused_pytest: "4 passed"
+    synthetic_no_pyqt5: "4 skipped"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    diff_check: clean
