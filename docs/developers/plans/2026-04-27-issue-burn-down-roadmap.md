@@ -130,8 +130,29 @@ Net outcome:
   of only sample-axis length.
 - Pickle round trips preserve stable matrix metadata while avoiding runtime
   callback/logger objects in `attrs` from breaking persistence.
-- Wave 1 is not fully complete yet: #289 and #292 remain the next Lane A
-  targets after this completed batch.
+- Wave 1 Batch 1 left #289 and #292 as the remaining Lane A targets; those
+  were closed by the Batch 2 follow-up below.
+
+#### Wave 1 Batch 2 Completion Report
+
+Status as of 2026-04-27: the second autonomous Wave 1 batch has been completed
+and merged. All PR heads were green in GitHub CI before merge.
+
+| Issue | PR | Merged | Merge commit | Result |
+| --- | --- | --- | --- | --- |
+| #289 | #300 `[AGENT:validation] Audit collection API contracts` | 2026-04-27 16:29 JST | `2d35528` | Documented and tested collection ordering, delegation, mutability, metadata, and manifest contracts across shared mixins and `TimeSeries`, `FrequencySeries`, `Spectrogram`, and `Histogram` collections. Runtime behavior unchanged. Known follow-ups include FrequencySeries axis tightening, TimeSeries metadata preservation, and HistogramList scalar/stat return policy. |
+| #292 | #299 `[AGENT:validation] Audit standalone series contracts` | 2026-04-27 16:29 JST | `8ec299a` | Documented and tested standalone `FrequencySeries`, `Spectrogram`, and `BifrequencyMap` contracts for construction, indexing, view/copy behavior, metadata preservation, helper return classes, rebinning, and current projection behavior. Runtime behavior unchanged. Known follow-ups include GWpy-vs-gwexpy return-class decisions, BifrequencyMap unit conversion, and channel/epoch propagation decisions. |
+
+Net outcome:
+
+- Wave 1 foundation issues #291, #269, #270, #271, #289, and #292 are now
+  closed through merged PRs.
+- Foundation contracts now cover low-level types, SeriesMatrix invariants,
+  family-specific `to_matrix()` behavior, metadata persistence, collection API
+  behavior, and standalone frequency/spectrogram class behavior.
+- Behavior-changing follow-ups remain intentionally deferred where they would
+  alter axis validation, metadata propagation, or public return classes.
+- Lane A no longer blocks Wave 2 public-surface audit work.
 
 ### Wave 2: Individual Public API Surfaces
 
