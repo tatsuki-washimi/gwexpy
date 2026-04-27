@@ -44,9 +44,12 @@ def test_axis_api_isel_preserves_axis_names_units_and_sliced_coordinates():
 
 
 def test_metadata_dict_and_matrix_deepcopy_isolates_entries():
-    md = MetaData(name="strain", channel="H1:STRAIN", unit=u.m)
-    metadata = MetaDataDict({"h1": md})
-    matrix = MetaDataMatrix([[md]])
+    metadata = MetaDataDict(
+        {"h1": MetaData(name="strain", channel="H1:STRAIN", unit=u.m)}
+    )
+    matrix = MetaDataMatrix(
+        [[MetaData(name="strain", channel="H1:STRAIN", unit=u.m)]]
+    )
 
     metadata_copy = copy.deepcopy(metadata)
     matrix_copy = copy.deepcopy(matrix)
@@ -141,12 +144,13 @@ def test_as_series_angular_frequency_default_keeps_values_angular_and_axis_hz():
     assert np.allclose(series.frequencies.value, [1.0, 2.0, 4.0])
 
 
-def test_as_series_angular_frequency_can_emit_hz_values_on_hz_axis():
+def test_as_series_angular_frequency_hz_values_keep_hz_frequency_axis():
     angular_axis = (2 * np.pi * np.array([1.0, 2.0, 4.0])) * (u.rad / u.s)
 
     series = as_series(angular_axis, unit=u.Hz)
 
     assert series.unit == u.Hz
+    # This complements the creator tests by pinning the emitted frequency axis.
     assert series.frequencies.unit == u.Hz
     assert np.allclose(series.value, [1.0, 2.0, 4.0])
     assert np.allclose(series.frequencies.value, [1.0, 2.0, 4.0])
