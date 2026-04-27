@@ -230,11 +230,11 @@ docs/test-only transform slices.
 | Slice | PR | Merged | Merge commit | Result |
 | --- | --- | --- | --- | --- |
 | Special transforms | #307 `[AGENT:validation] Add special transform contract coverage` | 2026-04-27 20:27 JST | `4a8de43` | Added DCT, cepstrum, Laplace, STLT, CWT, EMD, and HHT contract coverage for axes, units, metadata, scaling, and optional dependency behavior. Runtime behavior unchanged. |
+| Q-transform | #308 `[AGENT:validation] Add Q-transform contract coverage` | 2026-04-27 20:42 JST | `ba20d70` | Added direct TimeSeries Q-transform passthrough contracts, TimeSeriesList/Dict/Matrix container contracts, and documented current metadata loss plus the irregular-sampling gap. Runtime behavior unchanged. |
 
 Remaining #285 slices:
 
-- Q-transform passthrough/container contracts.
-- Spectrogram cleaning contracts.
+- Spectrogram cleaning contracts
 - Field/space transform workflow contracts.
 - PyEMD-dependent HHT numerical contracts, only after optional dependency and
   physics-review expectations are explicit.
