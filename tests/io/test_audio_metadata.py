@@ -17,6 +17,7 @@ from scipy.io import wavfile
 from gwexpy.io.utils import extract_audio_metadata
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.timeseries.io.audio import read_timeseriesdict_audio
+from gwexpy.timeseries.io.wav import read_timeseriesdict_wav
 
 # Check if tinytag is available
 try:
@@ -82,8 +83,34 @@ def test_extract_audio_metadata_no_tinytag(tmp_path):
 
             # Should produce warning
             assert len(w) >= 1
-            assert "tinytag is required" in str(w[0].message)
+            message = str(w[0].message)
+            assert "tinytag is required" in message
+            assert "pip install 'gwexpy[audio]'" in message
+            assert 'pip install "gwexpy[all]"' in message
+            assert "pip install tinytag" not in message
             assert w[0].category is UserWarning
+
+
+def test_extract_audio_metadata_docstring_points_to_audio_extra():
+    """Document the published install paths for tinytag metadata support."""
+    doc = extract_audio_metadata.__doc__
+
+    assert doc is not None
+    assert "pip install 'gwexpy[audio]'" in doc
+    assert 'pip install "gwexpy[all]"' in doc
+    assert "coming soon" not in doc
+
+
+def test_audio_reader_docstrings_point_to_audio_extra():
+    """Reader docstrings should match published tinytag install guidance."""
+    for func in (read_timeseriesdict_wav, read_timeseriesdict_audio):
+        doc = func.__doc__
+
+        assert doc is not None
+        assert "pip install 'gwexpy[audio]'" in doc
+        assert 'pip install "gwexpy[all]"' in doc
+        assert "pip install tinytag" not in doc
+        assert "coming soon" not in doc
 
 
 def test_extract_audio_metadata_invalid_file(tmp_path):

@@ -246,14 +246,13 @@ def extract_audio_metadata(source: str | Path) -> dict[str, Any]:
 
     Notes
     -----
-    Requires the optional ``tinytag`` package::
+    Requires the optional ``tinytag`` package. Install it via a GWexpy extra::
 
-        pip install tinytag
+        pip install 'gwexpy[audio]'
 
-    Or install with the ``audio`` extra::
+    Or install the bundled optional dependencies used by GWexpy tutorials::
 
-        pip install git+https://github.com/tatsuki-washimi/gwexpy.git[audio]
-        (Note: ``pip install gwexpy[audio]`` is coming soon.)
+        pip install "gwexpy[all]"
 
     Examples
     --------
@@ -282,7 +281,8 @@ def extract_audio_metadata(source: str | Path) -> dict[str, Any]:
     except ImportError:
         warnings.warn(
             "tinytag is required for metadata extraction. "
-            "Install with: pip install tinytag",
+            "Install with: pip install 'gwexpy[audio]' "
+            'or pip install "gwexpy[all]"',
             UserWarning,
             stacklevel=3,
         )

@@ -100,6 +100,11 @@ directly.
 | Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | Use `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, or `pip install 'gwexpy[audio]'` as appropriate. |
 | Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `finesse`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `metpy`, `wrf-python`, `harmonica`, `emg3d`, `meshio` | Install the named backend directly when the bridge imports it or when you need it to create accepted source objects. |
 
+`gwexpy[all]` installs the declared GWexpy extras as a convenience bundle. It
+does not install every public interop backend; entries in the bare package row
+still require direct backend installs when the bridge imports the backend or
+when you need to create accepted source objects.
+
 The xarray-backed interop bridges list the `netcdf4` extra because GWexpy does
 not currently publish a standalone `xarray` extra. If you only need in-memory
 xarray conversion and want to avoid installing `netCDF4`, install `xarray`

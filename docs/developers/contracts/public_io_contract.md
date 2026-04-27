@@ -46,8 +46,8 @@ Rules:
 - `required_args` and `metadata_requirements` are contract items, not optional commentary.
 - `unavailable_behavior` uses a small vocabulary:
   `available_in_base_install`, `raises_import_error`,
-  `raises_import_error_for_optional_metadata`, `conditional_registration`, or
-  `not_public`.
+  `raises_import_error_for_optional_metadata`,
+  `warns_and_skips_optional_metadata`, `conditional_registration`, or `not_public`.
 - Public registry entries may be absent only when
   `unavailable_behavior.<operation> = conditional_registration`.
 - A registry adapter alone is not enough to publish a new direct-I/O surface.
@@ -67,9 +67,16 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
 ### `xml.diaggui`
 
 - Public contract: `TimeSeriesDict.read(..., format="xml.diaggui", products=...)`.
-- Registry surface: `TimeSeries` and `TimeSeriesMatrix` adapters may exist.
+- Registry surface: `TimeSeries`, `TimeSeriesMatrix`, and frequency-domain
+  `FrequencySeriesDict` / `FrequencySeriesMatrix` adapters may exist.
+- Direct implementation surface: frequency-domain `FrequencySeries` /
+  `FrequencySeriesDict` shims may exist for compatibility.
 - Reason: the file is product-driven and `.xml` is ambiguous, so public guidance
   must stay explicit even if the registry can infer the identifier.
+- Frequency-domain DTTXML direct shims (`FrequencySeries` /
+  `FrequencySeriesDict`) and registry adapters (`FrequencySeriesDict` /
+  `FrequencySeriesMatrix`) are implementation-only and not part of the public
+  direct-I/O contract.
 
 ### `root`
 

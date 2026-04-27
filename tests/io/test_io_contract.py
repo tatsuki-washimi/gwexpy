@@ -15,6 +15,7 @@ from gwexpy.frequencyseries import (
     FrequencySeries,
     FrequencySeriesDict,
     FrequencySeriesList,
+    FrequencySeriesMatrix,
 )
 from gwexpy.gui.loaders.loaders import load_products
 from gwexpy.histogram import Histogram, HistogramDict, HistogramList
@@ -41,6 +42,7 @@ CLASS_MAP = {
     "FrequencySeries": FrequencySeries,
     "FrequencySeriesDict": FrequencySeriesDict,
     "FrequencySeriesList": FrequencySeriesList,
+    "FrequencySeriesMatrix": FrequencySeriesMatrix,
     "Spectrogram": Spectrogram,
     "SpectrogramDict": SpectrogramDict,
     "SpectrogramList": SpectrogramList,
@@ -67,6 +69,7 @@ VALID_UNAVAILABLE_BEHAVIORS = {
     "not_public",
     "raises_import_error",
     "raises_import_error_for_optional_metadata",
+    "warns_and_skips_optional_metadata",
 }
 
 
@@ -351,6 +354,10 @@ def test_current_public_boundary_decisions_are_recorded():
         "TimeSeriesMatrix",
     ]
     assert _api_classes(entries["wav"], "registry_api", "write") == ["TimeSeries"]
+    assert (
+        entries["wav"]["unavailable_behavior"]["read"]
+        == "warns_and_skips_optional_metadata"
+    )
     assert entries["wav"]["public_auto_identify"] is True
     assert entries["wav"]["registry_auto_identify"] is True
     assert entries["wav"]["metadata_requirements"]
@@ -592,7 +599,25 @@ def test_current_public_boundary_decisions_are_recorded():
     ]
     assert entries["xml.diaggui"]["public_auto_identify"] is False
     assert entries["xml.diaggui"]["registry_auto_identify"] is True
+    assert _api_classes(entries["xml.diaggui"], "direct_api", "read") == [
+        "FrequencySeries",
+        "FrequencySeriesDict",
+    ]
+    assert _api_classes(entries["xml.diaggui"], "registry_api", "read") == [
+        "TimeSeries",
+        "TimeSeriesDict",
+        "TimeSeriesMatrix",
+        "FrequencySeriesDict",
+        "FrequencySeriesMatrix",
+    ]
     assert entries["xml.diaggui"]["required_args"]["read"] == ["products"]
+    xml_notes = " ".join(entries["xml.diaggui"]["notes"])
+    assert (
+        "FrequencySeries and FrequencySeriesDict DTTXML direct shims, and "
+        "FrequencySeriesDict / FrequencySeriesMatrix registry adapters, are "
+        "implementation-only and not part of the public direct-I/O contract."
+        in xml_notes
+    )
     assert _api_classes(entries["nc"], "public_api", "read") == [
         "TimeSeries",
         "TimeSeriesDict",

@@ -79,6 +79,16 @@ def test_docs_seismic_table_matches_current_public_boundary():
     assert "使える direct path は `ats.mth5` のみ" in ja
 
 
+def test_docs_mark_frequency_dttxml_as_implementation_only():
+    contract = _load_contract()
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+
+    assert contract["xml.diaggui"]["public_api"]["read"] == ["TimeSeriesDict"]
+    assert "Frequency-domain DTTXML direct shims and registry adapters are implementation-only" in en
+    assert "周波数領域の DTTXML direct shim と registry adapter は implementation-only" in ja
+
+
 def test_optional_dependency_matrix_matches_contract():
     contract = _load_contract()
     en = _read(EN_GUIDE)
@@ -103,3 +113,10 @@ def test_optional_dependency_matrix_matches_contract():
     assert ats_mth5["extras"] == ["seismic"]
     assert "pip install 'gwexpy[seismic]'" in en
     assert "pip install 'gwexpy[seismic]'" in ja
+
+    wav = contract["wav"]
+    assert wav["unavailable_behavior"]["read"] == "warns_and_skips_optional_metadata"
+    assert "`.read(..., extract_metadata=True)` warns and skips metadata" in en
+    assert "`.read(..., extract_metadata=True)` は警告を出し、metadata を省略します" in ja
+    assert "pip install 'gwexpy[audio]'" in en
+    assert "pip install 'gwexpy[audio]'" in ja
