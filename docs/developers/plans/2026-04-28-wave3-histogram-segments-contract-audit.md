@@ -50,10 +50,10 @@ segments runtime behavior change remains deferred for human review.
   the square root of the covariance diagonal first.
 - If only `sumw2` is present, current `Histogram.errors` uses the square root
   of `sumw2`.
-- A desired `copy(deep=True)` contract is recorded as a strict xfail because
-  the current implementation reconstructs with Quantity underflow and overflow
-  values that trip `Histogram.__init__` truthiness handling. This is a known
-  gap for a follow-up runtime review, not a behavior change in this slice.
+- A `copy(deep=True)` current-gap test records that the current implementation
+  reconstructs with Quantity underflow and overflow values that trip Astropy's
+  "Quantity truthiness is ambiguous" guard in `Histogram.__init__`. This is a
+  known gap for a follow-up runtime review, not a behavior change in this slice.
 
 ### Fill Semantics
 
