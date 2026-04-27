@@ -16,11 +16,18 @@ base_alignment:
 
 slice_verification:
   commit: f172c404c0da30a137055a1071af7f5c35cd75bf
-  current_amendment_head: c9e97a3a09ec5ce350c4576425f03fee67824f61
+  review_note_followups:
+    - commit: c9e97a3a09ec5ce350c4576425f03fee67824f61
+      reason: manifest/roadmap provenance clarification
+    - commit: 8b8894377f9ab8fc482d7d4c4bd277a083b2d19d
+      reason: Claude review traceability notes
   note: >
     The command log below records verification after the field/space transform
     contract slice existed on this branch. Base-alignment commands are recorded
     separately above to avoid implying tests were run before the slice existed.
+    Final PR head provenance is tracked by GitHub PR metadata because a commit
+    cannot reliably self-record its own final SHA in a content-addressed
+    manifest.
 
 scope:
   mode: docs_and_tests_only
