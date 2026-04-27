@@ -1,3 +1,4 @@
+import ast
 import json
 import os
 import re
@@ -103,7 +104,9 @@ def _localized_markdown_texts(nb: dict, locale: str) -> list[str]:
         tags = set(cell.get("metadata", {}).get("tags", []))
         if wanted_tag in tags or not (tags & other_i18n_tags):
             source = cell.get("source", [])
-            localized.append("".join(source) if isinstance(source, list) else str(source))
+            localized.append(
+                "".join(source) if isinstance(source, list) else str(source)
+            )
     return localized
 
 
@@ -115,6 +118,204 @@ def _code_text(nb: dict) -> str:
     )
 
 
+def _code_cell_sources(nb: dict) -> list[str]:
+    return [
+        "".join(cell.get("source", []))
+        for cell in nb.get("cells", [])
+        if cell.get("cell_type") == "code"
+    ]
+
+
+def _call_function_name(node: ast.AST) -> str | None:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return node.attr
+    return None
+
+
+def _is_mappable_plot_call(node: ast.AST) -> bool:
+    return isinstance(node, ast.Call) and _call_function_name(node.func) in {
+        "imshow",
+        "pcolormesh",
+    }
+
+
+def _assigned_names(target: ast.AST) -> set[str]:
+    if isinstance(target, ast.Name):
+        return {target.id}
+    if isinstance(target, (ast.Tuple, ast.List)):
+        return {name for element in target.elts for name in _assigned_names(element)}
+    return set()
+
+
+def _explicit_colorbar_mappables_from_plot_assignments(nb: dict) -> list[str]:
+    sources = _code_cell_sources(nb)
+    parsed_cells: list[ast.Module] = []
+    unparsed_colorbar_cells: list[int] = []
+
+    for index, source in enumerate(sources, start=1):
+        try:
+            parsed_cells.append(ast.parse(source))
+        except SyntaxError:
+            if "colorbar(" in source:
+                unparsed_colorbar_cells.append(index)
+
+    assert not unparsed_colorbar_cells, (
+        "Could not parse code cells containing colorbar calls: "
+        + ", ".join(str(index) for index in unparsed_colorbar_cells)
+    )
+
+    class ColorbarMappableVisitor(ast.NodeVisitor):
+        def __init__(self) -> None:
+            self.valid_mappables: set[str] = set()
+            self.explicit_mappables: list[str] = []
+            self.invalid_colorbars: list[str] = []
+
+        def visit_Assign(self, node: ast.Assign) -> None:
+            self.visit(node.value)
+            target_names = {
+                name for target in node.targets for name in _assigned_names(target)
+            }
+            self._record_assignment(target_names, _is_mappable_plot_call(node.value))
+
+        def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+            if node.annotation is not None:
+                self.visit(node.annotation)
+            if node.value is None:
+                return
+            self.visit(node.value)
+            self._record_assignment(
+                _assigned_names(node.target), _is_mappable_plot_call(node.value)
+            )
+
+        def visit_NamedExpr(self, node: ast.NamedExpr) -> None:
+            self.visit(node.value)
+            self._record_assignment(
+                _assigned_names(node.target), _is_mappable_plot_call(node.value)
+            )
+
+        def visit_AugAssign(self, node: ast.AugAssign) -> None:
+            self.visit(node.target)
+            self.visit(node.value)
+            self.valid_mappables.difference_update(_assigned_names(node.target))
+
+        def visit_For(self, node: ast.For) -> None:
+            self.visit(node.iter)
+            self.valid_mappables.difference_update(_assigned_names(node.target))
+            for statement in node.body:
+                self.visit(statement)
+            for statement in node.orelse:
+                self.visit(statement)
+
+        def visit_AsyncFor(self, node: ast.AsyncFor) -> None:
+            self.visit(node.iter)
+            self.valid_mappables.difference_update(_assigned_names(node.target))
+            for statement in node.body:
+                self.visit(statement)
+            for statement in node.orelse:
+                self.visit(statement)
+
+        def visit_comprehension(self, node: ast.comprehension) -> None:
+            self.visit(node.iter)
+            self.valid_mappables.difference_update(_assigned_names(node.target))
+            for condition in node.ifs:
+                self.visit(condition)
+
+        def visit_Call(self, node: ast.Call) -> None:
+            if not (
+                isinstance(node, ast.Call)
+                and _call_function_name(node.func) == "colorbar"
+            ):
+                self.generic_visit(node)
+                return
+
+            mappable = next(
+                (
+                    keyword.value
+                    for keyword in node.keywords
+                    if keyword.arg == "mappable"
+                ),
+                None,
+            )
+            if mappable is None:
+                self.invalid_colorbars.append(
+                    f"line {node.lineno}: colorbar call lacks mappable="
+                )
+            elif not isinstance(mappable, ast.Name):
+                self.invalid_colorbars.append(
+                    f"line {node.lineno}: mappable= is not a simple assigned name"
+                )
+            elif mappable.id not in self.valid_mappables:
+                self.invalid_colorbars.append(
+                    f"line {node.lineno}: mappable={mappable.id} is not assigned "
+                    "from imshow/pcolormesh"
+                )
+            else:
+                self.explicit_mappables.append(mappable.id)
+
+            self.generic_visit(node)
+
+        def _record_assignment(
+            self, target_names: set[str], is_mappable_assignment: bool
+        ) -> None:
+            if is_mappable_assignment:
+                self.valid_mappables.update(target_names)
+            else:
+                self.valid_mappables.difference_update(target_names)
+
+    visitor = ColorbarMappableVisitor()
+    for tree in parsed_cells:
+        visitor.visit(tree)
+
+    assert not visitor.invalid_colorbars, "Invalid colorbar calls:\n" + "\n".join(
+        visitor.invalid_colorbars
+    )
+    return visitor.explicit_mappables
+
+
+def _synthetic_notebook(*sources: str) -> dict:
+    return {
+        "cells": [
+            {
+                "cell_type": "code",
+                "source": source,
+            }
+            for source in sources
+        ]
+    }
+
+
+def test_colorbar_mappable_guard_rejects_use_before_assignment():
+    nb = _synthetic_notebook(
+        "plt.colorbar(mappable=mesh)\n",
+        "mesh = ax.pcolormesh(x, y, z)\n",
+    )
+
+    with pytest.raises(AssertionError, match="mappable=mesh is not assigned"):
+        _explicit_colorbar_mappables_from_plot_assignments(nb)
+
+
+def test_colorbar_mappable_guard_rejects_stale_reassignment():
+    nb = _synthetic_notebook(
+        "mesh = ax.pcolormesh(x, y, z)\n",
+        "mesh = None\n",
+        "plt.colorbar(mappable=mesh)\n",
+    )
+
+    with pytest.raises(AssertionError, match="mappable=mesh is not assigned"):
+        _explicit_colorbar_mappables_from_plot_assignments(nb)
+
+
+def test_colorbar_mappable_guard_accepts_current_pcolormesh_assignment():
+    nb = _synthetic_notebook(
+        "mesh = ax.pcolormesh(x, y, z)\n",
+        "plt.colorbar(mappable=mesh)\n",
+    )
+
+    assert _explicit_colorbar_mappables_from_plot_assignments(nb) == ["mesh"]
+
+
 def test_tutorial_outputs_do_not_expose_local_paths_or_raw_warnings():
     notebooks = sorted(TUTORIAL_ROOT.glob("*/user_guide/tutorials/*.ipynb"))
     offenders: list[str] = []
@@ -122,7 +323,10 @@ def test_tutorial_outputs_do_not_expose_local_paths_or_raw_warnings():
     for path in notebooks:
         nb = _read_notebook(path)
         for text in _iter_output_texts(nb):
-            hit = next((pat.pattern for pat in FORBIDDEN_OUTPUT_PATTERNS if pat.search(text)), None)
+            hit = next(
+                (pat.pattern for pat in FORBIDDEN_OUTPUT_PATTERNS if pat.search(text)),
+                None,
+            )
             if hit:
                 offenders.append(f"{path.relative_to(ROOT)} -> {hit}")
                 break
@@ -186,7 +390,9 @@ def test_en_case_arima_burst_search_is_actually_english():
 
 
 def test_en_case_arima_burst_search_has_markdown_sections_not_code():
-    nb = _read_tutorial_notebook(Path("en/user_guide/tutorials/case_arima_burst_search.ipynb"))
+    nb = _read_tutorial_notebook(
+        Path("en/user_guide/tutorials/case_arima_burst_search.ipynb")
+    )
     code_texts = [
         "".join(cell.get("source", []))
         for cell in nb.get("cells", [])
@@ -241,9 +447,10 @@ def test_intro_table_sample_csv_resolves_from_repo_root(relative_path: Path):
         exec(source, namespace)
 
     sample_csv = cast(Path, namespace["sample_csv"])
-    assert sample_csv.resolve() == (
-        ROOT / "docs" / "_static" / "samples" / "sample_segment_data.csv"
-    ).resolve()
+    assert (
+        sample_csv.resolve()
+        == (ROOT / "docs" / "_static" / "samples" / "sample_segment_data.csv").resolve()
+    )
 
 
 @pytest.mark.parametrize(
@@ -279,7 +486,7 @@ def test_advanced_hht_uses_explicit_mappables_for_colorbars(relative_path: Path)
 
     assert "plt.gca().get_images()" not in joined
     assert "plt.gca().collections[-1]" not in joined
-    assert "plt.colorbar(mappable=mesh, ax=ax1, label=\"Power\")" in joined
+    assert 'plt.colorbar(mappable=mesh, ax=ax1, label="Power")' in joined
     assert "sc = None" in joined
     assert "if sc is not None:" in joined
     assert "cbar = plt.colorbar(mappable=sc, ax=ax2)" in joined
@@ -332,10 +539,14 @@ def test_non_fitting_tutorials_keep_source_notebooks_clean(relative_path: Path):
 def test_ja_advanced_hht_keeps_note_in_markdown_not_code():
     relative_path = Path("ja/user_guide/tutorials/advanced_hht.ipynb")
     nb = _read_tutorial_notebook(relative_path)
-    first_code = next(cell for cell in nb.get("cells", []) if cell.get("cell_type") == "code")
+    first_code = next(
+        cell for cell in nb.get("cells", []) if cell.get("cell_type") == "code"
+    )
 
     first_code_source = "".join(first_code.get("source", []))
-    first_markdown_source = _localized_markdown_texts(nb, _notebook_locale(relative_path))[0]
+    first_markdown_source = _localized_markdown_texts(
+        nb, _notebook_locale(relative_path)
+    )[0]
 
     assert "ワークフロー重視" not in first_code_source
     assert "ワークフロー重視" in first_markdown_source
@@ -383,3 +594,40 @@ def test_case_seismic_obspy_avoids_slow_plot_wrappers(relative_path: Path):
     assert "ax.plot(ts_seismic.times.value, ts_seismic.value" in joined
     assert "plot = sg.plot()" not in joined
     assert "mesh = ax.pcolormesh(" in joined
+
+
+@pytest.mark.parametrize(
+    ("relative_path", "minimum_explicit_colorbars"),
+    [
+        (
+            Path("en/user_guide/tutorials/advanced_correlation.ipynb"),
+            1,
+        ),
+        (
+            Path("en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb"),
+            2,
+        ),
+        (
+            Path("en/user_guide/tutorials/case_gbd_format.ipynb"),
+            1,
+        ),
+        (
+            Path("en/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb"),
+            3,
+        ),
+    ],
+)
+def test_public_tutorial_colorbars_use_explicit_mappables(
+    relative_path: Path,
+    minimum_explicit_colorbars: int,
+):
+    nb = _read_tutorial_notebook(relative_path)
+    joined = _code_text(nb)
+
+    assert "plt.gca().get_images()" not in joined
+    assert "plt.gca().collections[-1]" not in joined
+    assert "plt.gca().get_children()" not in joined
+    assert "hasattr(c, 'get_clim')" not in joined
+
+    explicit_mappables = _explicit_colorbar_mappables_from_plot_assignments(nb)
+    assert len(explicit_mappables) >= minimum_explicit_colorbars
