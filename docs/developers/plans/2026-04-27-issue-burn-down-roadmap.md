@@ -222,6 +222,23 @@ Net outcome:
   spectrogram cleaning, and field/space transform workflows before the issue is
   closed.
 
+#### Wave 3 #285 Follow-Up Progress
+
+Status as of 2026-04-27: #285 remains open and is being reduced through
+docs/test-only transform slices.
+
+| Slice | PR | Merged | Merge commit | Result |
+| --- | --- | --- | --- | --- |
+| Special transforms | #307 `[AGENT:validation] Add special transform contract coverage` | 2026-04-27 20:27 JST | `4a8de43` | Added DCT, cepstrum, Laplace, STLT, CWT, EMD, and HHT contract coverage for axes, units, metadata, scaling, and optional dependency behavior. Runtime behavior unchanged. |
+
+Remaining #285 slices:
+
+- Q-transform passthrough/container contracts.
+- Spectrogram cleaning contracts.
+- Field/space transform workflow contracts.
+- PyEMD-dependent HHT numerical contracts, only after optional dependency and
+  physics-review expectations are explicit.
+
 ### Wave 4: Plot, GUI, And Public Docs Synchronization
 
 **Issues:** #275 -> #283 -> #274
