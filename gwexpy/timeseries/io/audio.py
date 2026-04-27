@@ -64,9 +64,9 @@ def read_timeseriesdict_audio(
         If not provided, defaults to 0.0 (audio files do not carry absolute timestamps).
     extract_metadata : bool, optional
         If True, attempt to extract audio metadata (title, artist, album, etc.)
-        using tinytag. Metadata is stored in the provenance. Requires the
-        optional ``tinytag`` package (``pip install tinytag``).
-        (Note: ``pip install gwexpy[audio]`` is coming soon. For now, use GitHub version.)
+        using tinytag. Metadata is stored in the provenance when available.
+        Missing tinytag emits a warning and skips metadata extraction. Install
+        with ``pip install 'gwexpy[audio]'`` or ``pip install "gwexpy[all]"``.
         Default: False (for backward compatibility).
     **kwargs
         Additional keyword arguments accepted for reader compatibility.

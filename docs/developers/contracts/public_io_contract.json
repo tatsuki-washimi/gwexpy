@@ -235,14 +235,19 @@
                 "write": []
             },
             "direct_api": {
-                "read": [],
+                "read": [
+                    "FrequencySeries",
+                    "FrequencySeriesDict"
+                ],
                 "write": []
             },
             "registry_api": {
                 "read": [
                     "TimeSeries",
                     "TimeSeriesDict",
-                    "TimeSeriesMatrix"
+                    "TimeSeriesMatrix",
+                    "FrequencySeriesDict",
+                    "FrequencySeriesMatrix"
                 ],
                 "write": []
             },
@@ -259,7 +264,7 @@
             "notes": [
                 "Public direct I/O is TimeSeriesDict-first because DiagGUI XML is product-driven.",
                 "TimeSeries and TimeSeriesMatrix readers remain registry adapters, but public guidance requires explicit format=\"xml.diaggui\" and products=...",
-                "FrequencySeriesDict and FrequencySeriesMatrix DTTXML readers are registry-only and not part of the public direct-I/O contract; FrequencySeries has identifier support only."
+                "FrequencySeries, FrequencySeriesDict, and FrequencySeriesMatrix DTTXML readers and direct shims are implementation-only and not part of the public direct-I/O contract."
             ],
             "optional_dependencies": [],
             "extras": [],
@@ -578,7 +583,7 @@
                 "audio"
             ],
             "unavailable_behavior": {
-                "read": "raises_import_error_for_optional_metadata",
+                "read": "warns_and_skips_optional_metadata",
                 "write": "available_in_base_install"
             }
         },
