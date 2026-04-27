@@ -48,6 +48,7 @@ def test_histogram_dict_integral():
 
     # Dictionary plain method mapping
     assert type(res) is dict
+    assert list(res) == ["a", "b"]
     assert "a" in res
     assert "b" in res
 
@@ -57,6 +58,15 @@ def test_histogram_dict_integral():
 
     assert val_a.value == 15
     assert val_b.value == 35
+
+
+def test_histogram_list_statistical_methods_currently_use_map_contract():
+    h1 = Histogram([10, 20], [0, 1, 2], unit="count")
+    h2 = Histogram([30, 40], [0, 1, 2], unit="count")
+    hl = HistogramList([h1, h2])
+
+    with pytest.raises(TypeError, match="Cannot append type"):
+        hl.mean()
 
 
 def test_histogram_collections_hdf5(tmp_path):

@@ -190,6 +190,7 @@ class TestSpectrogramListCrop:
         sg = _make_sg()
         sl = SpectrogramList([sg])
         result = sl.crop(2.0, 7.0)
+        assert result is not sl
         assert isinstance(result, SpectrogramList)
 
     def test_crop_inplace(self):
@@ -241,6 +242,7 @@ class TestSpectrogramListToMatrix:
         sl = SpectrogramList([sg1, sg2])
         matrix = sl.to_matrix()
         assert matrix.shape[0] == 2
+        assert list(matrix.channel_names) == ["a", "b"]
 
     def test_to_matrix_empty(self):
         # Lines 368-369
@@ -322,6 +324,7 @@ class TestSpectrogramDictCrop:
         sg = _make_sg()
         sd = SpectrogramDict({"a": sg})
         result = sd.crop(2.0, 7.0)
+        assert result is not sd
         assert isinstance(result, SpectrogramDict)
         assert "a" in result
 
@@ -344,6 +347,22 @@ class TestSpectrogramDictReduce:
         sd = SpectrogramDict({"a": _make_sg()})
         reduced = sd.__reduce_ex__(4)
         assert reduced[0] is dict
+
+
+class TestSpectrogramDictToMatrixContract:
+    def test_to_matrix_preserves_dict_key_order_as_rows(self):
+        sd = SpectrogramDict(
+            {
+                "zeta": _make_sg(name="sg-zeta"),
+                "alpha": _make_sg(name="sg-alpha"),
+            }
+        )
+
+        matrix = sd.to_matrix()
+
+        assert matrix.row_keys() == ("zeta", "alpha")
+        assert list(matrix.channel_names) == ["sg-zeta", "sg-alpha"]
+        assert matrix.unit == u.m
 
 
 class TestSpectrogramDictWrite:

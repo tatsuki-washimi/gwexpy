@@ -223,11 +223,12 @@ class TestIterCollectionDirEntries:
     def test_no_manifest_infers_from_csv(self, tmp_path):
         dp = tmp_path / "col"
         dp.mkdir()
-        (dp / "channel_a.csv").write_text("1,2,3")
         (dp / "channel_b.csv").write_text("4,5,6")
+        (dp / "channel_a.csv").write_text("1,2,3")
         fmt, pairs = iter_collection_dir_entries(dp)
         assert fmt == "csv"
         assert len(pairs) == 2
+        assert [key for key, _, _ in pairs] == ["channel_a", "channel_b"]
 
     def test_no_manifest_no_csv_raises(self, tmp_path):
         dp = tmp_path / "col"
