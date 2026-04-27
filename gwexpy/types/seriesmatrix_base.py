@@ -282,6 +282,25 @@ class SeriesMatrix(  # type: ignore[misc]
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
 
+    def __reduce__(self) -> tuple[Any, ...]:
+        """Include SeriesMatrix metadata in ndarray-subclass pickle state."""
+        picked = list(super().__reduce__())
+        matrix_state = {k: v for k, v in self.__dict__.items() if k != "_value"}
+        picked[2] = picked[2] + (matrix_state,)
+        return tuple(picked)
+
+    def __setstate__(self, state: tuple[Any, ...]) -> None:
+        """Restore SeriesMatrix metadata from pickle state."""
+        if state and isinstance(state[-1], dict):
+            matrix_state = state[-1]
+            ndarray_state = state[:-1]
+        else:
+            matrix_state = {}
+            ndarray_state = state
+        super().__setstate__(ndarray_state)
+        self.__dict__.update(matrix_state)
+        self._value = self.view(np.ndarray)
+
     def __array_ufunc__(
         self, ufunc: Any, method: str, *inputs: Any, **kwargs: Any
     ) -> Any:
