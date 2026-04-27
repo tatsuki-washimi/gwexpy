@@ -164,7 +164,8 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 ```
 
 - **HDF5** は安全で構造化しやすく、GW 系で最も無難な保存先です。
-- **DTTXML** は `products` によって出力型が変わります。複素 transfer function を扱う場合は、周波数系列側で `native=True` を優先してください。
+- **DTTXML** は `products` によって出力型が変わります。public direct read は `TimeSeriesDict.read(..., format="xml.diaggui", products=...)` に揃えます。
+- 周波数領域の DTTXML reader は registry-only の実装アダプターで、public direct-I/O contract には含めません。複素 transfer function を扱う高度な registry 利用では `native=True` を優先できます。
 - **NDS2 / GWOSC** はファイル形式ではないため、ページ中では A に置きつつ備考で `ネットワーク経由` と明示します。
 
 <a id="io-formats-ja-b"></a>

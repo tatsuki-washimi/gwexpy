@@ -258,7 +258,8 @@
             "metadata_requirements": [],
             "notes": [
                 "Public direct I/O is TimeSeriesDict-first because DiagGUI XML is product-driven.",
-                "TimeSeries and TimeSeriesMatrix readers remain registry adapters, but public guidance requires explicit format=\"xml.diaggui\" and products=..."
+                "TimeSeries and TimeSeriesMatrix readers remain registry adapters, but public guidance requires explicit format=\"xml.diaggui\" and products=...",
+                "FrequencySeriesDict and FrequencySeriesMatrix DTTXML readers are registry-only and not part of the public direct-I/O contract; FrequencySeries has identifier support only."
             ],
             "optional_dependencies": [],
             "extras": [],

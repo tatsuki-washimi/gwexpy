@@ -79,6 +79,16 @@ def test_docs_seismic_table_matches_current_public_boundary():
     assert "使える direct path は `ats.mth5` のみ" in ja
 
 
+def test_docs_mark_frequency_dttxml_as_registry_only():
+    contract = _load_contract()
+    en = _read(EN_GUIDE)
+    ja = _read(JA_GUIDE)
+
+    assert contract["xml.diaggui"]["public_api"]["read"] == ["TimeSeriesDict"]
+    assert "Frequency-domain DTTXML readers are registry-only" in en
+    assert "周波数領域の DTTXML reader は registry-only" in ja
+
+
 def test_optional_dependency_matrix_matches_contract():
     contract = _load_contract()
     en = _read(EN_GUIDE)

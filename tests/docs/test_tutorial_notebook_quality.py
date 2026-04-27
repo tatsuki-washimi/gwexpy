@@ -146,6 +146,14 @@ def test_intro_interop_uses_explicit_axes_for_pandas_plot(relative_path: Path):
     assert "plt.close(fig)" in source
 
 
+def test_intro_interop_explains_all_extra_scope():
+    nb = _read_tutorial_notebook(Path("en/user_guide/tutorials/intro_interop.ipynb"))
+    markdown = " ".join("\n".join(_markdown_texts(nb)).split())
+
+    assert "`gwexpy[all]` installs the declared GWexpy extras" in markdown
+    assert "does not install every public interop backend" in markdown
+
+
 def test_example_intro_interop_uses_explicit_axes_for_pandas_plot():
     nb = _read_notebook(ROOT / "examples" / "basic-new-methods" / "intro_Interop.ipynb")
     source = _code_cell_source_containing(nb, 's_pd = ts.to_pandas(index="datetime")')

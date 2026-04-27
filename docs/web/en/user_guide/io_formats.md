@@ -165,7 +165,8 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 ```
 
 - **HDF5** is the safest general recommendation for structured GW data.
-- **DTTXML** changes behavior depending on `products`. For complex transfer functions, prefer `native=True` on the frequency-domain side.
+- **DTTXML** changes behavior depending on `products`. Keep public direct reads on `TimeSeriesDict.read(..., format="xml.diaggui", products=...)`.
+- Frequency-domain DTTXML readers are registry-only implementation adapters, not part of the public direct-I/O contract. Advanced registry users handling complex transfer functions can prefer `native=True` there.
 - **NDS2 / GWOSC** are shown inside group A, but explicitly marked as `network path` rather than file formats.
 
 <a id="io-formats-en-b"></a>

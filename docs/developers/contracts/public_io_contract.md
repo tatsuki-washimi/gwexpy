@@ -67,9 +67,12 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
 ### `xml.diaggui`
 
 - Public contract: `TimeSeriesDict.read(..., format="xml.diaggui", products=...)`.
-- Registry surface: `TimeSeries` and `TimeSeriesMatrix` adapters may exist.
+- Registry surface: `TimeSeries`, `TimeSeriesMatrix`, and frequency-domain
+  `FrequencySeriesDict` / `FrequencySeriesMatrix` adapters may exist.
 - Reason: the file is product-driven and `.xml` is ambiguous, so public guidance
   must stay explicit even if the registry can infer the identifier.
+- Frequency-domain DTTXML readers are registry-only and not part of the public
+  direct-I/O contract; `FrequencySeries` has identifier support only.
 
 ### `root`
 

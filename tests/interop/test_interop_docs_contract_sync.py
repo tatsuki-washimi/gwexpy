@@ -142,3 +142,10 @@ def test_optional_dependency_policy_matches_contract():
     assert mth5["extras"] == ["seismic"]
     assert "pip install 'gwexpy[seismic]'" in en_docs
     assert "pip install 'gwexpy[seismic]'" in ja_docs
+
+    en_normalized = " ".join(en_docs.split())
+    ja_normalized = " ".join(ja_docs.split())
+    assert "`gwexpy[all]` installs the declared GWexpy extras" in en_normalized
+    assert "does not install every public interop backend" in en_normalized
+    assert "`gwexpy[all]` は GWexpy が宣言している extra" in ja_docs
+    assert "すべての public interop backend" in ja_normalized
