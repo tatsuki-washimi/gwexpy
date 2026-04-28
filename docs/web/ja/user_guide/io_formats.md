@@ -124,14 +124,14 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 
 | 形式 / 系統 | オプション依存関係 | GWexpy extra | 未導入時の挙動 |
 |---|---|---|---|
-| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` は警告を出し、metadata を省略します。必要なら `pip install 'gwexpy[audio]'` または `pip install "gwexpy[all]"` で導入してください。通常の WAV 読み書きは利用できます。 |
+| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` は警告を出し、metadata を省略します。PyPI 公開までは [インストールガイド](installation.md) の `audio` または `all` のソース導入形式で追加してください。通常の WAV 読み書きは利用できます。 |
 | **MP3 / FLAC / OGG / M4A** | `pydub`, `tinytag` | `audio` | 音声の読み書きは `ImportError` を送出します。一部 codec は外部の `ffmpeg` / `libav` も必要です。 |
-| **TDMS** | `nptdms` | `io` | reader は `pip install 'gwexpy[io]'` の案内付きで `ImportError` を送出します。 |
-| **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | 登録済みの reader / writer は `pip install 'gwexpy[seismic]'` の案内付きで `ImportError` を送出します。 |
+| **TDMS** | `nptdms` | `io` | reader は必要な `io` extra の案内付きで `ImportError` を送出します。 |
+| **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | 登録済みの reader / writer は必要な `seismic` extra の案内付きで `ImportError` を送出します。 |
 | **WIN / WIN32** | `obspy` | `seismic` | 条件付き登録です。ObsPy がない環境では `win` / `win32` の registry entry 自体が存在しない場合があります。 |
-| **ATS.MTH5** | `mth5` | `seismic` | reader は `pip install 'gwexpy[seismic]'` の案内付きで `ImportError` を送出します。 |
-| **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | reader / writer は `pip install 'gwexpy[netcdf4]'` の案内付きで `ImportError` を送出します。 |
-| **Zarr** | `zarr` | `zarr` | reader / writer は `pip install 'gwexpy[zarr]'` の案内付きで `ImportError` を送出します。 |
+| **ATS.MTH5** | `mth5` | `seismic` | reader は必要な `seismic` extra の案内付きで `ImportError` を送出します。 |
+| **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | reader / writer は必要な `netcdf4` extra の案内付きで `ImportError` を送出します。 |
+| **Zarr** | `zarr` | `zarr` | reader / writer は必要な `zarr` extra の案内付きで `ImportError` を送出します。 |
 
 <a id="io-formats-ja-a"></a>
 
