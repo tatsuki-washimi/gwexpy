@@ -24,6 +24,10 @@
 
 - **fields**: `VectorField` and `TensorField` now support initialization directly from NumPy ndarrays (5D for VectorField, 6D for TensorField), automatically creating the component `ScalarField`s without breaking backward-compatible dictionary initialization.
 
+### Changed
+
+- **fields**: `ScalarField` binary arithmetic now fails fast with `ValueError` when operands have mismatched time/frequency domains, spatial domains, or coordinate grids. Align fields explicitly before arithmetic; future regridding/interpolation APIs will track explicit grid-alignment workflows.
+
 ### Documentation
 
 - **docs**: Unified the Class Index into five major categories (Core, Field, Signal, Analysis, Utilities) with standardized Japanese translations (e.g., "時系列行列" for `TimeSeriesMatrix`).
