@@ -397,19 +397,22 @@ limitations are accepted.
 
 #### Wave 5 Progress Report
 
-Status as of 2026-04-28: release-gate hardening and the conda-forge onboarding
-roadmap have landed. No PyPI or conda-forge publication has been performed.
+Status as of 2026-04-28: release-gate hardening, release artifact hygiene, and
+the conda-forge onboarding roadmap have landed. No PyPI or conda-forge
+publication has been performed.
 
 | Issue | PR | Merged | Merge commit | Result |
 | --- | --- | --- | --- | --- |
 | #293 | #326 `[AGENT:release] Harden release metadata version parsing` | 2026-04-28 20:00 JST | `f8cff53` | Hardened the release metadata checker so malformed or unparseable top-level `CITATION.cff` version metadata fails closed. Release tooling only; runtime package behavior unchanged. |
+| #293 | #332 `[AGENT:release] Harden PyPI release gates` | 2026-04-28 20:42 JST | `0a710a1` | Added fail-closed required-file and release-date metadata checks, aligned current `0.1.1` release dates, removed bytecode/internal trees from release artifacts, added artifact hygiene checks, and added fresh-venv wheel smoke before PyPI publication. |
 | #294 | #327 `[AGENT:release] Record conda-forge onboarding roadmap` | 2026-04-28 19:57 JST | `4bf66c0` | Added the conda-forge staged-recipes roadmap, corrected the v1 recipe model to use `build.entry_points`, deferred the optional GUI entry point from the first core recipe, and added noarch recipe test guidance. Docs/test-only. |
 
 Net outcome:
 
-- #293 remains open for the actual PyPI release workflow: build artifacts,
-  Trusted Publishing verification, release metadata final checks, and fresh
-  install smoke tests.
+- #293 remains open for human-controlled release execution: PyPI Trusted
+  Publishing environment verification, final target version/date decision, tag
+  creation, release workflow execution, and confirmation that the published
+  package installs from PyPI.
 - #294 remains open for the external `conda-forge/staged-recipes` submission
   after a stable source release exists or maintainers explicitly approve a
   source-archive-first submission.
@@ -504,6 +507,7 @@ Additional checks for release PRs:
 ```bash
 rtk python scripts/check_release_metadata.py
 rtk python -m build
+rtk python scripts/check_release_artifacts.py dist
 rtk twine check dist/*
 ```
 
