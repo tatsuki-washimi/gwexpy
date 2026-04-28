@@ -8,7 +8,7 @@ branch: codex/wave2-272-roadmap-update
 pr_context:
   number: 303
   head_ref: codex/wave2-272-roadmap-update
-  reviewed_head_commit: 67771f1f1721716c02474ceb2524fb1fabe850f5
+  reviewed_head_commit: c41aad210fe478235d23902d44ef62bec826edf8
   reviewed_head_commit_note: "PR #303 head observed before this review-response update; not a single-commit provenance marker for every file in files_changed."
   diff_base: 122ad2f6b823d92373ace703ce28a0b8c393e374
   diff_base_note: "GitHub PR #303 baseRefOid for the reviewed diff."
@@ -25,16 +25,21 @@ source_commits:
     role: "Prior audit manifest provenance correction."
     files:
       - docs/developers/plans/audit-manifest-272-wave2-batch1-roadmap.yaml
-source_issue: 272
-source_pr: 302
+  - commit: c41aad210fe478235d23902d44ef62bec826edf8
+    role: "Prior review-response clarification for manifest provenance."
+    files:
+      - docs/developers/plans/audit-manifest-272-wave2-batch1-roadmap.yaml
+records_issue: 272
+records_pr: 302
+records_note: "This manifest records Wave 2 Batch 1 roadmap status after PR #302 closed issue #272; it does not claim ownership of PR #302 implementation changes."
 physics_review: not_required
 risk: docs_only
 scope:
   - "Record Wave 2 Batch 1 completion after PR #302 closed issue #272."
   - "No runtime code, public API behavior, physics behavior, units, or metadata behavior changed."
+agent_notes:
+  - "Reviewed the doc-architect guidance from the local agent skill registry before editing; this local skill read is intentionally not recorded as a reproducible repository command."
 commands:
-  - cmd: "rtk sed -n '1,220p' <skill:doc-architect>/SKILL.md"
-    result: "Reviewed documentation synchronization workflow."
   - cmd: "rtk gh pr view 303 --json number,title,isDraft,mergeStateStatus,headRefName,headRefOid,baseRefName,body,files,statusCheckRollup,url"
     result: "Confirmed draft PR #303 scope and current checks."
   - cmd: "rtk gh issue view 272 --json number,title,state,closed,closedAt,closedByPullRequestsReferences,url"
@@ -45,8 +50,8 @@ commands:
     result: "Audit manifest parsed successfully."
   - cmd: "rtk git diff --check"
     result: "No whitespace errors."
-  - cmd: "rtk rg -n \"<local-absolute-path-patterns>\" docs/developers/plans/audit-manifest-272-wave2-batch1-roadmap.yaml"
-    result: "No local absolute paths in the new manifest."
+  - cmd: "rtk rg -n \"(^|[[:space:]\\\"'=:/])/([[:alnum:]_.-]+/){2,}|<(skill:[^>]+|local-[^>]+-patterns)>\" docs/developers/plans/audit-manifest-272-wave2-batch1-roadmap.yaml"
+    result: "No committed local absolute paths or unresolved template placeholders in the new manifest."
   - cmd: "rtk gh pr view 303 --json number,title,state,isDraft,headRefName,headRefOid,baseRefName,baseRefOid,files,url,commits"
     result: "Confirmed PR #303 diff base, reviewed head, changed files, and source commits for this manifest correction."
   - cmd: "rtk git show --name-only --format=fuller --stat --no-renames 3cecf19976bec79baed4f05c122bf8364fe30862"

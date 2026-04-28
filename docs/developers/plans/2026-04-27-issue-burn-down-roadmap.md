@@ -185,7 +185,7 @@ reviewed for contract wording before merge.
 
 | Issue | PR | Merged | Merge commit | Result |
 | --- | --- | --- | --- | --- |
-| #272 | #302 `[AGENT:docs] Finish I/O interop follow-ups` | 2026-04-27 18:58 JST | `122ad2f` | Updated audio metadata install guidance to the published `gwexpy[audio]` / `gwexpy[all]` paths, clarified that `gwexpy[all]` does not install every public interop backend, and recorded the `xml.diaggui` / DTTXML boundary. Public DTTXML direct I/O remains `TimeSeriesDict.read(..., format="xml.diaggui", products=...)`; frequency-domain DTTXML direct shims and registry adapters are implementation-only. The WAV metadata contract now matches the existing warning-and-skip behavior when `tinytag` is missing. |
+| #272 | #302 `[AGENT:docs] Finish I/O interop follow-ups` | 2026-04-27 18:58 JST | `122ad2f` | Updated I/O interop docs and contract records for audio extras, DTTXML boundaries, and WAV metadata fallback behavior. |
 
 Net outcome:
 
@@ -194,6 +194,12 @@ Net outcome:
   agree with current implementation behavior.
 - `gwexpy[all]` is documented as a convenience bundle for declared extras, not
   as an exhaustive installer for every public interop backend.
+- Public DTTXML direct I/O remains
+  `TimeSeriesDict.read(..., format="xml.diaggui", products=...)`;
+  frequency-domain DTTXML direct shims and registry adapters are
+  implementation-only.
+- The WAV metadata contract now matches the existing warning-and-skip behavior
+  when `tinytag` is missing.
 - Wave 2 still needs the remaining public-surface audits: #279, #280, #281,
   #276, #290, and #287.
 
