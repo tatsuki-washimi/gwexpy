@@ -4,6 +4,15 @@ Date: 2026-04-27
 Issue: #273, "Add numerical algorithm contract regression tests"
 Mode: audit-first; docs and regression tests only.
 
+## Core Contract: Numerical Equivalence
+
+GWexpy maintains a strict **Numerical Equivalence** contract with GWpy:
+
+1. **Default Bit-Identity**: All methods inherited from or extending GWpy classes must produce bit-identical numerical results to the upstream GWpy implementation by default.
+2. **No Silent Corrective Fixes**: "Corrective" numerical improvements that alter the default output (even to improve physical accuracy or stability) are forbidden. 
+3. **Opt-in Enhancements**: Any hardened numerical behavior, improved stability, or alternative normalizations must be provided via optional keyword arguments or global `gwexpy.options`.
+4. **Verification**: Every Wave 3 PR must include a "Compatibility Audit" ensuring that default outputs have not drifted from the GWpy baseline.
+
 ## Scope And Non-Goals
 
 This pass starts Wave 3 by adding a shared numerical baseline before targeted

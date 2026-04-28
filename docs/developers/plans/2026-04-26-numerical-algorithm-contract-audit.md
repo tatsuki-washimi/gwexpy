@@ -4,6 +4,14 @@ Date: 2026-04-26
 Issue: #249, "Audit numerical algorithm contracts and documentation"
 Mode: audit-first only; no runtime behavior changes in this pass.
 
+## Core Contract: Numerical Equivalence
+
+GWexpy maintains a strict **Numerical Equivalence** contract with GWpy:
+
+1. **Drop-in replacement**: Default numerical outputs must be bit-identical to the upstream GWpy implementation.
+2. **No silent "fixes"**: Improving precision or stability must not change default results. Such changes must be opt-in via parameters (e.g., `stable=True`).
+3. **Verification**: All numerical audits must prioritize verifying parity before proposing enhancements.
+
 ## Ground Rules And Inputs
 
 - `.agent/AGENTS.md` was reviewed. The relevant local requirements are physical

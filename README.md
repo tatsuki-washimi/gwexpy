@@ -14,6 +14,14 @@
 
 **gwexpy** is an extension library for [GWpy](https://gwpy.github.io/) for experimental physics and gravitational-wave data analysis. It adds matrix-aware containers, field operations, fitting workflows, expanded I/O, and interoperability layers while staying close to GWpy-style analysis.
 
+## Design Philosophy: Numerical Integrity
+
+GWexpy is designed as a drop-in extension for GWpy. Our core promise is **Numerical Equivalence**:
+
+- **Drop-in Replacement**: Replacing `import gwpy` with `import gwexpy` will yield bit-identical numerical results for all inherited methods.
+- **No Silent Fixes**: We never implement "corrective" numerical changes that silently alter results, even if they improve accuracy. Any enhancements (e.g., improved stability or different normalizations) are strictly opt-in via keyword arguments or global options.
+- **Scientific Continuity**: Your existing GWpy-based pipelines will produce the same scientific conclusions when switched to GWexpy.
+
 ## Install
 
 ```bash
