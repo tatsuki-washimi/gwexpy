@@ -1,0 +1,102 @@
+---
+# Audit manifest for issue #287 field-algebra contract slice
+# Date: 2026-04-28
+
+skill:
+  - superpowers:using-superpowers
+  - superpowers:test-driven-development
+  - superpowers:verification-before-completion
+issue: 287
+branch: codex/wave4-287-field-contracts
+agent_model: Codex session default
+
+scope:
+  mode: docs_and_tests_only
+  runtime_modules_changed: false
+  contract_surface:
+    - ScalarField binary addition with aligned field metadata
+    - ScalarField same-shape spatial coordinate mismatch guard gap
+    - ScalarField same-shape axis0 domain mismatch guard gap
+
+physics_review: deferred_required_before_runtime_change
+physics_review_reason: >
+  This slice documents current behavior and desired future guards only. It does
+  not change coordinate-grid alignment, time/frequency-domain separation, unit
+  conversion, or NumPy/GWpy arithmetic inheritance semantics.
+
+commands_executed:
+  - cmd: "rtk sed -n '1,220p' AGENTS.md"
+    result: "Read repository entrypoint instructions."
+  - cmd: "rtk sed -n '1,260p' .agent/AGENTS.md"
+    result: "Read project agent guidelines."
+  - cmd: "rtk sed -n '1,220p' .agent/workflow/SKILL.md"
+    result: "No such file in this worktree; project-local SKILL.md files were not present at the documented paths."
+  - cmd: "rtk sed -n '1,220p' .agent/validation/SKILL.md"
+    result: "No such file in this worktree; project-local SKILL.md files were not present at the documented paths."
+  - cmd: "rtk sed -n '1,220p' .agent/docs/SKILL.md"
+    result: "No such file in this worktree; project-local SKILL.md files were not present at the documented paths."
+  - cmd: "rtk find .agent -maxdepth 3 -type f -name 'SKILL.md' | rtk sort"
+    result: "No project-local SKILL.md files found."
+  - cmd: "rtk find docs/developers/plans -maxdepth 1 -type f | rtk sort | rtk sed -n '1,160p'"
+    result: "Reviewed available developer plan and audit context."
+  - cmd: "rtk sed -n '1,240p' docs/developers/plans/2026-04-27-wave3-field-space-transform-contract-audit.md"
+    result: "Reviewed prior field contract audit style and deferred-change pattern."
+  - cmd: "rtk sed -n '1,220p' docs/developers/plans/audit-manifest-285-field-space-transforms.yaml"
+    result: "Reviewed existing audit manifest format."
+  - cmd: "rtk sed -n '1,260p' tests/fields/test_scalarfield_domain.py"
+    result: "Reviewed domain and unit propagation test patterns."
+  - cmd: "rtk sed -n '1,260p' tests/fields/test_space_transform_contracts.py"
+    result: "Reviewed field contract helper and assertion style."
+  - cmd: "rtk rg -n \"class ScalarField|axis0_domain|space_domains|def axis\\(\" gwexpy/fields tests/fields -S"
+    result: "Located ScalarField metadata properties and existing field tests."
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp python -c \"... ScalarField binary arithmetic probe ...\""
+    result: "Confirmed aligned addition preserves left metadata, while same-shape x-grid and axis0-domain mismatches currently do not raise."
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp pytest -q tests/fields/test_field_algebra_contracts.py -p no:cacheprovider"
+    result: "1 passed, 2 xfailed in 1.67s"
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp pytest -q tests/fields/test_field_algebra_contracts.py tests/fields/test_scalarfield_domain.py tests/fields/test_space_transform_contracts.py -p no:cacheprovider"
+    result: "24 passed, 2 xfailed in 1.72s"
+  - cmd: "rtk ruff check tests/fields/test_field_algebra_contracts.py"
+    result: "Ruff: No issues found"
+  - cmd: "rtk ruff format --check tests/fields/test_field_algebra_contracts.py"
+    result: "1 file already formatted"
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-287-field-algebra.yaml'))\""
+    result: "Parsed successfully"
+  - cmd: "rtk git diff --check"
+    result: "Clean"
+  - cmd: "quality review"
+    result: >
+      Requested narrowing mismatch xfails so only the current unsafe success
+      path is xfailed; unexpected exceptions or non-contract ValueErrors now
+      fail normally.
+
+test_results:
+  new_test_file: "1 passed, 2 xfailed"
+  focused_field_regression: "24 passed, 2 xfailed"
+  ruff_changed_tests: clean
+  ruff_format_changed_tests: clean
+  yaml_parse_manifest: clean
+  diff_check: clean
+  full_pytest: not_run
+  mypy: not_run
+  docs_build: not_run
+
+files_changed:
+  - path: tests/fields/test_field_algebra_contracts.py
+    change: >
+      Adds an aligned ScalarField binary-addition baseline plus strict xfail
+      tests for desired future same-shape x-coordinate and axis0-domain
+      mismatch guards.
+  - path: docs/developers/plans/2026-04-28-field-algebra-contract-audit.md
+    change: >
+      Documents scope, reviewed inputs, observed inherited arithmetic behavior,
+      deferred runtime decisions, and follow-up candidates.
+  - path: docs/developers/plans/audit-manifest-287-field-algebra.yaml
+    change: >
+      Records issue scope, physics-review status, command log, test results,
+      and changed files for this docs/test-only slice.
+
+deferred_follow_ups:
+  - "Define public ScalarField binary-operation alignment requirements."
+  - "Decide exact versus tolerance-based coordinate comparisons."
+  - "Audit VectorField, TensorField, FieldList, and FieldDict algebra paths."
+  - "Add runtime guards after physics review and replace strict xfail tests."
