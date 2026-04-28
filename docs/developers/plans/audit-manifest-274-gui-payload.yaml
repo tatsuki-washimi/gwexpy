@@ -1,0 +1,228 @@
+---
+# Audit manifest for Issue #274 GUI payload contract baseline
+# Date: 2026-04-28
+
+skill:
+  - test-driven-development
+issue: 274
+branch: codex/wave4-274-gui-payload-contracts
+agent_model: Codex session default
+physics_review_required: false
+
+commands_executed:
+  - cmd: "rtk sed -n '1,240p' .agent/AGENTS.md"
+    result: "Reviewed project agent instructions."
+  - cmd: "rtk sed -n '1,220p' docs/developers/plans/2026-04-26-gui-plot-metadata-unit-audit.md"
+    result: "Reviewed prior GUI/plot metadata audit and identified GUI payload contract gap."
+  - cmd: "rtk sed -n '1,220p' docs/developers/plans/2026-04-27-issue-burn-down-roadmap.md"
+    result: "Reviewed issue-wave guidance for docs/test-only contract baselines."
+  - cmd: "rtk env MPLCONFIGDIR=<tmp>/matplotlib XDG_CACHE_HOME=<tmp> QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+    result: "4 passed."
+  - cmd: "rtk env MPLCONFIGDIR=<tmp>/matplotlib XDG_CACHE_HOME=<tmp> QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_plot_renderer.py tests/gui/test_accumulator_delay.py tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+    result: "8 passed."
+  - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+    result: "Initially reported I001 import ordering; clean after mechanical fix."
+  - cmd: "rtk ruff check --fix tests/gui/test_gui_payload_contracts.py"
+    result: "Fixed import ordering."
+  - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+    result: "1 file already formatted."
+  - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-274-gui-payload.yaml'))\""
+    result: "Manifest parsed successfully."
+  - cmd: "rtk git diff --check"
+    result: "Clean."
+
+test_results:
+  focused_pytest: "4 passed"
+  gui_regression_pytest: "8 passed"
+  ruff_check_changed_test: clean
+  ruff_format_changed_test: clean
+  yaml_parse_manifest: clean
+  diff_check: clean
+  full_pytest: "failed locally: `rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/ -p no:cacheprovider` exited 139 at 20% of the suite after a pyqtgraph Qt teardown RuntimeError: `wrapped C/C++ object of type ViewBox has been deleted`; this local full-suite limitation was not reproduced by GitHub CI on the reviewed PR head."
+  mypy: "passed (`mypy: No issues found`)"
+  ci_coverage: "PR #324 pre-cleanup head 226d0865a567a3b6468b75b2dcdc682d40783313 had 7 passing GitHub checks on 2026-04-28, including `Ruff, mypy, pytest, and smoke build`; final-head CI is reported in the PR comment after checks complete."
+  docs_build: not_run
+
+files_changed:
+  - path: tests/gui/test_gui_payload_contracts.py
+    change: "Added headless current-contract tests for Engine.compute() and SpectralAccumulator.get_results() time-series and spectrogram payload shapes."
+  - path: docs/developers/plans/2026-04-28-gui-payload-contract-audit.md
+    change: "Documented current GUI payload limitations and deferred metadata-rich behavior."
+  - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+    change: "Recorded issue scope, commands, verification results, files changed, and physics review status."
+
+review_sensitive_follow_ups:
+  - "Introduce structured GUI payload metadata such as units, name, channel, and metadata."
+  - "Update GUI renderer labels and colorbar behavior based on metadata-rich payloads."
+  - "Review display-unit and phase/dB labeling semantics with domain owners before behavior changes."
+
+notes:
+  - "Runtime gwexpy code was intentionally not changed."
+  - "Tests avoid Qt, live GUI display, NDS, network access, and expensive spectral computation."
+
+agent_internal_notes:
+  - "Reviewed local superpowers using-superpowers guidance."
+  - "Reviewed local superpowers test-driven-development guidance; no production code was changed in this docs/test-only pass."
+  - "Reviewed local receiving-code-review guidance before handling the follow-up; this local skill read is intentionally not recorded as a reproducible repository command."
+
+review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Guard module-level GUI imports so missing PyQt5 produces an explicit skip instead of collection failure."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Moved gwexpy.gui Engine and SpectralAccumulator imports into a pytest fixture guarded by pytest.importorskip('PyQt5')."
+  commands_executed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "4 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "Clean after targeted import-order fix."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal python /tmp/check_gui_payload_pyqt5_skip.py"
+      result: "Synthetic no-PyQt5 harness confirmed 4 skipped with pytest-qt disabled; the first harness attempt without disabling pytest-qt exited before collection because pytest-qt itself requires a Qt binding."
+  test_results:
+    focused_pytest: "4 passed"
+    synthetic_no_pyqt5: "4 skipped"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    diff_check: clean
+
+additional_review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Guard gwexpy.gui import chain for partial GUI environments such as PyQt5 present but pyqtgraph or qtpy missing."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Broadened the GUI payload fixture guard to cover PyQt5, pyqtgraph, and qtpy before importing gwexpy.gui modules, and to skip only known GUI dependency ImportError cases during those imports."
+    - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+      change: "Recorded the additional review response and partial-GUI skip verification."
+  commands_executed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal python -c '<block pyqtgraph import; run pytest for tests/gui/test_gui_payload_contracts.py>'"
+      result: "Before the guard update, reproduced the partial-GUI failure: 3 passed, 1 setup error from missing pyqtgraph."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal python -c '<block pyqtgraph import; run pytest for tests/gui/test_gui_payload_contracts.py>'"
+      result: "After the guard update, confirmed clean partial-GUI behavior: 4 skipped."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "4 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk python -c '<parse docs/developers/plans/audit-manifest-274-gui-payload.yaml with yaml.safe_load>'"
+      result: "Manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+  test_results:
+    focused_pytest: "4 passed"
+    synthetic_no_pyqtgraph_before_fix: "3 passed, 1 setup error"
+    synthetic_no_pyqtgraph_after_fix: "4 skipped"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    yaml_parse_manifest: clean
+    diff_check: clean
+
+final_review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Address outstanding review cleanup on GUI payload contract tests and audit manifest."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Kept the PyQt5, pyqtgraph, and qtpy dependency guard so only known GUI dependency ImportError cases skip; renamed the gwpy-style value helper to _AttrWrapper; documented the accumulator expected time derivation."
+    - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+      change: "Removed non-reproducible local skill placeholders from commands_executed, moved them to agent_internal_notes, and recorded local mypy/full-pytest status plus CI coverage for the previous PR head."
+  commands_executed:
+    - cmd: "rtk sed -n '1,260p' tests/gui/test_gui_payload_contracts.py"
+      result: "Reviewed current GUI payload contract tests."
+    - cmd: "rtk sed -n '1,260p' docs/developers/plans/audit-manifest-274-gui-payload.yaml"
+      result: "Reviewed current audit manifest."
+    - cmd: "rtk rg -n \"^(import|from) (PyQt5|pyqtgraph|qtpy|gwexpy\\.gui)\" gwexpy/gui -g '*.py'"
+      result: "Verified the gwexpy.gui import chain uses PyQt5, pyqtgraph, and qtpy as the relevant optional GUI dependencies."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "4 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-274-gui-payload.yaml'))\""
+      result: "Manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+    - cmd: "rtk mypy gwexpy/"
+      result: "mypy: No issues found."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/ -p no:cacheprovider"
+      result: "Failed locally: exited 139 at 20% of the suite after a pyqtgraph Qt teardown RuntimeError: `wrapped C/C++ object of type ViewBox has been deleted`."
+    - cmd: "rtk gh pr checks 324"
+      result: "CI Checks Summary: Passed 7, Failed 0 for PR #324 pre-edit head."
+    - cmd: "rtk gh pr view 324 --json headRefOid,statusCheckRollup,url"
+      result: "Confirmed PR #324 pre-edit head 226d0865a567a3b6468b75b2dcdc682d40783313 and passing GitHub checks including `Ruff, mypy, pytest, and smoke build`."
+  test_results:
+    focused_pytest: "4 passed"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    yaml_parse_manifest: clean
+    diff_check: clean
+    mypy: "passed (`mypy: No issues found`)"
+    full_pytest: "failed locally with signal 11 at 20% due to known Qt teardown failure in pyqtgraph AxisItem/ViewBox"
+    ci_coverage: "PR #324 pre-edit head 226d0865a567a3b6468b75b2dcdc682d40783313 had 7 passing checks, including `Ruff, mypy, pytest, and smoke build`."
+
+strict_gui_skip_review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Restrict GUI import skip handling to truly missing top-level GUI dependency packages."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Changed the ImportError skip classifier to return a dependency only when the missing name belongs to the GUI dependency set and importlib.util.find_spec() confirms the top-level package is absent; installed but incompatible GUI APIs now re-raise."
+    - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+      change: "Recorded the stricter skip classifier review response and clarified that the local full-pytest Qt teardown failure was not reproduced by GitHub CI on the reviewed PR head."
+  commands_executed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "6 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-274-gui-payload.yaml'))\""
+      result: "Manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+    - cmd: "rtk mypy gwexpy tests/gui/test_gui_payload_contracts.py --ignore-missing-imports"
+      result: "No issues found."
+  test_results:
+    focused_pytest: "6 passed"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    yaml_parse_manifest: clean
+    diff_check: clean
+    mypy: clean
+
+top_level_gui_dependency_review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Replace pytest.importorskip preflight with explicit top-level package discovery."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Replaced pytest.importorskip() preflight with importlib.util.find_spec() based top-level dependency discovery, so installed-but-broken GUI packages fail instead of being skipped before gwexpy.gui imports run."
+    - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+      change: "Recorded the top-level dependency preflight review response and validation."
+  commands_executed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "8 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk mypy gwexpy tests/gui/test_gui_payload_contracts.py --ignore-missing-imports"
+      result: "No issues found."
+    - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-274-gui-payload.yaml'))\""
+      result: "Manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+  test_results:
+    focused_pytest: "8 passed"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    mypy: clean
+    yaml_parse_manifest: clean
+    diff_check: clean
