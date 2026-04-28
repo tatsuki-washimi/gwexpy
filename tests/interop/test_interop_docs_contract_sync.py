@@ -140,8 +140,10 @@ def test_optional_dependency_policy_matches_contract():
     mth5 = {entry["name"]: entry for entry in contract}["mth5"]
     assert mth5["optional_dependencies"] == ["mth5"]
     assert mth5["extras"] == ["seismic"]
-    assert "pip install 'gwexpy[seismic]'" in en_docs
-    assert "pip install 'gwexpy[seismic]'" in ja_docs
+    assert "source-install extra syntax" in en_docs
+    assert 'pip install "gwexpy[control] @ git+' in en_docs
+    assert "ソース導入形式" in ja_docs
+    assert 'pip install "gwexpy[control] @ git+' in ja_docs
 
     en_normalized = " ".join(en_docs.split())
     ja_normalized = " ".join(ja_docs.split())
