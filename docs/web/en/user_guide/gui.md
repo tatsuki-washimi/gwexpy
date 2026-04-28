@@ -11,7 +11,7 @@ GWexpy includes a **PyQt5-based GUI** for interactive data exploration and visua
 The GUI is available as an optional feature. Install it using the `gui` extra:
 
 ```bash
-pip install gwexpy[gui]
+pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 ```
 
 This installs additional dependencies:
@@ -92,7 +92,7 @@ Open files via:
 Ensure that the GUI extra was installed:
 
 ```bash
-pip install gwexpy[gui]
+pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 ```
 
 ### GUI does not launch

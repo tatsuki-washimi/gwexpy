@@ -6,9 +6,9 @@
 
 # gwexpy: GWpy Expansions for Experiments
 
-[![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml)
+[![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/pr-fast.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/pr-fast.yml)
 [![codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy/branch/main/graph/badge.svg)](https://codecov.io/gh/tatsuki-washimi/gwexpy)
-[![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
+[![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs-pr.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
@@ -19,7 +19,7 @@
 ```bash
 git clone https://github.com/tatsuki-washimi/gwexpy.git
 cd gwexpy
-pip install -e .
+python -m pip install -e .
 ```
 
 For optional extras, external dependencies, and environment-specific setup, use the official installation guides:

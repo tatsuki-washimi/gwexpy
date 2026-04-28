@@ -11,7 +11,7 @@ GWexpy には **PyQt5 ベースの GUI** が含まれており、対話的なデ
 GUI はオプション機能として利用可能です。`gui` extras を使用してインストールしてください：
 
 ```bash
-pip install gwexpy[gui]
+pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 ```
 
 これにより、以下の追加の依存パッケージがインストールされます：
@@ -92,7 +92,7 @@ GUI は以下の形式でのデータ読み込みに対応しています：
 GUI extras がインストールされていることを確認してください：
 
 ```bash
-pip install gwexpy[gui]
+pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 ```
 
 ### GUI が起動しない
