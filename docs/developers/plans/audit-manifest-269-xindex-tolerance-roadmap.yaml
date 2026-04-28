@@ -1,0 +1,55 @@
+---
+agent: Codex
+skills:
+  - doc-architect
+  - pytest-tdd
+external_tools:
+  - "GitHub CLI/plugin used for issue and PR context; not a local agent skill."
+branch: codex/wave4-269-xindex-tolerance-roadmap
+issue: 269
+physics_review: not_required
+risk: docs_test_only
+scope:
+  - "Classify the remaining SeriesMatrix xindex jitter tolerance work after PR #298."
+  - "Correct the burn-down roadmap so #269 is not described as fully closed."
+  - "Add a docs drift guard for the residual classification."
+commands:
+  - cmd: "rtk gh issue view 269 --json number,title,state,body,comments,labels,url"
+    result: "Confirmed #269 is open and contains the post-#298 xindex jitter tolerance deep-dive note."
+  - cmd: "rtk gh pr view 298 --json number,title,state,mergedAt,mergeCommit,url,body"
+    result: "Confirmed PR #298 merged the focused SeriesMatrix matmul xindex equality slice and explicitly did not close all #269 work."
+  - cmd: "rtk pytest -q tests/test_issue_burn_down_roadmap.py -p no:cacheprovider"
+    result: "Red before roadmap update: 0 passed, 1 failed."
+  - cmd: "rtk ruff check --fix tests/test_issue_burn_down_roadmap.py"
+    result: "Import/layout issue fixed; no issues remain."
+  - cmd: "rtk pytest -q tests/test_issue_burn_down_roadmap.py -p no:cacheprovider"
+    result: "Green after roadmap update: 1 passed."
+  - cmd: "rtk ruff format --check tests/test_issue_burn_down_roadmap.py"
+    result: "Already formatted."
+  - cmd: "rtk git diff --check"
+    result: "No whitespace errors."
+  - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/audit-manifest-269-xindex-tolerance-roadmap.yaml').read_text())\""
+    result: "Audit manifest parsed successfully."
+  - cmd: "rtk rg -n \"<local-absolute-path-patterns>\" <changed-files>"
+    result: "No local absolute paths in changed files."
+  - cmd: "rtk pytest -q tests/test_issue_burn_down_roadmap.py -p no:cacheprovider"
+    result: "Review follow-up validation: 1 passed."
+  - cmd: "rtk ruff check tests/test_issue_burn_down_roadmap.py"
+    result: "Review follow-up validation: no issues found."
+  - cmd: "rtk ruff format --check tests/test_issue_burn_down_roadmap.py"
+    result: "Review follow-up validation: 1 file already formatted."
+  - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/audit-manifest-269-xindex-tolerance-roadmap.yaml').read_text())\""
+    result: "Review follow-up validation: audit manifest parsed successfully."
+  - cmd: "rtk git diff --check"
+    result: "Review follow-up validation: no whitespace errors."
+files_changed:
+  - path: docs/developers/plans/2026-04-27-issue-burn-down-roadmap.md
+    change: "Separates the merged #298 matmul invariant slice from the remaining #269 xindex tolerance policy decision."
+  - path: docs/developers/plans/audit-manifest-269-xindex-tolerance-roadmap.yaml
+    change: "Adds audit manifest for this docs/test-only roadmap correction and keeps external tool references separate from local skills."
+  - path: tests/test_issue_burn_down_roadmap.py
+    change: "Adds a lightweight drift guard that the #269 xindex tolerance residual remains explicitly classified."
+deferred:
+  - "Any exact-equality to fuzzy-tolerance runtime change."
+  - "Tolerance value, warning policy, and resampling/interpolation guidance for physics-facing xindex alignment."
+  - "Normative contract tests for tolerant xindex acceptance until physics review approves the policy."
