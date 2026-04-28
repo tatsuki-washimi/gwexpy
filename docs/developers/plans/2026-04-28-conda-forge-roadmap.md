@@ -81,10 +81,8 @@ build:
   noarch: python
   script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  python:
-    entry_points:
-      - gwexpy = gwexpy.cli:main
-      - gwexpy.gui = gwexpy.gui.pyaggui:main
+  entry_points:
+    - gwexpy = gwexpy.cli:main
 
 requirements:
   host:
@@ -111,6 +109,10 @@ tests:
   - python:
       imports:
         - gwexpy
+      pip_check: true
+      python_version:
+        - "3.11.*"
+        - "*"
   - script:
       - gwexpy --help
       - python -c "import gwexpy; gwexpy.register_all()"
@@ -118,17 +120,18 @@ tests:
 
 `noarch: python` is the expected starting point because this repository ships
 pure Python package code and delegates compiled or binary-heavy components to
-dependencies. Confirm this during the staged-recipes build review. If any future
-release adds compiled extension modules, revisit the platform model before
-submitting.
+dependencies. Confirm this during the staged-recipes build review. For the
+recipe tests, keep `pip_check: true` and run the import test against the
+minimum supported Python version plus the latest supported line that the
+feedstock will exercise. In the current roadmap draft, that means `3.11.*` and
+`*` in the conda-forge recipe syntax. If any future release adds compiled
+extension modules, revisit the platform model before submitting.
 
-The recipe model lists both console scripts from `pyproject.toml`, including
-`gwexpy.gui`, because noarch Python recipes must declare upstream console-script
-entry points in the build section. The first core recipe should not add GUI
-dependencies only to satisfy that entry point. Before external submission,
-maintainers should decide whether to keep the unconditional GUI console script,
-move it behind a split output, or change upstream package metadata in the PyPI
-release work.
+The initial recipe should keep only the core `gwexpy` console script in
+`build.entry_points`. `gwexpy.gui` imports PyQt5 and depends on the optional
+GUI stack, so it should stay out of the first noarch core recipe unless the GUI
+dependencies are added explicitly or the GUI is split into a separate output
+later.
 
 ## Core Dependency Map
 

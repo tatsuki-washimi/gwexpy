@@ -16,9 +16,9 @@ def _dependency_name(requirement: str) -> str:
     return name.lower().replace("_", "-")
 
 
-def _roadmap_core_dependencies() -> set[str]:
+def _roadmap_core_dependency_map() -> dict[str, str]:
     text = ROADMAP.read_text(encoding="utf-8")
-    dependencies: set[str] = set()
+    dependencies: dict[str, str] = {}
     in_table = False
 
     for line in text.splitlines():
@@ -36,11 +36,25 @@ def _roadmap_core_dependencies() -> set[str]:
         if not cells or cells[0].startswith("---"):
             continue
 
-        match = re.search(r"`([^`]+)`", cells[0])
-        if match:
-            dependencies.add(_dependency_name(match.group(1)))
+        pyproject_match = re.search(r"`([^`]+)`", cells[0])
+        conda_match = re.search(r"`([^`]+)`", cells[1])
+        if pyproject_match and conda_match:
+            dependencies[_dependency_name(pyproject_match.group(1))] = (
+                conda_match.group(1)
+            )
 
     return dependencies
+
+
+def _roadmap_initial_recipe() -> str:
+    text = ROADMAP.read_text(encoding="utf-8")
+    match = re.search(
+        r"## Initial Recipe Model.*?```yaml\n(.*?)\n```",
+        text,
+        flags=re.S,
+    )
+    assert match is not None, "Initial recipe model block not found"
+    return match.group(1)
 
 
 def test_conda_forge_roadmap_covers_project_core_dependencies():
@@ -50,12 +64,29 @@ def test_conda_forge_roadmap_covers_project_core_dependencies():
         for requirement in pyproject["project"]["dependencies"]
     }
 
-    assert expected <= _roadmap_core_dependencies()
+    assert expected <= set(_roadmap_core_dependency_map())
 
 
-def test_conda_forge_roadmap_lists_console_entry_points():
-    pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
-    roadmap = ROADMAP.read_text(encoding="utf-8")
+def test_conda_forge_roadmap_records_conda_package_name_translations():
+    dependency_map = _roadmap_core_dependency_map()
 
-    for script, target in pyproject["project"]["scripts"].items():
-        assert f"- {script} = {target}" in roadmap
+    assert dependency_map["matplotlib"] == "matplotlib-base"
+    assert dependency_map["typing-extensions"] == "typing-extensions"
+
+
+def test_conda_forge_roadmap_uses_build_entry_points_for_console_scripts():
+    recipe = _roadmap_initial_recipe()
+
+    assert "entry_points:" in recipe
+    assert "- gwexpy = gwexpy.cli:main" in recipe
+    assert "gwexpy.gui = gwexpy.gui.pyaggui:main" not in recipe
+    assert "build:\n  python:" not in recipe
+
+
+def test_conda_forge_roadmap_records_noarch_python_recipe_test_coverage():
+    recipe = _roadmap_initial_recipe()
+
+    assert "pip_check: true" in recipe
+    assert "python_version:" in recipe
+    assert "3.11.*" in recipe
+    assert '"*"' in recipe

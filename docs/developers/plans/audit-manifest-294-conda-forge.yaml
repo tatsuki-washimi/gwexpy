@@ -36,23 +36,23 @@ commands:
     result: "Reviewed issue scope and acceptance criteria."
 changed_files:
   - path: docs/developers/plans/2026-04-28-conda-forge-roadmap.md
-    change: "Added staged-recipes/feedstock onboarding plan, recipe model, core dependency map, and deferred decision list."
+    change: "Corrected the staged-recipes recipe model to use build.entry_points, deferred gwexpy.gui from the initial core recipe, and documented pip_check/python_version expectations for noarch recipe tests."
   - path: tests/test_conda_forge_roadmap.py
-    change: "Added drift guards requiring every pyproject core dependency and console entry point to appear in the roadmap recipe model."
+    change: "Added drift guards for the recipe build.entry_points location, GUI entry-point deferral, and noarch Python test coverage metadata."
   - path: docs/developers/plans/audit-manifest-294-conda-forge.yaml
-    change: "Recorded scope, consulted sources, commands, and validation plan."
+    change: "Recorded the scope, consulted sources, commands, and validation plan for the conda-forge roadmap follow-up."
 validation:
   completed:
     - cmd: "rtk pytest -q tests/test_conda_forge_roadmap.py -p no:cacheprovider"
-      result: "2 passed after adding console-entry-point coverage"
+      result: "3 passed after updating the build.entry_points, GUI deferral, and noarch test coverage guards"
     - cmd: "rtk ruff check tests/test_conda_forge_roadmap.py"
-      result: "clean after import-order fix"
-    - cmd: "rtk ruff format --check tests/test_conda_forge_roadmap.py"
-      result: "already formatted after ruff format"
+      result: "No issues found"
     - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/audit-manifest-294-conda-forge.yaml').read_text())\""
       result: "parsed successfully"
     - cmd: "rtk git diff --check"
-      result: "clean after review follow-up"
+      result: "clean"
+    - cmd: "rtk rg -n \"build\\.python\\.entry_points|gwexpy\\.gui = gwexpy\\.gui\\.pyaggui:main\" docs/developers/plans tests"
+      result: "Only the negative GUI entry-point guard remains in the roadmap test; no build.python.entry_points reference remains."
 reviews:
   - reviewer: "Newton"
     type: "conda-forge roadmap review"
