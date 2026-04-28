@@ -153,14 +153,14 @@ def test_cff_version_parser_accepts_document_start_and_indented_root_keys(
     assert module.get_version_from_cff() == "1.2.3"
 
 
-def test_cff_version_missing_file_warns_and_returns_none(
+def test_cff_version_missing_file_errors_and_returns_empty(
     tmp_path: Path, monkeypatch, capsys
 ):
     module = load_script_module()
     monkeypatch.chdir(tmp_path)
 
-    assert module.get_version_from_cff() is None
-    assert "Warning: CITATION.cff not found" in capsys.readouterr().out
+    assert module.get_version_from_cff() == ""
+    assert "Error: CITATION.cff not found" in capsys.readouterr().out
 
 
 def test_cff_version_parser_rejects_comment_only_value(
@@ -207,10 +207,10 @@ def test_main_fails_when_cff_version_is_malformed(tmp_path: Path, monkeypatch, c
     )
     Path("CITATION.cff").write_text("version: # missing\n", encoding="utf-8")
     Path(".zenodo.json").write_text(
-        json.dumps({"version": "0.1.1"}),
+        json.dumps({"version": "0.1.1", "publication_date": "2026-04-28"}),
         encoding="utf-8",
     )
-    Path("CHANGELOG.md").write_text("## [0.1.1]\n", encoding="utf-8")
+    Path("CHANGELOG.md").write_text("## [0.1.1] - 2026-04-28\n", encoding="utf-8")
 
     try:
         module.main()
@@ -240,10 +240,10 @@ def test_main_fails_when_cff_version_has_quoted_trailing_junk(
         encoding="utf-8",
     )
     Path(".zenodo.json").write_text(
-        json.dumps({"version": "0.1.1"}),
+        json.dumps({"version": "0.1.1", "publication_date": "2026-04-28"}),
         encoding="utf-8",
     )
-    Path("CHANGELOG.md").write_text("## [0.1.1]\n", encoding="utf-8")
+    Path("CHANGELOG.md").write_text("## [0.1.1] - 2026-04-28\n", encoding="utf-8")
 
     try:
         module.main()
@@ -278,7 +278,7 @@ def test_main_passes_when_release_metadata_matches(tmp_path: Path, monkeypatch, 
         encoding="utf-8",
     )
     Path(".zenodo.json").write_text(
-        json.dumps({"version": "0.6.0"}),
+        json.dumps({"version": "0.6.0", "publication_date": "2026-04-28"}),
         encoding="utf-8",
     )
     Path("CHANGELOG.md").write_text(
@@ -306,6 +306,7 @@ def test_main_passes_with_yaml_spacing_variants(tmp_path: Path, monkeypatch, cap
                 "  cff-version: 1.2.0",
                 "  title: GWexpy",
                 "  version : 9.9.9",
+                "  date-released: 2026-04-28",
                 "  preferred-citation:",
                 "    version: 0.0.1",
             ]
@@ -313,10 +314,10 @@ def test_main_passes_with_yaml_spacing_variants(tmp_path: Path, monkeypatch, cap
         encoding="utf-8",
     )
     Path(".zenodo.json").write_text(
-        json.dumps({"version": "9.9.9"}),
+        json.dumps({"version": "9.9.9", "publication_date": "2026-04-28"}),
         encoding="utf-8",
     )
-    Path("CHANGELOG.md").write_text("## [9.9.9]\n", encoding="utf-8")
+    Path("CHANGELOG.md").write_text("## [9.9.9] - 2026-04-28\n", encoding="utf-8")
 
     module.main()
 
@@ -345,10 +346,10 @@ def test_main_fails_closed_when_cff_exists_without_parseable_version(
         encoding="utf-8",
     )
     Path(".zenodo.json").write_text(
-        json.dumps({"version": "1.2.3"}),
+        json.dumps({"version": "1.2.3", "publication_date": "2026-04-28"}),
         encoding="utf-8",
     )
-    Path("CHANGELOG.md").write_text("## [1.2.3]\n", encoding="utf-8")
+    Path("CHANGELOG.md").write_text("## [1.2.3] - 2026-04-28\n", encoding="utf-8")
 
     try:
         module.main()
@@ -360,3 +361,60 @@ def test_main_fails_closed_when_cff_exists_without_parseable_version(
     output = capsys.readouterr().out
     assert "Could not parse top-level version from CITATION.cff" in output
     assert "Version mismatch in CITATION.cff" in output
+
+
+def test_main_fails_closed_when_zenodo_is_missing(tmp_path: Path, monkeypatch, capsys):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+
+    Path("gwexpy").mkdir()
+    Path("gwexpy/_version.py").write_text(
+        '__version__ = "1.2.3"\n',
+        encoding="utf-8",
+    )
+    Path("CITATION.cff").write_text(
+        "version: 1.2.3\ndate-released: 2026-04-28\n",
+        encoding="utf-8",
+    )
+    Path("CHANGELOG.md").write_text("## [1.2.3] - 2026-04-28\n", encoding="utf-8")
+
+    try:
+        module.main()
+    except SystemExit as exc:
+        assert exc.code == 1
+    else:
+        raise AssertionError("missing .zenodo.json should fail")
+
+    output = capsys.readouterr().out
+    assert "Error: .zenodo.json not found" in output
+    assert "Version mismatch in .zenodo.json" in output
+
+
+def test_main_fails_when_release_dates_drift(tmp_path: Path, monkeypatch, capsys):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+
+    Path("gwexpy").mkdir()
+    Path("gwexpy/_version.py").write_text(
+        '__version__ = "1.2.3"\n',
+        encoding="utf-8",
+    )
+    Path("CITATION.cff").write_text(
+        "version: 1.2.3\ndate-released: 2026-04-28\n",
+        encoding="utf-8",
+    )
+    Path(".zenodo.json").write_text(
+        json.dumps({"version": "1.2.3", "publication_date": "2026-04-27"}),
+        encoding="utf-8",
+    )
+    Path("CHANGELOG.md").write_text("## [1.2.3] - 2026-04-28\n", encoding="utf-8")
+
+    try:
+        module.main()
+    except SystemExit as exc:
+        assert exc.code == 1
+    else:
+        raise AssertionError("release date drift should fail")
+
+    output = capsys.readouterr().out
+    assert "Release date mismatch" in output

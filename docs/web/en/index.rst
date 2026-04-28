@@ -10,7 +10,7 @@ GWexpy Documentation
 
 GWexpy extends GWpy with new containers and numerical utilities for time-series and frequency-series data analysis.
 
-v\ |release| · Python ≥ 3.9 · Last updated: |today|
+v\ |release| · Python ≥ 3.11 · Last updated: |today|
 
 .. raw:: html
 
@@ -42,7 +42,7 @@ v\ |release| · Python ≥ 3.9 · Last updated: |today|
          </div>
          <div>
            <dt>Install</dt>
-           <dd>Git checkout recommended</dd>
+           <dd>Source install until PyPI release</dd>
          </div>
        </dl>
      </div>
@@ -62,7 +62,7 @@ v\ |release| · Python ≥ 3.9 · Last updated: |today|
        <p>Quick installation</p>
        <pre><code>git clone https://github.com/tatsuki-washimi/gwexpy.git
     cd gwexpy
-    pip install -e .</code></pre>
+    python -m pip install -e .</code></pre>
      </section>
      <section class="gw-hub-panel">
        <p>3-line demo</p>

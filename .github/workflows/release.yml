@@ -50,8 +50,18 @@ jobs:
       - name: Build package
         run: python -m build
 
+      - name: Check release artifact hygiene
+        run: python scripts/check_release_artifacts.py dist
+
       - name: Check package metadata
         run: twine check dist/*
+
+      - name: Smoke test built wheel in a fresh environment
+        run: |
+          python -m venv /tmp/gwexpy-release-smoke
+          /tmp/gwexpy-release-smoke/bin/python -m pip install --upgrade pip
+          /tmp/gwexpy-release-smoke/bin/python -m pip install dist/*.whl
+          /tmp/gwexpy-release-smoke/bin/python -c "import gwexpy; print(gwexpy.__version__)"
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

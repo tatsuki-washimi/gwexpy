@@ -4,8 +4,8 @@ import re
 import sys
 from pathlib import Path
 
-VERSION_KEY_PATTERN = re.compile(r'(?:version|"version"|\'version\')\s*:\s*(.*)$')
 QUOTED_VALUE_PATTERN = re.compile(r'(["\'])(.*?)\1\s*(?:#.*)?$')
+DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 def get_version_from_py():
@@ -18,11 +18,38 @@ def get_version_from_py():
     return match.group(1) if match else None
 
 
-def get_version_from_cff():
+def _parse_cff_scalar_value(value: str, *, source: str) -> str:
+    value = value.strip()
+    if value.startswith(("'", '"')):
+        quoted_match = QUOTED_VALUE_PATTERN.fullmatch(value)
+        if not quoted_match:
+            if value.count(value[0]) < 2:
+                print(f"Error: Malformed CITATION.cff {source}: unterminated quote")
+            else:
+                print(
+                    f"Error: Malformed CITATION.cff {source}: "
+                    "trailing content after quoted value"
+                )
+            return ""
+        parsed = quoted_match.group(2).strip()
+    else:
+        parsed = value.split("#", 1)[0].strip()
+
+    if not parsed:
+        print(f"Error: Malformed CITATION.cff {source}: empty value")
+        return ""
+    return parsed
+
+
+def _get_top_level_cff_value(key: str) -> str:
     cff_file = Path("CITATION.cff")
     if not cff_file.exists():
-        print(f"Warning: {cff_file} not found")
-        return None
+        print(f"Error: {cff_file} not found")
+        return ""
+
+    key_pattern = re.compile(
+        rf'(?:{re.escape(key)}|"{re.escape(key)}"|\'{re.escape(key)}\')\s*:\s*(.*)$'
+    )
 
     top_level_indent = None
     for line in cff_file.read_text().splitlines():
@@ -37,45 +64,47 @@ def get_version_from_cff():
         if indent != top_level_indent:
             continue
 
-        match = VERSION_KEY_PATTERN.fullmatch(line.lstrip())
+        match = key_pattern.fullmatch(line.lstrip())
         if not match:
             continue
 
-        value = match.group(1).strip()
-        if value.startswith(("'", '"')):
-            quoted_match = QUOTED_VALUE_PATTERN.fullmatch(value)
-            if not quoted_match:
-                if value.count(value[0]) < 2:
-                    print("Error: Malformed CITATION.cff version: unterminated quote")
-                else:
-                    print(
-                        "Error: Malformed CITATION.cff version: trailing content after quoted value"
-                    )
-                return ""
-            parsed = quoted_match.group(2).strip()
-        else:
-            parsed = value.split("#", 1)[0].strip()
+        return _parse_cff_scalar_value(match.group(1), source=key)
 
-        if not parsed:
-            print("Error: Malformed CITATION.cff version: empty value")
-            return ""
-        return parsed
-
-    print("Error: Could not parse top-level version from CITATION.cff")
+    print(f"Error: Could not parse top-level {key} from CITATION.cff")
     return ""
 
 
+def get_version_from_cff():
+    return _get_top_level_cff_value("version")
+
+
+def get_date_from_cff():
+    return _get_top_level_cff_value("date-released")
+
+
 def get_version_from_zenodo():
+    return _get_zenodo_field("version")
+
+
+def get_date_from_zenodo():
+    return _get_zenodo_field("publication_date")
+
+
+def _get_zenodo_field(field_name):
     zenodo_file = Path(".zenodo.json")
     if not zenodo_file.exists():
-        print(f"Warning: {zenodo_file} not found")
-        return None
+        print(f"Error: {zenodo_file} not found")
+        return ""
     try:
         data = json.loads(zenodo_file.read_text())
-        return data.get("version")
+        value = data.get(field_name)
     except Exception as e:
         print(f"Error parsing .zenodo.json: {e}")
-        return None
+        return ""
+    if not value:
+        print(f"Error: .zenodo.json missing {field_name}")
+        return ""
+    return str(value)
 
 
 def check_changelog(version):
@@ -92,6 +121,30 @@ def check_changelog(version):
     return False
 
 
+def get_changelog_release_date(version):
+    changelog_file = Path("CHANGELOG.md")
+    if not changelog_file.exists():
+        print(f"Error: {changelog_file} not found")
+        return ""
+    content = changelog_file.read_text()
+    match = re.search(
+        rf"^## \[{re.escape(version)}\]\s*-\s*(\d{{4}}-\d{{2}}-\d{{2}})\s*$",
+        content,
+        flags=re.MULTILINE,
+    )
+    if not match:
+        print(f"Error: Release date for version {version} not found in CHANGELOG.md")
+        return ""
+    return match.group(1)
+
+
+def _check_date(label, value):
+    if not DATE_PATTERN.fullmatch(value):
+        print(f"Error: {label} release date is not YYYY-MM-DD: {value}")
+        return False
+    return True
+
+
 def main():
     py_version = get_version_from_py()
     if not py_version:
@@ -101,19 +154,20 @@ def main():
     print(f"Detected version: {py_version}")
 
     cff_version = get_version_from_cff()
+    cff_date = get_date_from_cff()
     zenodo_version = get_version_from_zenodo()
+    zenodo_date = get_date_from_zenodo()
+    changelog_date = get_changelog_release_date(py_version)
 
     errors = 0
 
-    if cff_version is not None and cff_version != py_version:
+    if cff_version != py_version:
         print(f"Error: Version mismatch in CITATION.cff: {cff_version} != {py_version}")
         errors += 1
-    elif cff_version == py_version:
-        print("OK: CITATION.cff version matches.")
     else:
-        print("Warning: CITATION.cff version not checked.")
+        print("OK: CITATION.cff version matches.")
 
-    if zenodo_version and zenodo_version != py_version:
+    if zenodo_version != py_version:
         print(
             f"Error: Version mismatch in .zenodo.json: {zenodo_version} != {py_version}"
         )
@@ -125,6 +179,33 @@ def main():
         errors += 1
     else:
         print("OK: CHANGELOG.md entry found.")
+
+    if not _check_date("CITATION.cff", cff_date):
+        errors += 1
+    if not _check_date(".zenodo.json", zenodo_date):
+        errors += 1
+    if not _check_date("CHANGELOG.md", changelog_date):
+        errors += 1
+
+    if cff_date and zenodo_date and cff_date != zenodo_date:
+        print(
+            f"Error: Release date mismatch: CITATION.cff {cff_date} != "
+            f".zenodo.json {zenodo_date}"
+        )
+        errors += 1
+    if cff_date and changelog_date and cff_date != changelog_date:
+        print(
+            f"Error: Release date mismatch: CITATION.cff {cff_date} != "
+            f"CHANGELOG.md {changelog_date}"
+        )
+        errors += 1
+    if (
+        cff_date
+        and zenodo_date
+        and changelog_date
+        and cff_date == zenodo_date == changelog_date
+    ):
+        print("OK: release dates match.")
 
     if errors > 0:
         print(f"\nFound {errors} metadata consistency error(s).")

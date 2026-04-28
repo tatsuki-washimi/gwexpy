@@ -10,7 +10,7 @@ GWexpy ドキュメント
 
 GWexpy は GWpy を拡張し、時系列および周波数系列データ解析のための新たなコンテナや数値計算ユーティリティを提供します。
 
-v\ |release| · Python ≥ 3.9 · 最終更新: |today|
+v\ |release| · Python ≥ 3.11 · 最終更新: |today|
 
 .. raw:: html
 
@@ -45,7 +45,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
          </div>
          <div>
            <dt>Install</dt>
-           <dd>Git checkout 推奨</dd>
+           <dd>PyPI 公開まではソース導入</dd>
          </div>
        </dl>
      </div>
@@ -65,7 +65,7 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
        <p>Quick install</p>
        <pre><code>git clone https://github.com/tatsuki-washimi/gwexpy.git
    cd gwexpy
-   pip install -e .</code></pre>
+   python -m pip install -e .</code></pre>
      </section>
      <section class="gw-hub-panel">
        <p>3-line demo</p>
