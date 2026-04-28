@@ -40,7 +40,7 @@ test_results:
   diff_check: clean
   full_pytest: "failed locally: `rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/ -p no:cacheprovider` exited 139 at 20% of the suite after a pyqtgraph Qt teardown RuntimeError: `wrapped C/C++ object of type ViewBox has been deleted`."
   mypy: "passed (`mypy: No issues found`)"
-  ci_coverage: "PR #324 head 226d0865a567a3b6468b75b2dcdc682d40783313 had 7 passing GitHub checks on 2026-04-28, including `Ruff, mypy, pytest, and smoke build`."
+  ci_coverage: "PR #324 pre-cleanup head 226d0865a567a3b6468b75b2dcdc682d40783313 had 7 passing GitHub checks on 2026-04-28, including `Ruff, mypy, pytest, and smoke build`; final-head CI is reported in the PR comment after checks complete."
   docs_build: not_run
 
 files_changed:
@@ -63,6 +63,7 @@ notes:
 agent_internal_notes:
   - "Reviewed local superpowers using-superpowers guidance."
   - "Reviewed local superpowers test-driven-development guidance; no production code was changed in this docs/test-only pass."
+  - "Reviewed local receiving-code-review guidance before handling the follow-up; this local skill read is intentionally not recorded as a reproducible repository command."
 
 review_response:
   date: 2026-04-28
@@ -132,8 +133,6 @@ final_review_response:
     - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
       change: "Removed non-reproducible local skill placeholders from commands_executed, moved them to agent_internal_notes, and recorded local mypy/full-pytest status plus CI coverage for the previous PR head."
   commands_executed:
-    - cmd: "rtk sed -n '1,220p' /home/washimi/.codex/superpowers/skills/receiving-code-review/SKILL.md"
-      result: "Reviewed code-review response workflow."
     - cmd: "rtk sed -n '1,260p' tests/gui/test_gui_payload_contracts.py"
       result: "Reviewed current GUI payload contract tests."
     - cmd: "rtk sed -n '1,260p' docs/developers/plans/audit-manifest-274-gui-payload.yaml"
