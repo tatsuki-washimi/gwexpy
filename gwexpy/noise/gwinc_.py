@@ -3,6 +3,7 @@
 This module provides functions to generate Amplitude Spectral Density (ASD)
 from pyGWINC detector noise models.
 """
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -13,6 +14,21 @@ from ..frequencyseries import FrequencySeries
 
 # Allowed quantity values for pyGWINC
 _PYGWINC_QUANTITIES = frozenset({"strain", "darm", "displacement"})
+
+
+def _pop_frequency_kwargs(kwargs: dict[str, Any]) -> tuple[Any, Any, Any]:
+    """Remove default frequency-array controls from FrequencySeries metadata."""
+    fmin = kwargs.pop("fmin", 10.0)
+    fmax = kwargs.pop("fmax", 4000.0)
+    df = kwargs.pop("df", 1.0)
+    return fmin, fmax, df
+
+
+def _reject_unit_override(kwargs: dict[str, Any]) -> None:
+    if "unit" in kwargs:
+        raise ValueError(
+            "The pyGWINC ASD unit is determined by quantity; do not pass unit."
+        )
 
 
 def from_pygwinc(
@@ -120,10 +136,10 @@ def from_pygwinc(
     if quantity_lower == "displacement":
         quantity_lower = "darm"
 
+    _reject_unit_override(kwargs)
+
     # Build frequency array
-    fmin = kwargs.pop("fmin", 10.0)
-    fmax = kwargs.pop("fmax", 4000.0)
-    df = kwargs.pop("df", 1.0)
+    fmin, fmax, df = _pop_frequency_kwargs(kwargs)
 
     if fmin >= fmax:
         raise ValueError(f"fmin ({fmin}) must be less than fmax ({fmax})")
@@ -162,17 +178,6 @@ def from_pygwinc(
         asd = strain_asd
         unit = "1 / sqrt(Hz)"
 
-    # Remove known noise-generation parameters from kwargs
-    # to avoid TypeError in FrequencySeries constructor
-    for k in ["fmin", "fmax", "df"]:
-        kwargs.pop(k, None)
+    name = kwargs.pop("name", model)
 
-    # If there are still problematic keys, print them (will show up in sphinx-build output/logs)
-    if any(k in kwargs for k in ["fmin", "fmax", "df"]):
-        print(
-            f"CRITICAL: Key found in kwargs even after pop: {[k for k in ['fmin', 'fmax', 'df'] if k in kwargs]}"
-        )
-
-    return FrequencySeries(
-        asd, frequencies=frequencies, unit=unit, name=model, **kwargs
-    )
+    return FrequencySeries(asd, frequencies=frequencies, unit=unit, name=name, **kwargs)

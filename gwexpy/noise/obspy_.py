@@ -3,6 +3,7 @@
 This module provides functions to generate Amplitude Spectral Density (ASD)
 from ObsPy seismic and infrasound noise models.
 """
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -139,6 +140,11 @@ def from_obspy(
             f"Allowed values are: 'displacement', 'velocity', 'acceleration'."
         )
 
+    if "unit" in kwargs:
+        raise ValueError(
+            "The ObsPy ASD unit is determined by model and quantity; do not pass unit."
+        )
+
     # Load model data
     model_upper = model.upper()
     if model_upper == "NHNM":
@@ -187,9 +193,11 @@ def from_obspy(
         frequencies = f_orig
         asd = asd_orig
 
+    name = kwargs.pop("name", model_upper)
+
     # Create FrequencySeries with base unit (acceleration for seismic)
     fs = FrequencySeries(
-        asd, frequencies=frequencies, unit=base_unit, name=model_upper, **kwargs
+        asd, frequencies=frequencies, unit=base_unit, name=name, **kwargs
     )
 
     # Apply quantity conversion for seismic models
@@ -243,6 +251,11 @@ def _convert_seismic_quantity(
         # Should not reach here due to earlier validation
         raise ValueError(f"Unknown quantity: {quantity}")
 
+    series_kwargs: dict[str, Any] = {"name": fs.name}
+    channel = getattr(fs, "channel", None)
+    if channel is not None:
+        series_kwargs["channel"] = channel
+
     return FrequencySeries(
-        data, frequencies=fs.frequencies, unit=target_unit, name=fs.name
+        data, frequencies=fs.frequencies, unit=target_unit, **series_kwargs
     )

@@ -15,9 +15,9 @@ import pytest
 from astropy import units as u
 
 from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.noise.colored import pink_noise, power_law
+from gwexpy.noise.colored import pink_noise, power_law, red_noise, white_noise
 from gwexpy.noise.gwinc_ import from_pygwinc
-from gwexpy.noise.magnetic import schumann_resonance
+from gwexpy.noise.magnetic import geomagnetic_background, schumann_resonance
 from gwexpy.noise.non_gaussian import transient_gaussian_noise
 from gwexpy.noise.obspy_ import from_obspy
 from gwexpy.noise.peaks import gaussian_line, lorentzian_line, voigt_line
@@ -71,6 +71,68 @@ def test_float_colored_amplitude_uses_explicit_unit_without_rescaling() -> None:
     assert asd.unit == u.Unit("pT / Hz^(1/2)")
 
 
+@pytest.mark.parametrize(
+    ("helper", "expected", "expected_unit"),
+    [
+        (
+            lambda freqs, **kwargs: white_noise(
+                6.0, frequencies=freqs, unit="m / Hz^(1/2)", **kwargs
+            ),
+            [6.0, 6.0, 6.0],
+            u.Unit("m / Hz^(1/2)"),
+        ),
+        (
+            lambda freqs, **kwargs: pink_noise(
+                6.0,
+                f_ref=1.0,
+                frequencies=freqs,
+                unit="m / Hz^(1/2)",
+                **kwargs,
+            ),
+            [6.0, 3.0, 1.5],
+            u.Unit("m / Hz^(1/2)"),
+        ),
+        (
+            lambda freqs, **kwargs: red_noise(
+                6.0,
+                f_ref=1.0,
+                frequencies=freqs,
+                unit="m / Hz^(1/2)",
+                **kwargs,
+            ),
+            [6.0, 1.5, 0.375],
+            u.Unit("m / Hz^(1/2)"),
+        ),
+        (
+            lambda freqs, **kwargs: geomagnetic_background(
+                freqs,
+                amplitude_1hz=6.0,
+                exponent=1.0,
+                **kwargs,
+            ),
+            [6.0, 1.5, 0.375],
+            u.Unit("pT / Hz^(1/2)"),
+        ),
+    ],
+)
+def test_named_power_law_helpers_return_asd_with_stable_metadata(
+    helper,
+    expected: list[float],
+    expected_unit: u.Unit,
+) -> None:
+    freqs = np.array([1.0, 4.0, 16.0])
+
+    asd = helper(freqs, name="helper-contract", channel="X1:HELPER")
+
+    np.testing.assert_allclose(asd.value, expected)
+    assert asd.unit == expected_unit
+    assert asd.name == "helper-contract"
+    assert _channel_name(asd) == "X1:HELPER"
+
+    psd = asd.value**2
+    np.testing.assert_allclose(psd, np.square(expected))
+
+
 def test_peak_helpers_are_asd_peak_normalized_reference_signals() -> None:
     freqs = np.array([8.0, 10.0, 12.0])
 
@@ -93,6 +155,48 @@ def test_peak_helpers_are_asd_peak_normalized_reference_signals() -> None:
     assert gaussian.value[1] == pytest.approx(3.0)
     assert voigt.value[1] == pytest.approx(3.0)
     assert voigt.value[0] == pytest.approx(voigt.value[2])
+
+
+@pytest.mark.parametrize(
+    "helper",
+    [
+        lambda freqs: lorentzian_line(
+            10.0,
+            3.0,
+            gamma=2.0,
+            frequencies=freqs,
+            unit="m / Hz^(1/2)",
+            name="peak-contract",
+            channel="X1:PEAK",
+        ),
+        lambda freqs: gaussian_line(
+            10.0,
+            3.0,
+            sigma=2.0,
+            frequencies=freqs,
+            unit="m / Hz^(1/2)",
+            name="peak-contract",
+            channel="X1:PEAK",
+        ),
+        lambda freqs: voigt_line(
+            10.0,
+            3.0,
+            sigma=2.0,
+            gamma=1.0,
+            frequencies=freqs,
+            unit="m / Hz^(1/2)",
+            name="peak-contract",
+            channel="X1:PEAK",
+        ),
+    ],
+)
+def test_peak_helpers_preserve_explicit_metadata_and_asd_unit(helper) -> None:
+    asd = helper(np.array([8.0, 10.0, 12.0]))
+
+    assert asd.unit == u.Unit("m / Hz^(1/2)")
+    assert asd.name == "peak-contract"
+    assert _channel_name(asd) == "X1:PEAK"
+    assert asd.value[1] == pytest.approx(3.0)
 
 
 def test_schumann_resonance_sums_modes_in_psd_space() -> None:
@@ -254,6 +358,93 @@ def test_pygwinc_frequency_axis_quantity_units_and_metadata_with_stub() -> None:
     assert _channel_name(asd) == "H1:DARM"
 
 
+def test_pygwinc_explicit_name_overrides_default_model_metadata() -> None:
+    class FakeBudget:
+        ifo = SimpleNamespace(Infrastructure=SimpleNamespace(Length=5.0))
+
+        def run(self, freq: np.ndarray) -> SimpleNamespace:
+            return SimpleNamespace(psd=np.full(len(freq), 4.0))
+
+    fake_gwinc = SimpleNamespace(load_budget=lambda model: FakeBudget())
+
+    with patch.dict(sys.modules, {"gwinc": fake_gwinc}):
+        asd = from_pygwinc(
+            "A+",
+            frequencies=np.array([10.0, 20.0]),
+            name="custom-gwinc",
+            channel="H1:STRAIN",
+        )
+
+    assert asd.name == "custom-gwinc"
+    assert _channel_name(asd) == "H1:STRAIN"
+    assert asd.unit == u.Unit("1 / Hz^(1/2)")
+
+
+def test_backend_units_are_quantity_derived_not_user_overridable() -> None:
+    class FakeBudget:
+        ifo = SimpleNamespace(Infrastructure=SimpleNamespace(Length=5.0))
+
+        def run(self, freq: np.ndarray) -> SimpleNamespace:
+            return SimpleNamespace(psd=np.full(len(freq), 4.0))
+
+    fake_gwinc = SimpleNamespace(load_budget=lambda model: FakeBudget())
+
+    with patch.dict(sys.modules, {"gwinc": fake_gwinc}):
+        with pytest.raises(ValueError, match="unit.*determined"):
+            from_pygwinc("aLIGO", frequencies=np.array([10.0]), unit="m")
+
+    periods = np.array([1.0])
+    psd_db = np.array([-20.0])
+    fake_spec = SimpleNamespace(
+        get_nhnm=lambda: (periods.copy(), psd_db.copy()),
+        get_nlnm=lambda: (periods.copy(), psd_db.copy()),
+        get_idc_infra_hi_noise=lambda: (periods.copy(), psd_db.copy()),
+        get_idc_infra_low_noise=lambda: (periods.copy(), psd_db.copy()),
+    )
+    fake_signal = SimpleNamespace(spectral_estimation=fake_spec)
+    fake_obspy = SimpleNamespace(signal=fake_signal)
+    modules = {
+        "obspy": fake_obspy,
+        "obspy.signal": fake_signal,
+        "obspy.signal.spectral_estimation": fake_spec,
+    }
+
+    with patch.dict(sys.modules, modules):
+        with pytest.raises(ValueError, match="unit.*determined"):
+            from_obspy("NLNM", frequencies=np.array([1.0]), unit="m")
+
+
+def test_obspy_explicit_name_and_channel_survive_seismic_conversion() -> None:
+    periods = np.array([1.0, 0.5])
+    psd_db = np.array([-20.0, -20.0])
+    fake_spec = SimpleNamespace(
+        get_nhnm=lambda: (periods.copy(), psd_db.copy()),
+        get_nlnm=lambda: (periods.copy(), psd_db.copy()),
+        get_idc_infra_hi_noise=lambda: (periods.copy(), psd_db.copy()),
+        get_idc_infra_low_noise=lambda: (periods.copy(), psd_db.copy()),
+    )
+    fake_signal = SimpleNamespace(spectral_estimation=fake_spec)
+    fake_obspy = SimpleNamespace(signal=fake_signal)
+    modules = {
+        "obspy": fake_obspy,
+        "obspy.signal": fake_signal,
+        "obspy.signal.spectral_estimation": fake_spec,
+    }
+
+    with patch.dict(sys.modules, modules):
+        asd = from_obspy(
+            "NLNM",
+            frequencies=np.array([1.0, 2.0]),
+            quantity="velocity",
+            name="custom-obspy",
+            channel="X1:SEIS_VEL",
+        )
+
+    assert asd.name == "custom-obspy"
+    assert _channel_name(asd) == "X1:SEIS_VEL"
+    assert asd.unit == u.Unit("m / s / Hz^(1/2)")
+
+
 def test_obspy_units_interpolation_conversion_and_metadata_with_stub() -> None:
     periods = np.array([1.0, 0.5])
     psd_db = np.array([-20.0, -20.0])
@@ -306,9 +497,7 @@ def test_obspy_units_interpolation_conversion_and_metadata_with_stub() -> None:
     )
     assert velocity.unit == u.Unit("m / s / Hz^(1/2)")
     assert velocity.name == "NLNM"
-    # The current seismic conversion path rebuilds the FrequencySeries and
-    # does not propagate channel metadata.
-    assert _channel_name(velocity) is None
+    assert _channel_name(velocity) == "X1:SEIS_VEL"
 
     np.testing.assert_allclose(pressure.value, [0.0, 0.1, 0.1])
     assert pressure.unit == u.Unit("Pa / Hz^(1/2)")
