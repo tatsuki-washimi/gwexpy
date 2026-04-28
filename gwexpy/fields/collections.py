@@ -1,16 +1,14 @@
 """Collections for ScalarField objects in the `gwexpy.fields` namespace."""
+
 from __future__ import annotations
 
 import numpy as np
 from astropy import units as u
 
+from .base import _axis_coordinates_close
 from .scalar import ScalarField
 
 __all__ = ["FieldList", "FieldDict"]
-
-# Tolerance for axis coordinate comparison
-_AXIS_RTOL = 1e-9
-_AXIS_ATOL = 1e-12
 
 
 class FieldList(list):
@@ -103,21 +101,7 @@ class FieldList(list):
                         f"Item {i}: Axis {ax_idx} shape mismatch. "
                         f"Expected {ref_ax.shape}, got {item_ax.shape}"
                     )
-                ref_axis_unit = getattr(ref_ax, "unit", u.dimensionless_unscaled)
-                item_axis_unit = getattr(item_ax, "unit", u.dimensionless_unscaled)
-                if ref_axis_unit != item_axis_unit:
-                    raise ValueError(
-                        f"Item {i}: Axis {ax_idx} unit mismatch. "
-                        f"Expected {ref_axis_unit}, got {item_axis_unit}"
-                    )
-                ref_val = getattr(ref_ax, "value", ref_ax)
-                item_val = getattr(item_ax, "value", item_ax)
-                if not np.allclose(
-                    np.asarray(ref_val),
-                    np.asarray(item_val),
-                    rtol=_AXIS_RTOL,
-                    atol=_AXIS_ATOL,
-                ):
+                if not _axis_coordinates_close(ref_ax, item_ax):
                     raise ValueError(
                         f"Item {i}: Axis {ax_idx} coordinate mismatch. "
                         f"Axis values differ beyond tolerance."
@@ -280,21 +264,7 @@ class FieldDict(dict):
                         f"Key '{key}': Axis {ax_idx} shape mismatch. "
                         f"Expected {ref_ax.shape}, got {item_ax.shape}"
                     )
-                ref_axis_unit = getattr(ref_ax, "unit", u.dimensionless_unscaled)
-                item_axis_unit = getattr(item_ax, "unit", u.dimensionless_unscaled)
-                if ref_axis_unit != item_axis_unit:
-                    raise ValueError(
-                        f"Key '{key}': Axis {ax_idx} unit mismatch. "
-                        f"Expected {ref_axis_unit}, got {item_axis_unit}"
-                    )
-                ref_val = getattr(ref_ax, "value", ref_ax)
-                item_val = getattr(item_ax, "value", item_ax)
-                if not np.allclose(
-                    np.asarray(ref_val),
-                    np.asarray(item_val),
-                    rtol=_AXIS_RTOL,
-                    atol=_AXIS_ATOL,
-                ):
+                if not _axis_coordinates_close(ref_ax, item_ax):
                     raise ValueError(
                         f"Key '{key}': Axis {ax_idx} coordinate mismatch. "
                         f"Axis values differ beyond tolerance."

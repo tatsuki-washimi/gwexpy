@@ -1,0 +1,88 @@
+---
+# Audit manifest for #287 Field algebra hardening
+# Date: 2026-04-28
+
+skill:
+  - validation
+issue:
+  - 287
+scope: runtime field algebra hardening
+agent_model: Codex session default
+
+commands_executed:
+  - cmd: "rtk gh issue view 287 --repo tatsuki-washimi/gwexpy --comments --json number,title,state,updatedAt,comments,url"
+    result: "Confirmed #287 remains open and reviewed the silent field algebra failure reports."
+  - cmd: "rtk python reproduce_287.py"
+    result: "Confirmed local draft rejects time/frequency domain mismatch and spatial grid mismatch."
+  - cmd: "rtk pytest tests/fields/test_field_algebra_contracts.py -q"
+    result: "RED observed before implementation refinement: GPS-axis jitter was accepted and equivalent coordinate units were rejected."
+  - cmd: "rtk pytest tests/fields/test_field_algebra_contracts.py -q"
+    result: "Passed after axis comparison hardening."
+  - cmd: "rtk pytest tests/fields/test_scalarfield_collections.py tests/fields/test_vectorfield.py tests/fields/test_tensorfield.py tests/fields/test_scalarfield_domain.py tests/fields/test_field_algebra_contracts.py -q"
+    result: "86 passed."
+  - cmd: "rtk pytest tests/fields -q"
+    result: "288 passed."
+  - cmd: "rtk ruff check gwexpy/ tests/"
+    result: "No issues found."
+  - cmd: "rtk ruff check gwexpy/fields/base.py gwexpy/fields/collections.py tests/fields/test_field_algebra_contracts.py"
+    result: "No issues found."
+  - cmd: "rtk ruff format --check gwexpy/fields/base.py gwexpy/fields/collections.py tests/fields/test_field_algebra_contracts.py"
+    result: "Passed after formatting."
+  - cmd: "rtk mypy gwexpy/"
+    result: "No issues found."
+  - cmd: "rtk mypy gwexpy/fields/base.py gwexpy/fields/collections.py"
+    result: "No issues found."
+  - cmd: "rtk pytest tests/ -q"
+    result: "Attempted full one-process test suite; exited 139 around 21% with no actionable Python traceback."
+  - cmd: "rtk pytest tests/analysis tests/astro tests/cli tests/compatibility tests/data tests/detector tests/docs -q"
+    result: "523 passed."
+  - cmd: "rtk pytest tests/e2e tests/fields tests/fitting tests/frequencyseries tests/general -q"
+    result: "770 passed."
+  - cmd: "rtk pytest tests/gui tests/histogram tests/interop tests/io tests/nds tests/noise -q"
+    result: "1435 passed."
+  - cmd: "rtk proxy pytest tests/numerics tests/plot tests/scripts tests/segments tests/signal tests/spectral -q -x"
+    result: "912 passed, 5 skipped, 1 xfailed."
+  - cmd: "rtk proxy pytest tests/spectrogram tests/statistics tests/table tests/time tests/timeseries tests/types tests/utils -q"
+    result: "2439 passed, 183 skipped, 5 xfailed."
+  - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/audit-manifest-287-field-algebra-hardening.yaml').read_text())\""
+    result: "Audit manifest YAML parsed successfully."
+  - cmd: "rtk git diff --check"
+    result: "Clean."
+
+verify_physics: required_before_merge
+
+test_results:
+  field_algebra_contracts: passed
+  focused_field_related_tests: passed
+  all_field_tests: passed
+  split_test_suite:
+    passed: 6079
+    skipped: 188
+    xfailed: 6
+  ruff_check_changed_files: passed
+  ruff_format_changed_files: passed
+  mypy_changed_modules: passed
+  full_ruff_check: passed
+  full_mypy: passed
+  full_pytest: attempted_exit_139_without_traceback
+
+files_changed:
+  - path: gwexpy/fields/base.py
+    change: "Adds FieldBase binary ufunc validation for axis0 domain, spatial domain, and all coordinate axes; compares equivalent axis units in a common unit with absolute-only tolerance."
+  - path: gwexpy/fields/collections.py
+    change: "Reuses the shared field-axis coordinate comparison helper for FieldList and FieldDict validation."
+  - path: tests/fields/test_field_algebra_contracts.py
+    change: "Adds regression coverage for aligned field arithmetic, domain mismatch, spatial domain mismatch, coordinate mismatch, large GPS-axis jitter, and equivalent coordinate-unit acceptance."
+  - path: docs/developers/plans/2026-04-27-issue-burn-down-roadmap.md
+    change: "Records the local #287 field algebra hardening draft and keeps #287 release-blocking until reviewed and merged."
+  - path: docs/developers/plans/audit-manifest-287-field-algebra-hardening.yaml
+    change: "Records scope, validation commands, and review requirements for #287 hardening."
+
+release_gate_classification:
+  issue: 287
+  classification: release-blocking_until_reviewed_pr_merge
+  rationale: "The silent algebra failure is runtime physics-facing behavior. The local draft mitigates it, but release gating should only clear after maintainer physics/data-model review and PR merge."
+
+known_residuals:
+  - "ScalarField slicing / Array4D integer slicing policy remains a separate data-model decision in #287."
+  - "Explicit regridding/interpolation APIs are not implemented by this hardening pass; mismatched grids now fail fast and require a future explicit alignment API."
