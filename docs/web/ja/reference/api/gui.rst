@@ -12,7 +12,7 @@
 
 .. code-block:: bash
 
-   pip install "gwexpy[gui]"
+   pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
    python -m gwexpy.gui
 
 .. currentmodule:: gwexpy.gui
