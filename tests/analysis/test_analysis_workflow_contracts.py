@@ -8,13 +8,18 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pytest
 from astropy import units as u
+from gwpy.segments import Segment
+from gwpy.timeseries import TimeSeries
 
-from gwexpy.analysis.bruco import BrucoResult, _resolve_block_size
+from gwexpy.analysis import coupling as coupling_mod
+from gwexpy.analysis.bruco import Bruco, BrucoResult, _resolve_block_size
 from gwexpy.analysis.coupling_result import CouplingResult, CouplingResultCollection
-from gwexpy.analysis.response import ResponseFunctionResult
+from gwexpy.analysis.response import ResponseFunctionResult, _compute_response_row
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.spectrogram import Spectrogram
+from gwexpy.timeseries import TimeSeriesDict
 
 
 def _frequency_series(
@@ -90,6 +95,50 @@ def test_bruco_result_preserves_metadata_and_exports_ranked_topn(monkeypatch) ->
     )
 
 
+def test_bruco_compute_records_auto_block_size_and_exports_metadata(
+    monkeypatch,
+) -> None:
+    monkeypatch.delenv("GWEXPY_BRUCO_BLOCK_BYTES", raising=False)
+    monkeypatch.delenv("GWEXPY_BRUCO_BLOCK_SIZE", raising=False)
+
+    sample_rate = 64.0
+    times = np.arange(int(sample_rate * 4.0)) / sample_rate
+    target = TimeSeries(
+        np.sin(2.0 * np.pi * 8.0 * times),
+        sample_rate=sample_rate * u.Hz,
+        name="TGT",
+    )
+
+    result = Bruco("TGT", aux_channels=[]).compute(
+        target_data=target,
+        aux_data=TimeSeriesDict(),
+        fftlength=1.0,
+        overlap=0.5,
+        parallel=1,
+        batch_size=7,
+        top_n=1,
+        block_size="auto",
+    )
+
+    expected_block_size = _resolve_block_size(
+        "auto", n_bins=len(result.frequencies), top_n=1
+    )
+    assert result.block_size == expected_block_size
+    assert result.metadata["block_size_requested"] == "auto"
+    assert result.metadata["block_size"] == expected_block_size
+    assert result.metadata["n_frequency_bins"] == len(result.frequencies)
+    assert result.metadata["frequency_resolution"] == pytest.approx(1.0)
+
+    exported = result.to_dataframe(
+        ranks=[0],
+        stride=len(result.frequencies) + 1,
+        include_metadata=True,
+    )
+    assert exported["metadata_fftlength"].to_list() == [1.0]
+    assert exported["metadata_overlap"].to_list() == [0.5]
+    assert exported["metadata_block_size"].to_list() == [expected_block_size]
+
+
 def test_coupling_result_frequency_units_and_summary_export_contract(tmp_path) -> None:
     freqs = np.array([5.0, 10.0, 20.0])
     cf = _frequency_series([0.1, 0.2, np.nan], freqs, unit=u.m / u.V, name="CF")
@@ -134,6 +183,132 @@ def test_coupling_result_frequency_units_and_summary_export_contract(tmp_path) -
     np.testing.assert_allclose([float(row["cf_ul"]) for row in rows], cf_ul.value)
     np.testing.assert_allclose([float(row["inj_asd"]) for row in rows], [2.0, 3.0, 4.0])
     np.testing.assert_allclose([float(row["bkg_asd"]) for row in rows], [1.0, 2.0, 3.0])
+
+
+class _StaticPsdSeries:
+    def __init__(self, psd: FrequencySeries, unit: u.UnitBase) -> None:
+        self._psd = psd
+        self.unit = unit
+
+    def psd(self, **kwargs: object) -> FrequencySeries:
+        del kwargs
+        return self._psd
+
+
+class _AllTrueThreshold:
+    def check(
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        **kwargs: object,
+    ) -> np.ndarray:
+        del psd_bkg, kwargs
+        return np.ones_like(psd_inj.value, dtype=bool)
+
+    def threshold(
+        self,
+        psd_inj: FrequencySeries,
+        psd_bkg: FrequencySeries,
+        **kwargs: object,
+    ) -> np.ndarray:
+        del psd_inj, kwargs
+        return psd_bkg.value * 2.0
+
+
+def test_coupling_skips_target_when_any_psd_frequency_grid_mismatches() -> None:
+    witness_freqs = np.array([10.0, 20.0, 30.0])
+    shifted_target_freqs = np.array([10.0, 20.0, 31.0])
+    psd_wit_inj = _frequency_series([4.0, 5.0, 6.0], witness_freqs, unit=u.V**2 / u.Hz)
+    psd_wit_bkg = _frequency_series([1.0, 1.0, 1.0], witness_freqs, unit=u.V**2 / u.Hz)
+    psd_tgt_inj = _frequency_series([4.0, 5.0, 6.0], witness_freqs, unit=u.m**2 / u.Hz)
+    psd_tgt_bkg = _frequency_series(
+        [1.0, 1.0, 1.0], shifted_target_freqs, unit=u.m**2 / u.Hz
+    )
+
+    with pytest.warns(UserWarning, match="Skipping coupling target TGT"):
+        result = coupling_mod._process_single_target(
+            "TGT",
+            _StaticPsdSeries(psd_tgt_inj, u.m),
+            _StaticPsdSeries(psd_tgt_bkg, u.m),
+            {"fftlength": 1.0},
+            psd_wit_inj,
+            psd_wit_bkg,
+            np.ones(3, dtype=bool),
+            psd_wit_inj.value - psd_wit_bkg.value,
+            "WIT",
+            _StaticPsdSeries(psd_wit_inj, u.V),
+            _StaticPsdSeries(psd_wit_bkg, u.V),
+            _AllTrueThreshold(),
+            {},
+            1.0,
+            0.0,
+            None,
+        )
+
+    assert result is None
+
+
+def test_coupling_rejects_nonfinite_excess_power_bins() -> None:
+    freqs = np.array([10.0, 20.0, 30.0, 40.0])
+    psd_wit_inj = _frequency_series([4.0, 4.0, 4.0, 4.0], freqs, unit=u.V**2 / u.Hz)
+    psd_wit_bkg = _frequency_series([1.0, 1.0, 1.0, 1.0], freqs, unit=u.V**2 / u.Hz)
+    psd_tgt_inj = _frequency_series(
+        [4.0, np.inf, np.nan, 1.0], freqs, unit=u.m**2 / u.Hz
+    )
+    psd_tgt_bkg = _frequency_series([1.0, 1.0, 1.0, 2.0], freqs, unit=u.m**2 / u.Hz)
+
+    result = coupling_mod._process_single_target(
+        "TGT",
+        _StaticPsdSeries(psd_tgt_inj, u.m),
+        _StaticPsdSeries(psd_tgt_bkg, u.m),
+        {"fftlength": 1.0},
+        psd_wit_inj,
+        psd_wit_bkg,
+        np.ones(4, dtype=bool),
+        psd_wit_inj.value - psd_wit_bkg.value,
+        "WIT",
+        _StaticPsdSeries(psd_wit_inj, u.V),
+        _StaticPsdSeries(psd_wit_bkg, u.V),
+        _AllTrueThreshold(),
+        {},
+        1.0,
+        0.0,
+        None,
+    )
+
+    assert result is not None
+    _, coupling_result = result
+    np.testing.assert_array_equal(
+        coupling_result.valid_mask, [True, False, False, False]
+    )
+    assert coupling_result.cf.value[0] == pytest.approx(1.0)
+    assert np.all(np.isnan(coupling_result.cf.value[1:]))
+
+
+def test_response_row_mismatched_background_grid_returns_nan_cf(
+    monkeypatch,
+) -> None:
+    ts_wit = TimeSeries(np.ones(512), t0=0.0, dt=1.0 / 256, name="W")
+    ts_tgt = TimeSeries(np.ones(512), t0=0.0, dt=1.0 / 256, name="T")
+    inj_asd = _frequency_series([1.0, 2.0, 4.0], np.array([10.0, 20.0, 30.0]))
+    bkg_asd_short = _frequency_series([1.0, 1.0], np.array([10.0, 20.0]))
+    bkg_asd = _frequency_series([1.0, 1.0, 1.0], np.array([10.0, 20.0, 30.0]))
+
+    monkeypatch.setattr(TimeSeries, "asd", lambda self, **kwargs: inj_asd)
+
+    row = _compute_response_row(
+        witness=ts_wit,
+        target=ts_tgt,
+        segment=Segment(0.0, 1.0),
+        injected_freq=30.0,
+        fftlength=1.0,
+        overlap=0.0,
+        kwargs={},
+        master_asd_wit_bkg=bkg_asd_short,
+        master_asd_tgt_bkg=bkg_asd,
+    )
+
+    assert np.isnan(row["cf"])
 
 
 def test_response_function_result_plot_sorts_without_mutating_metadata() -> None:
