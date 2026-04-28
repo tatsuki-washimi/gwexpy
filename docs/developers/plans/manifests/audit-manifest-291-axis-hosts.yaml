@@ -31,7 +31,7 @@ commands:
   - cmd: "rtk sed -n '1,320p' gwexpy/types/array4d.py"
     result: "Reviewed Array4D pure-slice and dimension-dropping behavior."
 changed_files:
-  - path: docs/developers/plans/2026-04-28-types-axis-host-contracts.md
+  - path: docs/developers/plans/archive/contract-audits/2026-04-28-types-axis-host-contracts.md
     change: "Added public axis host matrix, shared AxisApiMixin contract, internal helper boundary, and follow-up candidates."
   - path: tests/types/test_axis_host_contract_docs.py
     change: "Added docs drift guards for public axis host rows and internal helper boundary rows."

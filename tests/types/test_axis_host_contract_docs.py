@@ -5,7 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DOC = ROOT / "docs/developers/plans/2026-04-28-types-axis-host-contracts.md"
+DOC = (
+    ROOT
+    / "docs/developers/plans/archive/contract-audits/2026-04-28-types-axis-host-contracts.md"
+)
 
 PUBLIC_AXIS_HOSTS = (
     "Array",
