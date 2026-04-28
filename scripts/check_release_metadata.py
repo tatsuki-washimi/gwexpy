@@ -4,6 +4,9 @@ import re
 import sys
 from pathlib import Path
 
+VERSION_KEY_PATTERN = re.compile(r'(?:version|"version"|\'version\')\s*:\s*(.*)$')
+QUOTED_VALUE_PATTERN = re.compile(r'(["\'])(.*?)\1\s*(?:#.*)?$')
+
 
 def get_version_from_py():
     version_file = Path("gwexpy/_version.py")
@@ -14,14 +17,53 @@ def get_version_from_py():
     match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', content)
     return match.group(1) if match else None
 
+
 def get_version_from_cff():
     cff_file = Path("CITATION.cff")
     if not cff_file.exists():
         print(f"Warning: {cff_file} not found")
         return None
-    content = cff_file.read_text()
-    match = re.search(r'^version:\s*["\']?([^"\']+)["\']?', content, re.MULTILINE)
-    return match.group(1) if match else None
+
+    top_level_indent = None
+    for line in cff_file.read_text().splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped in {"---", "..."}:
+            continue
+        indent = len(line) - len(line.lstrip())
+        if top_level_indent is None:
+            top_level_indent = indent
+        if indent != top_level_indent:
+            continue
+
+        match = VERSION_KEY_PATTERN.fullmatch(line.lstrip())
+        if not match:
+            continue
+
+        value = match.group(1).strip()
+        if value.startswith(("'", '"')):
+            quoted_match = QUOTED_VALUE_PATTERN.fullmatch(value)
+            if not quoted_match:
+                if value.count(value[0]) < 2:
+                    print("Error: Malformed CITATION.cff version: unterminated quote")
+                else:
+                    print(
+                        "Error: Malformed CITATION.cff version: trailing content after quoted value"
+                    )
+                return ""
+            parsed = quoted_match.group(2).strip()
+        else:
+            parsed = value.split("#", 1)[0].strip()
+
+        if not parsed:
+            print("Error: Malformed CITATION.cff version: empty value")
+            return ""
+        return parsed
+
+    print("Error: Could not parse top-level version from CITATION.cff")
+    return ""
+
 
 def get_version_from_zenodo():
     zenodo_file = Path(".zenodo.json")
@@ -35,6 +77,7 @@ def get_version_from_zenodo():
         print(f"Error parsing .zenodo.json: {e}")
         return None
 
+
 def check_changelog(version):
     changelog_file = Path("CHANGELOG.md")
     if not changelog_file.exists():
@@ -42,11 +85,12 @@ def check_changelog(version):
         return True
     content = changelog_file.read_text()
     # Look for [X.Y.Z] or ## [X.Y.Z]
-    pattern = rf'\[{re.escape(version)}\]'
+    pattern = rf"\[{re.escape(version)}\]"
     if re.search(pattern, content):
         return True
     print(f"Error: Version {version} not found in CHANGELOG.md")
     return False
+
 
 def main():
     py_version = get_version_from_py()
@@ -61,14 +105,18 @@ def main():
 
     errors = 0
 
-    if cff_version and cff_version != py_version:
+    if cff_version is not None and cff_version != py_version:
         print(f"Error: Version mismatch in CITATION.cff: {cff_version} != {py_version}")
         errors += 1
-    else:
+    elif cff_version == py_version:
         print("OK: CITATION.cff version matches.")
+    else:
+        print("Warning: CITATION.cff version not checked.")
 
     if zenodo_version and zenodo_version != py_version:
-        print(f"Error: Version mismatch in .zenodo.json: {zenodo_version} != {py_version}")
+        print(
+            f"Error: Version mismatch in .zenodo.json: {zenodo_version} != {py_version}"
+        )
         errors += 1
     else:
         print("OK: .zenodo.json version matches.")
@@ -83,6 +131,7 @@ def main():
         sys.exit(1)
 
     print("\nMetadata consistency check passed!")
+
 
 if __name__ == "__main__":
     main()
