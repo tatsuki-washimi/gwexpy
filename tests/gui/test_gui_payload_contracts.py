@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 from collections import deque
 
 import numpy as np
@@ -13,14 +14,12 @@ def _missing_gui_dependency_name(exc: ImportError) -> str | None:
     missing = getattr(exc, "name", None)
     if missing is None:
         return None
-    return next(
-        (
-            dependency
-            for dependency in _GUI_IMPORT_DEPENDENCIES
-            if missing == dependency or missing.startswith(f"{dependency}.")
-        ),
-        None,
-    )
+    dependency = missing.split(".", maxsplit=1)[0]
+    if dependency not in _GUI_IMPORT_DEPENDENCIES:
+        return None
+    if importlib.util.find_spec(dependency) is None:
+        return dependency
+    return None
 
 
 @pytest.fixture
@@ -34,11 +33,10 @@ def gui_payload_classes():
         from gwexpy.gui.engine import Engine
         from gwexpy.gui.streaming import SpectralAccumulator
     except (ImportError, ModuleNotFoundError) as exc:
-        dependency = _missing_gui_dependency_name(exc)
-        if dependency is not None:
+        missing_dependency = _missing_gui_dependency_name(exc)
+        if missing_dependency is not None:
             pytest.skip(
-                f"gwexpy.gui payload contracts require {dependency}: {exc}",
-                allow_module_level=False,
+                f"gwexpy.gui payload contracts require {missing_dependency}: {exc}",
             )
         raise
 
@@ -80,6 +78,43 @@ def _active_trace(graph_type: str) -> dict[str, object]:
         "ch_b": None,
         "graph_type": graph_type,
     }
+
+
+def test_missing_gui_dependency_name_requires_absent_top_level_package(monkeypatch):
+    def find_spec(name):
+        return None if name == "pyqtgraph" else object()
+
+    monkeypatch.setattr(importlib.util, "find_spec", find_spec)
+
+    assert (
+        _missing_gui_dependency_name(
+            ModuleNotFoundError("missing pyqtgraph", name="pyqtgraph")
+        )
+        == "pyqtgraph"
+    )
+    assert (
+        _missing_gui_dependency_name(
+            ModuleNotFoundError("missing pyqtgraph.Qt", name="pyqtgraph.Qt")
+        )
+        == "pyqtgraph"
+    )
+
+
+def test_missing_gui_dependency_name_does_not_hide_installed_api_breakage(
+    monkeypatch,
+):
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+
+    assert (
+        _missing_gui_dependency_name(
+            ImportError("cannot import name", name="pyqtgraph.some_submodule")
+        )
+        is None
+    )
+    assert (
+        _missing_gui_dependency_name(ImportError("unrelated", name="not_gui_dep"))
+        is None
+    )
 
 
 def test_engine_time_series_payload_is_tuple_without_metadata_keys(gui_payload_classes):

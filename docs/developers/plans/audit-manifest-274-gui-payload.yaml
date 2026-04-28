@@ -38,7 +38,7 @@ test_results:
   ruff_format_changed_test: clean
   yaml_parse_manifest: clean
   diff_check: clean
-  full_pytest: "failed locally: `rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/ -p no:cacheprovider` exited 139 at 20% of the suite after a pyqtgraph Qt teardown RuntimeError: `wrapped C/C++ object of type ViewBox has been deleted`."
+  full_pytest: "failed locally: `rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/ -p no:cacheprovider` exited 139 at 20% of the suite after a pyqtgraph Qt teardown RuntimeError: `wrapped C/C++ object of type ViewBox has been deleted`; this local full-suite limitation was not reproduced by GitHub CI on the reviewed PR head."
   mypy: "passed (`mypy: No issues found`)"
   ci_coverage: "PR #324 pre-cleanup head 226d0865a567a3b6468b75b2dcdc682d40783313 had 7 passing GitHub checks on 2026-04-28, including `Ruff, mypy, pytest, and smoke build`; final-head CI is reported in the PR comment after checks complete."
   docs_build: not_run
@@ -166,3 +166,33 @@ final_review_response:
     mypy: "passed (`mypy: No issues found`)"
     full_pytest: "failed locally with signal 11 at 20% due to known Qt teardown failure in pyqtgraph AxisItem/ViewBox"
     ci_coverage: "PR #324 pre-edit head 226d0865a567a3b6468b75b2dcdc682d40783313 had 7 passing checks, including `Ruff, mypy, pytest, and smoke build`."
+
+strict_gui_skip_review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Restrict GUI import skip handling to truly missing top-level GUI dependency packages."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Changed the ImportError skip classifier to return a dependency only when the missing name belongs to the GUI dependency set and importlib.util.find_spec() confirms the top-level package is absent; installed but incompatible GUI APIs now re-raise."
+    - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+      change: "Recorded the stricter skip classifier review response and clarified that the local full-pytest Qt teardown failure was not reproduced by GitHub CI on the reviewed PR head."
+  commands_executed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "6 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-274-gui-payload.yaml'))\""
+      result: "Manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+    - cmd: "rtk mypy gwexpy tests/gui/test_gui_payload_contracts.py --ignore-missing-imports"
+      result: "No issues found."
+  test_results:
+    focused_pytest: "6 passed"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    yaml_parse_manifest: clean
+    diff_check: clean
+    mypy: clean
