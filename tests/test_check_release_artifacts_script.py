@@ -160,6 +160,27 @@ def test_release_artifact_hygiene_rejects_symlink_members(tmp_path: Path):
     assert any("reference_ndscope is a symlink" in problem for problem in problems)
 
 
+def test_release_artifact_hygiene_reports_forbidden_symlink_once(tmp_path: Path):
+    module = load_script_module()
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    _write_wheel_symlink(
+        dist / "gwexpy-0.1.1-py3-none-any.whl",
+        ".agent/tmp/reference",
+    )
+    _write_sdist_symlink(
+        dist / "gwexpy-0.1.1.tar.gz",
+        "gwexpy-0.1.1/.agent/tmp/reference",
+    )
+
+    problems = module.check_artifacts(dist)
+
+    assert problems == [
+        "gwexpy-0.1.1-py3-none-any.whl:.agent/tmp/reference is a symlink",
+        "gwexpy-0.1.1.tar.gz:gwexpy-0.1.1/.agent/tmp/reference is a symlink",
+    ]
+
+
 def test_release_artifact_hygiene_rejects_generated_artifacts(tmp_path: Path):
     module = load_script_module()
     dist = tmp_path / "dist"

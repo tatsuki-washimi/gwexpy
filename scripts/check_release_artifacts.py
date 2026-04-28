@@ -67,6 +67,8 @@ def _is_package_internal_test(parts: tuple[str, ...]) -> bool:
 
 
 def _is_package_internal_markdown(parts: tuple[str, ...]) -> bool:
+    # Public docs live outside gwexpy/; package-internal Markdown is development
+    # reference material and must not ship in release artifacts.
     return len(parts) >= 2 and parts[0] == "gwexpy" and parts[-1].endswith(".md")
 
 
@@ -94,6 +96,7 @@ def _check_members(path: Path, members: list[ArtifactMember]) -> list[str]:
     for member in members:
         if member.is_symlink:
             problems.append(f"{path.name}:{member.name} is a symlink")
+            continue
         if _is_forbidden(member.name):
             problems.append(f"{path.name}:{member.name}")
     return problems

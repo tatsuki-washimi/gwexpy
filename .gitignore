@@ -115,6 +115,8 @@ tests/unit/
 .conda-envs/
 .conda-pkgs/
 docs_internal/references/*
+# Reference material is ignored by default; track lightweight manifests with
+# an intentional git add -f when they are part of the documentation contract.
 # 自動生成カタログファイル（gitignore対象）
 docs_internal/references/SampleCodes_GWpy/CATALOG.json
 docs_internal/references/SampleCodes_GWpy/CATALOG_SUMMARY.md

@@ -4,6 +4,7 @@ include README.md
 recursive-include docs/_static/samples *.csv *.h5 *.txt
 include pyproject.toml
 prune gwexpy/*/tests
+recursive-exclude gwexpy *.md
 prune .agent
 prune .harness
 prune docs_internal
