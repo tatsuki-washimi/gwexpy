@@ -2,8 +2,8 @@
 agent: Codex
 skills:
   - doc-architect
-  - github:github
-  - github:yeet
+external_tools:
+  - "GitHub CLI/plugin used for issue and PR context; not a local agent skill."
 branch: codex/wave2-272-roadmap-update
 pr_context:
   number: 303
@@ -50,7 +50,7 @@ commands:
     result: "Audit manifest parsed successfully."
   - cmd: "rtk git diff --check"
     result: "No whitespace errors."
-  - cmd: "rtk rg -n \"(^|[[:space:]\\\"'=:/])/([[:alnum:]_.-]+/){2,}|<(skill:[^>]+|local-[^>]+-patterns)>\" docs/developers/plans/audit-manifest-272-wave2-batch1-roadmap.yaml"
+  - cmd: "rtk rg -n \"skill:doc-architect|local-absolute-path-patterns|(^|[[:space:]\\\"'=:/])/([[:alnum:]_.-]+/){2,}\" docs/developers/plans/audit-manifest-272-wave2-batch1-roadmap.yaml"
     result: "No committed local absolute paths or unresolved template placeholders in the new manifest."
   - cmd: "rtk gh pr view 303 --json number,title,state,isDraft,headRefName,headRefOid,baseRefName,baseRefOid,files,url,commits"
     result: "Confirmed PR #303 diff base, reviewed head, changed files, and source commits for this manifest correction."
