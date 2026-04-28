@@ -18,20 +18,50 @@ def _patch_pyqtgraph_axisitem_deleted_guard() -> None:
     except Exception:
         return
 
-    orig_update_height = getattr(AxisItem, "_updateHeight", None)
-    if orig_update_height is None:
+    if getattr(AxisItem, "_gwexpy_deleted_guard", False):
         return
 
-    def _updateHeight(self, *args, **kwargs):  # noqa: N802
-        try:
-            if sip.isdeleted(self):
-                return
-        except Exception:
-            # Best-effort guard; fall back to original behavior.
-            pass
-        return orig_update_height(self, *args, **kwargs)
+    def _is_deleted_error(exc: RuntimeError) -> bool:
+        return "has been deleted" in str(exc)
 
-    AxisItem._updateHeight = _updateHeight  # type: ignore[method-assign]
+    def _is_deleted(obj) -> bool:
+        try:
+            return sip.isdeleted(obj)
+        except Exception:
+            return False
+
+    orig_update_height = getattr(AxisItem, "_updateHeight", None)
+    orig_paint = getattr(AxisItem, "paint", None)
+
+    if orig_update_height is not None:
+
+        def _updateHeight(self, *args, **kwargs):  # noqa: N802
+            if _is_deleted(self):
+                return
+            try:
+                return orig_update_height(self, *args, **kwargs)
+            except RuntimeError as exc:
+                if _is_deleted_error(exc):
+                    return
+                raise
+
+        AxisItem._updateHeight = _updateHeight  # type: ignore[method-assign]
+
+    if orig_paint is not None:
+
+        def paint(self, *args, **kwargs):
+            if _is_deleted(self):
+                return
+            try:
+                return orig_paint(self, *args, **kwargs)
+            except RuntimeError as exc:
+                if _is_deleted_error(exc):
+                    return
+                raise
+
+        AxisItem.paint = paint  # type: ignore[method-assign]
+
+    AxisItem._gwexpy_deleted_guard = True
 
 
 _patch_pyqtgraph_axisitem_deleted_guard()

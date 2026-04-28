@@ -217,15 +217,36 @@ def pytest_collection_modifyitems(config, items):
         skip_mp = None
     else:
         skip_mp = pytest.mark.skip(reason=_MP_REASON)
+    if os.environ.get("GWEXPY_RUN_GUI", "") == "1":
+        skip_gui = None
+    else:
+        skip_gui = pytest.mark.skip(
+            reason="GUI tests are opt-in; set GWEXPY_RUN_GUI=1 or use tests/run_gui_tests.sh"
+        )
+    if os.environ.get("GWEXPY_RUN_ROOT", "") == "1":
+        skip_root = None
+    else:
+        skip_root = pytest.mark.skip(
+            reason="PyROOT native tests are opt-in; set GWEXPY_RUN_ROOT=1 to run"
+        )
 
     for item in items:
         path = str(item.fspath)
+        if skip_gui and (
+            "tests/gui" in path
+            or path.endswith("tests/e2e/test_gui_smoke.py")
+            or path.endswith("tests/nds/test_gui_nds_smoke.py")
+            or "gui" in item.keywords
+        ):
+            item.add_marker(skip_gui)
         if skip_mp and path.endswith("test_mp.py"):
             item.add_marker(skip_mp)
         if skip_mp and hasattr(item, "callspec"):
             nproc = item.callspec.params.get("nproc")
             if isinstance(nproc, int) and nproc > 1:
                 item.add_marker(skip_mp)
+        if skip_root and "root" in item.keywords:
+            item.add_marker(skip_root)
 
 
 def pytest_runtest_setup(item):

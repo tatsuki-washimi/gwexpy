@@ -111,12 +111,12 @@ def test_optional_dependency_matrix_matches_contract():
 
     ats_mth5 = contract["ats.mth5"]
     assert ats_mth5["extras"] == ["seismic"]
-    assert "pip install 'gwexpy[seismic]'" in en
-    assert "pip install 'gwexpy[seismic]'" in ja
+    assert "required `seismic` extra" in en
+    assert "必要な `seismic` extra" in ja
 
     wav = contract["wav"]
     assert wav["unavailable_behavior"]["read"] == "warns_and_skips_optional_metadata"
     assert "`.read(..., extract_metadata=True)` warns and skips metadata" in en
     assert "`.read(..., extract_metadata=True)` は警告を出し、metadata を省略します" in ja
-    assert "pip install 'gwexpy[audio]'" in en
-    assert "pip install 'gwexpy[audio]'" in ja
+    assert "`audio` or `all` source-extra syntax" in en
+    assert "`audio` または `all` のソース導入形式" in ja

@@ -686,6 +686,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 t["img"].clear()
         self.time_counter = 0.0
 
+    def closeEvent(self, event) -> None:  # noqa: N802
+        """Stop streaming and detach plot data before Qt destroys widgets."""
+        try:
+            self.timer.stop()
+            self.nds_cache.reset()
+            for graph_info in (self.graph_info1, self.graph_info2):
+                plot = graph_info.get("plot")
+                if plot is None:
+                    continue
+                plot.setUpdatesEnabled(False)
+                plot.clear()
+        finally:
+            super().closeEvent(event)
+
     def get_ui_params(self) -> dict[str, Any]:
         """Collect the current measurement parameters from the UI."""
         p = {}
