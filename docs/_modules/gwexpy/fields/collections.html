@@ -125,18 +125,16 @@
              
   <h1>Source code for gwexpy.fields.collections</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Collections for ScalarField objects in the `gwexpy.fields` namespace.&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">_axis_coordinates_close</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.scalar</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;FieldList&quot;</span><span class="p">,</span> <span class="s2">&quot;FieldDict&quot;</span><span class="p">]</span>
-
-<span class="c1"># Tolerance for axis coordinate comparison</span>
-<span class="n">_AXIS_RTOL</span> <span class="o">=</span> <span class="mf">1e-9</span>
-<span class="n">_AXIS_ATOL</span> <span class="o">=</span> <span class="mf">1e-12</span>
 
 
 <div class="viewcode-block" id="FieldList">
@@ -231,21 +229,7 @@
                         <span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: Axis </span><span class="si">{</span><span class="n">ax_idx</span><span class="si">}</span><span class="s2"> shape mismatch. &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="n">ref_ax</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">item_ax</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
-                <span class="n">ref_axis_unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ref_ax</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">)</span>
-                <span class="n">item_axis_unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_ax</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">ref_axis_unit</span> <span class="o">!=</span> <span class="n">item_axis_unit</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: Axis </span><span class="si">{</span><span class="n">ax_idx</span><span class="si">}</span><span class="s2"> unit mismatch. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="n">ref_axis_unit</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">item_axis_unit</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="p">)</span>
-                <span class="n">ref_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ref_ax</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">ref_ax</span><span class="p">)</span>
-                <span class="n">item_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_ax</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">item_ax</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ref_val</span><span class="p">),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">item_val</span><span class="p">),</span>
-                    <span class="n">rtol</span><span class="o">=</span><span class="n">_AXIS_RTOL</span><span class="p">,</span>
-                    <span class="n">atol</span><span class="o">=</span><span class="n">_AXIS_ATOL</span><span class="p">,</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">_axis_coordinates_close</span><span class="p">(</span><span class="n">ref_ax</span><span class="p">,</span> <span class="n">item_ax</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: Axis </span><span class="si">{</span><span class="n">ax_idx</span><span class="si">}</span><span class="s2"> coordinate mismatch. &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;Axis values differ beyond tolerance.&quot;</span>
@@ -438,21 +422,7 @@
                         <span class="sa">f</span><span class="s2">&quot;Key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;: Axis </span><span class="si">{</span><span class="n">ax_idx</span><span class="si">}</span><span class="s2"> shape mismatch. &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="n">ref_ax</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">item_ax</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
-                <span class="n">ref_axis_unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ref_ax</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">)</span>
-                <span class="n">item_axis_unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_ax</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">ref_axis_unit</span> <span class="o">!=</span> <span class="n">item_axis_unit</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;: Axis </span><span class="si">{</span><span class="n">ax_idx</span><span class="si">}</span><span class="s2"> unit mismatch. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="n">ref_axis_unit</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">item_axis_unit</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="p">)</span>
-                <span class="n">ref_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ref_ax</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">ref_ax</span><span class="p">)</span>
-                <span class="n">item_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item_ax</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">item_ax</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ref_val</span><span class="p">),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">item_val</span><span class="p">),</span>
-                    <span class="n">rtol</span><span class="o">=</span><span class="n">_AXIS_RTOL</span><span class="p">,</span>
-                    <span class="n">atol</span><span class="o">=</span><span class="n">_AXIS_ATOL</span><span class="p">,</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">_axis_coordinates_close</span><span class="p">(</span><span class="n">ref_ax</span><span class="p">,</span> <span class="n">item_ax</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;: Axis </span><span class="si">{</span><span class="n">ax_idx</span><span class="si">}</span><span class="s2"> coordinate mismatch. &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;Axis values differ beyond tolerance.&quot;</span>
@@ -528,7 +498,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 11:37:21.
+      <span class="lastupdated">Last updated on 2026-04-28 13:49:41.
       </span></p>
   </div>
 
