@@ -1,4 +1,5 @@
 """Base class for field objects with domain-aware axis metadata."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -9,6 +10,36 @@ from astropy import units as u
 from ..types.array4d import Array4D
 
 __all__ = ["FieldBase"]
+
+# Tolerance for axis coordinate comparison.  Keep relative tolerance disabled:
+# large absolute coordinates such as GPS seconds must not allow order-second
+# jitter through relative scaling.
+_AXIS_RTOL = 0.0
+_AXIS_ATOL = 1e-12
+
+
+def _axis_coordinates_close(left, right) -> bool:
+    """Return True when two coordinate axes describe the same physical grid."""
+    if left.shape != right.shape:
+        return False
+
+    left_unit = getattr(left, "unit", u.dimensionless_unscaled)
+    right_unit = getattr(right, "unit", u.dimensionless_unscaled)
+    if not right_unit.is_equivalent(left_unit):
+        return False
+
+    left_values = (
+        left.to_value(left_unit) if hasattr(left, "to_value") else np.asarray(left)
+    )
+    right_values = (
+        right.to_value(left_unit) if hasattr(right, "to_value") else np.asarray(right)
+    )
+    return np.allclose(
+        np.asarray(left_values),
+        np.asarray(right_values),
+        rtol=_AXIS_RTOL,
+        atol=_AXIS_ATOL,
+    )
 
 
 class FieldBase(Array4D):
@@ -137,6 +168,43 @@ class FieldBase(Array4D):
             self._axis0_offset = getattr(obj, "_axis0_offset", None)
 
         self._validate_domain_units()
+
+    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        """Validate domain and coordinate consistency before arithmetic."""
+        # Identify FieldBase objects among inputs
+        fields = [x for x in inputs if isinstance(x, FieldBase)]
+
+        if len(fields) > 1:
+            first = fields[0]
+            for other in fields[1:]:
+                # 1. Check axis0 domain (Time vs Frequency)
+                if first._axis0_domain != other._axis0_domain:
+                    raise ValueError(
+                        f"Field domain mismatch: {first._axis0_domain} vs "
+                        f"{other._axis0_domain}. Perform domain transform "
+                        "(e.g., fft_time) before operation."
+                    )
+
+                # 2. Check spatial domains (Real vs K-space)
+                if first._space_domains != other._space_domains:
+                    raise ValueError(
+                        "Field spatial domain mismatch: "
+                        f"{first._space_domains} vs {other._space_domains}."
+                    )
+
+                # 3. Check coordinates (All 4 axes must align)
+                for i in range(4):
+                    idx1 = getattr(first, f"_axis{i}_index")
+                    idx2 = getattr(other, f"_axis{i}_index")
+                    if not _axis_coordinates_close(idx1, idx2):
+                        name = first.axis_names[i]
+                        raise ValueError(
+                            f"Field coordinate mismatch on axis {i} ('{name}'). "
+                            "Regrid operands to a common grid before operation."
+                        )
+
+        # Defer to superclass (Array4D -> Array -> GwpyArray)
+        return super().__array_ufunc__(ufunc, method, *inputs, **kwargs)
 
     @property
     def axis0_domain(self):
