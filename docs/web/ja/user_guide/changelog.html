@@ -132,8 +132,9 @@
 <li class="toctree-l3"><a class="reference internal" href="verification_and_quality.html">検証と品質の見方</a></li>
 <li class="toctree-l3"><a class="reference internal" href="citation.html">引用方法 (Citation)</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">更新履歴 (Changelog)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">[0.1.0] - 2026-04-08</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">過去の履歴</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">[0.1.1] - 2026-04-28</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">[0.1.0] - 2026-04-08</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">過去の履歴</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="license.html">ライセンス</a></li>
@@ -174,9 +175,35 @@
 <h1>更新履歴 (Changelog)<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
 <p>GWexpy の主な変更履歴を記載します。</p>
 <section id="id1">
-<h2>[0.1.0] - 2026-04-08<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>[0.1.1] - 2026-04-28<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="added">
 <h3>追加 (Added)<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code>、histogram/segments 補助機能、detector/time 変換、CLI、plot helper に関する公開契約の基準化ドキュメントとテストを追加。</p></li>
+<li><p>PyPI 公開前の release gate として、メタデータ整合性、配布物の健全性、fresh environment での wheel smoke を確認する仕組みを追加。</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>変更 (Changed)<a class="headerlink" href="#changed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>optional extras、ソースインストール、将来の配布チャネル切り替えに関する案内を整理。</p></li>
+</ul>
+</section>
+<section id="known-limitations-and-follow-ups">
+<h3>既知の制限とフォローアップ (Known Limitations And Follow-Ups)<a class="headerlink" href="#known-limitations-and-follow-ups" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>#293 の最終段階である PyPI 公開はまだ人手実行のままです。公開インストール手順は、最初の PyPI リリースと post-publish smoke が成功するまで GitHub / ソース導入のままにします。<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gwexpy</span></code> への切り替えは公開後に行います。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> パッケージはまだ公開されていません。#294 では staged-recipes 提出と fresh conda 環境での smoke test を継続します。</p></li>
+<li><p>ノイズ契約 (#278)、astro range の単位と前提 (#282)、BruCo/coupling/response ワークフロー (#284)、preprocessing / decomposition / forecasting 契約 (#288) は、現状挙動の docs/test baseline は入ったものの、方針決定が残っています。</p></li>
+<li><p>GUI と可視化まわりでは、payload metadata、ラベル、colorbar、plot helper の意味論、公開ドキュメントの残差 drift が継続課題です (#274, #275, #283)。GUI は引き続き安定性ラベル上の実験的機能です。</p></li>
+<li><p>ローカル検証のフォローアップ #335 では、<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/</span> <span class="pre">-q</span></code> を 1 プロセスで通したときに exit 139 が断続的に発生します。分割スイートでは通過していますが、単一プロセス異常終了の原因は未解明です。</p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h2>[0.1.0] - 2026-04-08<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>追加 (Added)<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>ドキュメントデザインの刷新 (Task 1 &amp; 2)。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> 系クラスの安定化。</p></li>
@@ -191,8 +218,8 @@
 </ul>
 </section>
 </section>
-<section id="id2">
-<h2>過去の履歴<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id4">
+<h2>過去の履歴<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <p>詳細は <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases">GitHub Releases</a> を参照してください。</p>
 </section>
 </section>
@@ -209,7 +236,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 13:49:41.
+      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
       </span></p>
   </div>
 

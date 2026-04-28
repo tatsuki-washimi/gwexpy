@@ -97,7 +97,7 @@ directly.
 
 | Policy | Dependencies | Install guidance |
 | --- | --- | --- |
-| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | Use `pip install 'gwexpy[zarr]'`, `pip install 'gwexpy[netcdf4]'`, `pip install 'gwexpy[seismic]'`, `pip install 'gwexpy[gw]'`, `pip install 'gwexpy[control]'`, or `pip install 'gwexpy[audio]'` as appropriate. |
+| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | Until PyPI publication, use the source-install extra syntax from the [Installation Guide](installation.md), such as `pip install "gwexpy[control] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`. |
 | Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `finesse`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `metpy`, `wrf-python`, `harmonica`, `emg3d`, `meshio` | Install the named backend directly when the bridge imports it or when you need it to create accepted source objects. |
 
 `gwexpy[all]` installs the declared GWexpy extras as a convenience bundle. It

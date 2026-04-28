@@ -131,7 +131,8 @@
 <li class="toctree-l3"><a class="reference internal" href="verification_and_quality.html">Verification and Quality Signals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Changelog</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">[0.1.0] - 2026-04-08</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">[0.1.1] - 2026-04-28</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">[0.1.0] - 2026-04-08</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#past-versions">Past Versions</a></li>
 </ul>
 </li>
@@ -174,9 +175,35 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
 <p>Notable changes to the GWexpy project.</p>
 <section id="id1">
-<h2>[0.1.0] - 2026-04-08<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>[0.1.1] - 2026-04-28<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added public contract baselines for <code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code>, histogram/segments helpers, detector/time conversion surfaces, CLI behavior, and plot-helper documentation/tests.</p></li>
+<li><p>Added release-gate checks for metadata consistency, artifact hygiene, and fresh-environment wheel smoke before PyPI publication.</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Clarified installation guidance around optional extras, source installs, and future release-channel transitions.</p></li>
+</ul>
+</section>
+<section id="known-limitations-and-follow-ups">
+<h3>Known Limitations And Follow-Ups<a class="headerlink" href="#known-limitations-and-follow-ups" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>PyPI publication is still a human-controlled final step for issue #293. Public install docs intentionally remain GitHub/source-based until the first PyPI release is actually published; switch them to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gwexpy</span></code> only after publication and post-publish smoke succeed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> packaging is not published yet. Issue #294 remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.</p></li>
+<li><p>Open numerical and analysis audit follow-ups remain for noise contracts (#278), astro range assumptions and unit handling (#282), Bruco/coupling/response workflow semantics (#284), and preprocessing/decomposition/forecasting contracts (#288). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.</p></li>
+<li><p>GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift (#274, #275, #283). The GUI should still be treated as experimental.</p></li>
+<li><p>Local validation follow-up #335 tracks an intermittent one-process <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/</span> <span class="pre">-q</span></code> exit 139. Split-suite validation passed and remains the current evidence base, but the single-process crash is not yet explained.</p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h2>[0.1.0] - 2026-04-08<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>Added<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Redesigned documentation site (Task 1 &amp; 2).</p></li>
 <li><p>Stabilized <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> classes.</p></li>
@@ -209,7 +236,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 13:49:41.
+      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
       </span></p>
   </div>
 

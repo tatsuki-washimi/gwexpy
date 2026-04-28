@@ -12,7 +12,7 @@ To launch the GUI after installing the optional dependency:
 
 .. code-block:: bash
 
-   pip install "gwexpy[gui]"
+   pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
    gwexpy.gui
 
 .. currentmodule:: gwexpy.gui

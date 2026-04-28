@@ -401,7 +401,7 @@
 <tr class="row-even"><td><p><strong>WAV metadata</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">tinytag</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">audio</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">extract_metadata=True)</span></code> は警告を出し、metadata を省略します。必要なら <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[audio]'</span></code> または <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[all]&quot;</span></code> で導入してください。通常の WAV 読み書きは利用できます。</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">extract_metadata=True)</span></code> は警告を出し、metadata を省略します。PyPI 公開までは <a class="reference internal" href="installation.html"><span class="std std-doc">インストールガイド</span></a> の <code class="docutils literal notranslate"><span class="pre">audio</span></code> または <code class="docutils literal notranslate"><span class="pre">all</span></code> のソース導入形式で追加してください。通常の WAV 読み書きは利用できます。</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>MP3 / FLAC / OGG / M4A</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">pydub</span></code>, <code class="docutils literal notranslate"><span class="pre">tinytag</span></code></p></td>
@@ -411,12 +411,12 @@
 <tr class="row-even"><td><p><strong>TDMS</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">nptdms</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">io</span></code></p></td>
-<td><p>reader は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[io]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+<td><p>reader は必要な <code class="docutils literal notranslate"><span class="pre">io</span></code> extra の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>mseed / SAC / GSE2 / K-NET</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">seismic</span></code></p></td>
-<td><p>登録済みの reader / writer は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[seismic]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+<td><p>登録済みの reader / writer は必要な <code class="docutils literal notranslate"><span class="pre">seismic</span></code> extra の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>WIN / WIN32</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code></p></td>
@@ -426,17 +426,17 @@
 <tr class="row-odd"><td><p><strong>ATS.MTH5</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">mth5</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">seismic</span></code></p></td>
-<td><p>reader は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[seismic]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+<td><p>reader は必要な <code class="docutils literal notranslate"><span class="pre">seismic</span></code> extra の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>nc / NetCDF4</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
-<td><p>reader / writer は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[netcdf4]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+<td><p>reader / writer は必要な <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> extra の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Zarr</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code></p></td>
-<td><p>reader / writer は <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[zarr]'</span></code> の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
+<td><p>reader / writer は必要な <code class="docutils literal notranslate"><span class="pre">zarr</span></code> extra の案内付きで <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。</p></td>
 </tr>
 </tbody>
 </table>
@@ -885,7 +885,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 13:49:41.
+      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
       </span></p>
   </div>
 

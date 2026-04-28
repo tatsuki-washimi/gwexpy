@@ -402,7 +402,7 @@ on optional packages or optional metadata helpers.</p>
 <tr class="row-even"><td><p><strong>WAV metadata</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">tinytag</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">audio</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">extract_metadata=True)</span></code> warns and skips metadata when <code class="docutils literal notranslate"><span class="pre">tinytag</span></code> is missing; install with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[audio]'</span></code> or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[all]&quot;</span></code>. Basic WAV read/write remains available.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.read(...,</span> <span class="pre">extract_metadata=True)</span></code> warns and skips metadata when <code class="docutils literal notranslate"><span class="pre">tinytag</span></code> is missing; until PyPI publication, install with the <code class="docutils literal notranslate"><span class="pre">audio</span></code> or <code class="docutils literal notranslate"><span class="pre">all</span></code> source-extra syntax from the <a class="reference internal" href="installation.html"><span class="std std-doc">Installation Guide</span></a>. Basic WAV read/write remains available.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>MP3 / FLAC / OGG / M4A</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">pydub</span></code>, <code class="docutils literal notranslate"><span class="pre">tinytag</span></code></p></td>
@@ -412,12 +412,12 @@ on optional packages or optional metadata helpers.</p>
 <tr class="row-even"><td><p><strong>TDMS</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">nptdms</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">io</span></code></p></td>
-<td><p>Reader raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[io]'</span></code> guidance.</p></td>
+<td><p>Reader raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with the required <code class="docutils literal notranslate"><span class="pre">io</span></code> extra in its install guidance.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>mseed / SAC / GSE2 / K-NET</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">seismic</span></code></p></td>
-<td><p>Registered reader/writer raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[seismic]'</span></code> guidance.</p></td>
+<td><p>Registered reader/writer raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with the required <code class="docutils literal notranslate"><span class="pre">seismic</span></code> extra in its install guidance.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>WIN / WIN32</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">obspy</span></code></p></td>
@@ -427,17 +427,17 @@ on optional packages or optional metadata helpers.</p>
 <tr class="row-odd"><td><p><strong>ATS.MTH5</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">mth5</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">seismic</span></code></p></td>
-<td><p>Reader raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[seismic]'</span></code> guidance.</p></td>
+<td><p>Reader raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with the required <code class="docutils literal notranslate"><span class="pre">seismic</span></code> extra in its install guidance.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>nc / NetCDF4</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
-<td><p>Reader/writer raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[netcdf4]'</span></code> guidance.</p></td>
+<td><p>Reader/writer raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with the required <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> extra in its install guidance.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Zarr</strong></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code></p></td>
-<td><p>Reader/writer raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'gwexpy[zarr]'</span></code> guidance.</p></td>
+<td><p>Reader/writer raises <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with the required <code class="docutils literal notranslate"><span class="pre">zarr</span></code> extra in its install guidance.</p></td>
 </tr>
 </tbody>
 </table>
@@ -886,7 +886,7 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 13:49:41.
+      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
       </span></p>
   </div>
 

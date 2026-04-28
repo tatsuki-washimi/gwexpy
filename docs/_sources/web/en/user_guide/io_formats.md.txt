@@ -125,14 +125,14 @@ on optional packages or optional metadata helpers.
 
 | Format / family | Optional dependency | GWexpy extra | Missing-dependency behavior |
 |---|---|---|---|
-| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` warns and skips metadata when `tinytag` is missing; install with `pip install 'gwexpy[audio]'` or `pip install "gwexpy[all]"`. Basic WAV read/write remains available. |
+| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` warns and skips metadata when `tinytag` is missing; until PyPI publication, install with the `audio` or `all` source-extra syntax from the [Installation Guide](installation.md). Basic WAV read/write remains available. |
 | **MP3 / FLAC / OGG / M4A** | `pydub`, `tinytag` | `audio` | Audio read/write raises `ImportError`; some codecs also need an external `ffmpeg`/`libav` binary. |
-| **TDMS** | `nptdms` | `io` | Reader raises `ImportError` with `pip install 'gwexpy[io]'` guidance. |
-| **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | Registered reader/writer raises `ImportError` with `pip install 'gwexpy[seismic]'` guidance. |
+| **TDMS** | `nptdms` | `io` | Reader raises `ImportError` with the required `io` extra in its install guidance. |
+| **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | Registered reader/writer raises `ImportError` with the required `seismic` extra in its install guidance. |
 | **WIN / WIN32** | `obspy` | `seismic` | Uses conditional registration: when ObsPy is unavailable, the `win` / `win32` registry entries may be absent. |
-| **ATS.MTH5** | `mth5` | `seismic` | Reader raises `ImportError` with `pip install 'gwexpy[seismic]'` guidance. |
-| **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | Reader/writer raises `ImportError` with `pip install 'gwexpy[netcdf4]'` guidance. |
-| **Zarr** | `zarr` | `zarr` | Reader/writer raises `ImportError` with `pip install 'gwexpy[zarr]'` guidance. |
+| **ATS.MTH5** | `mth5` | `seismic` | Reader raises `ImportError` with the required `seismic` extra in its install guidance. |
+| **nc / NetCDF4** | `xarray`, `netCDF4` | `netcdf4` | Reader/writer raises `ImportError` with the required `netcdf4` extra in its install guidance. |
+| **Zarr** | `zarr` | `zarr` | Reader/writer raises `ImportError` with the required `zarr` extra in its install guidance. |
 
 <a id="io-formats-en-a"></a>
 
