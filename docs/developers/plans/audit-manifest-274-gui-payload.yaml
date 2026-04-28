@@ -10,10 +10,6 @@ agent_model: Codex session default
 physics_review_required: false
 
 commands_executed:
-  - cmd: "rtk sed -n '1,220p' <local superpowers using-superpowers skill>"
-    result: "Reviewed session skill-selection guidance."
-  - cmd: "rtk sed -n '1,260p' <local superpowers test-driven-development skill>"
-    result: "Reviewed TDD guidance; no production code was changed in this docs/test-only pass."
   - cmd: "rtk sed -n '1,240p' .agent/AGENTS.md"
     result: "Reviewed project agent instructions."
   - cmd: "rtk sed -n '1,220p' docs/developers/plans/2026-04-26-gui-plot-metadata-unit-audit.md"
@@ -42,8 +38,9 @@ test_results:
   ruff_format_changed_test: clean
   yaml_parse_manifest: clean
   diff_check: clean
-  full_pytest: not_run
-  mypy: not_run
+  full_pytest: "failed locally: `rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/ -p no:cacheprovider` exited 139 at 20% of the suite after a pyqtgraph Qt teardown RuntimeError: `wrapped C/C++ object of type ViewBox has been deleted`."
+  mypy: "passed (`mypy: No issues found`)"
+  ci_coverage: "PR #324 head 226d0865a567a3b6468b75b2dcdc682d40783313 had 7 passing GitHub checks on 2026-04-28, including `Ruff, mypy, pytest, and smoke build`."
   docs_build: not_run
 
 files_changed:
@@ -62,6 +59,10 @@ review_sensitive_follow_ups:
 notes:
   - "Runtime gwexpy code was intentionally not changed."
   - "Tests avoid Qt, live GUI display, NDS, network access, and expensive spectral computation."
+
+agent_internal_notes:
+  - "Reviewed local superpowers using-superpowers guidance."
+  - "Reviewed local superpowers test-driven-development guidance; no production code was changed in this docs/test-only pass."
 
 review_response:
   date: 2026-04-28
@@ -120,3 +121,49 @@ additional_review_response:
     ruff_format_changed_test: clean
     yaml_parse_manifest: clean
     diff_check: clean
+
+final_review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Address outstanding review cleanup on GUI payload contract tests and audit manifest."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Kept the PyQt5, pyqtgraph, and qtpy dependency guard so only known GUI dependency ImportError cases skip; renamed the gwpy-style value helper to _AttrWrapper; documented the accumulator expected time derivation."
+    - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+      change: "Removed non-reproducible local skill placeholders from commands_executed, moved them to agent_internal_notes, and recorded local mypy/full-pytest status plus CI coverage for the previous PR head."
+  commands_executed:
+    - cmd: "rtk sed -n '1,220p' /home/washimi/.codex/superpowers/skills/receiving-code-review/SKILL.md"
+      result: "Reviewed code-review response workflow."
+    - cmd: "rtk sed -n '1,260p' tests/gui/test_gui_payload_contracts.py"
+      result: "Reviewed current GUI payload contract tests."
+    - cmd: "rtk sed -n '1,260p' docs/developers/plans/audit-manifest-274-gui-payload.yaml"
+      result: "Reviewed current audit manifest."
+    - cmd: "rtk rg -n \"^(import|from) (PyQt5|pyqtgraph|qtpy|gwexpy\\.gui)\" gwexpy/gui -g '*.py'"
+      result: "Verified the gwexpy.gui import chain uses PyQt5, pyqtgraph, and qtpy as the relevant optional GUI dependencies."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "4 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-274-gui-payload.yaml'))\""
+      result: "Manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+    - cmd: "rtk mypy gwexpy/"
+      result: "mypy: No issues found."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/ -p no:cacheprovider"
+      result: "Failed locally: exited 139 at 20% of the suite after a pyqtgraph Qt teardown RuntimeError: `wrapped C/C++ object of type ViewBox has been deleted`."
+    - cmd: "rtk gh pr checks 324"
+      result: "CI Checks Summary: Passed 7, Failed 0 for PR #324 pre-edit head."
+    - cmd: "rtk gh pr view 324 --json headRefOid,statusCheckRollup,url"
+      result: "Confirmed PR #324 pre-edit head 226d0865a567a3b6468b75b2dcdc682d40783313 and passing GitHub checks including `Ruff, mypy, pytest, and smoke build`."
+  test_results:
+    focused_pytest: "4 passed"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    yaml_parse_manifest: clean
+    diff_check: clean
+    mypy: "passed (`mypy: No issues found`)"
+    full_pytest: "failed locally with signal 11 at 20% due to known Qt teardown failure in pyqtgraph AxisItem/ViewBox"
+    ci_coverage: "PR #324 pre-edit head 226d0865a567a3b6468b75b2dcdc682d40783313 had 7 passing checks, including `Ruff, mypy, pytest, and smoke build`."

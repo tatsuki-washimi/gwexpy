@@ -45,15 +45,15 @@ def gui_payload_classes():
     return Engine, SpectralAccumulator
 
 
-class _Value:
+class _AttrWrapper:
     def __init__(self, value):
         self.value = value
 
 
 class _FakeTimeSeries:
     def __init__(self):
-        self.sample_rate = _Value(8.0)
-        self.times = _Value(np.array([100.0, 100.125, 100.25, 100.375]))
+        self.sample_rate = _AttrWrapper(8.0)
+        self.times = _AttrWrapper(np.array([100.0, 100.125, 100.25, 100.375]))
         self.value = np.array([1.0, 2.0, 3.0, 4.0])
 
     def __len__(self) -> int:
@@ -65,8 +65,8 @@ class _FakeTimeSeries:
 
 class _FakeSpectrogram:
     def __init__(self):
-        self.times = _Value(np.array([100.0, 101.0]))
-        self.frequencies = _Value(np.array([1.0, 2.0, 3.0]))
+        self.times = _AttrWrapper(np.array([100.0, 101.0]))
+        self.frequencies = _AttrWrapper(np.array([1.0, 2.0, 3.0]))
         self.value = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
 
     def crop_frequencies(self, start, stop):
@@ -143,6 +143,8 @@ def test_spectral_accumulator_time_series_payload_is_tuple_without_metadata_keys
     assert isinstance(payload, tuple)
     assert len(payload) == 2
     times, values = payload
+    # With no current samples, history is anchored before t0:
+    # t0 - (history_len - current_len) * dt = 98.5, then advance by dt.
     assert np.allclose(times, [98.5, 99.0, 99.5])
     assert np.allclose(values, [1.0, 2.0, 3.0])
     assert not isinstance(payload, dict)
