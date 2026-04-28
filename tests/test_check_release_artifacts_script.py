@@ -141,6 +141,30 @@ def test_release_artifact_hygiene_rejects_package_internal_agent_docs(
     assert any("CLAUDE.md" in problem for problem in problems)
 
 
+def test_release_artifact_hygiene_rejects_wheel_data_package_internal_files(
+    tmp_path: Path,
+):
+    module = load_script_module()
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    _write_wheel(
+        dist / "gwexpy-0.1.1-py3-none-any.whl",
+        [
+            "gwexpy-0.1.1.data/purelib/gwexpy/gui/AGENTS.md",
+            "gwexpy-0.1.1.data/platlib/gwexpy/histogram/tests/test_histogram.py",
+        ],
+    )
+    _write_sdist(
+        dist / "gwexpy-0.1.1.tar.gz",
+        ["gwexpy-0.1.1/pyproject.toml"],
+    )
+
+    problems = module.check_artifacts(dist)
+
+    assert any(".data/purelib/gwexpy/gui/AGENTS.md" in problem for problem in problems)
+    assert any(".data/platlib/gwexpy/histogram/tests" in problem for problem in problems)
+
+
 def test_release_artifact_hygiene_rejects_symlink_members(tmp_path: Path):
     module = load_script_module()
     dist = tmp_path / "dist"

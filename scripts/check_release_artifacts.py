@@ -45,9 +45,13 @@ class ArtifactMember:
 def _normalized_parts(member_name: str) -> tuple[str, ...]:
     path = Path(member_name.replace("\\", "/"))
     parts = path.parts
-    if parts and parts[0].startswith("gwexpy-"):
+    if parts and _is_sdist_root(parts[0]):
         return parts[1:]
     return parts
+
+
+def _is_sdist_root(part: str) -> bool:
+    return part.startswith("gwexpy-") and not part.endswith((".data", ".dist-info"))
 
 
 def _is_forbidden(member_name: str) -> bool:
@@ -63,13 +67,24 @@ def _is_forbidden(member_name: str) -> bool:
 
 
 def _is_package_internal_test(parts: tuple[str, ...]) -> bool:
-    return len(parts) >= 3 and parts[0] == "gwexpy" and "tests" in parts[1:]
+    package_parts = _package_parts(parts)
+    return len(package_parts) >= 3 and "tests" in package_parts[1:]
 
 
 def _is_package_internal_markdown(parts: tuple[str, ...]) -> bool:
     # Public docs live outside gwexpy/; package-internal Markdown is development
     # reference material and must not ship in release artifacts.
-    return len(parts) >= 2 and parts[0] == "gwexpy" and parts[-1].endswith(".md")
+    package_parts = _package_parts(parts)
+    return len(package_parts) >= 2 and package_parts[-1].endswith(".md")
+
+
+def _package_parts(parts: tuple[str, ...]) -> tuple[str, ...]:
+    if parts and parts[0] == "gwexpy":
+        return parts
+    for index, part in enumerate(parts[:-1]):
+        if part in {"purelib", "platlib"} and parts[index + 1] == "gwexpy":
+            return parts[index + 1 :]
+    return ()
 
 
 def _iter_wheel_members(path: Path) -> list[ArtifactMember]:
