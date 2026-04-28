@@ -14,6 +14,7 @@ scope:
   - "Record closed issue status for #276, #279, #280, #281, and #290."
   - "Classify #287 as an explicit field data-model residual after partial baseline PR #325."
   - "Classify #278 as a Wave 3 numerical/analysis residual after merged baseline PR #313."
+  - "Record the behavior decision queue from human review comments on PRs #314, #315, #316, #322, and #328."
   - "No runtime code, public API behavior, physics behavior, units, or metadata behavior changed."
 merge_verification:
   - issue: 281
@@ -54,6 +55,42 @@ residuals:
   - issue: 278
     classification: "Wave 3 numerical/analysis residual"
     reason: "PR #313 merged a noise baseline, but remaining PSD/ASD conventions and stochastic/optional-backend decisions belong to Wave 3."
+decision_queue:
+  - priority: 1
+    source_pr: 328
+    owning_issues: [291, 287]
+    decision_area: "Array4D dimension-dropping return classes, AxisApiMixin.sel(method=...), and downstream smoke-test ordering."
+    where_to_decide: "#291 follow-up design note cross-linked to #287."
+    when_to_decide: "Before low-level axis or ScalarField runtime hardening PRs."
+    review_required: "Human review; physics/data-model review if ScalarField semantics change."
+  - priority: 2
+    source_pr: 315
+    owning_issues: [288]
+    decision_area: "inverse_transform() return type, Inf missing-data policy, and TimeSeriesMatrix.to_list() flattening."
+    where_to_decide: "#288 follow-up design note."
+    when_to_decide: "Before preprocessing return-type or metadata behavior PRs."
+    review_required: "Human API/metadata review; statistical review for missing-data policy."
+  - priority: 3
+    source_pr: 314
+    owning_issues: [284]
+    decision_area: "Bruco Welch DC/Nyquist scaling, GWEXPY_BRUCO_BLOCK_BYTES deterministic CI policy, and correction priority."
+    where_to_decide: "#284 follow-up design note."
+    when_to_decide: "Before changing Bruco numerical behavior."
+    review_required: "Human physics/statistics review."
+  - priority: 4
+    source_pr: 322
+    owning_issues: [283, 274]
+    decision_area: "Dynamic unit labels, FieldPlot colorbar access, and PairPlot mismatch policy."
+    where_to_decide: "#283 follow-up for plot helpers, cross-link #274 for GUI/metadata."
+    when_to_decide: "Before plot/runtime behavior PRs or GUI metadata work."
+    review_required: "Human UX/API review; physics review if labels imply unit semantics."
+  - priority: 5
+    source_pr: 316
+    owning_issues: [282]
+    decision_area: "Astro pure re-export vs thin wrapper, optional inspiral_range CI, and physical type/unit assertions."
+    where_to_decide: "#282 follow-up design note."
+    when_to_decide: "Before wrapper implementation or optional-deps CI expansion."
+    review_required: "Human physics/API review for wrapper behavior; CI review for optional deps."
 commands:
   - cmd: "rtk gh pr view 317 --json number,state,isDraft,mergeStateStatus,reviewDecision,statusCheckRollup,headRefOid,baseRefName,headRefName,url"
     result: "Confirmed PR #317 was open, non-draft, CLEAN, and all check runs succeeded before merge."
@@ -81,11 +118,22 @@ commands:
     result: "Merged PR #325 without closing #287."
   - cmd: "GitHub connector get_issue for #276, #279, #280, #281, #287, #290, and #278"
     result: "Confirmed #276, #279, #280, #281, and #290 are closed; #287 and #278 remain open."
+  - cmd: "rtk gh pr view 314 --json number,reviews,comments,url"
+    result: "Confirmed human review comments identify follow-up decisions for Bruco scaling and deterministic CI policy."
+  - cmd: "rtk gh pr view 315 --json number,reviews,comments,url"
+    result: "Confirmed human review comments identify follow-up decisions for preprocessing return types, Inf policy, and matrix flattening."
+  - cmd: "rtk gh pr view 316 --json number,reviews,comments,url"
+    result: "Confirmed human review comments identify follow-up decisions for astro wrapper boundaries and optional-deps CI."
+  - cmd: "rtk gh pr view 322 --json number,reviews,comments,url"
+    result: "Confirmed human review comments identify follow-up decisions for plot labels, colorbar access, and mismatch policy."
+  - cmd: "rtk gh pr view 328 --json number,reviews,comments,url"
+    result: "Confirmed human review comments identify follow-up decisions for Array4D slicing and AxisApiMixin.sel behavior."
 files_changed:
   - path: docs/developers/plans/2026-04-27-issue-burn-down-roadmap.md
-    change: "Records Wave 2 Batch 2 completion, merged PRs, closed issues, and residual classification for #287 and #278."
+    change: "Records Wave 2 Batch 2 completion, merged PRs, closed issues, residual classification for #287 and #278, and the behavior decision queue from review comments."
   - path: docs/developers/plans/audit-manifest-wave2-batch2-roadmap.yaml
-    change: "Adds file-backed audit manifest for this roadmap-only status update."
+    change: "Adds file-backed audit manifest for this roadmap-only status update and the review-derived behavior decision queue."
 deferred:
   - "Close or split #287 after deciding the field data-model residual scope and human physics-review requirements."
   - "Continue #278 as a Wave 3 numerical/analysis residual or close it separately if maintainers accept PR #313 as sufficient."
+  - "Open or update follow-up design notes for the decision queue before runtime behavior PRs."

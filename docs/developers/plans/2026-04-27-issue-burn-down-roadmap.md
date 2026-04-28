@@ -241,6 +241,29 @@ Net outcome:
 - Wave 2 public-surface work is complete for the issue set that can be closed
   through docs/test-only audits without changing runtime field algebra.
 
+#### Behavior Decision Queue
+
+Status as of 2026-04-28: human review comments on PRs #314, #315, #316,
+#322, and #328 identify design decisions that should not block docs/test-only
+contract PRs. Resolve these before runtime behavior PRs, or before release if
+they become public-contract commitments.
+
+| Priority | Source PR | Owning Issue | Decision Area | Where To Decide | When To Decide | Review Required |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | #328 | #291 / #287 | `Array4D` dimension-dropping return classes, `AxisApiMixin.sel(method=...)`, downstream smoke-test ordering | #291 follow-up design note cross-linked to #287 | Before low-level axis or `ScalarField` runtime hardening PRs | Human review; physics/data-model review if `ScalarField` semantics change |
+| 2 | #315 | #288 | `inverse_transform()` return type, `Inf` missing-data policy, `TimeSeriesMatrix.to_list()` flattening | #288 follow-up design note | Before preprocessing return-type or metadata behavior PRs | Human API/metadata review; statistical review for missing-data policy |
+| 3 | #314 | #284 | Bruco Welch DC/Nyquist scaling, `GWEXPY_BRUCO_BLOCK_BYTES` deterministic CI policy, correction priority | #284 follow-up design note | Before changing Bruco numerical behavior | Human physics/statistics review |
+| 4 | #322 | #283 / #274 | Dynamic unit labels, `FieldPlot` colorbar access, `PairPlot` mismatch policy | #283 follow-up for plot helpers, cross-link #274 for GUI/metadata | Before plot/runtime behavior PRs or GUI metadata work | Human UX/API review; physics review if labels imply unit semantics |
+| 5 | #316 | #282 | Astro pure re-export vs thin wrapper, optional `inspiral_range` CI, physical type/unit assertions | #282 follow-up design note | Before wrapper implementation or optional-deps CI expansion | Human physics/API review for wrapper behavior; CI review for optional deps |
+
+Operating rule:
+
+- Merge docs/test-only PRs when CI is green and review comments only identify
+  follow-up design decisions.
+- Do not mix the decisions above into the audit PRs.
+- Each runtime PR should cite the corresponding decision record and mark human
+  physics, statistics, API, or CI review where required.
+
 ### Wave 3: Numerical And Analysis Contracts
 
 **Issues:** #273 -> #285 / #286 -> #277 / #278 / #284 / #288 / #282
