@@ -6,16 +6,41 @@ import numpy as np
 import pytest
 
 _METADATA_KEYS = {"unit", "name", "channel", "metadata"}
+_GUI_IMPORT_DEPENDENCIES = ("PyQt5", "pyqtgraph", "qtpy")
+
+
+def _missing_gui_dependency_name(exc: ImportError) -> str | None:
+    missing = getattr(exc, "name", None)
+    if missing is None:
+        return None
+    return next(
+        (
+            dependency
+            for dependency in _GUI_IMPORT_DEPENDENCIES
+            if missing == dependency or missing.startswith(f"{dependency}.")
+        ),
+        None,
+    )
 
 
 @pytest.fixture
 def gui_payload_classes():
-    pytest.importorskip(
-        "PyQt5",
-        reason="gwexpy.gui package imports PyQt5 while loading GUI submodules",
-    )
-    from gwexpy.gui.engine import Engine
-    from gwexpy.gui.streaming import SpectralAccumulator
+    for dependency in _GUI_IMPORT_DEPENDENCIES:
+        pytest.importorskip(
+            dependency,
+            reason="gwexpy.gui payload contracts require the GUI dependency chain",
+        )
+    try:
+        from gwexpy.gui.engine import Engine
+        from gwexpy.gui.streaming import SpectralAccumulator
+    except (ImportError, ModuleNotFoundError) as exc:
+        dependency = _missing_gui_dependency_name(exc)
+        if dependency is not None:
+            pytest.skip(
+                f"gwexpy.gui payload contracts require {dependency}: {exc}",
+                allow_module_level=False,
+            )
+        raise
 
     return Engine, SpectralAccumulator
 

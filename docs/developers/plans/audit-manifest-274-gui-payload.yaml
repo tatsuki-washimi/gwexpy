@@ -87,3 +87,36 @@ review_response:
     ruff_check_changed_test: clean
     ruff_format_changed_test: clean
     diff_check: clean
+
+additional_review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Guard gwexpy.gui import chain for partial GUI environments such as PyQt5 present but pyqtgraph or qtpy missing."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Broadened the GUI payload fixture guard to cover PyQt5, pyqtgraph, and qtpy before importing gwexpy.gui modules, and to skip only known GUI dependency ImportError cases during those imports."
+    - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+      change: "Recorded the additional review response and partial-GUI skip verification."
+  commands_executed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal python -c '<block pyqtgraph import; run pytest for tests/gui/test_gui_payload_contracts.py>'"
+      result: "Before the guard update, reproduced the partial-GUI failure: 3 passed, 1 setup error from missing pyqtgraph."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal python -c '<block pyqtgraph import; run pytest for tests/gui/test_gui_payload_contracts.py>'"
+      result: "After the guard update, confirmed clean partial-GUI behavior: 4 skipped."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "4 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk python -c '<parse docs/developers/plans/audit-manifest-274-gui-payload.yaml with yaml.safe_load>'"
+      result: "Manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+  test_results:
+    focused_pytest: "4 passed"
+    synthetic_no_pyqtgraph_before_fix: "3 passed, 1 setup error"
+    synthetic_no_pyqtgraph_after_fix: "4 skipped"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    yaml_parse_manifest: clean
+    diff_check: clean
