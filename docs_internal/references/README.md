@@ -13,6 +13,7 @@
 | `data-analysis/noise-subtraction/` | DeepClean 等のノイズ減算手法に関する論文・発表資料 |
 | `data-analysis/non-Gaussian/` | 非ガウスノイズ解析に関する文献 |
 | `data-analysis/stat-info/` | 統計的情報論に関する参考資料 |
+| `data-analysis/hht_refs/` | HHT 関連のテキスト化済み参考資料 |
 | `file-io/` | 計測器・ファイル形式仕様書（ADU、SEED、GWF 等） |
 | `gui-app/` | GUI 関連の診断ソフトウェア仕様書 |
 | `main_E.pdf` | 主要参考文献（概要書） |
@@ -20,8 +21,7 @@
 ## .gitignore の設定
 
 ```gitignore
-docs_internal/references/*        # PDF・バイナリはすべて除外
-!docs_internal/references/**/*.md # .md ファイルのみ追跡
+docs_internal/references/*        # 参照資料は原則として除外
 ```
 
 `deepclean_extracted/` 等の大容量展開ディレクトリ（889 MB 超）も上記ルールで除外される。手元で再現するには元の PDF から展開すること。
@@ -29,5 +29,7 @@ docs_internal/references/*        # PDF・バイナリはすべて除外
 ## 追加・更新のルール
 
 - **PDF や大容量ファイルはコミットしない** — `.gitignore` により除外済み。
+- チーム共有が必要な軽量テキスト資料だけ、意図を確認したうえで明示的に Git 管理する。
+- 一時ログやジョブ状態は `.agent/tmp/` に置き、Git 管理しない。
 - 新しいサブトピックを追加する場合は、このファイルの表も更新する。
 - 出所・ライセンスが明確な文献のみを格納する。

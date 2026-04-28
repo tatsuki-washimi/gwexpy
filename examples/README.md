@@ -15,6 +15,11 @@ Public notebook pages are maintained from `docs/web/{en,ja}/user_guide/tutorials
 If a notebook exists in both `examples/` and `docs/web/.../tutorials/`, the public-docs copy is authoritative for published content.
 Use `examples/` as a staging area for notebooks that may later be promoted into the published tutorial or case-study set.
 
+Generated outputs should not be committed here. In particular,
+`advanced-methods/tutorial_Bruco.ipynb` may create
+`advanced-methods/bruco_report/` via `generate_report(...)`; the published
+copies live under `docs/web/*/user_guide/tutorials/bruco_report/`.
+
 ## 1. Feature Introductions (`basic-new-methods/intro_*.ipynb`)
 
 These notebooks focus on introducing specific classes and methods within the `gwexpy` library.

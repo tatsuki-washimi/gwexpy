@@ -199,6 +199,9 @@ all = [
   "tinytag>=1.10",
 ]
 
+[tool.setuptools]
+include-package-data = false
+
 [tool.setuptools.package-data]
 gwexpy = [
   "py.typed",
@@ -213,7 +216,7 @@ gwexpy = [
 
 [tool.setuptools.packages.find]
 include = ["gwexpy*"]
-exclude = ["typings*", "tests*", "docs*", "examples*"]
+exclude = ["gwexpy*.tests*", "typings*", "tests*", "docs*", "examples*"]
 
 [project.scripts]
 "gwexpy" = "gwexpy.cli:main"
@@ -268,7 +271,6 @@ ignore = [
 "tests/**/*.py" = ["F401", "E741", "D", "UP"]
 "examples/*" = ["F401", "E741", "D", "UP"]
 "examples/**/*.py" = ["F401", "E741", "D", "UP"]
-"gwexpy/*/tests/*" = ["F401", "E741", "D", "UP"]
 # Auxiliary scripts: docstring coverage is not yet enforced project-wide.
 "scripts/*.py" = ["D"]
 "scripts/**/*.py" = ["D"]

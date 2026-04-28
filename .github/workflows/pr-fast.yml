@@ -58,6 +58,11 @@ jobs:
       - name: Run PR-fast gate
         run: python scripts/ci/run_gate.py pr-fast
 
+      - name: Check release artifact hygiene
+        run: |
+          python -m build --sdist --wheel --no-isolation
+          python scripts/check_release_artifacts.py dist
+
   io-contract-gate:
     name: Core I/O contract gate
     runs-on: ubuntu-latest

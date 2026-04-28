@@ -1,6 +1,6 @@
 # DTT (diaggui) リファレンス解析レポート
 
-このレポートは、`gwexpy/gui/reference-dtt/dtt-master/src/dtt/diag` にあるオリジナルの C++ 版 DTT (Diagnostic Test Tools) 実装を解析したものです。Python による再実装版 (`gwexpy/gui`) の開発および検証のためのリファレンス情報を提供することを目的としています。
+このレポートは、当時ローカル参照として利用していた C++ 版 DTT (Diagnostic Test Tools) 実装（旧 `gwexpy/gui/reference-dtt/dtt-master/src/dtt/diag`、現在は Git 管理外の外部参照）を解析したものです。Python による再実装版 (`gwexpy/gui`) の開発および検証のためのリファレンス情報を提供することを目的としています。
 
 ## 1. コアアーキテクチャ (C++)
 
@@ -87,4 +87,4 @@
 4.  **Stepped Sine の検証**: (前述の通り)
 
 ---
-*解析元: `gwexpy/gui/reference-dtt/dtt-master/src/dtt/diag` & `src/dtt/gui/dttgui`*
+*解析元: 旧ローカル参照 `gwexpy/gui/reference-dtt/dtt-master/src/dtt/diag` & `src/dtt/gui/dttgui`（現在は Git 管理外）*

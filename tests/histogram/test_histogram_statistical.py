@@ -73,6 +73,7 @@ def test_histogram_quantile_plateaus():
     h_empty = Histogram([0, 0], [0, 1, 2], xunit=u.s)
     assert np.isnan(h_empty.quantile(0.5).value)
 
+@pytest.mark.root
 def test_histogram_root_interop_overflow():
     pytest.importorskip("ROOT")
     from gwexpy.interop.root_ import to_th1d
