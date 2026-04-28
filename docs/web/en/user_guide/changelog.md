@@ -2,7 +2,7 @@
 
 Notable changes to the GWexpy project.
 
-## [0.1.1] - 2026-04-05
+## [0.1.1] - 2026-04-28
 ### Added
 - Added public contract baselines for `SegmentTable`, histogram/segments helpers, detector/time conversion surfaces, CLI behavior, and plot-helper documentation/tests.
 - Added release-gate checks for metadata consistency, artifact hygiene, and fresh-environment wheel smoke before PyPI publication.

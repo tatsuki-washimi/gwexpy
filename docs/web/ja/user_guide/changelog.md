@@ -2,7 +2,7 @@
 
 GWexpy の主な変更履歴を記載します。
 
-## [0.1.1] - 2026-04-05
+## [0.1.1] - 2026-04-28
 ### 追加 (Added)
 - `SegmentTable`、histogram/segments 補助機能、detector/time 変換、CLI、plot helper に関する公開契約の基準化ドキュメントとテストを追加。
 - PyPI 公開前の release gate として、メタデータ整合性、配布物の健全性、fresh environment での wheel smoke を確認する仕組みを追加。

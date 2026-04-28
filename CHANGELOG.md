@@ -42,7 +42,7 @@
 - **ci**: Integrated `nbstripout` into pre-commit hooks to manage repository size and diff clarity.
 - **pre-commit**: Added a GitHub Actions PR template with automated quality gate checklist.
 
-## [0.1.1] - 2026-04-05
+## [0.1.1] - 2026-04-28
 
 ### Added
 
