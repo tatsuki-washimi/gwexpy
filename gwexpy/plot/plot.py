@@ -13,6 +13,21 @@ if TYPE_CHECKING:
 __all__ = ["Plot"]
 
 
+def _format_unit_for_label(unit: Any) -> str | None:
+    """Return a display unit string, or None for unitless data."""
+    if unit is None:
+        return None
+
+    try:
+        unit_str = unit.to_string("latex_inline")
+    except (AttributeError, ValueError):
+        unit_str = str(unit)
+
+    if not unit_str or unit_str == r"$\mathrm{}$":
+        return None
+    return unit_str
+
+
 def plot_mmm(median, min_s, max_s, ax=None, **kwargs):
     """Plot Median, Min, and Max series with a filled area between Min and Max.
 
@@ -398,9 +413,7 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
         items = list(cast(Any, sg_collection).items())
     elif isinstance(sg_collection, (SpectrogramList, list)):
         sg_list = cast(list[Any], sg_collection)
-        items = [
-            (getattr(s, "name", f"Channel {i}"), s) for i, s in enumerate(sg_list)
-        ]
+        items = [(getattr(s, "name", f"Channel {i}"), s) for i, s in enumerate(sg_list)]
     else:
         raise TypeError(f"Unsupported collection type: {type(sg_collection)}")
 
@@ -453,12 +466,24 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
         ax_asd.set_xscale("log")
         ax_asd.set_yscale("log")
 
-        unit_str = sg.unit.to_string("latex_inline").replace("Hz^{-1/2}", r"/\sqrt{Hz}")
+        unit = getattr(sg, "unit", None)
+        raw_unit_str = _format_unit_for_label(unit)
+        unit_str = (
+            raw_unit_str.replace("Hz^{-1/2}", r"/\sqrt{Hz}")
+            if raw_unit_str is not None
+            else ""
+        )
 
         # Auto-detect title based on unit
-        unit_lower = str(sg.unit).lower()
+        unit_lower = str(unit).lower() if unit is not None else ""
         name_lower = str(getattr(sg, "name", "")).lower()
-        if "coherence" in name_lower or sg.unit.is_equivalent(""):
+        is_dimensionless = False
+        if unit is not None:
+            try:
+                is_dimensionless = unit.is_equivalent("")
+            except (AttributeError, ValueError):
+                is_dimensionless = False
+        if "coherence" in name_lower or is_dimensionless:
             summary_title = "Coherence"
         elif "hz^{-1/2}" in unit_str.lower() or "hz^-1/2" in unit_lower:
             summary_title = f"Amplitude Spectral Density [{unit_str}]"
@@ -517,7 +542,7 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
             ax_sg.tick_params(labelbottom=False)
 
         # Add colorbar
-        fig.colorbar(mesh, ax=ax_sg, label=sg.unit.to_string("latex_inline"))
+        fig.colorbar(mesh, ax=ax_sg, label=raw_unit_str)
 
     with warnings.catch_warnings():
         warnings.filterwarnings(

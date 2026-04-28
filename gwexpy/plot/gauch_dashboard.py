@@ -1,4 +1,5 @@
 """gwexpy.plot.gauch_dashboard - GauCh/Rayleigh dashboard plots."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -11,6 +12,18 @@ if TYPE_CHECKING:
     from ..spectrogram import Spectrogram
     from ..statistics.gauch import GauChResult
     from ..timeseries import TimeSeries
+
+
+def _format_quantity_label(label: str, unit: Any) -> str:
+    """Format a value label without empty brackets for unitless data."""
+    if unit is None:
+        return label
+
+    unit_text = str(unit)
+    if not unit_text:
+        return label
+
+    return f"{label} [{unit_text}]"
 
 
 def plot_gauch_dashboard(
@@ -49,8 +62,13 @@ def plot_gauch_dashboard(
     if p_map is not None:
         # Use -log10(p) for better contrast
         log_p = -np.log10(np.clip(p_map.value, 1e-10, 1.0))
-        pc1 = ax1.pcolormesh(p_map.times.value, p_map.frequencies.value, log_p.T,
-                            shading="auto", cmap="RdYlBu_r")
+        pc1 = ax1.pcolormesh(
+            p_map.times.value,
+            p_map.frequencies.value,
+            log_p.T,
+            shading="auto",
+            cmap="RdYlBu_r",
+        )
         fig.colorbar(pc1, ax=ax1, label="-log10(p-value)")
         ax1.set_title("GauCh p-value Map")
         ax1.set_ylabel("Frequency [Hz]")
@@ -59,15 +77,25 @@ def plot_gauch_dashboard(
     # Panel 2: Rayleigh statistic (if provided) or GauCh statistic
     ax2 = fig.add_subplot(gs[1], sharex=ax1)
     if rayleigh_spec is not None:
-        pc2 = ax2.pcolormesh(rayleigh_spec.times.value, rayleigh_spec.frequencies.value,
-                            rayleigh_spec.value.T, shading="auto", cmap="viridis")
+        pc2 = ax2.pcolormesh(
+            rayleigh_spec.times.value,
+            rayleigh_spec.frequencies.value,
+            rayleigh_spec.value.T,
+            shading="auto",
+            cmap="viridis",
+        )
         fig.colorbar(pc2, ax=ax2, label="Rayleigh Statistic")
         ax2.set_title("Rayleigh Spectrogram")
     else:
         s_map = gauch_res.statistic_map
         if s_map is not None:
-            pc2 = ax2.pcolormesh(s_map.times.value, s_map.frequencies.value, s_map.value.T,
-                                shading="auto", cmap="viridis")
+            pc2 = ax2.pcolormesh(
+                s_map.times.value,
+                s_map.frequencies.value,
+                s_map.value.T,
+                shading="auto",
+                cmap="viridis",
+            )
             fig.colorbar(pc2, ax=ax2, label="KS Statistic (Dn)")
             ax2.set_title("GauCh KS Statistic Map")
 
@@ -78,7 +106,7 @@ def plot_gauch_dashboard(
     ax3 = fig.add_subplot(gs[2], sharex=ax1)
     ax3.plot(ts.times.value, ts.value, color="black", linewidth=0.5)
     ax3.set_title("Time Series")
-    ax3.set_ylabel(f"Amplitude [{ts.unit}]")
+    ax3.set_ylabel(_format_quantity_label("Amplitude", getattr(ts, "unit", None)))
     ax3.set_xlabel("Time [s]")
 
     # Auto-gps scale
