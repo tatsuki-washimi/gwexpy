@@ -352,6 +352,26 @@ the data and metadata contracts are clear.
 - GUI payload metadata gaps are baselined before any metadata-rich behavior is
   introduced.
 
+#### Wave 4 Progress Report
+
+Status as of 2026-04-28: the public-doc and plot-helper baseline slices have
+landed. The remaining Wave 4 work is runtime/design-facing GUI and plot metadata
+behavior.
+
+| Issue | PR | Merged | Merge commit | Result |
+| --- | --- | --- | --- | --- |
+| #283 | #322 `[AGENT:validation] Add plot helper contract baseline` | 2026-04-28 18:53 JST | `6bcc887` | Added docs/test-only plot-helper contracts for field plots, dashboards, pair plots, labels, colorbars, and optional plotting surfaces. Runtime behavior unchanged. |
+| #275 | #323 `[AGENT:docs] Guard public tutorial colorbar mappables` | 2026-04-28 19:57 JST | `0147000` | Replaced brittle public tutorial colorbar mappable lookups with explicit mappables, restored the GPS-aware spectrogram x-axis in the GBD tutorial, and added notebook drift guards. Runtime package behavior unchanged. |
+
+Net outcome:
+
+- #275 remains open for residual tutorial/public-doc drift work, including
+  deferred source-policy cleanup and any remaining notebook guard follow-ups.
+- #283 remains open for runtime/design decisions around dynamic scientific
+  labels, `PairPlot` mismatch policy, and stable `FieldPlot` colorbar exposure.
+- #274 remains open for GUI payload metadata, renderer labels, and colorbar
+  behavior that affects GUI-facing contracts.
+
 ### Wave 5: Release Readiness
 
 **Issues:** #293 -> #294
@@ -374,6 +394,28 @@ limitations are accepted.
 - Public docs accurately distinguish source install, PyPI install, and conda
   install states.
 - PyPI release is verified in a fresh environment before conda-forge onboarding.
+
+#### Wave 5 Progress Report
+
+Status as of 2026-04-28: release-gate hardening and the conda-forge onboarding
+roadmap have landed. No PyPI or conda-forge publication has been performed.
+
+| Issue | PR | Merged | Merge commit | Result |
+| --- | --- | --- | --- | --- |
+| #293 | #326 `[AGENT:release] Harden release metadata version parsing` | 2026-04-28 20:00 JST | `f8cff53` | Hardened the release metadata checker so malformed or unparseable top-level `CITATION.cff` version metadata fails closed. Release tooling only; runtime package behavior unchanged. |
+| #294 | #327 `[AGENT:release] Record conda-forge onboarding roadmap` | 2026-04-28 19:57 JST | `4bf66c0` | Added the conda-forge staged-recipes roadmap, corrected the v1 recipe model to use `build.entry_points`, deferred the optional GUI entry point from the first core recipe, and added noarch recipe test guidance. Docs/test-only. |
+
+Net outcome:
+
+- #293 remains open for the actual PyPI release workflow: build artifacts,
+  Trusted Publishing verification, release metadata final checks, and fresh
+  install smoke tests.
+- #294 remains open for the external `conda-forge/staged-recipes` submission
+  after a stable source release exists or maintainers explicitly approve a
+  source-archive-first submission.
+- The accepted release-gate policy is fail-closed: if `CITATION.cff` exists but
+  its top-level `version` cannot be parsed by the supported subset, the release
+  metadata check must fail rather than warn and continue.
 
 ## Parallel Work Lanes
 

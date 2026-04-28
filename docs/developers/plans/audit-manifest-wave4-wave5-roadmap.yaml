@@ -1,0 +1,82 @@
+---
+agent: Codex
+skills:
+  - doc-architect
+  - github
+  - using-git-worktrees
+branch: codex/update-roadmap-postmerge
+records_scope: "Wave 4 and Wave 5 roadmap status after PR #323, #326, and #327 merges."
+physics_review: not_required
+risk: docs_only
+scope:
+  - "Record merged Wave 4 public-doc PR #323 and prior plot-helper PR #322."
+  - "Record merged Wave 5 release-readiness PRs #326 and #327."
+  - "Keep #275, #283, #274, #293, and #294 open as residual work owners."
+  - "Record the accepted fail-closed release-gate policy for unparseable top-level CITATION.cff version metadata."
+  - "No runtime package behavior, physics behavior, units, or public analysis semantics changed."
+merge_verification:
+  - issue: 283
+    pr: 322
+    merged_at: "2026-04-28T09:53:36Z"
+    merge_commit: 6bcc887200616b91ef60a70c671d31899a574606
+    status: open
+    note: "Issue remains open for plot-helper runtime/design decisions."
+  - issue: 275
+    pr: 323
+    merged_at: "2026-04-28T10:57:01Z"
+    merge_commit: 0147000da63eb5df0cb0ae9ffd26ee1908110b62
+    status: open
+    note: "Issue remains open for residual tutorial/public-doc drift work."
+  - issue: 293
+    pr: 326
+    merged_at: "2026-04-28T11:00:55Z"
+    merge_commit: f8cff53809550cc34d033f0452566829a40320b0
+    status: open
+    note: "Issue remains open for actual PyPI release workflow and final release verification."
+  - issue: 294
+    pr: 327
+    merged_at: "2026-04-28T10:57:13Z"
+    merge_commit: 4bf66c0021e6219db9d89a7e3042663b39052666
+    status: open
+    note: "Issue remains open for external conda-forge staged-recipes submission."
+residuals:
+  - issue: 274
+    classification: "Wave 4 GUI payload metadata residual"
+    reason: "GUI payload metadata, renderer labels, and colorbar behavior still require dedicated contract/runtime decisions."
+  - issue: 275
+    classification: "Wave 4 tutorial/public-doc drift residual"
+    reason: "PR #323 added colorbar and GPS-axis guards, but the issue still owns broader public-doc source-policy cleanup and follow-ups."
+  - issue: 283
+    classification: "Wave 4 plot-helper runtime/design residual"
+    reason: "PR #322 added baseline coverage, while dynamic labels, PairPlot mismatch policy, and FieldPlot colorbar exposure remain design decisions."
+  - issue: 293
+    classification: "Wave 5 PyPI release residual"
+    reason: "PR #326 hardened release metadata parsing but did not build, publish, or verify release artifacts."
+  - issue: 294
+    classification: "Wave 5 conda-forge onboarding residual"
+    reason: "PR #327 recorded the roadmap but did not open staged-recipes or create a feedstock."
+commands:
+  - cmd: "rtk git fetch origin main"
+    result: "Fetched latest main after PR #323, #326, and #327 merges."
+  - cmd: "rtk git worktree add <scratch-worktree> -b codex/update-roadmap-postmerge origin/main"
+    result: "Created isolated roadmap update worktree from latest main."
+  - cmd: "rtk gh issue view 275 --json number,state,title,url"
+    result: "Confirmed #275 is open."
+  - cmd: "rtk gh issue view 283 --json number,state,title,url"
+    result: "Confirmed #283 is open."
+  - cmd: "rtk gh issue view 274 --json number,state,title,url"
+    result: "Confirmed #274 is open."
+  - cmd: "rtk gh issue view 293 --json number,state,title,url"
+    result: "Confirmed #293 is open."
+  - cmd: "rtk gh issue view 294 --json number,state,title,url"
+    result: "Confirmed #294 is open."
+files_changed:
+  - path: docs/developers/plans/2026-04-27-issue-burn-down-roadmap.md
+    change: "Adds Wave 4 and Wave 5 progress reports with merge commits, issue states, residuals, and release-gate policy."
+  - path: docs/developers/plans/audit-manifest-wave4-wave5-roadmap.yaml
+    change: "Adds file-backed audit manifest for this roadmap-only status update."
+deferred:
+  - "Continue #275 for public-doc drift cleanup and tutorial source-policy work."
+  - "Continue #283 and #274 for plot-helper and GUI metadata runtime/design decisions."
+  - "Continue #293 for actual PyPI release build, publish, and smoke verification."
+  - "Continue #294 for external conda-forge staged-recipes and feedstock onboarding."
