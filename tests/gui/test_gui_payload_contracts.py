@@ -22,12 +22,24 @@ def _missing_gui_dependency_name(exc: ImportError) -> str | None:
     return None
 
 
+def _missing_top_level_gui_dependency_name() -> str | None:
+    return next(
+        (
+            dependency
+            for dependency in _GUI_IMPORT_DEPENDENCIES
+            if importlib.util.find_spec(dependency) is None
+        ),
+        None,
+    )
+
+
 @pytest.fixture
 def gui_payload_classes():
-    for dependency in _GUI_IMPORT_DEPENDENCIES:
-        pytest.importorskip(
-            dependency,
-            reason="gwexpy.gui payload contracts require the GUI dependency chain",
+    missing_dependency = _missing_top_level_gui_dependency_name()
+    if missing_dependency is not None:
+        pytest.skip(
+            "gwexpy.gui payload contracts require "
+            f"{missing_dependency} from the GUI dependency chain",
         )
     try:
         from gwexpy.gui.engine import Engine
@@ -115,6 +127,29 @@ def test_missing_gui_dependency_name_does_not_hide_installed_api_breakage(
         _missing_gui_dependency_name(ImportError("unrelated", name="not_gui_dep"))
         is None
     )
+
+
+def test_missing_top_level_gui_dependency_name_uses_spec_without_importing(
+    monkeypatch,
+):
+    checked: list[str] = []
+
+    def find_spec(name):
+        checked.append(name)
+        return None if name == "pyqtgraph" else object()
+
+    monkeypatch.setattr(importlib.util, "find_spec", find_spec)
+
+    assert _missing_top_level_gui_dependency_name() == "pyqtgraph"
+    assert checked == ["PyQt5", "pyqtgraph"]
+
+
+def test_missing_top_level_gui_dependency_name_keeps_installed_packages_strict(
+    monkeypatch,
+):
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+
+    assert _missing_top_level_gui_dependency_name() is None
 
 
 def test_engine_time_series_payload_is_tuple_without_metadata_keys(gui_payload_classes):

@@ -196,3 +196,33 @@ strict_gui_skip_review_response:
     yaml_parse_manifest: clean
     diff_check: clean
     mypy: clean
+
+top_level_gui_dependency_review_response:
+  date: 2026-04-28
+  pr: 324
+  item: "Replace pytest.importorskip preflight with explicit top-level package discovery."
+  files_changed:
+    - path: tests/gui/test_gui_payload_contracts.py
+      change: "Replaced pytest.importorskip() preflight with importlib.util.find_spec() based top-level dependency discovery, so installed-but-broken GUI packages fail instead of being skipped before gwexpy.gui imports run."
+    - path: docs/developers/plans/audit-manifest-274-gui-payload.yaml
+      change: "Recorded the top-level dependency preflight review response and validation."
+  commands_executed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp QT_QPA_PLATFORM=minimal pytest -q tests/gui/test_gui_payload_contracts.py -p no:cacheprovider"
+      result: "8 passed."
+    - cmd: "rtk ruff check tests/gui/test_gui_payload_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/gui/test_gui_payload_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk mypy gwexpy tests/gui/test_gui_payload_contracts.py --ignore-missing-imports"
+      result: "No issues found."
+    - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-274-gui-payload.yaml'))\""
+      result: "Manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+  test_results:
+    focused_pytest: "8 passed"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    mypy: clean
+    yaml_parse_manifest: clean
+    diff_check: clean
