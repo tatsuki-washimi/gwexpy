@@ -211,8 +211,35 @@ Net outcome:
   implementation-only.
 - The WAV metadata contract now matches the existing warning-and-skip behavior
   when `tinytag` is missing.
-- Wave 2 still needs the remaining public-surface audits: #279, #280, #281,
-  #276, #290, and #287.
+- Wave 2 Batch 1 left #279, #280, #281, #276, #290, and #287 for the next
+  public-surface batch.
+
+#### Wave 2 Batch 2 Completion Report
+
+Status as of 2026-04-28: the second Wave 2 public-surface batch has been
+merged. All PR heads were clean and green in GitHub checks before merge.
+
+| Issue | PR | Merged | Merge commit | Result |
+| --- | --- | --- | --- | --- |
+| #281 | #317 `[AGENT:validation] Add detector proxy contract baseline` | 2026-04-28 15:14 JST | `b0443db` | Added docs/test-only detector package, channel proxy, and unit alias contract coverage. Runtime behavior unchanged. |
+| #279 | #318 `[AGENT:validation] Add time conversion contract baseline` | 2026-04-28 15:14 JST | `4572590` | Added docs/test-only GPS/UTC conversion, scalar/vector return-type, timezone-policy, and interop helper contract coverage. Runtime behavior unchanged. |
+| #280 | #319 `[AGENT:validation] Add CLI command contract baseline` | 2026-04-28 15:14 JST | `e10172b` | Added docs/test-only CLI placeholder, stdout/stderr, exit-code, version/help, and GWpy re-export boundary contract coverage. Runtime behavior unchanged. |
+| #290 | #320 `[AGENT:validation] Add histogram and segments contract baseline` | 2026-04-28 15:14 JST | `c5aa144` | Added docs/test-only `Histogram` and `gwexpy.segments` public contract coverage for units, bin geometry, metadata, statistics, rebinning, collections, and proxy boundaries. Runtime behavior unchanged. |
+| #276 | #321 `[AGENT:validation] Add SegmentTable contract baseline` | 2026-04-28 15:15 JST | `88dd783` | Added docs/test-only `SegmentTable`, `RowProxy`, `SegmentCell`, lazy payload/cache, copy/materialize, and structural plotting contract coverage. Runtime behavior unchanged. |
+| #287 | #325 `[AGENT:validation] Add field algebra contract baseline` | 2026-04-28 15:15 JST | `e3ac1e9` | Added a docs/test-only field-algebra baseline plus xfail-guarded coordinate/domain mismatch behavior. This intentionally did not close #287 because broader field data-model audit and physics-facing runtime guard decisions remain. |
+
+Net outcome:
+
+- #276, #279, #280, #281, and #290 are closed through merged PRs.
+- #287 remains open as an explicit field data-model residual. The merged
+  baseline records the current aligned-arithmetic behavior and defers runtime
+  coordinate/domain guards for human physics review.
+- #278 is not a Wave 2 blocker. PR #313 already merged a docs/test-only noise
+  baseline, but #278 remains a Wave 3 numerical/analysis residual because that
+  PR used `Refs #278` and the remaining PSD/ASD behavior decisions are
+  numerical/physics-facing.
+- Wave 2 public-surface work is complete for the issue set that can be closed
+  through docs/test-only audits without changing runtime field algebra.
 
 ### Wave 3: Numerical And Analysis Contracts
 
