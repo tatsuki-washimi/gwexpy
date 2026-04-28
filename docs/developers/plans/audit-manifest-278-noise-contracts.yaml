@@ -16,9 +16,10 @@ branch: codex/wave3-278-noise-contracts
 agent_role: Implementation worker
 agent_model: Codex session default
 
+agent_internal_notes:
+  - "Reviewed local using-superpowers guidance before the initial audit work; this local skill read is intentionally not recorded as a reproducible repository command."
+
 commands_executed:
-  - cmd: "rtk sed -n '1,220p' /home/washimi/.codex/superpowers/skills/using-superpowers/SKILL.md"
-    result: "Reviewed skill-selection workflow."
   - cmd: "rtk sed -n '1,220p' AGENTS.md"
     result: "Confirmed repository-level AGENTS.md delegates to .agent/AGENTS.md."
   - cmd: "rtk sed -n '1,260p' .agent/AGENTS.md"
@@ -109,7 +110,7 @@ test_results:
   yaml_parse: clean
   diff_check: clean
   full_pytest: not_run
-  mypy: not_run
+  mypy: "passed for gwexpy plus tests/noise/test_noise_contracts.py with --ignore-missing-imports"
   docs_build: not_run
 
 files_changed:
@@ -141,3 +142,33 @@ deferred_follow_ups:
   - "Audit ObsPy interpolation accuracy for sharp features and conversion metadata preservation."
   - "Clean up pyGWINC duplicate argument handling and diagnostic printing in a runtime PR."
   - "Review optional dependency extras, skip policy, and install guidance."
+
+review_response:
+  date: 2026-04-28
+  pr: 313
+  item: "Address Claude review readability and validation follow-ups."
+  files_changed:
+    - path: tests/noise/test_noise_contracts.py
+      change: "Clarified the infrasound quantity-ignore contract, made Generator state advancement deterministic in the test, named the from_asd sample-count formula, and covered ObsPy converted/preserved channel metadata."
+    - path: docs/developers/plans/audit-manifest-278-noise-contracts.yaml
+      change: "Recorded mypy validation and this review-response update."
+  commands_executed:
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/noise/test_noise_contracts.py -p no:cacheprovider"
+      result: "10 passed, 5 existing Astropy unit-format warnings."
+    - cmd: "rtk ruff check tests/noise/test_noise_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/noise/test_noise_contracts.py"
+      result: "1 file already formatted."
+    - cmd: "rtk mypy gwexpy tests/noise/test_noise_contracts.py --ignore-missing-imports"
+      result: "No issues found."
+    - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/audit-manifest-278-noise-contracts.yaml'))\""
+      result: "YAML manifest parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+  test_results:
+    focused_pytest: "10 passed, 5 existing Astropy unit-format warnings"
+    ruff_check_changed_test: clean
+    ruff_format_changed_test: clean
+    mypy: clean
+    yaml_parse_manifest: clean
+    diff_check: clean

@@ -123,14 +123,25 @@ def test_wave_noise_seed_and_generator_reproducibility_contracts() -> None:
     rng = np.random.default_rng(321)
     first_from_rng = uniform_noise(duration=1.0, sample_rate=8.0, rng=rng)
     second_from_same_rng = uniform_noise(duration=1.0, sample_rate=8.0, rng=rng)
+    matching_rng = np.random.default_rng(321)
     first_from_matching_rng = uniform_noise(
         duration=1.0,
         sample_rate=8.0,
-        rng=np.random.default_rng(321),
+        rng=matching_rng,
+    )
+    second_from_matching_rng = uniform_noise(
+        duration=1.0,
+        sample_rate=8.0,
+        rng=matching_rng,
     )
 
+    # Reusing a Generator advances its state; a freshly replayed Generator
+    # reproduces both draws in sequence.
     assert not np.allclose(first_from_rng.value, second_from_same_rng.value)
     np.testing.assert_allclose(first_from_rng.value, first_from_matching_rng.value)
+    np.testing.assert_allclose(
+        second_from_same_rng.value, second_from_matching_rng.value
+    )
 
     first_colored = wave_noise(duration=1.0, sample_rate=8.0, exponent=0.5, seed=456)
     second_colored = wave_noise(duration=1.0, sample_rate=8.0, exponent=0.5, seed=456)
@@ -149,9 +160,10 @@ def test_from_asd_seed_metadata_and_unit_contract() -> None:
 
     first = from_asd(asd, duration=2.0, sample_rate=8.0, t0=100.0, seed=789)
     second = from_asd(asd, duration=2.0, sample_rate=8.0, t0=100.0, seed=789)
+    expected_samples = int(2.0 * 8.0)
 
     assert isinstance(first, TimeSeries)
-    assert len(first) == 16
+    assert len(first) == expected_samples
     np.testing.assert_allclose(first.value, second.value)
     assert first.sample_rate.value == pytest.approx(8.0)
     assert first.t0.value == pytest.approx(100.0)
@@ -267,8 +279,20 @@ def test_obspy_units_interpolation_conversion_and_metadata_with_stub() -> None:
             quantity="acceleration",
             channel="X1:SEIS",
         )
-        velocity = from_obspy("NLNM", frequencies=freqs, quantity="velocity")
-        pressure = from_obspy("IDCH", frequencies=freqs, quantity="displacement")
+        velocity = from_obspy(
+            "NLNM",
+            frequencies=freqs,
+            quantity="velocity",
+            channel="X1:SEIS_VEL",
+        )
+        # IDCH is an infrasound model; it validates but ignores the seismic
+        # quantity argument and always returns pressure ASD.
+        pressure = from_obspy(
+            "IDCH",
+            frequencies=freqs,
+            quantity="displacement",
+            channel="X1:INFRA",
+        )
 
     np.testing.assert_allclose(acceleration.frequencies.to_value(u.Hz), freqs)
     np.testing.assert_allclose(acceleration.value, [0.0, 0.1, 0.1])
@@ -282,7 +306,11 @@ def test_obspy_units_interpolation_conversion_and_metadata_with_stub() -> None:
     )
     assert velocity.unit == u.Unit("m / s / Hz^(1/2)")
     assert velocity.name == "NLNM"
+    # The current seismic conversion path rebuilds the FrequencySeries and
+    # does not propagate channel metadata.
+    assert _channel_name(velocity) is None
 
     np.testing.assert_allclose(pressure.value, [0.0, 0.1, 0.1])
     assert pressure.unit == u.Unit("Pa / Hz^(1/2)")
     assert pressure.name == "IDCH"
+    assert _channel_name(pressure) == "X1:INFRA"
