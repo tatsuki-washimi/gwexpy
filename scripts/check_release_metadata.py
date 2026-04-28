@@ -4,6 +4,9 @@ import re
 import sys
 from pathlib import Path
 
+VERSION_KEY_PATTERN = re.compile(r'(?:version|"version"|\'version\')\s*:\s*(.*)$')
+QUOTED_VALUE_PATTERN = re.compile(r'(["\'])(.*?)\1\s*(?:#.*)?$')
+
 
 def get_version_from_py():
     version_file = Path("gwexpy/_version.py")
@@ -20,27 +23,46 @@ def get_version_from_cff():
     if not cff_file.exists():
         print(f"Warning: {cff_file} not found")
         return None
+
+    top_level_indent = None
     for line in cff_file.read_text().splitlines():
-        if not line.startswith("version:"):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
             continue
-        value = line.partition(":")[2].strip()
+        if stripped in {"---", "..."}:
+            continue
+        indent = len(line) - len(line.lstrip())
+        if top_level_indent is None:
+            top_level_indent = indent
+        if indent != top_level_indent:
+            continue
+
+        match = VERSION_KEY_PATTERN.fullmatch(line.lstrip())
+        if not match:
+            continue
+
+        value = match.group(1).strip()
         if value.startswith(("'", '"')):
-            quote = value[0]
-            end = value.find(quote, 1)
-            if end != -1:
-                parsed = value[1:end].strip()
-                if not parsed:
-                    print("Error: Malformed CITATION.cff version: empty value")
-                    return ""
-                return parsed
-            print("Error: Malformed CITATION.cff version: unterminated quote")
-            return ""
-        parsed = value.split("#", 1)[0].strip()
+            quoted_match = QUOTED_VALUE_PATTERN.fullmatch(value)
+            if not quoted_match:
+                if value.count(value[0]) < 2:
+                    print("Error: Malformed CITATION.cff version: unterminated quote")
+                else:
+                    print(
+                        "Error: Malformed CITATION.cff version: trailing content after quoted value"
+                    )
+                return ""
+            parsed = quoted_match.group(2).strip()
+        else:
+            parsed = value.split("#", 1)[0].strip()
+
         if not parsed:
             print("Error: Malformed CITATION.cff version: empty value")
             return ""
         return parsed
-    return None
+
+    print("Error: Could not parse top-level version from CITATION.cff")
+    return ""
 
 
 def get_version_from_zenodo():

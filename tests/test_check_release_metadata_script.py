@@ -49,6 +49,29 @@ def test_cff_version_parser_handles_quoted_values(tmp_path: Path, monkeypatch):
     assert module.get_version_from_cff() == "0.3.0"
 
 
+def test_cff_version_parser_handles_quoted_version_key(tmp_path: Path, monkeypatch):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+
+    Path("CITATION.cff").write_text('"version": 1.2.3\n', encoding="utf-8")
+
+    assert module.get_version_from_cff() == "1.2.3"
+
+
+def test_cff_version_parser_rejects_quoted_value_with_trailing_junk(
+    tmp_path: Path, monkeypatch, capsys
+):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+    Path("CITATION.cff").write_text(
+        'version: "0.1.1" junk\n',
+        encoding="utf-8",
+    )
+
+    assert module.get_version_from_cff() == ""
+    assert "trailing content after quoted value" in capsys.readouterr().out
+
+
 def test_cff_version_parser_handles_unquoted_inline_comment(
     tmp_path: Path, monkeypatch
 ):
@@ -77,6 +100,57 @@ def test_cff_version_parser_ignores_nested_version(tmp_path: Path, monkeypatch):
     )
 
     assert module.get_version_from_cff() == "0.5.0"
+
+
+def test_cff_version_parser_accepts_space_before_colon(tmp_path: Path, monkeypatch):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+    Path("CITATION.cff").write_text("version : 9.9.9\n", encoding="utf-8")
+
+    assert module.get_version_from_cff() == "9.9.9"
+
+
+def test_cff_version_parser_accepts_top_level_indented_version(
+    tmp_path: Path, monkeypatch
+):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+    Path("CITATION.cff").write_text(
+        "\n".join(
+            [
+                "  cff-version: 1.2.0",
+                "  title: GWexpy",
+                "  version: 1.2.3",
+                "  preferred-citation:",
+                "    version: 9.9.9",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert module.get_version_from_cff() == "1.2.3"
+
+
+def test_cff_version_parser_accepts_document_start_and_indented_root_keys(
+    tmp_path: Path, monkeypatch
+):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+    Path("CITATION.cff").write_text(
+        "\n".join(
+            [
+                "---",
+                "  cff-version: 1.2.0",
+                "  title: GWexpy",
+                '  "version": 1.2.3',
+                "  preferred-citation:",
+                "    version: 9.9.9",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert module.get_version_from_cff() == "1.2.3"
 
 
 def test_cff_version_missing_file_warns_and_returns_none(
@@ -150,6 +224,39 @@ def test_main_fails_when_cff_version_is_malformed(tmp_path: Path, monkeypatch, c
     assert "Version mismatch in CITATION.cff" in output
 
 
+def test_main_fails_when_cff_version_has_quoted_trailing_junk(
+    tmp_path: Path, monkeypatch, capsys
+):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+
+    Path("gwexpy").mkdir()
+    Path("gwexpy/_version.py").write_text(
+        '__version__ = "0.1.1"\n',
+        encoding="utf-8",
+    )
+    Path("CITATION.cff").write_text(
+        'version: "0.1.1" junk\n',
+        encoding="utf-8",
+    )
+    Path(".zenodo.json").write_text(
+        json.dumps({"version": "0.1.1"}),
+        encoding="utf-8",
+    )
+    Path("CHANGELOG.md").write_text("## [0.1.1]\n", encoding="utf-8")
+
+    try:
+        module.main()
+    except SystemExit as exc:
+        assert exc.code == 1
+    else:
+        raise AssertionError("quoted CITATION.cff junk should fail")
+
+    output = capsys.readouterr().out
+    assert "Malformed CITATION.cff version" in output
+    assert "Version mismatch in CITATION.cff" in output
+
+
 def test_main_passes_when_release_metadata_matches(tmp_path: Path, monkeypatch, capsys):
     module = load_script_module()
     monkeypatch.chdir(tmp_path)
@@ -182,3 +289,74 @@ def test_main_passes_when_release_metadata_matches(tmp_path: Path, monkeypatch, 
     module.main()
 
     assert "Metadata consistency check passed!" in capsys.readouterr().out
+
+
+def test_main_passes_with_yaml_spacing_variants(tmp_path: Path, monkeypatch, capsys):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+
+    Path("gwexpy").mkdir()
+    Path("gwexpy/_version.py").write_text(
+        '__version__ = "9.9.9"\n',
+        encoding="utf-8",
+    )
+    Path("CITATION.cff").write_text(
+        "\n".join(
+            [
+                "  cff-version: 1.2.0",
+                "  title: GWexpy",
+                "  version : 9.9.9",
+                "  preferred-citation:",
+                "    version: 0.0.1",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    Path(".zenodo.json").write_text(
+        json.dumps({"version": "9.9.9"}),
+        encoding="utf-8",
+    )
+    Path("CHANGELOG.md").write_text("## [9.9.9]\n", encoding="utf-8")
+
+    module.main()
+
+    assert "Metadata consistency check passed!" in capsys.readouterr().out
+
+
+def test_main_fails_closed_when_cff_exists_without_parseable_version(
+    tmp_path: Path, monkeypatch, capsys
+):
+    module = load_script_module()
+    monkeypatch.chdir(tmp_path)
+
+    Path("gwexpy").mkdir()
+    Path("gwexpy/_version.py").write_text(
+        '__version__ = "1.2.3"\n',
+        encoding="utf-8",
+    )
+    Path("CITATION.cff").write_text(
+        "\n".join(
+            [
+                "---",
+                "  cff-version: 1.2.0",
+                "  title: GWexpy",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    Path(".zenodo.json").write_text(
+        json.dumps({"version": "1.2.3"}),
+        encoding="utf-8",
+    )
+    Path("CHANGELOG.md").write_text("## [1.2.3]\n", encoding="utf-8")
+
+    try:
+        module.main()
+    except SystemExit as exc:
+        assert exc.code == 1
+    else:
+        raise AssertionError("CITATION.cff without a parseable version should fail")
+
+    output = capsys.readouterr().out
+    assert "Could not parse top-level version from CITATION.cff" in output
+    assert "Version mismatch in CITATION.cff" in output
