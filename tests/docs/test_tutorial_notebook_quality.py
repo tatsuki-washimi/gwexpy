@@ -631,3 +631,20 @@ def test_public_tutorial_colorbars_use_explicit_mappables(
 
     explicit_mappables = _explicit_colorbar_mappables_from_plot_assignments(nb)
     assert len(explicit_mappables) >= minimum_explicit_colorbars
+
+
+def test_case_gbd_format_spectrogram_uses_auto_gps_xscale():
+    nb = _read_tutorial_notebook(Path("en/user_guide/tutorials/case_gbd_format.ipynb"))
+    source = _code_cell_source_containing(nb, "ts_ch0.spectrogram")
+    tree = ast.parse(source)
+
+    assert "sg = ts_ch0.spectrogram" in source
+    assert any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "set_xscale"
+        and node.args
+        and isinstance(node.args[0], ast.Constant)
+        and node.args[0].value == "auto-gps"
+        for node in ast.walk(tree)
+    )
