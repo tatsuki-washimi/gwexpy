@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PYPROJECT = ROOT / "pyproject.toml"
-ROADMAP = ROOT / "docs/developers/plans/2026-04-28-conda-forge-roadmap.md"
+ROADMAP = ROOT / "docs/developers/plans/active/2026-04-28-conda-forge-roadmap.md"
 
 
 def _dependency_name(requirement: str) -> str:

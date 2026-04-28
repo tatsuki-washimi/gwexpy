@@ -28,7 +28,7 @@ constants, public return classes, or metadata propagation.
 - `.agent/AGENTS.md`
 - `docs/developers/contracts/numerical.md`
 - `docs/developers/plans/2026-04-26-numerical-algorithm-contract-audit.md`
-- `docs/developers/plans/2026-04-27-issue-burn-down-roadmap.md`
+- `docs/developers/plans/active/2026-04-27-issue-burn-down-roadmap.md`
 - `gwexpy/timeseries/_spectral_fourier.py`
 - `gwexpy/timeseries/matrix_spectral.py`
 - `gwexpy/signal/normalization.py`

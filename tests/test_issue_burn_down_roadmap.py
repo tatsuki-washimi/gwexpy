@@ -1,7 +1,10 @@
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-ROADMAP = REPO_ROOT / "docs/developers/plans/2026-04-27-issue-burn-down-roadmap.md"
+ROADMAP = (
+    REPO_ROOT
+    / "docs/developers/plans/active/2026-04-27-issue-burn-down-roadmap.md"
+)
 
 
 def test_seriesmatrix_xindex_tolerance_residual_is_classified() -> None:

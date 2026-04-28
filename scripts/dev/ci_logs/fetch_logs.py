@@ -2,7 +2,6 @@ import json
 import subprocess
 from pathlib import Path
 
-
 ANALYSIS_DIR = Path("temp_logs/analysis")
 DOC_FAILS_PATH = ANALYSIS_DIR / "doc_fails.json"
 TEST_FAILS_PATH = ANALYSIS_DIR / "test_fails.json"
