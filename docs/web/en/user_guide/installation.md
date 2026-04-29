@@ -40,7 +40,7 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
 | Minimal | `pip install git+https://github.com/tatsuki-washimi/gwexpy.git` | Numerical containers and basic arithmetic. Minimal dependencies. |
 | **Recommended** | `pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Advanced statistics, curve fitting, and mapping features. |
 | GW Analysis | `pip install "gwexpy[gw,io] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Frame file support, NDS2 access, and official GW tools. |
-| Dev / Full | `pip install "gwexpy[all] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Enables all optional features. |
+| Dev / Full | `pip install "gwexpy[all] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Enables declared non-GUI optional features. |
 
 ## 1. Installation Steps
 

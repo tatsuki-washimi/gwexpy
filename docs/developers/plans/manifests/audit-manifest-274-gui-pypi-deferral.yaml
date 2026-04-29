@@ -50,6 +50,10 @@ commands_executed:
     result: "Confirmed wheel contains only gwexpy = gwexpy.cli:main and no gwexpy.gui console script."
   - cmd: "rtk python scripts/check_release_artifacts.py /tmp/gwexpy-dist-gui-defer"
     result: "Release artifacts passed hygiene checks."
+  - cmd: "Reviewer agent review of PR #349"
+    result: "Found one medium documentation inconsistency: installation tables described gwexpy[all] as all optional features even though GUI is excluded."
+  - cmd: "rtk rg -n \"all optional features|すべてのオプション機能|non-GUI|GUI を除く|gwexpy\\[all\\]\" docs/web/en/user_guide/installation.md docs/web/ja/user_guide/installation.md"
+    result: "Confirmed EN/JA install tables now describe gwexpy[all] as non-GUI optional features."
   - cmd: "rtk sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-docs-html-gui-defer"
     result: "Not run: sphinx-build executable is unavailable in this environment."
   - cmd: "rtk python -m sphinx -b html -D nbsphinx_execute=never docs /tmp/gwexpy-docs-html-gui-defer"
@@ -61,9 +65,9 @@ files_changed:
   - path: CHANGELOG.md
     change: "Recorded the user-visible packaging decision in Unreleased."
   - path: docs/web/en/user_guide/installation.md
-    change: "Marked the GUI extra as source/development-only and outside first PyPI support."
+    change: "Marked the GUI extra as source/development-only and outside first PyPI support; clarified gwexpy[all] excludes GUI."
   - path: docs/web/ja/user_guide/installation.md
-    change: "Marked the GUI extra as source/development-only and outside first PyPI support."
+    change: "Marked the GUI extra as source/development-only and outside first PyPI support; clarified gwexpy[all] excludes GUI."
   - path: docs/web/en/user_guide/gui.md
     change: "Removed console-script launch instructions and documented the GUI as post-release/source-development track."
   - path: docs/web/ja/user_guide/gui.md
@@ -89,6 +93,7 @@ test_results:
   diff_check: clean
   ruff_changed_test: clean
   ruff_format_changed_test: clean
+  reviewer_agent: "one medium docs inconsistency found and addressed"
   docs_build: not_run_sphinx_unavailable
 
 risks:
