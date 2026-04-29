@@ -68,11 +68,11 @@ files_changed:
   - path: gwexpy/plot/_label_utils.py
     change: "Added shared bracket-safe plot label and unit formatting helpers."
   - path: gwexpy/plot/field.py
-    change: "Used shared bracket-safe label formatting for scalar/vector axis labels, omitted empty colorbar labels, documented last_field_colorbar replacement semantics, and exposed the most recent scalar colorbar as FieldPlot.last_field_colorbar."
+    change: "Used shared bracket-safe label formatting for scalar/vector axis labels, distinguished omitted/None labels from explicit empty colorbar labels, documented last_field_colorbar replacement semantics, and exposed the most recent scalar colorbar as FieldPlot.last_field_colorbar."
   - path: gwexpy/plot/gauch_dashboard.py
     change: "Derived frequency labels from spectrogram frequency metadata and omitted unit brackets for unitless amplitude labels."
   - path: tests/plot/test_plot_helper_contracts.py
-    change: "Added failing-first coverage for FieldPlot colorbar access, unitless FieldPlot labels, omitted empty colorbar labels, GauCh metadata frequency labels, and unitless GauCh amplitude labels."
+    change: "Added failing-first coverage for FieldPlot colorbar access, unitless FieldPlot labels, omitted versus explicit empty colorbar labels, GauCh metadata frequency labels, and unitless GauCh amplitude labels."
   - path: docs/developers/plans/archive/contract-audits/2026-04-28-plot-helper-contract-audit.md
     change: "Updated #283 audit with dynamic label and FieldPlot colorbar handle decisions plus #341 PairPlot confirmation."
   - path: docs/developers/plans/manifests/audit-manifest-283-plot-helper.yaml
@@ -82,7 +82,7 @@ contracts_covered:
   - "FieldPlot.add_scalar returns a QuadMesh-like object and sets x/y unit labels for a deterministic ScalarField slice."
   - "FieldPlot.add_scalar exposes the most recent scalar colorbar via last_field_colorbar without depending on figure axes ordering."
   - "FieldPlot.add_scalar omits empty brackets for dimensionless axis and colorbar labels."
-  - "FieldPlot.add_scalar omits the colorbar label keyword when both label and unit are absent."
+  - "FieldPlot.add_scalar omits the colorbar label keyword when label is None or inferred metadata is absent, while preserving explicit label=''."
   - "FieldPlot.add_vector uses the same bracket-safe axis label formatter as scalar slices."
   - "plot_gauch_dashboard creates current GauCh p-value, GauCh KS statistic, and Time Series panel titles."
   - "plot_gauch_dashboard uses spectrogram frequency metadata for Frequency labels without unit conversion."

@@ -5,6 +5,8 @@ from .plot import Plot
 
 __all__ = ["FieldPlot"]
 
+_LABEL_NOT_PROVIDED = object()
+
 
 class FieldPlot(Plot):
     """Enhanced plot class for visualizing ScalarField, VectorField, and TensorField.
@@ -76,8 +78,9 @@ class FieldPlot(Plot):
         # Determine shading (auto or gouraud or flat)
         shading = kwargs.pop("shading", "auto")
 
-        # Handle label for colorbar
-        label = kwargs.pop("label", getattr(field, "name", None))
+        # Handle label for colorbar. None means no label; an explicit empty
+        # string is preserved for callers that want a blank colorbar label.
+        label = kwargs.pop("label", _LABEL_NOT_PROVIDED)
 
         mesh = ax.pcolormesh(
             x_idx.value, y_idx.value, data.value.T, shading=shading, **kwargs
@@ -91,7 +94,16 @@ class FieldPlot(Plot):
 
         # Colorbar
         # We wrap standard colorbar to allow options
-        cbar_label = format_label_with_unit(label, getattr(field, "unit", None))
+        if label is _LABEL_NOT_PROVIDED:
+            cbar_label = format_label_with_unit(
+                getattr(field, "name", None), getattr(field, "unit", None)
+            )
+        elif label is None:
+            cbar_label = None
+        elif label == "":
+            cbar_label = ""
+        else:
+            cbar_label = format_label_with_unit(label, getattr(field, "unit", None))
         cbar_kwargs = {"label": cbar_label} if cbar_label is not None else {}
         self.last_field_colorbar = self.colorbar(mesh, **cbar_kwargs)
 

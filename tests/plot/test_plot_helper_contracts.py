@@ -161,6 +161,34 @@ def test_field_plot_add_scalar_omits_colorbar_label_when_empty():
         plt.close(plot.figure)
 
 
+def test_field_plot_add_scalar_preserves_explicit_empty_colorbar_label():
+    field = _deterministic_scalar_field()
+    plot = FieldPlot()
+    original_colorbar = plot.colorbar
+    captured_kwargs = {}
+
+    def colorbar_proxy(*args, **kwargs):
+        captured_kwargs.update(kwargs)
+        return original_colorbar(*args, **kwargs)
+
+    plot.colorbar = colorbar_proxy
+
+    try:
+        plot.add_scalar(
+            field,
+            x="x",
+            y="y",
+            slice_kwargs={"t": 0, "z": 0},
+            label="",
+        )
+
+        assert captured_kwargs["label"] == ""
+        assert plot.last_field_colorbar is not None
+        assert plot.last_field_colorbar.ax.get_ylabel() == ""
+    finally:
+        plt.close(plot.figure)
+
+
 def test_plot_gauch_dashboard_current_structural_labels():
     ts = TimeSeries(np.arange(6, dtype=float), t0=0, dt=1, unit=u.m)
     sg = _deterministic_spectrogram()
