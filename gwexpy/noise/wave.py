@@ -18,6 +18,7 @@ Examples
 >>> sweep = chirp(duration=1.0, sample_rate=1024, f0=10, f1=100)
 
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -835,7 +836,9 @@ def from_asd(
     Parameters
     ----------
     asd : FrequencySeries
-        The amplitude spectral density defining the noise spectrum.
+        The one-sided amplitude spectral density defining the noise spectrum.
+        Values must be finite and non-negative on a strictly increasing,
+        non-negative frequency axis.
     duration : float
         Duration of the output time-series in seconds.
     sample_rate : float
@@ -867,16 +870,29 @@ def from_asd(
     if rng is None:
         rng = np.random.default_rng(seed)
 
+    asd_values = np.asarray(asd.value, dtype=float)
+    asd_freqs = np.asarray(asd.frequencies.to_value(u.Hz), dtype=float)
+    if asd_values.ndim != 1 or asd_freqs.ndim != 1:
+        raise ValueError("ASD values and frequencies must be one-dimensional")
+    if asd_values.size == 0 or asd_values.size != asd_freqs.size:
+        raise ValueError("ASD values and frequencies must be non-empty and aligned")
+    if np.any(~np.isfinite(asd_freqs)) or np.any(asd_freqs < 0.0):
+        raise ValueError("ASD frequencies must be finite and non-negative")
+    if np.any(np.diff(asd_freqs) <= 0.0):
+        raise ValueError("ASD frequencies must be strictly increasing")
+    if np.any(~np.isfinite(asd_values)) or np.any(asd_values < 0.0):
+        raise ValueError("ASD values must be finite and non-negative")
+
     n_samples = int(duration * sample_rate)
     fft_freqs = np.fft.rfftfreq(n_samples, d=1.0 / sample_rate)
 
     # Interpolate ASD to required frequency bins
     asd_interp = np.interp(
         fft_freqs,
-        asd.frequencies.value,
-        asd.value,
-        left=asd.value[0],
-        right=asd.value[-1],
+        asd_freqs,
+        asd_values,
+        left=asd_values[0],
+        right=asd_values[-1],
     )
 
     # Convert ASD to PSD and scale to FFT amplitudes

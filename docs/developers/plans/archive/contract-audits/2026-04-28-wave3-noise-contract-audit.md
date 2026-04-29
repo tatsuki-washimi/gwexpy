@@ -4,6 +4,11 @@ Date: 2026-04-28
 Issue: #278, "Audit noise model PSD ASD and optional backend contracts"
 Mode: audit-first; docs and regression tests only.
 
+Update (2026-04-29): this audit-first baseline has been superseded for the
+`transient_gaussian_noise(psd=...)` item by the release-blocking runtime review
+in `2026-04-29-release-blocker-278-284-runtime-review.md`. The PSD argument is
+no longer accepted as a documented placeholder for 0.1.1.
+
 ## Scope For This Slice
 
 This first #278 slice records current `gwexpy.noise` behavior that can be

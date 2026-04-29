@@ -78,6 +78,10 @@ then publish package releases.
   behavior-change follow-up.
 - Keep release tasks blocked until release-critical audit decisions are closed
   or explicitly deferred as known limitations.
+- Current release policy update (2026-04-29): #278 and #284 are
+  release-blocking until runtime corrections pass CI and receive human
+  physics/statistics review. They are not accepted as first-release known
+  limitations.
 
 ## Recommended Burn-Down Waves
 
@@ -237,9 +241,9 @@ Net outcome:
   baseline records the current aligned-arithmetic behavior and defers runtime
   coordinate/domain guards for human physics review.
 - #278 is not a Wave 2 blocker. PR #313 already merged a docs/test-only noise
-  baseline, but #278 remains a Wave 3 numerical/analysis residual because that
-  PR used `Refs #278` and the remaining PSD/ASD behavior decisions are
-  numerical/physics-facing.
+  baseline, but #278 is now a 0.1.1 release blocker until the PSD/ASD runtime
+  correction for `transient_gaussian_noise(psd=...)` passes CI and human
+  physics/statistics review.
 - Wave 2 public-surface work is complete for the issue set that can be closed
   through docs/test-only audits without changing runtime field algebra.
 
@@ -254,7 +258,7 @@ they become public-contract commitments.
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | #328 | #291 / #287 | `Array4D` dimension-dropping return classes, `AxisApiMixin.sel(method=...)`, downstream smoke-test ordering | #291 follow-up design note cross-linked to #287 | Before low-level axis or `ScalarField` runtime hardening PRs | Human review; physics/data-model review if `ScalarField` semantics change |
 | 2 | #315 / #345 | #346 | `inverse_transform()` return type, `Inf` missing-data policy, `TimeSeriesMatrix.to_list()` flattening, PCA/ICA inverse fallback semantics | #346 preprocessing runtime policy follow-up | Before preprocessing return-type or metadata behavior PRs | Human API/metadata review; statistical review for missing-data policy |
-| 3 | #314 | #284 | Bruco Welch DC/Nyquist scaling, `GWEXPY_BRUCO_BLOCK_BYTES` deterministic CI policy, correction priority | #284 follow-up design note | Before changing Bruco numerical behavior | Human physics/statistics review |
+| 3 | #314 | #284 | Bruco Welch DC/Nyquist scaling, `GWEXPY_BRUCO_BLOCK_BYTES` deterministic CI policy, correction priority | 2026-04-29 #278/#284 release-blocker runtime review | Before 0.1.1 release | Human physics/statistics review |
 | 4 | #322 / #341 / #344 | #347 / #274 | Residual GauCh colorbar/Rayleigh coverage, ancillary plot helper public-stability policy, GUI metadata/colorbar payload integration | #347 for plot helpers, #274 for GUI metadata | Before additional plot helper API commitments or GUI metadata work | Human UX/API review; physics review if labels imply unit semantics |
 | 5 | #316 | #282 | Astro pure re-export vs thin wrapper, optional `inspiral_range` CI, physical type/unit assertions | #282 follow-up design note | Before wrapper implementation or optional-deps CI expansion | Human physics/API review for wrapper behavior; CI review for optional deps |
 
@@ -288,6 +292,9 @@ clear review boundary for physics-sensitive changes.
 - Reference tests exist for PSD/ASD/CSD/coherence, FFT-related axes, statistical
   bounds, correlation outputs, and optional dependency behavior.
 - Physics-sensitive changes are isolated from docs/test-only contract PRs.
+- #278 and #284 are complete only when the runtime corrections are merged,
+  issue comments record the verification, and human physics/statistics review
+  signs off on the release-facing behavior.
 - Known numerical limitations are either fixed with tests or recorded as release
   notes / follow-up issues.
 
@@ -442,6 +449,9 @@ Net outcome:
   Publishing environment verification, final target version/date decision, tag
   creation, release workflow execution, and confirmation that the published
   package installs from PyPI.
+- #293 is additionally blocked by #278 and #284 as of 2026-04-29. The release
+  should not proceed until the noise PSD/ASD and Bruco Welch-scaling runtime
+  corrections are reviewed and accepted.
 - #274 is explicitly deferred as a post-release GUI stabilization track. The
   first PyPI package supports the Python library surface, not the experimental
   GUI app; `gwexpy.gui` is not installed as a console script for the first PyPI
