@@ -1,4 +1,5 @@
 """gwexpy.noise.non_gaussian - Non-Gaussian noise simulators."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -14,6 +15,54 @@ except ImportError as _exc:
     ) from _exc
 
 from ..timeseries import TimeSeries
+from .wave import from_asd
+
+
+def _psd_to_asd(psd: Any) -> Any:
+    """Return an ASD FrequencySeries derived from a PSD FrequencySeries."""
+    from ..frequencyseries import FrequencySeries
+
+    psd_values = np.asarray(psd.value, dtype=float)
+    psd_freqs = np.asarray(psd.frequencies.to_value(u.Hz), dtype=float)
+    if psd_values.ndim != 1 or psd_freqs.ndim != 1:
+        raise ValueError("PSD values and frequencies must be one-dimensional")
+    if psd_values.size == 0 or psd_values.size != psd_freqs.size:
+        raise ValueError("PSD values and frequencies must be non-empty and aligned")
+    if np.any(~np.isfinite(psd_freqs)) or np.any(psd_freqs < 0.0):
+        raise ValueError("PSD frequencies must be finite and non-negative")
+    if np.any(np.diff(psd_freqs) <= 0.0):
+        raise ValueError("PSD frequencies must be strictly increasing")
+    if np.any(~np.isfinite(psd_values)) or np.any(psd_values < 0.0):
+        raise ValueError("PSD values must be finite and non-negative")
+
+    psd_unit = getattr(psd, "unit", None)
+    asd_unit = None
+    if psd_unit is not None:
+        asd_unit = u.Unit(psd_unit) ** 0.5
+
+    return FrequencySeries(
+        np.sqrt(psd_values),
+        frequencies=psd.frequencies,
+        unit=asd_unit,
+        name=getattr(psd, "name", None),
+        channel=getattr(psd, "channel", None),
+    )
+
+
+def _normal_pair(
+    n_samples: int,
+    rng: Any | None,
+) -> tuple[np.ndarray, np.ndarray]:
+    if rng is not None:
+        return rng.normal(size=n_samples), rng.normal(size=n_samples)
+    return np.random.randn(n_samples), np.random.randn(n_samples)
+
+
+def _window_start(n_samples: int, transient_len: int, rng: Any | None) -> int:
+    high = n_samples - transient_len
+    if rng is not None:
+        return int(rng.integers(0, high))
+    return int(np.random.randint(0, high))
 
 
 def transient_gaussian_noise(
@@ -21,6 +70,8 @@ def transient_gaussian_noise(
     sample_rate: float | u.Quantity,
     A1: float,
     psd: Any | None = None,
+    rng: Any | None = None,
+    seed: int | None = None,
     **kwargs: Any,
 ) -> TimeSeries:
     """Generate Model I non-Gaussian noise: Superposition of transient Gaussian noise.
@@ -36,7 +87,13 @@ def transient_gaussian_noise(
     A1 : float
         Amplitude scaling factor for the transient part.
     psd : FrequencySeries, optional
-        PSD to color the noise. If None, white noise is used.
+        One-sided PSD used to color both Gaussian components. If None, white
+        noise is used.
+    rng : numpy.random.Generator, optional
+        Random number generator. If None and ``seed`` is not provided, the
+        legacy global NumPy RNG is used for the white-noise path.
+    seed : int, optional
+        Seed used to initialize a default random generator.
     **kwargs
         Additional arguments for TimeSeries.
 
@@ -51,22 +108,20 @@ def transient_gaussian_noise(
         sample_rate = sample_rate.to("Hz").value
 
     n_samples = int(duration * sample_rate)
-    # Generate n0(t) and n1(t)
-    # For now, we use white noise if psd is not provided.
-    # In the future, we can use colored noise.
-    n0 = np.random.randn(n_samples)
-    n1 = np.random.randn(n_samples)
-
+    if rng is None and seed is not None:
+        rng = np.random.default_rng(seed)
     if psd is not None:
-        # TODO: Implement coloring if PSD is provided
-        # For now, just a placeholder as the simple model often uses white noise
-        pass
+        asd = _psd_to_asd(psd)
+        n0 = from_asd(asd, float(duration), float(sample_rate), rng=rng, **kwargs).value
+        n1 = from_asd(asd, float(duration), float(sample_rate), rng=rng, **kwargs).value
+    else:
+        n0, n1 = _normal_pair(n_samples, rng)
 
     # B(t): Tukey window (alpha=0.5), random start, duration T/6
     transient_len = n_samples // 6
     if transient_len > 0:
         win = signal.windows.tukey(transient_len, alpha=0.5)
-        start_idx = np.random.randint(0, n_samples - transient_len)
+        start_idx = _window_start(n_samples, transient_len, rng)
         B = np.zeros(n_samples)
         B[start_idx : start_idx + transient_len] = win
     else:
@@ -128,7 +183,9 @@ def scatter_light_noise(
 
     n0 = np.random.randn(n_samples)
 
-    delta_x_sc = A2 * (1 + 0.25 * np.sin(2 * np.pi * f_amp * t)) * np.cos(2 * np.pi * f_sc * t)
+    delta_x_sc = (
+        A2 * (1 + 0.25 * np.sin(2 * np.pi * f_amp * t)) * np.cos(2 * np.pi * f_sc * t)
+    )
     phase = (4 * np.pi / lambda_val) * (x0 + delta_x_sc)
     glitch = G * np.sin(phase)
 

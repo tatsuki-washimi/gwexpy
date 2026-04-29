@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+from scipy import signal
 
 from gwexpy.analysis.bruco import FastCoherenceEngine
 from gwexpy.analysis.stats import SpectralStats
@@ -40,6 +41,26 @@ def test_fast_bruco_identical_input_coherence_stays_in_numeric_bounds():
     assert np.min(coherence) >= -1e-12
     assert np.max(coherence) <= 1.0 + 1e-12
     np.testing.assert_allclose(coherence, 1.0, atol=1e-12)
+
+
+def test_fast_bruco_target_psd_matches_scipy_welch_density_scaling():
+    target = _sine_timeseries()
+    engine = FastCoherenceEngine(target, fftlength=1.0, overlap=0.5)
+
+    frequencies, scipy_psd = signal.welch(
+        np.asarray(target.value, dtype=float),
+        fs=float(target.sample_rate.value),
+        window=np.hanning(engine.nperseg),
+        nperseg=engine.nperseg,
+        noverlap=engine.noverlap,
+        detrend=False,
+        scaling="density",
+    )
+
+    np.testing.assert_allclose(engine.frequencies, frequencies)
+    np.testing.assert_allclose(engine._target_psd, scipy_psd, rtol=1e-12, atol=1e-12)
+    assert engine._scale[1] == pytest.approx(2.0 * engine._scale[0])
+    assert engine._scale[-2] == pytest.approx(2.0 * engine._scale[-1])
 
 
 def test_spectral_stats_zero_sigma_current_contract_returns_infinite_significance():

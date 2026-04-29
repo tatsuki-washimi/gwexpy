@@ -4,6 +4,11 @@ Date: 2026-04-28
 Issue: #284, "Audit analysis workflow contracts for Bruco coupling and response"
 Mode: audit-first; docs and regression tests only.
 
+Update (2026-04-29): the Bruco Welch DC/Nyquist scaling item is no longer
+deferred as a non-blocking follow-up for 0.1.1. It is covered by the
+release-blocking runtime review in
+`2026-04-29-release-blocker-278-284-runtime-review.md`.
+
 ## Scope For This Slice
 
 This first #284 slice records current result-object and lightweight helper

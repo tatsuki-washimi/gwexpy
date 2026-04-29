@@ -174,16 +174,11 @@ class FastCoherenceEngine:
             raise ValueError("overlap must be smaller than fftlength")
 
         self._window = np.hanning(self.nperseg).astype(float)
-        # Scaling factor to match scipy.signal.welch (scaling='density')
-        # - 1/_window_power: Normalizae for window energy loss
-        # - 2.0: Compensate for one-sided RFFT energy (excluding DC/Nyquist ideally,
-        #        but 2.0 is the standard approximation for density scaling)
-        # - 1/sample_rate: Convert to V^2/Hz (Power Spectral Density)
         self._window_power = np.sum(self._window**2)
-        self._scale = (
-            2.0 / (self.sample_rate * self._window_power)
-            if self.sample_rate > 0
-            else 1.0
+        self._scale = self._onesided_density_scale(
+            self.nperseg,
+            self.sample_rate,
+            self._window,
         )
 
         target_array = np.asarray(target_data.value, dtype=float)
@@ -193,6 +188,23 @@ class FastCoherenceEngine:
         self._target_fft = np.fft.rfft(windowed, axis=1)
         self._target_psd = np.mean(np.abs(self._target_fft) ** 2, axis=0) * self._scale
         self.frequencies = np.fft.rfftfreq(self.nperseg, d=1.0 / self.sample_rate)
+
+    @staticmethod
+    def _onesided_density_scale(
+        nperseg: int,
+        sample_rate: float,
+        window: np.ndarray,
+    ) -> np.ndarray:
+        """Return SciPy-compatible one-sided Welch density scale per RFFT bin."""
+        if sample_rate <= 0:
+            return np.ones(nperseg // 2 + 1, dtype=float)
+        window_power = np.sum(window**2)
+        scale = np.full(nperseg // 2 + 1, 1.0 / (sample_rate * window_power))
+        if nperseg % 2 == 0:
+            scale[1:-1] *= 2.0
+        else:
+            scale[1:] *= 2.0
+        return scale
 
     @staticmethod
     def _segment_array(data: np.ndarray, nperseg: int, noverlap: int) -> np.ndarray:
