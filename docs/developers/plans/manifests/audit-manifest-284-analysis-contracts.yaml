@@ -126,3 +126,27 @@ review_response_2026_04_29:
       change: "Computed representative CF from each channel's own injected-frequency bin while preserving response spectrogram rows on the target ASD frequency grid, including frequencies above witness Nyquist."
     - path: "tests/analysis/test_analysis_workflow_contracts.py"
       change: "Added regression coverage for coupling common-prefix behavior and response target-axis preservation above witness Nyquist."
+
+review_response_2026_04_29_b:
+  context: "PR #340 code review follow-up on commit 2220882474."
+  comments_addressed:
+    - "P1 inline: PercentileThreshold target background tables must be evaluated on the full target grid before common-prefix truncation."
+    - "Top-level: `_common_frequency_prefix_length` should return the prefix before the first mismatched bin."
+    - "Top-level: skip warnings should point one level closer to the public API."
+    - "Top-level: `_slice_frequency_series` must preserve the original frequency-axis unit."
+    - "Top-level: Bruco block-size metadata should be populated before `BrucoResult` construction rather than by post-construction mutation."
+    - "Top-level: Bruco metadata export should reject non-scalar metadata values."
+    - "Top-level: response grid checks should avoid redundant length checks and document that target spectrogram bins above witness Nyquist are raw ASD, not CF."
+  commands_executed:
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/analysis/test_analysis_workflow_contracts.py::test_coupling_uses_partial_common_prefix_before_first_mismatched_bin tests/analysis/test_analysis_workflow_contracts.py::test_coupling_preserves_frequency_axis_unit_when_truncating tests/analysis/test_analysis_workflow_contracts.py::test_coupling_percentile_target_threshold_uses_full_target_grid_before_truncation tests/analysis/test_analysis_workflow_contracts.py::test_bruco_rejects_non_scalar_metadata_values -p no:cacheprovider"
+      result: "RED before implementation, then 4 passed after fixes."
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/analysis/test_analysis_workflow_contracts.py -p no:cacheprovider"
+      result: "15 passed."
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/analysis/test_analysis_workflow_contracts.py tests/analysis/test_bruco_result.py tests/analysis/test_bruco_logic.py tests/analysis/test_coupling.py tests/analysis/test_coupling_analysis.py tests/analysis/test_response.py tests/analysis/test_response_compat.py tests/analysis/test_stats_and_export.py tests/analysis/test_integration_phase04.py -p no:cacheprovider"
+      result: "162 passed, 14 existing warnings."
+    - cmd: "rtk ruff check gwexpy/analysis/bruco.py gwexpy/analysis/coupling.py gwexpy/analysis/response.py tests/analysis/test_analysis_workflow_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check gwexpy/analysis/bruco.py gwexpy/analysis/coupling.py gwexpy/analysis/response.py tests/analysis/test_analysis_workflow_contracts.py"
+      result: "4 files already formatted."
+    - cmd: "rtk mypy gwexpy/analysis/bruco.py gwexpy/analysis/coupling.py gwexpy/analysis/response.py tests/analysis/test_analysis_workflow_contracts.py --ignore-missing-imports"
+      result: "No issues found."

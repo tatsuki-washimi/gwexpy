@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import csv
-from typing import cast
+from typing import Any, cast
 
 import matplotlib
 
@@ -27,9 +27,10 @@ from gwexpy.analysis.response import (
     ResponseFunctionResult,
     _compute_response_row,
 )
-from gwexpy.analysis.threshold import ThresholdStrategy
+from gwexpy.analysis.threshold import PercentileThreshold, ThresholdStrategy
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.spectrogram import Spectrogram
+from gwexpy.table.segment_table import SegmentTable
 from gwexpy.timeseries import TimeSeriesDict
 
 
@@ -306,6 +307,94 @@ def test_coupling_uses_common_prefix_when_target_nyquist_is_lower() -> None:
     assert len(coupling_result.psd_target_inj.value) == len(target_freqs)
 
 
+def test_coupling_uses_partial_common_prefix_before_first_mismatched_bin() -> None:
+    witness_freqs = np.array([0.0, 10.0, 21.0, 30.0])
+    target_freqs = np.array([0.0, 10.0, 20.0])
+    psd_wit_inj = _frequency_series(
+        [2.0, 5.0, 10.0, 17.0], witness_freqs, unit=u.V**2 / u.Hz
+    )
+    psd_wit_bkg = _frequency_series(
+        [1.0, 1.0, 1.0, 1.0], witness_freqs, unit=u.V**2 / u.Hz
+    )
+    psd_tgt_inj = _frequency_series([2.0, 5.0, 10.0], target_freqs, unit=u.m**2 / u.Hz)
+    psd_tgt_bkg = _frequency_series([1.0, 1.0, 1.0], target_freqs, unit=u.m**2 / u.Hz)
+
+    result = coupling_mod._process_single_target(
+        "TGT",
+        cast(TimeSeries, _StaticPsdSeries(psd_tgt_inj, u.m)),
+        cast(TimeSeries, _StaticPsdSeries(psd_tgt_bkg, u.m)),
+        {"fftlength": 1.0},
+        psd_wit_inj,
+        psd_wit_bkg,
+        np.ones(len(witness_freqs), dtype=bool),
+        psd_wit_inj.value - psd_wit_bkg.value,
+        "WIT",
+        cast(TimeSeries, _StaticPsdSeries(psd_wit_inj, u.V)),
+        cast(TimeSeries, _StaticPsdSeries(psd_wit_bkg, u.V)),
+        _AllTrueThreshold(),
+        {},
+        1.0,
+        0.0,
+        None,
+    )
+
+    assert result is not None
+    _, coupling_result = result
+    np.testing.assert_allclose(coupling_result.cf.xindex.value, [0.0, 10.0])
+    np.testing.assert_allclose(coupling_result.cf.value, [1.0, 1.0])
+
+
+def test_coupling_preserves_frequency_axis_unit_when_truncating() -> None:
+    freqs = np.array([0.0, 10.0, 20.0]) * u.mHz
+    series = FrequencySeries([1.0, 2.0, 3.0], frequencies=freqs)
+
+    sliced = coupling_mod._slice_frequency_series(series, 2)
+
+    assert sliced.xindex.unit == u.mHz
+    np.testing.assert_allclose(sliced.xindex.value, [0.0, 10.0])
+
+
+def test_coupling_percentile_target_threshold_uses_full_target_grid_before_truncation() -> (
+    None
+):
+    witness_freqs = np.array([0.0, 10.0, 20.0])
+    target_freqs = np.array([0.0, 10.0, 20.0, 30.0])
+    psd_wit_inj = _frequency_series([4.0, 4.0, 4.0], witness_freqs, unit=u.V**2 / u.Hz)
+    psd_wit_bkg = _frequency_series([1.0, 1.0, 1.0], witness_freqs, unit=u.V**2 / u.Hz)
+    psd_tgt_inj = _frequency_series(
+        [4.0, 4.0, 4.0, 4.0], target_freqs, unit=u.m**2 / u.Hz
+    )
+    psd_tgt_bkg = _frequency_series(
+        [1.0, 1.0, 1.0, 1.0], target_freqs, unit=u.m**2 / u.Hz
+    )
+    bkg_table = SegmentTable.from_segments([Segment(0.0, 1.0)], psd=[psd_tgt_bkg])
+
+    result = coupling_mod._process_single_target(
+        "TGT",
+        cast(TimeSeries, _StaticPsdSeries(psd_tgt_inj, u.m)),
+        cast(TimeSeries, _StaticPsdSeries(psd_tgt_bkg, u.m)),
+        {"fftlength": 1.0},
+        psd_wit_inj,
+        psd_wit_bkg,
+        np.ones(len(witness_freqs), dtype=bool),
+        psd_wit_inj.value - psd_wit_bkg.value,
+        "WIT",
+        cast(TimeSeries, _StaticPsdSeries(psd_wit_inj, u.V)),
+        cast(TimeSeries, _StaticPsdSeries(psd_wit_bkg, u.V)),
+        PercentileThreshold(percentile=50.0, factor=1.0),
+        {"factor": 1.0},
+        1.0,
+        0.0,
+        None,
+        bkg_table=bkg_table,
+    )
+
+    assert result is not None
+    _, coupling_result = result
+    np.testing.assert_allclose(coupling_result.cf.xindex.value, witness_freqs)
+    np.testing.assert_allclose(coupling_result.cf.value, [1.0, 1.0, 1.0])
+
+
 def test_coupling_rejects_nonfinite_excess_power_bins() -> None:
     freqs = np.array([10.0, 20.0, 30.0, 40.0])
     psd_wit_inj = _frequency_series([4.0, 4.0, 4.0, 4.0], freqs, unit=u.V**2 / u.Hz)
@@ -441,6 +530,16 @@ def test_response_compute_keeps_target_spectrogram_above_witness_nyquist(
         result.spectrogram_inj.yindex.value, tgt_asd.xindex.value
     )
     assert result.spectrogram_inj.value.shape == (1, len(tgt_asd.value))
+
+
+def test_bruco_rejects_non_scalar_metadata_values() -> None:
+    with pytest.raises(TypeError, match="metadata values must be scalar"):
+        BrucoResult(
+            np.array([10.0, 20.0]),
+            "TGT",
+            np.ones(2),
+            metadata=cast(Any, {"bad": [1, 2]}),
+        )
 
 
 def test_coupling_rejects_mismatched_witness_psd_frequency_grids(

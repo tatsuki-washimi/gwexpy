@@ -145,12 +145,8 @@ def _compute_response_row(
         )
         tgt_asd_bkg = tgt_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
 
-    compatible_witness_grids = len(wit_asd_bkg.value) == len(
-        wit_asd_inj.value
-    ) and _freq_grids_match(wit_asd_bkg, wit_asd_inj)
-    compatible_target_grids = len(tgt_asd_bkg.value) == len(
-        tgt_asd_inj.value
-    ) and _freq_grids_match(tgt_asd_bkg, tgt_asd_inj)
+    compatible_witness_grids = _freq_grids_match(wit_asd_bkg, wit_asd_inj)
+    compatible_target_grids = _freq_grids_match(tgt_asd_bkg, tgt_asd_inj)
     wit_idx = _nearest_frequency_index(wit_asd_inj, injected_freq)
     tgt_idx = _nearest_frequency_index(tgt_asd_inj, injected_freq)
     if (
@@ -194,9 +190,13 @@ class ResponseFunctionResult:
     Attributes
     ----------
     spectrogram_inj : Spectrogram
-        The measured spectrogram of the target channel during the injection steps.
+        The measured target-channel ASD spectrogram during the injection steps.
+        Its frequency axis is the target ASD axis and can include bins above the
+        witness Nyquist frequency; those high-frequency bins are raw target ASD
+        values, not coupling-factor estimates.
     spectrogram_bkg : Spectrogram
-        The background spectrogram of the target channel for the injection steps.
+        The target-channel background ASD spectrogram for the injection steps,
+        on the same target frequency axis as ``spectrogram_inj``.
     injected_freqs : numpy.ndarray
         Array of injected frequencies [Hz] corresponding to each step.
     step_times : numpy.ndarray
@@ -871,9 +871,7 @@ class ResponseFunctionAnalysis:
             tgt_asd_inj = row["tgt_asd_inj"]
             tgt_asd_bkg = row["tgt_asd_bkg"]
             base_freqs = _freq_values(tgt_asd_inj)
-            compatible_within_row = len(tgt_asd_bkg.value) == len(
-                tgt_asd_inj.value
-            ) and _freq_grids_match(tgt_asd_bkg, tgt_asd_inj)
+            compatible_within_row = _freq_grids_match(tgt_asd_bkg, tgt_asd_inj)
             if not compatible_within_row:
                 warnings.warn(
                     f"Skipping response row {row_index} due to incompatible target ASD frequency grids.",

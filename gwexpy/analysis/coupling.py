@@ -14,7 +14,6 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
-from astropy import units as u
 
 logger = logging.getLogger(__name__)
 
@@ -91,10 +90,12 @@ def _common_frequency_prefix_length(
     common_len = min(lhs_freqs.size, rhs_freqs.size)
     if common_len == 0:
         return 0
-    if not np.allclose(
+    matched = np.isclose(
         lhs_freqs[:common_len], rhs_freqs[:common_len], rtol=rtol, atol=atol
-    ):
-        return 0
+    )
+    mismatches = np.flatnonzero(~matched)
+    if mismatches.size:
+        return int(mismatches[0])
     return int(common_len)
 
 
@@ -103,7 +104,7 @@ def _slice_frequency_series(series: FrequencySeries, stop: int) -> FrequencySeri
         return series
     return FrequencySeries(
         np.asarray(series.value, dtype=float)[:stop],
-        frequencies=_index_values(series.xindex)[:stop] * u.Hz,
+        frequencies=series.xindex[:stop],
         unit=series.unit,
         name=series.name,
         epoch=getattr(series, "epoch", None),
@@ -115,7 +116,7 @@ def _warn_skip_target(tgt_key: str, reason: str) -> None:
     warnings.warn(
         f"Skipping coupling target {tgt_key} because {reason}.",
         UserWarning,
-        stacklevel=2,
+        stacklevel=3,
     )
 
 
@@ -267,6 +268,24 @@ def _process_single_target(
         _warn_skip_target(tgt_key, "its threshold masks do not match PSD shapes")
         return None
 
+    try:
+        psd_tgt_threshold = threshold_target.threshold(
+            psd_tgt_inj,
+            psd_tgt_bkg,
+            raw_bkg=ts_tgt_bkg,
+            bkg_table=bkg_table,
+            **check_kwargs,
+        )
+    except AttributeError:
+        psd_tgt_threshold = psd_tgt_bkg.value
+
+    if hasattr(psd_tgt_threshold, "value"):
+        psd_tgt_threshold = psd_tgt_threshold.value
+    psd_tgt_threshold = np.asarray(psd_tgt_threshold, dtype=float)
+    if psd_tgt_threshold.shape != psd_tgt_inj.value.shape:
+        _warn_skip_target(tgt_key, "its threshold values do not match PSD shapes")
+        return None
+
     psd_wit_inj = _slice_frequency_series(psd_wit_inj, common_len)
     psd_wit_bkg = _slice_frequency_series(psd_wit_bkg, common_len)
     psd_tgt_inj = _slice_frequency_series(psd_tgt_inj, common_len)
@@ -321,23 +340,7 @@ def _process_single_target(
     if freq_mask is not None:
         mask_ul = mask_ul & freq_mask[:common_len]
 
-    try:
-        psd_tgt_threshold = threshold_target.threshold(
-            psd_tgt_inj,
-            psd_tgt_bkg,
-            raw_bkg=ts_tgt_bkg,
-            bkg_table=bkg_table,
-            **check_kwargs,
-        )
-    except AttributeError:
-        psd_tgt_threshold = psd_tgt_bkg.value
-
-    if hasattr(psd_tgt_threshold, "value"):
-        psd_tgt_threshold = psd_tgt_threshold.value
-
-    delta_thr = (
-        np.asarray(psd_tgt_threshold, dtype=float)[:common_len] - psd_tgt_bkg.value
-    )
+    delta_thr = psd_tgt_threshold[:common_len] - psd_tgt_bkg.value
     mask_ul = mask_ul & np.isfinite(delta_thr) & (delta_thr > 0)
 
     ul_values = np.full_like(delta_wit, np.nan)
