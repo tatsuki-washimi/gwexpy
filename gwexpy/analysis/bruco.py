@@ -36,6 +36,19 @@ BrucoMetadataValue: TypeAlias = Union[str, int, float, bool]
 BrucoMetadata: TypeAlias = Mapping[str, BrucoMetadataValue]
 
 
+def _metadata_dict(metadata: BrucoMetadata | None) -> dict[str, BrucoMetadataValue]:
+    if metadata is None:
+        return {}
+    clean: dict[str, BrucoMetadataValue] = {}
+    for key, value in metadata.items():
+        if isinstance(value, np.generic):
+            value = value.item()
+        if not isinstance(value, (str, int, float, bool)):
+            raise TypeError("BrucoResult metadata values must be scalar.")
+        clean[key] = value
+    return clean
+
+
 class BrucoPairSummary(TypedDict):
     """Summary of coherence for a single target-auxiliary pair."""
 
@@ -318,9 +331,7 @@ class BrucoResult:
         self.target_spectrum = target_spectrum
         # Internal calculations use PSD; ASD is derived only for display.
         self.top_n = top_n
-        self.metadata: dict[str, BrucoMetadataValue] = (
-            dict(metadata) if metadata is not None else {}
-        )
+        self.metadata = _metadata_dict(metadata)
         self.n_bins = len(frequencies)
         self.block_size = _resolve_block_size(block_size, self.n_bins, self.top_n)
 
@@ -610,6 +621,7 @@ class BrucoResult:
         stride: int = 1,
         asd: bool = True,
         coherence_threshold: float = 0.0,
+        include_metadata: bool = False,
     ) -> pd.DataFrame:
         """Convert results to a long-form DataFrame."""
         if ranks is None:
@@ -644,7 +656,11 @@ class BrucoResult:
             return pd.DataFrame(
                 columns=["frequency", "rank", "channel", "coherence", "projection"]
             )
-        return pd.concat(frames, ignore_index=True)
+        exported = pd.concat(frames, ignore_index=True)
+        if include_metadata:
+            for key, value in self.metadata.items():
+                exported[f"metadata_{key}"] = value
+        return exported
 
     def plot_projection(
         self,
@@ -1209,6 +1225,9 @@ class Bruco:
             raise
 
         # Initialize Result container
+        resolved_block_size = _resolve_block_size(
+            block_size, len(target_frequencies), top_n
+        )
         metadata = {
             "start": start,
             "end": end,
@@ -1220,6 +1239,14 @@ class Bruco:
             "parallel": parallel,
             "target": self.target,
             "target_sample_rate": target_ts.sample_rate.value,
+            "block_size_requested": "default"
+            if block_size is None
+            else str(block_size),
+            "block_size": resolved_block_size,
+            "n_frequency_bins": len(target_frequencies),
+            "frequency_resolution": float(target_frequencies[1] - target_frequencies[0])
+            if len(target_frequencies) > 1
+            else float("nan"),
         }
         result = BrucoResult(
             target_frequencies,
@@ -1227,7 +1254,7 @@ class Bruco:
             target_spectrum_values,
             top_n=top_n,
             metadata=metadata,
-            block_size=block_size,
+            block_size=resolved_block_size,
         )
 
         # 2. Processing

@@ -4,6 +4,7 @@ Estimates the coupling function (CF) with flexible threshold strategies.
 Threshold strategies are defined in :mod:`gwexpy.analysis.threshold`.
 The result container is defined in :mod:`gwexpy.analysis.coupling_result`.
 """
+
 from __future__ import annotations
 
 import logging
@@ -63,6 +64,62 @@ def estimate_bkg_mem_bytes(
     return int(bytes_est * 1.2), n_rows
 
 
+def _frequency_grids_match(
+    lhs: FrequencySeries,
+    rhs: FrequencySeries,
+    *,
+    rtol: float = 1e-10,
+    atol: float = 1e-12,
+) -> bool:
+    lhs_freqs = _index_values(lhs.xindex)
+    rhs_freqs = _index_values(rhs.xindex)
+    return lhs_freqs.shape == rhs_freqs.shape and np.allclose(
+        lhs_freqs, rhs_freqs, rtol=rtol, atol=atol
+    )
+
+
+def _common_frequency_prefix_length(
+    lhs: FrequencySeries,
+    rhs: FrequencySeries,
+    *,
+    rtol: float = 1e-10,
+    atol: float = 1e-12,
+) -> int:
+    lhs_freqs = _index_values(lhs.xindex)
+    rhs_freqs = _index_values(rhs.xindex)
+    common_len = min(lhs_freqs.size, rhs_freqs.size)
+    if common_len == 0:
+        return 0
+    matched = np.isclose(
+        lhs_freqs[:common_len], rhs_freqs[:common_len], rtol=rtol, atol=atol
+    )
+    mismatches = np.flatnonzero(~matched)
+    if mismatches.size:
+        return int(mismatches[0])
+    return int(common_len)
+
+
+def _slice_frequency_series(series: FrequencySeries, stop: int) -> FrequencySeries:
+    if stop == len(series.value):
+        return series
+    return FrequencySeries(
+        np.asarray(series.value, dtype=float)[:stop],
+        frequencies=series.xindex[:stop],
+        unit=series.unit,
+        name=series.name,
+        epoch=getattr(series, "epoch", None),
+        channel=getattr(series, "channel", None),
+    )
+
+
+def _warn_skip_target(tgt_key: str, reason: str) -> None:
+    warnings.warn(
+        f"Skipping coupling target {tgt_key} because {reason}.",
+        UserWarning,
+        stacklevel=3,
+    )
+
+
 def _build_bkg_segment_table(
     ts_bkg: TimeSeries,
     fftlength: float,
@@ -94,8 +151,8 @@ def _build_bkg_segment_table(
 
         if mem_size > memory_limit:
             raise ValueError(
-                f"Background SegmentTable memory estimate ({mem_size/1e6:.2f} MB) "
-                f"exceeds limit ({memory_limit/1e6:.2f} MB) even after stride adjustment. "
+                f"Background SegmentTable memory estimate ({mem_size / 1e6:.2f} MB) "
+                f"exceeds limit ({memory_limit / 1e6:.2f} MB) even after stride adjustment. "
                 "Increase 'memory_limit' or use a larger 'bkg_stride'."
             )
         logger.warning(
@@ -135,9 +192,7 @@ def _build_bkg_segment_table(
                 stacklevel=2,
             )
             continue
-        p = cropped.psd(
-            fftlength=fftlength, overlap=overlap, **kwargs
-        )
+        p = cropped.psd(fftlength=fftlength, overlap=overlap, **kwargs)
         kept_segments.append(seg)
         psds.append(p)
 
@@ -181,24 +236,78 @@ def _process_single_target(
     psd_tgt_inj = ts_tgt_inj.psd(**psd_kwargs)
     psd_tgt_bkg = ts_tgt_bkg.psd(**psd_kwargs)
 
-    # Frequency check
-    if not np.allclose(
-        _index_values(psd_wit_inj.xindex), _index_values(psd_tgt_inj.xindex)
-    ):
-        warnings.warn(f"Frequency mismatch for {tgt_key}. Skipping.")
+    if not _frequency_grids_match(psd_wit_inj, psd_wit_bkg):
+        _warn_skip_target(tgt_key, "the witness PSD frequency grids are incompatible")
+        return None
+    if not _frequency_grids_match(psd_tgt_inj, psd_tgt_bkg):
+        _warn_skip_target(tgt_key, "the target PSD frequency grids are incompatible")
+        return None
+
+    common_len = _common_frequency_prefix_length(psd_wit_inj, psd_tgt_inj)
+    if common_len == 0:
+        _warn_skip_target(
+            tgt_key,
+            "the witness and target PSD frequency grids have no exact common prefix",
+        )
         return None
 
     # Check Target Excess
-    mask_tgt = threshold_target.check(
-        psd_tgt_inj, psd_tgt_bkg, raw_bkg=ts_tgt_bkg, bkg_table=bkg_table, **check_kwargs
+    mask_tgt_full = threshold_target.check(
+        psd_tgt_inj,
+        psd_tgt_bkg,
+        raw_bkg=ts_tgt_bkg,
+        bkg_table=bkg_table,
+        **check_kwargs,
     )
+    mask_wit_full = np.asarray(mask_wit, dtype=bool)
+    mask_tgt_full = np.asarray(mask_tgt_full, dtype=bool)
+    if (
+        mask_wit_full.shape != psd_wit_inj.value.shape
+        or mask_tgt_full.shape != psd_tgt_inj.value.shape
+    ):
+        _warn_skip_target(tgt_key, "its threshold masks do not match PSD shapes")
+        return None
 
+    try:
+        psd_tgt_threshold = threshold_target.threshold(
+            psd_tgt_inj,
+            psd_tgt_bkg,
+            raw_bkg=ts_tgt_bkg,
+            bkg_table=bkg_table,
+            **check_kwargs,
+        )
+    except AttributeError:
+        psd_tgt_threshold = psd_tgt_bkg.value
+
+    if hasattr(psd_tgt_threshold, "value"):
+        psd_tgt_threshold = psd_tgt_threshold.value
+    psd_tgt_threshold = np.asarray(psd_tgt_threshold, dtype=float)
+    if psd_tgt_threshold.shape != psd_tgt_inj.value.shape:
+        _warn_skip_target(tgt_key, "its threshold values do not match PSD shapes")
+        return None
+
+    psd_wit_inj = _slice_frequency_series(psd_wit_inj, common_len)
+    psd_wit_bkg = _slice_frequency_series(psd_wit_bkg, common_len)
+    psd_tgt_inj = _slice_frequency_series(psd_tgt_inj, common_len)
+    psd_tgt_bkg = _slice_frequency_series(psd_tgt_bkg, common_len)
+    mask_wit = mask_wit_full[:common_len]
+    mask_tgt = mask_tgt_full[:common_len]
+    delta_wit = np.asarray(delta_wit, dtype=float)[:common_len]
     delta_tgt = psd_tgt_inj.value - psd_tgt_bkg.value
 
     # --- Compute CF ---
-    valid_mask = mask_wit & mask_tgt & (delta_wit > 0) & (delta_tgt > 0)
+    finite_wit = np.isfinite(delta_wit)
+    finite_tgt = np.isfinite(delta_tgt)
+    valid_mask = (
+        mask_wit
+        & mask_tgt
+        & finite_wit
+        & finite_tgt
+        & (delta_wit > 0)
+        & (delta_tgt > 0)
+    )
     if freq_mask is not None:
-        valid_mask = valid_mask & freq_mask
+        valid_mask = valid_mask & freq_mask[:common_len]
 
     cf_values = np.full_like(delta_wit, np.nan)
 
@@ -227,22 +336,12 @@ def _process_single_target(
     )
 
     # --- Calculate Upper Limit (UL) ---
-    mask_ul = mask_wit & (~mask_tgt) & (delta_wit > 0)
+    mask_ul = mask_wit & (~mask_tgt) & finite_wit & (delta_wit > 0)
     if freq_mask is not None:
-        mask_ul = mask_ul & freq_mask
+        mask_ul = mask_ul & freq_mask[:common_len]
 
-    try:
-        psd_tgt_threshold = threshold_target.threshold(
-            psd_tgt_inj, psd_tgt_bkg, raw_bkg=ts_tgt_bkg, bkg_table=bkg_table, **check_kwargs
-        )
-    except AttributeError:
-        psd_tgt_threshold = psd_tgt_bkg.value
-
-    if hasattr(psd_tgt_threshold, "value"):
-        psd_tgt_threshold = psd_tgt_threshold.value
-
-    delta_thr = psd_tgt_threshold - psd_tgt_bkg.value
-    mask_ul = mask_ul & (delta_thr > 0)
+    delta_thr = psd_tgt_threshold[:common_len] - psd_tgt_bkg.value
+    mask_ul = mask_ul & np.isfinite(delta_thr) & (delta_thr > 0)
 
     ul_values = np.full_like(delta_wit, np.nan)
 
@@ -496,9 +595,7 @@ class CouplingFunctionAnalysis:
 
         # 1. Prepare Background Distribution
         # We use a SegmentTable for the background to get the empirical distribution
-        st_bkg = _build_bkg_segment_table(
-            raw_bkg, fftlength, overlap=overlap, **kwargs
-        )
+        st_bkg = _build_bkg_segment_table(raw_bkg, fftlength, overlap=overlap, **kwargs)
         # psd_matrix shape: (segments, frequencies)
         psd_matrix = np.stack([row["psd"].value for row in st_bkg])
         p_emp = np.percentile(psd_matrix, percentile, axis=0)
@@ -640,6 +737,10 @@ class CouplingFunctionAnalysis:
         # Witness PSDs
         psd_wit_inj = ts_wit_inj.psd(**psd_kwargs)
         psd_wit_bkg = ts_wit_bkg.psd(**psd_kwargs)
+        if not _frequency_grids_match(psd_wit_inj, psd_wit_bkg):
+            raise ValueError(
+                "Witness injection and background PSD frequency grids are incompatible."
+            )
 
         t_start = time.perf_counter()
 
@@ -677,6 +778,7 @@ class CouplingFunctionAnalysis:
 
         if n_jobs_eff != 1:
             from gwexpy.interop._optional import require_optional
+
             joblib = require_optional("joblib")
             Parallel, delayed = joblib.Parallel, joblib.delayed
 
@@ -709,7 +811,11 @@ class CouplingFunctionAnalysis:
 
         # Check Witness Excess
         mask_wit = threshold_witness.check(
-            psd_wit_inj, psd_wit_bkg, raw_bkg=ts_wit_bkg, bkg_table=st_wit_bkg, **check_kwargs
+            psd_wit_inj,
+            psd_wit_bkg,
+            raw_bkg=ts_wit_bkg,
+            bkg_table=st_wit_bkg,
+            **check_kwargs,
         )
 
         delta_wit = psd_wit_inj.value - psd_wit_bkg.value
@@ -786,7 +892,10 @@ class CouplingFunctionAnalysis:
         logger.info(
             "Coupling Analysis Complete: %d/%d channels estimated in %.2fs. "
             "percentile_factor=%.2f",
-            n_targets, n_total, dur, percentile_factor
+            n_targets,
+            n_total,
+            dur,
+            percentile_factor,
         )
 
         if len(results) == 1:

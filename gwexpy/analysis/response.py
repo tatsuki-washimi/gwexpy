@@ -4,6 +4,7 @@ This module implements the Response Function Model (RFM) based on
 Stepped Sine (Discrete) Injections. It prioritizes statistical significance
 by calculating averaged ASDs for each stable frequency step.
 """
+
 from __future__ import annotations
 
 import logging
@@ -39,13 +40,22 @@ def _freq_values(series: Any) -> np.ndarray:
     return np.asarray(getattr(series.xindex, "value", series.xindex), dtype=float)
 
 
-def _freq_grids_match(lhs: Any, rhs: Any, *, rtol: float = 1e-10, atol: float = 1e-12) -> bool:
+def _freq_grids_match(
+    lhs: Any, rhs: Any, *, rtol: float = 1e-10, atol: float = 1e-12
+) -> bool:
     """Return True when two frequency grids match within numerical tolerance."""
     lhs_freqs = _freq_values(lhs)
     rhs_freqs = _freq_values(rhs)
     return lhs_freqs.shape == rhs_freqs.shape and np.allclose(
         lhs_freqs, rhs_freqs, rtol=rtol, atol=atol
     )
+
+
+def _nearest_frequency_index(series: Any, frequency: float) -> int | None:
+    freqs = _freq_values(series)
+    if freqs.size == 0 or frequency < freqs[0] or frequency > freqs[-1]:
+        return None
+    return int(np.argmin(np.abs(freqs - frequency)))
 
 
 def _estimate_response_row_bytes(
@@ -117,9 +127,7 @@ def _compute_response_row(
             sample_rate=witness.sample_rate,
             start=t_b_s,
         )
-        wit_asd_bkg = wit_bkg.asd(
-            fftlength=fftlength, overlap=overlap, **kwargs
-        )
+        wit_asd_bkg = wit_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
 
     if master_asd_tgt_bkg is not None:
         tgt_asd_bkg = master_asd_tgt_bkg
@@ -135,14 +143,30 @@ def _compute_response_row(
             sample_rate=target.sample_rate,
             start=t_b_s,
         )
-        tgt_asd_bkg = tgt_bkg.asd(
-            fftlength=fftlength, overlap=overlap, **kwargs
-        )
+        tgt_asd_bkg = tgt_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
 
-    f_idx = np.argmin(np.abs(wit_asd_inj.xindex.value - injected_freq))
-    p_wit_net = wit_asd_inj.value[f_idx] ** 2 - wit_asd_bkg.value[f_idx] ** 2
-    p_tgt_net = tgt_asd_inj.value[f_idx] ** 2 - tgt_asd_bkg.value[f_idx] ** 2
-    cf = np.sqrt(p_tgt_net / p_wit_net) if p_wit_net > 0 and p_tgt_net > 0 else np.nan
+    compatible_witness_grids = _freq_grids_match(wit_asd_bkg, wit_asd_inj)
+    compatible_target_grids = _freq_grids_match(tgt_asd_bkg, tgt_asd_inj)
+    wit_idx = _nearest_frequency_index(wit_asd_inj, injected_freq)
+    tgt_idx = _nearest_frequency_index(tgt_asd_inj, injected_freq)
+    if (
+        compatible_witness_grids
+        and compatible_target_grids
+        and wit_idx is not None
+        and tgt_idx is not None
+    ):
+        p_wit_net = wit_asd_inj.value[wit_idx] ** 2 - wit_asd_bkg.value[wit_idx] ** 2
+        p_tgt_net = tgt_asd_inj.value[tgt_idx] ** 2 - tgt_asd_bkg.value[tgt_idx] ** 2
+        cf = (
+            np.sqrt(p_tgt_net / p_wit_net)
+            if np.isfinite(p_wit_net)
+            and np.isfinite(p_tgt_net)
+            and p_wit_net > 0
+            and p_tgt_net > 0
+            else np.nan
+        )
+    else:
+        cf = np.nan
 
     return {
         "span": segment,
@@ -166,9 +190,13 @@ class ResponseFunctionResult:
     Attributes
     ----------
     spectrogram_inj : Spectrogram
-        The measured spectrogram of the target channel during the injection steps.
+        The measured target-channel ASD spectrogram during the injection steps.
+        Its frequency axis is the target ASD axis and can include bins above the
+        witness Nyquist frequency; those high-frequency bins are raw target ASD
+        values, not coupling-factor estimates.
     spectrogram_bkg : Spectrogram
-        The background spectrogram of the target channel for the injection steps.
+        The target-channel background ASD spectrogram for the injection steps,
+        on the same target frequency axis as ``spectrogram_inj``.
     injected_freqs : numpy.ndarray
         Array of injected frequencies [Hz] corresponding to each step.
     step_times : numpy.ndarray
@@ -312,9 +340,7 @@ class ResponseFunctionResult:
         ax.set_yscale("log")
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel(f"ASD [{self.spectrogram_inj.unit}]")
-        ax.set_title(
-            f"Projection Summary: {self.witness_name} -> {self.target_name}"
-        )
+        ax.set_title(f"Projection Summary: {self.witness_name} -> {self.target_name}")
         ax.legend(fontsize=7, loc="upper right", ncol=max(1, n_steps // 10))
         ax.grid(True, which="both", linestyle=":")
 
@@ -377,7 +403,8 @@ class ResponseFunctionResult:
 
         fig = plt.figure(figsize=figsize)
         gs = GridSpec(
-            2, 2,
+            2,
+            2,
             figure=fig,
             width_ratios=[4, 1],
             height_ratios=[1, 4],
@@ -397,7 +424,9 @@ class ResponseFunctionResult:
             shading="auto",
             cmap="viridis",
         )
-        fig.colorbar(c, ax=ax_right, label=f"ASD [{self.spectrogram_inj.unit}]", fraction=0.5)
+        fig.colorbar(
+            c, ax=ax_right, label=f"ASD [{self.spectrogram_inj.unit}]", fraction=0.5
+        )
         ax_main.set_yscale("log")
         ax_main.set_xlabel("Step Time [GPS s]")
         ax_main.set_ylabel("Frequency [Hz]")
@@ -411,9 +440,7 @@ class ResponseFunctionResult:
         )
         ax_top.set_yscale("log")
         ax_top.set_ylabel(f"ASD\n@ {freqs_plot[mid_freq_idx]:.1f} Hz")
-        ax_top.set_title(
-            f"Response Matrix: {self.witness_name} -> {self.target_name}"
-        )
+        ax_top.set_title(f"Response Matrix: {self.witness_name} -> {self.target_name}")
         plt.setp(ax_top.get_xticklabels(), visible=False)
 
         # Side panel: Time evolution at center frequency bin
@@ -714,7 +741,9 @@ class ResponseFunctionAnalysis:
         # Filter segments with duration >= fftlength
         valid_segments = [s for s in segments if (s[1] - s[0]) >= fftlength]
         if not valid_segments:
-            raise ValueError(f"No segments found with duration >= fftlength ({fftlength}s).")
+            raise ValueError(
+                f"No segments found with duration >= fftlength ({fftlength}s)."
+            )
 
         seg_objs = [Segment(s, e) for s, e, f in valid_segments]
         injected_freqs_list = [f for s, e, f in valid_segments]
@@ -723,9 +752,13 @@ class ResponseFunctionAnalysis:
         master_asd_tgt_bkg = None
         master_asd_wit_bkg = None
         if target_bkg is not None:
-            master_asd_tgt_bkg = target_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
+            master_asd_tgt_bkg = target_bkg.asd(
+                fftlength=fftlength, overlap=overlap, **kwargs
+            )
         if witness_bkg is not None:
-            master_asd_wit_bkg = witness_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
+            master_asd_wit_bkg = witness_bkg.asd(
+                fftlength=fftlength, overlap=overlap, **kwargs
+            )
 
         row_bytes = _estimate_response_row_bytes(
             witness,
@@ -740,7 +773,12 @@ class ResponseFunctionAnalysis:
             )
         batch_size = max(1, memory_limit // row_bytes)
         batches = [
-            list(zip(seg_objs[i : i + batch_size], injected_freqs_list[i : i + batch_size]))
+            list(
+                zip(
+                    seg_objs[i : i + batch_size],
+                    injected_freqs_list[i : i + batch_size],
+                )
+            )
             for i in range(0, len(seg_objs), batch_size)
         ]
 
@@ -796,12 +834,32 @@ class ResponseFunctionAnalysis:
             [row["span"] for row in row_results],
             injected_freq=[row["injected_freq"] for row in row_results],
         )
-        st.add_series_column("wit_inj", data=[row["wit_inj"] for row in row_results], kind="timeseries")
-        st.add_series_column("tgt_inj", data=[row["tgt_inj"] for row in row_results], kind="timeseries")
-        st.add_series_column("wit_asd_inj", data=[row["wit_asd_inj"] for row in row_results], kind="frequencyseries")
-        st.add_series_column("tgt_asd_inj", data=[row["tgt_asd_inj"] for row in row_results], kind="frequencyseries")
-        st.add_series_column("wit_asd_bkg", data=[row["wit_asd_bkg"] for row in row_results], kind="frequencyseries")
-        st.add_series_column("tgt_asd_bkg", data=[row["tgt_asd_bkg"] for row in row_results], kind="frequencyseries")
+        st.add_series_column(
+            "wit_inj", data=[row["wit_inj"] for row in row_results], kind="timeseries"
+        )
+        st.add_series_column(
+            "tgt_inj", data=[row["tgt_inj"] for row in row_results], kind="timeseries"
+        )
+        st.add_series_column(
+            "wit_asd_inj",
+            data=[row["wit_asd_inj"] for row in row_results],
+            kind="frequencyseries",
+        )
+        st.add_series_column(
+            "tgt_asd_inj",
+            data=[row["tgt_asd_inj"] for row in row_results],
+            kind="frequencyseries",
+        )
+        st.add_series_column(
+            "wit_asd_bkg",
+            data=[row["wit_asd_bkg"] for row in row_results],
+            kind="frequencyseries",
+        )
+        st.add_series_column(
+            "tgt_asd_bkg",
+            data=[row["tgt_asd_bkg"] for row in row_results],
+            kind="frequencyseries",
+        )
         st.add_column("cf", [row["cf"] for row in row_results], kind="meta")
 
         # --- 3. Wrap in Containers ---
@@ -810,21 +868,13 @@ class ResponseFunctionAnalysis:
         ref_freqs: np.ndarray | None = None
 
         for row_index, (_, row) in enumerate(st_data.iterrows()):
-            row_series = [
-                row["wit_asd_inj"],
-                row["tgt_asd_inj"],
-                row["wit_asd_bkg"],
-                row["tgt_asd_bkg"],
-            ]
-            base_freqs = _freq_values(row_series[0])
-            compatible_within_row = all(
-                len(series.value) == len(row_series[0].value)
-                and _freq_grids_match(series, row_series[0])
-                for series in row_series[1:]
-            )
+            tgt_asd_inj = row["tgt_asd_inj"]
+            tgt_asd_bkg = row["tgt_asd_bkg"]
+            base_freqs = _freq_values(tgt_asd_inj)
+            compatible_within_row = _freq_grids_match(tgt_asd_bkg, tgt_asd_inj)
             if not compatible_within_row:
                 warnings.warn(
-                    f"Skipping response row {row_index} due to incompatible ASD frequency grids.",
+                    f"Skipping response row {row_index} due to incompatible target ASD frequency grids.",
                     UserWarning,
                     stacklevel=2,
                 )
@@ -834,7 +884,7 @@ class ResponseFunctionAnalysis:
                 ref_freqs = base_freqs
             elif not np.allclose(base_freqs, ref_freqs, rtol=1e-10, atol=1e-12):
                 warnings.warn(
-                    f"Skipping response row {row_index} due to incompatible ASD frequency grids.",
+                    f"Skipping response row {row_index} due to incompatible target ASD frequency grids.",
                     UserWarning,
                     stacklevel=2,
                 )
@@ -843,7 +893,9 @@ class ResponseFunctionAnalysis:
             valid_indices.append(row_index)
 
         if not valid_indices:
-            raise ValueError("No compatible response rows remain after frequency alignment.")
+            raise ValueError(
+                "No compatible response rows remain after frequency alignment."
+            )
 
         row_mask = [i in set(valid_indices) for i in range(len(st))]
         st = st.select(mask=row_mask)
@@ -860,8 +912,20 @@ class ResponseFunctionAnalysis:
         inj_freqs = np.asarray(st_data["injected_freq"].values)
 
         unit = getattr(target, "unit", None) or "dimensionless"
-        sg_inj = Spectrogram(spec_inj_data, times=step_times, frequencies=freq_axis, unit=unit, name="Inj")
-        sg_bkg = Spectrogram(spec_bkg_data, times=step_times, frequencies=freq_axis, unit=unit, name="Bkg")
+        sg_inj = Spectrogram(
+            spec_inj_data,
+            times=step_times,
+            frequencies=freq_axis,
+            unit=unit,
+            name="Inj",
+        )
+        sg_bkg = Spectrogram(
+            spec_bkg_data,
+            times=step_times,
+            frequencies=freq_axis,
+            unit=unit,
+            name="Bkg",
+        )
 
         res = ResponseFunctionResult(
             spectrogram_inj=sg_inj,
@@ -879,7 +943,10 @@ class ResponseFunctionAnalysis:
         logger.info(
             "Response Function Analysis Complete: %d steps processed in %.2fs "
             "(batches=%d, n_jobs=%s).",
-            len(st), dur, len(batches), n_jobs_eff,
+            len(st),
+            dur,
+            len(batches),
+            n_jobs_eff,
         )
         return res
 
