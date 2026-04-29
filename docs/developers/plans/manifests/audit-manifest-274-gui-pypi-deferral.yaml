@@ -24,6 +24,8 @@ decision:
     library release can proceed without treating #274 as release-blocking.
   policy:
     - "Do not install a gwexpy.gui console script in the first PyPI release."
+    - "Do not ship the gwexpy.gui Python package in first PyPI release artifacts."
+    - "Do not publish a gui extra in first PyPI release metadata."
     - "Keep GUI dependencies outside gwexpy[all]."
     - "Track GUI payload metadata and renderer work as post-release #274 stabilization."
 
@@ -63,13 +65,13 @@ commands_executed:
 
 files_changed:
   - path: pyproject.toml
-    change: "Removed the gwexpy.gui console script and documented GUI dependencies as source/development-only, outside the first PyPI supported surface."
+    change: "Removed the gwexpy.gui console script, excluded gwexpy.gui package discovery, and removed the gui extra from first-release metadata."
   - path: CHANGELOG.md
     change: "Recorded the user-visible packaging decision in Unreleased."
   - path: docs/web/en/user_guide/installation.md
-    change: "Marked the GUI extra as source/development-only and outside first PyPI support; clarified gwexpy[all] excludes GUI."
+    change: "Removed the GUI extra from first-release install guidance; clarified gwexpy[all] excludes GUI."
   - path: docs/web/ja/user_guide/installation.md
-    change: "Marked the GUI extra as source/development-only and outside first PyPI support; clarified gwexpy[all] excludes GUI."
+    change: "Removed the GUI extra from first-release install guidance; clarified gwexpy[all] excludes GUI."
   - path: docs/web/en/user_guide/gui.md
     change: "Removed console-script launch instructions and documented the GUI as post-release/source-development track."
   - path: docs/web/ja/user_guide/gui.md
@@ -100,5 +102,5 @@ test_results:
   docs_build: not_run_sphinx_unavailable
 
 risks:
-  - "The gwexpy.gui Python package is still present in built artifacts for source compatibility, but the GUI app is not exposed as a first-release console script or supported PyPI surface."
+  - "Source checkout GUI workflows now require manually installing PyQt5, pyqtgraph, qtpy, and sounddevice until GUI packaging is redesigned for a later release."
   - "Full docs build should be rerun in CI or a docs-enabled environment."

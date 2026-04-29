@@ -5,7 +5,8 @@
 ### Packaging & Optional Dependencies (issue #251)
 
 - **packaging**: Added `netcdf4` extra (`netCDF4`, `xarray`) and `zarr` extra (`zarr`) to `pyproject.toml`; both are now included in the `all` convenience extra.
-- **packaging**: Removed the experimental `gwexpy.gui` console script from the first PyPI supported surface; GUI dependencies remain source/development-only and outside `gwexpy[all]`.
+- **packaging**: Removed the experimental `gwexpy.gui` package, console script, and `gui` extra from the first PyPI distribution; GUI work remains source/development-only until the post-release stabilization track is complete.
+- **packaging**: Tightened first-release artifact hygiene by excluding top-level tests, docs sample data, and package-internal Sphinx helper shims from built distributions.
 - **packaging**: Removed hand-edited tail from `requirements-dev.txt`; `analysis` extras are now managed exclusively through `pyproject.toml`.
 - **interop**: Fixed `_optional.py` `_EXTRA_MAP` — phantom extras (`interop`, `bio`, `stats`, `eda`) replaced with `None` entries that fall back to bare `pip install <package>`; `netCDF4`/`xarray` now point to `netcdf4` extra; `zarr` points to `zarr` extra.
 - **io**: `ensure_dependency()` error hint corrected to `pip install 'gwexpy[<extra>]'` instead of `pip install <pkg>[<extra>]`.

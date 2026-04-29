@@ -113,14 +113,15 @@ class TestRequireOptional:
         assert "pip install 'gwexpy[netcdf4]'" in msg
         assert 'pip install "gwexpy[all]"' in msg
 
-    def test_gui_extra_does_not_suggest_all(self):
-        """The gui extra is intentionally excluded from gwexpy[all]."""
+    def test_gui_dependencies_use_bare_install_hint(self):
+        """GUI dependencies are not exposed as a first-release PyPI extra."""
         with patch.dict(sys.modules, {"PyQt5": None}):
             with pytest.raises(ImportError) as excinfo:
                 require_optional("PyQt5")
 
         msg = str(excinfo.value)
-        assert "pip install 'gwexpy[gui]'" in msg
+        assert "pip install PyQt5" in msg
+        assert "gwexpy[gui]" not in msg
         assert "gwexpy[all]" not in msg
 
     @pytest.mark.parametrize("name", ["librosa", "pyroomacoustics"])

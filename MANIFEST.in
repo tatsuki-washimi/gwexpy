@@ -1,9 +1,12 @@
 include CHANGELOG.md
 include LICENSE.txt
 include README.md
-recursive-include docs/_static/samples *.csv *.h5 *.txt
 include pyproject.toml
+prune docs/_static/samples
+prune gwexpy/gui
+prune gwexpy/utils/sphinx
 prune gwexpy/*/tests
+prune tests
 recursive-exclude gwexpy *.md
 prune .agent
 prune .harness

@@ -128,15 +128,6 @@ audio = [
   "tinytag>=1.10",
 ]
 
-# GUI dependencies for source/development use. The GUI app is experimental,
-# not included in gwexpy[all], and not part of the first PyPI supported surface.
-gui = [
-  "PyQt5",
-  "pyqtgraph",
-  "qtpy",
-  "sounddevice",
-]
-
 # Development tools
 dev = [
   "build",
@@ -217,7 +208,15 @@ gwexpy = [
 
 [tool.setuptools.packages.find]
 include = ["gwexpy*"]
-exclude = ["gwexpy*.tests*", "typings*", "tests*", "docs*", "examples*"]
+exclude = [
+  "gwexpy*.tests*",
+  "gwexpy.gui*",
+  "gwexpy.utils.sphinx*",
+  "typings*",
+  "tests*",
+  "docs*",
+  "examples*",
+]
 
 [project.scripts]
 "gwexpy" = "gwexpy.cli:main"
