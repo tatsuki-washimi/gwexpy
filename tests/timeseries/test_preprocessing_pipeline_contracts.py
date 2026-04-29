@@ -1,3 +1,5 @@
+"""First-release preprocessing pipeline contract baselines (#346)."""
+
 from __future__ import annotations
 
 import numpy as np

@@ -3,6 +3,7 @@
 Date: 2026-04-28
 Issue: #288, "Audit preprocessing pipeline decomposition and forecasting contracts"
 Mode: audit-first; docs and regression tests only.
+First-release follow-up owner: #346 (preprocessing runtime/statistical policy decisions).
 
 ## Scope For This Slice
 

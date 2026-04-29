@@ -179,3 +179,36 @@ deferred_follow_ups:
 human_review:
   physics_review_required: false
   rationale: "Docs/notebook/test-only changes; no runtime or physics behavior changes."
+
+follow_up_2026_04_29:
+  branch: codex/release-preflight-293-testpypi
+  scope:
+    classification: docs_test_only
+    runtime_code_changed: false
+    notebook_execution: false
+    physics_behavior_changed: false
+    summary: >
+      Added pre-release drift guards for public tutorial internal links and
+      known stale HHT/colorbar code snippets. The guards cover public tutorial
+      notebooks and Markdown tutorial pages without editing notebook outputs.
+  commands_executed:
+    - cmd: "rtk pytest tests/docs/test_tutorial_notebook_quality.py -q"
+      result: "49 passed after adding the scoped drift guards."
+    - cmd: "rtk pytest tests/plot/test_plot_helper_contracts.py tests/timeseries/test_preprocessing_pipeline_contracts.py tests/docs/test_tutorial_notebook_quality.py -q"
+      result: "74 passed in the combined pre-release focused suite after narrowing PR #350 to the latest main branch."
+    - cmd: "rtk ruff check tests/docs/test_tutorial_notebook_quality.py tests/timeseries/test_preprocessing_pipeline_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk git diff --check"
+      result: "Clean."
+  files_changed:
+    - path: tests/docs/test_tutorial_notebook_quality.py
+      change: >
+        Added public tutorial guards for internal docs links and stale
+        HHT/colorbar snippets across tutorial notebooks and Markdown tutorial
+        pages.
+  contracts_covered:
+    - "Public tutorial markdown must not link to docs/developers/, docs_internal/, or API_MAPPING.md."
+    - "Public tutorial notebooks and Markdown pages must not use known stale HHT/colorbar snippets such as plt.gca().get_images(), plt.gca().collections[-1], plt.gca().get_children(), hasattr(c, 'get_clim'), or spec = data.hht(...)."
+  deferred_follow_ups:
+    - "Do not enforce a repo-wide positional plt.colorbar ban in this slice; broader cleanup would require separate content churn."
+    - "Clarify the public EN/JA tutorial notebook source policy before closing #275, or record it as a known limitation."
