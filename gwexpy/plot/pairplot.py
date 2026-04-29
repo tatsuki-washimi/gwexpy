@@ -1,4 +1,5 @@
 """Pair plot for series collections."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -9,68 +10,53 @@ from matplotlib.figure import Figure
 
 __all__ = ["PairPlot"]
 
-
-def _get_min_sample_rate(series_list: list) -> float | None:
-    """Get the minimum sample rate from a list of series."""
-    rates = []
-    for s in series_list:
-        if hasattr(s, "sample_rate"):
-            rates.append(float(s.sample_rate.value))
-        elif hasattr(s, "df"):
-            rates.append(float(s.df.value))
-    if not rates:
-        return None
-    return min(rates)
+_SPAN_ATOL_SECONDS = 1e-9
 
 
-def _get_common_span(series_list: list) -> tuple[float | None, float | None]:
-    """Get common time/frequency span from a list of series."""
-    starts = []
-    ends = []
-    for s in series_list:
-        if hasattr(s, "t0") and hasattr(s, "duration"):
-            starts.append(float(s.t0.value))
-            ends.append(float(s.t0.value) + float(s.duration.value))
-        elif hasattr(s, "f0") and hasattr(s, "df"):
-            starts.append(float(s.f0.value))
-            ends.append(float(s.f0.value) + float(s.df.value) * len(s))
-        elif hasattr(s, "xindex"):
-            starts.append(float(s.xindex[0]))
-            ends.append(float(s.xindex[-1]))
-    if not starts or not ends:
-        return None, None
-    return max(starts), min(ends)
+def _get_series_span(series: Any) -> tuple[float, float] | None:
+    """Return the covered x-axis span when series metadata exposes one."""
+    if hasattr(series, "t0") and hasattr(series, "duration"):
+        start = float(series.t0.value)
+        return start, start + float(series.duration.value)
+    if hasattr(series, "f0") and hasattr(series, "df"):
+        start = float(series.f0.value)
+        return start, start + float(series.df.value) * len(series)
+    if hasattr(series, "xindex") and len(series) > 0:
+        return float(series.xindex[0]), float(series.xindex[-1])
+    return None
 
 
-def _align_series(series_list: list) -> list:
-    """Align series to common sample rate and span."""
+def _get_series_sample_rate(series: Any) -> float | None:
+    """Return sample-rate-like metadata when available."""
+    if hasattr(series, "sample_rate"):
+        return float(series.sample_rate.value)
+    if hasattr(series, "df"):
+        return float(series.df.value)
+    return None
+
+
+def _validate_series_compatibility(series_list: list) -> None:
+    """Reject pair-plot inputs that would require implicit alignment."""
     if len(series_list) < 2:
-        return series_list
+        return
 
-    # Get minimum sample rate
-    min_rate = _get_min_sample_rate(series_list)
+    lengths = [len(s) for s in series_list]
+    if len(set(lengths)) > 1:
+        raise ValueError("PairPlot inputs must have the same length.")
 
-    # Get common span
-    start, end = _get_common_span(series_list)
+    sample_rates = [_get_series_sample_rate(s) for s in series_list]
+    known_sample_rates = [rate for rate in sample_rates if rate is not None]
+    if known_sample_rates and not np.allclose(
+        known_sample_rates, known_sample_rates[0]
+    ):
+        raise ValueError("PairPlot inputs must have the same sample rate.")
 
-    aligned = []
-    for s in series_list:
-        aligned_s = s
-
-        # Resample if needed
-        if min_rate is not None and hasattr(s, "sample_rate"):
-            current_rate = float(s.sample_rate.value)
-            if current_rate > min_rate:
-                aligned_s = aligned_s.resample(min_rate)
-
-        # Crop to common span
-        if start is not None and end is not None:
-            if hasattr(aligned_s, "crop"):
-                aligned_s = aligned_s.crop(start, end)
-
-        aligned.append(aligned_s)
-
-    return aligned
+    spans = [_get_series_span(s) for s in series_list]
+    known_spans = [span for span in spans if span is not None]
+    if known_spans and not np.allclose(
+        known_spans, known_spans[0], rtol=0.0, atol=_SPAN_ATOL_SECONDS
+    ):
+        raise ValueError("PairPlot inputs must have the same time span.")
 
 
 def _normalize_input(data: Any) -> tuple[list, list[str]]:
@@ -161,8 +147,8 @@ class PairPlot:
         # Normalize input
         series_list, labels = _normalize_input(data)
 
-        # Align series
-        self._series = _align_series(series_list)
+        _validate_series_compatibility(series_list)
+        self._series = series_list
         self._labels = labels
         self._n = len(self._series)
 
@@ -235,11 +221,6 @@ class PairPlot:
         mask = ~(np.isnan(data_i) | np.isnan(data_j))
         data_i = data_i[mask]
         data_j = data_j[mask]
-
-        # Truncate to same length
-        min_len = min(len(data_i), len(data_j))
-        data_i = data_i[:min_len]
-        data_j = data_j[:min_len]
 
         if self.offdiag == "hist2d":
             ax.hist2d(data_j, data_i, bins=self.bins, cmap="Blues")
