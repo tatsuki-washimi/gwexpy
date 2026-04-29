@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from ._label_utils import format_axis_label, format_label_with_unit
 from .plot import Plot
 
 __all__ = ["FieldPlot"]
+
+_LABEL_NOT_PROVIDED = object()
 
 
 class FieldPlot(Plot):
@@ -10,6 +13,13 @@ class FieldPlot(Plot):
 
     Provides methods to slice 4D fields and render them as 2D maps (pcolormesh),
     vector plots (quiver/streamplot), or component grids.
+
+    Attributes
+    ----------
+    last_field_colorbar
+        Most recent colorbar returned by :meth:`add_scalar`. Replaced on each
+        scalar plot call.
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -30,6 +40,7 @@ class FieldPlot(Plot):
         # We want to allow empty init or init with setup.
         # For now, pass allow empty.
         super().__init__(*args, **kwargs)
+        self.last_field_colorbar = None
 
     def add_scalar(self, field, x=None, y=None, slice_kwargs=None, **kwargs):
         """Add a scalar field slice to the plot.
@@ -67,8 +78,9 @@ class FieldPlot(Plot):
         # Determine shading (auto or gouraud or flat)
         shading = kwargs.pop("shading", "auto")
 
-        # Handle label for colorbar
-        label = kwargs.pop("label", getattr(field, "name", None))
+        # Handle label for colorbar. None means no label; an explicit empty
+        # string is preserved for callers that want a blank colorbar label.
+        label = kwargs.pop("label", _LABEL_NOT_PROVIDED)
 
         mesh = ax.pcolormesh(
             x_idx.value, y_idx.value, data.value.T, shading=shading, **kwargs
@@ -76,14 +88,24 @@ class FieldPlot(Plot):
 
         # Labels
         if not ax.get_xlabel():
-            ax.set_xlabel(f"{x_name} [{x_idx.unit}]")
+            ax.set_xlabel(format_axis_label(x_name, x_idx.unit))
         if not ax.get_ylabel():
-            ax.set_ylabel(f"{y_name} [{y_idx.unit}]")
+            ax.set_ylabel(format_axis_label(y_name, y_idx.unit))
 
         # Colorbar
         # We wrap standard colorbar to allow options
-        cbar_label = f"{label} [{field.unit}]" if label else f"[{field.unit}]"
-        self.colorbar(mesh, label=cbar_label)
+        if label is _LABEL_NOT_PROVIDED:
+            cbar_label = format_label_with_unit(
+                getattr(field, "name", None), getattr(field, "unit", None)
+            )
+        elif label is None:
+            cbar_label = None
+        elif label == "":
+            cbar_label = ""
+        else:
+            cbar_label = format_label_with_unit(label, getattr(field, "unit", None))
+        cbar_kwargs = {"label": cbar_label} if cbar_label is not None else {}
+        self.last_field_colorbar = self.colorbar(mesh, **cbar_kwargs)
 
         return mesh
 
@@ -193,8 +215,8 @@ class FieldPlot(Plot):
             raise ValueError(f"Unknown vector mode: {mode}")
 
         if not ax.get_xlabel():
-            ax.set_xlabel(f"{x_name} [{x_idx.unit}]")
+            ax.set_xlabel(format_axis_label(x_name, x_idx.unit))
         if not ax.get_ylabel():
-            ax.set_ylabel(f"{y_name} [{y_idx.unit}]")
+            ax.set_ylabel(format_axis_label(y_name, y_idx.unit))
 
         return mesh
