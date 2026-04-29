@@ -24,6 +24,16 @@ def _flat_psd() -> FrequencySeries:
     )
 
 
+def _flat_asd() -> FrequencySeries:
+    psd = _flat_psd()
+    return FrequencySeries(
+        np.sqrt(psd.value),
+        frequencies=psd.frequencies,
+        unit=u.dimensionless_unscaled / u.Hz**0.5,
+        name="contract-asd",
+    )
+
+
 def test_range_module_reexports_gwpy_objects():
     """gwexpy.astro.range is currently a GWpy object re-export boundary."""
     representative_names = [
@@ -39,6 +49,16 @@ def test_range_module_reexports_gwpy_objects():
     ]
 
     for name in representative_names:
+        assert getattr(gwexpy_range, name) is getattr(gwpy_range, name)
+
+
+def test_range_module_public_surface_matches_gwpy_range():
+    """No gwexpy-specific range wrappers are added outside the GWpy surface."""
+    gwpy_public = {name for name in dir(gwpy_range) if not name.startswith("_")}
+    gwexpy_public = {name for name in dir(gwexpy_range) if not name.startswith("_")}
+
+    assert gwexpy_public == gwpy_public
+    for name in gwpy_public:
         assert getattr(gwexpy_range, name) is getattr(gwpy_range, name)
 
 
@@ -68,6 +88,16 @@ def test_sensemon_range_accepts_single_frequencyseries_and_returns_length():
     assert result.to_value(u.Mpc) > 0
 
 
+def test_sensemon_range_psd_accepts_single_frequencyseries_and_returns_psd():
+    """Range PSD output keeps the GWpy single-FrequencySeries unit contract."""
+    result = gwexpy_astro.sensemon_range_psd(_flat_psd(), mass1=1.4, mass2=1.4)
+
+    assert isinstance(result, FrequencySeries)
+    assert result.unit.is_equivalent(u.Mpc**2 / u.Hz)
+    assert np.all(np.isfinite(result.value))
+    assert np.all(result.value > 0)
+
+
 @pytest.mark.skipif(
     not INSPIRAL_RANGE_AVAILABLE,
     reason="inspiral-range package is required for inspiral_range contracts",
@@ -82,9 +112,49 @@ def test_inspiral_range_accepts_single_frequencyseries_and_returns_length():
     assert result.to_value(u.Mpc) > 0
 
 
+@pytest.mark.skipif(
+    INSPIRAL_RANGE_AVAILABLE,
+    reason="missing optional dependency behavior only applies without inspiral-range",
+)
+def test_inspiral_range_missing_optional_dependency_uses_gwpy_error():
+    """gwexpy does not normalize or hide GWpy's optional dependency error."""
+    with pytest.raises(ModuleNotFoundError, match="inspiral-range") as exc_info:
+        gwexpy_astro.inspiral_range(_flat_psd(), mass1=1.4, mass2=1.4)
+
+    assert gwpy_range.MISSING_INSPIRAL_RANGE_MESSAGE in str(exc_info.value)
+
+
 def test_gwexpy_does_not_add_vectorized_range_wrappers():
     """Vector/list range handling is not a gwexpy-added wrapper in this slice."""
     assert gwexpy_astro.sensemon_range is gwpy_astro.sensemon_range
     assert gwexpy_range.sensemon_range is gwpy_range.sensemon_range
     assert not hasattr(gwexpy_range, "sensemon_range_many")
     assert not hasattr(gwexpy_range, "inspiral_range_many")
+
+
+def test_list_range_input_is_delegated_to_gwpy_scalar_contract():
+    """List/vector inputs fail with GWpy's scalar FrequencySeries assumptions."""
+    psds = [_flat_psd(), _flat_psd()]
+
+    with pytest.raises(AttributeError) as gwpy_exc_info:
+        gwpy_astro.sensemon_range(psds, mass1=1.4, mass2=1.4)
+    with pytest.raises(AttributeError) as gwexpy_exc_info:
+        gwexpy_astro.sensemon_range(psds, mass1=1.4, mass2=1.4)
+
+    assert type(gwexpy_exc_info.value) is type(gwpy_exc_info.value)
+    assert str(gwexpy_exc_info.value) == str(gwpy_exc_info.value)
+
+
+def test_asd_input_is_not_auto_converted_to_psd_by_gwexpy():
+    """ASD-shaped data is delegated to GWpy, not squared by a gwexpy wrapper."""
+    psd_range = gwexpy_astro.sensemon_range(_flat_psd(), mass1=1.4, mass2=1.4)
+    asd_range = gwexpy_astro.sensemon_range(_flat_asd(), mass1=1.4, mass2=1.4)
+
+    assert not _flat_asd().unit.is_equivalent(gwpy_range.PSD_UNIT)
+    assert asd_range.unit.is_equivalent(u.Mpc)
+    assert np.isfinite(asd_range.to_value(u.Mpc))
+    assert not np.isclose(
+        asd_range.to_value(u.Mpc),
+        psd_range.to_value(u.Mpc),
+        rtol=0.01,
+    )
