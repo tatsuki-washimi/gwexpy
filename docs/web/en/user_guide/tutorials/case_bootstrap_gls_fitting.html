@@ -1347,6 +1347,14 @@ Q          19.3873         0.0943       20.0000            -6.50
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Covariance matrix is not positive definite, falling back to pinv.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Running MCMC with 32 walkers, 3000 steps...
@@ -1358,10 +1366,9 @@ Burn-in: 500 steps
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Covariance matrix is not positive definite, falling back to pinv.
   0%|          | 0/3000 [00:00&lt;?, ?it/s]/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/emcee/moves/red_blue.py:99: RuntimeWarning: invalid value encountered in scalar subtract
   lnpdiff = f + nlp - state.log_prob[j]
-100%|██████████| 3000/3000 [00:31&lt;00:00, 96.65it/s]
+100%|██████████| 3000/3000 [00:35&lt;00:00, 85.69it/s]
 </pre></div></div>
 </div>
 </section>
@@ -1399,6 +1406,22 @@ Covariance matrix is not positive definite, falling back to pinv.
 MCMC Diagnostics:
   Mean acceptance fraction: 0.000
   (Optimal range: 0.2 - 0.5)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/emcee/autocorr.py:38: RuntimeWarning: invalid value encountered in divide
+  acf /= acf[0]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
 
   Autocorrelation times:
     A_bg: nan steps
@@ -1407,15 +1430,6 @@ MCMC Diagnostics:
     f0: nan steps
     Q: nan steps
   Effective samples: ~nan
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/runner/micromamba/envs/gwexpy/lib/python3.11/site-packages/emcee/autocorr.py:38: RuntimeWarning: invalid value encountered in divide
-  acf /= acf[0]
 </pre></div></div>
 </div>
 </section>
@@ -1936,7 +1950,7 @@ Created test BifrequencyMap: (10, 10)
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
+      <span class="lastupdated">Last updated on 2026-04-29 01:51:40.
       </span></p>
   </div>
 

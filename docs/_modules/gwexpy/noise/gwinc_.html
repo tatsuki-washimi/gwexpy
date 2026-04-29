@@ -129,6 +129,7 @@
 <span class="sd">This module provides functions to generate Amplitude Spectral Density (ASD)</span>
 <span class="sd">from pyGWINC detector noise models.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
@@ -139,6 +140,21 @@
 
 <span class="c1"># Allowed quantity values for pyGWINC</span>
 <span class="n">_PYGWINC_QUANTITIES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;strain&quot;</span><span class="p">,</span> <span class="s2">&quot;darm&quot;</span><span class="p">,</span> <span class="s2">&quot;displacement&quot;</span><span class="p">})</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_pop_frequency_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove default frequency-array controls from FrequencySeries metadata.&quot;&quot;&quot;</span>
+    <span class="n">fmin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">fmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmax&quot;</span><span class="p">,</span> <span class="mf">4000.0</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">df</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_reject_unit_override</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;unit&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The pyGWINC ASD unit is determined by quantity; do not pass unit.&quot;</span>
+        <span class="p">)</span>
 
 
 <div class="viewcode-block" id="from_pygwinc">
@@ -248,10 +264,10 @@
     <span class="k">if</span> <span class="n">quantity_lower</span> <span class="o">==</span> <span class="s2">&quot;displacement&quot;</span><span class="p">:</span>
         <span class="n">quantity_lower</span> <span class="o">=</span> <span class="s2">&quot;darm&quot;</span>
 
+    <span class="n">_reject_unit_override</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="c1"># Build frequency array</span>
-    <span class="n">fmin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
-    <span class="n">fmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmax&quot;</span><span class="p">,</span> <span class="mf">4000.0</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">df</span> <span class="o">=</span> <span class="n">_pop_frequency_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">fmin</span> <span class="o">&gt;=</span> <span class="n">fmax</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fmin (</span><span class="si">{</span><span class="n">fmin</span><span class="si">}</span><span class="s2">) must be less than fmax (</span><span class="si">{</span><span class="n">fmax</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
@@ -290,20 +306,9 @@
         <span class="n">asd</span> <span class="o">=</span> <span class="n">strain_asd</span>
         <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;1 / sqrt(Hz)&quot;</span>
 
-    <span class="c1"># Remove known noise-generation parameters from kwargs</span>
-    <span class="c1"># to avoid TypeError in FrequencySeries constructor</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="s2">&quot;fmax&quot;</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">]:</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
 
-    <span class="c1"># If there are still problematic keys, print them (will show up in sphinx-build output/logs)</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="s2">&quot;fmax&quot;</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">]):</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;CRITICAL: Key found in kwargs even after pop: </span><span class="si">{</span><span class="p">[</span><span class="n">k</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;fmin&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;fmax&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;df&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">kwargs</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
-        <span class="n">asd</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 </pre></div>
 
@@ -315,7 +320,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
+      <span class="lastupdated">Last updated on 2026-04-29 01:51:40.
       </span></p>
   </div>
 

@@ -515,7 +515,7 @@ Original: 20000, Plotted: 2000
 <p>Below is a basic usage example of <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.PairPlot</span></code>.</p>
 <ul class="simple">
 <li><p>Create two <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> with different sampling rates</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PairPlot</span></code> automatically resamples to the minimum sample rate and trims to the common interval</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PairPlot</span></code> requires the input series to already have the same length, sample rate, and time span; align them explicitly with <code class="docutils literal notranslate"><span class="pre">resample()</span></code> and <code class="docutils literal notranslate"><span class="pre">crop()</span></code> before plotting if needed</p></li>
 <li><p>With <code class="docutils literal notranslate"><span class="pre">corner=True</span></code> (default), only the lower-left triangle is drawn</p></li>
 </ul>
 <p>When executed, histograms appear on the diagonal and 2D histograms on the off-diagonal.</p>
@@ -528,9 +528,9 @@ Original: 20000, Plotted: 2000
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">PairPlot</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
-<span class="c1"># Create two TimeSeries with different sampling rates</span>
+<span class="c1"># Create two TimeSeries with the same length and sample rate</span>
 <span class="n">ts1</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TS1&quot;</span><span class="p">)</span>
-<span class="n">ts2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TS2&quot;</span><span class="p">)</span>
+<span class="n">ts2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TS2&quot;</span><span class="p">)</span>
 
 <span class="c1"># Create PairPlot (corner=True is default)</span>
 <span class="n">pair</span> <span class="o">=</span> <span class="n">PairPlot</span><span class="p">([</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">],</span> <span class="n">corner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -553,7 +553,7 @@ Original: 20000, Plotted: 2000
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;gwexpy.plot.pairplot.PairPlot at 0x7fe963798a90&gt;
+&lt;gwexpy.plot.pairplot.PairPlot at 0x7fd062a58b10&gt;
 </pre></div></div>
 </div>
 </section>
@@ -571,7 +571,7 @@ Original: 20000, Plotted: 2000
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
+      <span class="lastupdated">Last updated on 2026-04-29 01:51:40.
       </span></p>
   </div>
 

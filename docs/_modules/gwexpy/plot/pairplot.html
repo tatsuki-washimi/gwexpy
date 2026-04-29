@@ -125,6 +125,7 @@
              
   <h1>Source code for gwexpy.plot.pairplot</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Pair plot for series collections.&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
@@ -135,68 +136,53 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PairPlot&quot;</span><span class="p">]</span>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_min_sample_rate</span><span class="p">(</span><span class="n">series_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the minimum sample rate from a list of series.&quot;&quot;&quot;</span>
-    <span class="n">rates</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">series_list</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">):</span>
-            <span class="n">rates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">):</span>
-            <span class="n">rates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">rates</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">rates</span><span class="p">)</span>
+<span class="n">_SPAN_ATOL_SECONDS</span> <span class="o">=</span> <span class="mf">1e-9</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_common_span</span><span class="p">(</span><span class="n">series_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get common time/frequency span from a list of series.&quot;&quot;&quot;</span>
-    <span class="n">starts</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">ends</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">series_list</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;t0&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">):</span>
-            <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
-            <span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">):</span>
-            <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">f0</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
-            <span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">f0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;xindex&quot;</span><span class="p">):</span>
-            <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">xindex</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-            <span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">xindex</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">starts</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">ends</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">starts</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">ends</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_series_span</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the covered x-axis span when series metadata exposes one.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;t0&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">f0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;xindex&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">xindex</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">xindex</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="kc">None</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_align_series</span><span class="p">(</span><span class="n">series_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Align series to common sample rate and span.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_series_sample_rate</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return sample-rate-like metadata when available.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_series_compatibility</span><span class="p">(</span><span class="n">series_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reject pair-plot inputs that would require implicit alignment.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">series_list</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">series_list</span>
+        <span class="k">return</span>
 
-    <span class="c1"># Get minimum sample rate</span>
-    <span class="n">min_rate</span> <span class="o">=</span> <span class="n">_get_min_sample_rate</span><span class="p">(</span><span class="n">series_list</span><span class="p">)</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">series_list</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">lengths</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;PairPlot inputs must have the same length.&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Get common span</span>
-    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">_get_common_span</span><span class="p">(</span><span class="n">series_list</span><span class="p">)</span>
+    <span class="n">sample_rates</span> <span class="o">=</span> <span class="p">[</span><span class="n">_get_series_sample_rate</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">series_list</span><span class="p">]</span>
+    <span class="n">known_sample_rates</span> <span class="o">=</span> <span class="p">[</span><span class="n">rate</span> <span class="k">for</span> <span class="n">rate</span> <span class="ow">in</span> <span class="n">sample_rates</span> <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">known_sample_rates</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+        <span class="n">known_sample_rates</span><span class="p">,</span> <span class="n">known_sample_rates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;PairPlot inputs must have the same sample rate.&quot;</span><span class="p">)</span>
 
-    <span class="n">aligned</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">series_list</span><span class="p">:</span>
-        <span class="n">aligned_s</span> <span class="o">=</span> <span class="n">s</span>
-
-        <span class="c1"># Resample if needed</span>
-        <span class="k">if</span> <span class="n">min_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">):</span>
-            <span class="n">current_rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">current_rate</span> <span class="o">&gt;</span> <span class="n">min_rate</span><span class="p">:</span>
-                <span class="n">aligned_s</span> <span class="o">=</span> <span class="n">aligned_s</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">min_rate</span><span class="p">)</span>
-
-        <span class="c1"># Crop to common span</span>
-        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">aligned_s</span><span class="p">,</span> <span class="s2">&quot;crop&quot;</span><span class="p">):</span>
-                <span class="n">aligned_s</span> <span class="o">=</span> <span class="n">aligned_s</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-
-        <span class="n">aligned</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aligned_s</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">aligned</span>
+    <span class="n">spans</span> <span class="o">=</span> <span class="p">[</span><span class="n">_get_series_span</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">series_list</span><span class="p">]</span>
+    <span class="n">known_spans</span> <span class="o">=</span> <span class="p">[</span><span class="n">span</span> <span class="k">for</span> <span class="n">span</span> <span class="ow">in</span> <span class="n">spans</span> <span class="k">if</span> <span class="n">span</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">known_spans</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+        <span class="n">known_spans</span><span class="p">,</span> <span class="n">known_spans</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">_SPAN_ATOL_SECONDS</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;PairPlot inputs must have the same time span.&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_input</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
@@ -289,8 +275,8 @@
         <span class="c1"># Normalize input</span>
         <span class="n">series_list</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">_normalize_input</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-        <span class="c1"># Align series</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_series</span> <span class="o">=</span> <span class="n">_align_series</span><span class="p">(</span><span class="n">series_list</span><span class="p">)</span>
+        <span class="n">_validate_series_compatibility</span><span class="p">(</span><span class="n">series_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_series</span> <span class="o">=</span> <span class="n">series_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">labels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_series</span><span class="p">)</span>
 
@@ -364,11 +350,6 @@
         <span class="n">data_i</span> <span class="o">=</span> <span class="n">data_i</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
         <span class="n">data_j</span> <span class="o">=</span> <span class="n">data_j</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
 
-        <span class="c1"># Truncate to same length</span>
-        <span class="n">min_len</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_i</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_j</span><span class="p">))</span>
-        <span class="n">data_i</span> <span class="o">=</span> <span class="n">data_i</span><span class="p">[:</span><span class="n">min_len</span><span class="p">]</span>
-        <span class="n">data_j</span> <span class="o">=</span> <span class="n">data_j</span><span class="p">[:</span><span class="n">min_len</span><span class="p">]</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offdiag</span> <span class="o">==</span> <span class="s2">&quot;hist2d&quot;</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">hist2d</span><span class="p">(</span><span class="n">data_j</span><span class="p">,</span> <span class="n">data_i</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">offdiag</span> <span class="o">==</span> <span class="s2">&quot;scatter&quot;</span><span class="p">:</span>
@@ -410,7 +391,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
+      <span class="lastupdated">Last updated on 2026-04-29 01:51:40.
       </span></p>
   </div>
 

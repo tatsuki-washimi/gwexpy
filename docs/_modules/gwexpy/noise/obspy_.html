@@ -129,6 +129,7 @@
 <span class="sd">This module provides functions to generate Amplitude Spectral Density (ASD)</span>
 <span class="sd">from ObsPy seismic and infrasound noise models.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
@@ -267,6 +268,11 @@
             <span class="sa">f</span><span class="s2">&quot;Allowed values are: &#39;displacement&#39;, &#39;velocity&#39;, &#39;acceleration&#39;.&quot;</span>
         <span class="p">)</span>
 
+    <span class="k">if</span> <span class="s2">&quot;unit&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The ObsPy ASD unit is determined by model and quantity; do not pass unit.&quot;</span>
+        <span class="p">)</span>
+
     <span class="c1"># Load model data</span>
     <span class="n">model_upper</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">model_upper</span> <span class="o">==</span> <span class="s2">&quot;NHNM&quot;</span><span class="p">:</span>
@@ -315,9 +321,11 @@
         <span class="n">frequencies</span> <span class="o">=</span> <span class="n">f_orig</span>
         <span class="n">asd</span> <span class="o">=</span> <span class="n">asd_orig</span>
 
+    <span class="n">name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">model_upper</span><span class="p">)</span>
+
     <span class="c1"># Create FrequencySeries with base unit (acceleration for seismic)</span>
     <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
-        <span class="n">asd</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">base_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">model_upper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="n">asd</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">base_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span>
 
     <span class="c1"># Apply quantity conversion for seismic models</span>
@@ -372,8 +380,13 @@
         <span class="c1"># Should not reach here due to earlier validation</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown quantity: </span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+    <span class="n">series_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+    <span class="n">channel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">series_kwargs</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel</span>
+
     <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
-        <span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">target_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">fs</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">target_unit</span><span class="p">,</span> <span class="o">**</span><span class="n">series_kwargs</span>
     <span class="p">)</span>
 </pre></div>
 
@@ -385,7 +398,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
+      <span class="lastupdated">Last updated on 2026-04-29 01:51:40.
       </span></p>
   </div>
 

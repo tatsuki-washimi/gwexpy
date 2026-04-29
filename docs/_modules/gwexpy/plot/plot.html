@@ -139,6 +139,21 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Plot&quot;</span><span class="p">]</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_unit_for_label</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a display unit string, or None for unitless data.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">unit_str</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="s2">&quot;latex_inline&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">unit_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">unit_str</span> <span class="ow">or</span> <span class="n">unit_str</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;$\mathrm</span><span class="si">{}</span><span class="s2">$&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">unit_str</span>
+
+
 <div class="viewcode-block" id="plot_mmm">
 <a class="viewcode-back" href="../../../web/ja/reference/api/plot.html#gwexpy.plot.plot_mmm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_mmm</span><span class="p">(</span><span class="n">median</span><span class="p">,</span> <span class="n">min_s</span><span class="p">,</span> <span class="n">max_s</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -536,9 +551,7 @@
         <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">sg_collection</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sg_collection</span><span class="p">,</span> <span class="p">(</span><span class="n">SpectrogramList</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
         <span class="n">sg_list</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">sg_collection</span><span class="p">)</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sg_list</span><span class="p">)</span>
-        <span class="p">]</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sg_list</span><span class="p">)]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported collection type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sg_collection</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -591,12 +604,24 @@
         <span class="n">ax_asd</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
         <span class="n">ax_asd</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 
-        <span class="n">unit_str</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="s2">&quot;latex_inline&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Hz^{-1/2}&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;/\sqrt</span><span class="si">{Hz}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">raw_unit_str</span> <span class="o">=</span> <span class="n">_format_unit_for_label</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
+        <span class="n">unit_str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">raw_unit_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Hz^{-1/2}&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;/\sqrt</span><span class="si">{Hz}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raw_unit_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
 
         <span class="c1"># Auto-detect title based on unit</span>
-        <span class="n">unit_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sg</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">unit_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">name_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s2">&quot;coherence&quot;</span> <span class="ow">in</span> <span class="n">name_lower</span> <span class="ow">or</span> <span class="n">sg</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">is_dimensionless</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">is_dimensionless</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="n">is_dimensionless</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s2">&quot;coherence&quot;</span> <span class="ow">in</span> <span class="n">name_lower</span> <span class="ow">or</span> <span class="n">is_dimensionless</span><span class="p">:</span>
             <span class="n">summary_title</span> <span class="o">=</span> <span class="s2">&quot;Coherence&quot;</span>
         <span class="k">elif</span> <span class="s2">&quot;hz^{-1/2}&quot;</span> <span class="ow">in</span> <span class="n">unit_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;hz^-1/2&quot;</span> <span class="ow">in</span> <span class="n">unit_lower</span><span class="p">:</span>
             <span class="n">summary_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Amplitude Spectral Density [</span><span class="si">{</span><span class="n">unit_str</span><span class="si">}</span><span class="s2">]&quot;</span>
@@ -655,7 +680,7 @@
             <span class="n">ax_sg</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Add colorbar</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_sg</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">sg</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="s2">&quot;latex_inline&quot;</span><span class="p">))</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_sg</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">raw_unit_str</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
@@ -675,7 +700,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-28 17:26:47.
+      <span class="lastupdated">Last updated on 2026-04-29 01:51:40.
       </span></p>
   </div>
 
