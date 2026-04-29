@@ -179,14 +179,17 @@
 <h1>グラフィカルユーザーインターフェース（GUI、試作版）<a class="headerlink" href="#gui" title="Link to this heading"></a></h1>
 <section id="id1">
 <h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<p><strong>ステータス:</strong> 試作版（ソース / 開発環境向け）</p>
-<p>GWexpy には <strong>PyQt5 ベースの GUI</strong> が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI は <strong>試作段階 / 実験的インターフェース</strong>として扱ってください。再現性やサポートの観点では、<strong>Python API</strong> が引き続き主要インターフェースです。</p>
-<p>GUI アプリは <strong>初回 PyPI のサポート対象には含めません</strong>。初回 PyPI リリースは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。</p>
+<p><strong>ステータス:</strong> 試作版（ソース / 開発環境専用）</p>
+<p>GWexpy のソースツリーには <strong>PyQt5 ベースの GUI</strong> が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI は <strong>試作段階 / 実験的インターフェース</strong>として扱ってください。再現性やサポートの観点では、<strong>Python API</strong> が引き続き主要インターフェースです。</p>
+<p>GUI アプリと <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package は <strong>初回 PyPI 配布物には含めません</strong>。初回 PyPI リリースは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。</p>
 </section>
 <section id="id2">
 <h2>インストール<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<p>ソース checkout または開発用途では、<code class="docutils literal notranslate"><span class="pre">gui</span></code> extras で GUI 依存関係をインストールできます：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
+<p>ソース checkout または開発用途では、ローカル clone から GWexpy を入れたうえで GUI 依存関係を明示的にインストールします：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/tatsuki-washimi/gwexpy.git
+<span class="nb">cd</span><span class="w"> </span>gwexpy
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+pip<span class="w"> </span>install<span class="w"> </span>PyQt5<span class="w"> </span>pyqtgraph<span class="w"> </span>qtpy<span class="w"> </span>sounddevice
 </pre></div>
 </div>
 <p>これにより、以下の追加の依存パッケージがインストールされます：</p>
@@ -198,12 +201,11 @@
 </section>
 <section id="id3">
 <h2>GUI を起動する<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<p>ソース checkout または開発インストールで GUI extras を入れた後は、
-モジュールを直接起動します：</p>
+<p>ソース checkout または開発インストールで GUI 依存関係を入れた後は、モジュールを直接起動します：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
 </pre></div>
 </div>
-<p>初回 PyPI リリースでは <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> console script はインストールしません。</p>
+<p>初回 PyPI リリースでは <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> console script も <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> package も配布しません。</p>
 <section id="id4">
 <h3>プログラム内での起動<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.gui.pyaggui</span><span class="w"> </span><span class="kn">import</span> <span class="n">MainWindow</span>
@@ -275,8 +277,8 @@
 <h2>トラブルシューティング<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <section id="modulenotfounderror-no-module-named-pyqt5">
 <h3>“ModuleNotFoundError: No module named ‘PyQt5’”<a class="headerlink" href="#modulenotfounderror-no-module-named-pyqt5" title="Link to this heading"></a></h3>
-<p>GUI extras がインストールされていることを確認してください：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
+<p>ソース checkout または開発環境で GUI 依存関係がインストールされていることを確認してください：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>PyQt5<span class="w"> </span>pyqtgraph<span class="w"> </span>qtpy<span class="w"> </span>sounddevice
 </pre></div>
 </div>
 </section>
@@ -316,7 +318,7 @@ python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-29 13:36:58.
+      <span class="lastupdated">Last updated on 2026-04-29 14:52:43.
       </span></p>
   </div>
 

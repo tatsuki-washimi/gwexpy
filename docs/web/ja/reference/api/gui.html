@@ -178,13 +178,13 @@
 <p><strong>安定性:</strong> Experimental</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>GWexpy GUI（<code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code>）は <strong>試験実装段階</strong> であり、初回 PyPI の
-サポート対象には含めません。ソース / 開発環境で動作させる場合は
-<code class="docutils literal notranslate"><span class="pre">.[gui]</span></code> オプション依存関係（PyQt5, pyqtgraph）が必要です。
-API は予告なく変更される可能性があります。</p>
+<p>GWexpy GUI（<code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code>）は <strong>試験実装段階</strong> であり、初回 PyPI
+配布物には含めません。ソース / 開発環境で動作させる場合は GUI
+依存関係（PyQt5, pyqtgraph, qtpy, sounddevice）を明示的に
+インストールしてください。API は予告なく変更される可能性があります。</p>
 </div>
 <p>ソース checkout または開発インストールでオプション依存関係を入れた後の起動方法：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>PyQt5<span class="w"> </span>pyqtgraph<span class="w"> </span>qtpy<span class="w"> </span>sounddevice
 python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
 </pre></div>
 </div>
@@ -208,7 +208,7 @@ python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-29 13:36:58.
+      <span class="lastupdated">Last updated on 2026-04-29 14:52:43.
       </span></p>
   </div>
 
