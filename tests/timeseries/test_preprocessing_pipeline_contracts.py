@@ -6,8 +6,13 @@ from astropy import units as u
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 from gwexpy.timeseries.collections import TimeSeriesList
-from gwexpy.timeseries.decomposition import PCAResult
-from gwexpy.timeseries.pipeline import Pipeline, StandardizeTransform
+from gwexpy.timeseries.decomposition import (
+    ICAResult,
+    PCAResult,
+    ica_inverse_transform,
+    pca_inverse_transform,
+)
+from gwexpy.timeseries.pipeline import ImputeTransform, Pipeline, StandardizeTransform
 from gwexpy.timeseries.preprocess import impute_timeseries, standardize_timeseries
 
 
@@ -86,6 +91,20 @@ def test_pipeline_standardize_inverse_restores_values_and_time_metadata():
     assert restored.name == ts.name
 
 
+def test_pipeline_inverse_strict_error_and_standardize_unsupported_input_contract():
+    ts = TimeSeries([1.0, np.nan, 3.0], t0=0.0 * u.s, dt=1.0 * u.s)
+
+    unsupported_inverse = Pipeline([("impute", ImputeTransform(method="ffill"))])
+    transformed = unsupported_inverse.fit_transform(ts)
+
+    with pytest.raises(ValueError, match="does not support inverse_transform"):
+        unsupported_inverse.inverse_transform(transformed)
+
+    standardize = StandardizeTransform().fit(ts)
+    with pytest.raises(TypeError, match="Incompatible input"):
+        standardize.inverse_transform(np.asarray(transformed.value))
+
+
 def test_multicolumn_matrix_to_list_flattens_in_row_major_order():
     names = ["r0c0", "r0c1", "r1c0", "r1c1"]
     data = np.arange(16.0).reshape(2, 2, 4)
@@ -108,6 +127,35 @@ def test_multicolumn_matrix_to_list_flattens_in_row_major_order():
         assert series.t0 == matrix.t0
         assert series.dt == matrix.dt
         assert series.unit == u.m
+
+
+def test_multivariate_standardize_list_inverse_uses_flat_to_list_restoration():
+    series_list = TimeSeriesList()
+    for index, values in enumerate(([1.0, 2.0, 3.0], [2.0, 4.0, 6.0])):
+        series_list.append(
+            TimeSeries(
+                values,
+                t0=5.0 * u.s,
+                dt=0.5 * u.s,
+                unit=u.m,
+                name=f"witness-{index}",
+            )
+        )
+
+    transform = StandardizeTransform(multivariate=True)
+    transformed = transform.fit_transform(series_list)
+    restored = transform.inverse_transform(transformed)
+
+    assert isinstance(transformed, TimeSeriesMatrix)
+    assert transformed.shape == (2, 1, 3)
+    assert transformed.channel_names == ["witness-0", "witness-1"]
+    assert isinstance(restored, TimeSeriesList)
+    assert [series.name for series in restored] == ["witness-0", "witness-1"]
+    for restored_series, original_series in zip(restored, series_list, strict=True):
+        np.testing.assert_allclose(restored_series.value, original_series.value)
+        assert restored_series.t0 == original_series.t0
+        assert restored_series.dt == original_series.dt
+        assert restored_series.unit == u.dimensionless_unscaled
 
 
 def test_pca_result_summary_and_metadata_are_passive_contracts():
@@ -137,3 +185,73 @@ def test_pca_result_summary_and_metadata_are_passive_contracts():
     assert result.channel_labels == ["a", "b"]
     assert result.preprocessing is preprocessing
     assert result.input_meta is input_meta
+
+
+def test_pca_inverse_reconstructs_shape_from_input_meta_but_time_from_scores(
+    monkeypatch,
+):
+    class FakePCA:
+        def inverse_transform(self, scores):
+            return np.arange(scores.shape[0] * 4.0).reshape(scores.shape[0], 4)
+
+    import gwexpy.timeseries.decomposition as decomposition
+
+    monkeypatch.setattr(decomposition, "_check_sklearn", lambda name="sklearn": None)
+    scores = TimeSeriesMatrix(
+        np.ones((2, 1, 3)),
+        t0=20.0 * u.s,
+        dt=0.25 * u.s,
+    )
+    result = PCAResult(
+        sklearn_model=FakePCA(),
+        channel_labels=["r0c0", "r0c1", "r1c0", "r1c1"],
+        preprocessing={"center": False, "scale": None},
+        input_meta={
+            "t0": 5.0 * u.s,
+            "dt": 1.0 * u.s,
+            "original_shape": (2, 2, 3),
+        },
+    )
+
+    reconstructed = pca_inverse_transform(result, scores)
+
+    assert isinstance(reconstructed, TimeSeriesMatrix)
+    assert reconstructed.shape == (2, 2, 3)
+    assert reconstructed.t0 == scores.t0
+    assert reconstructed.dt == scores.dt
+    assert reconstructed.channel_names == result.channel_labels
+
+
+def test_ica_result_metadata_and_inverse_reconstruction_contract(monkeypatch):
+    class FakeICA:
+        def inverse_transform(self, sources):
+            return np.arange(sources.shape[0] * 2.0).reshape(sources.shape[0], 2)
+
+    import gwexpy.timeseries.decomposition as decomposition
+
+    monkeypatch.setattr(decomposition, "_check_sklearn", lambda name="sklearn": None)
+    sources = TimeSeriesMatrix(
+        np.ones((2, 1, 3)),
+        t0=30.0 * u.s,
+        dt=0.5 * u.s,
+    )
+    result = ICAResult(
+        sklearn_model=FakeICA(),
+        channel_labels=["mix-a", "mix-b"],
+        preprocessing={"center": False, "scale": None, "prewhiten": False},
+        input_meta={
+            "t0": 7.0 * u.s,
+            "dt": 2.0 * u.s,
+            "original_shape": (2, 1, 3),
+        },
+    )
+
+    reconstructed = ica_inverse_transform(result, sources)
+
+    assert result.channel_labels == ["mix-a", "mix-b"]
+    assert result.preprocessing["prewhiten"] is False
+    assert isinstance(reconstructed, TimeSeriesMatrix)
+    assert reconstructed.shape == (2, 1, 3)
+    assert reconstructed.t0 == sources.t0
+    assert reconstructed.dt == sources.dt
+    assert reconstructed.channel_names == result.channel_labels
