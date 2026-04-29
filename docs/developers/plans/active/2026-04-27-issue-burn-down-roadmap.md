@@ -1,7 +1,7 @@
 # Issue Burn-Down Roadmap For Contract Audits And Release Readiness
 
 Date: 2026-04-27
-Issues: #269-#294
+Issues: #269-#294 plus follow-up routing issues #346 and #347
 Mode: planning document only; no runtime behavior changes in this pass.
 
 > **For agentic workers:** Use this document as the coordinating plan for the
@@ -47,6 +47,7 @@ then publish package releases.
 - #285 Audit time-frequency and space-transform contracts
 - #286 Audit statistics correlation and numerical primitive contracts
 - #288 Audit preprocessing pipeline decomposition and forecasting contracts
+- #346 Track preprocessing runtime policies after #288
 
 ### Plot, GUI, Docs, And I/O Residuals
 
@@ -54,6 +55,7 @@ then publish package releases.
 - #274 Harden GUI and plot metadata contracts
 - #275 Add tutorial and public-doc drift prevention guards
 - #283 Audit extended plot helper and visual contract surface
+- #347 Track residual plot-helper policies after #283
 
 ### Release Roadmaps
 
@@ -251,9 +253,9 @@ they become public-contract commitments.
 | Priority | Source PR | Owning Issue | Decision Area | Where To Decide | When To Decide | Review Required |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | #328 | #291 / #287 | `Array4D` dimension-dropping return classes, `AxisApiMixin.sel(method=...)`, downstream smoke-test ordering | #291 follow-up design note cross-linked to #287 | Before low-level axis or `ScalarField` runtime hardening PRs | Human review; physics/data-model review if `ScalarField` semantics change |
-| 2 | #315 | #288 | `inverse_transform()` return type, `Inf` missing-data policy, `TimeSeriesMatrix.to_list()` flattening | #288 follow-up design note | Before preprocessing return-type or metadata behavior PRs | Human API/metadata review; statistical review for missing-data policy |
+| 2 | #315 / #345 | #346 | `inverse_transform()` return type, `Inf` missing-data policy, `TimeSeriesMatrix.to_list()` flattening, PCA/ICA inverse fallback semantics | #346 preprocessing runtime policy follow-up | Before preprocessing return-type or metadata behavior PRs | Human API/metadata review; statistical review for missing-data policy |
 | 3 | #314 | #284 | Bruco Welch DC/Nyquist scaling, `GWEXPY_BRUCO_BLOCK_BYTES` deterministic CI policy, correction priority | #284 follow-up design note | Before changing Bruco numerical behavior | Human physics/statistics review |
-| 4 | #322 | #283 / #274 | Dynamic unit labels, `FieldPlot` colorbar access, `PairPlot` mismatch policy | #283 follow-up for plot helpers, cross-link #274 for GUI/metadata | Before plot/runtime behavior PRs or GUI metadata work | Human UX/API review; physics review if labels imply unit semantics |
+| 4 | #322 / #341 / #344 | #347 / #274 | Residual GauCh colorbar/Rayleigh coverage, ancillary plot helper public-stability policy, GUI metadata/colorbar payload integration | #347 for plot helpers, #274 for GUI metadata | Before additional plot helper API commitments or GUI metadata work | Human UX/API review; physics review if labels imply unit semantics |
 | 5 | #316 | #282 | Astro pure re-export vs thin wrapper, optional `inspiral_range` CI, physical type/unit assertions | #282 follow-up design note | Before wrapper implementation or optional-deps CI expansion | Human physics/API review for wrapper behavior; CI review for optional deps |
 
 Operating rule:
@@ -330,6 +332,26 @@ Remaining #285 work after the field/space transform slice lands:
 - PyEMD-dependent HHT numerical contracts, only after optional dependency and
   physics-review expectations are explicit.
 
+#### Wave 3 #288 Contract Closure
+
+Status as of 2026-04-29: #288 has been reduced from an audit issue to a
+runtime policy follow-up. The remaining policy decisions now live in #346.
+
+| Issue | PR | Merged | Merge commit | Result |
+| --- | --- | --- | --- | --- |
+| #288 | #345 `[AGENT:validation] Close preprocessing contract residuals` | 2026-04-29 12:44 JST | `8edede55` | Added docs/test-only coverage for pipeline inverse errors, unsupported `StandardizeTransform.inverse_transform()` inputs, current non-finite behavior, matrix/list flattening, multivariate standardization restoration, and PCA/ICA inverse reconstruction contracts. Runtime behavior unchanged. |
+
+Net outcome:
+
+- #288 is closed as an audit/baseline issue.
+- #346 tracks the remaining runtime/statistical/API decisions: preprocessing
+  container persistence, non-finite policy, matrix structure preservation,
+  PCA/ICA inverse fallback semantics, and ARIMA time-standard validation or
+  documentation.
+- Runtime PRs against #346 should remain focused and require human
+  API/metadata review, plus statistical review when non-finite or decomposition
+  semantics change.
+
 ### Wave 4: Plot, GUI, And Public Docs Synchronization
 
 **Issues:** #275 -> #283 -> #274
@@ -354,23 +376,28 @@ the data and metadata contracts are clear.
 
 #### Wave 4 Progress Report
 
-Status as of 2026-04-28: the public-doc and plot-helper baseline slices have
-landed. The remaining Wave 4 work is runtime/design-facing GUI and plot metadata
-behavior.
+Status as of 2026-04-29: the public-doc, plot-helper baseline, and pre-PyPI
+plot-helper runtime hardening slices have landed. The remaining Wave 4 work is
+GUI-facing metadata/payload behavior plus residual plot-helper policy work
+tracked separately in #347.
 
 | Issue | PR | Merged | Merge commit | Result |
 | --- | --- | --- | --- | --- |
 | #283 | #322 `[AGENT:validation] Add plot helper contract baseline` | 2026-04-28 18:53 JST | `6bcc887` | Added docs/test-only plot-helper contracts for field plots, dashboards, pair plots, labels, colorbars, and optional plotting surfaces. Runtime behavior unchanged. |
 | #275 | #323 `[AGENT:docs] Guard public tutorial colorbar mappables` | 2026-04-28 19:57 JST | `0147000` | Replaced brittle public tutorial colorbar mappable lookups with explicit mappables, restored the GPS-aware spectrogram x-axis in the GBD tutorial, and added notebook drift guards. Runtime package behavior unchanged. |
+| #283 / #274 | #341 `[AGENT:plot] Harden plot helper contracts before PyPI` | 2026-04-29 10:31 JST | `a69a537` | Rejected incompatible `PairPlot` inputs instead of silently aligning/truncating, avoided empty/unitless dashboard labels, and made `plot_summary` tolerate unitless spectrogram colorbars. |
+| #283 | #344 `[AGENT:plot] Harden plot helper labels and FieldPlot colorbar access` | 2026-04-29 13:39 JST | `bbb71d3` | Centralized plot label/unit formatting, accepted dynamic scientific label wording, exposed the public `FieldPlot.last_field_colorbar` API, preserved explicit `label=""`, and added an `[Unreleased]` changelog note. |
 
 Net outcome:
 
 - #275 remains open for residual tutorial/public-doc drift work, including
   deferred source-policy cleanup and any remaining notebook guard follow-ups.
-- #283 remains open for runtime/design decisions around dynamic scientific
-  labels, `PairPlot` mismatch policy, and stable `FieldPlot` colorbar exposure.
+- #283 is closed as the plot-helper audit/runtime-closure issue. #347 now tracks
+  remaining plot-helper policy follow-ups such as GauCh colorbar handles,
+  Rayleigh structural coverage, ancillary helper public-stability decisions,
+  optional backend install hints, and visual-regression policy.
 - #274 remains open for GUI payload metadata, renderer labels, and colorbar
-  behavior that affects GUI-facing contracts.
+  behavior that affects GUI-facing contracts. It is the next implementation PR.
 
 ### Wave 5: Release Readiness
 
