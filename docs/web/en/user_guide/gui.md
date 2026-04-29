@@ -23,6 +23,9 @@ This installs additional dependencies:
 
 ## Launching the GUI
 
+After installing the GUI extra from a source checkout or development install, launch
+the module directly:
+
 ```bash
 python -m gwexpy.gui
 ```

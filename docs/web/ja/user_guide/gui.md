@@ -23,6 +23,9 @@ pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 
 ## GUI を起動する
 
+ソース checkout または開発インストールで GUI extras を入れた後は、
+モジュールを直接起動します：
+
 ```bash
 python -m gwexpy.gui
 ```

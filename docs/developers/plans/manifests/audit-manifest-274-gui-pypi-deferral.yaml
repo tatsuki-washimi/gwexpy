@@ -28,9 +28,9 @@ decision:
     - "Track GUI payload metadata and renderer work as post-release #274 stabilization."
 
 commands_executed:
-  - cmd: "rtk sed -n '1,180p' /home/washimi/ai-harness/skills/release-coordinator/SKILL.md"
+  - cmd: "Reviewed release-coordinator skill instructions"
     result: "Reviewed release coordination workflow."
-  - cmd: "rtk sed -n '1,160p' /home/washimi/ai-harness/skills/doc-architect/SKILL.md"
+  - cmd: "Reviewed doc-architect skill instructions"
     result: "Reviewed documentation synchronization workflow."
   - cmd: "rtk python -c \"import tomllib; data=tomllib.load(open('pyproject.toml','rb')); assert data['project']['scripts'] == {'gwexpy': 'gwexpy.cli:main'}\""
     result: "Confirmed pyproject exposes only the core gwexpy console script."
@@ -51,8 +51,10 @@ commands_executed:
   - cmd: "rtk python scripts/check_release_artifacts.py /tmp/gwexpy-dist-gui-defer"
     result: "Release artifacts passed hygiene checks."
   - cmd: "Reviewer agent review of PR #349"
-    result: "Found one medium documentation inconsistency: installation tables described gwexpy[all] as all optional features even though GUI is excluded."
-  - cmd: "rtk rg -n \"all optional features|すべてのオプション機能|non-GUI|GUI を除く|gwexpy\\[all\\]\" docs/web/en/user_guide/installation.md docs/web/ja/user_guide/installation.md"
+    result: "Found one medium documentation inconsistency: installation tables over-described gwexpy[all] even though GUI is excluded."
+  - cmd: "PR #349 follow-up reviews"
+    result: "Addressed stronger GUI-dependency coverage, source/development GUI launch wording, and manifest path hygiene."
+  - cmd: "rtk rg -n \"non-GUI|GUI を除く|gwexpy\\[all\\]\" docs/web/en/user_guide/installation.md docs/web/ja/user_guide/installation.md"
     result: "Confirmed EN/JA install tables now describe gwexpy[all] as non-GUI optional features."
   - cmd: "rtk sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-docs-html-gui-defer"
     result: "Not run: sphinx-build executable is unavailable in this environment."
@@ -75,13 +77,13 @@ files_changed:
   - path: docs/web/en/reference/api/gui.rst
     change: "Updated the GUI API warning and launch command."
   - path: docs/web/ja/reference/api/gui.rst
-    change: "Updated the GUI API warning."
+    change: "Updated the GUI API warning and launch command."
   - path: docs/developers/plans/active/2026-04-27-issue-burn-down-roadmap.md
     change: "Classified #274 as a post-release follow-up rather than release-blocking."
   - path: docs/developers/plans/active/2026-04-28-conda-forge-roadmap.md
     change: "Aligned conda-forge entry point guidance with the PyPI GUI deferral."
   - path: tests/test_conda_forge_roadmap.py
-    change: "Added a packaging metadata guard that only the core gwexpy console script is exposed."
+    change: "Added packaging metadata guards for the core console script and GUI dependency exclusion from gwexpy[all]."
 
 test_results:
   pyproject_script_check: passed
@@ -94,6 +96,7 @@ test_results:
   ruff_changed_test: clean
   ruff_format_changed_test: clean
   reviewer_agent: "one medium docs inconsistency found and addressed"
+  pr_follow_up_reviews: "actionable items addressed"
   docs_build: not_run_sphinx_unavailable
 
 risks:

@@ -9,7 +9,8 @@ Graphical User Interface
    (PyQt5, pyqtgraph) for source/development use. The API may change without
    notice.
 
-To launch the GUI after installing the optional dependency:
+To launch the GUI after installing the optional dependency from a source checkout
+or development install:
 
 .. code-block:: bash
 
