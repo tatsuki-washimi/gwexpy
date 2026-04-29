@@ -17,6 +17,18 @@ FORBIDDEN_OUTPUT_PATTERNS = [
     re.compile(r"\bDeprecationWarning\b"),
     re.compile(r"\bConvergenceWarning\b"),
 ]
+FORBIDDEN_PUBLIC_DOC_LINK_PATTERNS = [
+    re.compile(r"docs/developers/"),
+    re.compile(r"docs_internal/"),
+    re.compile(r"API_MAPPING\.md"),
+]
+STALE_TUTORIAL_CODE_SNIPPETS = [
+    "plt.gca().get_images()",
+    "plt.gca().collections[-1]",
+    "plt.gca().get_children()",
+    "hasattr(c, 'get_clim')",
+    "spec = data.hht(",
+]
 
 
 def _read_notebook(path: Path) -> dict:
@@ -35,6 +47,14 @@ def _localized_tutorial_path(relative_path: Path) -> Path:
 
 def _read_tutorial_notebook(relative_path: Path) -> dict:
     return _read_notebook(_localized_tutorial_path(relative_path))
+
+
+def _public_tutorial_notebooks() -> list[Path]:
+    return sorted(TUTORIAL_ROOT.glob("*/user_guide/tutorials/*.ipynb"))
+
+
+def _public_tutorial_markdown_files() -> list[Path]:
+    return sorted(TUTORIAL_ROOT.glob("*/user_guide/tutorials/*.md"))
 
 
 def _notebook_locale(relative_path: Path) -> str:
@@ -332,6 +352,68 @@ def test_tutorial_outputs_do_not_expose_local_paths_or_raw_warnings():
                 break
 
     assert not offenders, "Forbidden notebook output found:\n" + "\n".join(offenders)
+
+
+def test_public_tutorial_markdown_does_not_link_internal_docs_surfaces():
+    offenders: list[str] = []
+
+    for path in _public_tutorial_notebooks():
+        nb = _read_notebook(path)
+        for markdown in _markdown_texts(nb):
+            hit = next(
+                (
+                    pattern.pattern
+                    for pattern in FORBIDDEN_PUBLIC_DOC_LINK_PATTERNS
+                    if pattern.search(markdown)
+                ),
+                None,
+            )
+            if hit:
+                offenders.append(f"{path.relative_to(ROOT)} -> {hit}")
+                break
+
+    for path in _public_tutorial_markdown_files():
+        markdown = path.read_text()
+        hit = next(
+            (
+                pattern.pattern
+                for pattern in FORBIDDEN_PUBLIC_DOC_LINK_PATTERNS
+                if pattern.search(markdown)
+            ),
+            None,
+        )
+        if hit:
+            offenders.append(f"{path.relative_to(ROOT)} -> {hit}")
+
+    assert not offenders, "Forbidden internal-doc link found:\n" + "\n".join(offenders)
+
+
+def test_public_tutorial_code_does_not_use_known_stale_hht_or_colorbar_patterns():
+    offenders: list[str] = []
+
+    for path in _public_tutorial_notebooks():
+        joined = _code_text(_read_notebook(path))
+        hit = next(
+            (snippet for snippet in STALE_TUTORIAL_CODE_SNIPPETS if snippet in joined),
+            None,
+        )
+        if hit:
+            offenders.append(f"{path.relative_to(ROOT)} -> {hit}")
+
+    for path in _public_tutorial_markdown_files():
+        markdown = path.read_text()
+        hit = next(
+            (
+                snippet
+                for snippet in STALE_TUTORIAL_CODE_SNIPPETS
+                if snippet in markdown
+            ),
+            None,
+        )
+        if hit:
+            offenders.append(f"{path.relative_to(ROOT)} -> {hit}")
+
+    assert not offenders, "Stale tutorial pattern found:\n" + "\n".join(offenders)
 
 
 @pytest.mark.parametrize(
