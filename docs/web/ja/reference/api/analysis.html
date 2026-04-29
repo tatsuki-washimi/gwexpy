@@ -1257,7 +1257,10 @@ by calculating averaged ASDs for each stable frequency step.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">spectrogram_inj</span></span></dt>
-<dd><p>The measured spectrogram of the target channel during the injection steps.</p>
+<dd><p>The measured target-channel ASD spectrogram during the injection steps.
+Its frequency axis is the target ASD axis and can include bins above the
+witness Nyquist frequency; those high-frequency bins are raw target ASD
+values, not coupling-factor estimates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Spectrogram</p>
@@ -1268,7 +1271,8 @@ by calculating averaged ASDs for each stable frequency step.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">spectrogram_bkg</span></span></dt>
-<dd><p>The background spectrogram of the target channel for the injection steps.</p>
+<dd><p>The target-channel background ASD spectrogram for the injection steps,
+on the same target frequency axis as <code class="docutils literal notranslate"><span class="pre">spectrogram_inj</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Spectrogram</p>
@@ -1808,7 +1812,7 @@ The value 2.6 is recommended in Appendix B.1 to set reduced χ² ≈ 1.</p></li>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-29 01:51:40.
+      <span class="lastupdated">Last updated on 2026-04-29 03:21:36.
       </span></p>
   </div>
 

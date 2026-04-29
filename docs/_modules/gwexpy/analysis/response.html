@@ -130,6 +130,7 @@
 <span class="sd">Stepped Sine (Discrete) Injections. It prioritizes statistical significance</span>
 <span class="sd">by calculating averaged ASDs for each stable frequency step.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -165,13 +166,22 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">xindex</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">series</span><span class="o">.</span><span class="n">xindex</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_freq_grids_match</span><span class="p">(</span><span class="n">lhs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_freq_grids_match</span><span class="p">(</span>
+    <span class="n">lhs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True when two frequency grids match within numerical tolerance.&quot;&quot;&quot;</span>
     <span class="n">lhs_freqs</span> <span class="o">=</span> <span class="n">_freq_values</span><span class="p">(</span><span class="n">lhs</span><span class="p">)</span>
     <span class="n">rhs_freqs</span> <span class="o">=</span> <span class="n">_freq_values</span><span class="p">(</span><span class="n">rhs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">lhs_freqs</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">rhs_freqs</span><span class="o">.</span><span class="n">shape</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
         <span class="n">lhs_freqs</span><span class="p">,</span> <span class="n">rhs_freqs</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span>
     <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_nearest_frequency_index</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">_freq_values</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">freqs</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">frequency</span> <span class="o">&lt;</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">frequency</span> <span class="o">&gt;</span> <span class="n">freqs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">freqs</span> <span class="o">-</span> <span class="n">frequency</span><span class="p">)))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_estimate_response_row_bytes</span><span class="p">(</span>
@@ -243,9 +253,7 @@
             <span class="n">sample_rate</span><span class="o">=</span><span class="n">witness</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span>
             <span class="n">start</span><span class="o">=</span><span class="n">t_b_s</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">wit_asd_bkg</span> <span class="o">=</span> <span class="n">wit_bkg</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span>
-            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span>
+        <span class="n">wit_asd_bkg</span> <span class="o">=</span> <span class="n">wit_bkg</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">master_asd_tgt_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tgt_asd_bkg</span> <span class="o">=</span> <span class="n">master_asd_tgt_bkg</span>
@@ -261,14 +269,30 @@
             <span class="n">sample_rate</span><span class="o">=</span><span class="n">target</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span>
             <span class="n">start</span><span class="o">=</span><span class="n">t_b_s</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">tgt_asd_bkg</span> <span class="o">=</span> <span class="n">tgt_bkg</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span>
-            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span>
+        <span class="n">tgt_asd_bkg</span> <span class="o">=</span> <span class="n">tgt_bkg</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="n">f_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">wit_asd_inj</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">injected_freq</span><span class="p">))</span>
-    <span class="n">p_wit_net</span> <span class="o">=</span> <span class="n">wit_asd_inj</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">f_idx</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">wit_asd_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">f_idx</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="n">p_tgt_net</span> <span class="o">=</span> <span class="n">tgt_asd_inj</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">f_idx</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">tgt_asd_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">f_idx</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="n">cf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">p_tgt_net</span> <span class="o">/</span> <span class="n">p_wit_net</span><span class="p">)</span> <span class="k">if</span> <span class="n">p_wit_net</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">p_tgt_net</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">compatible_witness_grids</span> <span class="o">=</span> <span class="n">_freq_grids_match</span><span class="p">(</span><span class="n">wit_asd_bkg</span><span class="p">,</span> <span class="n">wit_asd_inj</span><span class="p">)</span>
+    <span class="n">compatible_target_grids</span> <span class="o">=</span> <span class="n">_freq_grids_match</span><span class="p">(</span><span class="n">tgt_asd_bkg</span><span class="p">,</span> <span class="n">tgt_asd_inj</span><span class="p">)</span>
+    <span class="n">wit_idx</span> <span class="o">=</span> <span class="n">_nearest_frequency_index</span><span class="p">(</span><span class="n">wit_asd_inj</span><span class="p">,</span> <span class="n">injected_freq</span><span class="p">)</span>
+    <span class="n">tgt_idx</span> <span class="o">=</span> <span class="n">_nearest_frequency_index</span><span class="p">(</span><span class="n">tgt_asd_inj</span><span class="p">,</span> <span class="n">injected_freq</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">compatible_witness_grids</span>
+        <span class="ow">and</span> <span class="n">compatible_target_grids</span>
+        <span class="ow">and</span> <span class="n">wit_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">tgt_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="n">p_wit_net</span> <span class="o">=</span> <span class="n">wit_asd_inj</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">wit_idx</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">wit_asd_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">wit_idx</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">p_tgt_net</span> <span class="o">=</span> <span class="n">tgt_asd_inj</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">tgt_idx</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">tgt_asd_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">tgt_idx</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">p_tgt_net</span> <span class="o">/</span> <span class="n">p_wit_net</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">p_wit_net</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">p_tgt_net</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">p_wit_net</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="n">p_tgt_net</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;span&quot;</span><span class="p">:</span> <span class="n">segment</span><span class="p">,</span>
@@ -294,9 +318,13 @@
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    spectrogram_inj : Spectrogram</span>
-<span class="sd">        The measured spectrogram of the target channel during the injection steps.</span>
+<span class="sd">        The measured target-channel ASD spectrogram during the injection steps.</span>
+<span class="sd">        Its frequency axis is the target ASD axis and can include bins above the</span>
+<span class="sd">        witness Nyquist frequency; those high-frequency bins are raw target ASD</span>
+<span class="sd">        values, not coupling-factor estimates.</span>
 <span class="sd">    spectrogram_bkg : Spectrogram</span>
-<span class="sd">        The background spectrogram of the target channel for the injection steps.</span>
+<span class="sd">        The target-channel background ASD spectrogram for the injection steps,</span>
+<span class="sd">        on the same target frequency axis as ``spectrogram_inj``.</span>
 <span class="sd">    injected_freqs : numpy.ndarray</span>
 <span class="sd">        Array of injected frequencies [Hz] corresponding to each step.</span>
 <span class="sd">    step_times : numpy.ndarray</span>
@@ -448,9 +476,7 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spectrogram_inj</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Projection Summary: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Projection Summary: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_steps</span> <span class="o">//</span> <span class="mi">10</span><span class="p">))</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
 
@@ -516,7 +542,8 @@
 
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
         <span class="n">gs</span> <span class="o">=</span> <span class="n">GridSpec</span><span class="p">(</span>
-            <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">,</span>
             <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span>
             <span class="n">width_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
             <span class="n">height_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
@@ -536,7 +563,9 @@
             <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
             <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_right</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spectrogram_inj</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_right</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spectrogram_inj</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="n">fraction</span><span class="o">=</span><span class="mf">0.5</span>
+        <span class="p">)</span>
         <span class="n">ax_main</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
         <span class="n">ax_main</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Step Time [GPS s]&quot;</span><span class="p">)</span>
         <span class="n">ax_main</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
@@ -550,9 +579,7 @@
         <span class="p">)</span>
         <span class="n">ax_top</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
         <span class="n">ax_top</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD</span><span class="se">\n</span><span class="s2">@ </span><span class="si">{</span><span class="n">freqs_plot</span><span class="p">[</span><span class="n">mid_freq_idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
-        <span class="n">ax_top</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Response Matrix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="n">ax_top</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response Matrix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax_top</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Side panel: Time evolution at center frequency bin</span>
@@ -865,7 +892,9 @@
         <span class="c1"># Filter segments with duration &gt;= fftlength</span>
         <span class="n">valid_segments</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">segments</span> <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="n">fftlength</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_segments</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No segments found with duration &gt;= fftlength (</span><span class="si">{</span><span class="n">fftlength</span><span class="si">}</span><span class="s2">s).&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No segments found with duration &gt;= fftlength (</span><span class="si">{</span><span class="n">fftlength</span><span class="si">}</span><span class="s2">s).&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">seg_objs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Segment</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">valid_segments</span><span class="p">]</span>
         <span class="n">injected_freqs_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">valid_segments</span><span class="p">]</span>
@@ -874,9 +903,13 @@
         <span class="n">master_asd_tgt_bkg</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">master_asd_wit_bkg</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">target_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">master_asd_tgt_bkg</span> <span class="o">=</span> <span class="n">target_bkg</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">master_asd_tgt_bkg</span> <span class="o">=</span> <span class="n">target_bkg</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span>
+                <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">witness_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">master_asd_wit_bkg</span> <span class="o">=</span> <span class="n">witness_bkg</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">master_asd_wit_bkg</span> <span class="o">=</span> <span class="n">witness_bkg</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span>
+                <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
 
         <span class="n">row_bytes</span> <span class="o">=</span> <span class="n">_estimate_response_row_bytes</span><span class="p">(</span>
             <span class="n">witness</span><span class="p">,</span>
@@ -891,7 +924,12 @@
             <span class="p">)</span>
         <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">memory_limit</span> <span class="o">//</span> <span class="n">row_bytes</span><span class="p">)</span>
         <span class="n">batches</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">seg_objs</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">],</span> <span class="n">injected_freqs_list</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]))</span>
+            <span class="nb">list</span><span class="p">(</span>
+                <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">seg_objs</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">],</span>
+                    <span class="n">injected_freqs_list</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">seg_objs</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)</span>
         <span class="p">]</span>
 
@@ -947,12 +985,32 @@
             <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;span&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span>
             <span class="n">injected_freq</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;injected_freq&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span>
         <span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span><span class="s2">&quot;wit_inj&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;wit_inj&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span><span class="s2">&quot;tgt_inj&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_inj&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span><span class="s2">&quot;wit_asd_inj&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;wit_asd_inj&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span><span class="s2">&quot;tgt_asd_inj&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_asd_inj&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span><span class="s2">&quot;wit_asd_bkg&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;wit_asd_bkg&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">)</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span><span class="s2">&quot;tgt_asd_bkg&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_asd_bkg&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span>
+            <span class="s2">&quot;wit_inj&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;wit_inj&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;timeseries&quot;</span>
+        <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span>
+            <span class="s2">&quot;tgt_inj&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_inj&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;timeseries&quot;</span>
+        <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span>
+            <span class="s2">&quot;wit_asd_inj&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;wit_asd_inj&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span>
+            <span class="s2">&quot;tgt_asd_inj&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_asd_inj&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span>
+            <span class="s2">&quot;wit_asd_bkg&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;wit_asd_bkg&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span>
+            <span class="s2">&quot;tgt_asd_bkg&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_asd_bkg&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span>
+            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;cf&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;cf&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">row_results</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;meta&quot;</span><span class="p">)</span>
 
         <span class="c1"># --- 3. Wrap in Containers ---</span>
@@ -961,21 +1019,13 @@
         <span class="n">ref_freqs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">row_index</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">st_data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
-            <span class="n">row_series</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;wit_asd_inj&quot;</span><span class="p">],</span>
-                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_asd_inj&quot;</span><span class="p">],</span>
-                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;wit_asd_bkg&quot;</span><span class="p">],</span>
-                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_asd_bkg&quot;</span><span class="p">],</span>
-            <span class="p">]</span>
-            <span class="n">base_freqs</span> <span class="o">=</span> <span class="n">_freq_values</span><span class="p">(</span><span class="n">row_series</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">compatible_within_row</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
-                <span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">row_series</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">_freq_grids_match</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">row_series</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">for</span> <span class="n">series</span> <span class="ow">in</span> <span class="n">row_series</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="p">)</span>
+            <span class="n">tgt_asd_inj</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_asd_inj&quot;</span><span class="p">]</span>
+            <span class="n">tgt_asd_bkg</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;tgt_asd_bkg&quot;</span><span class="p">]</span>
+            <span class="n">base_freqs</span> <span class="o">=</span> <span class="n">_freq_values</span><span class="p">(</span><span class="n">tgt_asd_inj</span><span class="p">)</span>
+            <span class="n">compatible_within_row</span> <span class="o">=</span> <span class="n">_freq_grids_match</span><span class="p">(</span><span class="n">tgt_asd_bkg</span><span class="p">,</span> <span class="n">tgt_asd_inj</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">compatible_within_row</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Skipping response row </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s2"> due to incompatible ASD frequency grids.&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Skipping response row </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s2"> due to incompatible target ASD frequency grids.&quot;</span><span class="p">,</span>
                     <span class="ne">UserWarning</span><span class="p">,</span>
                     <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -985,7 +1035,7 @@
                 <span class="n">ref_freqs</span> <span class="o">=</span> <span class="n">base_freqs</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">base_freqs</span><span class="p">,</span> <span class="n">ref_freqs</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">):</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Skipping response row </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s2"> due to incompatible ASD frequency grids.&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Skipping response row </span><span class="si">{</span><span class="n">row_index</span><span class="si">}</span><span class="s2"> due to incompatible target ASD frequency grids.&quot;</span><span class="p">,</span>
                     <span class="ne">UserWarning</span><span class="p">,</span>
                     <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -994,7 +1044,9 @@
             <span class="n">valid_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row_index</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_indices</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No compatible response rows remain after frequency alignment.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;No compatible response rows remain after frequency alignment.&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">row_mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">valid_indices</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">))]</span>
         <span class="n">st</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">mask</span><span class="o">=</span><span class="n">row_mask</span><span class="p">)</span>
@@ -1011,8 +1063,20 @@
         <span class="n">inj_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">st_data</span><span class="p">[</span><span class="s2">&quot;injected_freq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
         <span class="n">unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;dimensionless&quot;</span>
-        <span class="n">sg_inj</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span><span class="n">spec_inj_data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">step_times</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freq_axis</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Inj&quot;</span><span class="p">)</span>
-        <span class="n">sg_bkg</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span><span class="n">spec_bkg_data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">step_times</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freq_axis</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bkg&quot;</span><span class="p">)</span>
+        <span class="n">sg_inj</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">spec_inj_data</span><span class="p">,</span>
+            <span class="n">times</span><span class="o">=</span><span class="n">step_times</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">freq_axis</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Inj&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sg_bkg</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">spec_bkg_data</span><span class="p">,</span>
+            <span class="n">times</span><span class="o">=</span><span class="n">step_times</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">freq_axis</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bkg&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="n">res</span> <span class="o">=</span> <span class="n">ResponseFunctionResult</span><span class="p">(</span>
             <span class="n">spectrogram_inj</span><span class="o">=</span><span class="n">sg_inj</span><span class="p">,</span>
@@ -1030,7 +1094,10 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="s2">&quot;Response Function Analysis Complete: </span><span class="si">%d</span><span class="s2"> steps processed in </span><span class="si">%.2f</span><span class="s2">s &quot;</span>
             <span class="s2">&quot;(batches=</span><span class="si">%d</span><span class="s2">, n_jobs=</span><span class="si">%s</span><span class="s2">).&quot;</span><span class="p">,</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">),</span> <span class="n">dur</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">batches</span><span class="p">),</span> <span class="n">n_jobs_eff</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">),</span>
+            <span class="n">dur</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">batches</span><span class="p">),</span>
+            <span class="n">n_jobs_eff</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span></div>
 </div>
@@ -1096,7 +1163,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-29 01:51:40.
+      <span class="lastupdated">Last updated on 2026-04-29 03:21:36.
       </span></p>
   </div>
 
