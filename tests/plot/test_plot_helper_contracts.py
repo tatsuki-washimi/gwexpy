@@ -142,6 +142,14 @@ def test_pair_plot_rejects_mismatched_time_spans():
         PairPlot({"H1": ts1, "L1": ts2}, corner=True, bins=4)
 
 
+def test_pair_plot_rejects_gps_scale_time_span_offsets():
+    ts1 = TimeSeries(np.arange(8, dtype=float), t0=1_200_000_000, dt=1)
+    ts2 = TimeSeries(np.arange(8, dtype=float), t0=1_200_003_600, dt=1)
+
+    with pytest.raises(ValueError, match="same time span"):
+        PairPlot({"H1": ts1, "L1": ts2}, corner=True, bins=4)
+
+
 def test_pair_plot_rejects_mismatched_sample_rates():
     ts1 = TimeSeries(np.arange(8, dtype=float), t0=0, dt=1)
     ts2 = TimeSeries(np.arange(8, dtype=float), t0=0, dt=0.5)

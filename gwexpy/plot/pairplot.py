@@ -10,6 +10,8 @@ from matplotlib.figure import Figure
 
 __all__ = ["PairPlot"]
 
+_SPAN_ATOL_SECONDS = 1e-9
+
 
 def _get_series_span(series: Any) -> tuple[float, float] | None:
     """Return the covered x-axis span when series metadata exposes one."""
@@ -51,7 +53,9 @@ def _validate_series_compatibility(series_list: list) -> None:
 
     spans = [_get_series_span(s) for s in series_list]
     known_spans = [span for span in spans if span is not None]
-    if known_spans and not np.allclose(known_spans, known_spans[0]):
+    if known_spans and not np.allclose(
+        known_spans, known_spans[0], rtol=0.0, atol=_SPAN_ATOL_SECONDS
+    ):
         raise ValueError("PairPlot inputs must have the same time span.")
 
 
