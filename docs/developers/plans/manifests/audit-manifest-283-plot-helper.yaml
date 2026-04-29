@@ -38,24 +38,24 @@ commands_executed:
     result: "Initial TDD red run: 4 failed, 4 passed for FieldPlot colorbar exposure, unitless labels, and GauCh dynamic frequency/unitless labels."
   - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp pytest -q tests/plot/test_plot_helper_contracts.py -p no:cacheprovider"
     result: "8 passed after runtime changes."
-  - cmd: "rtk ruff format gwexpy/plot/field.py gwexpy/plot/gauch_dashboard.py tests/plot/test_plot_helper_contracts.py"
+  - cmd: "rtk ruff format gwexpy/plot/_label_utils.py gwexpy/plot/field.py gwexpy/plot/gauch_dashboard.py tests/plot/test_plot_helper_contracts.py"
     result: "All files formatted correctly."
   - cmd: "rtk python -c \"import yaml; yaml.safe_load(open('docs/developers/plans/manifests/audit-manifest-283-plot-helper.yaml'))\""
     result: "Manifest parsed successfully."
   - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp pytest -q tests/plot/test_plot_helper_contracts.py tests/plot/test_field_plots.py -p no:cacheprovider"
     result: "14 passed."
-  - cmd: "rtk ruff check gwexpy/plot/field.py gwexpy/plot/gauch_dashboard.py tests/plot/test_plot_helper_contracts.py"
+  - cmd: "rtk ruff check gwexpy/plot/_label_utils.py gwexpy/plot/field.py gwexpy/plot/gauch_dashboard.py tests/plot/test_plot_helper_contracts.py"
     result: "No issues found."
-  - cmd: "rtk ruff format --check gwexpy/plot/field.py gwexpy/plot/gauch_dashboard.py tests/plot/test_plot_helper_contracts.py"
-    result: "3 files already formatted."
+  - cmd: "rtk ruff format --check gwexpy/plot/_label_utils.py gwexpy/plot/field.py gwexpy/plot/gauch_dashboard.py tests/plot/test_plot_helper_contracts.py"
+    result: "4 files already formatted."
   - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib XDG_CACHE_HOME=/tmp pytest -q tests/plot/test_plot_helper_contracts.py tests/plot/test_field_plots.py tests/plot/test_gwexpy_plot_smoke.py tests/plot/test_defaults.py tests/plot/test_init_helpers.py -p no:cacheprovider"
-    result: "201 passed, 3 warnings from existing layout helper tests."
+    result: "202 passed, 3 warnings from existing layout helper tests."
   - cmd: "rtk git diff --check -- <changed #283 files>"
     result: "No whitespace errors in scoped diff."
 
 test_results:
-  new_plot_helper_contracts: "8 passed"
-  focused_plot_subset: "201 passed, 3 warnings"
+  new_plot_helper_contracts: "14 passed"
+  focused_plot_subset: "202 passed, 3 warnings"
   ruff_changed_files: clean
   ruff_format_changed_files: clean
   diff_check: clean
@@ -65,12 +65,14 @@ test_results:
   docs_build: not_run
 
 files_changed:
+  - path: gwexpy/plot/_label_utils.py
+    change: "Added shared bracket-safe plot label and unit formatting helpers."
   - path: gwexpy/plot/field.py
-    change: "Added bracket-safe unit label formatting and exposed the most recent scalar colorbar as FieldPlot.last_field_colorbar."
+    change: "Used shared bracket-safe label formatting for scalar/vector axis labels, omitted empty colorbar labels, documented last_field_colorbar replacement semantics, and exposed the most recent scalar colorbar as FieldPlot.last_field_colorbar."
   - path: gwexpy/plot/gauch_dashboard.py
     change: "Derived frequency labels from spectrogram frequency metadata and omitted unit brackets for unitless amplitude labels."
   - path: tests/plot/test_plot_helper_contracts.py
-    change: "Added failing-first coverage for FieldPlot colorbar access, unitless FieldPlot labels, GauCh metadata frequency labels, and unitless GauCh amplitude labels."
+    change: "Added failing-first coverage for FieldPlot colorbar access, unitless FieldPlot labels, omitted empty colorbar labels, GauCh metadata frequency labels, and unitless GauCh amplitude labels."
   - path: docs/developers/plans/archive/contract-audits/2026-04-28-plot-helper-contract-audit.md
     change: "Updated #283 audit with dynamic label and FieldPlot colorbar handle decisions plus #341 PairPlot confirmation."
   - path: docs/developers/plans/manifests/audit-manifest-283-plot-helper.yaml
@@ -80,6 +82,8 @@ contracts_covered:
   - "FieldPlot.add_scalar returns a QuadMesh-like object and sets x/y unit labels for a deterministic ScalarField slice."
   - "FieldPlot.add_scalar exposes the most recent scalar colorbar via last_field_colorbar without depending on figure axes ordering."
   - "FieldPlot.add_scalar omits empty brackets for dimensionless axis and colorbar labels."
+  - "FieldPlot.add_scalar omits the colorbar label keyword when both label and unit are absent."
+  - "FieldPlot.add_vector uses the same bracket-safe axis label formatter as scalar slices."
   - "plot_gauch_dashboard creates current GauCh p-value, GauCh KS statistic, and Time Series panel titles."
   - "plot_gauch_dashboard uses spectrogram frequency metadata for Frequency labels without unit conversion."
   - "plot_gauch_dashboard omits empty brackets for unitless time-series amplitude labels."

@@ -129,6 +129,38 @@ def test_field_plot_add_scalar_omits_empty_brackets_for_unitless_field():
         plt.close(plot.figure)
 
 
+def test_field_plot_add_scalar_omits_colorbar_label_when_empty():
+    field = ScalarField(
+        np.arange(48, dtype=float).reshape(2, 3, 4, 2),
+        axis0=np.arange(2) * u.s,
+        axis1=np.arange(3) * u.dimensionless_unscaled,
+        axis2=np.arange(4) * u.dimensionless_unscaled,
+        axis3=np.arange(2) * u.mm,
+    )
+    plot = FieldPlot()
+    original_colorbar = plot.colorbar
+    captured_kwargs = {}
+
+    def colorbar_proxy(*args, **kwargs):
+        captured_kwargs.update(kwargs)
+        return original_colorbar(*args, **kwargs)
+
+    plot.colorbar = colorbar_proxy
+
+    try:
+        plot.add_scalar(
+            field,
+            x="x",
+            y="y",
+            slice_kwargs={"t": 0, "z": 0},
+            label=None,
+        )
+
+        assert "label" not in captured_kwargs
+    finally:
+        plt.close(plot.figure)
+
+
 def test_plot_gauch_dashboard_current_structural_labels():
     ts = TimeSeries(np.arange(6, dtype=float), t0=0, dt=1, unit=u.m)
     sg = _deterministic_spectrogram()

@@ -8,33 +8,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import gridspec
 
+from ._label_utils import format_quantity_label
+
 if TYPE_CHECKING:
     from ..spectrogram import Spectrogram
     from ..statistics.gauch import GauChResult
     from ..timeseries import TimeSeries
-
-
-def _format_unit_text(unit: Any) -> str | None:
-    """Return a displayable unit string, or None for unitless values."""
-    if unit is None:
-        return None
-
-    try:
-        unit_text = unit.to_string()
-    except (AttributeError, ValueError):
-        unit_text = str(unit)
-
-    if not unit_text or unit_text == "None":
-        return None
-    return unit_text
-
-
-def _format_quantity_label(label: str, unit: Any) -> str:
-    """Format a value label without empty brackets for unitless data."""
-    unit_text = _format_unit_text(unit)
-    if unit_text is None:
-        return label
-    return f"{label} [{unit_text}]"
 
 
 def _spectrogram_frequency_label(spectrogram: Spectrogram | None) -> str:
@@ -46,7 +25,7 @@ def _spectrogram_frequency_label(spectrogram: Spectrogram | None) -> str:
         if unit is None:
             unit = getattr(spectrogram, "yunit", None)
 
-    return _format_quantity_label("Frequency", unit)
+    return format_quantity_label("Frequency", unit)
 
 
 def plot_gauch_dashboard(
@@ -130,7 +109,7 @@ def plot_gauch_dashboard(
     ax3 = fig.add_subplot(gs[2], sharex=ax1)
     ax3.plot(ts.times.value, ts.value, color="black", linewidth=0.5)
     ax3.set_title("Time Series")
-    ax3.set_ylabel(_format_quantity_label("Amplitude", getattr(ts, "unit", None)))
+    ax3.set_ylabel(format_quantity_label("Amplitude", getattr(ts, "unit", None)))
     ax3.set_xlabel("Time [s]")
 
     # Auto-gps scale

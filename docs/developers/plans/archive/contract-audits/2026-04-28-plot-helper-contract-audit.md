@@ -41,10 +41,15 @@ the displayed axis labels are:
 - y-axis: `y [cm]`
 
 The helper creates a colorbar label from the field name and unit without
-rendering empty brackets for unitless data. `FieldPlot.last_field_colorbar`
-now exposes the most recent scalar colorbar handle returned by
-`Plot.colorbar()` so tests and callers can inspect the label without relying
-on backend-specific figure axes ordering.
+rendering empty brackets for unitless data. Empty labels are omitted rather than
+passed as empty strings to Matplotlib. `FieldPlot.last_field_colorbar` now
+exposes the most recent scalar colorbar handle returned by `Plot.colorbar()` so
+tests and callers can inspect the label without relying on backend-specific
+figure axes ordering. Repeated scalar plot calls intentionally replace this
+attribute with the latest scalar colorbar.
+
+`FieldPlot.add_vector` uses the same bracket-safe axis label formatter for
+vector slices.
 
 ### plot_gauch_dashboard
 
