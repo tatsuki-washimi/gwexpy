@@ -22,6 +22,7 @@ FORBIDDEN_PARTS = {
     "htmlcov",
     "scratch",
     "temp_logs",
+    "tests",
     "tmp",
 }
 
@@ -63,7 +64,11 @@ def _is_forbidden(member_name: str) -> bool:
         return True
     if member_name.endswith(FORBIDDEN_SUFFIXES):
         return True
-    return _is_package_internal_test(parts) or _is_package_internal_markdown(parts)
+    return (
+        _is_package_internal_test(parts)
+        or _is_package_internal_markdown(parts)
+        or _is_package_internal_sphinx_helper(parts)
+    )
 
 
 def _is_package_internal_test(parts: tuple[str, ...]) -> bool:
@@ -76,6 +81,15 @@ def _is_package_internal_markdown(parts: tuple[str, ...]) -> bool:
     # reference material and must not ship in release artifacts.
     package_parts = _package_parts(parts)
     return len(package_parts) >= 2 and package_parts[-1].endswith(".md")
+
+
+def _is_package_internal_sphinx_helper(parts: tuple[str, ...]) -> bool:
+    package_parts = _package_parts(parts)
+    return len(package_parts) >= 3 and package_parts[:3] == (
+        "gwexpy",
+        "utils",
+        "sphinx",
+    )
 
 
 def _package_parts(parts: tuple[str, ...]) -> tuple[str, ...]:

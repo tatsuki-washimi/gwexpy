@@ -454,8 +454,9 @@ Net outcome:
   corrections are reviewed and accepted.
 - #274 is explicitly deferred as a post-release GUI stabilization track. The
   first PyPI package supports the Python library surface, not the experimental
-  GUI app; `gwexpy.gui` is not installed as a console script for the first PyPI
-  release.
+  GUI app; `gwexpy.gui` is not included in first-release artifacts, no
+  `gwexpy.gui` console script is installed, and no `gui` PyPI extra is
+  published for the first PyPI release.
 - #294 remains open for the external `conda-forge/staged-recipes` submission
   after a stable source release exists or maintainers explicitly approve a
   source-archive-first submission.
@@ -567,8 +568,8 @@ Before closing #293, decide for every remaining audit issue whether it is:
 Current classification:
 
 - #274 is a **post-release follow-up**. The first PyPI release excludes the
-  experimental GUI app from the supported public surface and does not expose a
-  `gwexpy.gui` console script.
+  experimental GUI app from the supported public surface, built artifacts, and
+  PyPI extras metadata.
 
 Conda-forge onboarding (#294) should start after a stable PyPI/source release
 unless maintainers intentionally choose a source-archive-first conda submission.

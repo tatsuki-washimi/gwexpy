@@ -2,18 +2,21 @@
 
 ## Overview
 
-**Status:** Experimental, source/development track
+**Status:** Experimental, source/development track only
 
-GWexpy includes a **PyQt5-based GUI** for interactive data exploration and visualization. However, the GUI should currently be treated as an **experimental, prototype-stage interface**, not as a finalized end-user product. For reproducible and fully supported workflows, the **Python API** remains the primary interface.
+The GWexpy source tree includes a **PyQt5-based GUI** for interactive data exploration and visualization. However, the GUI should currently be treated as an **experimental, prototype-stage interface**, not as a finalized end-user product. For reproducible and fully supported workflows, the **Python API** remains the primary interface.
 
-The GUI app is **not part of the first PyPI supported surface**. The first PyPI release focuses on the Python library API; GUI stabilization is tracked separately as post-release work.
+The GUI app and `gwexpy.gui` package are **not included in the first PyPI distribution**. The first PyPI release focuses on the Python library API; GUI stabilization is tracked separately as post-release work.
 
 ## Installation
 
-For source checkout or development use, install the GUI dependencies with the `gui` extra:
+For source checkout or development use, install GWexpy from a local clone and install the GUI dependencies explicitly:
 
 ```bash
-pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+git clone https://github.com/tatsuki-washimi/gwexpy.git
+cd gwexpy
+pip install -e .
+pip install PyQt5 pyqtgraph qtpy sounddevice
 ```
 
 This installs additional dependencies:
@@ -23,14 +26,13 @@ This installs additional dependencies:
 
 ## Launching the GUI
 
-After installing the GUI extra from a source checkout or development install, launch
-the module directly:
+After installing the GUI dependencies from a source checkout or development install, launch the module directly:
 
 ```bash
 python -m gwexpy.gui
 ```
 
-The first PyPI release does not install a `gwexpy.gui` console script.
+The first PyPI release does not install a `gwexpy.gui` console script or ship the `gwexpy.gui` package.
 
 ### Programmatically
 
@@ -88,10 +90,10 @@ Open files via:
 
 ### "ModuleNotFoundError: No module named 'PyQt5'"
 
-Ensure that the GUI extra was installed:
+Ensure that the GUI dependencies were installed in a source checkout or development environment:
 
 ```bash
-pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+pip install PyQt5 pyqtgraph qtpy sounddevice
 ```
 
 ### GUI does not launch

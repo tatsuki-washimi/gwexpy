@@ -120,6 +120,47 @@ def test_release_artifact_hygiene_rejects_package_internal_tests(
     assert any("gwexpy/histogram/tests" in problem for problem in problems)
 
 
+def test_release_artifact_hygiene_rejects_top_level_tests(
+    tmp_path: Path,
+):
+    module = load_script_module()
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    _write_wheel(
+        dist / "gwexpy-0.1.1-py3-none-any.whl",
+        ["tests/test_bruco.py"],
+    )
+    _write_sdist(
+        dist / "gwexpy-0.1.1.tar.gz",
+        ["gwexpy-0.1.1/tests/test_bruco.py"],
+    )
+
+    problems = module.check_artifacts(dist)
+
+    assert any("tests/test_bruco.py" in problem for problem in problems)
+
+
+def test_release_artifact_hygiene_rejects_package_internal_sphinx_helpers(
+    tmp_path: Path,
+):
+    module = load_script_module()
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    _write_wheel(
+        dist / "gwexpy-0.1.1-py3-none-any.whl",
+        ["gwexpy/utils/sphinx/ex2rst.py"],
+    )
+    _write_sdist(
+        dist / "gwexpy-0.1.1.tar.gz",
+        ["gwexpy-0.1.1/gwexpy/utils/sphinx/zenodo.py"],
+    )
+
+    problems = module.check_artifacts(dist)
+
+    assert any("gwexpy/utils/sphinx/ex2rst.py" in problem for problem in problems)
+    assert any("gwexpy/utils/sphinx/zenodo.py" in problem for problem in problems)
+
+
 def test_release_artifact_hygiene_rejects_package_internal_agent_docs(
     tmp_path: Path,
 ):

@@ -2,18 +2,21 @@
 
 ## 概要
 
-**ステータス:** 試作版（ソース / 開発環境向け）
+**ステータス:** 試作版（ソース / 開発環境専用）
 
-GWexpy には **PyQt5 ベースの GUI** が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI は **試作段階 / 実験的インターフェース**として扱ってください。再現性やサポートの観点では、**Python API** が引き続き主要インターフェースです。
+GWexpy のソースツリーには **PyQt5 ベースの GUI** が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI は **試作段階 / 実験的インターフェース**として扱ってください。再現性やサポートの観点では、**Python API** が引き続き主要インターフェースです。
 
-GUI アプリは **初回 PyPI のサポート対象には含めません**。初回 PyPI リリースは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。
+GUI アプリと `gwexpy.gui` package は **初回 PyPI 配布物には含めません**。初回 PyPI リリースは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。
 
 ## インストール
 
-ソース checkout または開発用途では、`gui` extras で GUI 依存関係をインストールできます：
+ソース checkout または開発用途では、ローカル clone から GWexpy を入れたうえで GUI 依存関係を明示的にインストールします：
 
 ```bash
-pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+git clone https://github.com/tatsuki-washimi/gwexpy.git
+cd gwexpy
+pip install -e .
+pip install PyQt5 pyqtgraph qtpy sounddevice
 ```
 
 これにより、以下の追加の依存パッケージがインストールされます：
@@ -23,14 +26,13 @@ pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 
 ## GUI を起動する
 
-ソース checkout または開発インストールで GUI extras を入れた後は、
-モジュールを直接起動します：
+ソース checkout または開発インストールで GUI 依存関係を入れた後は、モジュールを直接起動します：
 
 ```bash
 python -m gwexpy.gui
 ```
 
-初回 PyPI リリースでは `gwexpy.gui` console script はインストールしません。
+初回 PyPI リリースでは `gwexpy.gui` console script も `gwexpy.gui` package も配布しません。
 
 ### プログラム内での起動
 
@@ -88,10 +90,10 @@ GUI は以下の形式でのデータ読み込みに対応しています：
 
 ### "ModuleNotFoundError: No module named 'PyQt5'"
 
-GUI extras がインストールされていることを確認してください：
+ソース checkout または開発環境で GUI 依存関係がインストールされていることを確認してください：
 
 ```bash
-pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+pip install PyQt5 pyqtgraph qtpy sounddevice
 ```
 
 ### GUI が起動しない

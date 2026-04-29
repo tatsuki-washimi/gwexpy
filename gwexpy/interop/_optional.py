@@ -103,12 +103,12 @@ _EXTRA_MAP: dict[str, str | None] = {
     # audio: Audio processing
     "pydub": "audio",
     "tinytag": "audio",
-    # gui: GUI components
-    "PyQt5": "gui",
-    "pyqtgraph": "gui",
-    "qtpy": "gui",
-    "sounddevice": "gui",
     # No declared extra — install these packages directly
+    # GUI dependencies are source/development-only for the first PyPI release.
+    "PyQt5": None,
+    "pyqtgraph": None,
+    "qtpy": None,
+    "sounddevice": None,
     "PySpice": None,
     "skrf": None,
     "torch": None,
