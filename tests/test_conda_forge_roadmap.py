@@ -83,6 +83,23 @@ def test_conda_forge_roadmap_uses_build_entry_points_for_console_scripts():
     assert "build:\n  python:" not in recipe
 
 
+def test_pyproject_excludes_experimental_gui_console_script_from_first_pypi():
+    pyproject = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
+    scripts = pyproject["project"]["scripts"]
+    optional_dependencies = pyproject["project"]["optional-dependencies"]
+    gui_requirements = {
+        _dependency_name(requirement) for requirement in optional_dependencies["gui"]
+    }
+    all_requirements = {
+        _dependency_name(requirement)
+        for requirement in optional_dependencies.get("all", [])
+    }
+
+    assert scripts == {"gwexpy": "gwexpy.cli:main"}
+    assert gui_requirements
+    assert gui_requirements.isdisjoint(all_requirements)
+
+
 def test_conda_forge_roadmap_records_noarch_python_recipe_test_coverage():
     recipe = _roadmap_initial_recipe()
 

@@ -128,10 +128,10 @@ feedstock will exercise. In the current roadmap draft, that means `3.11.*` and
 extension modules, revisit the platform model before submitting.
 
 The initial recipe should keep only the core `gwexpy` console script in
-`build.entry_points`. `gwexpy.gui` imports PyQt5 and depends on the optional
-GUI stack, so it should stay out of the first noarch core recipe unless the GUI
-dependencies are added explicitly or the GUI is split into a separate output
-later.
+`build.entry_points`. The first PyPI package does not expose `gwexpy.gui` as a
+console script because the GUI app is a post-release stabilization track. If the
+GUI is added later, keep it in a separate output or add the GUI dependencies
+explicitly.
 
 ## Core Dependency Map
 

@@ -128,7 +128,8 @@ audio = [
   "tinytag>=1.10",
 ]
 
-# GUI (experimental, not included in v0.1.0 release)
+# GUI dependencies for source/development use. The GUI app is experimental,
+# not included in gwexpy[all], and not part of the first PyPI supported surface.
 gui = [
   "PyQt5",
   "pyqtgraph",
@@ -154,7 +155,7 @@ dev = [
   "types-PyYAML",
 ]
 
-# Convenience: install all optional features (flattened to avoid self-referential extras)
+# Convenience: install non-GUI optional features (flattened to avoid self-referential extras)
 all = [
   # analysis
   "scikit-learn",
@@ -220,7 +221,6 @@ exclude = ["gwexpy*.tests*", "typings*", "tests*", "docs*", "examples*"]
 
 [project.scripts]
 "gwexpy" = "gwexpy.cli:main"
-"gwexpy.gui" = "gwexpy.gui.pyaggui:main"
 
 [tool.setuptools.dynamic]
 version = {attr = "gwexpy._version.__version__"}
