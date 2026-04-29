@@ -685,6 +685,10 @@ class CouplingFunctionAnalysis:
         # Witness PSDs
         psd_wit_inj = ts_wit_inj.psd(**psd_kwargs)
         psd_wit_bkg = ts_wit_bkg.psd(**psd_kwargs)
+        if not _frequency_grids_match(psd_wit_inj, psd_wit_bkg):
+            raise ValueError(
+                "Witness injection and background PSD frequency grids are incompatible."
+            )
 
         t_start = time.perf_counter()
 

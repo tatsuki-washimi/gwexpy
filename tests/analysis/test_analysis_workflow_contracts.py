@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+from typing import cast
 
 import matplotlib
 
@@ -14,9 +15,15 @@ from gwpy.segments import Segment
 from gwpy.timeseries import TimeSeries
 
 from gwexpy.analysis import coupling as coupling_mod
-from gwexpy.analysis.bruco import Bruco, BrucoResult, _resolve_block_size
+from gwexpy.analysis.bruco import (
+    Bruco,
+    BrucoMetadataValue,
+    BrucoResult,
+    _resolve_block_size,
+)
 from gwexpy.analysis.coupling_result import CouplingResult, CouplingResultCollection
 from gwexpy.analysis.response import ResponseFunctionResult, _compute_response_row
+from gwexpy.analysis.threshold import ThresholdStrategy
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.spectrogram import Spectrogram
 from gwexpy.timeseries import TimeSeriesDict
@@ -40,7 +47,11 @@ def _frequency_series(
 def test_bruco_result_preserves_metadata_and_exports_ranked_topn(monkeypatch) -> None:
     freqs = np.array([10.0, 20.0, 30.0, 40.0])
     target_psd = np.array([4.0, 9.0, 16.0, 25.0])
-    metadata = {"fftlength": 4, "overlap": 2, "run": "contract"}
+    metadata: dict[str, BrucoMetadataValue] = {
+        "fftlength": 4,
+        "overlap": 2,
+        "run": "contract",
+    }
 
     monkeypatch.setenv("GWEXPY_BRUCO_BLOCK_BYTES", str(8 * len(freqs) * (2 + 17)))
     assert _resolve_block_size("auto", n_bins=len(freqs), top_n=2) == 17
@@ -195,23 +206,25 @@ class _StaticPsdSeries:
         return self._psd
 
 
-class _AllTrueThreshold:
+class _AllTrueThreshold(ThresholdStrategy):
     def check(
         self,
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
-        del psd_bkg, kwargs
+        del psd_bkg, raw_bkg, kwargs
         return np.ones_like(psd_inj.value, dtype=bool)
 
     def threshold(
         self,
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
-        del psd_inj, kwargs
+        del psd_inj, raw_bkg, kwargs
         return psd_bkg.value * 2.0
 
 
@@ -228,16 +241,16 @@ def test_coupling_skips_target_when_any_psd_frequency_grid_mismatches() -> None:
     with pytest.warns(UserWarning, match="Skipping coupling target TGT"):
         result = coupling_mod._process_single_target(
             "TGT",
-            _StaticPsdSeries(psd_tgt_inj, u.m),
-            _StaticPsdSeries(psd_tgt_bkg, u.m),
+            cast(TimeSeries, _StaticPsdSeries(psd_tgt_inj, u.m)),
+            cast(TimeSeries, _StaticPsdSeries(psd_tgt_bkg, u.m)),
             {"fftlength": 1.0},
             psd_wit_inj,
             psd_wit_bkg,
             np.ones(3, dtype=bool),
             psd_wit_inj.value - psd_wit_bkg.value,
             "WIT",
-            _StaticPsdSeries(psd_wit_inj, u.V),
-            _StaticPsdSeries(psd_wit_bkg, u.V),
+            cast(TimeSeries, _StaticPsdSeries(psd_wit_inj, u.V)),
+            cast(TimeSeries, _StaticPsdSeries(psd_wit_bkg, u.V)),
             _AllTrueThreshold(),
             {},
             1.0,
@@ -259,16 +272,16 @@ def test_coupling_rejects_nonfinite_excess_power_bins() -> None:
 
     result = coupling_mod._process_single_target(
         "TGT",
-        _StaticPsdSeries(psd_tgt_inj, u.m),
-        _StaticPsdSeries(psd_tgt_bkg, u.m),
+        cast(TimeSeries, _StaticPsdSeries(psd_tgt_inj, u.m)),
+        cast(TimeSeries, _StaticPsdSeries(psd_tgt_bkg, u.m)),
         {"fftlength": 1.0},
         psd_wit_inj,
         psd_wit_bkg,
         np.ones(4, dtype=bool),
         psd_wit_inj.value - psd_wit_bkg.value,
         "WIT",
-        _StaticPsdSeries(psd_wit_inj, u.V),
-        _StaticPsdSeries(psd_wit_bkg, u.V),
+        cast(TimeSeries, _StaticPsdSeries(psd_wit_inj, u.V)),
+        cast(TimeSeries, _StaticPsdSeries(psd_wit_bkg, u.V)),
         _AllTrueThreshold(),
         {},
         1.0,
@@ -311,6 +324,55 @@ def test_response_row_mismatched_background_grid_returns_nan_cf(
     assert np.isnan(row["cf"])
 
 
+def test_coupling_rejects_mismatched_witness_psd_frequency_grids(
+    monkeypatch,
+) -> None:
+    freqs = np.array([10.0, 20.0, 30.0])
+    psd_wit_inj = _frequency_series([4.0, 5.0, 6.0], freqs, unit=u.V**2 / u.Hz)
+    psd_wit_bkg = _frequency_series(
+        [1.0, 1.0, 1.0], np.array([10.0, 20.0, 31.0]), unit=u.V**2 / u.Hz
+    )
+    psd_tgt = _frequency_series([2.0, 2.0, 2.0], freqs, unit=u.m**2 / u.Hz)
+
+    sample_rate = 64.0
+    times = np.arange(int(sample_rate * 4.0)) / sample_rate
+    witness_inj = TimeSeries(
+        np.sin(2.0 * np.pi * 8.0 * times),
+        sample_rate=sample_rate * u.Hz,
+        name="WIT",
+    )
+    witness_bkg = TimeSeries(
+        np.sin(2.0 * np.pi * 8.0 * times),
+        sample_rate=sample_rate * u.Hz,
+        name="WIT",
+    )
+    target = TimeSeries(
+        np.sin(2.0 * np.pi * 8.0 * times),
+        sample_rate=sample_rate * u.Hz,
+        name="TGT",
+    )
+
+    psd_by_id = {
+        id(witness_inj): psd_wit_inj,
+        id(witness_bkg): psd_wit_bkg,
+        id(target): psd_tgt,
+    }
+
+    def fake_psd(self, **kwargs):
+        del kwargs
+        return psd_by_id[id(self)]
+
+    monkeypatch.setattr(TimeSeries, "psd", fake_psd)
+
+    with pytest.raises(ValueError, match="Witness.*frequency grids"):
+        coupling_mod.CouplingFunctionAnalysis().compute(
+            data_inj=TimeSeriesDict({"WIT": witness_inj, "TGT": target}),
+            data_bkg=TimeSeriesDict({"WIT": witness_bkg, "TGT": target}),
+            fftlength=1.0,
+            witness="WIT",
+        )
+
+
 def test_response_function_result_plot_sorts_without_mutating_metadata() -> None:
     freqs = np.array([8.0, 16.0, 32.0, 64.0])
     times = np.array([100.0, 110.0, 120.0])
@@ -351,8 +413,8 @@ def test_response_function_result_plot_sorts_without_mutating_metadata() -> None
     ax = result.plot()
     line = ax.lines[0]
 
-    np.testing.assert_allclose(line.get_xdata(), [10.0, 20.0, 30.0])
-    np.testing.assert_allclose(line.get_ydata(), [1.0e-4, 2.0e-4, 3.0e-4])
+    np.testing.assert_allclose(np.asarray(line.get_xdata()), [10.0, 20.0, 30.0])
+    np.testing.assert_allclose(np.asarray(line.get_ydata()), [1.0e-4, 2.0e-4, 3.0e-4])
     np.testing.assert_allclose(result.injected_freqs, injected_freqs)
     np.testing.assert_allclose(result.coupling_factors, coupling_factors)
     assert result.spectrogram_inj.unit == unit
