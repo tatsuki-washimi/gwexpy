@@ -8,7 +8,7 @@ skill:
   - test-driven-development
   - verification-before-completion
 issue: 288
-branch: codex/wave3-288-preprocessing-contracts
+branch: codex/288-preprocessing-contract-closure
 agent_role: Implementation worker
 agent_model: Codex session default
 
@@ -20,7 +20,7 @@ commands_executed:
   - cmd: "rtk cat .agent/skills_index.md"
     result: "Confirmed this checkout has a skills index rather than individual .agent skill directories."
   - cmd: "rtk git status --short --branch"
-    result: "Confirmed worktree branch codex/wave3-288-preprocessing-contracts."
+    result: "Confirmed worktree branch codex/288-preprocessing-contract-closure."
   - cmd: "rtk rg --files docs/developers/plans"
     result: "Reviewed available Wave 3 audit plan and manifest examples."
   - cmd: "rtk sed -n '1,260p' gwexpy/timeseries/preprocess.py"
@@ -43,12 +43,26 @@ commands_executed:
     result: "Reviewed existing standardization and whitening metadata/unit tests."
   - cmd: "rtk sed -n '1,560p' tests/signal/test_imputation.py"
     result: "Reviewed low-level signal imputation policy and optional pandas fallback tests."
+  - cmd: "rtk pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py"
+    result: "Pre-change local baseline: 6 passed."
+  - cmd: "rtk pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py"
+    result: "After adding second-slice characterization tests: 9 passed, 1 failed; adjusted multivariate TimeSeriesList restoration assertions to match current Matrix-forward/List-inverse behavior."
+  - cmd: "rtk python -c \"...\""
+    result: "Probed multivariate StandardizeTransform TimeSeriesList fit_transform and inverse_transform return types: forward returned TimeSeriesMatrix, inverse returned TimeSeriesList."
+  - cmd: "rtk pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py"
+    result: "After updating forward-return assertion: 9 passed, 1 failed; unit assertion showed inverse-restored TimeSeriesList elements are dimensionless in current behavior."
+  - cmd: "rtk pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py"
+    result: "10 passed after baselining dimensionless inverse-restored list units."
   - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py"
     result: "Initial run: 1 failed, 5 passed; adjusted matrix unit assertion to per-element unit contract."
   - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py"
     result: "6 passed, 1 warning from GWpy TimeSeries xindex/x0 construction."
   - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py tests/timeseries/test_preprocess_impute.py tests/timeseries/test_preprocess_standardize_whiten.py tests/timeseries/test_pipeline.py tests/timeseries/test_decomposition.py tests/signal/test_imputation.py tests/signal/test_preprocessing.py"
     result: "313 passed, 1 skipped, 10 warnings from current GWpy xindex/x0 construction and all-NaN mean imputation behavior."
+  - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py"
+    result: "10 passed, 2 warnings from current GWpy xindex/x0 construction."
+  - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/timeseries/test_preprocessing_pipeline_contracts.py tests/timeseries/test_preprocess_impute.py tests/timeseries/test_preprocess_standardize_whiten.py tests/timeseries/test_pipeline.py tests/timeseries/test_decomposition.py tests/signal/test_imputation.py tests/signal/test_preprocessing.py"
+    result: "317 passed, 1 skipped, 11 warnings from current GWpy xindex/x0 construction and all-NaN mean imputation behavior."
   - cmd: "rtk ruff check tests/timeseries/test_preprocessing_pipeline_contracts.py"
     result: "No issues found."
   - cmd: "rtk ruff format --check tests/timeseries/test_preprocessing_pipeline_contracts.py"
@@ -64,8 +78,8 @@ verify_physics: not_required_for_this_pr
   # decomposition, forecasting, or Hurst behavior.
 
 test_results:
-  new_test_file: "6 passed, 1 warning"
-  focused_existing_pytest: "313 passed, 1 skipped, 10 warnings"
+  new_test_file: "10 passed, 2 warnings"
+  focused_existing_pytest: "317 passed, 1 skipped, 11 warnings"
   ruff_changed_tests: clean
   ruff_format_changed_tests: clean
   yaml_parse: clean
@@ -76,10 +90,10 @@ test_results:
 
 files_changed:
   - path: tests/timeseries/test_preprocessing_pipeline_contracts.py
-    change: "Added deterministic preprocessing, pipeline, matrix to_list, and PCAResult metadata contract tests."
-  - path: docs/developers/plans/2026-04-28-wave3-preprocessing-pipeline-contract-audit.md
-    change: "Documented #288 first-slice contracts, stable versus experimental surfaces, deferred behavior changes, and verification plan."
-  - path: docs/developers/plans/audit-manifest-288-preprocessing-contracts.yaml
+    change: "Added deterministic preprocessing, pipeline, unsupported input, matrix to_list/list-restoration, PCAResult, ICAResult, and inverse reconstruction metadata contract tests."
+  - path: docs/developers/plans/archive/contract-audits/2026-04-28-wave3-preprocessing-pipeline-contract-audit.md
+    change: "Documented #288 first and second-slice contracts, stable versus experimental surfaces, deferred behavior changes, and verification plan."
+  - path: docs/developers/plans/manifests/audit-manifest-288-preprocessing-contracts.yaml
     change: "Recorded audit commands, verification status, files changed, and deferred follow-ups."
 
 contracts_covered:
@@ -88,14 +102,20 @@ contracts_covered:
   - "impute_timeseries treats NaN as missing but leaves Inf as observed data in the covered forward-fill path."
   - "Quantity max_gap values are converted to the TimeSeries time-axis unit before gap filtering."
   - "Pipeline plus StandardizeTransform restores values, t0, dt, unit, and name in the covered regular TimeSeries path."
+  - "Pipeline.inverse_transform defaults to strict mode and raises ValueError for non-invertible steps such as ImputeTransform."
+  - "StandardizeTransform.inverse_transform raises TypeError for incompatible ndarray input after fitting on TimeSeries."
   - "TimeSeriesMatrix.to_list flattens a multi-row, multi-column matrix in row-major order with per-element metadata."
+  - "Multivariate StandardizeTransform over TimeSeriesList currently returns TimeSeriesMatrix on forward transform and restores a flat TimeSeriesList on inverse; values, names, t0, and dt round-trip, while restored list units are dimensionless."
   - "PCAResult aliases and summary_dict expose passive wrapped-model and metadata contracts without requiring sklearn."
+  - "PCA inverse reconstruction uses input_meta original_shape when feature counts match, applies channel_labels, and takes t0/dt from the scores object."
+  - "ICAResult stores passive metadata; non-prewhitened ICA inverse reconstruction uses input_meta original_shape when feature counts match, applies channel_labels, and takes t0/dt from the sources object."
 
 deferred_follow_ups:
   - "Decide whether standardization inverse helpers should return metadata-bearing TimeSeries objects or plain arrays."
   - "Clarify StandardizeTransform transformed-unit semantics and whether dimensionless output is required."
   - "Define non-finite input policy across imputation, standardization, whitening, PCA, ICA, ARIMA, and Hurst helpers."
   - "Audit Pipeline unsupported input errors, fit/transform ordering, inverse ordering, and collection restoration semantics."
+  - "Decide whether multivariate TimeSeriesList pipeline inverse output should restore original physical units."
   - "Audit whitening epsilon validation, PCA/ZCA shapes, covariance finite-ness, and metadata propagation."
   - "Audit PCA/ICA optional dependency behavior, reproducibility knobs, inverse shape fallback, and channel metadata."
   - "Audit ARIMA/SARIMAX optional dependencies, forecast intervals, GPS/TAI time assumptions, and output metadata."

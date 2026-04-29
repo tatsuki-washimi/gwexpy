@@ -34,6 +34,12 @@ PCA/ICA runtime paths.
 - `Pipeline([("standardize", StandardizeTransform())])` round-trips values and
   preserves `t0`, `dt`, `unit`, and `name` for the covered regular
   `TimeSeries` case.
+- `Pipeline.inverse_transform()` defaults to strict mode. If a step such as
+  `ImputeTransform` does not advertise inverse support, strict inverse raises
+  `ValueError` with a "does not support inverse_transform" message.
+- `StandardizeTransform.inverse_transform()` raises `TypeError` for an
+  incompatible plain ndarray after fitting on a `TimeSeries`; this slice records
+  the current unsupported-input error surface without changing accepted inputs.
 
 ### Imputation
 
@@ -52,6 +58,12 @@ PCA/ICA runtime paths.
   in row-major order into a `TimeSeriesList`.
 - Flattened elements preserve per-element value arrays, names, `t0`, `dt`, and
   units for the covered `(2, 2, 4)` matrix.
+- In the covered multivariate `StandardizeTransform` path, fitting and
+  transforming a `TimeSeriesList` currently returns a `TimeSeriesMatrix`, while
+  inverse-transforming that matrix restores a flat `TimeSeriesList` through
+  `to_list()` semantics. Values, names, `t0`, and `dt` round-trip in this path,
+  but restored list elements are currently dimensionless rather than preserving
+  the original physical unit.
 - This test is intentionally separate from collection-restoration runtime
   changes. Follow-up work should decide whether row/column structure should be
   preserved or whether flat list semantics are the intended public contract.
@@ -68,6 +80,13 @@ PCA/ICA runtime paths.
 - `channel_labels`, `preprocessing`, and `input_meta` are currently passive
   stored metadata; this slice does not assert mutation, validation, or metadata
   propagation through transform/inverse-transform paths.
+- `pca_inverse_transform()` and `ica_inverse_transform()` use
+  `input_meta["original_shape"]` to restore the reconstructed matrix shape when
+  the reconstructed feature count matches that shape. The returned matrix takes
+  `t0` and `dt` from the scores/sources input object, not from `input_meta`.
+- PCA/ICA inverse reconstruction applies stored `channel_labels` to the returned
+  matrix when labels are present. The covered ICA inverse case records passive
+  result metadata and the non-prewhitened reconstruction path only.
 
 ## Stable Versus Experimental Surfaces
 
@@ -101,6 +120,8 @@ These are intentionally not included in this docs/test-only slice:
   Hurst helpers.
 - Change `TimeSeriesMatrix.to_list()` flattening, collection restoration, or
   row/column metadata preservation.
+- Change multivariate pipeline collection restoration to preserve original list
+  units on inverse output.
 - Change whitening epsilon validation or numerical regularization thresholds.
 - Change PCA/ICA inverse shape fallback behavior, optional dependency errors,
   reproducibility knobs, or metadata propagation.
@@ -158,7 +179,7 @@ rtk ruff format --check tests/timeseries/test_preprocessing_pipeline_contracts.p
 rtk python - <<'PY'
 import yaml
 from pathlib import Path
-yaml.safe_load(Path("docs/developers/plans/audit-manifest-288-preprocessing-contracts.yaml").read_text())
+yaml.safe_load(Path("docs/developers/plans/manifests/audit-manifest-288-preprocessing-contracts.yaml").read_text())
 PY
 rtk git diff --check
 ```
