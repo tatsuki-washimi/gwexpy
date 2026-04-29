@@ -150,3 +150,17 @@ review_response_2026_04_29_b:
       result: "4 files already formatted."
     - cmd: "rtk mypy gwexpy/analysis/bruco.py gwexpy/analysis/coupling.py gwexpy/analysis/response.py tests/analysis/test_analysis_workflow_contracts.py --ignore-missing-imports"
       result: "No issues found."
+
+review_response_2026_04_29_c:
+  context: "PR #340 re-review follow-up on commit e0df32b."
+  comments_addressed:
+    - "Removed redundant `BrucoResult.to_dataframe()` metadata type checks after confirming `_metadata_dict()` validates and normalizes metadata at construction time."
+  commands_executed:
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/analysis/test_analysis_workflow_contracts.py::test_bruco_compute_records_auto_block_size_and_exports_metadata tests/analysis/test_analysis_workflow_contracts.py::test_bruco_rejects_non_scalar_metadata_values -p no:cacheprovider"
+      result: "2 passed."
+    - cmd: "rtk ruff check gwexpy/analysis/bruco.py tests/analysis/test_analysis_workflow_contracts.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check gwexpy/analysis/bruco.py tests/analysis/test_analysis_workflow_contracts.py"
+      result: "2 files already formatted."
+    - cmd: "rtk mypy gwexpy/analysis/bruco.py tests/analysis/test_analysis_workflow_contracts.py --ignore-missing-imports"
+      result: "No issues found."

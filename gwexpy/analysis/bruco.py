@@ -659,10 +659,6 @@ class BrucoResult:
         exported = pd.concat(frames, ignore_index=True)
         if include_metadata:
             for key, value in self.metadata.items():
-                if isinstance(value, np.generic):
-                    value = value.item()
-                if not isinstance(value, (str, int, float, bool)):
-                    raise TypeError("BrucoResult metadata values must be scalar.")
                 exported[f"metadata_{key}"] = value
         return exported
 
