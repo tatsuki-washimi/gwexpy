@@ -17,13 +17,13 @@ docs_and_tests_only: false
 runtime_modules_changed: true
 
 verify_physics:
-  status: human_review_recommended
+  status: accepted_by_human_review
   reason: >
     This PR changes plot labels generated from existing metadata and exposes
     a FieldPlot colorbar handle. It does not convert units, change numerical
     data, alter metadata propagation, change GUI behavior, or load optional
-    backends. Human review is recommended because label text is
-    physics-facing presentation.
+    backends. The physics-facing label wording and public
+    FieldPlot.last_field_colorbar API decision were accepted during PR review.
 
 commands_executed:
   - cmd: "rtk sed -n '1,220p' <user-level RTK instruction file>"
@@ -91,7 +91,6 @@ contracts_covered:
   - "GeoMap raises an ImportError with a PyGMT requirement and pip install hint when the optional backend is unavailable."
 
 deferred_follow_ups:
-  - "Human review of physics-facing label wording, especially generic amplitude/field labels."
   - "GauCh backend-specific colorbar exposure and Rayleigh branch structural coverage."
   - "GeoMap, SkyMap, and PairPlot public stability decisions."
   - "Standardized optional backend install hints for plot helpers."

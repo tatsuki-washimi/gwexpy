@@ -27,6 +27,7 @@
 ### Changed
 
 - **fields**: `ScalarField` binary arithmetic now fails fast with `ValueError` when operands have mismatched time/frequency domains, spatial domains, or coordinate grids. Align fields explicitly before arithmetic; future regridding/interpolation APIs will track explicit grid-alignment workflows.
+- **plot**: `FieldPlot` labels now avoid empty unit brackets for unitless metadata and expose the latest scalar colorbar via the public `last_field_colorbar` attribute. Explicit `label=""` colorbar labels remain supported.
 
 ### Documentation
 
