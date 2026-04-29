@@ -2,13 +2,15 @@
 
 ## Overview
 
-**Status:** Experimental
+**Status:** Experimental, source/development track
 
 GWexpy includes a **PyQt5-based GUI** for interactive data exploration and visualization. However, the GUI should currently be treated as an **experimental, prototype-stage interface**, not as a finalized end-user product. For reproducible and fully supported workflows, the **Python API** remains the primary interface.
 
+The GUI app is **not part of the first PyPI supported surface**. The first PyPI release focuses on the Python library API; GUI stabilization is tracked separately as post-release work.
+
 ## Installation
 
-The GUI is available as an optional feature. Install it using the `gui` extra:
+For source checkout or development use, install the GUI dependencies with the `gui` extra:
 
 ```bash
 pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
@@ -21,19 +23,16 @@ This installs additional dependencies:
 
 ## Launching the GUI
 
-### Method 1: Via Python Module (Recommended)
+After installing the GUI extra from a source checkout or development install, launch
+the module directly:
 
 ```bash
 python -m gwexpy.gui
 ```
 
-### Method 2: Via the Package Entry Point
+The first PyPI release does not install a `gwexpy.gui` console script.
 
-```bash
-gwexpy.gui
-```
-
-### Method 3: Programmatically
+### Programmatically
 
 ```python
 from gwexpy.gui.pyaggui import MainWindow

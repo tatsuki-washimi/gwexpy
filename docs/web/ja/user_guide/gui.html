@@ -137,11 +137,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#id1">概要</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id2">インストール</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">GUI を起動する</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">対応ファイル形式</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id7">主な機能</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id11">既知の制限事項</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id12">トラブルシューティング</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id15">参照</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">対応ファイル形式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">主な機能</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">既知の制限事項</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11">トラブルシューティング</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">参照</a></li>
 </ul>
 </li>
 </ul>
@@ -179,12 +179,13 @@
 <h1>グラフィカルユーザーインターフェース（GUI、試作版）<a class="headerlink" href="#gui" title="Link to this heading"></a></h1>
 <section id="id1">
 <h2>概要<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<p><strong>ステータス:</strong> 試作版（安定性ラベル）</p>
+<p><strong>ステータス:</strong> 試作版（ソース / 開発環境向け）</p>
 <p>GWexpy には <strong>PyQt5 ベースの GUI</strong> が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI は <strong>試作段階 / 実験的インターフェース</strong>として扱ってください。再現性やサポートの観点では、<strong>Python API</strong> が引き続き主要インターフェースです。</p>
+<p>GUI アプリは <strong>初回 PyPI のサポート対象には含めません</strong>。初回 PyPI リリースは Python ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。</p>
 </section>
 <section id="id2">
 <h2>インストール<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<p>GUI はオプション機能として利用可能です。<code class="docutils literal notranslate"><span class="pre">gui</span></code> extras を使用してインストールしてください：</p>
+<p>ソース checkout または開発用途では、<code class="docutils literal notranslate"><span class="pre">gui</span></code> extras で GUI 依存関係をインストールできます：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
 </pre></div>
 </div>
@@ -197,20 +198,14 @@
 </section>
 <section id="id3">
 <h2>GUI を起動する<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<section id="python">
-<h3>方法 1: Python モジュール経由（推奨）<a class="headerlink" href="#python" title="Link to this heading"></a></h3>
+<p>ソース checkout または開発インストールで GUI extras を入れた後は、
+モジュールを直接起動します：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
 </pre></div>
 </div>
-</section>
+<p>初回 PyPI リリースでは <code class="docutils literal notranslate"><span class="pre">gwexpy.gui</span></code> console script はインストールしません。</p>
 <section id="id4">
-<h3>方法 2: パッケージエントリポイント経由<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gwexpy.gui
-</pre></div>
-</div>
-</section>
-<section id="id5">
-<h3>方法 3: プログラム内での起動<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<h3>プログラム内での起動<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.gui.pyaggui</span><span class="w"> </span><span class="kn">import</span> <span class="n">MainWindow</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyQt5</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtWidgets</span>
@@ -223,8 +218,8 @@
 </div>
 </section>
 </section>
-<section id="id6">
-<h2>対応ファイル形式<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id5">
+<h2>対応ファイル形式<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <p>GUI は以下の形式でのデータ読み込みに対応しています：</p>
 <ul class="simple">
 <li><p><strong>GBD</strong> (GRAPHTEC バイナリ)</p></li>
@@ -240,10 +235,10 @@
 <li><p>データが読み込まれ、メインプロット領域に表示されます</p></li>
 </ol>
 </section>
+<section id="id6">
+<h2>主な機能<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
 <section id="id7">
-<h2>主な機能<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
-<section id="id8">
-<h3>データ可視化<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<h3>データ可視化<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>インタラクティブな時系列プロット</p></li>
 <li><p>スペクトログラムの生成</p></li>
@@ -251,24 +246,24 @@
 <li><p>マルチチャンネル対応</p></li>
 </ul>
 </section>
-<section id="id9">
-<h3>データ検査<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<section id="id8">
+<h3>データ検査<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>メタデータの表示（サンプリングレート、単位、期間）</p></li>
 <li><p>ズームとパンコントロール</p></li>
 <li><p>カーソル位置インジケータ</p></li>
 </ul>
 </section>
-<section id="id10">
-<h3>エクスポート<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>エクスポート<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>図を画像として保存（PNG、PDF など）</p></li>
 <li><p>処理済みデータをエクスポート</p></li>
 </ul>
 </section>
 </section>
-<section id="id11">
-<h2>既知の制限事項<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<section id="id10">
+<h2>既知の制限事項<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>GUI はまだ試作段階の機能であり、挙動・対応ワークフロー・画面構成は今後変更される可能性があります。コア Python API と同等の互換性保証は想定していません。</p></li>
 <li><p>GUI は単一ファイルの解析に最適化されています。バッチ処理には Python API の使用をお勧めします。</p></li>
@@ -276,8 +271,8 @@
 <li><p>一部の高度な解析機能（マッチドフィルタリング、機械学習パイプラインなど）は GUI では利用できません。これらのワークフローについては、Python API を使用してください。</p></li>
 </ul>
 </section>
-<section id="id12">
-<h2>トラブルシューティング<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<section id="id11">
+<h2>トラブルシューティング<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <section id="modulenotfounderror-no-module-named-pyqt5">
 <h3>“ModuleNotFoundError: No module named ‘PyQt5’”<a class="headerlink" href="#modulenotfounderror-no-module-named-pyqt5" title="Link to this heading"></a></h3>
 <p>GUI extras がインストールされていることを確認してください：</p>
@@ -285,24 +280,24 @@
 </pre></div>
 </div>
 </section>
-<section id="id13">
-<h3>GUI が起動しない<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<section id="id12">
+<h3>GUI が起動しない<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
 <p>システムにディスプレイがあることを確認してください（Linux の X11、macOS/Windows はネイティブ）：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span>:0<span class="w">  </span><span class="c1"># Linux/WSL（必要な場合）</span>
 python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
 </pre></div>
 </div>
 </section>
-<section id="id14">
-<h3>ファイルが読み込めない<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<section id="id13">
+<h3>ファイルが読み込めない<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
 <p>ファイルが存在し、対応形式であることを確認してください。コンソール出力でエラーメッセージを確認してください：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
 </pre></div>
 </div>
 </section>
 </section>
-<section id="id15">
-<h2>参照<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<section id="id14">
+<h2>参照<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../index.html"><span class="doc">Python API ドキュメント</span></a> - プログラミングによるデータ解析の方法</p></li>
 <li><p><a class="reference internal" href="tutorials/index.html"><span class="doc">チュートリアル</span></a> - GWexpy の学習用対話的な例</p></li>
@@ -321,7 +316,7 @@ python<span class="w"> </span>-m<span class="w"> </span>gwexpy.gui
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-29 05:41:38.
+      <span class="lastupdated">Last updated on 2026-04-29 07:11:06.
       </span></p>
   </div>
 
