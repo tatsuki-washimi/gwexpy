@@ -119,7 +119,7 @@ pip install -e ".[dev,all]"
 | `audio` | `pydub`, `tinytag` | Audio export, processing, and optional metadata extraction. |
 | `seismic` | `obspy`, `mth5`, `mtpy` | Seismic and magnetotelluric data. |
 | `control` | `control` (python-control) | Control systems and transfer functions. |
-| `gui` | `PyQt5`, `pyqtgraph` | Graphical interface (prototype stage). Not included in `all`. |
+| `gui` | `PyQt5`, `pyqtgraph` | Experimental GUI dependencies for source/development use. The GUI app is not part of the first PyPI supported surface and is not included in `all`. |
 
 ---
 

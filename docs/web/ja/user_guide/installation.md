@@ -119,7 +119,7 @@ pip install -e ".[dev,all]"
 | `audio` | `pydub`, `tinytag` | 音声書き出し、オーディオ解析、任意のメタデータ抽出。 |
 | `seismic` | `obspy`, `mth5`, `mtpy` | 地震・地磁気データ解析。 |
 | `control` | `control` (python-control) | 制御系モデル・伝達関数解析。 |
-| `gui` | `PyQt5`, `pyqtgraph` | グラフィカルインターフェース（試作段階）。 |
+| `gui` | `PyQt5`, `pyqtgraph` | ソース / 開発環境向けの試作 GUI 依存関係。GUI アプリは初回 PyPI のサポート対象には含めず、`all` にも含めません。 |
 
 ---
 

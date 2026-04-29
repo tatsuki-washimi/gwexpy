@@ -4,16 +4,17 @@ Graphical User Interface
 **Stability:** Experimental
 
 .. warning::
-   The GWexpy GUI (``gwexpy.gui``) is **experimental** and not included in the v0.1.0
-   release. It requires the ``.[gui]`` optional dependency (PyQt5, pyqtgraph).
-   The API may change without notice.
+   The GWexpy GUI (``gwexpy.gui``) is **experimental** and not part of the first
+   PyPI supported surface. It requires the ``.[gui]`` optional dependency
+   (PyQt5, pyqtgraph) for source/development use. The API may change without
+   notice.
 
 To launch the GUI after installing the optional dependency:
 
 .. code-block:: bash
 
    pip install "gwexpy[gui] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
-   gwexpy.gui
+   python -m gwexpy.gui
 
 .. currentmodule:: gwexpy.gui
 

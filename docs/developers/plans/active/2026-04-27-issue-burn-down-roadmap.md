@@ -52,7 +52,7 @@ then publish package releases.
 ### Plot, GUI, Docs, And I/O Residuals
 
 - #272 Finish small I/O and interop audit follow-ups
-- #274 Harden GUI and plot metadata contracts
+- #274 Harden GUI and plot metadata contracts (post-release GUI track)
 - #275 Add tutorial and public-doc drift prevention guards
 - #283 Audit extended plot helper and visual contract surface
 - #347 Track residual plot-helper policies after #283
@@ -364,15 +364,15 @@ the data and metadata contracts are clear.
 1. #275: Add public-doc drift guards and update stale tutorial/notebook patterns.
 2. #283: Audit extended plot helpers and add headless structural assertions.
 3. #274: Harden GUI and core plot metadata behavior against the settled
-   metadata contracts.
+   metadata contracts as a post-release GUI stabilization track.
 
 **Completion criteria:**
 
 - Public docs no longer teach stale API patterns.
 - Plot labels, colorbars, legends, title defaults, and unitless behavior have
   headless tests where stable.
-- GUI payload metadata gaps are baselined before any metadata-rich behavior is
-  introduced.
+- GUI payload metadata gaps are tracked as post-release stabilization work
+  before any metadata-rich GUI behavior is introduced.
 
 #### Wave 4 Progress Report
 
@@ -397,7 +397,9 @@ Net outcome:
   Rayleigh structural coverage, ancillary helper public-stability decisions,
   optional backend install hints, and visual-regression policy.
 - #274 remains open for GUI payload metadata, renderer labels, and colorbar
-  behavior that affects GUI-facing contracts. It is the next implementation PR.
+  behavior that affects GUI-facing contracts, but it is not release-blocking for
+  the first PyPI package because the GUI app is outside the first supported
+  PyPI surface.
 
 ### Wave 5: Release Readiness
 
@@ -440,6 +442,10 @@ Net outcome:
   Publishing environment verification, final target version/date decision, tag
   creation, release workflow execution, and confirmation that the published
   package installs from PyPI.
+- #274 is explicitly deferred as a post-release GUI stabilization track. The
+  first PyPI package supports the Python library surface, not the experimental
+  GUI app; `gwexpy.gui` is not installed as a console script for the first PyPI
+  release.
 - #294 remains open for the external `conda-forge/staged-recipes` submission
   after a stable source release exists or maintainers explicitly approve a
   source-archive-first submission.
@@ -547,6 +553,12 @@ Before closing #293, decide for every remaining audit issue whether it is:
   target release.
 - **Post-release follow-up:** not part of the public contract for the target
   release, but tracked with a clear owner and scope.
+
+Current classification:
+
+- #274 is a **post-release follow-up**. The first PyPI release excludes the
+  experimental GUI app from the supported public surface and does not expose a
+  `gwexpy.gui` console script.
 
 Conda-forge onboarding (#294) should start after a stable PyPI/source release
 unless maintainers intentionally choose a source-archive-first conda submission.
