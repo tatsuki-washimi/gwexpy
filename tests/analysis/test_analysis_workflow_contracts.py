@@ -22,7 +22,11 @@ from gwexpy.analysis.bruco import (
     _resolve_block_size,
 )
 from gwexpy.analysis.coupling_result import CouplingResult, CouplingResultCollection
-from gwexpy.analysis.response import ResponseFunctionResult, _compute_response_row
+from gwexpy.analysis.response import (
+    ResponseFunctionAnalysis,
+    ResponseFunctionResult,
+    _compute_response_row,
+)
 from gwexpy.analysis.threshold import ThresholdStrategy
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.spectrogram import Spectrogram
@@ -228,7 +232,9 @@ class _AllTrueThreshold(ThresholdStrategy):
         return psd_bkg.value * 2.0
 
 
-def test_coupling_skips_target_when_any_psd_frequency_grid_mismatches() -> None:
+def test_coupling_skips_target_when_target_injection_background_grids_mismatch() -> (
+    None
+):
     witness_freqs = np.array([10.0, 20.0, 30.0])
     shifted_target_freqs = np.array([10.0, 20.0, 31.0])
     psd_wit_inj = _frequency_series([4.0, 5.0, 6.0], witness_freqs, unit=u.V**2 / u.Hz)
@@ -259,6 +265,45 @@ def test_coupling_skips_target_when_any_psd_frequency_grid_mismatches() -> None:
         )
 
     assert result is None
+
+
+def test_coupling_uses_common_prefix_when_target_nyquist_is_lower() -> None:
+    witness_freqs = np.array([0.0, 10.0, 20.0, 30.0, 40.0])
+    target_freqs = np.array([0.0, 10.0, 20.0])
+    psd_wit_inj = _frequency_series(
+        [2.0, 5.0, 10.0, 17.0, 26.0], witness_freqs, unit=u.V**2 / u.Hz
+    )
+    psd_wit_bkg = _frequency_series(
+        [1.0, 1.0, 1.0, 1.0, 1.0], witness_freqs, unit=u.V**2 / u.Hz
+    )
+    psd_tgt_inj = _frequency_series([2.0, 5.0, 10.0], target_freqs, unit=u.m**2 / u.Hz)
+    psd_tgt_bkg = _frequency_series([1.0, 1.0, 1.0], target_freqs, unit=u.m**2 / u.Hz)
+
+    result = coupling_mod._process_single_target(
+        "TGT",
+        cast(TimeSeries, _StaticPsdSeries(psd_tgt_inj, u.m)),
+        cast(TimeSeries, _StaticPsdSeries(psd_tgt_bkg, u.m)),
+        {"fftlength": 1.0},
+        psd_wit_inj,
+        psd_wit_bkg,
+        np.ones(len(witness_freqs), dtype=bool),
+        psd_wit_inj.value - psd_wit_bkg.value,
+        "WIT",
+        cast(TimeSeries, _StaticPsdSeries(psd_wit_inj, u.V)),
+        cast(TimeSeries, _StaticPsdSeries(psd_wit_bkg, u.V)),
+        _AllTrueThreshold(),
+        {},
+        1.0,
+        0.0,
+        None,
+    )
+
+    assert result is not None
+    _, coupling_result = result
+    np.testing.assert_allclose(coupling_result.cf.xindex.value, target_freqs)
+    np.testing.assert_allclose(coupling_result.cf.value, [1.0, 1.0, 1.0])
+    assert len(coupling_result.psd_witness_inj.value) == len(target_freqs)
+    assert len(coupling_result.psd_target_inj.value) == len(target_freqs)
 
 
 def test_coupling_rejects_nonfinite_excess_power_bins() -> None:
@@ -322,6 +367,80 @@ def test_response_row_mismatched_background_grid_returns_nan_cf(
     )
 
     assert np.isnan(row["cf"])
+
+
+def test_response_row_preserves_target_high_frequency_grid_when_witness_is_shorter(
+    monkeypatch,
+) -> None:
+    ts_wit = TimeSeries(np.ones(512), t0=0.0, dt=1.0 / 128, name="W")
+    ts_tgt = TimeSeries(np.ones(2048), t0=0.0, dt=1.0 / 512, name="T")
+    wit_inj = _frequency_series([1.0, 3.0, 5.0], np.array([0.0, 32.0, 64.0]))
+    wit_bkg = _frequency_series([1.0, 1.0, 1.0], np.array([0.0, 32.0, 64.0]))
+    tgt_inj = _frequency_series(
+        [1.0, 4.0, 9.0, 16.0, 25.0], np.array([0.0, 32.0, 64.0, 96.0, 128.0])
+    )
+    tgt_bkg = _frequency_series(
+        [1.0, 1.0, 1.0, 1.0, 1.0], np.array([0.0, 32.0, 64.0, 96.0, 128.0])
+    )
+    asd_by_name = {
+        "W": wit_inj,
+        "T": tgt_inj,
+    }
+
+    def fake_asd(self, **kwargs):
+        del kwargs
+        return asd_by_name[self.name]
+
+    monkeypatch.setattr(TimeSeries, "asd", fake_asd)
+
+    row = _compute_response_row(
+        witness=ts_wit,
+        target=ts_tgt,
+        segment=Segment(0.0, 4.0),
+        injected_freq=32.0,
+        fftlength=1.0,
+        overlap=0.0,
+        kwargs={},
+        master_asd_wit_bkg=wit_bkg,
+        master_asd_tgt_bkg=tgt_bkg,
+    )
+
+    np.testing.assert_allclose(row["tgt_asd_inj"].xindex.value, tgt_inj.xindex.value)
+    assert row["cf"] == pytest.approx(np.sqrt((4.0**2 - 1.0**2) / (3.0**2 - 1.0**2)))
+
+
+def test_response_compute_keeps_target_spectrogram_above_witness_nyquist(
+    monkeypatch,
+) -> None:
+    ts_wit = TimeSeries(np.ones(512), t0=0.0, dt=1.0 / 128, name="W")
+    ts_tgt = TimeSeries(np.ones(2048), t0=0.0, dt=1.0 / 512, name="T")
+    wit_asd = _frequency_series([1.0, 3.0, 5.0], np.array([0.0, 32.0, 64.0]))
+    tgt_asd = _frequency_series(
+        [1.0, 4.0, 9.0, 16.0, 25.0], np.array([0.0, 32.0, 64.0, 96.0, 128.0])
+    )
+    asd_by_name = {
+        "W": wit_asd,
+        "T": tgt_asd,
+    }
+
+    def fake_asd(self, **kwargs):
+        del kwargs
+        return asd_by_name[self.name]
+
+    monkeypatch.setattr(TimeSeries, "asd", fake_asd)
+
+    result = ResponseFunctionAnalysis().compute(
+        witness=ts_wit,
+        target=ts_tgt,
+        segments=[(0.0, 4.0, 32.0)],
+        fftlength=1.0,
+        auto_detect=False,
+    )
+
+    np.testing.assert_allclose(
+        result.spectrogram_inj.yindex.value, tgt_asd.xindex.value
+    )
+    assert result.spectrogram_inj.value.shape == (1, len(tgt_asd.value))
 
 
 def test_coupling_rejects_mismatched_witness_psd_frequency_grids(

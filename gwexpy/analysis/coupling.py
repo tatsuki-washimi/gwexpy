@@ -14,6 +14,7 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
+from astropy import units as u
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +76,38 @@ def _frequency_grids_match(
     rhs_freqs = _index_values(rhs.xindex)
     return lhs_freqs.shape == rhs_freqs.shape and np.allclose(
         lhs_freqs, rhs_freqs, rtol=rtol, atol=atol
+    )
+
+
+def _common_frequency_prefix_length(
+    lhs: FrequencySeries,
+    rhs: FrequencySeries,
+    *,
+    rtol: float = 1e-10,
+    atol: float = 1e-12,
+) -> int:
+    lhs_freqs = _index_values(lhs.xindex)
+    rhs_freqs = _index_values(rhs.xindex)
+    common_len = min(lhs_freqs.size, rhs_freqs.size)
+    if common_len == 0:
+        return 0
+    if not np.allclose(
+        lhs_freqs[:common_len], rhs_freqs[:common_len], rtol=rtol, atol=atol
+    ):
+        return 0
+    return int(common_len)
+
+
+def _slice_frequency_series(series: FrequencySeries, stop: int) -> FrequencySeries:
+    if stop == len(series.value):
+        return series
+    return FrequencySeries(
+        np.asarray(series.value, dtype=float)[:stop],
+        frequencies=_index_values(series.xindex)[:stop] * u.Hz,
+        unit=series.unit,
+        name=series.name,
+        epoch=getattr(series, "epoch", None),
+        channel=getattr(series, "channel", None),
     )
 
 
@@ -202,31 +235,45 @@ def _process_single_target(
     psd_tgt_inj = ts_tgt_inj.psd(**psd_kwargs)
     psd_tgt_bkg = ts_tgt_bkg.psd(**psd_kwargs)
 
-    # Frequency check: all PSD arithmetic below is elementwise on this grid.
-    if not all(
-        _frequency_grids_match(psd_wit_inj, series)
-        for series in (psd_wit_bkg, psd_tgt_inj, psd_tgt_bkg)
-    ):
-        _warn_skip_target(tgt_key, "its PSD frequency grids are incompatible")
+    if not _frequency_grids_match(psd_wit_inj, psd_wit_bkg):
+        _warn_skip_target(tgt_key, "the witness PSD frequency grids are incompatible")
+        return None
+    if not _frequency_grids_match(psd_tgt_inj, psd_tgt_bkg):
+        _warn_skip_target(tgt_key, "the target PSD frequency grids are incompatible")
+        return None
+
+    common_len = _common_frequency_prefix_length(psd_wit_inj, psd_tgt_inj)
+    if common_len == 0:
+        _warn_skip_target(
+            tgt_key,
+            "the witness and target PSD frequency grids have no exact common prefix",
+        )
         return None
 
     # Check Target Excess
-    mask_tgt = threshold_target.check(
+    mask_tgt_full = threshold_target.check(
         psd_tgt_inj,
         psd_tgt_bkg,
         raw_bkg=ts_tgt_bkg,
         bkg_table=bkg_table,
         **check_kwargs,
     )
-    mask_wit = np.asarray(mask_wit, dtype=bool)
-    mask_tgt = np.asarray(mask_tgt, dtype=bool)
+    mask_wit_full = np.asarray(mask_wit, dtype=bool)
+    mask_tgt_full = np.asarray(mask_tgt_full, dtype=bool)
     if (
-        mask_wit.shape != psd_wit_inj.value.shape
-        or mask_tgt.shape != psd_tgt_inj.value.shape
+        mask_wit_full.shape != psd_wit_inj.value.shape
+        or mask_tgt_full.shape != psd_tgt_inj.value.shape
     ):
         _warn_skip_target(tgt_key, "its threshold masks do not match PSD shapes")
         return None
 
+    psd_wit_inj = _slice_frequency_series(psd_wit_inj, common_len)
+    psd_wit_bkg = _slice_frequency_series(psd_wit_bkg, common_len)
+    psd_tgt_inj = _slice_frequency_series(psd_tgt_inj, common_len)
+    psd_tgt_bkg = _slice_frequency_series(psd_tgt_bkg, common_len)
+    mask_wit = mask_wit_full[:common_len]
+    mask_tgt = mask_tgt_full[:common_len]
+    delta_wit = np.asarray(delta_wit, dtype=float)[:common_len]
     delta_tgt = psd_tgt_inj.value - psd_tgt_bkg.value
 
     # --- Compute CF ---
@@ -241,7 +288,7 @@ def _process_single_target(
         & (delta_tgt > 0)
     )
     if freq_mask is not None:
-        valid_mask = valid_mask & freq_mask
+        valid_mask = valid_mask & freq_mask[:common_len]
 
     cf_values = np.full_like(delta_wit, np.nan)
 
@@ -272,7 +319,7 @@ def _process_single_target(
     # --- Calculate Upper Limit (UL) ---
     mask_ul = mask_wit & (~mask_tgt) & finite_wit & (delta_wit > 0)
     if freq_mask is not None:
-        mask_ul = mask_ul & freq_mask
+        mask_ul = mask_ul & freq_mask[:common_len]
 
     try:
         psd_tgt_threshold = threshold_target.threshold(
@@ -288,7 +335,9 @@ def _process_single_target(
     if hasattr(psd_tgt_threshold, "value"):
         psd_tgt_threshold = psd_tgt_threshold.value
 
-    delta_thr = psd_tgt_threshold - psd_tgt_bkg.value
+    delta_thr = (
+        np.asarray(psd_tgt_threshold, dtype=float)[:common_len] - psd_tgt_bkg.value
+    )
     mask_ul = mask_ul & np.isfinite(delta_thr) & (delta_thr > 0)
 
     ul_values = np.full_like(delta_wit, np.nan)

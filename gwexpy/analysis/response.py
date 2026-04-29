@@ -51,6 +51,13 @@ def _freq_grids_match(
     )
 
 
+def _nearest_frequency_index(series: Any, frequency: float) -> int | None:
+    freqs = _freq_values(series)
+    if freqs.size == 0 or frequency < freqs[0] or frequency > freqs[-1]:
+        return None
+    return int(np.argmin(np.abs(freqs - frequency)))
+
+
 def _estimate_response_row_bytes(
     witness: TimeSeries,
     target: TimeSeries,
@@ -138,16 +145,22 @@ def _compute_response_row(
         )
         tgt_asd_bkg = tgt_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
 
-    row_series = [wit_asd_inj, tgt_asd_inj, wit_asd_bkg, tgt_asd_bkg]
-    compatible_grids = all(
-        len(series.value) == len(wit_asd_inj.value)
-        and _freq_grids_match(series, wit_asd_inj)
-        for series in row_series[1:]
-    )
-    if compatible_grids:
-        f_idx = np.argmin(np.abs(wit_asd_inj.xindex.value - injected_freq))
-        p_wit_net = wit_asd_inj.value[f_idx] ** 2 - wit_asd_bkg.value[f_idx] ** 2
-        p_tgt_net = tgt_asd_inj.value[f_idx] ** 2 - tgt_asd_bkg.value[f_idx] ** 2
+    compatible_witness_grids = len(wit_asd_bkg.value) == len(
+        wit_asd_inj.value
+    ) and _freq_grids_match(wit_asd_bkg, wit_asd_inj)
+    compatible_target_grids = len(tgt_asd_bkg.value) == len(
+        tgt_asd_inj.value
+    ) and _freq_grids_match(tgt_asd_bkg, tgt_asd_inj)
+    wit_idx = _nearest_frequency_index(wit_asd_inj, injected_freq)
+    tgt_idx = _nearest_frequency_index(tgt_asd_inj, injected_freq)
+    if (
+        compatible_witness_grids
+        and compatible_target_grids
+        and wit_idx is not None
+        and tgt_idx is not None
+    ):
+        p_wit_net = wit_asd_inj.value[wit_idx] ** 2 - wit_asd_bkg.value[wit_idx] ** 2
+        p_tgt_net = tgt_asd_inj.value[tgt_idx] ** 2 - tgt_asd_bkg.value[tgt_idx] ** 2
         cf = (
             np.sqrt(p_tgt_net / p_wit_net)
             if np.isfinite(p_wit_net)
@@ -855,21 +868,15 @@ class ResponseFunctionAnalysis:
         ref_freqs: np.ndarray | None = None
 
         for row_index, (_, row) in enumerate(st_data.iterrows()):
-            row_series = [
-                row["wit_asd_inj"],
-                row["tgt_asd_inj"],
-                row["wit_asd_bkg"],
-                row["tgt_asd_bkg"],
-            ]
-            base_freqs = _freq_values(row_series[0])
-            compatible_within_row = all(
-                len(series.value) == len(row_series[0].value)
-                and _freq_grids_match(series, row_series[0])
-                for series in row_series[1:]
-            )
+            tgt_asd_inj = row["tgt_asd_inj"]
+            tgt_asd_bkg = row["tgt_asd_bkg"]
+            base_freqs = _freq_values(tgt_asd_inj)
+            compatible_within_row = len(tgt_asd_bkg.value) == len(
+                tgt_asd_inj.value
+            ) and _freq_grids_match(tgt_asd_bkg, tgt_asd_inj)
             if not compatible_within_row:
                 warnings.warn(
-                    f"Skipping response row {row_index} due to incompatible ASD frequency grids.",
+                    f"Skipping response row {row_index} due to incompatible target ASD frequency grids.",
                     UserWarning,
                     stacklevel=2,
                 )
@@ -879,7 +886,7 @@ class ResponseFunctionAnalysis:
                 ref_freqs = base_freqs
             elif not np.allclose(base_freqs, ref_freqs, rtol=1e-10, atol=1e-12):
                 warnings.warn(
-                    f"Skipping response row {row_index} due to incompatible ASD frequency grids.",
+                    f"Skipping response row {row_index} due to incompatible target ASD frequency grids.",
                     UserWarning,
                     stacklevel=2,
                 )
