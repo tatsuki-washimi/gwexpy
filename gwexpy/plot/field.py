@@ -5,6 +5,41 @@ from .plot import Plot
 __all__ = ["FieldPlot"]
 
 
+def _format_unit_text(unit):
+    """Return a displayable unit string, or None for unitless values."""
+    if unit is None:
+        return None
+
+    try:
+        unit_text = unit.to_string()
+    except (AttributeError, ValueError):
+        unit_text = str(unit)
+
+    if not unit_text or unit_text == "None":
+        return None
+    return unit_text
+
+
+def _format_label_with_unit(label, unit):
+    unit_text = _format_unit_text(unit)
+    label_text = str(label) if label else ""
+
+    if label_text and unit_text:
+        return f"{label_text} [{unit_text}]"
+    if label_text:
+        return label_text
+    if unit_text:
+        return f"[{unit_text}]"
+    return ""
+
+
+def _format_axis_label(name, unit):
+    unit_text = _format_unit_text(unit)
+    if unit_text:
+        return f"{name} [{unit_text}]"
+    return str(name)
+
+
 class FieldPlot(Plot):
     """Enhanced plot class for visualizing ScalarField, VectorField, and TensorField.
 
@@ -30,6 +65,7 @@ class FieldPlot(Plot):
         # We want to allow empty init or init with setup.
         # For now, pass allow empty.
         super().__init__(*args, **kwargs)
+        self.last_field_colorbar = None
 
     def add_scalar(self, field, x=None, y=None, slice_kwargs=None, **kwargs):
         """Add a scalar field slice to the plot.
@@ -76,14 +112,14 @@ class FieldPlot(Plot):
 
         # Labels
         if not ax.get_xlabel():
-            ax.set_xlabel(f"{x_name} [{x_idx.unit}]")
+            ax.set_xlabel(_format_axis_label(x_name, x_idx.unit))
         if not ax.get_ylabel():
-            ax.set_ylabel(f"{y_name} [{y_idx.unit}]")
+            ax.set_ylabel(_format_axis_label(y_name, y_idx.unit))
 
         # Colorbar
         # We wrap standard colorbar to allow options
-        cbar_label = f"{label} [{field.unit}]" if label else f"[{field.unit}]"
-        self.colorbar(mesh, label=cbar_label)
+        cbar_label = _format_label_with_unit(label, getattr(field, "unit", None))
+        self.last_field_colorbar = self.colorbar(mesh, label=cbar_label)
 
         return mesh
 
@@ -193,8 +229,8 @@ class FieldPlot(Plot):
             raise ValueError(f"Unknown vector mode: {mode}")
 
         if not ax.get_xlabel():
-            ax.set_xlabel(f"{x_name} [{x_idx.unit}]")
+            ax.set_xlabel(_format_axis_label(x_name, x_idx.unit))
         if not ax.get_ylabel():
-            ax.set_ylabel(f"{y_name} [{y_idx.unit}]")
+            ax.set_ylabel(_format_axis_label(y_name, y_idx.unit))
 
         return mesh

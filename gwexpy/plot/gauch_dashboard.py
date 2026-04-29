@@ -14,16 +14,39 @@ if TYPE_CHECKING:
     from ..timeseries import TimeSeries
 
 
+def _format_unit_text(unit: Any) -> str | None:
+    """Return a displayable unit string, or None for unitless values."""
+    if unit is None:
+        return None
+
+    try:
+        unit_text = unit.to_string()
+    except (AttributeError, ValueError):
+        unit_text = str(unit)
+
+    if not unit_text or unit_text == "None":
+        return None
+    return unit_text
+
+
 def _format_quantity_label(label: str, unit: Any) -> str:
     """Format a value label without empty brackets for unitless data."""
-    if unit is None:
+    unit_text = _format_unit_text(unit)
+    if unit_text is None:
         return label
-
-    unit_text = str(unit)
-    if not unit_text:
-        return label
-
     return f"{label} [{unit_text}]"
+
+
+def _spectrogram_frequency_label(spectrogram: Spectrogram | None) -> str:
+    """Return a frequency-axis label from spectrogram metadata."""
+    unit = None
+    if spectrogram is not None:
+        frequencies = getattr(spectrogram, "frequencies", None)
+        unit = getattr(frequencies, "unit", None)
+        if unit is None:
+            unit = getattr(spectrogram, "yunit", None)
+
+    return _format_quantity_label("Frequency", unit)
 
 
 def plot_gauch_dashboard(
@@ -71,7 +94,7 @@ def plot_gauch_dashboard(
         )
         fig.colorbar(pc1, ax=ax1, label="-log10(p-value)")
         ax1.set_title("GauCh p-value Map")
-        ax1.set_ylabel("Frequency [Hz]")
+        ax1.set_ylabel(_spectrogram_frequency_label(p_map))
         ax1.set_yscale("log")
 
     # Panel 2: Rayleigh statistic (if provided) or GauCh statistic
@@ -99,7 +122,8 @@ def plot_gauch_dashboard(
             fig.colorbar(pc2, ax=ax2, label="KS Statistic (Dn)")
             ax2.set_title("GauCh KS Statistic Map")
 
-    ax2.set_ylabel("Frequency [Hz]")
+    ax2_source = rayleigh_spec if rayleigh_spec is not None else gauch_res.statistic_map
+    ax2.set_ylabel(_spectrogram_frequency_label(ax2_source))
     ax2.set_yscale("log")
 
     # Panel 3: Time Series

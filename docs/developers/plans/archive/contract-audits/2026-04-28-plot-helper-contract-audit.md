@@ -3,7 +3,8 @@
 Date: 2026-04-28
 Issue: #283
 Branch: `codex/wave3-283-plot-helper-contracts`
-Mode: docs and tests only. No runtime modules under `gwexpy/` were changed.
+Mode: contract tests plus narrow runtime hardening for dynamic labels and
+FieldPlot colorbar exposure.
 
 ## Scope
 
@@ -22,7 +23,7 @@ Covered helpers:
 
 Out of scope:
 
-- Runtime behavior changes in `gwexpy/`
+- Unit conversions; labels reflect existing metadata units only.
 - Colorbar axis-count assumptions for GWpy `Plot`
 - Screenshot or image-diff visual regression
 - GUI/core metadata work tracked separately by #274
@@ -39,9 +40,11 @@ the displayed axis labels are:
 - x-axis: `x [m]`
 - y-axis: `y [cm]`
 
-The helper also attempts to create a colorbar label from the field name and
-unit. This test baseline does not assert colorbar axes because this local
-environment exposes GWpy `Plot` colorbars inconsistently.
+The helper creates a colorbar label from the field name and unit without
+rendering empty brackets for unitless data. `FieldPlot.last_field_colorbar`
+now exposes the most recent scalar colorbar handle returned by
+`Plot.colorbar()` so tests and callers can inspect the label without relying
+on backend-specific figure axes ordering.
 
 ### plot_gauch_dashboard
 
@@ -51,11 +54,12 @@ The current GauCh dashboard builds three structural panels:
 - `GauCh KS Statistic Map`
 - `Time Series`
 
-The frequency panels currently use the hard-coded y-label
-`Frequency [Hz]`. The time-series panel currently uses `Time [s]` and
-`Amplitude [m]` for a meter-valued input series. Colorbar labels are not
-asserted in this slice because the current exposure path depends on
-backend-specific Matplotlib axes.
+The frequency panels derive their y-label unit from the displayed
+spectrogram frequency metadata, for example `Frequency [Hz]` or
+`Frequency [kHz]`, without converting data. The time-series panel uses
+`Time [s]` and formats the amplitude label from the input series unit,
+omitting brackets for unitless series. Colorbar labels are still treated as
+backend figure details for the GauCh dashboard.
 
 ### PairPlot
 
@@ -63,6 +67,10 @@ The current `PairPlot` corner mode for two dictionary-keyed equal-length
 series returns a `(2, 2)` axes grid. The upper-right axes is invisible, the
 bottom-left cell labels the x/y axes as `H1` and `L1`, and the bottom-right
 diagonal cell labels the x-axis as `L1`.
+
+PR #341 (`a69a537`) separately merged the PairPlot mismatch policy: inputs
+that differ in length, sample rate, or time span are rejected instead of being
+silently aligned or truncated. This pass did not reopen that policy.
 
 ### GeoMap
 
@@ -74,17 +82,10 @@ When the optional PyGMT backend is unavailable, `GeoMap()` currently raises
 
 ## Deferred Follow-ups
 
-- FieldPlot colorbar exposure and labels: decide whether colorbar labels are
-  public contract for `FieldPlot.add_scalar`, then add assertions that do not
-  depend on backend-specific axes exposure.
-- GauCh unitless label risk and colorbar exposure: `plot_gauch_dashboard`
-  formats the time-series y-label from `ts.unit`, and its colorbar labels are
-  currently exposed through backend-specific axes.
+- GauCh colorbar exposure remains backend-specific; decide separately whether
+  dashboard colorbars need stable public handles.
 - GauCh Rayleigh branch: add a separate structural test for `rayleigh_spec`
   once the intended Rayleigh title and colorbar contract is accepted.
-- PairPlot unequal and aligned lengths: define whether the public policy is
-  truncate, crop, resample, reject, or preserve inputs before adding behavior
-  tests for mismatched spans and sample rates.
 - GeoMap, SkyMap, and PairPlot public stability: decide which ancillary plot
   helpers are stable public API and which are best-effort convenience helpers.
 - Optional backend install hints: standardize backend-unavailable errors across
