@@ -17,10 +17,15 @@
 ## Install
 
 ```bash
-git clone https://github.com/tatsuki-washimi/gwexpy.git
-cd gwexpy
-python -m pip install -e .
+python -m pip install gwexpy
 ```
+
+GWexpy is published on PyPI for the core Python library surface. The
+experimental GUI app is not part of the first supported package surface.
+You can install the PyPI package inside a Conda-managed environment today. The
+native conda-forge package is still in staged-recipes review and should not be
+treated as available until `conda install -c conda-forge gwexpy` has been
+smoke-tested from the live channel.
 
 For optional extras, external dependencies, and environment-specific setup, use the official installation guides:
 

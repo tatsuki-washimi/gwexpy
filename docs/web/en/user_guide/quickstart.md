@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    description: "Start GWexpy quickly with a GitHub install command, a 3-line first plot, and pointers to the next tutorials and migration guides."
+    description: "Start GWexpy quickly with a PyPI install command, a 3-line first plot, and pointers to the next tutorials and migration guides."
 ---
 
 # Quickstart
@@ -29,17 +29,17 @@ Get your first analysis plot with GWexpy as quickly as possible.
 (en-quickstart-install-command)=
 ## Quick Install
 
-GWexpy is currently in development and is **not yet published on PyPI or Conda**, so install it directly from the GitHub source repository for now:
+Install the core GWexpy package from PyPI:
 
-- Purpose: install the current development build as quickly as possible
+- Purpose: install the released core package as quickly as possible
 - Input: Python 3.11+ with `pip`
 - Output: a local GWexpy installation ready for the first example
 
 ```bash
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+pip install gwexpy
 ```
 
-If you need a Conda-managed environment, GW binary dependencies such as NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the [Installation Guide](installation.md) instead of adding those packages ad hoc after this quick install.
+If you need a Conda-managed environment, GW binary dependencies such as NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the [Installation Guide](installation.md) instead of adding those packages ad hoc after this quick install. Installing the PyPI package inside a Conda environment is supported; the native conda-forge package is still in staged-recipes review, so the public `conda install -c conda-forge gwexpy` command is not documented as available yet.
 
 (en-quick-demo)=
 ## 3-line Quickstart

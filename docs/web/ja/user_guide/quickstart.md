@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    description: "GWexpy を最短で始めるための導入ガイドです。GitHub からのインストール、3 行の最小例、次に読むチュートリアルへの入口をまとめています。"
+    description: "GWexpy を最短で始めるための導入ガイドです。PyPI からのインストール、3 行の最小例、次に読むチュートリアルへの入口をまとめています。"
 ---
 
 # クイックスタート (Quickstart)
@@ -29,17 +29,17 @@ GWexpy を使って、最初の解析図を最短で作成しましょう。
 (ja-quickstart-install-command)=
 ## クイックインストール (Quick Install)
 
-GWexpy は現在開発版で、**PyPI / Conda にはまだ公開されていない**ため、まずは GitHub のソースリポジトリから直接インストールしてください：
+GWexpy の core package は PyPI からインストールできます：
 
-- 目的: 開発版を最短でインストールする
+- 目的: リリース済みの core package を最短でインストールする
 - 入力: Python 3.11 以上と `pip`
 - 出力: 最初のサンプルを実行できる GWexpy 環境
 
 ```bash
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+pip install gwexpy
 ```
 
-Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、`pygmt` などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda 前提手順から始めてください。
+Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、`pygmt` などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda 前提手順から始めてください。Conda 環境の中に PyPI 版を入れることはできます。conda-forge native package は staged-recipes でレビュー中のため、`conda install -c conda-forge gwexpy` はまだ利用可能な公開手順として案内していません。
 
 (ja-quick-demo)=
 ## 3行で最初の図を出す (3-line Quickstart)

@@ -21,7 +21,7 @@ Conda (Miniforge 等) で専用環境を作成し、その中で依存関係と 
 conda create -n gwexpy python=3.11
 conda activate gwexpy
 conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
-pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+pip install "gwexpy[gw,analysis,fitting]"
 ```
 
 関連ページ: [インストールガイド](installation.md#コンダ環境-recommended--gw-analysis)

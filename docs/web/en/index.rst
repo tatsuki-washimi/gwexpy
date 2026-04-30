@@ -42,7 +42,7 @@ v\ |release| · Python ≥ 3.11 · Last updated: |today|
          </div>
          <div>
            <dt>Install</dt>
-           <dd>Source install until PyPI release</dd>
+           <dd>PyPI for core library</dd>
          </div>
        </dl>
      </div>
@@ -60,9 +60,7 @@ v\ |release| · Python ≥ 3.11 · Last updated: |today|
    <section class="gw-hub-duo">
      <section class="gw-hub-panel">
        <p>Quick installation</p>
-       <pre><code>git clone https://github.com/tatsuki-washimi/gwexpy.git
-    cd gwexpy
-    python -m pip install -e .</code></pre>
+       <pre><code>python -m pip install gwexpy</code></pre>
      </section>
      <section class="gw-hub-panel">
        <p>3-line demo</p>

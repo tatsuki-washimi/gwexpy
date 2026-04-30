@@ -8,11 +8,11 @@ Notable changes to the GWexpy project.
 - Added release-gate checks for metadata consistency, artifact hygiene, and fresh-environment wheel smoke before PyPI publication.
 
 ### Changed
-- Clarified installation guidance around optional extras, source installs, and future release-channel transitions.
+- Switched public installation guidance to the published PyPI package for the core Python library, while keeping conda-forge documented as pending review.
 
 ### Known Limitations And Follow-Ups
-- PyPI publication is still a human-controlled final step for issue #293. Public install docs intentionally remain GitHub/source-based until the first PyPI release is actually published; switch them to `pip install gwexpy` only after publication and post-publish smoke succeed.
-- `conda-forge` packaging is not published yet. Issue #294 remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.
+- PyPI `gwexpy==0.1.1` has been published and fresh-install smoke-tested. Normal users should start with `pip install gwexpy`; source installs are for contributor or unreleased-code workflows.
+- `conda-forge` packaging is not published yet. The staged-recipes PR is open and CI-green, but public docs should not advertise `conda install -c conda-forge gwexpy` until the feedstock is created, the package is live, and fresh conda-environment smoke tests pass.
 - Open numerical and analysis audit follow-ups remain for noise contracts (#278), astro range assumptions and unit handling (#282), Bruco/coupling/response workflow semantics (#284), and preprocessing/decomposition/forecasting contracts (#288). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.
 - GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift (#274, #275, #283). The GUI should still be treated as experimental.
 - Local validation follow-up #335 tracks an intermittent one-process `pytest tests/ -q` exit 139. Split-suite validation passed and remains the current evidence base, but the single-process crash is not yet explained.

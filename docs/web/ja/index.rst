@@ -45,7 +45,7 @@ v\ |release| · Python ≥ 3.11 · 最終更新: |today|
          </div>
          <div>
            <dt>Install</dt>
-           <dd>PyPI 公開まではソース導入</dd>
+           <dd>core library は PyPI から導入</dd>
          </div>
        </dl>
      </div>
@@ -63,9 +63,7 @@ v\ |release| · Python ≥ 3.11 · 最終更新: |today|
    <section class="gw-hub-duo">
      <section class="gw-hub-panel">
        <p>Quick install</p>
-       <pre><code>git clone https://github.com/tatsuki-washimi/gwexpy.git
-   cd gwexpy
-   python -m pip install -e .</code></pre>
+       <pre><code>python -m pip install gwexpy</code></pre>
      </section>
      <section class="gw-hub-panel">
        <p>3-line demo</p>

@@ -16,12 +16,12 @@ Use this page as a reverse lookup by symptom:
 Binary libraries used in the `[gw]` extra cannot be installed via `pip`.
 
 **Solution:**
-Use Conda (Miniforge, etc.) in a dedicated environment, then install GWexpy from source there.
+Use Conda (Miniforge, etc.) in a dedicated environment, then install GWexpy from PyPI there.
 ```bash
 conda create -n gwexpy python=3.11
 conda activate gwexpy
 conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
-pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+pip install "gwexpy[gw,analysis,fitting]"
 ```
 
 See also: [Installation Guide](installation.md#conda-environment-recommended--gw-analysis)
@@ -67,7 +67,7 @@ We recommend reinstalling `pygmt` via Conda.
 conda install -c conda-forge pygmt
 ```
 
-If you started from the smallest example in [Quickstart](quickstart.md), note that `pygmt` is optional and is not part of the minimal source install.
+If you started from the smallest example in [Quickstart](quickstart.md), note that `pygmt` is optional and is not part of the minimal PyPI install.
 
 ---
 

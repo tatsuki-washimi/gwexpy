@@ -118,5 +118,5 @@ def test_optional_dependency_matrix_matches_contract():
     assert wav["unavailable_behavior"]["read"] == "warns_and_skips_optional_metadata"
     assert "`.read(..., extract_metadata=True)` warns and skips metadata" in en
     assert "`.read(..., extract_metadata=True)` は警告を出し、metadata を省略します" in ja
-    assert "`audio` or `all` source-extra syntax" in en
-    assert "`audio` または `all` のソース導入形式" in ja
+    assert "install with the `audio` or `all` extra" in en
+    assert "`audio` または `all` extra で追加" in ja

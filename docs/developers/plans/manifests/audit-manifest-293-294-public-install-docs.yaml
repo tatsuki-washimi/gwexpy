@@ -1,0 +1,101 @@
+issues:
+  - 293
+  - 294
+date: 2026-04-30
+agent: Codex
+skills:
+  - doc-architect
+scope:
+  summary: "Update README and public documentation after PyPI publication while keeping conda-forge documented as pending."
+  runtime_code_changed: false
+  physics_behavior_changed: false
+  public_install_docs_changed: true
+  release_published: false
+current_distribution_state:
+  pypi:
+    package: "gwexpy"
+    version: "0.1.1"
+    status: "published and fresh-install smoke-tested"
+    public_command: "python -m pip install gwexpy"
+  conda_forge:
+    staged_recipes_pr: "https://github.com/conda-forge/staged-recipes/pull/33169"
+    status: "open, mergeable, CI-green, awaiting review/merge"
+    feedstock_exists: false
+    public_command_status: "not advertised as available yet"
+  conda_environment:
+    status: "supported with PyPI install inside the Conda environment"
+    command_pattern: "conda create -n gwexpy python=3.11; conda activate gwexpy; pip install gwexpy"
+commands:
+  - cmd: "rtk gh pr view 33169 --repo conda-forge/staged-recipes --json url,state,mergedAt,mergeable,reviewDecision,statusCheckRollup,comments,reviews"
+    result: "Confirmed staged-recipes PR #33169 is still open, mergeable, and CI-green."
+  - cmd: "rtk gh repo view conda-forge/gwexpy-feedstock --json name,url,description,defaultBranchRef"
+    result: "Repository was not found, confirming the feedstock has not been created yet."
+  - cmd: "rtk env CONDA_PKGS_DIRS=/tmp/conda-pkgs /home/washimi/miniforge3/condabin/conda search -c conda-forge --override-channels gwexpy --json"
+    result: "PackagesNotFoundError for gwexpy, confirming the native conda-forge package is not live yet."
+  - cmd: "rtk rg -n \"pip install|conda install|TestPyPI|test.pypi|PyPI|conda-forge|installation|Install\" README.md docs -g '*.md' -g '*.rst'"
+    result: "Found public install pages and remaining source-install wording to update."
+changed_files:
+  - path: README.md
+    change: "Switches quick install to PyPI, records conda-forge as pending review, and distinguishes Conda environments from native conda-forge packages."
+  - path: docs/index.rst
+    change: "Switches root quick install to PyPI."
+  - path: docs/web/en/index.rst
+    change: "Updates hub install messaging to PyPI for the core library."
+  - path: docs/web/ja/index.rst
+    change: "Updates Japanese hub install messaging to PyPI for the core library."
+  - path: docs/web/en/user_guide/installation.md
+    change: "Switches normal install commands from GitHub source installs to PyPI, documents conda-forge as pending, and clarifies that installing the PyPI package inside Conda is supported."
+  - path: docs/web/ja/user_guide/installation.md
+    change: "Japanese install guide synchronized with PyPI published, Conda-environment install, and conda-forge pending state."
+  - path: docs/web/en/user_guide/quickstart.md
+    change: "Switches quick install to PyPI and distinguishes Conda-environment installs from unavailable native conda-forge installs."
+  - path: docs/web/ja/user_guide/quickstart.md
+    change: "Japanese quickstart synchronized with PyPI quick install and Conda wording."
+  - path: docs/web/en/user_guide/changelog.md
+    change: "Updates release-channel status for PyPI publication and conda-forge pending review."
+  - path: docs/web/ja/user_guide/changelog.md
+    change: "Japanese changelog synchronized with PyPI and conda-forge status."
+  - path: docs/web/en/user_guide/troubleshooting.md
+    change: "Switches GW binary-dependency recovery command to PyPI extras."
+  - path: docs/web/ja/user_guide/troubleshooting.md
+    change: "Japanese troubleshooting command synchronized with PyPI extras."
+  - path: docs/web/en/user_guide/interop.md
+    change: "Switches interop extra examples to PyPI extras."
+  - path: docs/web/ja/user_guide/interop.md
+    change: "Japanese interop extra examples synchronized with PyPI extras."
+  - path: docs/web/en/user_guide/io_formats.md
+    change: "Updates WAV metadata optional-extra guidance from source syntax to PyPI extras."
+  - path: docs/web/ja/user_guide/io_formats.md
+    change: "Japanese WAV metadata optional-extra guidance synchronized with PyPI extras."
+  - path: docs/web/en/user_guide/tutorials/field_scalar_intro_outputs.md
+    change: "Switches local tutorial setup command to PyPI."
+  - path: docs/web/ja/user_guide/tutorials/field_scalar_intro_outputs.md
+    change: "Japanese local tutorial setup command synchronized with PyPI."
+human_review:
+  required: false
+  reason: "Documentation-only install-channel update; no runtime, physics, statistical, or packaging behavior changed."
+remaining:
+  - "After staged-recipes PR #33169 merges and gwexpy appears on conda-forge, update public docs again to add the verified conda install command."
+validation:
+  completed:
+    - cmd: "rtk rg -n \"Until PyPI publication|until PyPI publication|PyPI 公開までは|not yet published on PyPI|PyPI / Conda にはまだ公開|source-install extra syntax|ソース導入形式|Source install until PyPI release|PyPI 公開まではソース導入\" README.md docs/index.rst docs/web -g '*.md' -g '*.rst'"
+      result: "No stale pre-PyPI publication wording found outside GUI source/development guidance."
+    - cmd: "rtk rg -n \"conda install -c conda-forge gwexpy|conda create -n gwexpy-release -c conda-forge gwexpy\" README.md docs/index.rst docs/web -g '*.md' -g '*.rst'"
+      result: "The conda install command appears only in warnings/status text that says it is not available yet."
+    - cmd: "rtk pytest -q tests/test_conda_forge_roadmap.py -p no:cacheprovider"
+      result: "5 passed"
+    - cmd: "rtk ruff check tests/test_conda_forge_roadmap.py"
+      result: "No issues found"
+    - cmd: "rtk ruff format --check tests/test_conda_forge_roadmap.py"
+      result: "1 file already formatted"
+    - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/manifests/audit-manifest-293-294-public-install-docs.yaml').read_text())\""
+      result: "parsed successfully"
+    - cmd: "rtk git diff --check"
+      result: "clean"
+    - cmd: "rtk /home/washimi/miniforge3/condabin/conda run -n gwexpy python -m sphinx -b html -D nbsphinx_execute=never docs /tmp/gwexpy-docs-html-install-update"
+      result: "build succeeded; existing MyST missing-reference warnings remain non-fatal in the standard docs build."
+  attempted:
+    - cmd: "rtk sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-docs-html-install-update"
+      result: "Initial attempt could not run because sphinx-build is not installed in the active PATH; rerun succeeded in the gwexpy Conda environment."
+    - cmd: "rtk python -m sphinx -b html -D nbsphinx_execute=never docs /tmp/gwexpy-docs-html-install-update"
+      result: "Initial attempt could not run because the active Python environment does not have sphinx installed; rerun succeeded in the gwexpy Conda environment."

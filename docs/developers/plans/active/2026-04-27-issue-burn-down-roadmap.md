@@ -433,33 +433,35 @@ limitations are accepted.
 
 #### Wave 5 Progress Report
 
-Status as of 2026-04-28: release-gate hardening, release artifact hygiene, and
-the conda-forge onboarding roadmap have landed. No PyPI or conda-forge
-publication has been performed.
+Status as of 2026-04-30: PyPI `gwexpy==0.1.1` has been published and
+fresh-environment smoke-tested. The conda-forge staged-recipes PR for #294 is
+open, mergeable, and CI-green, but it has not yet been reviewed or merged, and
+`conda-forge/gwexpy-feedstock` does not exist yet.
 
 | Issue | PR | Merged | Merge commit | Result |
 | --- | --- | --- | --- | --- |
 | #293 | #326 `[AGENT:release] Harden release metadata version parsing` | 2026-04-28 20:00 JST | `f8cff53` | Hardened the release metadata checker so malformed or unparseable top-level `CITATION.cff` version metadata fails closed. Release tooling only; runtime package behavior unchanged. |
 | #293 | #332 `[AGENT:release] Harden PyPI release gates` | 2026-04-28 20:42 JST | `0a710a1` | Added fail-closed required-file and release-date metadata checks, aligned current `0.1.1` release dates, removed bytecode/internal trees from release artifacts, added artifact hygiene checks, and added fresh-venv wheel smoke before PyPI publication. |
-| #294 | #327 `[AGENT:release] Record conda-forge onboarding roadmap` | 2026-04-28 19:57 JST | `4bf66c0` | Added the conda-forge staged-recipes roadmap, corrected the v1 recipe model to use `build.entry_points`, deferred the optional GUI entry point from the first core recipe, and added noarch recipe test guidance. Docs/test-only. |
+| #294 | #327 `[AGENT:release] Record conda-forge onboarding roadmap` | 2026-04-28 19:57 JST | `4bf66c0` | Added the conda-forge staged-recipes roadmap, later corrected the v1 recipe model to use `build.python.entry_points`, deferred the optional GUI entry point from the first core recipe, and added noarch recipe test guidance. Docs/test-only. |
+| #293 | #351 `[AGENT:release] Fix release-blocking physics/statistics issues` | 2026-04-29 JST | `3ced86d` | Resolved the release-blocking #278/#284 physics/statistics issues before publication. |
+| #293 | #352 `[AGENT:release] Exclude GUI and sample data from first PyPI artifacts` | 2026-04-29 JST | `a45c7b4` | Removed GUI, Sphinx utility, sample data, and tests from first PyPI artifacts; updated artifact hygiene checks and release docs. |
+| #294 | conda-forge/staged-recipes#33169 `Add gwexpy` | Open as of 2026-04-30 | `487d1cd` in fork | Submitted `gwexpy==0.1.1` recipe from the PyPI sdist. Local `conda-smithy` and `rattler-build` validation passed; remote staged-recipes linter, conda-forge-linter, linux_64, osx_64, and win_64 CI are green. Awaiting conda-forge review/merge. |
 
 Net outcome:
 
-- #293 remains open for human-controlled release execution: PyPI Trusted
-  Publishing environment verification, final target version/date decision, tag
-  creation, release workflow execution, and confirmation that the published
-  package installs from PyPI.
-- #293 is additionally blocked by #278 and #284 as of 2026-04-29. The release
-  should not proceed until the noise PSD/ASD and Bruco Welch-scaling runtime
-  corrections are reviewed and accepted.
+- #293 release execution is complete for PyPI `0.1.1`: Trusted Publishing was
+  configured, `v0.1.1` was retagged at the release commit, the publish workflow
+  succeeded, and a fresh PyPI install smoke test passed.
+- #278 and #284 were resolved before the PyPI publication path proceeded.
 - #274 is explicitly deferred as a post-release GUI stabilization track. The
   first PyPI package supports the Python library surface, not the experimental
   GUI app; `gwexpy.gui` is not included in first-release artifacts, no
   `gwexpy.gui` console script is installed, and no `gui` PyPI extra is
   published for the first PyPI release.
-- #294 remains open for the external `conda-forge/staged-recipes` submission
-  after a stable source release exists or maintainers explicitly approve a
-  source-archive-first submission.
+- #294 remains open for conda-forge review/merge, feedstock creation, first
+  package publication, and a fresh `conda install -c conda-forge gwexpy` smoke
+  test. The external `conda-forge/staged-recipes` submission is already open at
+  <https://github.com/conda-forge/staged-recipes/pull/33169>.
 - The accepted release-gate policy is fail-closed: if `CITATION.cff` exists but
   its top-level `version` cannot be parsed by the supported subset, the release
   metadata check must fail rather than warn and continue.
@@ -543,7 +545,7 @@ rtk pytest tests/ -q
 Additional checks for docs-facing PRs:
 
 ```bash
-rtk sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-docs-html
+rtk conda run -n gwexpy python -m sphinx -b html -D nbsphinx_execute=never docs /tmp/gwexpy-docs-html
 ```
 
 Additional checks for release PRs:
@@ -571,8 +573,9 @@ Current classification:
   experimental GUI app from the supported public surface, built artifacts, and
   PyPI extras metadata.
 
-Conda-forge onboarding (#294) should start after a stable PyPI/source release
-unless maintainers intentionally choose a source-archive-first conda submission.
+Conda-forge onboarding (#294) has started from the stable PyPI `0.1.1` sdist.
+Keep #294 open until the staged-recipes PR merges, the feedstock is created,
+and a fresh conda install from the `conda-forge` channel passes.
 
 ## Success Criteria
 
@@ -581,5 +584,5 @@ unless maintainers intentionally choose a source-archive-first conda submission.
 - Release docs and metadata no longer contradict the actual distribution state.
 - PyPI publication has a reproducible build path and fresh-environment smoke
   proof.
-- Conda-forge submission has a reviewed recipe plan and does not promise pip
-  extras that conda packaging cannot represent.
+- Conda-forge submission has a reviewed recipe plan, an open staged-recipes PR,
+  and does not promise pip extras that conda packaging cannot represent.

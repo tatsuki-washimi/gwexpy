@@ -7,16 +7,37 @@
 
 ## Scope
 
-This pass records the conda-forge onboarding plan that should follow the PyPI
-release readiness work in #293. It does not publish a release, open a
-`conda-forge/staged-recipes` PR, edit public install docs, or change package
-runtime behavior.
+This document records the conda-forge onboarding plan that follows the PyPI
+release readiness work in #293 and tracks the live staged-recipes submission for
+#294. The initial staged-recipes PR is now open and CI-green, but the package is
+not yet live on the `conda-forge` channel. Do not update public conda install
+docs until the feedstock exists, the package is published, and a fresh conda
+install smoke test passes.
 
 The intended first submission is a single core `gwexpy` conda package. Pip
 extras should not be promised as conda install groups in the initial recipe
 because conda packages do not expose pip-style extras. Optional feature groups
 can be documented later as explicit dependency sets or split outputs after the
 core feedstock exists.
+
+## Current Status
+
+Status as of 2026-04-30:
+
+- PyPI `gwexpy==0.1.1` has been published and smoke-tested from PyPI.
+- The staged-recipes PR is open and mergeable:
+  <https://github.com/conda-forge/staged-recipes/pull/33169>.
+- The staged-recipes recipe uses the PyPI sdist hash
+  `82176ef7c07d1196755eb7f113d5a74988466d6f373da4a92711c77d9bf13092`.
+- Local validation passed with `conda-smithy recipe-lint`, `rattler-build
+  --render-only`, and `rattler-build ... --test native`.
+- Remote staged-recipes CI is green: GitHub linter, conda-forge-linter, Azure
+  aggregate job, linux_64, osx_64, and win_64 builds.
+- `conda-forge/gwexpy-feedstock` does not exist yet.
+
+Current blocker: conda-forge reviewer/maintainer review and merge of the
+staged-recipes PR. After merge, continue with feedstock creation checks,
+package publication checks, and fresh conda install smoke testing.
 
 ## External Policy Snapshot
 
@@ -49,14 +70,14 @@ Important constraints from those sources:
 
 ## Preconditions
 
-Do not begin the staged-recipes submission until these gates are resolved:
+The staged-recipes submission was opened only after these gates were resolved:
 
-1. #293 has produced a stable PyPI/source release or maintainers explicitly
-   choose a source-archive-first conda submission.
+1. #293 produced a stable PyPI/source release: `gwexpy==0.1.1`.
 2. The release version, `CITATION.cff`, `.zenodo.json`, `CHANGELOG.md`, and
-   `gwexpy/_version.py` agree.
-3. The source archive used by the recipe has a recorded SHA256 hash.
-4. Maintainers confirm the initial feedstock maintainer list.
+   `gwexpy/_version.py` were aligned before publication.
+3. The source archive used by the recipe has a recorded SHA256 hash:
+   `82176ef7c07d1196755eb7f113d5a74988466d6f373da4a92711c77d9bf13092`.
+4. The initial feedstock maintainer is `tatsuki-washimi`.
 5. Remaining audit issues are closed, accepted as known limitations, or deferred
    as post-release follow-ups.
 
@@ -67,7 +88,8 @@ Recommended first recipe shape:
 ```yaml
 context:
   name: gwexpy
-  version: "<released-version>"
+  version: "0.1.1"
+  python_min: "3.11"
 
 package:
   name: ${{ name|lower }}
@@ -78,23 +100,24 @@ source:
   sha256: "<pypi-sdist-sha256>"
 
 build:
-  noarch: python
-  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  entry_points:
-    - gwexpy = gwexpy.cli:main
+  noarch: python
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+  python:
+    entry_points:
+      - gwexpy = gwexpy.cli:main
 
 requirements:
   host:
-    - python >=3.11
+    - python ${{ python_min }}.*
     - pip
     - setuptools >=68
     - wheel
   run:
-    - python >=3.11
+    - python >=${{ python_min }}
     - numpy >=1.23.2,<2.0.0
     - scipy >=1.10.0
-    - astropy >=5.0
+    - astropy-base >=5.0
     - gwpy >=4.0.0,<5.0.0
     - pandas >=1.5.0
     - matplotlib-base >=3.5.0
@@ -110,28 +133,34 @@ tests:
       imports:
         - gwexpy
       pip_check: true
-      python_version:
-        - "3.11.*"
-        - "*"
+      python_version: ${{ python_min }}.*
   - script:
+      - python -m pip check
       - gwexpy --help
       - python -c "import gwexpy; gwexpy.register_all()"
+      - python -c "import importlib.util; assert importlib.util.find_spec('gwexpy.gui') is None"
+      - python -c "import importlib.util; assert importlib.util.find_spec('gwexpy.utils.sphinx') is None"
+      - python -c "from gwexpy.timeseries import TimeSeries; ts = TimeSeries([1, 2, 3], dt=1); assert ts.shape == (3,)"
+    requirements:
+      run:
+        - python
+        - pip
 ```
 
 `noarch: python` is the expected starting point because this repository ships
 pure Python package code and delegates compiled or binary-heavy components to
 dependencies. Confirm this during the staged-recipes build review. For the
 recipe tests, keep `pip_check: true` and run the import test against the
-minimum supported Python version plus the latest supported line that the
-feedstock will exercise. In the current roadmap draft, that means `3.11.*` and
-`*` in the conda-forge recipe syntax. If any future release adds compiled
-extension modules, revisit the platform model before submitting.
+minimum supported Python version. The script smoke test should use an
+unconstrained `python` test requirement so staged-recipes CI also exercises the
+current solver default. If any future release adds compiled extension modules,
+revisit the platform model before submitting.
 
 The initial recipe should keep only the core `gwexpy` console script in
-`build.entry_points`. The first PyPI package does not ship `gwexpy.gui` or a
-`gui` extra because the GUI app is a post-release stabilization track. If the
-GUI is added later, keep it in a separate output or add the GUI dependencies
-explicitly.
+`build.python.entry_points`. The first PyPI package does not expose
+`gwexpy.gui`, a GUI console script, or a `gui` extra because the GUI app is a
+post-release stabilization track. If the GUI is added later, keep it in a
+separate output or add the GUI dependencies explicitly.
 
 ## Core Dependency Map
 
@@ -142,7 +171,7 @@ sync with the source metadata before generating a recipe.
 | --- | --- | --- | --- |
 | `numpy>=1.23.2,<2.0.0` | `numpy` | Preserve lower and upper bounds initially. | Revisit the `<2.0.0` cap only with runtime compatibility evidence. |
 | `scipy>=1.10.0` | `scipy` | Preserve lower bound. | Core numerical dependency. |
-| `astropy>=5.0` | `astropy` | Preserve lower bound. | Unit and astronomy foundation. |
+| `astropy>=5.0` | `astropy-base` | Preserve lower bound while avoiding optional astropy dependencies. | Unit and astronomy foundation. |
 | `gwpy>=4.0.0,<5.0.0` | `gwpy` | Preserve major-version cap. | GWpy 4.x is available as a noarch conda-forge package. |
 | `pandas>=1.5.0` | `pandas` | Preserve lower bound. | DataFrame/table interoperability. |
 | `matplotlib>=3.5.0` | `matplotlib-base` | Prefer `matplotlib-base` unless GUI backends are required. | Avoid pulling GUI stack into the core package. |
@@ -176,21 +205,26 @@ Follow-up candidates after the core feedstock exists:
 
 ## Staged-Recipes Checklist
 
-Before opening the external PR:
+Completed for the external PR:
 
-1. Build the PyPI sdist and wheel for the target release.
-2. Record the PyPI sdist SHA256 hash.
-3. Generate a candidate recipe with
-   `grayskull pypi --use-v1-format --strict-conda-forge -o recipes gwexpy`
-   or write the recipe manually from the model above.
-4. Review license fields against `LICENSE` and package metadata.
-5. Review every dependency against the core dependency map above.
-6. Add import and CLI tests: `import gwexpy`, `gwexpy.register_all()`, and
-   `gwexpy --help`.
-7. Add one minimal data-structure smoke test only if it does not require network,
-   optional backends, or test-only data files.
-8. Run staged-recipes local build/lint when tooling is available.
-9. Open the PR to `conda-forge/staged-recipes` and request Python review.
+1. Built and published the PyPI release for `gwexpy==0.1.1`.
+2. Recorded the PyPI sdist SHA256 hash.
+3. Wrote the v1 recipe manually from the model above.
+4. Reviewed license fields against `LICENSE.txt` and package metadata.
+5. Reviewed every dependency against the core dependency map above.
+6. Added import, CLI, `gwexpy.register_all()`, `pip check`, GUI/sphinx
+   exclusion, and minimal `TimeSeries` smoke tests.
+7. Ran staged-recipes local build/lint with `conda-smithy` and `rattler-build`.
+8. Opened the PR to `conda-forge/staged-recipes`:
+   <https://github.com/conda-forge/staged-recipes/pull/33169>.
+9. Confirmed remote staged-recipes CI is green.
+
+Remaining staged-recipes work:
+
+1. Wait for conda-forge reviewer/maintainer review.
+2. Address any requested recipe changes without expanding the first package
+   beyond the core, non-GUI surface.
+3. Wait for staged-recipes merge.
 
 ## Feedstock Maintenance Checklist
 
@@ -208,12 +242,10 @@ After staged-recipes merges:
 
 ## Deferred Human Decisions
 
-- Target release version and date.
-- Whether the first conda submission must wait for a PyPI source distribution or
-  can use a tagged GitHub source archive.
-- Initial feedstock maintainers.
+- Reviewer approval and merge timing for
+  <https://github.com/conda-forge/staged-recipes/pull/33169>.
 - Whether any optional dependencies should become split outputs.
-- Whether the `numpy<2.0.0` cap remains necessary for the release being packaged.
+- Whether the `numpy<2.0.0` cap remains necessary for future releases.
 
 ## Validation
 
@@ -226,6 +258,6 @@ Recommended local checks:
 rtk pytest -q tests/test_conda_forge_roadmap.py -p no:cacheprovider
 rtk ruff check tests/test_conda_forge_roadmap.py
 rtk ruff format --check tests/test_conda_forge_roadmap.py
-rtk python -c "import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/audit-manifest-294-conda-forge.yaml').read_text())"
+rtk python -c "import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/manifests/audit-manifest-294-conda-forge-staged-recipes-status.yaml').read_text())"
 rtk git diff --check
 ```

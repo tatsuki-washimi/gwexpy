@@ -125,7 +125,7 @@ on optional packages or optional metadata helpers.
 
 | Format / family | Optional dependency | GWexpy extra | Missing-dependency behavior |
 |---|---|---|---|
-| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` warns and skips metadata when `tinytag` is missing; until PyPI publication, install with the `audio` or `all` source-extra syntax from the [Installation Guide](installation.md). Basic WAV read/write remains available. |
+| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` warns and skips metadata when `tinytag` is missing; install with the `audio` or `all` extra from the [Installation Guide](installation.md). Basic WAV read/write remains available. |
 | **MP3 / FLAC / OGG / M4A** | `pydub`, `tinytag` | `audio` | Audio read/write raises `ImportError`; some codecs also need an external `ffmpeg`/`libav` binary. |
 | **TDMS** | `nptdms` | `io` | Reader raises `ImportError` with the required `io` extra in its install guidance. |
 | **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | Registered reader/writer raises `ImportError` with the required `seismic` extra in its install guidance. |

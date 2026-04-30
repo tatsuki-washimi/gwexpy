@@ -70,17 +70,19 @@ def test_conda_forge_roadmap_covers_project_core_dependencies():
 def test_conda_forge_roadmap_records_conda_package_name_translations():
     dependency_map = _roadmap_core_dependency_map()
 
+    assert dependency_map["astropy"] == "astropy-base"
     assert dependency_map["matplotlib"] == "matplotlib-base"
     assert dependency_map["typing-extensions"] == "typing-extensions"
 
 
-def test_conda_forge_roadmap_uses_build_entry_points_for_console_scripts():
+def test_conda_forge_roadmap_uses_v1_python_entry_points_for_console_scripts():
     recipe = _roadmap_initial_recipe()
 
+    assert "build:\n  number: 0\n  noarch: python" in recipe
+    assert "  python:\n    entry_points:" in recipe
     assert "entry_points:" in recipe
     assert "- gwexpy = gwexpy.cli:main" in recipe
     assert "gwexpy.gui = gwexpy.gui.pyaggui:main" not in recipe
-    assert "build:\n  python:" not in recipe
 
 
 def test_pyproject_excludes_experimental_gui_console_script_from_first_pypi():
@@ -101,6 +103,10 @@ def test_conda_forge_roadmap_records_noarch_python_recipe_test_coverage():
     recipe = _roadmap_initial_recipe()
 
     assert "pip_check: true" in recipe
-    assert "python_version:" in recipe
-    assert "3.11.*" in recipe
-    assert '"*"' in recipe
+    assert "python_version: ${{ python_min }}.*" in recipe
+    assert "python -m pip check" in recipe
+    assert "gwexpy.register_all()" in recipe
+    assert "find_spec('gwexpy.gui') is None" in recipe
+    assert "find_spec('gwexpy.utils.sphinx') is None" in recipe
+    assert "from gwexpy.timeseries import TimeSeries" in recipe
+    assert "requirements:\n      run:\n        - python\n        - pip" in recipe

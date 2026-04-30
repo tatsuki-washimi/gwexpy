@@ -85,8 +85,7 @@ Quick Installation
 
 .. code-block:: bash
 
-   git clone https://github.com/tatsuki-washimi/gwexpy.git
-   cd gwexpy && pip install -e .
+   python -m pip install gwexpy
 
 Quick Demo
 ----------
