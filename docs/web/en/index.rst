@@ -66,7 +66,7 @@ v\ |release| · Python ≥ 3.11 · Last updated: |today|
      </section>
      <section class="gw-hub-panel">
        <p>3-line demo</p>
-       <pre><code>from gwexpy.timeseries import FrequencySeriesMatrix
+       <pre><code>from gwexpy.frequencyseries import FrequencySeriesMatrix
     fsmtx = FrequencySeriesMatrix.read("data.hdf5")
     fsmtx[2, 0].fit(model="lorentzian").plot()</code></pre>
      </section>
