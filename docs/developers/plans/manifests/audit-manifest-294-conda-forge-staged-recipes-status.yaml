@@ -8,7 +8,7 @@ scope:
   runtime_code_changed: false
   physics_behavior_changed: false
   public_install_docs_changed: false
-  release_published: true
+  release_published: false
 external_state:
   staged_recipes_pr:
     url: "https://github.com/conda-forge/staged-recipes/pull/33169"
@@ -16,8 +16,8 @@ external_state:
     state: open
     mergeable: true
     head_commit: "487d1cd"
-    source: "currently opened from gwexpy==0.1.1; must be refreshed to gwexpy==0.1.2 PyPI sdist"
-    sha256: "pending refresh for gwexpy==0.1.2"
+    source: "currently opened from gwexpy==0.1.1; must be refreshed after the gwexpy==0.1.2 PyPI sdist is published"
+    sha256: "pending after gwexpy==0.1.2 publication"
   ci:
     conda_forge_linter: success
     staged_recipes_linter: success
@@ -59,7 +59,7 @@ human_review:
   required: false
   reason: "Documentation and roadmap guard update only; no runtime, physics, statistical, or public install behavior changed."
 remaining:
-  - "Refresh staged-recipes PR #33169 from gwexpy==0.1.1 to the gwexpy==0.1.2 PyPI sdist, record the 0.1.2 SHA256 hash, and rerun local plus remote validation."
+  - "After gwexpy==0.1.2 is published and smoke-tested, refresh staged-recipes PR #33169 from gwexpy==0.1.1 to the gwexpy==0.1.2 PyPI sdist, record the 0.1.2 SHA256 hash, and rerun local plus remote validation."
   - "Wait for conda-forge reviewer/maintainer review and merge of staged-recipes PR #33169."
   - "Confirm feedstock creation after merge."
   - "Run a fresh conda install smoke test only after the package appears on the conda-forge channel."

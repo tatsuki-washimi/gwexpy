@@ -6,16 +6,16 @@ agent: Codex
 skills:
   - doc-architect
 scope:
-  summary: "Update README and public documentation after PyPI publication while keeping conda-forge documented as pending."
+  summary: "Prepare README and public documentation for the v0.1.2 PyPI publication while keeping conda-forge documented as pending."
   runtime_code_changed: false
   physics_behavior_changed: false
   public_install_docs_changed: true
-  release_published: true
+  release_published: false
 current_distribution_state:
   pypi:
     package: "gwexpy"
     version: "0.1.2"
-    status: "published and fresh-install smoke-tested"
+    status: "target release; publication and fresh-install smoke test pending"
     public_command: "python -m pip install gwexpy"
   conda_forge:
     staged_recipes_pr: "https://github.com/conda-forge/staged-recipes/pull/33169"

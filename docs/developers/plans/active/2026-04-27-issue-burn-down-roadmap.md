@@ -433,10 +433,11 @@ limitations are accepted.
 
 #### Wave 5 Progress Report
 
-Status as of 2026-05-07: PyPI `gwexpy==0.1.2` has been published and
-fresh-environment smoke-tested. The conda-forge staged-recipes PR for #294 is
-open, mergeable, and CI-green, but it has not yet been reviewed or merged, and
-`conda-forge/gwexpy-feedstock` does not exist yet.
+Status as of 2026-05-07: the `gwexpy==0.1.2` hotfix lane is prepared but not
+yet published or fresh-environment smoke-tested. The conda-forge staged-recipes
+PR for #294 is open, mergeable, and CI-green for the old `0.1.1` sdist, but it
+has not yet been reviewed or merged, and `conda-forge/gwexpy-feedstock` does
+not exist yet.
 
 | Issue | PR | Merged | Merge commit | Result |
 | --- | --- | --- | --- | --- |
@@ -449,9 +450,9 @@ open, mergeable, and CI-green, but it has not yet been reviewed or merged, and
 
 Net outcome:
 
-- #293 release execution is complete for PyPI `0.1.2`: Trusted Publishing was
-  configured, `v0.1.2` was tagged at the release commit, the publish workflow
-  succeeded, and a fresh PyPI install smoke test passed.
+- #293 release execution for PyPI `0.1.2` is pending: Trusted Publishing is the
+  expected release path, but `v0.1.2` has not been tagged/published and the
+  fresh PyPI install smoke test has not run yet.
 - #278 and #284 were resolved before the PyPI publication path proceeded.
 - #274 is explicitly deferred as a post-release GUI stabilization track. The
   first PyPI package supports the Python library surface, not the experimental

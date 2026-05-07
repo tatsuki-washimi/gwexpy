@@ -7,7 +7,7 @@ GWexpy の主な変更履歴を記載します。
 - GWpy 4 に対する公開 I/O proxy import、table I/O proxy、GWF read、seismic/audio auto-identify、SegmentTable CSV span parse、FrequencySeries DTT XML dispatch、古い公開 I/O 例の互換性を回復しました。
 
 ### 既知の制限とフォローアップ (Known Limitations And Follow-Ups)
-- PyPI `gwexpy==0.1.2` は公開済みで、fresh install smoke test も通過しています。通常利用者は `pip install gwexpy` から開始してください。ソースインストールは、開発者や未リリース変更の検証向けです。
+- PyPI `gwexpy==0.1.2` は次の hotfix release target であり、公開と fresh install smoke test はまだ pending です。公開後は、通常利用者は `pip install gwexpy` から開始してください。ソースインストールは、開発者や未リリース変更の検証向けです。
 - `conda-forge` パッケージはまだ公開されていません。staged-recipes PR は open / CI green ですが、feedstock 作成、パッケージ公開、fresh conda 環境での smoke test が終わるまで `conda install -c conda-forge gwexpy` は公開手順として案内しません。
 
 ## [0.1.1] - 2026-04-28

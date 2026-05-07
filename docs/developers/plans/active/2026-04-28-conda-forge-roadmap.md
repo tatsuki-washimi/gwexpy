@@ -24,7 +24,8 @@ core feedstock exists.
 
 Status as of 2026-05-07:
 
-- PyPI `gwexpy==0.1.2` has been published and smoke-tested from PyPI.
+- PyPI `gwexpy==0.1.2` is the next hotfix target and has not yet been
+  published or smoke-tested from PyPI.
 - The staged-recipes PR is open and mergeable:
   <https://github.com/conda-forge/staged-recipes/pull/33169>.
 - The staged-recipes PR was opened from the `0.1.1` PyPI sdist and must be
@@ -35,10 +36,10 @@ Status as of 2026-05-07:
   aggregate job, linux_64, osx_64, and win_64 builds.
 - `conda-forge/gwexpy-feedstock` does not exist yet.
 
-Current blocker: refresh staged-recipes PR #33169 to `gwexpy==0.1.2`, then
-continue conda-forge reviewer/maintainer review. After merge, continue with
-feedstock creation checks, package publication checks, and fresh conda install
-smoke testing.
+Current blocker: publish and smoke-test `gwexpy==0.1.2`, then refresh
+staged-recipes PR #33169 to the new PyPI sdist before continuing conda-forge
+review. After merge, continue with feedstock creation checks, package
+publication checks, and fresh conda install smoke testing.
 
 ## External Policy Snapshot
 
@@ -218,8 +219,8 @@ Completed evidence for the current external PR based on the `gwexpy==0.1.1`
 sdist. This evidence does not close the required `gwexpy==0.1.2` refresh and
 revalidation listed in the remaining work below.
 
-1. Confirmed the PyPI release for `gwexpy==0.1.2` exists as the target for
-   the upcoming refresh.
+1. Identified `gwexpy==0.1.2` as the target for the upcoming refresh after
+   the PyPI hotfix release is published and smoke-tested.
 2. Recorded the PyPI sdist SHA256 hash for the `0.1.1` source used by the
    current staged-recipes PR.
 3. Wrote the v1 recipe manually from the model above for the current PR.

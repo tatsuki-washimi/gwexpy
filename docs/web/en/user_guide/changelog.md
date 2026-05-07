@@ -7,7 +7,7 @@ Notable changes to the GWexpy project.
 - Restored GWpy 4 I/O compatibility for public proxy imports, table I/O proxies, GWF reads, seismic/audio auto-identification, SegmentTable CSV span parsing, FrequencySeries DTT XML dispatch, and stale public I/O examples.
 
 ### Known Limitations And Follow-Ups
-- PyPI `gwexpy==0.1.2` has been published and fresh-install smoke-tested. Normal users should start with `pip install gwexpy`; source installs are for contributor or unreleased-code workflows.
+- PyPI `gwexpy==0.1.2` is the next hotfix release target; publication and fresh-install smoke testing are still pending. After publication, normal users should start with `pip install gwexpy`; source installs are for contributor or unreleased-code workflows.
 - `conda-forge` packaging is not published yet. The staged-recipes PR is open and CI-green, but public docs should not advertise `conda install -c conda-forge gwexpy` until the feedstock is created, the package is live, and fresh conda-environment smoke tests pass.
 
 ## [0.1.1] - 2026-04-28
