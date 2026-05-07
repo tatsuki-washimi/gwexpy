@@ -104,12 +104,16 @@ validation:
       result: "parsed successfully."
     - cmd: "rtk git diff --check"
       result: "clean."
-  blocked:
+    - cmd: "rtk conda run -n gwexpy sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-v012-docs-html"
+      result: "passed with exit code 0; emitted existing docs warnings."
+    - cmd: "rtk conda run -n gwexpy sphinx-build -E -q -b html -D nbsphinx_execute=never -w /tmp/gwexpy-v012-docs-warnings-fresh.log docs /tmp/gwexpy-v012-docs-html-fresh"
+      result: "passed with exit code 0; warning file had 167 lines covering existing duplicate Open In Colab substitutions and JA MyST xref warnings."
+  environment_notes:
     - cmd: "rtk make html"
       workdir: "docs"
       result: "Failed: this checkout has no docs Makefile/html target."
     - cmd: "rtk sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-v012-docs-html"
-      result: "Failed: sphinx-build executable is unavailable in this environment."
+      result: "Failed outside conda because sphinx-build is unavailable on PATH."
 human_review:
   required: true
   reason: "Integration includes PR #376, which preserves Histogram flow metadata and was flagged for human statistical metadata review in its individual manifest."
