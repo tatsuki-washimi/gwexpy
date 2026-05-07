@@ -1,11 +1,5 @@
 from __future__ import annotations
 
-from gwpy.table.io.gravityspy import (
-    EventTable,
-    get_gravityspy_triggers,
-)
+from ._proxy import bind_gwpy_proxy
 
-__all__ = [
-    "EventTable",
-    "get_gravityspy_triggers",
-]
+__all__ = bind_gwpy_proxy(globals(), "gwpy.table.io.gravityspy")

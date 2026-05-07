@@ -1,25 +1,5 @@
 from __future__ import annotations
 
-from gwpy.table.io.snax import (
-    EventTable,
-    read_table_hdf5,
-    read_with_columns,
-    read_with_selection,
-    register_reader,
-    table_from_file,
-    vstack,
-    warnings,
-    with_read_hdf5,
-)
+from ._proxy import bind_gwpy_proxy
 
-__all__ = [
-    "EventTable",
-    "read_table_hdf5",
-    "read_with_columns",
-    "read_with_selection",
-    "register_reader",
-    "table_from_file",
-    "vstack",
-    "warnings",
-    "with_read_hdf5",
-]
+__all__ = bind_gwpy_proxy(globals(), "gwpy.table.io.snax")

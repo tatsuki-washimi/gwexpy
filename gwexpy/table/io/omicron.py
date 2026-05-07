@@ -1,13 +1,5 @@
 from __future__ import annotations
 
-from gwpy.table.io.omicron import (
-    EventTable,
-    registry,
-    table_from_omicron,
-)
+from ._proxy import bind_gwpy_proxy
 
-__all__ = [
-    "EventTable",
-    "registry",
-    "table_from_omicron",
-]
+__all__ = bind_gwpy_proxy(globals(), "gwpy.table.io.omicron")

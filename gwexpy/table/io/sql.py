@@ -1,17 +1,5 @@
 from __future__ import annotations
 
-from gwpy.table.io.sql import (
-    OPERATORS,
-    Table,
-    fetch,
-    format_db_selection,
-    parse_column_filters,
-)
+from ._proxy import bind_gwpy_proxy
 
-__all__ = [
-    "OPERATORS",
-    "Table",
-    "fetch",
-    "format_db_selection",
-    "parse_column_filters",
-]
+__all__ = bind_gwpy_proxy(globals(), "gwpy.table.io.sql")
