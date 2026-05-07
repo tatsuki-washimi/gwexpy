@@ -69,18 +69,26 @@ Important constraints from those sources:
 - feedstock changes should normally be proposed through fork PRs and rerendered
   when recipe or feedstock configuration changes.
 
-## Preconditions
+## Submission Preconditions And Refresh Gates
 
-The staged-recipes submission was opened only after these gates were resolved:
+The initial staged-recipes submission based on the `gwexpy==0.1.1` PyPI sdist
+was opened only after these gates were resolved:
 
-1. #293 produced a stable PyPI/source release: `gwexpy==0.1.2`.
+1. #293 produced a stable PyPI/source release suitable for the first
+   conda-forge recipe submission.
 2. The release version, `CITATION.cff`, `.zenodo.json`, `CHANGELOG.md`, and
    `gwexpy/_version.py` were aligned before publication.
-3. The source archive used by the recipe must be refreshed to the `0.1.2` PyPI
-   sdist and its SHA256 hash recorded in the staged-recipes PR.
-4. The initial feedstock maintainer is `tatsuki-washimi`.
-5. Remaining audit issues are closed, accepted as known limitations, or deferred
-   as post-release follow-ups.
+3. The initial feedstock maintainer is `tatsuki-washimi`.
+4. Remaining audit issues were closed, accepted as known limitations, or
+   deferred as post-release follow-ups.
+
+Before the staged-recipes PR can merge, it must still satisfy these
+`gwexpy==0.1.2` refresh gates:
+
+1. Refresh the recipe source from the current `0.1.1` PyPI sdist to the
+   `0.1.2` PyPI sdist.
+2. Record the `0.1.2` sdist SHA256 hash in staged-recipes PR #33169.
+3. Rerun local and remote staged-recipes validation after the refresh.
 
 ## Initial Recipe Model
 
