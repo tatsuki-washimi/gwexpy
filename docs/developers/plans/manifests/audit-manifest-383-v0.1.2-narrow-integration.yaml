@@ -42,9 +42,10 @@ validation_status:
     - "Task 1 scope review: passed."
     - "Task 2 scope review: passed."
     - "Task 3 scope review: passed."
+  task_6_status: "Task 6 complete-with-gaps."
   pending:
-    - "Task 5 targeted tests are complete; Task 6 static/full release gates remain pending."
-    - "Static/lint gate re-run is pending Task 5/6 execution."
+    - "Task 5 targeted tests are complete."
+    - "Task 6 static/full release gates completed with environment gaps and one pytest failure."
 
 targeted_validation:
   tests:
@@ -68,3 +69,35 @@ targeted_validation:
 review:
   physics_signoff_required: false
   rationale: "This manifest/docs slice records release-prep scope only; runtime issue manifests retain their own validation and review checks."
+
+static_release_validation:
+  status: "complete-with-gaps"
+  notes:
+    - "pytest exit 2; output reached summary '0 passed, 0 failed, 8 skipped' before failure section, with no changed-code assertion failure identified in this run."
+    - "build failed because isolated environment could not fetch build requirements (wheel) due network / index access limitation."
+    - "Sphinx docs build could not run because `sphinx` is not installed in the environment."
+    - "No build or docs artifacts were created under `/tmp/gwexpy-v0.1.2-narrow-dist-task6` or `/tmp/gwexpy-v0.1.2-narrow-docs-html-task6`."
+  commands:
+    - command: "rtk ruff check gwexpy tests"
+      result: "pass"
+    - command: "rtk python scripts/check_release_metadata.py"
+      result: "pass"
+    - command: "rtk pytest -q tests/ -p no:cacheprovider"
+      result: "fail"
+      detail: "exit 2; no changed-code assertion failures identified."
+    - command: "rtk python -m build --outdir /tmp/gwexpy-v0.1.2-narrow-dist-task6"
+      result: "env-gap"
+      detail: "build backend could not install wheel in isolated env."
+    - command: "rtk python scripts/check_release_artifacts.py /tmp/gwexpy-v0.1.2-narrow-dist-task6"
+      result: "skipped"
+      detail: "no build artifacts were produced."
+    - command: "rtk twine check /tmp/gwexpy-v0.1.2-narrow-dist-task6/*"
+      result: "skipped"
+      detail: "no build artifacts were produced."
+    - command: "rtk python -m sphinx -b html -D nbsphinx_execute=never docs /tmp/gwexpy-v0.1.2-narrow-docs-html-task6"
+      result: "env-gap"
+      detail: "module sphinx is not installed."
+    - command: "rtk git -C /tmp/gwexpy-v0.1.2-narrow diff --check"
+      result: "pass"
+    - command: "rtk git -C /tmp/gwexpy-v0.1.2-narrow status --short --branch"
+      result: "pass"
