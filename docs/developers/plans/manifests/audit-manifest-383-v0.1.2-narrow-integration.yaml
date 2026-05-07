@@ -1,0 +1,51 @@
+---
+issue: 383
+title: "Pre-publication narrow v0.1.2 integration release-prep documentation"
+date: 2026-05-07
+branch: codex/v0.1.2-io-hotfix-integration-narrow
+worktree: /tmp/gwexpy-v0.1.2-narrow
+agent_role: "Task 4 worker: pre-publication narrow release prep"
+agent_model: "Codex (GPT-5)"
+target_release: v0.1.2
+release_state: "unpublished / pre-publication"
+
+scope:
+  included:
+    - "#357 GWpy4 public I/O proxy compatibility fix set."
+    - "#356 GWF list/dict read compatibility fixes."
+    - "#363 histogram HDF5 flow compatibility fixes."
+    - "#364 ATS/MTH5 compatibility fixes."
+    - "#366 audio auto-identify fixes."
+    - "#367 seismic auto-identify fixes."
+    - "#365 SegmentTable span CSV compatibility fixes."
+    - "#362 FrequencySeries DTT XML auto-identify fixes."
+    - "Minimal #369 landing/demo import hunk only (no full #369 stream)."
+  excluded:
+    - "#368 scope."
+    - "#371 scope and gwexpy.table.io.* proxy drift."
+    - "Full #369 notebooks/tests/manifest stream."
+    - "Spectrogram follow-up stream."
+    - "Broad docs/manuscript cleanup."
+    - "#353 public feedback/roadmap docs stream."
+
+release_day_deferred:
+  - "Version bump and public artifact metadata transition to 0.1.2."
+  - "Release metadata dates update."
+  - "Git tag and release-note publication."
+  - "PyPI publication."
+  - "Zenodo publication record refresh."
+  - "conda-forge refresh."
+  - "Fresh-environment release smoke and publish gates final pass."
+
+validation_status:
+  scope_reviews:
+    - "Task 1 scope review: passed."
+    - "Task 2 scope review: passed."
+    - "Task 3 scope review: passed."
+  pending:
+    - "Targeted test gates are pending Task 5/6 execution."
+    - "Static/lint gate re-run is pending Task 5/6 execution."
+
+review:
+  physics_signoff_required: false
+  rationale: "This manifest/docs slice records release-prep scope only; runtime issue manifests retain their own validation and review checks."

@@ -2,6 +2,16 @@
 
 GWexpy の主な変更履歴を記載します。
 
+## [Pending v0.1.2] (未公開)
+### 対象を絞った hotfix 範囲
+- GWpy4 向け公開 I/O proxy import と GWF list/dict read 挙動の互換性修正。
+- histogram HDF5、ATS/MTH5、audio、seismic、SegmentTable span CSV、FrequencySeries DTT XML の auto-identify/read-path 修正。
+- この統合トラックでは #369 の最小 landing/demo import hunk のみを含みます。
+
+### 公開前の残タスク
+- `v0.1.2` は未公開で、タグ作成とパッケージ公開はまだ保留です。
+- fresh release smoke の再実行と conda-forge 更新は、公開当日側のフォローアップとして未完了です。
+
 ## [0.1.1] - 2026-04-28
 ### 追加 (Added)
 - `SegmentTable`、histogram/segments 補助機能、detector/time 変換、CLI、plot helper に関する公開契約の基準化ドキュメントとテストを追加。
