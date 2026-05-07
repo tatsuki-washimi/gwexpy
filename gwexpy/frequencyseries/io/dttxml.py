@@ -1,4 +1,5 @@
 """Frequency-domain DTT XML reader."""
+
 from __future__ import annotations
 
 from datetime import UTC
@@ -25,6 +26,15 @@ from ..frequencyseries import FrequencySeries
 from ..matrix import FrequencySeriesMatrix
 
 _DTTXML_FORMATS = ("xml.diaggui", "dttxml")
+
+
+def _looks_like_dttxml(source) -> bool:
+    if source is None:
+        return False
+    if hasattr(source, "name"):
+        source = source.name
+    source_text = str(source).lower()
+    return source_text.endswith(".xml") or source_text.endswith(".xml.gz")
 
 
 def _build_epoch(value, timezone):
@@ -249,10 +259,10 @@ for _fmt in _DTTXML_FORMATS:
 io_registry.register_identifier(
     "xml.diaggui",
     FrequencySeries,
-    lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+    lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
 )
 io_registry.register_identifier(
     "xml.diaggui",
     FrequencySeriesDict,
-    lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+    lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
 )
