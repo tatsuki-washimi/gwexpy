@@ -46,6 +46,25 @@ validation_status:
     - "Targeted test gates are pending Task 5/6 execution."
     - "Static/lint gate re-run is pending Task 5/6 execution."
 
+targeted_validation:
+  tests:
+    command: >-
+      rtk pytest -q tests/io/test_gwpy4_io_proxy_imports.py
+      tests/timeseries/test_io_gwf_timeseriesdict.py
+      tests/histogram/test_histogram_io.py
+      tests/io/test_seismic_public_io.py
+      tests/io/test_compressed_audio_public_io.py
+      tests/io/test_frequencyseries_io.py
+      tests/table/test_segment_table_new.py
+      tests/io/test_io_docs_contract_sync.py
+      -p no:cacheprovider
+    result: "71 passed, 0 skipped, 0 failed."
+  import_smoke:
+    command: >-
+      rtk python -c 'import sys; exec("""try:\\n    from gwexpy.timeseries
+      import FrequencySeriesMatrix as _\\n    print(\\\"old-import-unexpected-pass\\\")\\n    sys.exit(2)\\nexcept Exception as e:\\n    print(f\\\"old-import-fail:{type(e).__name__}\\\")\\nfrom gwexpy.frequencyseries import FrequencySeriesMatrix\\nprint(f\\\"new-import-pass:{FrequencySeriesMatrix.__name__}\\\")""")'
+    result: "old import failed with ImportError; new import passed as FrequencySeriesMatrix."
+
 review:
   physics_signoff_required: false
   rationale: "This manifest/docs slice records release-prep scope only; runtime issue manifests retain their own validation and review checks."
