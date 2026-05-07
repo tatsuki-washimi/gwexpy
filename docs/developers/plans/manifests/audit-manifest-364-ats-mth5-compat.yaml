@@ -1,0 +1,68 @@
+issue: 364
+title: "Handle ats.mth5 drift with clean compatibility error"
+branch: codex/issue-364-ats-mth5-compat
+date: 2026-05-07
+agent: Codex
+target_release: v0.1.2
+release_order: "05/10"
+tracker: 372
+depends_on:
+  issues:
+    - 357
+    - 371
+    - 356
+    - 363
+  pull_requests:
+    - 373
+    - 374
+    - 375
+    - 376
+skills:
+  - github:github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+scope:
+  summary: "Convert ats.mth5 optional-dependency API drift into clean ImportError guidance."
+  included:
+    - "Detect installed-but-incompatible mth5 packages that lack mth5.io.metronix.metronix_atss."
+    - "Raise ImportError with the installed mth5 version, required API path, and native format='ats' fallback guidance."
+    - "Keep the native ATS reader path unchanged."
+    - "Add regression coverage for the incompatible mth5 shape."
+  excluded:
+    - "No broad mth5 version support expansion or ATSS filename normalization."
+    - "No default native ATS parser behavior changes."
+    - "No release publication, tagging, PyPI/TestPyPI upload, or build artifacts."
+changed_files:
+  - path: gwexpy/timeseries/io/ats.py
+    change: "Added ats.mth5 compatibility error formatting for missing or drifted mth5 Metronix APIs."
+  - path: tests/io/test_seismic_public_io.py
+    change: "Added regression coverage for installed mth5 packages without mth5.io.metronix."
+  - path: docs/developers/plans/manifests/audit-manifest-364-ats-mth5-compat.yaml
+    change: "Recorded release target, dependency order, scope, validation, and review notes."
+validation:
+  red:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_seismic_public_io.py::test_ats_mth5_incompatible_dependency_raises_clean_importerror -p no:cacheprovider"
+      result: "1 failed; incompatible fake mth5 surfaced AttributeError before implementation."
+  completed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_seismic_public_io.py -p no:cacheprovider"
+      result: "9 passed."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_seismic_public_io.py tests/io/test_ats_reader.py tests/io/test_io_contract.py::test_current_public_boundary_decisions_are_recorded -p no:cacheprovider"
+      result: "13 passed."
+    - cmd: "rtk ruff check gwexpy/timeseries/io/ats.py tests/io/test_seismic_public_io.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check gwexpy/timeseries/io/ats.py tests/io/test_seismic_public_io.py"
+      result: "2 files already formatted."
+review:
+  human_review_required: false
+  physics_review_required: false
+  statistics_metadata_review_required: false
+  rationale: "Optional dependency error-handling change only; no data parsing, numerical behavior, physics, units, or statistics changed."
+release_notes:
+  target: "v0.1.2 hotfix integration release"
+  user_visible_change: "TimeSeries.read(..., format='ats.mth5') now reports incompatible mth5 installs with clean guidance instead of AttributeError."
+deferred_follow_ups:
+  - "Keep #364 behind #373, #374, #375, and #376 in the v0.1.2 integration PR."
+  - "Evaluate full mth5/ATSS compatibility separately if maintainers want broader version support."

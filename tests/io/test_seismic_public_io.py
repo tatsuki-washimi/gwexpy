@@ -72,9 +72,9 @@ def test_win_alias_family_public_surface_is_dict_first(monkeypatch):
 
     monkeypatch.setattr(win_io, "_read_win_fixed", lambda *a, **k: stream)
 
-    assert str(next(iter(TimeSeriesDict.read("dummy.win", format="win").keys()))).endswith(
-        "A1_01"
-    )
+    assert str(
+        next(iter(TimeSeriesDict.read("dummy.win", format="win").keys()))
+    ).endswith("A1_01")
     assert str(
         next(iter(TimeSeriesDict.read("dummy.cnt", format="win32").keys()))
     ).endswith("A1_01")
@@ -99,3 +99,24 @@ def test_ats_mth5_missing_dependency_raises_clean_importerror():
 
     with pytest.raises(ImportError):
         TimeSeries.read(fixture, format="ats.mth5")
+
+
+def test_ats_mth5_incompatible_dependency_raises_clean_importerror(
+    monkeypatch, tmp_path
+):
+    from types import SimpleNamespace
+
+    from gwexpy.timeseries.io import ats as ats_io
+
+    fake_mth5 = SimpleNamespace(__version__="0.6.7", io=SimpleNamespace())
+    monkeypatch.setattr(ats_io, "ensure_dependency", lambda name: fake_mth5)
+    source = tmp_path / "sample.ats"
+    source.write_bytes(b"")
+
+    with pytest.raises(ImportError) as exc:
+        TimeSeries.read(source, format="ats.mth5")
+
+    message = str(exc.value)
+    assert "ats.mth5" in message
+    assert "mth5.io.metronix.metronix_atss" in message
+    assert "format='ats'" in message
