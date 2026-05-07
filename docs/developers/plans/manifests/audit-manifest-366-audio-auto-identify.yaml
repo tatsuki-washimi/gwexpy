@@ -1,0 +1,72 @@
+issue: 366
+title: "Fix public audio auto-identify registration"
+branch: codex/issue-366-audio-auto-identify
+date: 2026-05-07
+agent: Codex
+target_release: v0.1.2
+release_order: "06/10"
+tracker: 372
+depends_on:
+  issues:
+    - 357
+    - 371
+    - 356
+    - 363
+    - 364
+  pull_requests:
+    - 373
+    - 374
+    - 375
+    - 376
+    - 377
+skills:
+  - github:github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+scope:
+  summary: "Restore compressed-audio registry auto-identification and clean missing-codec behavior."
+  included:
+    - "Normalize registered extensions so dotted values like .flac match file paths correctly."
+    - "Add public auto-identify coverage for flac, ogg, mp3, and m4a."
+    - "Raise clean ImportError guidance when pydub is present but ffmpeg/libav is missing."
+    - "Skip compressed-audio round-trip tests when no external codec backend is available."
+  excluded:
+    - "No WAV registration or reader behavior changes."
+    - "No broad audio metadata documentation cleanup."
+    - "No release publication, tagging, PyPI/TestPyPI upload, or build artifacts."
+changed_files:
+  - path: gwexpy/timeseries/io/_registration.py
+    change: "Normalized extension suffix handling for generated registry identifiers."
+  - path: gwexpy/timeseries/io/audio.py
+    change: "Converted missing ffmpeg/libav FileNotFoundError cases into clean ImportError guidance."
+  - path: tests/io/test_compressed_audio_public_io.py
+    change: "Added compressed-audio auto-identify coverage, codec clean-error tests, and codec-backend skip logic."
+  - path: docs/developers/plans/manifests/audit-manifest-366-audio-auto-identify.yaml
+    change: "Recorded release target, dependency order, scope, validation, and review notes."
+validation:
+  red:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_compressed_audio_public_io.py::test_compressed_audio_public_extensions_auto_identify -p no:cacheprovider"
+      result: "4 failed; flac, ogg, mp3, and m4a identified as [] before extension normalization."
+  completed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_compressed_audio_public_io.py::test_compressed_audio_public_extensions_auto_identify tests/io/test_io_improvements.py::test_register_timeseries_format_auto_adapt tests/io/test_io_improvements.py::test_register_timeseries_format_aliases_do_not_duplicate_identifiers -p no:cacheprovider"
+      result: "6 passed."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_compressed_audio_public_io.py tests/io/test_audio_metadata.py tests/io/test_optional_deps.py tests/io/test_io_improvements.py::test_register_timeseries_format_auto_adapt tests/io/test_io_improvements.py::test_register_timeseries_format_aliases_do_not_duplicate_identifiers -p no:cacheprovider"
+      result: "31 passed, 6 skipped, 1 warning; skips were compressed-audio round-trips without ffmpeg/libav and optional dependency skips."
+    - cmd: "rtk ruff check gwexpy/timeseries/io/_registration.py gwexpy/timeseries/io/audio.py tests/io/test_compressed_audio_public_io.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check gwexpy/timeseries/io/_registration.py gwexpy/timeseries/io/audio.py tests/io/test_compressed_audio_public_io.py"
+      result: "3 files already formatted."
+review:
+  human_review_required: false
+  physics_review_required: false
+  statistics_metadata_review_required: false
+  rationale: "I/O registry and optional external codec error-handling changes only; no numerical, physics, units, or statistics behavior changed."
+release_notes:
+  target: "v0.1.2 hotfix integration release"
+  user_visible_change: "flac, ogg, mp3, and m4a now auto-identify through the registry, and missing ffmpeg/libav reports clean install guidance."
+deferred_follow_ups:
+  - "Keep #366 behind #373, #374, #375, #376, and #377 in the v0.1.2 integration PR."
+  - "Address broader audio metadata documentation cleanup separately from this registry hotfix."
