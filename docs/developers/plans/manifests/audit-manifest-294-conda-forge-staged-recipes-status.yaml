@@ -59,6 +59,7 @@ human_review:
   required: false
   reason: "Documentation and roadmap guard update only; no runtime, physics, statistical, or public install behavior changed."
 remaining:
+  - "Refresh staged-recipes PR #33169 from gwexpy==0.1.1 to the gwexpy==0.1.2 PyPI sdist, record the 0.1.2 SHA256 hash, and rerun local plus remote validation."
   - "Wait for conda-forge reviewer/maintainer review and merge of staged-recipes PR #33169."
   - "Confirm feedstock creation after merge."
   - "Run a fresh conda install smoke test only after the package appears on the conda-forge channel."

@@ -206,23 +206,30 @@ Follow-up candidates after the core feedstock exists:
 
 ## Staged-Recipes Checklist
 
-Completed for the external PR:
+Completed evidence for the current external PR based on the `gwexpy==0.1.1`
+sdist. This evidence does not close the required `gwexpy==0.1.2` refresh and
+revalidation listed in the remaining work below.
 
-1. Built and published the PyPI release for `gwexpy==0.1.2`.
-2. Recorded the PyPI sdist SHA256 hash.
-3. Wrote the v1 recipe manually from the model above.
+1. Confirmed the PyPI release for `gwexpy==0.1.2` exists as the target for
+   the upcoming refresh.
+2. Recorded the PyPI sdist SHA256 hash for the `0.1.1` source used by the
+   current staged-recipes PR.
+3. Wrote the v1 recipe manually from the model above for the current PR.
 4. Reviewed license fields against `LICENSE.txt` and package metadata.
 5. Reviewed every dependency against the core dependency map above.
 6. Added import, CLI, `gwexpy.register_all()`, `pip check`, GUI/sphinx
    exclusion, and minimal `TimeSeries` smoke tests.
-7. Ran staged-recipes local build/lint with `conda-smithy` and `rattler-build`.
+7. Ran staged-recipes local build/lint with `conda-smithy` and `rattler-build`
+   against the `0.1.1` PR state.
 8. Opened the PR to `conda-forge/staged-recipes`:
    <https://github.com/conda-forge/staged-recipes/pull/33169>.
-9. Confirmed remote staged-recipes CI is green.
+9. Confirmed remote staged-recipes CI is green for the `0.1.1` PR state.
 
 Remaining staged-recipes work:
 
-1. Refresh staged-recipes PR #33169 from `gwexpy==0.1.1` to `gwexpy==0.1.2`.
+1. Refresh staged-recipes PR #33169 from `gwexpy==0.1.1` to the
+   `gwexpy==0.1.2` PyPI sdist, record the `0.1.2` SHA256 hash, and rerun
+   local plus remote validation.
 2. Wait for conda-forge reviewer/maintainer review.
 3. Address any requested recipe changes without expanding the first package
    beyond the core, non-GUI surface.

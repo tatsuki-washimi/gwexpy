@@ -79,6 +79,8 @@ For fitting, I/O, interoperability, and notebook-based workflows, start from the
 ## Support
 
 - Lightweight bug reports and feature requests: <https://forms.gle/Ewx5K69KqDvzrJp57>
+- Security reports: see [SECURITY.md](SECURITY.md); do not use the form or
+  public issues for vulnerability details.
 - Issues: <https://github.com/tatsuki-washimi/gwexpy/issues>
 - Discussions: <https://github.com/tatsuki-washimi/gwexpy/discussions>
 - Contributions: pull requests are welcome on GitHub
