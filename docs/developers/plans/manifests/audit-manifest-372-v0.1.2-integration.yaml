@@ -1,0 +1,109 @@
+tracker: 372
+branch: codex/v0.1.2-io-hotfix-integration
+date: 2026-05-07
+agent: Codex
+skills:
+  - github:github
+  - release-coordinator
+  - superpowers:using-git-worktrees
+  - superpowers:executing-plans
+target_release: v0.1.2
+integration_pr: true
+scope:
+  summary: "Aggregate the v0.1.2 I/O hotfix lane into one reviewable integration branch."
+  runtime_code_changed: true
+  physics_behavior_changed: false
+  public_api_changed: false
+  docs_changed: true
+  tests_changed: true
+included_prs:
+  - order: "01/10"
+    issue: 357
+    pr: 373
+    branch: codex/issue-357-gwpy4-io-proxy
+    commit: c3be072ba
+    release: v0.1.2
+  - order: "02/10"
+    issue: 371
+    pr: 374
+    branch: codex/issue-371-gwpy4-table-io-proxy
+    commit: afb1cade3
+    release: v0.1.2
+  - order: "03/10"
+    issue: 356
+    pr: 375
+    branch: codex/issue-356-gwf-gwpy4-compat
+    commit: 10e246aa6
+    release: v0.1.2
+  - order: "04/10"
+    issue: 363
+    pr: 376
+    branch: codex/issue-363-histogram-hdf5-flow
+    commit: 3362f70b7
+    release: v0.1.2
+  - order: "05/10"
+    issue: 364
+    pr: 377
+    branch: codex/issue-364-ats-mth5-compat
+    commit: 708557334
+    release: v0.1.2
+  - order: "06/10"
+    issue: 366
+    pr: 378
+    branch: codex/issue-366-audio-auto-identify
+    commit: 920e9f064
+    release: v0.1.2
+  - order: "07/10"
+    issue: 367
+    pr: 379
+    branch: codex/issue-367-seismic-auto-identify
+    commit: 0dab274e9
+    release: v0.1.2
+  - order: "08/10"
+    issue: 365
+    pr: 380
+    branch: codex/issue-365-segmenttable-span-csv
+    commit: 36d2a5d6d
+    release: v0.1.2
+  - order: "09/10"
+    issue: 362
+    pr: 381
+    branch: codex/issue-362-frequency-dttxml-identify
+    commit: fe7e03318
+    release: v0.1.2
+  - order: "10/10"
+    issue: 369
+    pr: 382
+    branch: codex/issue-369-docs-io-examples
+    commit: 01bf0eb50
+    release: v0.1.2
+excluded:
+  - "No v0.1.3+ issues: #368, #359, #370."
+  - "No v0.2.0+ issues: #355, #274."
+  - "No conda-forge/release-channel task: #294."
+merge_strategy:
+  base: origin/main
+  method: "Sequential --no-ff merges in release order."
+  conflicts: "None."
+commands:
+  - cmd: "rtk git fetch origin main codex/issue-357-gwpy4-io-proxy codex/issue-371-gwpy4-table-io-proxy codex/issue-356-gwf-gwpy4-compat codex/issue-363-histogram-hdf5-flow codex/issue-364-ats-mth5-compat codex/issue-366-audio-auto-identify codex/issue-367-seismic-auto-identify codex/issue-365-segmenttable-span-csv codex/issue-362-frequency-dttxml-identify codex/issue-369-docs-io-examples"
+    result: "Fetched all v0.1.2 hotfix branches."
+  - cmd: "rtk git worktree add -b codex/v0.1.2-io-hotfix-integration /tmp/gwexpy-v0.1.2-integration origin/main"
+    result: "Created integration worktree from origin/main."
+  - cmd: "rtk git merge --no-ff --no-edit <hotfix branch>"
+    result: "Merged all 10 hotfix branches in order 01/10 through 10/10 with no conflicts."
+validation:
+  completed:
+    - cmd: "rtk pytest tests/io/test_gwpy4_io_proxy_imports.py tests/table/test_gwpy4_table_io_proxy_imports.py tests/timeseries/test_io_gwf_timeseriesdict.py tests/histogram/test_histogram_io.py tests/io/test_seismic_public_io.py tests/io/test_compressed_audio_public_io.py tests/table/test_segment_table_new.py tests/io/test_frequencyseries_io.py tests/io/test_io_docs_contract_sync.py -q"
+      result: "76 passed."
+    - cmd: "rtk ruff check gwexpy tests"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check <changed Python files>"
+      result: "49 files already formatted."
+    - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/manifests/audit-manifest-372-v0.1.2-integration.yaml').read_text())\""
+      result: "parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "clean."
+human_review:
+  required: true
+  reason: "Integration includes PR #376, which preserves Histogram flow metadata and was flagged for human statistical metadata review in its individual manifest."
