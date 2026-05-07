@@ -2,7 +2,7 @@
 
 Notable changes to the GWexpy project.
 
-## [0.1.2] - 2026-05-07
+## [0.1.2] - Pending
 ### Fixed
 - Restored GWpy 4 I/O compatibility for public proxy imports, table I/O proxies, GWF reads, seismic/audio auto-identification, SegmentTable CSV span parsing, FrequencySeries DTT XML dispatch, and stale public I/O examples.
 

@@ -2,7 +2,7 @@
 
 GWexpy の主な変更履歴を記載します。
 
-## [0.1.2] - 2026-05-07
+## [0.1.2] - Pending
 ### 修正 (Fixed)
 - GWpy 4 に対する公開 I/O proxy import、table I/O proxy、GWF read、seismic/audio auto-identify、SegmentTable CSV span parse、FrequencySeries DTT XML dispatch、古い公開 I/O 例の互換性を回復しました。
 

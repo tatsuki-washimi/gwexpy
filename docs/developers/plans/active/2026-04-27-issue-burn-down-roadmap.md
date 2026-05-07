@@ -575,10 +575,11 @@ Current classification:
   experimental GUI app from the supported public surface, built artifacts, and
   PyPI extras metadata.
 
-Conda-forge onboarding (#294) now targets the stable PyPI `0.1.2` sdist, but
-the open staged-recipes PR still needs a refresh from its original `0.1.1`
-source. Keep #294 open until the staged-recipes PR merges, the feedstock is
-created, and a fresh conda install from the `conda-forge` channel passes.
+Conda-forge onboarding (#294) now targets the PyPI `0.1.2` sdist after
+publication, but the open staged-recipes PR still needs a refresh from its
+original `0.1.1` source. Keep #294 open until the staged-recipes PR merges,
+the feedstock is created, and a fresh conda install from the `conda-forge`
+channel passes.
 
 ## Success Criteria
 
