@@ -6,12 +6,26 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 def _make_single_series():
     return TimeSeries(np.arange(8, dtype=float), sample_rate=4, name="SIG")
+
+
+@pytest.mark.parametrize("fmt", ["mseed", "sac", "gse2", "knet"])
+def test_public_seismic_extensions_auto_identify(tmp_path, fmt):
+    path = tmp_path / f"sample.{fmt}"
+    path.write_bytes(b"not a seismic payload")
+
+    assert fmt in io_registry.identify_format(
+        "read", TimeSeriesDict, str(path), None, (), {}
+    )
+    assert fmt in io_registry.identify_format(
+        "read", TimeSeries, str(path), None, (), {}
+    )
 
 
 @pytest.mark.parametrize("fmt", ["mseed", "miniseed"])
@@ -72,9 +86,9 @@ def test_win_alias_family_public_surface_is_dict_first(monkeypatch):
 
     monkeypatch.setattr(win_io, "_read_win_fixed", lambda *a, **k: stream)
 
-    assert str(next(iter(TimeSeriesDict.read("dummy.win", format="win").keys()))).endswith(
-        "A1_01"
-    )
+    assert str(
+        next(iter(TimeSeriesDict.read("dummy.win", format="win").keys()))
+    ).endswith("A1_01")
     assert str(
         next(iter(TimeSeriesDict.read("dummy.cnt", format="win32").keys()))
     ).endswith("A1_01")
