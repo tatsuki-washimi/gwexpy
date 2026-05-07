@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, _gwf_io
 from gwexpy.timeseries._gwf_io import _extract_gwf_read_args, _resolve_gwf_format
 
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
@@ -48,6 +48,24 @@ def test_read_gwf_timeseriesdict_autodetects_extension_and_channels():
     assert CHANNEL in tsd
 
 
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+def test_read_gwf_timeseriesdict_autodetects_list_source_with_nproc_alias():
+    tsd = TimeSeriesDict.read([FIXTURE_DATA], CHANNEL, nproc=1)
+
+    assert isinstance(tsd, TimeSeriesDict)
+    assert list(tsd) == [CHANNEL]
+
+
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+def test_read_gwf_timeseriesdict_explicit_format_drops_unsupported_nproc():
+    tsd = TimeSeriesDict.read([FIXTURE_DATA], CHANNEL, format="lalframe", nproc=1)
+
+    assert isinstance(tsd, TimeSeriesDict)
+    assert list(tsd) == [CHANNEL]
+
+
 def test_read_gwf_timeseries_with_autodetect_requires_backend():
     pytest.skip("Backend-dependent integration test for .gwf without explicit format")
 
@@ -64,6 +82,7 @@ def test_gwf_format_resolution_prefers_explicit_format_over_extension():
     assert _resolve_gwf_format(path, "lalframe") == "gwf.lalframe"
     assert _resolve_gwf_format(path, "hdf5") is None
     assert _resolve_gwf_format(path, None) == "gwf"
+    assert _resolve_gwf_format([path], None) == "gwf"
 
 
 def test_extract_gwf_read_args_supports_name_fallback_and_channel_aliases():
@@ -115,7 +134,8 @@ def test_extract_gwf_read_args_no_start_end_leak_with_channel_alias():
 
 def test_extract_gwf_read_args_rejects_positional_keyword_overlap():
     with pytest.raises(
-        TypeError, match="Cannot specify both positional and keyword 'start' for GWF read"
+        TypeError,
+        match="Cannot specify both positional and keyword 'start' for GWF read",
     ):
         _extract_gwf_read_args(
             ("K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ", 10.0),
@@ -129,6 +149,30 @@ def test_extract_gwf_read_args_rejects_positional_keyword_overlap():
             ("K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ", 10.0, 20.0),
             {"format": "gwf", "end": 30.0},
         )
+
+
+def test_filter_gwf_reader_kwargs_preserves_unknown_kwargs_except_parallel_aliases():
+    def reader(source, channels, *, parallel=None, scaled=None):
+        return None
+
+    filtered = _gwf_io._filter_gwf_reader_kwargs(
+        reader,
+        {"nproc": 2, "scaled": True, "custom": "kept"},
+    )
+
+    assert filtered == {"parallel": 2, "scaled": True, "custom": "kept"}
+
+
+def test_filter_gwf_reader_kwargs_drops_parallel_aliases_when_reader_rejects_them():
+    def reader(source, channels, *, scaled=None):
+        return None
+
+    filtered = _gwf_io._filter_gwf_reader_kwargs(
+        reader,
+        {"nproc": 2, "parallel": 3, "scaled": True, "custom": "kept"},
+    )
+
+    assert filtered == {"scaled": True, "custom": "kept"}
 
 
 def test_read_gwf_timeseries_with_single_channel_by_format_gwf():

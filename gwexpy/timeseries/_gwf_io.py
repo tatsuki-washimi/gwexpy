@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from pathlib import Path
 from typing import Any
 
@@ -71,7 +72,9 @@ def _sync_gwf_registry_aliases() -> None:
     all_formats = set(canonical_formats + alias_formats)
 
     for fmt in all_formats:
-        io_registry.register_reader(fmt, TimeSeriesMatrix, _read_timeseriesmatrix_gwf, force=True)
+        io_registry.register_reader(
+            fmt, TimeSeriesMatrix, _read_timeseriesmatrix_gwf, force=True
+        )
 
     for alias, canonical in _GWF_ALIAS_TO_CANONICAL.items():
         canonical_reader = _safe_get_reader(canonical, TimeSeries)
@@ -99,7 +102,9 @@ def _sync_gwf_registry_aliases() -> None:
                 alias, TimeSeriesMatrix, canonical_matrix_reader, force=True
             )
         if canonical_matrix_writer is not None:
-            io_registry.register_writer(alias, TimeSeriesMatrix, canonical_matrix_writer, force=True)
+            io_registry.register_writer(
+                alias, TimeSeriesMatrix, canonical_matrix_writer, force=True
+            )
 
     _GWF_REGISTRY_SYNCED = True
 
@@ -143,14 +148,49 @@ def _resolve_gwf_format(source: Any, fmt: Any) -> str | None:
             return _normalize_gwf_format(fmt)
         return None
 
-    try:
-        path = Path(source)
-    except TypeError:
-        return None
-
-    if path.suffix.lower() == ".gwf":
+    if _looks_like_gwf_path(source):
         return "gwf"
+
+    if isinstance(source, (list, tuple)) and source:
+        if all(_looks_like_gwf_path(item) for item in source):
+            return "gwf"
     return None
+
+
+def _looks_like_gwf_path(source: Any) -> bool:
+    try:
+        return Path(source).suffix.lower() == ".gwf"
+    except (TypeError, ValueError):
+        return False
+
+
+def _filter_gwf_reader_kwargs(reader: Any, kwargs: dict[str, Any]) -> dict[str, Any]:
+    """Normalize GWF reader parallel kwargs for GWpy/backend signature drift."""
+    try:
+        parameters = inspect.signature(reader).parameters
+    except (TypeError, ValueError):
+        return dict(kwargs)
+
+    accepts_kwargs = any(
+        parameter.kind == inspect.Parameter.VAR_KEYWORD
+        for parameter in parameters.values()
+    )
+
+    def accepts(name: str) -> bool:
+        return accepts_kwargs or name in parameters
+
+    filtered = dict(kwargs)
+    if "nproc" in filtered:
+        nproc = filtered.pop("nproc")
+        if accepts("nproc"):
+            filtered["nproc"] = nproc
+        elif accepts("parallel") and "parallel" not in filtered:
+            filtered["parallel"] = nproc
+
+    if "parallel" in filtered and not accepts("parallel"):
+        filtered.pop("parallel")
+
+    return filtered
 
 
 def _normalize_gwf_channels(channels: Any) -> list[str] | None:
@@ -203,14 +243,18 @@ def _extract_gwf_read_args(
 
     if len(args) > 1:
         if has_start_kw and not has_channel_alias_kw:
-            raise TypeError("Cannot specify both positional and keyword 'start' for GWF read.")
+            raise TypeError(
+                "Cannot specify both positional and keyword 'start' for GWF read."
+            )
         start = args[1]
     else:
         start = gwf_kwargs.pop("start", None)
 
     if len(args) > 2:
         if has_end_kw and not has_channel_alias_kw:
-            raise TypeError("Cannot specify both positional and keyword 'end' for GWF read.")
+            raise TypeError(
+                "Cannot specify both positional and keyword 'end' for GWF read."
+            )
         end = args[2]
     else:
         end = gwf_kwargs.pop("end", None)
@@ -233,6 +277,7 @@ def _extract_gwf_read_args(
 
 __all__ = [
     "_extract_gwf_read_args",
+    "_filter_gwf_reader_kwargs",
     "_normalize_gwf_channels",
     "_normalize_gwf_format",
     "_resolve_gwf_format",
