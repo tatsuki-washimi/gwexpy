@@ -33,6 +33,7 @@
 
 ## 公開トラッキング先
 
+- [簡単な不具合報告・機能追加要望フォーム](https://forms.gle/Ewx5K69KqDvzrJp57)
 - [GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues)
 - [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)
 - [更新履歴](changelog.md)

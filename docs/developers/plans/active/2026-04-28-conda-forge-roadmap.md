@@ -22,22 +22,23 @@ core feedstock exists.
 
 ## Current Status
 
-Status as of 2026-04-30:
+Status as of 2026-05-07:
 
-- PyPI `gwexpy==0.1.1` has been published and smoke-tested from PyPI.
+- PyPI `gwexpy==0.1.2` has been published and smoke-tested from PyPI.
 - The staged-recipes PR is open and mergeable:
   <https://github.com/conda-forge/staged-recipes/pull/33169>.
-- The staged-recipes recipe uses the PyPI sdist hash
-  `82176ef7c07d1196755eb7f113d5a74988466d6f373da4a92711c77d9bf13092`.
+- The staged-recipes PR was opened from the `0.1.1` PyPI sdist and must be
+  refreshed to the `0.1.2` PyPI sdist before conda-forge merge.
 - Local validation passed with `conda-smithy recipe-lint`, `rattler-build
   --render-only`, and `rattler-build ... --test native`.
 - Remote staged-recipes CI is green: GitHub linter, conda-forge-linter, Azure
   aggregate job, linux_64, osx_64, and win_64 builds.
 - `conda-forge/gwexpy-feedstock` does not exist yet.
 
-Current blocker: conda-forge reviewer/maintainer review and merge of the
-staged-recipes PR. After merge, continue with feedstock creation checks,
-package publication checks, and fresh conda install smoke testing.
+Current blocker: refresh staged-recipes PR #33169 to `gwexpy==0.1.2`, then
+continue conda-forge reviewer/maintainer review. After merge, continue with
+feedstock creation checks, package publication checks, and fresh conda install
+smoke testing.
 
 ## External Policy Snapshot
 
@@ -72,11 +73,11 @@ Important constraints from those sources:
 
 The staged-recipes submission was opened only after these gates were resolved:
 
-1. #293 produced a stable PyPI/source release: `gwexpy==0.1.1`.
+1. #293 produced a stable PyPI/source release: `gwexpy==0.1.2`.
 2. The release version, `CITATION.cff`, `.zenodo.json`, `CHANGELOG.md`, and
    `gwexpy/_version.py` were aligned before publication.
-3. The source archive used by the recipe has a recorded SHA256 hash:
-   `82176ef7c07d1196755eb7f113d5a74988466d6f373da4a92711c77d9bf13092`.
+3. The source archive used by the recipe must be refreshed to the `0.1.2` PyPI
+   sdist and its SHA256 hash recorded in the staged-recipes PR.
 4. The initial feedstock maintainer is `tatsuki-washimi`.
 5. Remaining audit issues are closed, accepted as known limitations, or deferred
    as post-release follow-ups.
@@ -88,7 +89,7 @@ Recommended first recipe shape:
 ```yaml
 context:
   name: gwexpy
-  version: "0.1.1"
+  version: "0.1.2"
   python_min: "3.11"
 
 package:
@@ -207,7 +208,7 @@ Follow-up candidates after the core feedstock exists:
 
 Completed for the external PR:
 
-1. Built and published the PyPI release for `gwexpy==0.1.1`.
+1. Built and published the PyPI release for `gwexpy==0.1.2`.
 2. Recorded the PyPI sdist SHA256 hash.
 3. Wrote the v1 recipe manually from the model above.
 4. Reviewed license fields against `LICENSE.txt` and package metadata.
@@ -221,10 +222,11 @@ Completed for the external PR:
 
 Remaining staged-recipes work:
 
-1. Wait for conda-forge reviewer/maintainer review.
-2. Address any requested recipe changes without expanding the first package
+1. Refresh staged-recipes PR #33169 from `gwexpy==0.1.1` to `gwexpy==0.1.2`.
+2. Wait for conda-forge reviewer/maintainer review.
+3. Address any requested recipe changes without expanding the first package
    beyond the core, non-GUI surface.
-3. Wait for staged-recipes merge.
+4. Wait for staged-recipes merge.
 
 ## Feedstock Maintenance Checklist
 

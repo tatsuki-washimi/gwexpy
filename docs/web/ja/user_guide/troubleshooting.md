@@ -73,7 +73,12 @@ conda install -c conda-forge pygmt
 
 ## 解決しない場合
 
-GitHub の [Issues](https://github.com/tatsuki-washimi/gwexpy/issues) にエラーログを添えて報告してください。
+簡単な不具合報告や機能追加要望は
+[フィードバックフォーム](https://forms.gle/Ewx5K69KqDvzrJp57) からも送れます。
+再現手順を含む技術的な問題や公開で追跡したい内容は、GitHub の
+[Issues](https://github.com/tatsuki-washimi/gwexpy/issues) にエラーログを添えて報告してください。
+フォームには非公開データ、認証情報、security vulnerability の詳細を含めないでください。
+security report はプロジェクトの security policy を利用してください。
 報告時には以下の情報を含めていただけるとスムーズです：
 * OS バージョン
 * Python バージョン

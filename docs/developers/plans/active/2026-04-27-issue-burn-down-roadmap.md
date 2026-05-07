@@ -433,7 +433,7 @@ limitations are accepted.
 
 #### Wave 5 Progress Report
 
-Status as of 2026-04-30: PyPI `gwexpy==0.1.1` has been published and
+Status as of 2026-05-07: PyPI `gwexpy==0.1.2` has been published and
 fresh-environment smoke-tested. The conda-forge staged-recipes PR for #294 is
 open, mergeable, and CI-green, but it has not yet been reviewed or merged, and
 `conda-forge/gwexpy-feedstock` does not exist yet.
@@ -445,12 +445,12 @@ open, mergeable, and CI-green, but it has not yet been reviewed or merged, and
 | #294 | #327 `[AGENT:release] Record conda-forge onboarding roadmap` | 2026-04-28 19:57 JST | `4bf66c0` | Added the conda-forge staged-recipes roadmap, later corrected the v1 recipe model to use `build.python.entry_points`, deferred the optional GUI entry point from the first core recipe, and added noarch recipe test guidance. Docs/test-only. |
 | #293 | #351 `[AGENT:release] Fix release-blocking physics/statistics issues` | 2026-04-29 JST | `3ced86d` | Resolved the release-blocking #278/#284 physics/statistics issues before publication. |
 | #293 | #352 `[AGENT:release] Exclude GUI and sample data from first PyPI artifacts` | 2026-04-29 JST | `a45c7b4` | Removed GUI, Sphinx utility, sample data, and tests from first PyPI artifacts; updated artifact hygiene checks and release docs. |
-| #294 | conda-forge/staged-recipes#33169 `Add gwexpy` | Open as of 2026-04-30 | `487d1cd` in fork | Submitted `gwexpy==0.1.1` recipe from the PyPI sdist. Local `conda-smithy` and `rattler-build` validation passed; remote staged-recipes linter, conda-forge-linter, linux_64, osx_64, and win_64 CI are green. Awaiting conda-forge review/merge. |
+| #294 | conda-forge/staged-recipes#33169 `Add gwexpy` | Open as of 2026-04-30 | `487d1cd` in fork | The staged-recipes PR was submitted from `gwexpy==0.1.1` and must be refreshed to `gwexpy==0.1.2` before merge. Previous local `conda-smithy` / `rattler-build` and remote CI evidence applies to the old sdist only. |
 
 Net outcome:
 
-- #293 release execution is complete for PyPI `0.1.1`: Trusted Publishing was
-  configured, `v0.1.1` was retagged at the release commit, the publish workflow
+- #293 release execution is complete for PyPI `0.1.2`: Trusted Publishing was
+  configured, `v0.1.2` was tagged at the release commit, the publish workflow
   succeeded, and a fresh PyPI install smoke test passed.
 - #278 and #284 were resolved before the PyPI publication path proceeded.
 - #274 is explicitly deferred as a post-release GUI stabilization track. The
@@ -458,7 +458,8 @@ Net outcome:
   GUI app; `gwexpy.gui` is not included in first-release artifacts, no
   `gwexpy.gui` console script is installed, and no `gui` PyPI extra is
   published for the first PyPI release.
-- #294 remains open for conda-forge review/merge, feedstock creation, first
+- #294 remains open for refreshing staged-recipes to `gwexpy==0.1.2`,
+  conda-forge review/merge, feedstock creation, first
   package publication, and a fresh `conda install -c conda-forge gwexpy` smoke
   test. The external `conda-forge/staged-recipes` submission is already open at
   <https://github.com/conda-forge/staged-recipes/pull/33169>.
@@ -573,9 +574,10 @@ Current classification:
   experimental GUI app from the supported public surface, built artifacts, and
   PyPI extras metadata.
 
-Conda-forge onboarding (#294) has started from the stable PyPI `0.1.1` sdist.
-Keep #294 open until the staged-recipes PR merges, the feedstock is created,
-and a fresh conda install from the `conda-forge` channel passes.
+Conda-forge onboarding (#294) now targets the stable PyPI `0.1.2` sdist, but
+the open staged-recipes PR still needs a refresh from its original `0.1.1`
+source. Keep #294 open until the staged-recipes PR merges, the feedstock is
+created, and a fresh conda install from the `conda-forge` channel passes.
 
 ## Success Criteria
 

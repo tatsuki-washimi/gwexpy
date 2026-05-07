@@ -1,5 +1,5 @@
 issue: 294
-date: 2026-04-30
+date: 2026-05-07
 agent: Codex
 skills:
   - doc-architect
@@ -8,7 +8,7 @@ scope:
   runtime_code_changed: false
   physics_behavior_changed: false
   public_install_docs_changed: false
-  release_published: false
+  release_published: true
 external_state:
   staged_recipes_pr:
     url: "https://github.com/conda-forge/staged-recipes/pull/33169"
@@ -16,8 +16,8 @@ external_state:
     state: open
     mergeable: true
     head_commit: "487d1cd"
-    source: "gwexpy==0.1.1 PyPI sdist"
-    sha256: "82176ef7c07d1196755eb7f113d5a74988466d6f373da4a92711c77d9bf13092"
+    source: "currently opened from gwexpy==0.1.1; must be refreshed to gwexpy==0.1.2 PyPI sdist"
+    sha256: "pending refresh for gwexpy==0.1.2"
   ci:
     conda_forge_linter: success
     staged_recipes_linter: success
@@ -38,7 +38,7 @@ changed_files:
   - path: docs/developers/plans/active/2026-04-28-conda-forge-roadmap.md
     change: "Adds current staged-recipes PR status, updates the recipe model to the CI-tested v1 form, and separates remaining review/feedstock/install gates."
   - path: docs/developers/plans/active/2026-04-27-issue-burn-down-roadmap.md
-    change: "Updates Wave 5 status now that PyPI 0.1.1 is published and staged-recipes PR #33169 is open and CI-green."
+    change: "Updates Wave 5 status now that PyPI 0.1.2 is the documentation baseline and staged-recipes PR #33169 must be refreshed from 0.1.1."
   - path: tests/test_conda_forge_roadmap.py
     change: "Updates drift guards for astropy-base, build.python.entry_points, and the CI-tested smoke-test coverage."
   - path: docs/developers/plans/manifests/audit-manifest-294-conda-forge-staged-recipes-status.yaml

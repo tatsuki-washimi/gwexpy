@@ -33,6 +33,7 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Public Tracking Sources
 
+- [Feedback form for lightweight bug reports and feature requests](https://forms.gle/Ewx5K69KqDvzrJp57)
 - [GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues)
 - [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)
 - [Changelog](changelog.md)
