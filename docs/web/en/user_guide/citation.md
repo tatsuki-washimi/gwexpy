@@ -13,7 +13,7 @@ For reproducibility of analysis results and continued maintenance of the softwar
   year = {2026},
   url = {https://github.com/tatsuki-washimi/gwexpy},
   doi = {10.5281/zenodo.1234567},
-  version = {0.1.2}
+  version = {0.1.1}
 }
 ```
 
