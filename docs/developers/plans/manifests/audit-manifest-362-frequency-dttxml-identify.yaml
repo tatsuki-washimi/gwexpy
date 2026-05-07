@@ -1,0 +1,80 @@
+issue: 362
+title: "Fix FrequencySeries DTT XML auto-identify gaps"
+branch: codex/issue-362-frequency-dttxml-identify
+date: 2026-05-07
+agent: Codex
+target_release: v0.1.2
+release_order: "09/10"
+tracker: 372
+depends_on:
+  issues:
+    - 357
+    - 371
+    - 356
+    - 363
+    - 364
+    - 366
+    - 367
+    - 365
+  pull_requests:
+    - 373
+    - 374
+    - 375
+    - 376
+    - 377
+    - 378
+    - 379
+    - 380
+skills:
+  - github:github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+scope:
+  summary: "Route FrequencySeries and FrequencySeriesDict DTT XML auto-detected inputs to the existing DTT XML reader."
+  included:
+    - "Add shared .xml/.xml.gz DTT XML source detection for frequency-domain DTT XML handling."
+    - "Route FrequencySeriesDict.read('*.xml') through read_frequencyseriesdict_dttxml when format is omitted."
+    - "Route FrequencySeries.read('*.xml.gz') through the DTT XML reader when format is omitted."
+    - "Keep existing explicit xml.diaggui/dttxml behavior and TimeSeries DTT XML tests intact."
+  excluded:
+    - "No GWF, frame, or nproc behavior changes."
+    - "No broad public API expansion beyond current frequency-domain DTT XML contract."
+    - "No release publication, tagging, PyPI/TestPyPI upload, or build artifacts."
+changed_files:
+  - path: gwexpy/frequencyseries/io/dttxml.py
+    change: "Added shared DTT XML filename detection and reused it in registered identifiers."
+  - path: gwexpy/frequencyseries/frequencyseries.py
+    change: "Used the shared detector so FrequencySeries.read handles .xml and .xml.gz auto-detected DTT XML inputs."
+  - path: gwexpy/frequencyseries/collections.py
+    change: "Used the shared detector so FrequencySeriesDict.read routes auto-detected DTT XML inputs without relying on registry identification."
+  - path: tests/io/test_frequencyseries_io.py
+    change: "Added FrequencySeriesDict .xml and FrequencySeries .xml.gz auto-detect regressions."
+  - path: docs/developers/plans/manifests/audit-manifest-362-frequency-dttxml-identify.yaml
+    change: "Recorded release target, dependency order, scope, validation, and review notes."
+validation:
+  red:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_frequencyseries_io.py::TestFrequencySeriesDttxml -p no:cacheprovider"
+      result: "2 failed, 8 passed; FrequencySeriesDict .xml and FrequencySeries .xml.gz auto-detect fell through to IORegistryError before implementation."
+  completed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_frequencyseries_io.py::TestFrequencySeriesDttxml tests/io/test_dttxml_reader.py -p no:cacheprovider"
+      result: "24 passed."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_frequencyseries_io.py tests/io/test_dttxml_reader.py tests/io/test_dttxml_common.py -p no:cacheprovider"
+      result: "45 passed."
+    - cmd: "rtk ruff check gwexpy/frequencyseries/io/dttxml.py gwexpy/frequencyseries/frequencyseries.py gwexpy/frequencyseries/collections.py tests/io/test_frequencyseries_io.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check gwexpy/frequencyseries/io/dttxml.py gwexpy/frequencyseries/frequencyseries.py gwexpy/frequencyseries/collections.py tests/io/test_frequencyseries_io.py"
+      result: "4 files already formatted."
+review:
+  human_review_required: false
+  physics_review_required: false
+  statistics_metadata_review_required: false
+  rationale: "DTT XML dispatch/identifier consistency change only; no data parsing semantics, numerical behavior, physics, units, or statistics changed."
+release_notes:
+  target: "v0.1.2 hotfix integration release"
+  user_visible_change: "FrequencySeriesDict.read('*.xml') and FrequencySeries.read('*.xml.gz') now route consistently to the DTT XML reader."
+deferred_follow_ups:
+  - "Keep #362 behind #373, #374, #375, #376, #377, #378, #379, and #380 in the v0.1.2 integration PR."
+  - "Do not broaden frequency-domain DTT XML public API claims without a separate contract/documentation PR."

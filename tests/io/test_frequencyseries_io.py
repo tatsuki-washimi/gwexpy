@@ -15,7 +15,10 @@ class TestFrequencySeriesHdf5:
     def test_roundtrip(self, tmp_path):
         fs = FrequencySeries(
             np.array([1.0, 2.0, 3.0, 4.0]),
-            f0=0, df=10, unit="1/Hz", name="test_psd",
+            f0=0,
+            df=10,
+            unit="1/Hz",
+            name="test_psd",
         )
         path = tmp_path / "fs.hdf5"
         fs.write(str(path), format="hdf5")
@@ -24,14 +27,22 @@ class TestFrequencySeriesHdf5:
         assert np.isclose(fs2.df.value, fs.df.value)
 
     def test_dict_roundtrip(self, tmp_path):
-        fsd = FrequencySeriesDict({
-            "H1:ASD": FrequencySeries(
-                np.arange(5.0), frequencies=np.arange(5.0), unit="1", name="H1:ASD",
-            ),
-            "L1:ASD": FrequencySeries(
-                np.arange(5.0) * 2, frequencies=np.arange(5.0), unit="1", name="L1:ASD",
-            ),
-        })
+        fsd = FrequencySeriesDict(
+            {
+                "H1:ASD": FrequencySeries(
+                    np.arange(5.0),
+                    frequencies=np.arange(5.0),
+                    unit="1",
+                    name="H1:ASD",
+                ),
+                "L1:ASD": FrequencySeries(
+                    np.arange(5.0) * 2,
+                    frequencies=np.arange(5.0),
+                    unit="1",
+                    name="L1:ASD",
+                ),
+            }
+        )
         path = tmp_path / "fsd.hdf5"
         fsd.write(str(path), format="hdf5")
         fsd2 = FrequencySeriesDict.read(str(path), format="hdf5")
@@ -86,6 +97,24 @@ class TestFrequencySeriesDttxml:
         with pytest.raises(ValueError, match="products"):
             FrequencySeries.read(str(dummy))
 
+    def test_frequencyseriesdict_auto_detected_xml_reaches_dttxml_reader(
+        self, tmp_path
+    ):
+        dummy = tmp_path / "dummy.xml"
+        dummy.write_text("<dttxml></dttxml>")
+        with pytest.raises(ValueError, match="products"):
+            FrequencySeriesDict.read(str(dummy))
+
+    def test_frequencyseries_auto_detected_xml_gz_reaches_dttxml_reader(self, tmp_path):
+        import gzip
+
+        dummy = tmp_path / "dummy.xml.gz"
+        with gzip.open(dummy, "wb") as fp:
+            fp.write(b"<dttxml></dttxml>")
+
+        with pytest.raises(ValueError, match="products"):
+            FrequencySeries.read(str(dummy))
+
     def test_legacy_alias_resolves_to_canonical_reader(self):
         from gwpy.io.registry import default_registry as io_registry
 
@@ -99,7 +128,10 @@ class TestFrequencySeriesCsv:
     def test_roundtrip_with_metadata(self, tmp_path):
         fs = FrequencySeries(
             np.array([10.0, 20.0, 30.0]),
-            f0=0, df=5, unit="m/Hz", name="csv_test",
+            f0=0,
+            df=5,
+            unit="m/Hz",
+            name="csv_test",
         )
         path = tmp_path / "fs.csv"
         fs.write(str(path), format="csv")
