@@ -1,0 +1,91 @@
+issue: 369
+tracker: 372
+branch: codex/issue-369-docs-io-examples
+date: 2026-05-07
+agent: Codex
+skills:
+  - github:github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+  - superpowers:executing-plans
+target_release: v0.1.2
+release_order: "10/10"
+depends_on_prs:
+  - 373
+  - 374
+  - 375
+  - 376
+  - 377
+  - 378
+  - 379
+  - 380
+  - 381
+scope:
+  summary: "Fix stale I/O examples in landing pages and tutorials for the v0.1.2 hotfix lane."
+  runtime_code_changed: false
+  physics_behavior_changed: false
+  public_api_changed: false
+  docs_changed: true
+  tests_changed: true
+  included:
+    - "Correct landing-page FrequencySeriesMatrix imports to use gwexpy.frequencyseries."
+    - "Remove a tutorial example that presents an NDS channel name as a TimeSeries.read path."
+    - "Align the seismic ObsPy tutorial with the public TimeSeriesDict reader boundary for mseed and sac."
+    - "Add docs contract guards for these examples."
+  excluded:
+    - "No runtime I/O implementation changes."
+    - "No DTT XML paper/manuscript claim changes beyond the v0.1.2 issue scope."
+    - "No distribution packaging or release publication."
+commands:
+  - cmd: "rtk pytest tests/io/test_io_docs_contract_sync.py -q"
+    result: "RED: 5 passed, 3 failed before docs edits; failures covered stale landing import, NDS channel-as-path example, and seismic TimeSeries.read examples."
+  - cmd: "rtk pytest tests/io/test_io_docs_contract_sync.py -q"
+    result: "GREEN: 8 passed after docs edits."
+  - cmd: "rtk rg -n <stale docs patterns> docs/index.rst docs/web/en/index.rst docs/web/ja/index.rst docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb"
+    result: "No stale examples found in the changed docs."
+  - cmd: "rtk python -m json.tool docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb"
+    result: "Notebook JSON parsed successfully."
+  - cmd: "rtk python -m json.tool docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb"
+    result: "Notebook JSON parsed successfully."
+  - cmd: "rtk python -c \"from gwexpy.frequencyseries import FrequencySeriesMatrix; print(FrequencySeriesMatrix.__name__)\""
+    result: "Import smoke passed; command emitted an existing matplotlib writable-cache warning before printing FrequencySeriesMatrix."
+changed_files:
+  - path: docs/index.rst
+    change: "Corrected the quick-demo FrequencySeriesMatrix import."
+  - path: docs/web/en/index.rst
+    change: "Corrected the English landing-page FrequencySeriesMatrix import."
+  - path: docs/web/ja/index.rst
+    change: "Corrected the Japanese landing-page FrequencySeriesMatrix import."
+  - path: docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb
+    change: "Replaced the NDS channel-name TimeSeries.read example with NDS/GWOSC fetch workflow wording."
+  - path: docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb
+    change: "Changed MiniSEED/SAC read examples from TimeSeries.read to TimeSeriesDict.read using canonical mseed and sac format names."
+  - path: tests/io/test_io_docs_contract_sync.py
+    change: "Added docs regression guards for stale landing imports, channel-name read examples, and seismic public reader boundaries."
+validation:
+  completed:
+    - cmd: "rtk pytest tests/io/test_io_docs_contract_sync.py -q"
+      result: "8 passed."
+    - cmd: "rtk ruff check tests/io/test_io_docs_contract_sync.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check tests/io/test_io_docs_contract_sync.py"
+      result: "1 file already formatted after applying ruff format."
+    - cmd: "rtk python -m json.tool docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb"
+      result: "parsed successfully."
+    - cmd: "rtk python -m json.tool docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb"
+      result: "parsed successfully."
+    - cmd: "rtk python -c \"from gwexpy.frequencyseries import FrequencySeriesMatrix; print(FrequencySeriesMatrix.__name__)\""
+      result: "printed FrequencySeriesMatrix."
+    - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/manifests/audit-manifest-369-docs-io-examples.yaml').read_text())\""
+      result: "parsed successfully."
+    - cmd: "rtk git diff --check"
+      result: "clean."
+human_review:
+  required: false
+  reason: "Docs/test-only correction; no runtime, physics, statistical, or data model behavior changed."
+deferred:
+  - "Track paper/manuscript DTT XML overclaims separately from this hotfix-scoped docs issue."
+  - "Track broader verification-doc coverage overclaims separately from this hotfix-scoped docs issue."

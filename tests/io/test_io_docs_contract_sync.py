@@ -11,6 +11,15 @@ EN_GUIDE = ROOT / "docs/web/en/user_guide/io_formats.md"
 JA_GUIDE = ROOT / "docs/web/ja/user_guide/io_formats.md"
 EN_INSTALL = ROOT / "docs/web/en/user_guide/installation.md"
 JA_INSTALL = ROOT / "docs/web/ja/user_guide/installation.md"
+LANDING_PAGES = (
+    ROOT / "docs/index.rst",
+    ROOT / "docs/web/en/index.rst",
+    ROOT / "docs/web/ja/index.rst",
+)
+SCHUMANN_TUTORIAL = (
+    ROOT / "docs/web/en/user_guide/tutorials/case_schumann_resonance.ipynb"
+)
+SEISMIC_TUTORIAL = ROOT / "docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb"
 
 
 def _load_contract() -> dict[str, dict]:
@@ -85,8 +94,14 @@ def test_docs_mark_frequency_dttxml_as_implementation_only():
     ja = _read(JA_GUIDE)
 
     assert contract["xml.diaggui"]["public_api"]["read"] == ["TimeSeriesDict"]
-    assert "Frequency-domain DTTXML direct shims and registry adapters are implementation-only" in en
-    assert "周波数領域の DTTXML direct shim と registry adapter は implementation-only" in ja
+    assert (
+        "Frequency-domain DTTXML direct shims and registry adapters are implementation-only"
+        in en
+    )
+    assert (
+        "周波数領域の DTTXML direct shim と registry adapter は implementation-only"
+        in ja
+    )
 
 
 def test_optional_dependency_matrix_matches_contract():
@@ -117,6 +132,41 @@ def test_optional_dependency_matrix_matches_contract():
     wav = contract["wav"]
     assert wav["unavailable_behavior"]["read"] == "warns_and_skips_optional_metadata"
     assert "`.read(..., extract_metadata=True)` warns and skips metadata" in en
-    assert "`.read(..., extract_metadata=True)` は警告を出し、metadata を省略します" in ja
+    assert (
+        "`.read(..., extract_metadata=True)` は警告を出し、metadata を省略します" in ja
+    )
     assert "`audio` or `all` source-extra syntax" in en
     assert "`audio` または `all` のソース導入形式" in ja
+
+
+def test_landing_pages_import_frequency_matrix_from_frequencyseries():
+    for page in LANDING_PAGES:
+        text = _read(page)
+        assert "from gwexpy.timeseries import FrequencySeriesMatrix" not in text
+        assert "from gwexpy.frequencyseries import FrequencySeriesMatrix" in text
+
+
+def test_tutorials_do_not_present_channel_names_as_read_paths():
+    text = _read(SCHUMANN_TUTORIAL)
+
+    assert "TimeSeries.read('K1:PEM-MAG_EXV_EAST_X_DQ', start, end)" not in text
+    assert "NDS/GWOSC fetch workflow" in text
+
+
+def test_seismic_tutorial_uses_public_dict_reader_boundary():
+    text = _read(SEISMIC_TUTORIAL)
+
+    stale_examples = (
+        "TimeSeries.read(format='miniseed')",
+        "TimeSeries.read(\"seismic.mseed\", format='miniseed')",
+        "TimeSeries.read(path, format='miniseed')",
+        "TimeSeries.read(path, format='sac')",
+        "TimeSeries.read(\"path/to/seismic.sac\", format='sac')",
+    )
+
+    for example in stale_examples:
+        assert example not in text
+
+    assert "TimeSeriesDict.read(format='mseed')" in text
+    assert "TimeSeriesDict.read(path, format='mseed')" in text
+    assert "TimeSeriesDict.read(path, format='sac')" in text
