@@ -104,6 +104,12 @@ validation:
       result: "parsed successfully."
     - cmd: "rtk git diff --check"
       result: "clean."
+  blocked:
+    - cmd: "rtk make html"
+      workdir: "docs"
+      result: "Failed: this checkout has no docs Makefile/html target."
+    - cmd: "rtk sphinx-build -b html -D nbsphinx_execute=never docs /tmp/gwexpy-v012-docs-html"
+      result: "Failed: sphinx-build executable is unavailable in this environment."
 human_review:
   required: true
   reason: "Integration includes PR #376, which preserves Histogram flow metadata and was flagged for human statistical metadata review in its individual manifest."
