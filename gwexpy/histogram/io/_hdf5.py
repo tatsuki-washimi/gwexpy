@@ -8,7 +8,9 @@ if TYPE_CHECKING:
     from gwexpy.histogram import Histogram
 
 
-def write_hdf5_dataset(hist: Histogram, f: h5py.Group | h5py.File, path: str | None = "data") -> None:
+def write_hdf5_dataset(
+    hist: Histogram, f: h5py.Group | h5py.File, path: str | None = "data"
+) -> None:
     """Write a Histogram to an HDF5 group or file.
 
     Parameters
@@ -37,6 +39,12 @@ def write_hdf5_dataset(hist: Histogram, f: h5py.Group | h5py.File, path: str | N
     # Standard metadata mapping aligned with gwexpy patterns
     group.attrs["unit"] = str(hist.unit)
     group.attrs["xunit"] = str(hist.xunit)
+    group.attrs["underflow"] = hist.underflow.to(hist.unit).value
+    group.attrs["overflow"] = hist.overflow.to(hist.unit).value
+    if hist.underflow_sumw2 is not None:
+        group.attrs["underflow_sumw2"] = hist.underflow_sumw2.to(hist.unit**2).value
+    if hist.overflow_sumw2 is not None:
+        group.attrs["overflow_sumw2"] = hist.overflow_sumw2.to(hist.unit**2).value
 
     if hist.name:
         group.attrs["name"] = hist.name
@@ -44,7 +52,9 @@ def write_hdf5_dataset(hist: Histogram, f: h5py.Group | h5py.File, path: str | N
         group.attrs["channel"] = str(getattr(hist.channel, "name", hist.channel))
 
 
-def read_hdf5_dataset(cls: type[Histogram], f: h5py.Group | h5py.File, path: str | None = "data") -> Histogram:
+def read_hdf5_dataset(
+    cls: type[Histogram], f: h5py.Group | h5py.File, path: str | None = "data"
+) -> Histogram:
     """Read a Histogram from an HDF5 group or file.
 
     Parameters
@@ -76,6 +86,14 @@ def read_hdf5_dataset(cls: type[Histogram], f: h5py.Group | h5py.File, path: str
         kwargs["cov"] = group["cov"][:]
     if "sumw2" in group:
         kwargs["sumw2"] = group["sumw2"][:]
+    if "underflow" in group.attrs:
+        kwargs["underflow"] = group.attrs["underflow"]
+    if "overflow" in group.attrs:
+        kwargs["overflow"] = group.attrs["overflow"]
+    if "underflow_sumw2" in group.attrs:
+        kwargs["underflow_sumw2"] = group.attrs["underflow_sumw2"]
+    if "overflow_sumw2" in group.attrs:
+        kwargs["overflow_sumw2"] = group.attrs["overflow_sumw2"]
 
     unit = group.attrs.get("unit")
     if isinstance(unit, bytes):
@@ -100,5 +118,5 @@ def read_hdf5_dataset(cls: type[Histogram], f: h5py.Group | h5py.File, path: str
         xunit=xunit,
         name=name,
         channel=channel,
-        **kwargs
+        **kwargs,
     )
