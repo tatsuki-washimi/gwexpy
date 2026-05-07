@@ -1,17 +1,12 @@
 from __future__ import annotations
 
-from gwpy.table.io.fetch import (
-    Table,
-    default_registry,
-    get_fetcher,
-    io_registry,
-    register_fetcher,
+_REMOVED_MESSAGE = (
+    "gwpy.table.io.fetch was removed from GWpy 4.x; use gwexpy.table.io.gwosc "
+    "for GWOSC catalog access or EventTable fetch/read APIs where available."
 )
 
-__all__ = [
-    "Table",
-    "default_registry",
-    "get_fetcher",
-    "io_registry",
-    "register_fetcher",
-]
+__all__: list[str] = []
+
+
+def __getattr__(name: str) -> object:
+    raise AttributeError(f"{name!r} is unavailable: {_REMOVED_MESSAGE}")

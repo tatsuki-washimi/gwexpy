@@ -1,47 +1,5 @@
 from __future__ import annotations
 
-from gwpy.table.io.ligolw import (
-    GET_AS_EXCLUDE,
-    LIGOLW_TABLES,
-    NUMPY_TYPE_MAP,
-    EventTable,
-    LIGOTimeGPS,
-    Table,
-    is_ligolw,
-    patch_ligotimegps,
-    read_ligolw_table,
-    read_table,
-    read_with_selection,
-    registry,
-    table_,
-    table_class,
-    table_to_ligolw,
-    to_astropy_column,
-    to_astropy_table,
-    to_ligolw_table_type,
-    write_ligolw_tables,
-    write_table,
-)
+from ._proxy import bind_gwpy_proxy
 
-__all__ = [
-    "GET_AS_EXCLUDE",
-    "LIGOLW_TABLES",
-    "LIGOTimeGPS",
-    "NUMPY_TYPE_MAP",
-    "EventTable",
-    "Table",
-    "is_ligolw",
-    "patch_ligotimegps",
-    "read_ligolw_table",
-    "read_table",
-    "read_with_selection",
-    "registry",
-    "table_",
-    "table_class",
-    "table_to_ligolw",
-    "to_astropy_column",
-    "to_astropy_table",
-    "to_ligolw_table_type",
-    "write_ligolw_tables",
-    "write_table",
-]
+__all__ = bind_gwpy_proxy(globals(), "gwpy.table.io.ligolw")

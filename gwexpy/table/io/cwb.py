@@ -1,23 +1,5 @@
 from __future__ import annotations
 
-from gwpy.table.io.cwb import (
-    Cwb,
-    CwbData,
-    CwbHeader,
-    EventTable,
-    Table,
-    core,
-    registry,
-    table_from_cwb,
-)
+from ._proxy import bind_gwpy_proxy
 
-__all__ = [
-    "Cwb",
-    "CwbData",
-    "CwbHeader",
-    "EventTable",
-    "Table",
-    "core",
-    "registry",
-    "table_from_cwb",
-]
+__all__ = bind_gwpy_proxy(globals(), "gwpy.table.io.cwb")

@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from gwpy.table.io import (
+from . import (
     cwb,
+    fetch,
     gravityspy,
     gstlal,
     gwf,
     gwosc,
     hacr,
     ligolw,
+    losc,
     omega,
     omicron,
     pycbc,
@@ -20,12 +22,14 @@ from gwpy.table.io import (
 
 __all__ = [
     "cwb",
+    "fetch",
     "gravityspy",
     "gstlal",
     "gwf",
     "gwosc",
     "hacr",
     "ligolw",
+    "losc",
     "omega",
     "omicron",
     "pycbc",

@@ -1,0 +1,78 @@
+issue: 371
+title: "Add GWpy 4 table I/O proxy drift guard"
+branch: codex/issue-371-gwpy4-table-io-proxy
+target_release: v0.1.2
+release_order: "02/10"
+tracker: 372
+depends_on:
+  - 357
+skills:
+  - github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - test-driven-development
+  - using-git-worktrees
+summary:
+  - "Add a GWpy 4 import-smoke regression test for gwexpy.table.io proxy modules."
+  - "Replace stale symbol-by-symbol table I/O proxy imports with GWpy 4 module proxies."
+  - "Add gwexpy.table.io.gwosc and gwexpy.table.io.reg modules to match the package public submodule list."
+  - "Keep gwexpy.table.io.fetch importable as an explicit compatibility-boundary module because GWpy 4 removed gwpy.table.io.fetch."
+files_changed:
+  - path: gwexpy/table/io/_proxy.py
+    change: "Add shared helper for binding GWpy table I/O module public names."
+  - path: gwexpy/table/io/__init__.py
+    change: "Import gwexpy-local proxy modules and include fetch/losc compatibility modules."
+  - path: gwexpy/table/io/gwosc.py
+    change: "Add GWOSC proxy module for the GWpy 4 replacement namespace."
+  - path: gwexpy/table/io/reg.py
+    change: "Add registry proxy module matching package public exports."
+  - path: gwexpy/table/io/fetch.py
+    change: "Replace removed GWpy fetch proxy with an empty compatibility-boundary module."
+  - path: gwexpy/table/io/losc.py
+    change: "Proxy to GWpy 4 gwosc namespace for LOSC/GWOSC compatibility."
+  - path: gwexpy/table/io/cwb.py
+    change: "Bind current GWpy 4 cwb public module surface."
+  - path: gwexpy/table/io/gravityspy.py
+    change: "Bind current GWpy 4 gravityspy public module surface."
+  - path: gwexpy/table/io/gstlal.py
+    change: "Bind current GWpy 4 gstlal public module surface."
+  - path: gwexpy/table/io/gwf.py
+    change: "Bind current GWpy 4 gwf public module surface."
+  - path: gwexpy/table/io/hacr.py
+    change: "Bind current GWpy 4 hacr public module surface."
+  - path: gwexpy/table/io/ligolw.py
+    change: "Bind current GWpy 4 ligolw public module surface."
+  - path: gwexpy/table/io/omega.py
+    change: "Bind current GWpy 4 omega public module surface."
+  - path: gwexpy/table/io/omicron.py
+    change: "Bind current GWpy 4 omicron public module surface."
+  - path: gwexpy/table/io/pycbc.py
+    change: "Bind current GWpy 4 pycbc public module surface."
+  - path: gwexpy/table/io/root.py
+    change: "Bind current GWpy 4 root public module surface."
+  - path: gwexpy/table/io/snax.py
+    change: "Bind current GWpy 4 snax public module surface."
+  - path: gwexpy/table/io/sql.py
+    change: "Bind current GWpy 4 sql public module surface."
+  - path: gwexpy/table/io/utils.py
+    change: "Bind current GWpy 4 utils public module surface."
+  - path: tests/table/test_gwpy4_table_io_proxy_imports.py
+    change: "Add import-smoke coverage for gwexpy.table.io local and package-public proxy modules."
+validation:
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/table/test_gwpy4_table_io_proxy_imports.py -p no:cacheprovider"
+    result: "2 passed"
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/table/test_gwpy4_table_io_proxy_imports.py tests/table/test_io_ligolw.py tests/table/test_hdf5_eventtable_io.py tests/table/test_io_pycbc.py -p no:cacheprovider"
+    result: "22 passed"
+  - cmd: "rtk python -c '<import smoke for all gwexpy.table.io proxy modules>'"
+    result: "all table I/O proxy modules imported"
+  - cmd: "rtk ruff check gwexpy/table/io tests/table/test_gwpy4_table_io_proxy_imports.py"
+    result: "passed"
+  - cmd: "rtk ruff format --check gwexpy/table/io tests/table/test_gwpy4_table_io_proxy_imports.py"
+    result: "passed"
+risk:
+  physics_review: "not required"
+  human_review: "normal code review"
+  notes:
+    - "Runtime EventTable/SegmentTable behavior is not intentionally changed."
+    - "This PR keeps table proxy module imports stable under GWpy 4 and leaves deeper table runtime I/O audits out of scope."
