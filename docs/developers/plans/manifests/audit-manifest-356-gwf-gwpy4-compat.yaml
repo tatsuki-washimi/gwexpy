@@ -1,0 +1,67 @@
+issue: 356
+title: "TimeSeriesDict.read GWF compatibility under GWpy 4"
+branch: codex/issue-356-gwf-gwpy4-compat
+date: 2026-05-07
+agent: Codex
+target_release: v0.1.2
+release_order: "03/10"
+tracker: 372
+depends_on:
+  issues:
+    - 357
+    - 371
+  pull_requests:
+    - 373
+    - 374
+skills:
+  - github:github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+  - superpowers:executing-plans
+scope:
+  summary: "Handle GWpy 4 GWF reader dispatch drift for list sources and parallel reader kwargs."
+  included:
+    - "Detect non-empty list/tuple sources of .gwf paths as GWF inputs when format is omitted."
+    - "Normalize nproc/parallel compatibility kwargs against the selected GWpy GWF reader signature."
+    - "Apply the compatibility filter in both TimeSeriesDict.read and TimeSeries.read GWF paths."
+    - "Add regression coverage for list-source dispatch and unsupported nproc kwargs."
+  excluded:
+    - "No GWF data normalization, unit conversion, calibration, or physics behavior changes."
+    - "No release publication, tagging, PyPI/TestPyPI upload, or build artifacts."
+changed_files:
+  - path: gwexpy/timeseries/_gwf_io.py
+    change: "Added list-source .gwf format resolution and GWF reader kwarg filtering."
+  - path: gwexpy/timeseries/collections.py
+    change: "Filtered GWF reader kwargs before calling GWpy read_timeseriesdict."
+  - path: gwexpy/timeseries/timeseries.py
+    change: "Filtered GWF reader kwargs before calling GWpy read_timeseriesdict for single-channel reads."
+  - path: tests/timeseries/test_io_gwf_timeseriesdict.py
+    change: "Added TDD regressions for list-source autodetect, nproc handling, and kwarg filter behavior."
+  - path: docs/developers/plans/manifests/audit-manifest-356-gwf-gwpy4-compat.yaml
+    change: "Recorded release target, dependency order, scope, validation, and review notes."
+validation:
+  red:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py -p no:cacheprovider"
+      result: "5 failed, 7 passed, 2 skipped; failures reproduced list-source autodetect and unsupported nproc behavior before implementation."
+  completed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py -p no:cacheprovider"
+      result: "12 passed, 2 skipped."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/timeseries/test_io_gwf_framecpp.py tests/timeseries/test_io_gwf_lalframe.py tests/timeseries/test_io_gwf_framel.py -p no:cacheprovider"
+      result: "3 skipped; optional frame backends unavailable in this environment."
+    - cmd: "rtk ruff check gwexpy/timeseries/_gwf_io.py gwexpy/timeseries/collections.py gwexpy/timeseries/timeseries.py tests/timeseries/test_io_gwf_timeseriesdict.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check gwexpy/timeseries/_gwf_io.py gwexpy/timeseries/collections.py gwexpy/timeseries/timeseries.py tests/timeseries/test_io_gwf_timeseriesdict.py"
+      result: "4 files already formatted."
+review:
+  human_review_required: false
+  physics_review_required: false
+  rationale: "Compatibility/read-dispatch change only; no numerical algorithms, physics formulas, units, or statistical behavior changed."
+release_notes:
+  target: "v0.1.2 hotfix integration release"
+  user_visible_change: "TimeSeriesDict.read and TimeSeries.read accept GWpy 4 GWF list inputs with legacy nproc-style reader kwargs where supported."
+deferred_follow_ups:
+  - "Keep #356 behind #373 and #374 in the v0.1.2 integration PR to avoid reviewing GWF behavior on stale I/O proxy imports."
+  - "Run the full timeseries GWF suite again in an environment with frameCPP, framel, and lalframe optional backends installed."
