@@ -394,9 +394,11 @@
                         <span class="n">orig_key</span> <span class="o">=</span> <span class="n">keymap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">grp_name</span><span class="p">,</span> <span class="n">grp_name</span><span class="p">)</span>
                         <span class="n">out</span><span class="p">[</span><span class="n">orig_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
                     <span class="k">return</span> <span class="n">out</span>
-        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;xml.diaggui&quot;</span><span class="p">,</span> <span class="s2">&quot;dttxml&quot;</span><span class="p">):</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">.io.dttxml</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_frequencyseriesdict_dttxml</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.io.dttxml</span><span class="w"> </span><span class="kn">import</span> <span class="n">_looks_like_dttxml</span><span class="p">,</span> <span class="n">read_frequencyseriesdict_dttxml</span>
 
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;xml.diaggui&quot;</span><span class="p">,</span> <span class="s2">&quot;dttxml&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">fmt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_looks_like_dttxml</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="n">read_frequencyseriesdict_dttxml</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
 
@@ -715,7 +717,9 @@
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_finesse_frequency_response</span>
 
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">from_finesse_frequency_response</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sol</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">from_finesse_frequency_response</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sol</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.from_finesse_noise">
@@ -742,7 +746,9 @@
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_finesse_noise</span>
 
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">from_finesse_noise</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sol</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">from_finesse_noise</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sol</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
     <span class="c1"># ===============================</span>
@@ -832,7 +838,10 @@
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_skrf_network</span>
 
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">from_skrf_network</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ntwk</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">parameter</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">FrequencySeriesDict</span><span class="p">,</span>
+            <span class="n">from_skrf_network</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ntwk</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="n">parameter</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">),</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FrequencySeriesDict.write">
@@ -1362,7 +1371,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-29 14:52:43.
+      <span class="lastupdated">Last updated on 2026-05-08 06:11:34.
       </span></p>
   </div>
 

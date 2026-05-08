@@ -131,10 +131,10 @@
 <span class="sd">This module extends `gwpy.frequencyseries.FrequencySeries` with matrix support,</span>
 <span class="sd">enhanced signal analysis, fitting capabilities, and deep metadata propagation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">SupportsIndex</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -273,12 +273,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># type: ignore[override]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a ``FrequencySeries`` from a supported source.&quot;&quot;&quot;</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">)</span>
-        <span class="n">source_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;xml.diaggui&quot;</span><span class="p">,</span> <span class="s2">&quot;dttxml&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">fmt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">source_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">source_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;.xml&quot;</span>
-        <span class="p">):</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">.io.dttxml</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_frequencyseriesdict_dttxml</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.io.dttxml</span><span class="w"> </span><span class="kn">import</span> <span class="n">_looks_like_dttxml</span><span class="p">,</span> <span class="n">read_frequencyseriesdict_dttxml</span>
 
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;xml.diaggui&quot;</span><span class="p">,</span> <span class="s2">&quot;dttxml&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">fmt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_looks_like_dttxml</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="n">fsd</span> <span class="o">=</span> <span class="n">read_frequencyseriesdict_dttxml</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">fsd</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No channels found in xml.diaggui&quot;</span><span class="p">)</span>
@@ -1248,9 +1247,7 @@
 
 <div class="viewcode-block" id="FrequencySeries.to_control_frd">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_control_frd">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_control_frd</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">frequency_unit</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;rad/s&quot;</span><span class="p">,</span> <span class="s2">&quot;Hz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Hz&quot;</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_control_frd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequency_unit</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;rad/s&quot;</span><span class="p">,</span> <span class="s2">&quot;Hz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Hz&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to control.FRD.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_control_frd</span>
 
@@ -1956,7 +1953,9 @@
 
 <span class="c1"># Preserve the inherited Unified I/O docstring structure so Astropy can</span>
 <span class="c1"># append format tables during reader/writer registration.</span>
-<span class="n">_frequencyseries_read_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">FrequencySeries</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="s2">&quot;__func__&quot;</span><span class="p">,</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">read</span><span class="p">)</span>
+<span class="n">_frequencyseries_read_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+    <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">read</span><span class="p">,</span> <span class="s2">&quot;__func__&quot;</span><span class="p">,</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">read</span>
+<span class="p">)</span>
 <span class="n">_frequencyseries_read_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">BaseFrequencySeries</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="vm">__doc__</span>
 
 
@@ -1994,7 +1993,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-04-29 14:52:43.
+      <span class="lastupdated">Last updated on 2026-05-08 06:11:34.
       </span></p>
   </div>
 
