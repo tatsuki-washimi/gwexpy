@@ -59,7 +59,8 @@ review:
   human_review_required: false
   physics_review_required: false
   statistics_metadata_review_required: false
-  rationale: "Optional dependency error-handling change only; no data parsing, numerical behavior, physics, units, or statistics changed."
+  maintainer_determination: "Accepted as clean ImportError normalization for optional ats.mth5 dependency drift."
+  rationale: "Optional dependency error-handling change only; native format='ats' remains the standard self-contained ATS reader path and is unchanged. The ats.mth5 wrapper still requires explicit format='ats.mth5' and does not silently fall back to the native reader, but its missing or incompatible mth5 failures now surface as ImportError instead of AttributeError. No data parsing, numerical behavior, physics, units, or statistics changed."
 release_notes:
   target: "v0.1.2 hotfix integration release"
   user_visible_change: "TimeSeries.read(..., format='ats.mth5') now reports incompatible mth5 installs with clean guidance instead of AttributeError."

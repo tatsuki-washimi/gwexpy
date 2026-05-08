@@ -29,6 +29,7 @@ scope:
     - "Write underflow_sumw2 and overflow_sumw2 scalar metadata when present."
     - "Restore those values through Histogram.read without changing legacy files that lack the attributes."
     - "Add regression coverage for HDF5 round-trip preservation with unit and xunit metadata."
+    - "Add legacy HDF5 coverage for files that lack the new flow-bin attributes."
   excluded:
     - "No changes to histogram fill, rebin, covariance propagation, unit conversion, or statistical formulas."
     - "No release publication, tagging, PyPI/TestPyPI upload, or build artifacts."
@@ -36,7 +37,7 @@ changed_files:
   - path: gwexpy/histogram/io/_hdf5.py
     change: "Stored and restored flow-bin HDF5 attributes for underflow, overflow, and flow-bin sumw2 values."
   - path: tests/histogram/test_histogram_io.py
-    change: "Added a regression test covering flow-bin HDF5 round-trip persistence."
+    change: "Added regression tests covering flow-bin HDF5 round-trip persistence and legacy files without flow-bin attributes."
   - path: docs/developers/plans/manifests/audit-manifest-363-histogram-hdf5-flow.yaml
     change: "Recorded release target, dependency order, scope, validation, and review requirements."
 validation:
@@ -46,6 +47,8 @@ validation:
   completed:
     - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/histogram/test_histogram_io.py -p no:cacheprovider"
       result: "2 passed."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/histogram/test_histogram_io.py -p no:cacheprovider"
+      result: "3 passed after adding explicit legacy HDF5 coverage for files without flow-bin attributes."
     - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/histogram/test_histogram_io.py tests/histogram/test_histogram_collections.py tests/histogram/test_histogram_contracts.py -p no:cacheprovider"
       result: "14 passed."
     - cmd: "rtk ruff check gwexpy/histogram/io/_hdf5.py tests/histogram/test_histogram_io.py"

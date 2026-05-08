@@ -8,6 +8,10 @@ agent_role: "Task 4 worker: pre-publication narrow release prep"
 agent_model: "Codex (GPT-5)"
 target_release: v0.1.2
 release_state: "unpublished / pre-publication"
+canonical_signoff_note: >-
+  This historical #383 manifest records the #384 canonical candidate sign-off
+  state for the narrow v0.1.2 integration branch; the filename remains
+  historical even where entries explicitly refer to #384 sign-off gates.
 
 scope:
   included:
@@ -36,6 +40,17 @@ release_day_deferred:
   - "Zenodo publication record refresh."
   - "conda-forge refresh."
   - "Fresh-environment release smoke and publish gates final pass."
+
+pre_signoff_gates:
+  - "Completed for #384 sign-off: framel-specific real-file GWF explicit-read backend matrix rows passed in a Python 3.11 / GWpy 4.0.1 / python-framel 8.48.5 environment with GWEXPY_REQUIRE_GWF_FRAMEL=1. get_channel_names(..., backend='framel') discovery failure remains diagnostic only and does not fail sign-off when explicit read passes."
+  - "Completed for #384 sign-off: SegmentTable #365 formatting-only residual diffs are accepted as Ruff-format-compliant formatter output; the span CSV parsing fix and tests remain in scope."
+
+maintainer_determinations:
+  - "#363 Histogram HDF5 legacy-file coverage is accepted after adding an explicit no-flow-attrs legacy test."
+  - "#364 ATS/MTH5 is accepted as clean ImportError normalization for optional ats.mth5 dependency drift; native format='ats' remains unchanged and no silent fallback is introduced."
+  - "#356 FrameL/python-framel explicit-read compatibility is accepted after direct probes and pytest backend-matrix rows passed in a python-framel environment; gwpy.io.gwf discovery remains diagnostic because GWpy 4 can read explicit gwf.framel through gwpy.timeseries while gwpy.io.gwf.framel discovery is unavailable in this environment."
+  - "#365 SegmentTable.read_csv span-column parsing is accepted as narrow CSV parsing repair. Formatting-only residual PR diff is retained because reverting it would conflict with Ruff-format-compliant output and is not a sign-off blocker."
+  - "v0.1.2 publication tasks remain deferred until the planned update set is complete."
 
 validation_status:
   scope_reviews:
@@ -75,6 +90,65 @@ targeted_validation:
       detail: >-
         Skips were backend/env dependent: GWF backend-dependent cases and
         compressed audio round-trip coverage when ffmpeg/libav was unavailable.
+    maintainer_follow_up:
+      command: >-
+        rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q
+        tests/io/test_gwpy4_io_proxy_imports.py
+        tests/timeseries/test_io_gwf_timeseriesdict.py
+        tests/histogram/test_histogram_io.py
+        tests/io/test_seismic_public_io.py
+        tests/io/test_compressed_audio_public_io.py
+        tests/io/test_frequencyseries_io.py
+        tests/table/test_segment_table_new.py
+        tests/io/test_io_docs_contract_sync.py
+        -p no:cacheprovider
+      result: "81 passed, 9 skipped, 0 failed."
+      detail: >-
+        Added availability-aware real-file GWF backend matrix coverage and
+        explicit legacy Histogram HDF5 coverage. Skips are optional backend or
+        environment availability rows, including framel and compressed-audio
+        round-trip support when unavailable.
+    framel_required_gate:
+      command: >-
+        rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl GWEXPY_REQUIRE_GWF_FRAMEL=1
+        pytest -q -rs tests/timeseries/test_io_gwf_timeseriesdict.py
+        -k "framel or backend_matrix" -p no:cacheprovider
+      result: >-
+        Expected required-gate failure in this environment: 3 failed, 9 passed,
+        14 deselected because explicit gwf.framel read dispatch was unavailable.
+        gwpy.io.gwf.framel discovery failure is diagnostic only and is not a
+        sign-off failure when explicit read passes.
+      detail: >-
+        The gate is test-only and intentionally does not xfail. Normal mode
+        keeps optional FrameL unavailable rows as skips when explicit read
+        dispatch is unavailable, with separate gwpy.io.gwf discovery and
+        explicit read-dispatch reasons retained for diagnostics. Required mode
+        turns explicit FrameL read unavailability into pytest.fail for #384
+        canonical candidate sign-off.
+    framel_required_gate_real_backend:
+      direct_probe:
+        command: >-
+          rtk /tmp/gwexpy-framel-probe-py311/bin/python -c
+          'exec("""... TimeSeries/TimeSeriesDict gwf.framel direct probes ...""")'
+        result: >-
+          Passed in a Python 3.11 / GWpy 4.0.1 / python-framel 8.48.5
+          environment for TimeSeries.read, TimeSeriesDict.read with string
+          channel, list channel, channels=, and list-source input.
+      subset_command: >-
+        rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl GWEXPY_REQUIRE_GWF_FRAMEL=1
+        /tmp/gwexpy-framel-probe-py311/bin/python -m pytest -q -rs
+        tests/timeseries/test_io_gwf_timeseriesdict.py
+        -k "framel or backend_matrix" -p no:cacheprovider
+      subset_result: >-
+        6 passed, 6 skipped, 14 deselected; skipped rows were frameCPP and
+        lalframe optional backend gaps.
+      full_file_command: >-
+        rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl GWEXPY_REQUIRE_GWF_FRAMEL=1
+        /tmp/gwexpy-framel-probe-py311/bin/python -m pytest -q -rs
+        tests/timeseries/test_io_gwf_timeseriesdict.py -p no:cacheprovider
+      full_file_result: >-
+        14 passed, 12 skipped; skipped rows were default/frameCPP/lalframe
+        optional backend gaps, while explicit gwf.framel read rows passed.
   import_smoke:
     command: >-
       rtk python -c 'import sys; exec("""try:\\n    from gwexpy.timeseries

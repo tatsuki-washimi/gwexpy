@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -7,20 +8,89 @@ from gwexpy.timeseries._gwf_io import _extract_gwf_read_args, _resolve_gwf_forma
 
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
+GWF_REQUIRE_FRAMEL_ENV = "GWEXPY_REQUIRE_GWF_FRAMEL"
+GWF_FORMAT_BACKEND_CASES = (
+    ("gwf", None),
+    ("gwf.framecpp", "frameCPP"),
+    ("gwf.lalframe", "lalframe"),
+    ("gwf.framel", "framel"),
+)
+GWF_BACKEND_ERRORS = (
+    ImportError,
+    ModuleNotFoundError,
+    OSError,
+    RuntimeError,
+    TypeError,
+    ValueError,
+)
 
 
-def has_gwf_backend(backend: str | None = None) -> bool:
+def _error_reason(prefix: str, exc: BaseException) -> str:
+    return f"{prefix}: {type(exc).__name__}: {exc}"
+
+
+def _framel_required() -> bool:
+    return os.environ.get(GWF_REQUIRE_FRAMEL_ENV, "").lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def gwf_discovery_available(backend: str | None = None) -> tuple[bool, str]:
+    """Return availability for gwpy.io.gwf channel discovery only."""
     try:
         from gwpy.io.gwf.core import get_channel_names
 
         kwargs = {"backend": backend} if backend is not None else {}
-        return bool(get_channel_names(FIXTURE_DATA, **kwargs))
-    except (ImportError, ModuleNotFoundError, OSError, RuntimeError, ValueError):
-        return False
+        channels = get_channel_names(FIXTURE_DATA, **kwargs)
+    except GWF_BACKEND_ERRORS as exc:
+        return False, _error_reason(
+            f"{backend or 'default'} gwf discovery unavailable", exc
+        )
+    if not channels:
+        return False, f"{backend or 'default'} gwf discovery returned no channels"
+    return True, f"{backend or 'default'} gwf discovery available"
+
+
+def gwf_explicit_read_available(
+    fmt: str, backend: str | None = None
+) -> tuple[bool, str]:
+    """Return availability for explicit TimeSeries GWF read dispatch."""
+    try:
+        TimeSeries.read(FIXTURE_DATA, CHANNEL, format=fmt)
+    except GWF_BACKEND_ERRORS as exc:
+        return False, _error_reason(
+            f"{backend or 'default'} explicit {fmt} read dispatch unavailable", exc
+        )
+    return True, f"{backend or 'default'} explicit {fmt} read dispatch available"
+
+
+def has_gwf_discovery_backend(backend: str | None = None) -> bool:
+    available, _ = gwf_discovery_available(backend)
+    return available
+
+
+def _require_or_skip_gwf_explicit_read(fmt: str, backend: str | None = None) -> None:
+    _, discovery_reason = gwf_discovery_available(backend)
+    read_available, read_reason = gwf_explicit_read_available(fmt, backend)
+    if read_available:
+        return
+
+    reason = f"{discovery_reason}; {read_reason}"
+    if backend == "framel" and _framel_required():
+        pytest.fail(
+            f"{GWF_REQUIRE_FRAMEL_ENV}=1 requires FrameL GWF explicit read support; "
+            f"{reason}"
+        )
+    pytest.skip(reason)
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
-@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+@pytest.mark.skipif(
+    not has_gwf_discovery_backend(), reason="default gwf discovery not available"
+)
 def test_read_gwf_timeseriesdict_single_channel_string():
     tsd = TimeSeriesDict.read(FIXTURE_DATA, CHANNEL, format="gwf")
 
@@ -31,7 +101,9 @@ def test_read_gwf_timeseriesdict_single_channel_string():
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
-@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+@pytest.mark.skipif(
+    not has_gwf_discovery_backend(), reason="default gwf discovery not available"
+)
 def test_read_gwf_timeseriesdict_channels_kwarg():
     tsd = TimeSeriesDict.read(FIXTURE_DATA, channels=[CHANNEL], format="gwf")
 
@@ -40,7 +112,9 @@ def test_read_gwf_timeseriesdict_channels_kwarg():
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
-@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+@pytest.mark.skipif(
+    not has_gwf_discovery_backend(), reason="default gwf discovery not available"
+)
 def test_read_gwf_timeseriesdict_autodetects_extension_and_channels():
     tsd = TimeSeriesDict.read(FIXTURE_DATA)
 
@@ -49,7 +123,9 @@ def test_read_gwf_timeseriesdict_autodetects_extension_and_channels():
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
-@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+@pytest.mark.skipif(
+    not has_gwf_discovery_backend(), reason="default gwf discovery not available"
+)
 def test_read_gwf_timeseriesdict_autodetects_list_source_with_nproc_alias():
     tsd = TimeSeriesDict.read([FIXTURE_DATA], CHANNEL, nproc=1)
 
@@ -58,12 +134,50 @@ def test_read_gwf_timeseriesdict_autodetects_list_source_with_nproc_alias():
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
-@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+@pytest.mark.skipif(
+    not has_gwf_discovery_backend(), reason="default gwf discovery not available"
+)
 def test_read_gwf_timeseriesdict_explicit_format_drops_unsupported_nproc():
     tsd = TimeSeriesDict.read([FIXTURE_DATA], CHANNEL, format="lalframe", nproc=1)
 
     assert isinstance(tsd, TimeSeriesDict)
     assert list(tsd) == [CHANNEL]
+
+
+@pytest.mark.parametrize(("fmt", "backend"), GWF_FORMAT_BACKEND_CASES)
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+def test_read_gwf_timeseriesdict_real_file_backend_matrix(fmt, backend):
+    _require_or_skip_gwf_explicit_read(fmt, backend)
+
+    tsd = TimeSeriesDict.read(FIXTURE_DATA, CHANNEL, format=fmt)
+
+    assert isinstance(tsd, TimeSeriesDict)
+    assert list(tsd) == [CHANNEL]
+    assert len(tsd[CHANNEL]) > 0
+
+
+@pytest.mark.parametrize(("fmt", "backend"), GWF_FORMAT_BACKEND_CASES)
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+def test_read_gwf_timeseriesdict_real_file_list_source_backend_matrix(fmt, backend):
+    _require_or_skip_gwf_explicit_read(fmt, backend)
+
+    tsd = TimeSeriesDict.read([FIXTURE_DATA], CHANNEL, format=fmt)
+
+    assert isinstance(tsd, TimeSeriesDict)
+    assert list(tsd) == [CHANNEL]
+    assert len(tsd[CHANNEL]) > 0
+
+
+@pytest.mark.parametrize(("fmt", "backend"), GWF_FORMAT_BACKEND_CASES)
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+def test_read_gwf_timeseries_real_file_backend_matrix(fmt, backend):
+    _require_or_skip_gwf_explicit_read(fmt, backend)
+
+    ts = TimeSeries.read(FIXTURE_DATA, CHANNEL, format=fmt)
+
+    assert isinstance(ts, TimeSeries)
+    assert ts.name == CHANNEL
+    assert len(ts) > 0
 
 
 def test_read_gwf_timeseries_with_autodetect_requires_backend():
@@ -176,17 +290,8 @@ def test_filter_gwf_reader_kwargs_drops_parallel_aliases_when_reader_rejects_the
 
 
 def test_read_gwf_timeseries_with_single_channel_by_format_gwf():
-    from gwpy.io.gwf.core import get_channel_names
+    _require_or_skip_gwf_explicit_read("gwf.framel", "framel")
 
-    if not has_gwf_backend("framel"):
-        pytest.skip("framel gwf backend not available")
-
-    try:
-        expected = get_channel_names(FIXTURE_DATA, backend="frameCPP")
-    except (ImportError, ModuleNotFoundError, OSError, RuntimeError, ValueError):
-        expected = get_channel_names(FIXTURE_DATA)
     ts = TimeSeries.read(FIXTURE_DATA, CHANNEL, format="gwf.framel")
     assert isinstance(ts, TimeSeries)
     assert ts.name == CHANNEL
-    if expected:
-        assert ts.name in expected
