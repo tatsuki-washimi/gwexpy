@@ -1,4 +1,5 @@
 """gwexpy.statistics.roc - Receiver Operating Characteristic (ROC) evaluation."""
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -45,8 +46,8 @@ def calculate_roc(
     fpr = fpr[idx]
     tpr = tpr[idx]
 
-    # trapz is deprecated in numpy 2.x, but we handle it via ignore for now
-    auc = np.trapz(tpr, fpr)  # type: ignore[attr-defined]
+    trapz = getattr(np, "trapezoid", None) or getattr(np, "trapz")
+    auc = trapz(tpr, fpr)
     return fpr, tpr, float(auc)
 
 
