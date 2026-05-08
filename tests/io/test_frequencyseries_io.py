@@ -115,6 +115,15 @@ class TestFrequencySeriesDttxml:
         with pytest.raises(ValueError, match="products"):
             FrequencySeries.read(str(dummy))
 
+    def test_dttxml_autodetect_ignores_file_like_name(self, tmp_path):
+        from gwexpy.frequencyseries.io.dttxml import _looks_like_dttxml
+
+        dummy = tmp_path / "dummy.xml"
+        dummy.write_text("<dttxml></dttxml>")
+
+        with dummy.open() as fp:
+            assert not _looks_like_dttxml(fp)
+
     def test_legacy_alias_resolves_to_canonical_reader(self):
         from gwpy.io.registry import default_registry as io_registry
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC
+from os import PathLike, fspath
 
 import numpy as np
 from gwpy.io.registry import default_registry as io_registry
@@ -29,11 +30,9 @@ _DTTXML_FORMATS = ("xml.diaggui", "dttxml")
 
 
 def _looks_like_dttxml(source) -> bool:
-    if source is None:
+    if not isinstance(source, (str, PathLike)):
         return False
-    if hasattr(source, "name"):
-        source = source.name
-    source_text = str(source).lower()
+    source_text = str(fspath(source)).lower()
     return source_text.endswith(".xml") or source_text.endswith(".xml.gz")
 
 
