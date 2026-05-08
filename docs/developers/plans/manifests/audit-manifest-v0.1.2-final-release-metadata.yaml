@@ -1,0 +1,135 @@
+---
+title: "Final v0.1.2 release metadata/docs finalization"
+date: 2026-05-08
+branch: codex/v0.1.2-final-release
+worktree: /tmp/gwexpy-v0.1.2-final
+agent_role: "Worker A: release metadata/docs finalization"
+agent_model: "gpt-5.4"
+agent_reasoning_effort: high
+target_release: v0.1.2
+release_state: "metadata/docs finalized; publication pending"
+
+scope:
+  included:
+    - "Bump release metadata from 0.1.1 to 0.1.2 in gwexpy/_version.py, CITATION.cff, and .zenodo.json."
+    - "Convert v0.1.2 changelog entries from pending/unpublished wording to a dated 0.1.2 release-notes entry."
+    - "Keep publication wording factual by recording that tag, PyPI, and Zenodo publication are still pending."
+    - "Record this release-metadata/docs slice in a manifest, following the existing project audit pattern."
+  excluded:
+    - "No runtime behavior changes."
+    - "No package build, artifact upload, PyPI publication, Zenodo publication, or Git tag creation."
+    - "No edits outside the owned metadata/docs scope."
+
+commands_executed:
+  - cmd: "rtk pwd"
+    result: "Confirmed worktree /tmp/gwexpy-v0.1.2-final."
+  - cmd: "rtk git branch --show-current"
+    result: "Confirmed branch codex/v0.1.2-final-release."
+  - cmd: "rtk git status --short"
+    result: "Clean worktree before edits."
+  - cmd: "rtk sed -n '1,220p' /home/washimi/.codex/RTK.md"
+    result: "Confirmed rtk shell-prefix requirement."
+  - cmd: "rtk sed -n '1,260p' .agent/AGENTS.md"
+    result: "Reviewed project agent guidance, release/audit expectations, and verification policy."
+  - cmd: "rtk rg --files .agent"
+    result: "Confirmed project-local workflow docs existed while referenced SKILL.md files were absent."
+  - cmd: "rtk sed -n '1,220p' .agent/workflows/release.md"
+    result: "Reviewed repository release workflow and version-sync expectations."
+  - cmd: "rtk sed -n '1,220p' .agent/workflows/evidence-pack.md"
+    result: "Reviewed audit-manifest expectations."
+  - cmd: "rtk sed -n '1,220p' .agent/workflows/feature-development.md"
+    result: "Reviewed general repo workflow expectations."
+  - cmd: "rtk sed -n '1,260p' docs/developers/plans/manifests/audit-manifest-293-release-metadata.yaml"
+    result: "Reviewed prior release-metadata manifest format."
+  - cmd: "rtk sed -n '1,260p' docs/developers/plans/manifests/audit-manifest-383-v0.1.2-narrow-integration.yaml"
+    result: "Reviewed v0.1.2 narrow integration release-prep status and publication deferral notes."
+  - cmd: "rtk sed -n '1,260p' docs/developers/plans/archive/contract-audits/2026-04-28-release-metadata-checker-audit.md"
+    result: "Reviewed release metadata checker behavior and deferred release tasks."
+  - cmd: "rtk sed -n '1,260p' gwexpy/_version.py"
+    result: "Confirmed runtime version was still 0.1.1 before this slice."
+  - cmd: "rtk sed -n '1,260p' pyproject.toml"
+    result: "Confirmed project version remains dynamically sourced from gwexpy._version.__version__."
+  - cmd: "rtk sed -n '1,260p' CITATION.cff"
+    result: "Confirmed citation metadata was still aligned to 0.1.1 / 2026-04-28 before edits."
+  - cmd: "rtk sed -n '1,260p' .zenodo.json"
+    result: "Confirmed Zenodo metadata was still aligned to 0.1.1 / 2026-04-28 before edits."
+  - cmd: "rtk sed -n '1,220p' CHANGELOG.md"
+    result: "Confirmed top-level changelog still described v0.1.2 as pending/unpublished before edits."
+  - cmd: "rtk sed -n '1,220p' docs/web/en/user_guide/changelog.md"
+    result: "Confirmed English docs changelog still described v0.1.2 as pending/unpublished before edits."
+  - cmd: "rtk sed -n '1,220p' docs/web/ja/user_guide/changelog.md"
+    result: "Confirmed Japanese docs changelog still described v0.1.2 as pending/unpublished before edits."
+  - cmd: "rtk python scripts/check_release_metadata.py"
+    result: "Passed. Detected version 0.1.2; CITATION.cff, .zenodo.json, and CHANGELOG.md all matched, and release dates matched."
+  - cmd: "rtk git diff --check"
+    result: "Passed with no whitespace or conflict-marker issues."
+  - cmd: "rtk rg -n 'Pending v0\\.1\\.2|0\\.1\\.1|2026-04-28' CHANGELOG.md docs/web/en/user_guide/changelog.md docs/web/ja/user_guide/changelog.md CITATION.cff .zenodo.json gwexpy/_version.py"
+    result: "Only historical 0.1.1 changelog entries remained below the new v0.1.2 sections; no pending-v0.1.2 or stale 0.1.1 metadata remained in the edited release blocks."
+  - cmd: "rtk python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('docs/developers/plans/manifests/audit-manifest-v0.1.2-final-release-metadata.yaml').read_text())\""
+    result: "Manifest parsed successfully."
+
+review:
+  physics_signoff_required: false
+  rationale: "This slice only updates release metadata and documentation wording."
+
+files_changed:
+  - path: gwexpy/_version.py
+    change: "Bumped package version from 0.1.1 to 0.1.2."
+  - path: CITATION.cff
+    change: "Aligned citation version/date with v0.1.2 metadata finalization."
+  - path: .zenodo.json
+    change: "Aligned Zenodo metadata version/date with v0.1.2 metadata finalization."
+  - path: CHANGELOG.md
+    change: "Converted the pending v0.1.2 block into a dated 0.1.2 release-notes entry while keeping publication pending wording explicit."
+  - path: docs/web/en/user_guide/changelog.md
+    change: "Converted the English docs changelog from pending v0.1.2 wording to a dated v0.1.2 entry with publication still pending."
+  - path: docs/web/ja/user_guide/changelog.md
+    change: "Converted the Japanese docs changelog from pending v0.1.2 wording to a dated v0.1.2 entry with publication still pending."
+  - path: docs/developers/plans/manifests/audit-manifest-v0.1.2-final-release-metadata.yaml
+    change: "Recorded scope, reviewed context, verification rationale, and changed files for this slice."
+
+validation:
+  release_metadata_check: pass
+  diff_check: pass
+  targeted_release_grep: pass
+  yaml_manifest_parse: pass
+  integrated_local_checks:
+    - cmd: "rtk ruff check gwexpy tests scripts"
+      result: "Passed."
+    - cmd: "rtk ruff format --check gwexpy/_version.py scripts/check_release_metadata.py scripts/check_release_artifacts.py"
+      result: "Passed. Full-repo format check is a known baseline mismatch and reported 375 pre-existing files needing formatting."
+    - cmd: "rtk python scripts/check_forbidden_artifacts.py"
+      result: "Passed."
+    - cmd: "rtk python scripts/check_terms.py"
+      result: "Passed."
+    - cmd: "rtk python scripts/check_docs_sync.py"
+      result: "Passed with existing JA/EN file-presence warnings; paired heading counts are synchronized."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl python scripts/run_quickstart_test.py --lang ja"
+      result: "Passed."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl python scripts/run_quickstart_test.py --lang en"
+      result: "Passed."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/statistics/test_statistical_bounds_contracts.py -p no:cacheprovider"
+      result: "Passed: 3 passed."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_io_docs_contract_sync.py tests/test_conda_forge_roadmap.py -p no:cacheprovider"
+      result: "Passed: 10 passed."
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/test_check_release_metadata_script.py tests/test_check_release_artifacts_script.py -p no:cacheprovider"
+      result: "Passed: 31 passed."
+    - cmd: "rtk python -m build --sdist --wheel --no-isolation --outdir /tmp/gwexpy-v0.1.2-final-dist2"
+      result: "Passed. Built gwexpy-0.1.2 sdist and wheel. Setuptools project.license deprecation warning is non-blocking."
+    - cmd: "rtk python scripts/check_release_artifacts.py /tmp/gwexpy-v0.1.2-final-dist2"
+      result: "Passed."
+    - cmd: "rtk env PYTHONPATH=/tmp/gwexpy-release-tools python -m twine check /tmp/gwexpy-v0.1.2-final-dist2/*"
+      result: "Passed for wheel and sdist."
+    - cmd: "rtk /tmp/gwexpy-v0.1.2-smoke2/bin/python -m pip install /tmp/gwexpy-v0.1.2-final-dist2/gwexpy-0.1.2-py3-none-any.whl"
+      result: "Passed in a fresh virtual environment after enabling network access for dependency resolution."
+    - cmd: "rtk /tmp/gwexpy-v0.1.2-smoke2/bin/python -c \"import gwexpy; print(gwexpy.__version__)\""
+      result: "Passed; printed 0.1.2."
+  notes:
+    - "The targeted grep intentionally still finds historical 0.1.1 sections later in the changelog files."
+    - "Public install/index pages were left unchanged because source-install and unpublished-publication wording remains factual until tag/PyPI/Zenodo publication actually occurs."
+    - "Local Sphinx build was not rerun in this slice; Docs PR CI remains a merge condition for rendered documentation."
+
+known_gaps:
+  - "PyPI publication has not been executed in this slice."
+  - "Zenodo publication has not been executed in this slice."
+  - "Tag creation, fresh release-smoke reruns, and conda-forge refresh remain deferred."

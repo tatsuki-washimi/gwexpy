@@ -2,15 +2,15 @@
 
 Notable changes to the GWexpy project.
 
-## [Pending v0.1.2] (unpublished)
+## [0.1.2] - 2026-05-08
 ### Targeted Narrow Hotfix Scope
 - Narrow compatibility fixes for GWpy4 public I/O proxy imports and GWF list/dict read behavior.
 - Targeted auto-identify/read-path fixes for histogram HDF5, ATS/MTH5, audio, seismic, SegmentTable span CSV, and FrequencySeries DTT XML flows.
 - Includes only a minimal #369 landing/demo import hunk for this integration track.
 
-### Pending Release Operations
-- `v0.1.2` publication is not complete yet; tagging and package publication are still deferred.
-- Fresh release-smoke reruns and conda-forge refresh are still pending as release-day follow-up work.
+### Publication Status
+- `v0.1.2` metadata and release notes are finalized, but publication is not complete yet.
+- Git tag creation, PyPI publication, Zenodo publication, fresh release-smoke reruns, and conda-forge refresh remain deferred release-day follow-up work.
 
 ## [0.1.1] - 2026-04-28
 ### Added

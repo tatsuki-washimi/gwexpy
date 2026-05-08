@@ -2,12 +2,14 @@
 
 ## [Unreleased]
 
-### Pending v0.1.2 hotfix scope (unpublished)
+## [0.1.2] - 2026-05-08
+
+### Narrow v0.1.2 hotfix scope
 
 - **io/gwpy4**: Narrow compatibility hotfixes for public I/O proxy imports and GWF list/dict read paths.
 - **io/formats**: Targeted reader auto-identify and compatibility fixes for histogram HDF5, ATS/MTH5, audio, seismic, SegmentTable span CSV, and FrequencySeries DTT XML flows.
 - **integration**: Narrow landing updates include only the minimal #369 landing/demo import hunk required for this track.
-- **release status**: Publication steps are still pending (fresh release smoke rerun, tag/publish execution, and conda-forge refresh); `v0.1.2` remains unpublished.
+- **release status**: Version metadata and release notes are finalized for `v0.1.2`, but tag creation, PyPI publication, Zenodo publication, fresh release smoke reruns, and conda-forge refresh are still pending.
 
 ### Packaging & Optional Dependencies (issue #251)
 
