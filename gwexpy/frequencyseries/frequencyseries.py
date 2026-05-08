@@ -5,10 +5,10 @@ Representation of a frequency series.
 This module extends `gwpy.frequencyseries.FrequencySeries` with matrix support,
 enhanced signal analysis, fitting capabilities, and deep metadata propagation.
 """
+
 from __future__ import annotations
 
 from enum import Enum
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, TypeVar, cast
 
 import numpy as np
@@ -140,12 +140,11 @@ class FrequencySeries(
     def read(cls, source, *args, **kwargs):  # type: ignore[override]
         """Read a ``FrequencySeries`` from a supported source."""
         fmt = kwargs.get("format")
-        source_path = Path(source) if isinstance(source, (str, Path)) else None
-        if fmt in ("xml.diaggui", "dttxml") or (
-            fmt is None and source_path is not None and source_path.suffix.lower() == ".xml"
-        ):
-            from .io.dttxml import read_frequencyseriesdict_dttxml
+        from .io.dttxml import _looks_like_dttxml, read_frequencyseriesdict_dttxml
 
+        if fmt in ("xml.diaggui", "dttxml") or (
+            fmt is None and _looks_like_dttxml(source)
+        ):
             fsd = read_frequencyseriesdict_dttxml(source, *args, **kwargs)
             if not fsd:
                 raise ValueError("No channels found in xml.diaggui")
@@ -1034,9 +1033,7 @@ class FrequencySeries(
             epoch=self.epoch,
         )
 
-    def to_control_frd(
-        self, frequency_unit: Literal["rad/s", "Hz"] = "Hz"
-    ) -> Any:
+    def to_control_frd(self, frequency_unit: Literal["rad/s", "Hz"] = "Hz") -> Any:
         """Convert to control.FRD."""
         from gwexpy.interop import to_control_frd
 
@@ -1656,7 +1653,9 @@ class FrequencySeries(
 
 # Preserve the inherited Unified I/O docstring structure so Astropy can
 # append format tables during reader/writer registration.
-_frequencyseries_read_func = getattr(FrequencySeries.read, "__func__", FrequencySeries.read)
+_frequencyseries_read_func = getattr(
+    FrequencySeries.read, "__func__", FrequencySeries.read
+)
 _frequencyseries_read_func.__doc__ = BaseFrequencySeries.read.__doc__
 
 

@@ -1,4 +1,5 @@
 """Read Metronix ATS files for gwexpy."""
+
 from __future__ import annotations
 
 import datetime
@@ -64,13 +65,13 @@ def identify_ats(origin, filepath, fileobj, *args, **kwargs):
     if filepath is None:
         return False
     try:
-        with open(filepath, 'rb') as f:
+        with open(filepath, "rb") as f:
             header = f.read(4)
             if len(header) < 4:
                 return False
 
-            header_size = struct.unpack('<H', header[0:2])[0]
-            header_vers = struct.unpack('<h', header[2:4])[0]
+            header_size = struct.unpack("<H", header[0:2])[0]
+            header_vers = struct.unpack("<h", header[2:4])[0]
 
             # Metronix ATS header is always >= 1024 bytes
             # Version must be in supported list
@@ -264,6 +265,19 @@ def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
     return ts
 
 
+def _format_ats_mth5_import_error(mth5: Any | None = None) -> ImportError:
+    version = (
+        "not installed" if mth5 is None else getattr(mth5, "__version__", "unknown")
+    )
+    return ImportError(
+        "format 'ats.mth5' requires a compatible mth5 installation exposing "
+        "mth5.io.metronix.metronix_atss. "
+        f"Installed mth5 version: {version}. "
+        "Install a compatible mth5 release with Metronix ATS support, "
+        "or use format='ats' for gwexpy's native ATS reader."
+    )
+
+
 def read_timeseries_ats_mth5(source, **kwargs):
     """Read Metronix ATS/ATSS file using mth5 library.
 
@@ -274,11 +288,16 @@ def read_timeseries_ats_mth5(source, **kwargs):
     """
     try:
         mth5 = ensure_dependency("mth5")
+    except ImportError as exc:
+        raise _format_ats_mth5_import_error() from exc
+
+    try:
         metronix_atss = mth5.io.metronix.metronix_atss
-    except ImportError:
-        raise ImportError(
-            "mth5 library is required to use this reader. Install it via pip."
-        )
+    except AttributeError as exc:
+        raise _format_ats_mth5_import_error(mth5) from exc
+
+    if not hasattr(metronix_atss, "read_atss"):
+        raise _format_ats_mth5_import_error(mth5)
 
     # mth5 requires .atss extension?
     # Based on investigation, it checks .suffix in _get_file_type.

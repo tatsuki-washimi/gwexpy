@@ -10,6 +10,7 @@ The implementation is modularized across several files:
 
 This module integrates all Mixins into a single TimeSeries class.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -29,6 +30,7 @@ from ._core import TimeSeriesCore
 from ._gwf_io import (
     _GWF_BACKENDS,
     _extract_gwf_read_args,
+    _filter_gwf_reader_kwargs,
     _format_gwf_import_error,
     _resolve_gwf_format,
 )
@@ -43,7 +45,6 @@ from ._statistics import StatisticsMixin
 # Import legacy for remaining methods
 
 if TYPE_CHECKING:
-
     from gwexpy.timeseries import TimeSeriesDict
 
 
@@ -149,7 +150,11 @@ class TimeSeries(
         """
         fmt = kwargs.get("format")
         source_path = Path(source) if isinstance(source, (str, Path)) else None
-        if fmt == "csv" or (fmt is None and source_path is not None and source_path.suffix.lower() == ".csv"):
+        if fmt == "csv" or (
+            fmt is None
+            and source_path is not None
+            and source_path.suffix.lower() == ".csv"
+        ):
             from .io.csv_enhanced import read_timeseries_csv
 
             return read_timeseries_csv(source, **kwargs)
@@ -166,6 +171,7 @@ class TimeSeries(
                 kwargs,
                 allow_multiple_channels=False,
             )
+            gwf_kwargs = _filter_gwf_reader_kwargs(read_timeseriesdict, gwf_kwargs)
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
             try:
                 if channels is None:
@@ -199,7 +205,11 @@ class TimeSeries(
         """
         fmt = kwargs.get("format")
         target_path = Path(target) if isinstance(target, (str, Path)) else None
-        if fmt == "csv" or (fmt is None and target_path is not None and target_path.suffix.lower() == ".csv"):
+        if fmt == "csv" or (
+            fmt is None
+            and target_path is not None
+            and target_path.suffix.lower() == ".csv"
+        ):
             from .io.csv_enhanced import write_timeseries_csv
 
             write_kwargs = dict(kwargs)
@@ -290,7 +300,6 @@ class TimeSeries(
         from gwexpy.io.pickle_compat import timeseries_reduce_args
 
         return timeseries_reduce_args(self)
-
 
     # Basic operations (tail, crop, append, find_peaks) are inherited from TimeSeriesCore
 

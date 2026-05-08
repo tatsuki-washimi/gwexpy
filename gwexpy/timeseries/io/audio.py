@@ -3,6 +3,7 @@
 pydub requires ffmpeg or libav for most formats.
 FLAC decoding may work without ffmpeg if the audioop module is available.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -34,6 +35,15 @@ def _import_pydub():
             "Install with `pip install 'gwexpy[audio]'`. "
             "MP3/M4A encoding also requires ffmpeg (`apt install ffmpeg` or equivalent)."
         ) from exc
+
+
+def _format_audio_codec_error(exc: FileNotFoundError) -> ImportError:
+    return ImportError(
+        "ffmpeg or libav is required for compressed audio formats "
+        "(MP3, FLAC, OGG, M4A). Install ffmpeg (`apt install ffmpeg`, "
+        "`brew install ffmpeg`, or equivalent), or install libav and ensure "
+        "the codec executable is on PATH."
+    )
 
 
 def read_timeseriesdict_audio(
@@ -78,7 +88,10 @@ def read_timeseriesdict_audio(
     if format_hint is not None:
         seg_kwargs["format"] = format_hint
 
-    seg = AudioSegment.from_file(str(source), **seg_kwargs)
+    try:
+        seg = AudioSegment.from_file(str(source), **seg_kwargs)
+    except FileNotFoundError as exc:
+        raise _format_audio_codec_error(exc) from exc
 
     n_channels = seg.channels
     sample_rate = seg.frame_rate
@@ -211,7 +224,10 @@ def write_timeseriesdict_audio(tsd, target, *, format_hint=None, **kwargs):
         ext = str(target).rsplit(".", 1)[-1].lower()
         export_fmt = ext
 
-    seg.export(str(target), format=export_fmt, **kwargs)
+    try:
+        seg.export(str(target), format=export_fmt, **kwargs)
+    except FileNotFoundError as exc:
+        raise _format_audio_codec_error(exc) from exc
 
 
 def write_timeseries_audio(ts, target, **kwargs):

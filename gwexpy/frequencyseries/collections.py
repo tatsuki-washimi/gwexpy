@@ -249,9 +249,11 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = fs
                     return out
-        if fmt in ("xml.diaggui", "dttxml"):
-            from .io.dttxml import read_frequencyseriesdict_dttxml
+        from .io.dttxml import _looks_like_dttxml, read_frequencyseriesdict_dttxml
 
+        if fmt in ("xml.diaggui", "dttxml") or (
+            fmt is None and _looks_like_dttxml(source)
+        ):
             return read_frequencyseriesdict_dttxml(source, *args, **kwargs)
         from astropy.io import registry
 
@@ -537,7 +539,9 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
 
         from gwexpy.interop import from_finesse_frequency_response
 
-        return cast(FrequencySeriesDict, from_finesse_frequency_response(cls, sol, unit=unit))
+        return cast(
+            FrequencySeriesDict, from_finesse_frequency_response(cls, sol, unit=unit)
+        )
 
     @classmethod
     def from_finesse_noise(
@@ -561,7 +565,9 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
 
         from gwexpy.interop import from_finesse_noise
 
-        return cast(FrequencySeriesDict, from_finesse_noise(cls, sol, output=output, unit=unit))
+        return cast(
+            FrequencySeriesDict, from_finesse_noise(cls, sol, output=output, unit=unit)
+        )
 
     # ===============================
     # 8. PySpice Interop
@@ -642,7 +648,10 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
 
         from gwexpy.interop import from_skrf_network
 
-        return cast(FrequencySeriesDict, from_skrf_network(cls, ntwk, parameter=parameter, unit=unit))
+        return cast(
+            FrequencySeriesDict,
+            from_skrf_network(cls, ntwk, parameter=parameter, unit=unit),
+        )
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write dict to file (HDF5, ROOT, etc.)."""

@@ -1,0 +1,57 @@
+issue: 357
+title: "Fix GWpy 4 import drift in public I/O proxy modules"
+branch: codex/issue-357-gwpy4-io-proxy
+target_release: v0.1.2
+release_order: "01/10"
+tracker: 372
+skills:
+  - github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - test-driven-development
+  - using-git-worktrees
+summary:
+  - "Add a GWpy 4 import-smoke regression test for public gwexpy I/O proxy modules."
+  - "Align public proxy exports with GWpy 4 public symbols for gwexpy.io, gwexpy.types.io, and gwexpy.timeseries.io modules."
+  - "Keep the removed gwpy.timeseries.io.core namespace importable with an explicit compatibility boundary and no exported symbols."
+files_changed:
+  - path: gwexpy/io/hdf5.py
+    change: "Proxy current GWpy 4 HDF5 helper names and remove stale iter_h5_full_names export."
+  - path: gwexpy/types/io/ascii.py
+    change: "Proxy register_ascii_io instead of removed register_ascii_series_io and drop removed io_registry export."
+  - path: gwexpy/types/io/hdf5.py
+    change: "Proxy IgnoredAttributeError and remove stale IgnoredAttribute/io_registry exports."
+  - path: gwexpy/types/io/ligolw.py
+    change: "Remove stale series_contenthandler export."
+  - path: gwexpy/timeseries/io/ascii.py
+    change: "Proxy current GWpy 4 ASCII time-series helpers."
+  - path: gwexpy/timeseries/io/core.py
+    change: "Replace removed GWpy core proxy imports with an empty compatibility-boundary module."
+  - path: gwexpy/timeseries/io/gwf/__init__.py
+    change: "Proxy current GWpy 4 GWF core helpers and backend registry surface."
+  - path: gwexpy/timeseries/io/hdf5.py
+    change: "Proxy registry instead of removed io_registry."
+  - path: gwexpy/timeseries/io/nds2.py
+    change: "Proxy current GWpy 4 NDS2 public helpers and remove stale print_verbose/set_parameter exports."
+  - path: tests/io/test_gwpy4_io_proxy_imports.py
+    change: "Add import-smoke coverage for public GWpy 4 proxy modules."
+validation:
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_gwpy4_io_proxy_imports.py -p no:cacheprovider"
+    result: "9 passed"
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_ligolw.py tests/spectrogram/test_spectrogram_core.py tests/io/test_io_contract.py -p no:cacheprovider"
+    result: "68 passed, 12 warnings"
+  - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/timeseries/test_io_gwf_timeseriesdict.py tests/timeseries/test_io_gwf_framecpp.py tests/timeseries/test_io_gwf_lalframe.py tests/timeseries/test_io_gwf_framel.py -p no:cacheprovider"
+    result: "10 passed, 3 skipped"
+  - cmd: "rtk python -c '<import smoke for gwexpy.io, gwexpy.types.io, gwexpy.timeseries.io>'"
+    result: "all public I/O proxy modules imported"
+  - cmd: "rtk ruff check gwexpy/io/hdf5.py gwexpy/types/io gwexpy/timeseries/io tests/io/test_gwpy4_io_proxy_imports.py"
+    result: "passed"
+  - cmd: "rtk ruff format --check gwexpy/io/hdf5.py gwexpy/types/io/ascii.py gwexpy/types/io/hdf5.py gwexpy/types/io/ligolw.py gwexpy/timeseries/io/ascii.py gwexpy/timeseries/io/core.py gwexpy/timeseries/io/gwf/__init__.py gwexpy/timeseries/io/hdf5.py gwexpy/timeseries/io/nds2.py tests/io/test_gwpy4_io_proxy_imports.py"
+    result: "passed"
+risk:
+  physics_review: "not required"
+  human_review: "normal code review"
+  notes:
+    - "Runtime physics behavior is unchanged; this PR only updates compatibility proxy imports and import-smoke coverage."
+    - "GWF runtime read behavior and path-list/nproc handling remain scoped to #356."

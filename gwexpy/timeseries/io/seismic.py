@@ -1,4 +1,5 @@
 """Read and write ObsPy-supported seismic formats."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -55,7 +56,11 @@ def _trace_to_timeseries(trace, *, unit, timezone, epoch_override):
 
 def _read_obspy_stream(format_name, source, *, pad=np.nan, gap="pad", **kwargs):
     obspy = _import_obspy()
-    if not isinstance(source, (str, bytes)) and not hasattr(source, "__fspath__") and hasattr(source, "name"):
+    if (
+        not isinstance(source, (str, bytes))
+        and not hasattr(source, "__fspath__")
+        and hasattr(source, "name")
+    ):
         source = source.name
     try:
         stream = obspy.read(source, format=format_name, **kwargs)
@@ -231,10 +236,13 @@ register_timeseries_format(
     "mseed",
     aliases=("miniseed",),
     reader_dict=read_miniseed_timeseriesdict,
-    reader_single=lambda *a, **k: _adapt_timeseries(read_miniseed_timeseriesdict, *a, **k),
+    reader_single=lambda *a, **k: _adapt_timeseries(
+        read_miniseed_timeseriesdict, *a, **k
+    ),
     reader_matrix=lambda *a, **k: _adapt_matrix(read_miniseed_timeseriesdict, *a, **k),
     writer_dict=write_miniseed,
     writer_single=lambda ts, f, **k: write_miniseed({ts.name: ts}, f, **k),
+    extension="mseed",
     auto_adapt=False,
 )
 
@@ -246,6 +254,7 @@ register_timeseries_format(
     reader_matrix=lambda *a, **k: _adapt_matrix(read_sac_timeseriesdict, *a, **k),
     writer_dict=write_sac,
     writer_single=lambda ts, f, **k: write_sac({ts.name: ts}, f, **k),
+    extension="sac",
     auto_adapt=False,
 )
 
@@ -257,6 +266,7 @@ register_timeseries_format(
     reader_matrix=lambda *a, **k: _adapt_matrix(read_gse2_timeseriesdict, *a, **k),
     writer_dict=write_gse2,
     writer_single=lambda ts, f, **k: write_gse2({ts.name: ts}, f, **k),
+    extension="gse2",
     auto_adapt=False,
 )
 
@@ -266,5 +276,6 @@ register_timeseries_format(
     reader_dict=read_knet_timeseriesdict,
     reader_single=lambda *a, **k: _adapt_timeseries(read_knet_timeseriesdict, *a, **k),
     reader_matrix=lambda *a, **k: _adapt_matrix(read_knet_timeseriesdict, *a, **k),
+    extension="knet",
     auto_adapt=False,
 )

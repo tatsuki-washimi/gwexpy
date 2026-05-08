@@ -4,6 +4,7 @@ This module provides utilities to register TimeSeries I/O handlers
 with automatic adapter generation for TimeSeriesDict, TimeSeries,
 and TimeSeriesMatrix types.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -17,6 +18,10 @@ if TYPE_CHECKING:
 __all__ = ["register_timeseries_format"]
 
 
+def _extension_suffix(extension: str) -> str:
+    return f".{extension.lower().lstrip('.')}"
+
+
 def _ensure_registry_docstring(data_class: type[Any], method_name: str) -> None:
     """Ensure Astropy registry doc updates see a multi-line method docstring."""
     method = getattr(data_class, method_name, None)
@@ -26,10 +31,16 @@ def _ensure_registry_docstring(data_class: type[Any], method_name: str) -> None:
     doc = getattr(method, "__doc__", None)
     if isinstance(doc, str):
         lines = doc.splitlines()
-        has_indented_content = any(line.strip() and line[:1].isspace() for line in lines[1:])
+        has_indented_content = any(
+            line.strip() and line[:1].isspace() for line in lines[1:]
+        )
         if len(lines) >= 2 and has_indented_content:
             return
-        summary = lines[0].strip() if lines and lines[0].strip() else f"{data_class.__name__}.{method_name}"
+        summary = (
+            lines[0].strip()
+            if lines and lines[0].strip()
+            else f"{data_class.__name__}.{method_name}"
+        )
     else:
         summary = f"{data_class.__name__}.{method_name}"
 
@@ -150,7 +161,9 @@ def register_timeseries_format(
     # Register TimeSeriesDict reader
     if reader_dict is not None:
         if not reader_dict.__doc__ or not reader_dict.__doc__.strip():
-            reader_dict.__doc__ = f"\n    Read {format_name} data into a TimeSeriesDict.\n    "
+            reader_dict.__doc__ = (
+                f"\n    Read {format_name} data into a TimeSeriesDict.\n    "
+            )
         for registered_name in format_names:
             io_registry.register_reader(
                 registered_name, TimeSeriesDict, reader_dict, force=force
@@ -166,12 +179,16 @@ def register_timeseries_format(
                 raise ValueError(f"No data found in {format_name} file")
             return tsd[next(iter(tsd.keys()))]
 
-        _adapted_single_reader.__doc__ = f"\n    Read {format_name} data into a TimeSeries.\n    "
+        _adapted_single_reader.__doc__ = (
+            f"\n    Read {format_name} data into a TimeSeries.\n    "
+        )
         reader_single = _adapted_single_reader
 
     if reader_single is not None:
         if not reader_single.__doc__ or not reader_single.__doc__.strip():
-            reader_single.__doc__ = f"\n    Read {format_name} data into a TimeSeries.\n    "
+            reader_single.__doc__ = (
+                f"\n    Read {format_name} data into a TimeSeries.\n    "
+            )
         for registered_name in format_names:
             io_registry.register_reader(
                 registered_name, TimeSeries, reader_single, force=force
@@ -185,12 +202,16 @@ def register_timeseries_format(
             tsd = reader_dict(*args, **kwargs)
             return tsd.to_matrix()
 
-        _adapted_matrix_reader.__doc__ = f"\n    Read {format_name} data into a TimeSeriesMatrix.\n    "
+        _adapted_matrix_reader.__doc__ = (
+            f"\n    Read {format_name} data into a TimeSeriesMatrix.\n    "
+        )
         reader_matrix = _adapted_matrix_reader
 
     if reader_matrix is not None:
         if not reader_matrix.__doc__ or not reader_matrix.__doc__.strip():
-            reader_matrix.__doc__ = f"\n    Read {format_name} data into a TimeSeriesMatrix.\n    "
+            reader_matrix.__doc__ = (
+                f"\n    Read {format_name} data into a TimeSeriesMatrix.\n    "
+            )
         for registered_name in format_names:
             io_registry.register_reader(
                 registered_name, TimeSeriesMatrix, reader_matrix, force=force
@@ -199,7 +220,9 @@ def register_timeseries_format(
     # Register TimeSeriesDict writer
     if writer_dict is not None:
         if not writer_dict.__doc__ or not writer_dict.__doc__.strip():
-            writer_dict.__doc__ = f"\n    Write TimeSeriesDict to {format_name} format.\n    "
+            writer_dict.__doc__ = (
+                f"\n    Write TimeSeriesDict to {format_name} format.\n    "
+            )
         for registered_name in format_names:
             io_registry.register_writer(
                 registered_name, TimeSeriesDict, writer_dict, force=force
@@ -215,12 +238,16 @@ def register_timeseries_format(
             tsd = TimeSeriesDict({ts.name: ts})
             return writer_dict(tsd, target, *args, **kwargs)
 
-        _adapted_single_writer.__doc__ = f"\n    Write TimeSeries to {format_name} format.\n    "
+        _adapted_single_writer.__doc__ = (
+            f"\n    Write TimeSeries to {format_name} format.\n    "
+        )
         writer_single = _adapted_single_writer
 
     if writer_single is not None:
         if not writer_single.__doc__ or not writer_single.__doc__.strip():
-            writer_single.__doc__ = f"\n    Write TimeSeries to {format_name} format.\n    "
+            writer_single.__doc__ = (
+                f"\n    Write TimeSeries to {format_name} format.\n    "
+            )
         for registered_name in format_names:
             io_registry.register_writer(
                 registered_name, TimeSeries, writer_single, force=force
@@ -234,12 +261,16 @@ def register_timeseries_format(
             tsd = tsm.to_dict()
             return writer_dict(tsd, target, *args, **kwargs)
 
-        _adapted_matrix_writer.__doc__ = f"\n    Write TimeSeriesMatrix to {format_name} format.\n    "
+        _adapted_matrix_writer.__doc__ = (
+            f"\n    Write TimeSeriesMatrix to {format_name} format.\n    "
+        )
         writer_matrix = _adapted_matrix_writer
 
     if writer_matrix is not None:
         if not writer_matrix.__doc__ or not writer_matrix.__doc__.strip():
-            writer_matrix.__doc__ = f"\n    Write TimeSeriesMatrix to {format_name} format.\n    "
+            writer_matrix.__doc__ = (
+                f"\n    Write TimeSeriesMatrix to {format_name} format.\n    "
+            )
         for registered_name in format_names:
             io_registry.register_writer(
                 registered_name, TimeSeriesMatrix, writer_matrix, force=force
@@ -249,6 +280,7 @@ def register_timeseries_format(
     if identifier_dict is None:
         # Create combined identifier if magic_identifier is provided
         if magic_identifier is not None:
+
             def _combined_identifier(origin, filepath, fileobj, *args, **kwargs):
                 """Check magic number first, then fall back to extension."""
                 # 1. Try magic number identification (high reliability)
@@ -261,7 +293,7 @@ def register_timeseries_format(
 
                 # 2. Fall back to extension check
                 if extension is not None and filepath is not None:
-                    return str(filepath).lower().endswith(f".{extension}")
+                    return str(filepath).lower().endswith(_extension_suffix(extension))
 
                 return False
 
@@ -273,7 +305,7 @@ def register_timeseries_format(
                 # args[1] is the source path in gwpy's identifier signature
                 if len(args) < 2:
                     return False
-                return str(args[1]).lower().endswith(f".{extension}")
+                return str(args[1]).lower().endswith(_extension_suffix(extension))
 
             identifier_dict = _extension_identifier
 
@@ -287,4 +319,6 @@ def register_timeseries_format(
     if identifier_single is not None:
         io_registry.register_identifier(format_name, TimeSeries, identifier_single)
         # TimeSeriesMatrix typically uses the same identifier
-        io_registry.register_identifier(format_name, TimeSeriesMatrix, identifier_single)
+        io_registry.register_identifier(
+            format_name, TimeSeriesMatrix, identifier_single
+        )
