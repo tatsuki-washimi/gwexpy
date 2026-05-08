@@ -93,7 +93,7 @@ Quick Demo
 
 .. code-block:: python
 
-   from gwexpy.timeseries import FrequencySeriesMatrix
+   from gwexpy.frequencyseries import FrequencySeriesMatrix
    fsmtx = FrequencySeriesMatrix.read("data.hdf5")
    fsmtx.fit(model="lorentzian").plot()
 

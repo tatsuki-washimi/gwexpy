@@ -1,0 +1,72 @@
+issue: 367
+title: "Fix public seismic auto-identify registration"
+branch: codex/issue-367-seismic-auto-identify
+date: 2026-05-07
+agent: Codex
+target_release: v0.1.2
+release_order: "07/10"
+tracker: 372
+depends_on:
+  issues:
+    - 357
+    - 371
+    - 356
+    - 363
+    - 364
+    - 366
+  pull_requests:
+    - 373
+    - 374
+    - 375
+    - 376
+    - 377
+    - 378
+skills:
+  - github:github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+scope:
+  summary: "Register public seismic file extensions for registry auto-identification."
+  included:
+    - "Add extension identifiers for mseed, sac, gse2, and knet registrations."
+    - "Add regression coverage that exercises registry identify_format without reading payloads."
+    - "Verify explicit-format seismic readers still pass in the focused public I/O coverage."
+  excluded:
+    - "No ObsPy optional-dependency import behavior changes."
+    - "No seismic parsing, units, timestamps, or write-path behavior changes."
+    - "No release publication, tagging, PyPI/TestPyPI upload, or build artifacts."
+changed_files:
+  - path: gwexpy/timeseries/io/seismic.py
+    change: "Added extension metadata to the public seismic register_timeseries_format calls."
+  - path: tests/io/test_seismic_public_io.py
+    change: "Added auto-identify coverage for mseed, sac, gse2, and knet."
+  - path: docs/developers/plans/manifests/audit-manifest-367-seismic-auto-identify.yaml
+    change: "Recorded release target, dependency order, scope, validation, and review notes."
+validation:
+  red:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_seismic_public_io.py::test_public_seismic_extensions_auto_identify -p no:cacheprovider"
+      result: "4 failed; mseed, sac, gse2, and knet identified as [] before extension registration."
+  completed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_seismic_public_io.py::test_public_seismic_extensions_auto_identify tests/io/test_seismic_public_io.py::test_mseed_public_dict_roundtrip_and_alias tests/io/test_seismic_public_io.py::test_obsby_backed_public_dict_roundtrip tests/io/test_seismic_public_io.py::test_knet_public_surface_is_dict_first tests/io/test_io_contract.py::test_current_public_boundary_decisions_are_recorded tests/io/test_io_improvements.py::test_register_timeseries_format_auto_adapt tests/io/test_io_improvements.py::test_register_timeseries_format_aliases_do_not_duplicate_identifiers -p no:cacheprovider"
+      result: "12 passed."
+    - cmd: "rtk ruff check gwexpy/timeseries/io/seismic.py tests/io/test_seismic_public_io.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check gwexpy/timeseries/io/seismic.py tests/io/test_seismic_public_io.py"
+      result: "2 files already formatted."
+  dependency_gated:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/io/test_seismic_public_io.py tests/io/test_io_contract.py::test_current_public_boundary_decisions_are_recorded tests/io/test_io_improvements.py::test_register_timeseries_format_auto_adapt tests/io/test_io_improvements.py::test_register_timeseries_format_aliases_do_not_duplicate_identifiers -p no:cacheprovider"
+      result: "1 failed, 14 passed; the failure is the known ats.mth5 AttributeError fixed by prerequisite PR #377."
+review:
+  human_review_required: false
+  physics_review_required: false
+  statistics_metadata_review_required: false
+  rationale: "Registry metadata change only; no data parsing, numerical behavior, physics, units, timestamps, or statistics changed."
+release_notes:
+  target: "v0.1.2 hotfix integration release"
+  user_visible_change: "mseed, sac, gse2, and knet now auto-identify through the registry according to the public I/O contract."
+deferred_follow_ups:
+  - "Keep #367 behind #373, #374, #375, #376, #377, and #378 in the v0.1.2 integration PR."
+  - "Re-run the full seismic public I/O file after #377 is merged into the integration branch."

@@ -1,7 +1,9 @@
 """Frequency-domain DTT XML reader."""
+
 from __future__ import annotations
 
 from datetime import UTC
+from os import PathLike, fspath
 
 import numpy as np
 from gwpy.io.registry import default_registry as io_registry
@@ -25,6 +27,13 @@ from ..frequencyseries import FrequencySeries
 from ..matrix import FrequencySeriesMatrix
 
 _DTTXML_FORMATS = ("xml.diaggui", "dttxml")
+
+
+def _looks_like_dttxml(source) -> bool:
+    if not isinstance(source, (str, PathLike)):
+        return False
+    source_text = str(fspath(source)).lower()
+    return source_text.endswith(".xml") or source_text.endswith(".xml.gz")
 
 
 def _build_epoch(value, timezone):
@@ -249,10 +258,10 @@ for _fmt in _DTTXML_FORMATS:
 io_registry.register_identifier(
     "xml.diaggui",
     FrequencySeries,
-    lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+    lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
 )
 io_registry.register_identifier(
     "xml.diaggui",
     FrequencySeriesDict,
-    lambda *args, **kwargs: str(args[1]).endswith(".xml"),
+    lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
 )

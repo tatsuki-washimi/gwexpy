@@ -6,6 +6,7 @@ values or heavy *payload* objects such as :class:`~gwpy.timeseries.TimeSeries`.
 Payload columns are stored as :class:`~gwexpy.table.segment_cell.SegmentCell`
 instances that support lazy loading and optional caching.
 """
+
 from __future__ import annotations
 
 import copy
@@ -32,6 +33,50 @@ _PAYLOAD_KINDS = frozenset(
 
 #: All valid kinds.
 _ALL_KINDS = _META_KINDS | _PAYLOAD_KINDS
+
+
+def _parse_span_string(value: str) -> Any:
+    """Parse simple serialized Segment forms used in CSV files."""
+    from gwpy.segments import Segment
+
+    text = value.strip()
+    if text.startswith("Segment(") and text.endswith(")"):
+        inner = text[len("Segment(") : -1]
+    elif len(text) >= 2 and text[0] in "([" and text[-1] in ")]":
+        inner = text[1:-1]
+    else:
+        raise ValueError(
+            "Could not parse SegmentTable 'span' value "
+            f"{value!r}; expected '(start, end)', 'Segment(start, end)', "
+            "or '[start ... end)'."
+        )
+
+    separator = "..." if "..." in inner else ","
+    parts = [part.strip() for part in inner.split(separator)]
+    if len(parts) != 2:
+        raise ValueError(
+            "Could not parse SegmentTable 'span' value "
+            f"{value!r}; expected exactly two endpoints."
+        )
+
+    try:
+        start, end = (float(part) for part in parts)
+    except ValueError as exc:
+        raise ValueError(
+            "Could not parse SegmentTable 'span' value "
+            f"{value!r}; endpoints must be numeric."
+        ) from exc
+    return Segment(start, end)
+
+
+def _coerce_span_value(value: Any) -> Any:
+    from gwpy.segments import Segment
+
+    if isinstance(value, Segment):
+        return value
+    if isinstance(value, str):
+        return _parse_span_string(value)
+    return value
 
 
 # ---------------------------------------------------------------------------
@@ -206,7 +251,9 @@ class SegmentTable:
                     f"Length of '{name}' ({len(data)}) does not match "
                     f"number of segments ({n})."
                 )
-        df = pd.DataFrame({"span": list(segments), **{k: list(v) for k, v in meta_columns.items()}})
+        df = pd.DataFrame(
+            {"span": list(segments), **{k: list(v) for k, v in meta_columns.items()}}
+        )
         return cls(df)
 
     @classmethod
@@ -241,9 +288,7 @@ class SegmentTable:
             df = pd.DataFrame(table)
 
         if span not in df.columns:
-            raise ValueError(
-                f"Column {span!r} not found in provided table."
-            )
+            raise ValueError(f"Column {span!r} not found in provided table.")
         if span != "span":
             df = df.rename(columns={span: "span"})
         return cls(df)
@@ -280,6 +325,8 @@ class SegmentTable:
         if "span" not in df.columns:
             s1, s2 = span_cols
             df["span"] = [Segment(float(s), float(e)) for s, e in zip(df[s1], df[s2])]
+        else:
+            df["span"] = [_coerce_span_value(value) for value in df["span"]]
         return cls(df)
 
     # Alias for backward compatibility or ease of use
@@ -332,7 +379,9 @@ class SegmentTable:
         self,
         name: str,
         data: Optional[Sequence[Any]] = None,
-        loader: Optional[Union[Sequence[Callable[[], Any]], Callable[[int], Callable[[], Any]]]] = None,
+        loader: Optional[
+            Union[Sequence[Callable[[], Any]], Callable[[int], Callable[[], Any]]]
+        ] = None,
         kind: str = "timeseries",
     ) -> None:
         """Add a payload column (lazy-loadable).
@@ -370,9 +419,7 @@ class SegmentTable:
                 f"Must be one of: {sorted(_PAYLOAD_KINDS)}."
             )
         if data is None and loader is None:
-            raise ValueError(
-                "At least one of 'data' or 'loader' must be provided."
-            )
+            raise ValueError("At least one of 'data' or 'loader' must be provided.")
 
         n = len(self)
 
@@ -400,9 +447,11 @@ class SegmentTable:
                 # Standard pattern: loader(segment) -> payload
                 for i in range(n):
                     seg = self._meta.at[i, "span"]
+
                     # Capture current segment in a closure
                     def _wrap_loader(s=seg, ldr=loader):
                         return ldr(s)
+
                     cells.append(SegmentCell(loader=_wrap_loader))
             else:
                 # Sequence of callables
@@ -821,7 +870,12 @@ class SegmentTable:
         df = self._meta.copy()
         if not meta_only:
             for col, cells in self._payload.items():
-                df[col] = [c.get() if c.is_loaded() else c._summary(self._schema.get(col, "object")) for c in cells]
+                df[col] = [
+                    c.get()
+                    if c.is_loaded()
+                    else c._summary(self._schema.get(col, "object"))
+                    for c in cells
+                ]
         return df
 
     def copy(self, deep: bool = False) -> SegmentTable:
@@ -906,7 +960,9 @@ class SegmentTable:
         """Scatter plot of two scalar columns."""
         from gwexpy.table.segment_plot import scatter_segment_table
 
-        return scatter_segment_table(self, x, y, color=color, selection=selection, **kwargs)
+        return scatter_segment_table(
+            self, x, y, color=color, selection=selection, **kwargs
+        )
 
     def hist(
         self,
@@ -948,7 +1004,9 @@ class SegmentTable:
         """Overlay payload from multiple rows."""
         from gwexpy.table.segment_plot import overlay_segment_table
 
-        return overlay_segment_table(self, column, rows, separate=separate, sharex=sharex, **kwargs)
+        return overlay_segment_table(
+            self, column, rows, separate=separate, sharex=sharex, **kwargs
+        )
 
     def overlay_spectra(
         self,
@@ -999,7 +1057,6 @@ class SegmentTable:
     # Display
     # ------------------------------------------------------------------
 
-
     def __repr__(self) -> str:
         n_rows = len(self)
         n_payload = len(self._payload)
@@ -1013,7 +1070,9 @@ class SegmentTable:
         else:
             span_summary = "[]"
 
-        col_display = str(all_cols) if n_cols <= 8 else str(all_cols[:8])[:-1] + ", ...]"
+        col_display = (
+            str(all_cols) if n_cols <= 8 else str(all_cols[:8])[:-1] + ", ...]"
+        )
         return (
             f"SegmentTable(n_rows={n_rows}, n_cols={n_cols}, payload={n_payload}, "
             f"columns={col_display})\n"
@@ -1113,6 +1172,7 @@ def _infer_kind(values: list[Any]) -> str:
     if isinstance(sample, FrequencySeries):
         return "frequencyseries"
     import numbers
+
     if isinstance(sample, (str, bool, numbers.Number)):
         return "meta"
     return "object"

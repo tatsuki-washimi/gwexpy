@@ -1,0 +1,72 @@
+issue: 365
+title: "Parse span column in SegmentTable.read_csv"
+branch: codex/issue-365-segmenttable-span-csv
+date: 2026-05-07
+agent: Codex
+target_release: v0.1.2
+release_order: "08/10"
+tracker: 372
+depends_on:
+  issues:
+    - 357
+    - 371
+    - 356
+    - 363
+    - 364
+    - 366
+    - 367
+  pull_requests:
+    - 373
+    - 374
+    - 375
+    - 376
+    - 377
+    - 378
+    - 379
+skills:
+  - github:github
+  - task-planner
+  - code-reviewer-pro
+  - release-coordinator
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+scope:
+  summary: "Allow SegmentTable.read_csv to parse simple serialized span columns."
+  included:
+    - "Parse span strings in '(start, end)', 'Segment(start, end)', and '[start ... end)' forms."
+    - "Keep start/end CSV construction behavior intact."
+    - "Raise a clear ValueError for unparseable span strings."
+    - "Add focused regression coverage for span-column CSV input."
+  excluded:
+    - "No SegmentTable.write implementation or HDF5 persistence work from #355."
+    - "No changes to SegmentTable constructor type validation outside read_csv coercion."
+    - "No release publication, tagging, PyPI/TestPyPI upload, or build artifacts."
+changed_files:
+  - path: gwexpy/table/segment_table.py
+    change: "Added read_csv span-string coercion helpers before constructor validation."
+  - path: tests/table/test_segment_table_new.py
+    change: "Added span-column CSV parse and invalid-span regression tests."
+  - path: docs/developers/plans/manifests/audit-manifest-365-segmenttable-span-csv.yaml
+    change: "Recorded release target, dependency order, scope, validation, and review notes."
+validation:
+  red:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/table/test_segment_table_new.py::test_segment_table_read_csv_parses_span_column -p no:cacheprovider"
+      result: "1 failed; span strings reached SegmentTable constructor as str before implementation."
+  completed:
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/gwexpy-mpl pytest -q tests/table/test_segment_table_new.py tests/table/test_segment_table.py::TestSegmentTableInit tests/table/test_segment_table.py::TestSegmentTableFactory tests/table/test_segment_table_contracts.py -p no:cacheprovider"
+      result: "21 passed."
+    - cmd: "rtk ruff check gwexpy/table/segment_table.py tests/table/test_segment_table_new.py"
+      result: "No issues found."
+    - cmd: "rtk ruff format --check gwexpy/table/segment_table.py tests/table/test_segment_table_new.py"
+      result: "2 files already formatted."
+review:
+  human_review_required: false
+  physics_review_required: false
+  statistics_metadata_review_required: false
+  rationale: "CSV parsing/validation change only; no segment algebra, numerical calculations, physics, units, or statistics changed."
+release_notes:
+  target: "v0.1.2 hotfix integration release"
+  user_visible_change: "SegmentTable.read_csv now accepts simple serialized span columns instead of failing with a constructor TypeError."
+deferred_follow_ups:
+  - "Keep #365 behind #373, #374, #375, #376, #377, #378, and #379 in the v0.1.2 integration PR."
+  - "Handle SegmentTable.write and HDF5 persistence only in #355 or a later feature PR."
