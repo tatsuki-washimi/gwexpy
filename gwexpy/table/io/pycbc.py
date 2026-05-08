@@ -1,47 +1,5 @@
 from __future__ import annotations
 
-from gwpy.table.io.pycbc import (
-    GET_COLUMN,
-    META_COLUMNS,
-    PYCBC_FILENAME,
-    PYCBC_LIVE_FORMAT,
-    EventTable,
-    Table,
-    basename,
-    empty_hdf5_file,
-    filter_empty_files,
-    filter_table,
-    get_mchirp,
-    get_new_snr,
-    h5py,
-    identify_hdf5,
-    identify_pycbc_live,
-    parse_column_filters,
-    register_identifier,
-    register_reader,
-    table_from_file,
-    with_read_hdf5,
-)
+from ._proxy import bind_gwpy_proxy
 
-__all__ = [
-    "GET_COLUMN",
-    "META_COLUMNS",
-    "PYCBC_FILENAME",
-    "PYCBC_LIVE_FORMAT",
-    "EventTable",
-    "Table",
-    "basename",
-    "empty_hdf5_file",
-    "filter_empty_files",
-    "filter_table",
-    "get_mchirp",
-    "get_new_snr",
-    "h5py",
-    "identify_hdf5",
-    "identify_pycbc_live",
-    "parse_column_filters",
-    "register_identifier",
-    "register_reader",
-    "table_from_file",
-    "with_read_hdf5",
-]
+__all__ = bind_gwpy_proxy(globals(), "gwpy.table.io.pycbc")

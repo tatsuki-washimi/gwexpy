@@ -1,47 +1,5 @@
 from __future__ import annotations
 
-from gwpy.table.io.gstlal import (
-    GET_COLUMN,
-    GET_COLUMN_EXTRA,
-    GSTLAL_COINC_FORMAT,
-    GSTLAL_FILENAME,
-    GSTLAL_FORMAT,
-    GSTLAL_SNGL_FORMAT,
-    EventTable,
-    basename,
-    get_chi_snr,
-    get_mchirp,
-    get_snr_chi,
-    identify_gstlal,
-    is_ligolw,
-    join,
-    read_gstlal,
-    read_gstlal_coinc,
-    read_gstlal_sngl,
-    read_table,
-    register_identifier,
-    register_reader,
-)
+from ._proxy import bind_gwpy_proxy
 
-__all__ = [
-    "GET_COLUMN",
-    "GET_COLUMN_EXTRA",
-    "GSTLAL_COINC_FORMAT",
-    "GSTLAL_FILENAME",
-    "GSTLAL_FORMAT",
-    "GSTLAL_SNGL_FORMAT",
-    "EventTable",
-    "basename",
-    "get_chi_snr",
-    "get_mchirp",
-    "get_snr_chi",
-    "identify_gstlal",
-    "is_ligolw",
-    "join",
-    "read_gstlal",
-    "read_gstlal_coinc",
-    "read_gstlal_sngl",
-    "read_table",
-    "register_identifier",
-    "register_reader",
-]
+__all__ = bind_gwpy_proxy(globals(), "gwpy.table.io.gstlal")
