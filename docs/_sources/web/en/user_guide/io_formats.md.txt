@@ -125,7 +125,7 @@ on optional packages or optional metadata helpers.
 
 | Format / family | Optional dependency | GWexpy extra | Missing-dependency behavior |
 |---|---|---|---|
-| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` warns and skips metadata when `tinytag` is missing; until PyPI publication, install with the `audio` or `all` source-extra syntax from the [Installation Guide](installation.md). Basic WAV read/write remains available. |
+| **WAV metadata** | `tinytag` | `audio` | `.read(..., extract_metadata=True)` warns and skips metadata when `tinytag` is missing; install with the `audio` or `all` extra from the [Installation Guide](installation.md). Basic WAV read/write remains available. |
 | **MP3 / FLAC / OGG / M4A** | `pydub`, `tinytag` | `audio` | Audio read/write raises `ImportError`; some codecs also need an external `ffmpeg`/`libav` binary. |
 | **TDMS** | `nptdms` | `io` | Reader raises `ImportError` with the required `io` extra in its install guidance. |
 | **mseed / SAC / GSE2 / K-NET** | `obspy` | `seismic` | Registered reader/writer raises `ImportError` with the required `seismic` extra in its install guidance. |
@@ -160,11 +160,13 @@ from gwexpy.timeseries import TimeSeries
 
 tsd = TimeSeriesDict.read("data.h5", format="hdf5")
 frame = TimeSeriesDict.read("data.gwf", format="gwf")
+merged = TimeSeriesDict.read(["part0.gwf", "part1.gwf"], "H1:STRAIN", pad=float("nan"))
 dtt = TimeSeriesDict.read("diag.xml", format="xml.diaggui", products="TS")
 open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 ```
 
 - **HDF5** is the safest general recommendation for structured GW data.
+- **GWF** reads accept a list or tuple of `.gwf` files for `TimeSeries` and `TimeSeriesDict`. Files are merged in time-span order; contiguous spans join normally, gaps raise by default, `pad=<value>` or `gap="pad"` fills gaps, and `gap="ignore"` concatenates without filling. Overlapping spans are rejected by default or with `gap="raise"`, while `gap="ignore"` concatenates files in span order and permits overlap concatenation. If `start` or `end` extends beyond available data, the default `gap="raise"` behavior rejects the request; use `pad=<value>` or `gap="pad"` to fill the outer interval. `gap="ignore"` never pads missing samples, including outer `start`/`end` ranges. When channel names are not supplied for multi-file reads, auto-discovery uses the first file and assumes the remaining files expose compatible channels.
 - **DTTXML** changes behavior depending on `products`. Keep public direct reads on `TimeSeriesDict.read(..., format="xml.diaggui", products=...)`.
 - Frequency-domain DTTXML direct shims and registry adapters are implementation-only, not part of the public direct-I/O contract. Advanced internal users handling complex transfer functions can prefer `native=True` there.
 - **NDS2 / GWOSC** are shown inside group A, but explicitly marked as `network path` rather than file formats.

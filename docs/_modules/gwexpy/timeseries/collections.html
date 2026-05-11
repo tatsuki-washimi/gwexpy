@@ -171,9 +171,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._gwf_io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_GWF_BACKENDS</span><span class="p">,</span>
     <span class="n">_extract_gwf_read_args</span><span class="p">,</span>
-    <span class="n">_filter_gwf_reader_kwargs</span><span class="p">,</span>
     <span class="n">_format_gwf_import_error</span><span class="p">,</span>
     <span class="n">_resolve_gwf_format</span><span class="p">,</span>
+    <span class="n">_source_for_gwf_channel_listing</span><span class="p">,</span>
+    <span class="n">read_gwf_timeseriesdict</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">coherence_matrix_from_collection</span><span class="p">,</span> <span class="n">csd_matrix_from_collection</span>
 
@@ -279,14 +280,8 @@
             <span class="s2">&quot;dttxml&quot;</span><span class="p">,</span>
         <span class="p">}:</span>
             <span class="n">direct_readers</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;mseed&quot;</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="s2">&quot;gwexpy.timeseries.io.seismic&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;read_miniseed_timeseriesdict&quot;</span><span class="p">,</span>
-                <span class="p">),</span>
-                <span class="s2">&quot;miniseed&quot;</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="s2">&quot;gwexpy.timeseries.io.seismic&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;read_miniseed_timeseriesdict&quot;</span><span class="p">,</span>
-                <span class="p">),</span>
+                <span class="s2">&quot;mseed&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.seismic&quot;</span><span class="p">,</span> <span class="s2">&quot;read_miniseed_timeseriesdict&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;miniseed&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.seismic&quot;</span><span class="p">,</span> <span class="s2">&quot;read_miniseed_timeseriesdict&quot;</span><span class="p">),</span>
                 <span class="s2">&quot;sac&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.seismic&quot;</span><span class="p">,</span> <span class="s2">&quot;read_sac_timeseriesdict&quot;</span><span class="p">),</span>
                 <span class="s2">&quot;gse2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.seismic&quot;</span><span class="p">,</span> <span class="s2">&quot;read_gse2_timeseriesdict&quot;</span><span class="p">),</span>
                 <span class="s2">&quot;knet&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.seismic&quot;</span><span class="p">,</span> <span class="s2">&quot;read_knet_timeseriesdict&quot;</span><span class="p">),</span>
@@ -296,10 +291,7 @@
                 <span class="s2">&quot;ats.mth5&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.ats&quot;</span><span class="p">,</span> <span class="s2">&quot;read_timeseriesdict_ats&quot;</span><span class="p">),</span>
                 <span class="s2">&quot;gbd&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.gbd&quot;</span><span class="p">,</span> <span class="s2">&quot;read_timeseriesdict_gbd&quot;</span><span class="p">),</span>
                 <span class="s2">&quot;tdms&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.tdms&quot;</span><span class="p">,</span> <span class="s2">&quot;read_timeseriesdict_tdms&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;xml.diaggui&quot;</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="s2">&quot;gwexpy.timeseries.io.dttxml&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;read_timeseriesdict_dttxml&quot;</span><span class="p">,</span>
-                <span class="p">),</span>
+                <span class="s2">&quot;xml.diaggui&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.dttxml&quot;</span><span class="p">,</span> <span class="s2">&quot;read_timeseriesdict_dttxml&quot;</span><span class="p">),</span>
                 <span class="s2">&quot;dttxml&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gwexpy.timeseries.io.dttxml&quot;</span><span class="p">,</span> <span class="s2">&quot;read_timeseriesdict_dttxml&quot;</span><span class="p">),</span>
             <span class="p">}</span>
             <span class="n">module_name</span><span class="p">,</span> <span class="n">func_name</span> <span class="o">=</span> <span class="n">direct_readers</span><span class="p">[</span><span class="n">fmt</span><span class="p">]</span>
@@ -310,31 +302,29 @@
             <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">reader</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">reader_kwargs</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">gwf_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.io.gwf.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_channel_names</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries.io.gwf.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_timeseriesdict</span>
 
             <span class="n">channels</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">gwf_kwargs</span> <span class="o">=</span> <span class="n">_extract_gwf_read_args</span><span class="p">(</span>
                 <span class="n">args</span><span class="p">,</span>
                 <span class="n">kwargs</span><span class="p">,</span>
                 <span class="n">allow_multiple_channels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">gwf_kwargs</span> <span class="o">=</span> <span class="n">_filter_gwf_reader_kwargs</span><span class="p">(</span><span class="n">read_timeseriesdict</span><span class="p">,</span> <span class="n">gwf_kwargs</span><span class="p">)</span>
             <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">))</span>
             <span class="n">backend</span> <span class="o">=</span> <span class="n">gwf_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="n">_GWF_BACKENDS</span><span class="p">[</span><span class="n">gwf_format</span><span class="p">])</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">channels</span> <span class="o">=</span> <span class="n">get_channel_names</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+                    <span class="n">channel_source</span> <span class="o">=</span> <span class="n">_source_for_gwf_channel_listing</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+                    <span class="n">channels</span> <span class="o">=</span> <span class="n">get_channel_names</span><span class="p">(</span><span class="n">channel_source</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No channels found in GWF source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
-                    <span class="n">read_timeseriesdict</span><span class="p">(</span>
-                        <span class="n">source</span><span class="p">,</span>
-                        <span class="n">channels</span><span class="p">,</span>
-                        <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
-                        <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
-                        <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
-                        <span class="n">series_class</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">,</span>
-                        <span class="o">**</span><span class="n">gwf_kwargs</span><span class="p">,</span>
-                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">read_gwf_timeseriesdict</span><span class="p">(</span>
+                    <span class="n">source</span><span class="p">,</span>
+                    <span class="n">channels</span><span class="p">,</span>
+                    <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                    <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span>
+                    <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+                    <span class="n">dict_class</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span>
+                    <span class="n">series_class</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">gwf_kwargs</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">_format_gwf_import_error</span><span class="p">(</span><span class="n">gwf_format</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
@@ -354,7 +344,6 @@
         <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">)):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.collection_dir</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_collection_dir</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_unit</span>
-
             <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">))</span>
 
             <span class="n">_</span><span class="p">,</span> <span class="n">items</span> <span class="o">=</span> <span class="n">read_collection_dir</span><span class="p">(</span>
@@ -733,9 +722,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
 
-            <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span>
-                <span class="s2">&quot;FrequencySeriesDict&quot;</span>
-            <span class="p">)</span>
+            <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesDict&quot;</span><span class="p">)</span>
             <span class="n">new_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span>
@@ -795,9 +782,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
 
-            <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span>
-                <span class="s2">&quot;FrequencySeriesDict&quot;</span>
-            <span class="p">)</span>
+            <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesDict&quot;</span><span class="p">)</span>
             <span class="n">new_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span>
@@ -1600,9 +1585,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
 
-            <span class="n">FrequencySeriesList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span>
-                <span class="s2">&quot;FrequencySeriesList&quot;</span>
-            <span class="p">)</span>
+            <span class="n">FrequencySeriesList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesList&quot;</span><span class="p">)</span>
             <span class="n">new_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -1669,9 +1652,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BaseTimeSeries</span><span class="p">):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
 
-            <span class="n">FrequencySeriesList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span>
-                <span class="s2">&quot;FrequencySeriesList&quot;</span>
-            <span class="p">)</span>
+            <span class="n">FrequencySeriesList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesList&quot;</span><span class="p">)</span>
             <span class="n">new_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -2195,7 +2176,6 @@
         <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">)):</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.collection_dir</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_collection_dir</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_unit</span>
-
             <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">))</span>
 
             <span class="n">_</span><span class="p">,</span> <span class="n">items</span> <span class="o">=</span> <span class="n">read_collection_dir</span><span class="p">(</span>
@@ -2364,7 +2344,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-08 10:56:34.
+      <span class="lastupdated">Last updated on 2026-05-11 15:02:42.
       </span></p>
   </div>
 
