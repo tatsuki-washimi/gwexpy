@@ -135,6 +135,15 @@ class TimeSeriesMatrix(  # type: ignore[misc]
             return _resolve_gwf_format(source, normalized) is not None
         return False
 
+    @staticmethod
+    def _is_ndscope_hdf5_candidate(source: Any) -> bool:
+        try:
+            path = str(source)
+        except TypeError:
+            return False
+        lower = path.lower()
+        return lower.endswith(".hdf5") or lower.endswith(".h5")
+
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a `TimeSeriesMatrix` from a supported source."""
@@ -142,6 +151,8 @@ class TimeSeriesMatrix(  # type: ignore[misc]
         normalized_format = read_kwargs.pop("format", None)
         positional_format = args[0] if args else None
         read_args: tuple[Any, ...] = args
+        if normalized_format is None and read_args == (None,):
+            read_args = ()
 
         # The public API supports ``read(source, format=None, **kwargs)``.
         # Also handle explicit positional format tokens while preserving channel
@@ -160,6 +171,21 @@ class TimeSeriesMatrix(  # type: ignore[misc]
             if len(tsd) == 0:
                 raise ValueError(f"No data found in {gwf_format} source: {source}")
             return tsd.to_matrix()
+
+        if (
+            normalized_format is None
+            and not read_args
+            and cls._is_ndscope_hdf5_candidate(source)
+        ):
+            from .io.ndscope_hdf5 import identify_ndscope_hdf5
+
+            if identify_ndscope_hdf5(TimeSeriesDict, source, None):
+                ndscope_kwargs = dict(read_kwargs)
+                ndscope_kwargs["format"] = "hdf.ndscope"
+                tsd = TimeSeriesDict.read(source, **ndscope_kwargs)
+                if len(tsd) == 0:
+                    raise ValueError(f"No data found in ndscope source: {source}")
+                return tsd.to_matrix()
 
         super_read_args = read_args
         if normalized_format is not None:
