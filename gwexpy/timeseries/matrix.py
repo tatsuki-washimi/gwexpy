@@ -111,17 +111,60 @@ class TimeSeriesMatrix(  # type: ignore[misc]
     default_yunit: str | u.Unit | None = None
     _default_plot_method = "plot"
 
+    _KNOWN_GWF_FORMAT_TOKENS = frozenset(
+        {
+            "gwf",
+            "frame",
+            "framecpp",
+            "framel",
+            "lalframe",
+            "gwf.framecpp",
+            "gwf.framel",
+            "gwf.lalframe",
+        }
+    )
+
+    @classmethod
+    def _looks_like_format_token(cls, source: Any, token: Any) -> bool:
+        """Heuristic check for positional format-like first arguments."""
+        if not isinstance(token, str):
+            return False
+        normalized = token.strip().lower()
+        if normalized in cls._KNOWN_GWF_FORMAT_TOKENS:
+            # Accept GWF aliases as explicit formats for non-GWF sources.
+            return _resolve_gwf_format(source, normalized) is not None
+        return False
+
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a `TimeSeriesMatrix` from a supported source."""
-        gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
+        read_kwargs = dict(kwargs)
+        normalized_format = read_kwargs.pop("format", None)
+        positional_format = args[0] if args else None
+        read_args: tuple[Any, ...] = args
+
+        # The public API supports ``read(source, format=None, **kwargs)``.
+        # Also handle explicit positional format tokens while preserving channel
+        # selectors for GWF reads (first positional is often a channel there).
+        if normalized_format is None and isinstance(positional_format, str):
+            if cls._looks_like_format_token(source, positional_format):
+                normalized_format = positional_format
+                read_args = args[1:]
+
+        gwf_format = _resolve_gwf_format(source, normalized_format)
         if gwf_format is not None:
-            tsd = TimeSeriesDict.read(source, *args, **kwargs)
+            gwf_read_kwargs = dict(read_kwargs)
+            if normalized_format is not None:
+                gwf_read_kwargs["format"] = normalized_format
+            tsd = TimeSeriesDict.read(source, *read_args, **gwf_read_kwargs)
             if len(tsd) == 0:
                 raise ValueError(f"No data found in {gwf_format} source: {source}")
             return tsd.to_matrix()
 
-        return super().read(source, *args, **kwargs)
+        super_read_args = read_args
+        if normalized_format is not None:
+            super_read_args = (normalized_format, *read_args)
+        return super().read(source, *super_read_args, **read_kwargs)
 
     def __new__(
         cls,

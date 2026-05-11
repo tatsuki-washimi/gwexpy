@@ -171,13 +171,15 @@ def maybe_pad_timeseries(ts, pad_value=np.nan, start=None, end=None, gap="pad"):
     if gap not in ("pad", "raise"):
         return ts
 
-    try:
-        from gwpy.timeseries.io.core import _pad_series
-    except ImportError:
-        # gwpy >= 4.0
-        from gwpy.timeseries.connect import _pad_series
+    from gwexpy.timeseries._gwf_io import _pad_gwf_series_to_span
 
-    return _pad_series(ts, pad_value, start=start, end=end, error=(gap == "raise"))
+    return _pad_gwf_series_to_span(
+        ts,
+        pad_value,
+        start=start,
+        end=end,
+        error=(gap == "raise"),
+    )
 
 
 def ensure_dependency(

@@ -45,9 +45,10 @@ from gwexpy.types.mixin._plot_mixin import PlotMixin
 from ._gwf_io import (
     _GWF_BACKENDS,
     _extract_gwf_read_args,
-    _filter_gwf_reader_kwargs,
     _format_gwf_import_error,
     _resolve_gwf_format,
+    _source_for_gwf_channel_listing,
+    read_gwf_timeseriesdict,
 )
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
 
@@ -149,14 +150,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             "dttxml",
         }:
             direct_readers = {
-                "mseed": (
-                    "gwexpy.timeseries.io.seismic",
-                    "read_miniseed_timeseriesdict",
-                ),
-                "miniseed": (
-                    "gwexpy.timeseries.io.seismic",
-                    "read_miniseed_timeseriesdict",
-                ),
+                "mseed": ("gwexpy.timeseries.io.seismic", "read_miniseed_timeseriesdict"),
+                "miniseed": ("gwexpy.timeseries.io.seismic", "read_miniseed_timeseriesdict"),
                 "sac": ("gwexpy.timeseries.io.seismic", "read_sac_timeseriesdict"),
                 "gse2": ("gwexpy.timeseries.io.seismic", "read_gse2_timeseriesdict"),
                 "knet": ("gwexpy.timeseries.io.seismic", "read_knet_timeseriesdict"),
@@ -166,10 +161,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 "ats.mth5": ("gwexpy.timeseries.io.ats", "read_timeseriesdict_ats"),
                 "gbd": ("gwexpy.timeseries.io.gbd", "read_timeseriesdict_gbd"),
                 "tdms": ("gwexpy.timeseries.io.tdms", "read_timeseriesdict_tdms"),
-                "xml.diaggui": (
-                    "gwexpy.timeseries.io.dttxml",
-                    "read_timeseriesdict_dttxml",
-                ),
+                "xml.diaggui": ("gwexpy.timeseries.io.dttxml", "read_timeseriesdict_dttxml"),
                 "dttxml": ("gwexpy.timeseries.io.dttxml", "read_timeseriesdict_dttxml"),
             }
             module_name, func_name = direct_readers[fmt]
@@ -180,31 +172,29 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             return cls(reader(source, *args, **reader_kwargs))
         if gwf_format is not None:
             from gwpy.io.gwf.core import get_channel_names
-            from gwpy.timeseries.io.gwf.core import read_timeseriesdict
 
             channels, start, end, gwf_kwargs = _extract_gwf_read_args(
                 args,
                 kwargs,
                 allow_multiple_channels=True,
             )
-            gwf_kwargs = _filter_gwf_reader_kwargs(read_timeseriesdict, gwf_kwargs)
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
             try:
                 if channels is None:
-                    channels = get_channel_names(source, backend=backend)
+                    channel_source = _source_for_gwf_channel_listing(source)
+                    channels = get_channel_names(channel_source, backend=backend)
                     if not channels:
                         raise ValueError(f"No channels found in GWF source: {source}")
-                return cls(
-                    read_timeseriesdict(
-                        source,
-                        channels,
-                        start=start,
-                        end=end,
-                        backend=backend,
-                        series_class=TimeSeries,
-                        **gwf_kwargs,
-                    )
+                return read_gwf_timeseriesdict(
+                    source,
+                    channels,
+                    start=start,
+                    end=end,
+                    backend=backend,
+                    dict_class=cls,
+                    series_class=TimeSeries,
+                    **gwf_kwargs,
                 )
             except ImportError as exc:
                 raise _format_gwf_import_error(gwf_format, exc)
@@ -224,7 +214,6 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
-
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(
@@ -579,9 +568,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if isinstance(other, BaseTimeSeries):
             from gwexpy.interop._registry import ConverterRegistry
 
-            FrequencySeriesDict = ConverterRegistry.get_constructor(
-                "FrequencySeriesDict"
-            )
+            FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.csd(
@@ -638,9 +625,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if isinstance(other, BaseTimeSeries):
             from gwexpy.interop._registry import ConverterRegistry
 
-            FrequencySeriesDict = ConverterRegistry.get_constructor(
-                "FrequencySeriesDict"
-            )
+            FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.coherence(
@@ -1332,9 +1317,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if isinstance(other, BaseTimeSeries):
             from gwexpy.interop._registry import ConverterRegistry
 
-            FrequencySeriesList = ConverterRegistry.get_constructor(
-                "FrequencySeriesList"
-            )
+            FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
             new_list = FrequencySeriesList()
             for ts in self:
                 list.append(
@@ -1398,9 +1381,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if isinstance(other, BaseTimeSeries):
             from gwexpy.interop._registry import ConverterRegistry
 
-            FrequencySeriesList = ConverterRegistry.get_constructor(
-                "FrequencySeriesList"
-            )
+            FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
             new_list = FrequencySeriesList()
             for ts in self:
                 list.append(
@@ -1855,7 +1836,6 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
-
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(

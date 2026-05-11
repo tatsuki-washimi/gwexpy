@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import inspect
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
 from gwpy.io.registry import default_registry as io_registry
+from gwpy.time import to_gps
 
 _GWF_FORMATS = frozenset(
     {
@@ -148,49 +149,155 @@ def _resolve_gwf_format(source: Any, fmt: Any) -> str | None:
             return _normalize_gwf_format(fmt)
         return None
 
-    if _looks_like_gwf_path(source):
-        return "gwf"
-
-    if isinstance(source, (list, tuple)) and source:
-        if all(_looks_like_gwf_path(item) for item in source):
+    if isinstance(source, (list, tuple)):
+        if not source:
+            return None
+        if all(
+            _normalize_path_suffix(value).suffix.lower() == ".gwf" for value in source
+        ):
             return "gwf"
+        return None
+
+    try:
+        path = Path(source)
+    except TypeError:
+        return None
+
+    if path.suffix.lower() == ".gwf":
+        return "gwf"
     return None
 
 
-def _looks_like_gwf_path(source: Any) -> bool:
+def _normalize_path_suffix(source: Any) -> Path:
     try:
-        return Path(source).suffix.lower() == ".gwf"
-    except (TypeError, ValueError):
-        return False
+        return Path(source)
+    except TypeError:
+        return Path()
 
 
-def _filter_gwf_reader_kwargs(reader: Any, kwargs: dict[str, Any]) -> dict[str, Any]:
-    """Normalize GWF reader parallel kwargs for GWpy/backend signature drift."""
+def _source_for_gwf_channel_listing(source: Any) -> Any:
+    """Return a single source suitable for GWF channel-name discovery."""
+    if isinstance(source, (list, tuple)) and source:
+        return source[0]
+    return source
+
+
+def _normalize_gwf_read_limit(value: Any | None) -> Any | None:
+    """Normalize a GWF read boundary to GWpy's GPS representation."""
+    if value is None:
+        return None
+    return to_gps(value)
+
+
+def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
+    """Return GWpy-compatible append gap mode and pad value."""
+    merge_gap = gap if gap is not None else ("pad" if pad is not None else "raise")
+    merge_pad = 0.0 if merge_gap == "pad" and pad is None else pad
+    return merge_gap, merge_pad
+
+
+def _consume_gwf_parallel_kwargs(gwf_kwargs: dict[str, Any]) -> int | None:
+    """Remove GWpy high-level parallel kwargs before low-level GWF reads."""
+    parallel = gwf_kwargs.pop("parallel", None)
+    nproc = gwf_kwargs.pop("nproc", None)
+    if parallel is None:
+        parallel = nproc
+    if parallel is None:
+        return None
     try:
-        parameters = inspect.signature(reader).parameters
+        return max(int(parallel), 1)
     except (TypeError, ValueError):
-        return dict(kwargs)
+        return None
 
-    accepts_kwargs = any(
-        parameter.kind == inspect.Parameter.VAR_KEYWORD
-        for parameter in parameters.values()
-    )
 
-    def accepts(name: str) -> bool:
-        return accepts_kwargs or name in parameters
+def _pad_gwf_series_to_span(
+    ts: Any,
+    pad: Any,
+    start: Any | None = None,
+    end: Any | None = None,
+    *,
+    error: bool = False,
+) -> Any:
+    """Pad or reject a GWF series that does not cover the requested interval."""
+    span = ts.span
+    if start is None:
+        start = span[0]
+    if end is None:
+        end = span[1]
 
-    filtered = dict(kwargs)
-    if "nproc" in filtered:
-        nproc = filtered.pop("nproc")
-        if accepts("nproc"):
-            filtered["nproc"] = nproc
-        elif accepts("parallel") and "parallel" not in filtered:
-            filtered["parallel"] = nproc
+    pada = max(int((span[0] - start) * ts.sample_rate.value), 0)
+    padb = max(int((end - span[1]) * ts.sample_rate.value), 0)
+    if not (pada or padb):
+        return ts
+    if error:
+        msg = (
+            f"{type(ts).__name__} with span {span} does not cover "
+            f"requested interval {type(span)(start, end)}"
+        )
+        raise ValueError(msg)
+    return ts.pad((pada, padb), mode="constant", constant_values=(pad,))
 
-    if "parallel" in filtered and not accepts("parallel"):
-        filtered.pop("parallel")
 
-    return filtered
+def read_gwf_timeseriesdict(
+    source: Any,
+    channels: list[str],
+    *,
+    start: Any | None = None,
+    end: Any | None = None,
+    backend: str | None = None,
+    dict_class: type[Any],
+    series_class: type[Any],
+    **gwf_kwargs: Any,
+) -> Any:
+    """Read GWF source(s) into a TimeSeriesDict-like class with GWpy merge semantics."""
+    from gwpy.timeseries.io.gwf.core import read_timeseriesdict
+
+    read_kwargs = dict(gwf_kwargs)
+    pad = read_kwargs.pop("pad", None)
+    gap = read_kwargs.pop("gap", None)
+    parallel = _consume_gwf_parallel_kwargs(read_kwargs)
+    start = _normalize_gwf_read_limit(start)
+    end = _normalize_gwf_read_limit(end)
+    merge_gap, merge_pad = _normalize_gwf_gap_options(pad, gap)
+
+    def read_one(item: Any) -> Any:
+        return dict_class(
+            read_timeseriesdict(
+                item,
+                channels,
+                start=start,
+                end=end,
+                backend=backend,
+                series_class=series_class,
+                **read_kwargs,
+            )
+        )
+
+    if isinstance(source, (list, tuple)):
+        sources = list(source)
+        if parallel is not None and parallel > 1 and len(sources) > 1:
+            with ThreadPoolExecutor(max_workers=parallel) as executor:
+                parts = list(executor.map(read_one, sources))
+        else:
+            parts = [read_one(item) for item in sources]
+
+        out = dict_class()
+        for part in sorted(parts, key=lambda item: item.span):
+            out.append(part, gap=merge_gap, pad=merge_pad)
+        result = out
+    else:
+        result = read_one(source)
+
+    if merge_gap in ("pad", "raise") and (start is not None or end is not None):
+        for key in result:
+            result[key] = _pad_gwf_series_to_span(
+                result[key],
+                merge_pad,
+                start,
+                end,
+                error=(merge_gap == "raise"),
+            )
+    return result
 
 
 def _normalize_gwf_channels(channels: Any) -> list[str] | None:
@@ -277,12 +384,14 @@ def _extract_gwf_read_args(
 
 __all__ = [
     "_extract_gwf_read_args",
-    "_filter_gwf_reader_kwargs",
+    "_pad_gwf_series_to_span",
     "_normalize_gwf_channels",
     "_normalize_gwf_format",
     "_resolve_gwf_format",
+    "_source_for_gwf_channel_listing",
     "_sync_gwf_registry_aliases",
     "_GWF_BACKENDS",
     "_GWF_FORMATS",
     "_format_gwf_import_error",
+    "read_gwf_timeseriesdict",
 ]
