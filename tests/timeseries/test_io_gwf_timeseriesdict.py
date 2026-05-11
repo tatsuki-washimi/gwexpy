@@ -4,7 +4,11 @@ import numpy as np
 import pytest
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-from gwexpy.timeseries._gwf_io import _extract_gwf_read_args, _resolve_gwf_format
+from gwexpy.timeseries._gwf_io import (
+    _extract_gwf_read_args,
+    _resolve_gwf_format,
+    read_gwf_timeseriesdict,
+)
 
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
@@ -110,6 +114,54 @@ def test_read_gwf_timeseriesdict_list_source_with_format_variants(read_kwargs):
     assert list(tsd) == [CHANNEL]
     assert tsd[CHANNEL].name == CHANNEL
     assert len(tsd[CHANNEL]) > 0
+
+
+def test_read_gwf_timeseriesdict_empty_source_list_rejected():
+    with pytest.raises(ValueError, match="must be non-empty"):
+        TimeSeriesDict.read([], CHANNEL, format="gwf")
+
+
+def test_read_gwf_timeseriesdict_filters_empty_parts(monkeypatch):
+    from gwpy.timeseries.io.gwf import core as gwf_core
+
+    series = TimeSeries(
+        np.arange(4.0),
+        sample_rate=4.0,
+        t0=1000.0,
+        channel=CHANNEL,
+        name=CHANNEL,
+    )
+
+    def fake_read_timeseriesdict(source, *args, **kwargs):
+        if source == "empty.gwf":
+            return {}
+        return {CHANNEL: series}
+
+    monkeypatch.setattr(gwf_core, "read_timeseriesdict", fake_read_timeseriesdict)
+
+    tsd = read_gwf_timeseriesdict(
+        ["empty.gwf", "full.gwf"],
+        [CHANNEL],
+        dict_class=TimeSeriesDict,
+        series_class=TimeSeries,
+    )
+
+    assert list(tsd) == [CHANNEL]
+    np.testing.assert_allclose(tsd[CHANNEL].value, series.value)
+
+
+def test_read_gwf_timeseriesdict_all_empty_parts_raise(monkeypatch):
+    from gwpy.timeseries.io.gwf import core as gwf_core
+
+    monkeypatch.setattr(gwf_core, "read_timeseriesdict", lambda *args, **kwargs: {})
+
+    with pytest.raises(ValueError, match="No data found in any provided GWF source"):
+        read_gwf_timeseriesdict(
+            ["empty0.gwf", "empty1.gwf"],
+            [CHANNEL],
+            dict_class=TimeSeriesDict,
+            series_class=TimeSeries,
+        )
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")

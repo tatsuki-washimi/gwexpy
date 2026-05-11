@@ -165,7 +165,7 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 ```
 
 - **HDF5** は安全で構造化しやすく、GW 系で最も無難な保存先です。
-- **GWF** は `TimeSeries` と `TimeSeriesDict` で `.gwf` ファイルの list / tuple 入力に対応します。ファイルは時刻 span 順で結合されます。連続 span はそのまま結合し、ギャップは既定で失敗します。`pad=<値>` または `gap="pad"` で埋められ、`gap="ignore"` では埋めずに連結します。オーバーラップする span は既定または `gap="raise"` で失敗しますが、`gap="ignore"` では span 順に連結し、オーバーラップの連結を許可します。
+- **GWF** は `TimeSeries` と `TimeSeriesDict` で `.gwf` ファイルの list / tuple 入力に対応します。ファイルは時刻 span 順で結合されます。連続 span はそのまま結合し、ギャップは既定で失敗します。`pad=<値>` または `gap="pad"` で埋められ、`gap="ignore"` では埋めずに連結します。オーバーラップする span は既定または `gap="raise"` で失敗しますが、`gap="ignore"` では span 順に連結し、オーバーラップの連結を許可します。`start` / `end` が実データの外側に伸びる場合も、既定の `gap="raise"` では失敗します。外側区間を埋めるには `pad=<値>` または `gap="pad"` を使ってください。`gap="ignore"` は内部ギャップも外側の `start` / `end` 区間も padding しません。複数ファイル読み込みで channel 名を指定しない場合、自動検出は先頭ファイルを使い、残りのファイルにも互換 channel がある前提です。
 - **DTTXML** は `products` によって出力型が変わります。public direct read は `TimeSeriesDict.read(..., format="xml.diaggui", products=...)` に揃えます。
 - 周波数領域の DTTXML direct shim と registry adapter は implementation-only で、public direct-I/O contract には含めません。複素 transfer function を扱う高度な内部利用では `native=True` を優先できます。
 - **NDS2 / GWOSC** はファイル形式ではないため、ページ中では A に置きつつ備考で `ネットワーク経由` と明示します。

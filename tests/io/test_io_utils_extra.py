@@ -11,6 +11,7 @@ import pytest
 from astropy import units as u
 
 from gwexpy.io.utils import (
+    _pad_gwf_series_to_span,
     apply_unit,
     ensure_datetime,
     ensure_dependency,
@@ -34,13 +35,32 @@ def test_maybe_pad_timeseries_passthrough():
 def test_maybe_pad_timeseries_delegation():
     """Test maybe_pad_timeseries delegates with the correct error flag."""
     ts = MagicMock()
-    target = "gwexpy.timeseries._gwf_io._pad_gwf_series_to_span"
+    target = "gwexpy.io.utils._pad_gwf_series_to_span"
     with patch(target) as mock_pad:
         maybe_pad_timeseries(ts, gap="raise")
         mock_pad.assert_called_with(ts, np.nan, start=None, end=None, error=True)
 
         maybe_pad_timeseries(ts, gap="pad")
         mock_pad.assert_called_with(ts, np.nan, start=None, end=None, error=False)
+
+
+def test_pad_gwf_series_to_span_ceil_prevents_float_underpadding():
+    """Padding must conservatively cover requested spans despite float noise."""
+    from gwexpy.timeseries import TimeSeries
+
+    ts = TimeSeries(
+        np.arange(10.0),
+        sample_rate=10.0,
+        t0=1.0,
+        channel="K1:TEST",
+        name="K1:TEST",
+    )
+
+    padded = _pad_gwf_series_to_span(ts, -1.0, start=0.2000000001, end=2.0)
+
+    assert len(padded) == len(ts) + 8
+    assert float(padded.t0.value) <= 0.2000000001
+    np.testing.assert_allclose(padded.value[:8], -1.0)
 
 
 # ---------------------------------------------------------------------------

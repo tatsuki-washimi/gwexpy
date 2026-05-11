@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
 from gwpy.io.registry import default_registry as io_registry
 from gwpy.time import to_gps
+
+from gwexpy.io.utils import _pad_gwf_series_to_span
 
 _GWF_FORMATS = frozenset(
     {
@@ -210,34 +211,6 @@ def _consume_gwf_parallel_kwargs(gwf_kwargs: dict[str, Any]) -> int | None:
         return None
 
 
-def _pad_gwf_series_to_span(
-    ts: Any,
-    pad: Any,
-    start: Any | None = None,
-    end: Any | None = None,
-    *,
-    error: bool = False,
-) -> Any:
-    """Pad or reject a GWF series that does not cover the requested interval."""
-    span = ts.span
-    if start is None:
-        start = span[0]
-    if end is None:
-        end = span[1]
-
-    pada = max(int((span[0] - start) * ts.sample_rate.value), 0)
-    padb = max(int((end - span[1]) * ts.sample_rate.value), 0)
-    if not (pada or padb):
-        return ts
-    if error:
-        msg = (
-            f"{type(ts).__name__} with span {span} does not cover "
-            f"requested interval {type(span)(start, end)}"
-        )
-        raise ValueError(msg)
-    return ts.pad((pada, padb), mode="constant", constant_values=(pad,))
-
-
 def read_gwf_timeseriesdict(
     source: Any,
     channels: list[str],
@@ -250,12 +223,15 @@ def read_gwf_timeseriesdict(
     **gwf_kwargs: Any,
 ) -> Any:
     """Read GWF source(s) into a TimeSeriesDict-like class with GWpy merge semantics."""
+    if isinstance(source, (list, tuple)) and not source:
+        raise ValueError("GWF source list/tuple must be non-empty")
+
     from gwpy.timeseries.io.gwf.core import read_timeseriesdict
 
     read_kwargs = dict(gwf_kwargs)
     pad = read_kwargs.pop("pad", None)
     gap = read_kwargs.pop("gap", None)
-    parallel = _consume_gwf_parallel_kwargs(read_kwargs)
+    _consume_gwf_parallel_kwargs(read_kwargs)
     start = _normalize_gwf_read_limit(start)
     end = _normalize_gwf_read_limit(end)
     merge_gap, merge_pad = _normalize_gwf_gap_options(pad, gap)
@@ -275,14 +251,13 @@ def read_gwf_timeseriesdict(
 
     if isinstance(source, (list, tuple)):
         sources = list(source)
-        if parallel is not None and parallel > 1 and len(sources) > 1:
-            with ThreadPoolExecutor(max_workers=parallel) as executor:
-                parts = list(executor.map(read_one, sources))
-        else:
-            parts = [read_one(item) for item in sources]
+        parts = [read_one(item) for item in sources]
+        non_empty_parts = [part for part in parts if len(part) > 0]
+        if not non_empty_parts:
+            raise ValueError("No data found in any provided GWF source")
 
         out = dict_class()
-        for part in sorted(parts, key=lambda item: item.span):
+        for part in sorted(non_empty_parts, key=lambda item: item.span):
             out.append(part, gap=merge_gap, pad=merge_pad)
         result = out
     else:
