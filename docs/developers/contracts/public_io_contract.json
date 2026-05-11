@@ -49,6 +49,13 @@
             "notes": [
                 "Backend aliases resolve through gwpy GWF readers.",
                 "Public direct I/O includes TimeSeries and TimeSeriesDict reads.",
+                "TimeSeries and TimeSeriesDict reads accept ordered list/tuple sources of .gwf paths.",
+                "Multi-file GWF reads merge in time-span order; contiguous spans join normally.",
+                "Gaps raise by default and with gap='raise'; pad=<value> or gap='pad' fills gaps, and gap='ignore' concatenates without filling.",
+                "When start/end extend beyond available data, the default gap='raise' behavior rejects the request; pass pad=<value> or gap='pad' to fill the outer interval.",
+                "For multi-file GWF reads without an explicit channel selector, channel auto-discovery uses the first source and assumes the remaining sources contain compatible channel names.",
+                "gap='ignore' does not pad missing samples inside gaps or outside a requested start/end interval.",
+                "Overlapping spans are rejected by default and with gap='raise'; gap='ignore' concatenates files in span order and permits overlap concatenation.",
                 "TimeSeriesMatrix reader remains an implementation convenience path until it is published explicitly in the user guide."
             ],
             "optional_dependencies": [],

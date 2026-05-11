@@ -10,7 +10,6 @@ The implementation is modularized across several files:
 
 This module integrates all Mixins into a single TimeSeries class.
 """
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -30,9 +29,9 @@ from ._core import TimeSeriesCore
 from ._gwf_io import (
     _GWF_BACKENDS,
     _extract_gwf_read_args,
-    _filter_gwf_reader_kwargs,
     _format_gwf_import_error,
     _resolve_gwf_format,
+    _source_for_gwf_channel_listing,
 )
 from ._interop import TimeSeriesInteropMixin
 from ._resampling import TimeSeriesResamplingMixin
@@ -45,6 +44,7 @@ from ._statistics import StatisticsMixin
 # Import legacy for remaining methods
 
 if TYPE_CHECKING:
+
     from gwexpy.timeseries import TimeSeriesDict
 
 
@@ -150,11 +150,7 @@ class TimeSeries(
         """
         fmt = kwargs.get("format")
         source_path = Path(source) if isinstance(source, (str, Path)) else None
-        if fmt == "csv" or (
-            fmt is None
-            and source_path is not None
-            and source_path.suffix.lower() == ".csv"
-        ):
+        if fmt == "csv" or (fmt is None and source_path is not None and source_path.suffix.lower() == ".csv"):
             from .io.csv_enhanced import read_timeseries_csv
 
             return read_timeseries_csv(source, **kwargs)
@@ -162,30 +158,29 @@ class TimeSeries(
         gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
         if gwf_format is not None:
             from gwpy.io.gwf.core import get_channel_names
-            from gwpy.timeseries.io.gwf.core import read_timeseriesdict
-
-            from gwexpy.interop._registry import ConverterRegistry
 
             channels, start, end, gwf_kwargs = _extract_gwf_read_args(
                 args,
                 kwargs,
                 allow_multiple_channels=False,
             )
-            gwf_kwargs = _filter_gwf_reader_kwargs(read_timeseriesdict, gwf_kwargs)
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
             try:
                 if channels is None:
-                    channels = get_channel_names(source, backend=backend)
+                    channel_source = _source_for_gwf_channel_listing(source)
+                    channels = get_channel_names(channel_source, backend=backend)
                     if not channels:
                         raise ValueError(f"No channels found in GWF source: {source}")
                 channel = channels[0]
-                tsd = read_timeseriesdict(
+                from .collections import TimeSeriesDict
+
+                tsd = TimeSeriesDict.read(
                     source,
                     [channel],
                     start=start,
                     end=end,
                     backend=backend,
-                    series_class=ConverterRegistry.get_constructor("TimeSeries"),
+                    format=gwf_format,
                     **gwf_kwargs,
                 )
             except ImportError as exc:
@@ -205,11 +200,7 @@ class TimeSeries(
         """
         fmt = kwargs.get("format")
         target_path = Path(target) if isinstance(target, (str, Path)) else None
-        if fmt == "csv" or (
-            fmt is None
-            and target_path is not None
-            and target_path.suffix.lower() == ".csv"
-        ):
+        if fmt == "csv" or (fmt is None and target_path is not None and target_path.suffix.lower() == ".csv"):
             from .io.csv_enhanced import write_timeseries_csv
 
             write_kwargs = dict(kwargs)
@@ -300,6 +291,7 @@ class TimeSeries(
         from gwexpy.io.pickle_compat import timeseries_reduce_args
 
         return timeseries_reduce_args(self)
+
 
     # Basic operations (tail, crop, append, find_peaks) are inherited from TimeSeriesCore
 

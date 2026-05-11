@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import datetime as _dt
 import importlib
+import math
 import warnings
 from collections.abc import Iterable
 from pathlib import Path
@@ -166,18 +167,58 @@ def filter_by_channels(mapping: dict[str, Any], channels: Iterable[str] | None):
     return {k: v for k, v in mapping.items() if k in wanted}
 
 
+def _ceil_nonnegative_sample_count(value: Any) -> int:
+    """Return a conservative non-negative sample count for float spans."""
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return 0
+    if numeric <= 0:
+        return 0
+    return int(math.ceil(numeric - 1e-12))
+
+
+def _pad_gwf_series_to_span(
+    ts: Any,
+    pad: Any,
+    start: Any | None = None,
+    end: Any | None = None,
+    *,
+    error: bool = False,
+) -> Any:
+    """Pad or reject a GWF series that does not cover the requested interval."""
+    span = ts.span
+    if start is None:
+        start = span[0]
+    if end is None:
+        end = span[1]
+
+    rate = ts.sample_rate.value
+    pada = _ceil_nonnegative_sample_count((span[0] - start) * rate)
+    padb = _ceil_nonnegative_sample_count((end - span[1]) * rate)
+    if not (pada or padb):
+        return ts
+    if error:
+        msg = (
+            f"{type(ts).__name__} with span {span} does not cover "
+            f"requested interval {type(span)(start, end)}"
+        )
+        raise ValueError(msg)
+    return ts.pad((pada, padb), mode="constant", constant_values=(pad,))
+
+
 def maybe_pad_timeseries(ts, pad_value=np.nan, start=None, end=None, gap="pad"):
     """Pad gaps or raise using gwpy join semantics."""
     if gap not in ("pad", "raise"):
         return ts
 
-    try:
-        from gwpy.timeseries.io.core import _pad_series
-    except ImportError:
-        # gwpy >= 4.0
-        from gwpy.timeseries.connect import _pad_series
-
-    return _pad_series(ts, pad_value, start=start, end=end, error=(gap == "raise"))
+    return _pad_gwf_series_to_span(
+        ts,
+        pad_value,
+        start=start,
+        end=end,
+        error=(gap == "raise"),
+    )
 
 
 def ensure_dependency(
