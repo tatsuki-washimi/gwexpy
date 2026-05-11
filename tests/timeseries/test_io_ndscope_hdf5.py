@@ -1,4 +1,5 @@
 """Tests for ndscope HDF5 I/O (gwexpy.timeseries.io.ndscope_hdf5)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,7 +8,7 @@ import h5py
 import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwexpy.timeseries.io.ndscope_hdf5 import (
     identify_ndscope_hdf5,
     read_timeseriesdict_ndscope_hdf5,
@@ -54,10 +55,19 @@ def _make_ndscope_trend(path):
 
 def _make_gwpy_hdf5(path):
     """Create a gwpy-native HDF5 file (flat datasets, not groups)."""
-    from astropy import units as u
-
     ts = TimeSeries(np.arange(10.0), sample_rate=1.0, t0=0, unit="m", name="test")
     ts.write(str(path), format="hdf5")
+
+
+def _make_timeseriesmatrix_hdf5(path):
+    """Create a native TimeSeriesMatrix HDF5 file, not an ndscope file."""
+    matrix = TimeSeriesMatrix(
+        np.arange(24.0).reshape(2, 3, 4),
+        t0=10.0,
+        dt=0.5,
+    )
+    matrix.write(path, format="hdf5")
+    return matrix
 
 
 # ---------------------------------------------------------------------------
@@ -189,7 +199,92 @@ class TestRead:
         tsd = TimeSeriesDict.read(str(p), format=fmt)
 
         assert list(tsd.keys()) == ["K1:TEST-CHANNEL"]
-        np.testing.assert_allclose(tsd["K1:TEST-CHANNEL"].value, np.arange(256, dtype=np.float64))
+        np.testing.assert_allclose(
+            tsd["K1:TEST-CHANNEL"].value, np.arange(256, dtype=np.float64)
+        )
+
+    @pytest.mark.parametrize("suffix", [".h5", ".hdf5"])
+    def test_read_matrix_auto_detect_matches_explicit(self, tmp_path, suffix):
+        p = tmp_path / f"auto_matrix{suffix}"
+        channels = {
+            "K1:TEST-CHANNEL-A": np.arange(256, dtype=np.float64),
+            "K1:TEST-CHANNEL-B": np.arange(256, dtype=np.float64) + 1000.0,
+        }
+        _make_ndscope_raw(p, channels=channels)
+
+        matrix_auto = TimeSeriesMatrix.read(str(p))
+        matrix_format_none = TimeSeriesMatrix.read(str(p), format=None)
+        matrix_explicit = TimeSeriesMatrix.read(str(p), format="hdf.ndscope")
+        matrix_positional = TimeSeriesMatrix.read(str(p), "hdf.ndscope")
+        matrix_from_dict = TimeSeriesDict.read(
+            str(p), format="hdf.ndscope"
+        ).to_matrix()
+
+        assert matrix_auto.shape == matrix_explicit.shape == (2, 1, 256)
+        np.testing.assert_allclose(matrix_auto.value, matrix_explicit.value)
+        np.testing.assert_allclose(matrix_format_none.value, matrix_explicit.value)
+        np.testing.assert_allclose(matrix_positional.value, matrix_explicit.value)
+        np.testing.assert_allclose(matrix_from_dict.value, matrix_explicit.value)
+        assert float(matrix_auto.sample_rate.value) == pytest.approx(
+            float(matrix_explicit.sample_rate.value)
+        )
+        assert float(matrix_auto.t0.value) == pytest.approx(
+            float(matrix_explicit.t0.value)
+        )
+        assert list(matrix_auto.channel_names) == [
+            "K1:TEST-CHANNEL-A",
+            "K1:TEST-CHANNEL-B",
+        ]
+
+    def test_read_matrix_auto_detect_channels_and_crop(self, tmp_path):
+        p = tmp_path / "auto_matrix_channel.hdf5"
+        channels = {
+            "K1:CH_A": np.arange(400, dtype=np.float64),
+            "K1:CH_B": np.arange(400, dtype=np.float64) + 2000.0,
+        }
+        _make_ndscope_raw(p, channels=channels)
+
+        auto = TimeSeriesMatrix.read(
+            str(p), channels=["K1:CH_B"], start=1_000_000_000.0, end=1_000_000_001.0
+        )
+        explicit = TimeSeriesMatrix.read(
+            str(p),
+            format="hdf.ndscope",
+            channels=["K1:CH_B"],
+            start=1_000_000_000.0,
+            end=1_000_000_001.0,
+        )
+
+        assert auto.shape[0] == 1
+        assert list(auto.channel_names) == ["K1:CH_B"]
+        np.testing.assert_allclose(auto.value, explicit.value)
+        assert float(auto.t0.value) == pytest.approx(float(explicit.t0.value))
+
+    def test_read_matrix_non_ndscope_hdf5_does_not_auto_detect_ndscope(self, tmp_path):
+        p = tmp_path / "native_matrix.hdf5"
+        expected = _make_timeseriesmatrix_hdf5(p)
+
+        assert identify_ndscope_hdf5(TimeSeriesDict, str(p), None) is False
+
+        auto = TimeSeriesMatrix.read(str(p), format=None)
+        explicit = TimeSeriesMatrix.read(str(p), format="hdf5")
+
+        assert auto.shape == expected.shape == explicit.shape
+        np.testing.assert_allclose(auto.value, explicit.value)
+        np.testing.assert_allclose(auto.value, expected.value)
+
+        with pytest.raises(ValueError):
+            TimeSeriesMatrix.read(str(p), format="hdf.ndscope")
+
+    def test_read_matrix_explicit_hdf5_does_not_invoke_ndscope_reader(self, tmp_path):
+        p = tmp_path / "explicit_hdf5_ndscope.hdf5"
+        _make_ndscope_raw(p)
+
+        ndscope = TimeSeriesMatrix.read(str(p), format="hdf.ndscope")
+        assert ndscope.shape == (1, 1, 256)
+
+        with pytest.raises(KeyError, match="data"):
+            TimeSeriesMatrix.read(str(p), format="hdf5")
 
     def test_read_via_timeseries(self, tmp_path):
         """Test that TimeSeries.read works with ndscope format."""
@@ -256,7 +351,9 @@ class TestWrite:
 
         reread = TimeSeriesDict.read(str(p), format="hdf.ndscope")
         assert list(reread.keys()) == ["K1:WRITE-ALIAS"]
-        np.testing.assert_allclose(reread["K1:WRITE-ALIAS"].value, np.arange(16, dtype=np.float64))
+        np.testing.assert_allclose(
+            reread["K1:WRITE-ALIAS"].value, np.arange(16, dtype=np.float64)
+        )
 
     def test_roundtrip(self, tmp_path):
         p = tmp_path / "roundtrip.hdf5"
@@ -406,6 +503,20 @@ class TestRealData:
     def test_read_all_channels(self):
         tsd = read_timeseriesdict_ndscope_hdf5(SAMPLE_HDF5)
         assert len(tsd) == 3
+
+    def test_matrix_auto_detect_real_file_matches_explicit(self):
+        auto = TimeSeriesMatrix.read(SAMPLE_HDF5)
+        positional_none = TimeSeriesMatrix.read(SAMPLE_HDF5, None)
+        explicit = TimeSeriesMatrix.read(SAMPLE_HDF5, format="hdf.ndscope")
+        from_dict = TimeSeriesDict.read(SAMPLE_HDF5, format="hdf.ndscope").to_matrix()
+
+        assert auto.shape == explicit.shape == from_dict.shape == (3, 1, _REAL_N_SAMPLES)
+        assert list(auto.channel_names) == _REAL_CHANNELS
+        assert float(auto.sample_rate.value) == pytest.approx(_REAL_RATE_HZ)
+        assert float(auto.t0.value) == pytest.approx(_REAL_GPS_START, rel=1e-9)
+        np.testing.assert_allclose(auto.value, explicit.value)
+        np.testing.assert_allclose(positional_none.value, explicit.value)
+        np.testing.assert_allclose(auto.value, from_dict.value)
 
     def test_channel_names(self):
         tsd = read_timeseriesdict_ndscope_hdf5(SAMPLE_HDF5)
