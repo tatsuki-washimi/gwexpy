@@ -283,8 +283,8 @@ def test_current_public_boundary_decisions_are_recorded():
         "Spectrogram",
         "EventTable",
     ]
-    assert entries["csv"]["public_auto_identify"] is False
-    assert entries["csv"]["registry_auto_identify"] is False
+    assert entries["csv"]["public_auto_identify"] is True
+    assert entries["csv"]["registry_auto_identify"] is True
     assert entries["csv"]["metadata_requirements"]
     assert _api_classes(entries["txt"], "public_api", "read") == [
         "TimeSeries",
@@ -513,8 +513,8 @@ def test_current_public_boundary_decisions_are_recorded():
     ]
     assert _api_classes(entries["root"], "registry_api", "read") == ["EventTable"]
     assert _api_classes(entries["root"], "registry_api", "write") == ["EventTable"]
-    assert entries["root"]["public_auto_identify"] is False
-    assert entries["root"]["registry_auto_identify"] is False
+    assert entries["root"]["public_auto_identify"] is True
+    assert entries["root"]["registry_auto_identify"] is True
     assert _api_classes(entries["hdf5"], "public_api", "read") == [
         "TimeSeries",
         "TimeSeriesDict",

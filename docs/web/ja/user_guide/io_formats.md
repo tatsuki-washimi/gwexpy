@@ -215,11 +215,11 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 
 | 形式 | 読 / 写 | 主な入口 | 用途 | 備考 |
 |---|:---:|---|---|---|
-| **CSV** (`.csv`) | ○ / ○ | `TimeSeries.read(..., format="csv")`, `TimeSeriesDict.read(..., format="csv")`, `TimeSeriesDict.write(..., format="csv")` | 軽量な交換、目視確認 | `TimeSeriesDict` は単一 CSV 読み込みと collection directory の両方に対応 |
+| **CSV** (`.csv`) | ○ / ○ | `TimeSeries.read("data.csv")`, `TimeSeriesDict.read("data.csv")`, `TimeSeriesDict.write(..., format="csv")` | 軽量な交換、目視確認 | `.csv` は自動判定されます。単純な CSV 交換は metadata-light です |
 | **TXT** (`.txt`) | ○ / ○ | `TimeSeries.read(..., format="txt")`, `TimeSeriesDict.read(dir, format="txt")`, `TimeSeriesDict.write(dir, format="txt")` | プレーンテキスト交換 | 複数チャネルの direct I/O は collection directory を使う |
-| **nc** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")`, `.write(..., format="nc")` | 時系列系の科学データ保存 | direct I/O は TimeSeries 系中心。旧 alias: `netcdf4` |
+| **nc** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")`, `.write(..., format="nc")` | 時系列系の科学データ保存 | direct I/O は TimeSeries 系中心。旧 format alias: `netcdf4` |
 | **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | chunked 保存、並列処理 | direct I/O は TimeSeries 系中心 |
-| **ROOT** (`.root`) | ○ / ○ | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | EventTable の入出力 | 直 I/O は EventTable のみ |
+| **ROOT** (`.root`) | ○ / ○ | `EventTable.read("events.root")`, `EventTable.write(..., format="root")` | EventTable の入出力 | `.root` は自動判定されます。直 I/O は EventTable のみ |
 
 - 目的: 汎用交換向けの direct I/O を、interop 専用の橋渡しと混同せず整理する
 - 入力: CSV, Zarr, ROOT などの汎用形式
@@ -231,13 +231,13 @@ from gwexpy.table import EventTable
 
 ascii_data = TimeSeriesDict.read("data.csv")
 chunked = TimeSeriesDict.read("data.zarr", format="zarr")
-events = EventTable.read("events.root", format="root")
+events = EventTable.read("events.root")
 ```
 
-- **CSV** は素朴ですが、共有や確認には依然として有用です。
+- **CSV** は素朴ですが、共有や確認には依然として有用です。単純な CSV ファイルは metadata-light と考えてください。`name`、`channel`、`unit` まで保持したい場合は HDF5、GWF、Zarr、NetCDF、または manifest 付き collection directory を使います。
 - **TXT** の direct I/O はより限定的で、単一 series は `format="txt"` 明示、複数チャネルは collection directory 前提です。
 - **Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct `.read()` / `.write()` 形式としては扱いません。
-- **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。
+- **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。
 - **Zarr** の direct I/O では、配列ごとの timing metadata を明示的に要求します。`sample_rate` を優先し、`dt` は fallback として受け付けます。どちらも無い場合は `ValueError` を送出し、legacy store を意図的に救済したい場合だけ `sample_rate_override=...` または `dt_override=...` を指定してください。
 - **ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは EventTable の直 I/O のみ扱います。
 

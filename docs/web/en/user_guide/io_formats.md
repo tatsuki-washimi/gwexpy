@@ -216,11 +216,11 @@ The key rule here is not to mix up “format choice” with “library conversio
 
 | Format | R / W | Main entry | Best for | Notes |
 |---|:---:|---|---|---|
-| **CSV** (`.csv`) | ○ / ○ | `TimeSeries.read(..., format="csv")`, `TimeSeriesDict.read(..., format="csv")`, `TimeSeriesDict.write(..., format="csv")` | Lightweight exchange and inspection | `TimeSeriesDict` supports single-file reads and collection-directory layouts |
+| **CSV** (`.csv`) | ○ / ○ | `TimeSeries.read("data.csv")`, `TimeSeriesDict.read("data.csv")`, `TimeSeriesDict.write(..., format="csv")` | Lightweight exchange and inspection | Auto-identifies `.csv`; simple CSV exchange is metadata-light |
 | **TXT** (`.txt`) | ○ / ○ | `TimeSeries.read(..., format="txt")`, `TimeSeriesDict.read(dir, format="txt")`, `TimeSeriesDict.write(dir, format="txt")` | Plain-text exchange | Multi-channel direct I/O uses collection directories |
-| **nc** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")`, `.write(..., format="nc")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes; legacy alias: `netcdf4` |
+| **nc** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")`, `.write(..., format="nc")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes; legacy format alias: `netcdf4` |
 | **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | Chunked storage and parallel workflows | Direct I/O here is centered on TimeSeries classes |
-| **ROOT** (`.root`) | ○ / ○ | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | EventTable I/O | Direct I/O here is EventTable only |
+| **ROOT** (`.root`) | ○ / ○ | `EventTable.read("events.root")`, `EventTable.write(..., format="root")` | EventTable I/O | Auto-identifies `.root`; direct I/O here is EventTable only |
 
 - Purpose: show the general-purpose direct-I/O routes without mixing them with interop-only bridges
 - Input: CSV, Zarr, ROOT, or other general exchange formats
@@ -232,13 +232,13 @@ from gwexpy.table import EventTable
 
 ascii_data = TimeSeriesDict.read("data.csv")
 chunked = TimeSeriesDict.read("data.zarr", format="zarr")
-events = EventTable.read("events.root", format="root")
+events = EventTable.read("events.root")
 ```
 
-- **CSV** remains useful for lightweight exchange and inspection.
+- **CSV** remains useful for lightweight exchange and inspection. Treat simple CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-backed collection directory when name, channel, and unit metadata must be preserved.
 - **TXT** direct I/O is more limited: single-series paths are explicit `format="txt"`, and multi-channel paths use collection directories.
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
-- **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop.
+- **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
 - **Zarr** direct I/O now expects per-array timing metadata explicitly. `sample_rate` is the primary key, `dt` is accepted as a fallback, and reads raise `ValueError` if neither is present unless you intentionally recover a legacy store with `sample_rate_override=...` or `dt_override=...`.
 - **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O.
 
