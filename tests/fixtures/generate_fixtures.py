@@ -235,13 +235,17 @@ def generate_zarr(filename):
     """Zarr format (v2/v3 compatible)."""
     if zarr is None: return
     try:
-        # Compatibility fix for Zarr 3.x
         root = zarr.open(filename, mode='w')
         data = np.cos(np.linspace(0, 5, 500))
-        # Ensure shape and dtype are explicitly passed
-        root.create_dataset("ch1", data=data, shape=data.shape, dtype=data.dtype, chunks=(100,))
-        root.attrs["t0"] = 1704067200.0
-        root.attrs["dt"] = 0.01
+        if hasattr(root, "create_array"):
+            arr = root.create_array("ch1", data=data, chunks=(100,))
+        else:
+            arr = root.create_dataset(
+                "ch1", data=data, shape=data.shape, dtype=data.dtype, chunks=(100,)
+            )
+        arr.attrs["t0"] = 1704067200.0
+        arr.attrs["dt"] = 0.01
+        arr.attrs["sample_rate"] = 100.0
     except (ImportError, Exception):
         pass
 
