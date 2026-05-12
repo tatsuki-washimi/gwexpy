@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-05-12
+
+### Fixed
+
+- **timeseries/gwf**: Fixed multi-file GWF reads for `TimeSeries` and
+  `TimeSeriesDict` inputs.
+- **timeseries/matrix**: Fixed ndscope HDF5 auto-detection for
+  `TimeSeriesMatrix.read()`.
+- **io/contracts**: Aligned public I/O docs and contract metadata with current
+  autodetection behavior.
+- **frequencyseries/csv**: Added a dedicated CSV fast path that preserves the
+  original frequency column values.
+- **timeseries/zarr**: Fixed matrix round-trip coverage under zarr 3 and
+  removed timeout-prone fixture behavior.
+- **plot/geomap**: Treat PyGMT installations without a loadable GMT shared
+  library as an unavailable optional backend instead of failing at import time.
+
+### Known Issues
+
+- **netcdf**: The bundled NetCDF fixture can fail the TimeSeries reader
+  time-coordinate contract in some cases (#393). Generated NetCDF round-trip
+  coverage still passes; users relying on NetCDF fixtures should verify that
+  their files expose an explicit time coordinate.
+
 ## [0.1.2] - 2026-05-08
 
 ### Narrow v0.1.2 hotfix scope
@@ -215,6 +239,10 @@ First stable release of GWexpy for SoftwareX publication. This release focuses o
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...HEAD
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...v0.1.0
 [0.1.0b2]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b1...v0.1.0b2
 [0.1.0b1]: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.0b1
