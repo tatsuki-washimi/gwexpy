@@ -8,7 +8,11 @@ enhanced signal analysis, fitting capabilities, and deep metadata propagation.
 
 from __future__ import annotations
 
+import csv
+import io
+import os
 from enum import Enum
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, TypeVar, cast
 
 import numpy as np
@@ -46,6 +50,66 @@ except ImportError:
 # =============================
 # FrequencySeries
 # =============================
+
+
+def _read_simple_frequencyseries_csv(cls, source, **kwargs):
+    """Read a two-column numeric CSV without reconstructing the x-axis."""
+    delimiter = kwargs.pop("delimiter", None)
+    encoding = kwargs.pop("encoding", "utf-8")
+    comment_char = kwargs.pop("comment_char", "#")
+    if kwargs:
+        return None
+
+    from gwexpy.timeseries.io.csv_enhanced import (
+        _detect_delimiter,
+        _detect_skip_rows,
+        _parse_comment_metadata,
+    )
+
+    if hasattr(source, "read"):
+        text = source.read()
+        if isinstance(text, bytes):
+            text = text.decode(encoding)
+    else:
+        text = Path(os.fspath(source)).read_text(encoding=encoding)
+
+    lines = text.splitlines()
+    metadata = _parse_comment_metadata(lines, comment_char)
+    if delimiter is None:
+        delimiter = _detect_delimiter("\n".join(lines[:20]))
+    skip = _detect_skip_rows(lines, delimiter, comment_char)
+
+    data_lines = []
+    for line in lines[skip:]:
+        stripped = line.strip()
+        if not stripped or stripped.startswith(comment_char):
+            continue
+        data_lines.append(stripped)
+    if not data_lines:
+        return None
+
+    rows = []
+    reader = csv.reader(io.StringIO("\n".join(data_lines)), delimiter=delimiter)
+    for row in reader:
+        try:
+            values = [float(value.strip()) for value in row if value.strip()]
+        except ValueError:
+            return None
+        if len(values) != 2:
+            return None
+        rows.append(values)
+    if not rows:
+        return None
+
+    raw = np.asarray(rows, dtype=float)
+    unit = u.Unit(metadata["unit"]) if metadata.get("unit") else None
+    return cls(
+        raw[:, 1],
+        frequencies=raw[:, 0],
+        unit=unit,
+        name=metadata.get("name") or None,
+        channel=metadata.get("channel") or None,
+    )
 
 
 class FrequencySeries(
@@ -140,6 +204,9 @@ class FrequencySeries(
     def read(cls, source, *args, **kwargs):  # type: ignore[override]
         """Read a ``FrequencySeries`` from a supported source."""
         fmt = kwargs.get("format")
+        source_path = None
+        if isinstance(source, (str, os.PathLike)):
+            source_path = Path(os.fspath(source))
         from .io.dttxml import _looks_like_dttxml, read_frequencyseriesdict_dttxml
 
         if fmt in ("xml.diaggui", "dttxml") or (
@@ -149,6 +216,20 @@ class FrequencySeries(
             if not fsd:
                 raise ValueError("No channels found in xml.diaggui")
             return fsd[next(iter(fsd.keys()))]
+        csv_source = (
+            fmt == "csv"
+            or (
+                fmt is None
+                and source_path is not None
+                and source_path.suffix.lower() == ".csv"
+            )
+        )
+        if csv_source and not args:
+            csv_kwargs = dict(kwargs)
+            csv_kwargs.pop("format", None)
+            fs = _read_simple_frequencyseries_csv(cls, source, **csv_kwargs)
+            if fs is not None:
+                return fs
         return super().read(source, *args, **kwargs)
 
     def __new__(

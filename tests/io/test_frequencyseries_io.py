@@ -134,6 +134,41 @@ class TestFrequencySeriesDttxml:
 
 
 class TestFrequencySeriesCsv:
+    def test_read_two_column_numeric_csv_with_format(self, tmp_path):
+        path = tmp_path / "two_col_numeric.csv"
+        path.write_text("1.0,10.0\n2.0,20.0\n3.0,30.0\n", encoding="utf-8")
+
+        fs = FrequencySeries.read(str(path), format="csv")
+
+        np.testing.assert_allclose(fs.frequencies.value, np.array([1.0, 2.0, 3.0]))
+        np.testing.assert_allclose(fs.value, np.array([10.0, 20.0, 30.0]))
+        assert fs.epoch is None
+
+    def test_read_two_column_numeric_csv_with_auto_detected_suffix(self, tmp_path):
+        path = tmp_path / "auto_detect.csv"
+        path.write_text("4.0,1.0\n5.0,2.0\n", encoding="utf-8")
+
+        fs = FrequencySeries.read(str(path))
+
+        np.testing.assert_allclose(fs.frequencies.value, np.array([4.0, 5.0]))
+        np.testing.assert_allclose(fs.value, np.array([1.0, 2.0]))
+
+    def test_read_csv_preserves_nonuniform_frequency_column(self, tmp_path):
+        path = tmp_path / "nonuniform.csv"
+        path.write_text("1.0,10.0\n2.0,20.0\n4.0,30.0\n", encoding="utf-8")
+
+        fs = FrequencySeries.read(str(path), format="csv")
+
+        np.testing.assert_allclose(fs.frequencies.value, np.array([1.0, 2.0, 4.0]))
+        np.testing.assert_allclose(fs.value, np.array([10.0, 20.0, 30.0]))
+
+    def test_read_csv_with_positional_args_keeps_registry_path(self, tmp_path):
+        path = tmp_path / "positional.csv"
+        path.write_text("1.0,10.0\n2.0,20.0\n", encoding="utf-8")
+
+        with pytest.raises(TypeError):
+            FrequencySeries.read(path, "unexpected", format="csv")
+
     def test_roundtrip_with_metadata(self, tmp_path):
         fs = FrequencySeries(
             np.array([10.0, 20.0, 30.0]),
