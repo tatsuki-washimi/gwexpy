@@ -21,6 +21,9 @@ def test_eventtable_root_roundtrip(tmp_path):
 
     events.write(path, format="root")
     events2 = EventTable.read(path, format="root")
+    events_auto = EventTable.read(path)
 
     assert len(events2) == 2
     assert list(events2["snr"]) == [8.0, 9.5]
+    assert len(events_auto) == 2
+    assert list(events_auto["snr"]) == [8.0, 9.5]
