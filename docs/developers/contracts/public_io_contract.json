@@ -485,14 +485,16 @@
             "metadata_requirements": [],
             "notes": [
                 "Published ROOT direct I/O is intentionally limited to EventTable.",
-                "EventTable .root files are auto-identified by the live registry when the ROOT backend is available.",
+                "EventTable .root files are auto-identified by the live registry; read/write require the optional uproot backend.",
                 "Collection .write(..., format=\"root\") helpers remain PyROOT-based interop conveniences and are not part of the published direct-I/O contract."
             ],
-            "optional_dependencies": [],
+            "optional_dependencies": [
+                "uproot"
+            ],
             "extras": [],
             "unavailable_behavior": {
-                "read": "available_in_base_install",
-                "write": "available_in_base_install"
+                "read": "raises_import_error",
+                "write": "raises_import_error"
             }
         },
         {

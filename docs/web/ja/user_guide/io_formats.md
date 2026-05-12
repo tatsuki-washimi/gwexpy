@@ -219,7 +219,7 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 | **TXT** (`.txt`) | ○ / ○ | `TimeSeries.read(..., format="txt")`, `TimeSeriesDict.read(dir, format="txt")`, `TimeSeriesDict.write(dir, format="txt")` | プレーンテキスト交換 | 複数チャネルの direct I/O は collection directory を使う |
 | **nc** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")`, `.write(..., format="nc")` | 時系列系の科学データ保存 | direct I/O は TimeSeries 系中心。旧 format alias: `netcdf4` |
 | **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | chunked 保存、並列処理 | direct I/O は TimeSeries 系中心 |
-| **ROOT** (`.root`) | ○ / ○ | `EventTable.read("events.root")`, `EventTable.write(..., format="root")` | EventTable の入出力 | `.root` は自動判定されます。直 I/O は EventTable のみ |
+| **ROOT** (`.root`) | ○ / ○ | `EventTable.read("events.root")`, `EventTable.write(..., format="root")` | EventTable の入出力 | `.root` は自動判定されます。直 I/O は EventTable のみで、`uproot` が必要です |
 
 - 目的: 汎用交換向けの direct I/O を、interop 専用の橋渡しと混同せず整理する
 - 入力: CSV, Zarr, ROOT などの汎用形式
@@ -239,7 +239,7 @@ events = EventTable.read("events.root")
 - **Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct `.read()` / `.write()` 形式としては扱いません。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。
 - **Zarr** の direct I/O では、配列ごとの timing metadata を明示的に要求します。`sample_rate` を優先し、`dt` は fallback として受け付けます。どちらも無い場合は `ValueError` を送出し、legacy store を意図的に救済したい場合だけ `sample_rate_override=...` または `dt_override=...` を指定してください。
-- **ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは EventTable の直 I/O のみ扱います。
+- **ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは `uproot` を必要とする EventTable の直 I/O のみ扱います。
 
 <a id="io-formats-ja-d"></a>
 

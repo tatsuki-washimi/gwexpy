@@ -220,7 +220,7 @@ The key rule here is not to mix up “format choice” with “library conversio
 | **TXT** (`.txt`) | ○ / ○ | `TimeSeries.read(..., format="txt")`, `TimeSeriesDict.read(dir, format="txt")`, `TimeSeriesDict.write(dir, format="txt")` | Plain-text exchange | Multi-channel direct I/O uses collection directories |
 | **nc** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")`, `.write(..., format="nc")` | Scientific storage for time-series-oriented data | Direct I/O here is centered on TimeSeries classes; legacy format alias: `netcdf4` |
 | **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | Chunked storage and parallel workflows | Direct I/O here is centered on TimeSeries classes |
-| **ROOT** (`.root`) | ○ / ○ | `EventTable.read("events.root")`, `EventTable.write(..., format="root")` | EventTable I/O | Auto-identifies `.root`; direct I/O here is EventTable only |
+| **ROOT** (`.root`) | ○ / ○ | `EventTable.read("events.root")`, `EventTable.write(..., format="root")` | EventTable I/O | Auto-identifies `.root`; direct I/O here is EventTable only and requires `uproot` |
 
 - Purpose: show the general-purpose direct-I/O routes without mixing them with interop-only bridges
 - Input: CSV, Zarr, ROOT, or other general exchange formats
@@ -240,7 +240,7 @@ events = EventTable.read("events.root")
 - **Pickle** portability notes still exist in class references, but Pickle is not a published direct `.read()` / `.write()` format on this page.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy format token alias for `nc`; `.netcdf4` is not a documented auto-identified extension alias.
 - **Zarr** direct I/O now expects per-array timing metadata explicitly. `sample_rate` is the primary key, `dt` is accepted as a fallback, and reads raise `ValueError` if neither is present unless you intentionally recover a legacy store with `sample_rate_override=...` or `dt_override=...`.
-- **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O.
+- **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O, which requires `uproot`.
 
 <a id="io-formats-en-d"></a>
 
