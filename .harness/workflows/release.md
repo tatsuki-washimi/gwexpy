@@ -45,16 +45,18 @@ conda run -n gwexpy mypy gwexpy/
 3. **Clean Install Test**: 新しい仮想環境で `pip install dist/*.whl` を行い、`import gwexpy` が成功すること。
 4. **Metadata Sync**: `CITATION.cff` の日付が最終リリース日と一致しているか。
 
-## ステップ 2: バージョン同期チェック（自動）
+## ステップ 2: metadata/posture 正規確認（自動）
 
 確認対象ファイル:
 - `pyproject.toml` — `version = "X.Y.Z"`
 - `gwexpy/_version.py` — `__version__`
 - `CITATION.cff` — `version:` と `date-released:`
 - `codemeta.json` — `"version":"`（存在する場合のみ）
+- `.zenodo.json` — `"version"` ほか配布 metadata（存在する場合のみ）
 
 差異がある場合はタグ作成前に必ず同期し、CHANGELOG の対象バージョン見出しとも整合させる。
-`metadata-checker` エージェントを実行し、不整合がないか確認してください。
+`metadata-checker` を metadata/posture（version/license/authors/date/changelog/release posture）の正規確認として実行し、不整合がないか確認する。
+※PR diff scope 判定は `release-scope-verifier` の責務であり、本ステップでは扱わない。
 
 ```
 /metadata-checker

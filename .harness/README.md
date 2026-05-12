@@ -10,14 +10,15 @@ gwexpy プロジェクトにおける AI エージェント（Claude, Codex, Cur
 ├── AGENTS.md               ← エージェント向け必読ガイドライン（規範）
 ├── hooks/
 │   └── hooks.json          ← Claude Code プロジェクトフック（自動品質チェック）
-├── agents/                 ← プロジェクト固有のサブエージェント定義（9件）
+├── agents/                 ← プロジェクト固有のサブエージェント定義（10件）
 ├── workflows/              ← 作業種別ごとの標準手順（8件）
 ├── rules/common/           ← プロジェクト固有のルール集（8件）
-├── skills/                 ← 専門タスク向けスキルパッケージ（38件）
+├── skills/                 ← 専門タスク向けスキルパッケージ（42件）
 ├── config/
 │   └── quality-gates/      ← verify-changed-files 用マニフェスト
 └── scripts/
-    └── setup_symlinks.sh   ← AI ツール向けシンボリックリンク設定
+    ├── setup_symlinks.sh   ← AI ツール向けシンボリックリンク設定
+    └── check_release_posture.py ← release metadata / posture drift 警告
 ```
 
 ---
@@ -45,6 +46,7 @@ gwexpy プロジェクトにおける AI エージェント（Claude, Codex, Cur
 | fields-review | `gwexpy/fields/` 変更があれば `needs-physics-review` 警告 |
 | changelog-reminder | Python 変更があるのに `CHANGELOG.md` 未更新なら警告 |
 | docs-drift | API 変更があるのに `docs/` 未更新なら警告 |
+| release-posture | release metadata や公開状態を示す docs 文言の不整合を警告 |
 | risk-label | 変更内容から推奨 PR ラベル（`needs-physics-review` 等）を提案 |
 
 ### PR 前の一括検証
@@ -71,7 +73,8 @@ AI_HARNESS_BIN=/path/to/ai-harness/bin \
 | `exception-auditor` | `except Exception` / 裸の `except` の監査 |
 | `numeric-scale-checker` | GW スケールに対する数値定数の妥当性チェック |
 | `gwexpy-compatibility-checker` | GWpy 互換性と後方互換性の確認 |
-| `metadata-checker` | フィールド・軸メタデータの整合性確認 |
+| `metadata-checker` | version / CITATION / `.zenodo.json` / CHANGELOG / release posture の整合性確認 |
+| `release-scope-verifier` | 宣言された PR/release scope と diff の範囲内外を分類 |
 | `optional-deps-reviewer` | オプション依存の影響範囲確認 |
 | `risk-labeler` | PR に付与すべきラベルの判定 |
 
