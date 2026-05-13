@@ -81,7 +81,7 @@ Choose the most appropriate function for your goal.
 from gwexpy.time import to_gps, from_gps, tconvert
 
 # Convert date string to GPS seconds (default UTC)
-gps = to_gps("2015-09-14 09:50:45")
+gps = to_gps("2015-09-14 09:50:45.391")
 # → 1126259462.391
 
 # Convert GPS seconds back to datetime object
@@ -171,12 +171,12 @@ Converts various time representations into GPS seconds. It performs efficient ve
 from gwexpy.time import to_gps
 
 # ISO 8601 string (assumed UTC if no timezone is specified)
-to_gps("2015-09-14 09:50:45 UTC")
+to_gps("2015-09-14 09:50:45.391 UTC")
 # → LIGOTimeGPS(1126259462, 391000000)
 
 # Python datetime (timezone-aware recommended)
 from datetime import datetime, timezone
-to_gps(datetime(2015, 9, 14, 9, 50, 45, tzinfo=timezone.utc))
+to_gps(datetime(2015, 9, 14, 9, 50, 45, 391000, tzinfo=timezone.utc))
 ```
 
 ### Choosing the Output Type
@@ -187,10 +187,10 @@ you need a specific representation:
 ```python
 from gwexpy.time import to_gps
 
-to_gps("2015-09-14 09:50:45 UTC", dtype=float)
+to_gps("2015-09-14 09:50:45.391 UTC", dtype=float)
 # -> 1126259462.391
 
-gps = to_gps("2015-09-14 09:50:45 UTC", dtype="quantity")
+gps = to_gps("2015-09-14 09:50:45.391 UTC", dtype="quantity")
 # -> <Quantity 1126259462.391 s>
 ```
 
@@ -198,7 +198,7 @@ gps = to_gps("2015-09-14 09:50:45 UTC", dtype="quantity")
 time axes:
 
 ```python
-threshold = to_gps("2015-09-14 09:50:45 UTC", dtype="quantity")
+threshold = to_gps("2015-09-14 09:50:45.391 UTC", dtype="quantity")
 mask = ts.times > threshold
 offset = ts.times - threshold
 ```
