@@ -8,6 +8,7 @@ from gwexpy.timeseries._gwf_io import _extract_gwf_read_args, _resolve_gwf_forma
 
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gwf"
 CHANNEL = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
+AUX_CHANNEL = "K1:CAL-CS_PROC_DARM_CONTROL_DQ"
 
 
 def has_gwf_backend(backend: str | None = None) -> bool:
@@ -50,6 +51,52 @@ def write_gwf_parts(
         expected.append(values)
 
     return files, np.concatenate(expected)
+
+
+def write_gwf_dict_parts(
+    tmp_path: Path,
+    *,
+    starts: tuple[float, float] = (1000.0, 1001.0),
+) -> tuple[list[Path], dict[str, np.ndarray]]:
+    """Create two-channel real GWF files for TimeSeriesDict read tests."""
+    rate_hz = 16.0
+    samples_per_file = 16
+    files = []
+    expected = {CHANNEL: [], AUX_CHANNEL: []}
+
+    for index, start in enumerate(starts):
+        values = np.arange(
+            index * samples_per_file,
+            (index + 1) * samples_per_file,
+            dtype=float,
+        )
+        tsd = TimeSeriesDict(
+            {
+                CHANNEL: TimeSeries(
+                    values,
+                    sample_rate=rate_hz,
+                    t0=start,
+                    channel=CHANNEL,
+                    name=CHANNEL,
+                ),
+                AUX_CHANNEL: TimeSeries(
+                    values + 100.0,
+                    sample_rate=rate_hz,
+                    t0=start,
+                    channel=AUX_CHANNEL,
+                    name=AUX_CHANNEL,
+                ),
+            }
+        )
+        path = tmp_path / f"dict_part{index}.gwf"
+        tsd.write(path, format="gwf")
+        files.append(path)
+        expected[CHANNEL].append(values)
+        expected[AUX_CHANNEL].append(values + 100.0)
+
+    return files, {
+        channel: np.concatenate(parts) for channel, parts in expected.items()
+    }
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
@@ -138,6 +185,23 @@ def test_read_gwf_timeseriesdict_multiple_files_with_format_variants(
     assert float(tsd[CHANNEL].t0.value) == pytest.approx(1000.0)
     assert float(tsd[CHANNEL].dt.value) == pytest.approx(1.0 / 16.0)
     np.testing.assert_allclose(tsd[CHANNEL].value, expected)
+
+
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+def test_read_gwf_timeseriesdict_multiple_files_preserves_two_channels(tmp_path):
+    files, expected = write_gwf_dict_parts(tmp_path)
+
+    tsd = TimeSeriesDict.read(files, [CHANNEL, AUX_CHANNEL])
+
+    assert isinstance(tsd, TimeSeriesDict)
+    assert set(tsd) == {CHANNEL, AUX_CHANNEL}
+    for channel in (CHANNEL, AUX_CHANNEL):
+        assert tsd[channel].name == channel
+        assert len(tsd[channel]) == len(expected[channel])
+        assert float(tsd[channel].t0.value) == pytest.approx(1000.0)
+        assert float(tsd[channel].dt.value) == pytest.approx(1.0 / 16.0)
+        np.testing.assert_allclose(tsd[channel].value, expected[channel])
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
@@ -345,7 +409,7 @@ def test_read_gwf_timeseriesdict_multiple_files_gap_raise_overrides_pad(tmp_path
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
 @pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
-@pytest.mark.parametrize("read_kwargs", [{"parallel": 1}, {"nproc": 1}])
+@pytest.mark.parametrize("read_kwargs", [{"parallel": 1}, {"parallel": 2}, {"nproc": 1}])
 def test_read_gwf_timeseriesdict_multiple_files_pad_accepts_parallel_kwargs(
     tmp_path, read_kwargs
 ):
