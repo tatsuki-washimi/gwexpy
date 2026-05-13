@@ -128,18 +128,26 @@ def to_gps(t, *args, dtype=None, **kwargs):
     else:
         try:
             unit = getattr(t_norm, "unit", None)
-            if (
-                unit is not None
-                and hasattr(t_norm, "to_value")
-                and unit.is_equivalent(u.s)
-            ):
-                result = np.asarray(t_norm.to_value(u.s), dtype=float)
+            if unit is not None and hasattr(t_norm, "to_value"):
+                if unit.is_equivalent(u.s):
+                    result = np.asarray(t_norm.to_value(u.s), dtype=float)
+                elif unit.is_equivalent(u.dimensionless_unscaled):
+                    result = np.asarray(
+                        t_norm.to_value(u.dimensionless_unscaled),
+                        dtype=float,
+                    )
+                else:
+                    raise u.UnitConversionError(
+                        f"{unit!r} is not convertible to seconds for GPS conversion"
+                    )
             else:
                 arr = np.asarray(t_norm)
                 if _is_numeric_array(arr):
                     result = arr.astype(float)
                 else:
                     result = Time(t_norm, *args, **kwargs).gps
+        except u.UnitConversionError:
+            raise
         except (ValueError, TypeError):
             result = np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm])
 

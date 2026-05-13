@@ -2,15 +2,43 @@
 
 GWexpy の主な変更履歴を記載します。
 
+## [0.1.4] - 2026-05-14
+### 追加 (Added)
+- `to_gps()` に opt-in の `dtype=` 出力モードを追加しました。デフォルトは
+  GWpy 互換のまま維持し、`dtype=float` / `dtype="float"` は通常の数値秒、
+  `dtype="quantity"` は `.times` と直接比較しやすい秒の Quantity を返します。
+
+### ドキュメント (Documentation)
+- README、docs hub、roadmap、troubleshooting、footer link から、軽量なバグ報告
+  と機能追加リクエストを公開 feedback form に案内するよう更新しました。
+  セキュリティ報告は引き続き repository security policy に誘導します。
+
+### テスト (Tests)
+- NetCDF fixture が明示的な time coordinate を持つことを確認するカバレッジを
+  追加しました (#393)。
+- multi-channel の GWF list-source read と、`parallel > 1` での padded gap read
+  に対する回帰テストを追加しました。
+
+## [0.1.3] - 2026-05-12
+### 修正 (Fixed)
+- `TimeSeries` / `TimeSeriesDict` の multi-file GWF read を修正しました。
+- `TimeSeriesMatrix.read()` の ndscope HDF5 auto-detection を修正しました。
+- 公開 I/O ドキュメントと contract metadata を現行の autodetection 挙動に合わせました。
+- FrequencySeries CSV fast path で元の frequency column 値を保持するようにしました。
+- zarr 3 matrix round-trip coverage を改善し、timeout しやすい fixture 挙動を削除しました。
+- loadable な GMT shared library がない PyGMT 環境を、import failure ではなく
+  optional backend unavailable として扱うようにしました。
+
+### 既知の問題 (Known Issues)
+- bundled NetCDF fixture の一部経路では、TimeSeries reader の time-coordinate
+  contract に失敗する場合があります (#393)。generated NetCDF round-trip coverage は
+  引き続き通過していますが、利用するファイルでは明示的な time coordinate を確認してください。
+
 ## [0.1.2] - 2026-05-08
 ### 対象を絞った hotfix 範囲
 - GWpy4 向け公開 I/O proxy import と GWF list/dict read 挙動の互換性修正。
 - histogram HDF5、ATS/MTH5、audio、seismic、SegmentTable span CSV、FrequencySeries DTT XML の auto-identify/read-path 修正。
 - この統合トラックでは #369 の最小 landing/demo import hunk のみを含みます。
-
-### 公開ステータス
-- `v0.1.2` のメタデータとリリースノートは確定済みですが、公開作業自体はまだ完了していません。
-- Git tag 作成、PyPI 公開、Zenodo 公開、fresh release smoke の再実行、conda-forge 更新は引き続き公開当日のフォローアップです。
 
 ## [0.1.1] - 2026-04-28
 ### 追加 (Added)

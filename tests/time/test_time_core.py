@@ -124,6 +124,11 @@ def test_to_gps_quantity_array_converts_to_seconds():
     np.testing.assert_allclose(result, [0.0, 0.001, 0.002])
 
 
+def test_to_gps_quantity_array_rejects_non_time_units():
+    with pytest.raises(u.UnitConversionError, match="not convertible"):
+        to_gps(np.array([1, 2]) * u.m)
+
+
 def test_to_gps_dtype_float_returns_python_float_for_scalar():
     result = to_gps(1000000000.0, dtype=float)
 
