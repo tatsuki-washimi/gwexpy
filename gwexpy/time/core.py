@@ -4,6 +4,7 @@ import importlib
 from typing import Any
 
 import numpy as np
+from astropy import units as u
 from astropy.time import Time
 from gwpy.time import from_gps as _gwpy_from_gps
 from gwpy.time import tconvert as _gwpy_tconvert
@@ -39,6 +40,26 @@ def _is_numeric_array(arr):
         return False
 
 
+def _as_float_seconds(result):
+    if isinstance(result, np.ndarray):
+        return result.astype(float)
+
+    arr = np.asarray(result, dtype=float)
+    if arr.ndim == 0:
+        return float(arr)
+    return arr
+
+
+def _format_gps_result(result, dtype):
+    if dtype is None:
+        return result
+    if dtype is float or dtype == "float":
+        return _as_float_seconds(result)
+    if dtype == "quantity":
+        return _as_float_seconds(result) * u.s
+    raise ValueError("dtype must be None, float, 'float', or 'quantity'")
+
+
 def _normalize_time_input(t):
     if pd is not None:
         if isinstance(t, pd.Timestamp):
@@ -64,7 +85,7 @@ def _normalize_time_input(t):
     return t
 
 
-def to_gps(t, *args, **kwargs):
+def to_gps(t, *args, dtype=None, **kwargs):
     """Convert a given time or array of times to GPS seconds.
 
     This is a vectorized extension of `gwpy.time.to_gps`. It supports
@@ -78,33 +99,51 @@ def to_gps(t, *args, **kwargs):
         datetime objects, pandas Timestamps, or arrays of these types.
     *args
         Additional positional arguments passed to `gwpy.time.to_gps`.
+    dtype : {None, float, "float", "quantity"}, optional
+        Output mode for the converted GPS seconds. ``None`` preserves the
+        default GWpy-compatible behavior. ``float`` or ``"float"`` returns
+        Python ``float`` for scalar inputs and ``numpy.ndarray`` for array-like
+        inputs. ``"quantity"`` returns an ``astropy.units.Quantity`` in seconds,
+        which can be compared with GWpy/GWexpy time axes.
     **kwargs
         Additional keyword arguments passed to `gwpy.time.to_gps`.
 
     Returns
     -------
-    float or numpy.ndarray
-        The equivalent time in GPS seconds. Returns a float for scalar inputs
-        and a numpy.ndarray of floats for array-like inputs.
+    object
+        The equivalent time in GPS seconds. With ``dtype=None``, this preserves
+        the existing GWpy-compatible return types. With ``dtype=float`` or
+        ``dtype="float"``, returns numeric seconds. With ``dtype="quantity"``,
+        returns seconds as an ``astropy.units.Quantity``.
 
     """
     t_norm = _normalize_time_input(t)
 
     if isinstance(t_norm, Time):
-        return t_norm.gps
-
-    if not _is_array(t_norm):
+        result = t_norm.gps
+    elif not _is_array(t_norm):
         if isinstance(t_norm, np.datetime64):
             t_norm = t_norm.item()
-        return _gwpy_to_gps(t_norm, *args, **kwargs)
+        result = _gwpy_to_gps(t_norm, *args, **kwargs)
+    else:
+        try:
+            unit = getattr(t_norm, "unit", None)
+            if (
+                unit is not None
+                and hasattr(t_norm, "to_value")
+                and unit.is_equivalent(u.s)
+            ):
+                result = np.asarray(t_norm.to_value(u.s), dtype=float)
+            else:
+                arr = np.asarray(t_norm)
+                if _is_numeric_array(arr):
+                    result = arr.astype(float)
+                else:
+                    result = Time(t_norm, *args, **kwargs).gps
+        except (ValueError, TypeError):
+            result = np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm])
 
-    try:
-        arr = np.asarray(t_norm)
-        if _is_numeric_array(arr):
-            return arr.astype(float)
-        return Time(t_norm, *args, **kwargs).gps
-    except (ValueError, TypeError):
-        return np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm])
+    return _format_gps_result(result, dtype)
 
 
 def from_gps(gps, *args, **kwargs):

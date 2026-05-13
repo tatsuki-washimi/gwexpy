@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from astropy import units as u
 from astropy.time import Time
 
 from gwexpy.time.core import (
@@ -100,10 +101,57 @@ def test_to_gps_astropy_time():
     assert float(result) == pytest.approx(1234567890.0)
 
 
+def test_to_gps_astropy_time_honors_dtype():
+    t = Time(1234567890.0, format="gps")
+
+    float_result = to_gps(t, dtype=float)
+    quantity_result = to_gps(t, dtype="quantity")
+
+    assert isinstance(float_result, float)
+    assert float_result == pytest.approx(1234567890.0)
+    assert quantity_result.unit == u.s
+    assert quantity_result.value == pytest.approx(1234567890.0)
+
+
 def test_to_gps_numpy_array_numeric():
     arr = np.array([1000.0, 2000.0, 3000.0])
     result = to_gps(arr)
     np.testing.assert_allclose(result, [1000.0, 2000.0, 3000.0])
+
+
+def test_to_gps_quantity_array_converts_to_seconds():
+    result = to_gps(np.array([0, 1, 2]) * u.ms)
+    np.testing.assert_allclose(result, [0.0, 0.001, 0.002])
+
+
+def test_to_gps_dtype_float_returns_python_float_for_scalar():
+    result = to_gps(1000000000.0, dtype=float)
+
+    assert isinstance(result, float)
+    assert result == pytest.approx(1000000000.0)
+
+
+def test_to_gps_dtype_float_returns_float_array_for_vector():
+    result = to_gps([1000000000, 1000000001], dtype="float")
+
+    assert isinstance(result, np.ndarray)
+    assert result.dtype == np.float64
+    np.testing.assert_allclose(result, [1000000000.0, 1000000001.0])
+
+
+def test_to_gps_dtype_quantity_returns_seconds_quantity():
+    scalar = to_gps(1000000000.0, dtype="quantity")
+    vector = to_gps([1000000000, 1000000001], dtype="quantity")
+
+    assert scalar.unit == u.s
+    assert scalar.value == pytest.approx(1000000000.0)
+    assert vector.unit == u.s
+    np.testing.assert_allclose(vector.value, [1000000000.0, 1000000001.0])
+
+
+def test_to_gps_invalid_dtype_raises():
+    with pytest.raises(ValueError, match="dtype"):
+        to_gps(1000000000.0, dtype="datetime")
 
 
 def test_to_gps_list_numeric():
