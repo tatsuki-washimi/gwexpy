@@ -249,6 +249,9 @@ def generate_netcdf4(filename):
     if netCDF4 is None: return
     with netCDF4.Dataset(filename, 'w', format='NETCDF4') as ds:
         ds.createDimension('time', 100)
+        t = ds.createVariable('time', 'f8', ('time',))
+        t[:] = 1704067200.0 + np.arange(100, dtype=np.float64) * 0.1
+        t.setncattr('units', 'GPS seconds')
         v = ds.createVariable('ch1', 'f4', ('time',))
         v[:] = np.random.randn(100)
         v.setncattr('t0', 1704067200.0)
