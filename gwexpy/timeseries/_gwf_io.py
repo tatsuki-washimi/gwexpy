@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
 from gwpy.io.registry import default_registry as io_registry
+from gwpy.time import to_gps
 
 _GWF_FORMATS = frozenset(
     {
@@ -71,7 +73,9 @@ def _sync_gwf_registry_aliases() -> None:
     all_formats = set(canonical_formats + alias_formats)
 
     for fmt in all_formats:
-        io_registry.register_reader(fmt, TimeSeriesMatrix, _read_timeseriesmatrix_gwf, force=True)
+        io_registry.register_reader(
+            fmt, TimeSeriesMatrix, _read_timeseriesmatrix_gwf, force=True
+        )
 
     for alias, canonical in _GWF_ALIAS_TO_CANONICAL.items():
         canonical_reader = _safe_get_reader(canonical, TimeSeries)
@@ -99,7 +103,9 @@ def _sync_gwf_registry_aliases() -> None:
                 alias, TimeSeriesMatrix, canonical_matrix_reader, force=True
             )
         if canonical_matrix_writer is not None:
-            io_registry.register_writer(alias, TimeSeriesMatrix, canonical_matrix_writer, force=True)
+            io_registry.register_writer(
+                alias, TimeSeriesMatrix, canonical_matrix_writer, force=True
+            )
 
     _GWF_REGISTRY_SYNCED = True
 
@@ -143,6 +149,15 @@ def _resolve_gwf_format(source: Any, fmt: Any) -> str | None:
             return _normalize_gwf_format(fmt)
         return None
 
+    if isinstance(source, (list, tuple)):
+        if not source:
+            return None
+        if all(
+            _normalize_path_suffix(value).suffix.lower() == ".gwf" for value in source
+        ):
+            return "gwf"
+        return None
+
     try:
         path = Path(source)
     except TypeError:
@@ -151,6 +166,201 @@ def _resolve_gwf_format(source: Any, fmt: Any) -> str | None:
     if path.suffix.lower() == ".gwf":
         return "gwf"
     return None
+
+
+def _normalize_path_suffix(source: Any) -> Path:
+    try:
+        return Path(source)
+    except TypeError:
+        return Path()
+
+
+def _source_for_gwf_channel_listing(source: Any) -> Any:
+    """Return a single source suitable for GWF channel-name discovery."""
+    if isinstance(source, (list, tuple)) and source:
+        return source[0]
+    return source
+
+
+def _normalize_gwf_read_limit(value: Any | None) -> Any | None:
+    """Normalize a GWF read boundary to GWpy's GPS representation."""
+    if value is None:
+        return None
+    return to_gps(value)
+
+
+def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
+    """Return GWpy-compatible append gap mode and pad value."""
+    merge_gap = gap if gap is not None else ("pad" if pad is not None else "raise")
+    merge_pad = 0.0 if merge_gap == "pad" and pad is None else pad
+    return merge_gap, merge_pad
+
+
+def _consume_gwf_parallel_kwargs(gwf_kwargs: dict[str, Any]) -> int | None:
+    """Remove GWpy high-level parallel kwargs before low-level GWF reads."""
+    parallel = gwf_kwargs.pop("parallel", None)
+    nproc = gwf_kwargs.pop("nproc", None)
+    if parallel is None:
+        parallel = nproc
+    if parallel is None:
+        return None
+    try:
+        return max(int(parallel), 1)
+    except (TypeError, ValueError):
+        return None
+
+
+def _pad_gwf_series_to_span(
+    ts: Any,
+    pad: Any,
+    start: Any | None = None,
+    end: Any | None = None,
+    *,
+    error: bool = False,
+) -> Any:
+    """Pad or reject a GWF series that does not cover the requested interval."""
+    span = ts.span
+    if start is None:
+        start = span[0]
+    if end is None:
+        end = span[1]
+
+    pada = max(int((span[0] - start) * ts.sample_rate.value), 0)
+    padb = max(int((end - span[1]) * ts.sample_rate.value), 0)
+    if not (pada or padb):
+        return ts
+    if error:
+        msg = (
+            f"{type(ts).__name__} with span {span} does not cover "
+            f"requested interval {type(span)(start, end)}"
+        )
+        raise ValueError(msg)
+    return ts.pad((pada, padb), mode="constant", constant_values=(pad,))
+
+
+def _gwf_segments_intersect_request(
+    segments: Any,
+    start: Any | None,
+    end: Any | None,
+) -> bool:
+    """Return True when any data segment intersects the requested interval."""
+    if start is None and end is None:
+        return True
+    for segment in segments:
+        if start is not None and segment[1] <= start:
+            continue
+        if end is not None and segment[0] >= end:
+            continue
+        return True
+    return False
+
+
+def _filter_gwf_sources_for_request(
+    sources: list[Any],
+    channels: list[str],
+    start: Any | None,
+    end: Any | None,
+    backend: str | None,
+) -> list[Any]:
+    """Drop list-source GWF files that cannot overlap the requested interval."""
+    if not sources or not channels or (start is None and end is None):
+        return sources
+
+    try:
+        from gwpy.io.gwf.core import data_segments
+    except ImportError:
+        return sources
+
+    filtered = []
+    saw_channel_segments = False
+    try:
+        for item in sources:
+            segments = data_segments(
+                str(item),
+                channels[0],
+                warn=False,
+                backend=backend,
+            )
+            if segments:
+                saw_channel_segments = True
+            if _gwf_segments_intersect_request(segments, start, end):
+                filtered.append(item)
+    except (OSError, RuntimeError, TypeError, ValueError):
+        return sources
+
+    if not saw_channel_segments:
+        return sources
+    if not filtered:
+        raise ValueError("No GWF source spans overlap the requested interval")
+    return filtered
+
+
+def read_gwf_timeseriesdict(
+    source: Any,
+    channels: list[str],
+    *,
+    start: Any | None = None,
+    end: Any | None = None,
+    backend: str | None = None,
+    dict_class: type[Any],
+    series_class: type[Any],
+    **gwf_kwargs: Any,
+) -> Any:
+    """Read GWF source(s) into a TimeSeriesDict-like class with GWpy merge semantics."""
+    from gwpy.timeseries.io.gwf.core import read_timeseriesdict
+
+    read_kwargs = dict(gwf_kwargs)
+    pad = read_kwargs.pop("pad", None)
+    gap = read_kwargs.pop("gap", None)
+    parallel = _consume_gwf_parallel_kwargs(read_kwargs)
+    start = _normalize_gwf_read_limit(start)
+    end = _normalize_gwf_read_limit(end)
+    merge_gap, merge_pad = _normalize_gwf_gap_options(pad, gap)
+
+    def read_one(item: Any) -> Any:
+        return dict_class(
+            read_timeseriesdict(
+                item,
+                channels,
+                start=start,
+                end=end,
+                backend=backend,
+                series_class=series_class,
+                **read_kwargs,
+            )
+        )
+
+    if isinstance(source, (list, tuple)):
+        sources = _filter_gwf_sources_for_request(
+            list(source),
+            channels,
+            start,
+            end,
+            backend,
+        )
+        if parallel is not None and parallel > 1 and len(sources) > 1:
+            with ThreadPoolExecutor(max_workers=parallel) as executor:
+                parts = list(executor.map(read_one, sources))
+        else:
+            parts = [read_one(item) for item in sources]
+
+        out = dict_class()
+        for part in sorted(parts, key=lambda item: item.span):
+            out.append(part, gap=merge_gap, pad=merge_pad)
+        result = out
+    else:
+        result = read_one(source)
+
+    if merge_gap in ("pad", "raise") and (start is not None or end is not None):
+        for key in result:
+            result[key] = _pad_gwf_series_to_span(
+                result[key],
+                merge_pad,
+                start,
+                end,
+                error=(merge_gap == "raise"),
+            )
+    return result
 
 
 def _normalize_gwf_channels(channels: Any) -> list[str] | None:
@@ -203,14 +413,18 @@ def _extract_gwf_read_args(
 
     if len(args) > 1:
         if has_start_kw and not has_channel_alias_kw:
-            raise TypeError("Cannot specify both positional and keyword 'start' for GWF read.")
+            raise TypeError(
+                "Cannot specify both positional and keyword 'start' for GWF read."
+            )
         start = args[1]
     else:
         start = gwf_kwargs.pop("start", None)
 
     if len(args) > 2:
         if has_end_kw and not has_channel_alias_kw:
-            raise TypeError("Cannot specify both positional and keyword 'end' for GWF read.")
+            raise TypeError(
+                "Cannot specify both positional and keyword 'end' for GWF read."
+            )
         end = args[2]
     else:
         end = gwf_kwargs.pop("end", None)
@@ -233,11 +447,14 @@ def _extract_gwf_read_args(
 
 __all__ = [
     "_extract_gwf_read_args",
+    "_pad_gwf_series_to_span",
     "_normalize_gwf_channels",
     "_normalize_gwf_format",
     "_resolve_gwf_format",
+    "_source_for_gwf_channel_listing",
     "_sync_gwf_registry_aliases",
     "_GWF_BACKENDS",
     "_GWF_FORMATS",
     "_format_gwf_import_error",
+    "read_gwf_timeseriesdict",
 ]

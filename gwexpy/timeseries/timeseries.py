@@ -31,6 +31,7 @@ from ._gwf_io import (
     _extract_gwf_read_args,
     _format_gwf_import_error,
     _resolve_gwf_format,
+    _source_for_gwf_channel_listing,
 )
 from ._interop import TimeSeriesInteropMixin
 from ._resampling import TimeSeriesResamplingMixin
@@ -157,9 +158,6 @@ class TimeSeries(
         gwf_format = _resolve_gwf_format(source, kwargs.get("format"))
         if gwf_format is not None:
             from gwpy.io.gwf.core import get_channel_names
-            from gwpy.timeseries.io.gwf.core import read_timeseriesdict
-
-            from gwexpy.interop._registry import ConverterRegistry
 
             channels, start, end, gwf_kwargs = _extract_gwf_read_args(
                 args,
@@ -169,17 +167,20 @@ class TimeSeries(
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
             try:
                 if channels is None:
-                    channels = get_channel_names(source, backend=backend)
+                    channel_source = _source_for_gwf_channel_listing(source)
+                    channels = get_channel_names(channel_source, backend=backend)
                     if not channels:
                         raise ValueError(f"No channels found in GWF source: {source}")
                 channel = channels[0]
-                tsd = read_timeseriesdict(
+                from .collections import TimeSeriesDict
+
+                tsd = TimeSeriesDict.read(
                     source,
                     [channel],
                     start=start,
                     end=end,
                     backend=backend,
-                    series_class=ConverterRegistry.get_constructor("TimeSeries"),
+                    format=gwf_format,
                     **gwf_kwargs,
                 )
             except ImportError as exc:

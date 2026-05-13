@@ -47,6 +47,8 @@ from ._gwf_io import (
     _extract_gwf_read_args,
     _format_gwf_import_error,
     _resolve_gwf_format,
+    _source_for_gwf_channel_listing,
+    read_gwf_timeseriesdict,
 )
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
 
@@ -170,7 +172,6 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             return cls(reader(source, *args, **reader_kwargs))
         if gwf_format is not None:
             from gwpy.io.gwf.core import get_channel_names
-            from gwpy.timeseries.io.gwf.core import read_timeseriesdict
 
             channels, start, end, gwf_kwargs = _extract_gwf_read_args(
                 args,
@@ -181,19 +182,19 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             backend = gwf_kwargs.pop("backend", _GWF_BACKENDS[gwf_format])
             try:
                 if channels is None:
-                    channels = get_channel_names(source, backend=backend)
+                    channel_source = _source_for_gwf_channel_listing(source)
+                    channels = get_channel_names(channel_source, backend=backend)
                     if not channels:
                         raise ValueError(f"No channels found in GWF source: {source}")
-                return cls(
-                    read_timeseriesdict(
-                        source,
-                        channels,
-                        start=start,
-                        end=end,
-                        backend=backend,
-                        series_class=TimeSeries,
-                        **gwf_kwargs,
-                    )
+                return read_gwf_timeseriesdict(
+                    source,
+                    channels,
+                    start=start,
+                    end=end,
+                    backend=backend,
+                    dict_class=cls,
+                    series_class=TimeSeries,
+                    **gwf_kwargs,
                 )
             except ImportError as exc:
                 raise _format_gwf_import_error(gwf_format, exc)
