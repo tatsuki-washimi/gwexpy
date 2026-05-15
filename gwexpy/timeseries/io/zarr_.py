@@ -13,7 +13,9 @@ Directory stores, zip stores, and any other backend supported by the
 """
 from __future__ import annotations
 
+import json
 import os
+from collections import OrderedDict
 
 import numpy as np
 
@@ -27,6 +29,8 @@ from gwexpy.io.utils import (
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from ._registration import register_timeseries_format
 
+_MATRIX_ARRAY_PREFIX = "__gwexpy_matrix__"
+
 
 def _import_zarr():
     try:
@@ -37,6 +41,38 @@ def _import_zarr():
             "Install with `pip install 'gwexpy[zarr]'`."
         ) from exc
     return zarr
+
+
+def _to_json_native(val):
+    """Convert matrix labels to JSON-compatible scalar values."""
+    if hasattr(val, "item"):
+        val = val.item()
+    if not isinstance(val, (bool, int, float, str, type(None))):
+        return str(val)
+    return val
+
+
+def _encode_zarr_array_name(key) -> str:
+    """Convert mapping keys to Zarr-safe root array names."""
+    if isinstance(key, tuple):
+        import hashlib
+
+        h = hashlib.sha256(repr(key).encode()).hexdigest()[:20]
+        return f"{_MATRIX_ARRAY_PREFIX}{h}"
+    return str(key)
+
+
+def _decode_zarr_key(raw):
+    """Deserialize a matrix label stored as JSON."""
+    if raw is None:
+        return None
+    try:
+        result = json.loads(raw)
+        if isinstance(result, list):
+            return tuple(result)
+        return result
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return str(raw)
 
 
 # -- Reader --------------------------------------------------------------------
@@ -157,10 +193,20 @@ def read_timeseriesdict_zarr(
 
         attrs = dict(arr.attrs)
         t0 = float(attrs.get("t0", 0.0))
+        out_key = key
+        if (
+            attrs.get("gwexpy_key_format") == "json"
+            and "gwexpy_row_key" in attrs
+            and "gwexpy_col_key" in attrs
+        ):
+            out_key = (
+                _decode_zarr_key(attrs.get("gwexpy_row_key")),
+                _decode_zarr_key(attrs.get("gwexpy_col_key")),
+            )
 
         sample_rate = _coerce_sample_rate_from_attrs_or_override(
             attrs,
-            channel_name=key,
+            channel_name=out_key,
             sample_rate_override=sample_rate_override,
             dt_override=dt_override,
         )
@@ -171,11 +217,11 @@ def read_timeseriesdict_zarr(
             np.asarray(arr[:], dtype=np.float64),
             t0=t0,
             sample_rate=sample_rate,
-            name=key,
-            channel=key,
+            name=out_key,
+            channel=out_key,
         )
         ts = apply_unit(ts, arr_unit) if arr_unit else ts
-        tsd[key] = ts
+        tsd[out_key] = ts
 
     if channels:
         tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
@@ -201,8 +247,70 @@ def read_timeseries_zarr(source, **kwargs) -> TimeSeries:
 
 def read_timeseriesmatrix_zarr(source, **kwargs) -> TimeSeriesMatrix:
     """Read a Zarr store and convert its channels to a matrix."""
-    tsd = read_timeseriesdict_zarr(source, **kwargs)
-    return tsd.to_matrix()
+    zarr = _import_zarr()
+
+    if isinstance(source, (str, os.PathLike)):
+        source = str(source)
+    store = zarr.open_group(source, mode="r", **kwargs)
+
+    matrix_arrays = []
+    for key in store.keys():
+        arr = store[key]
+        if not hasattr(arr, "shape"):
+            continue
+        attrs = dict(arr.attrs)
+        if (
+            attrs.get("gwexpy_key_format") != "json"
+            or "gwexpy_row_key" not in attrs
+            or "gwexpy_col_key" not in attrs
+        ):
+            continue
+        row_key = _decode_zarr_key(attrs.get("gwexpy_row_key"))
+        col_key = _decode_zarr_key(attrs.get("gwexpy_col_key"))
+        matrix_arrays.append((row_key, col_key, arr, attrs))
+
+    if not matrix_arrays:
+        tsd = read_timeseriesdict_zarr(source, **kwargs)
+        return tsd.to_matrix()
+
+    row_keys = list(OrderedDict.fromkeys(row for row, _, _, _ in matrix_arrays))
+    col_keys = list(OrderedDict.fromkeys(col for _, col, _, _ in matrix_arrays))
+
+    first_arr, first_attrs = matrix_arrays[0][2], matrix_arrays[0][3]
+    sample_rate = _coerce_sample_rate_from_attrs_or_override(
+        first_attrs,
+        channel_name=(matrix_arrays[0][0], matrix_arrays[0][1]),
+    )
+    t0 = float(first_attrs.get("t0", 0.0))
+    unit = first_attrs.get("unit") or first_attrs.get("units")
+    n_samples = int(first_arr.shape[0])
+    data = np.empty((len(row_keys), len(col_keys), n_samples), dtype=np.float64)
+
+    for row_key, col_key, arr, _attrs in matrix_arrays:
+        i = row_keys.index(row_key)
+        j = col_keys.index(col_key)
+        data[i, j, :] = np.asarray(arr[:], dtype=np.float64)
+
+    matrix = TimeSeriesMatrix(
+        data,
+        t0=t0,
+        sample_rate=sample_rate,
+        unit=unit,
+    )
+    if row_keys != list(matrix.row_keys()) or col_keys != list(matrix.col_keys()):
+        from gwexpy.types.metadata import MetaData, MetaDataDict
+
+        matrix.rows = MetaDataDict(
+            OrderedDict((key, MetaData()) for key in row_keys),
+            expected_size=len(row_keys),
+            key_prefix="row",
+        )
+        matrix.cols = MetaDataDict(
+            OrderedDict((key, MetaData()) for key in col_keys),
+            expected_size=len(col_keys),
+            key_prefix="col",
+        )
+    return matrix
 
 
 # -- Writer --------------------------------------------------------------------
@@ -228,12 +336,16 @@ def write_timeseriesdict_zarr(tsd, target, **kwargs):
         # zarr>=3 uses create_array(data=...) and removed create_dataset.
         # zarr<3 has create_dataset; fall back for compatibility.
         creator = getattr(store, "create_array", None) or store.create_dataset
-        arr = creator(key, data=data, overwrite=True)
+        arr = creator(_encode_zarr_array_name(key), data=data, overwrite=True)
         arr.attrs["sample_rate"] = float(ts.sample_rate.value)
         arr.attrs["t0"] = float(ts.t0.value)
         arr.attrs["dt"] = float(ts.dt.value)
         if ts.unit is not None:
             arr.attrs["unit"] = str(ts.unit)
+        if isinstance(key, tuple) and len(key) == 2:
+            arr.attrs["gwexpy_row_key"] = json.dumps(_to_json_native(key[0]))
+            arr.attrs["gwexpy_col_key"] = json.dumps(_to_json_native(key[1]))
+            arr.attrs["gwexpy_key_format"] = "json"
 
 
 def write_timeseries_zarr(ts, target, **kwargs):
@@ -241,6 +353,11 @@ def write_timeseries_zarr(ts, target, **kwargs):
     write_timeseriesdict_zarr(
         TimeSeriesDict({ts.name or "channel_0": ts}), target, **kwargs
     )
+
+
+def write_timeseriesmatrix_zarr(tsm, target, **kwargs):
+    """Write a TimeSeriesMatrix to a Zarr store preserving row/column labels."""
+    write_timeseriesdict_zarr(tsm.to_dict(), target, **kwargs)
 
 
 # -- Registration --------------------------------------------------------------
@@ -252,5 +369,6 @@ register_timeseries_format(
     reader_matrix=read_timeseriesmatrix_zarr,
     writer_dict=write_timeseriesdict_zarr,
     writer_single=write_timeseries_zarr,
+    writer_matrix=write_timeseriesmatrix_zarr,
     extension="zarr",
 )

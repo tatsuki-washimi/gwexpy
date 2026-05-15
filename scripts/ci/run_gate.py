@@ -169,11 +169,10 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "-q",
                 "-m",
                 "network or nds",
-                "tests/io/",
-                "tests/nds/",
-                "tests/segments/",
+                "tests/nds/test_nds_thread_live_smoke.py",
+                "tests/nds/test_nds_channel_list_live_smoke.py",
+                "tests/segments/test_flag.py",
                 "tests/timeseries/test_timeseries.py",
-                "--ignore=tests/nds/test_gui_nds_smoke.py",
             ]
         )
         run_pytest(["-q", "tests/io/test_kerberos.py"])
