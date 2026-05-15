@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/timeseries/matrix.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -263,6 +263,15 @@
             <span class="k">return</span> <span class="n">_resolve_gwf_format</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">normalized</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="kc">False</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_ndscope_hdf5_candidate</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">lower</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.hdf5&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">lower</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="TimeSeriesMatrix.read">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.read">[docs]</a>
     <span class="nd">@classmethod</span>
@@ -272,6 +281,8 @@
         <span class="n">normalized_format</span> <span class="o">=</span> <span class="n">read_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">positional_format</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">read_args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="n">normalized_format</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">read_args</span> <span class="o">==</span> <span class="p">(</span><span class="kc">None</span><span class="p">,):</span>
+            <span class="n">read_args</span> <span class="o">=</span> <span class="p">()</span>
 
         <span class="c1"># The public API supports ``read(source, format=None, **kwargs)``.</span>
         <span class="c1"># Also handle explicit positional format tokens while preserving channel</span>
@@ -290,6 +301,21 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsd</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found in </span><span class="si">{</span><span class="n">gwf_format</span><span class="si">}</span><span class="s2"> source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">normalized_format</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">read_args</span>
+            <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_ndscope_hdf5_candidate</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.io.ndscope_hdf5</span><span class="w"> </span><span class="kn">import</span> <span class="n">identify_ndscope_hdf5</span>
+
+            <span class="k">if</span> <span class="n">identify_ndscope_hdf5</span><span class="p">(</span><span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">ndscope_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">read_kwargs</span><span class="p">)</span>
+                <span class="n">ndscope_kwargs</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hdf.ndscope&quot;</span>
+                <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">ndscope_kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsd</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data found in ndscope source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
 
         <span class="n">super_read_args</span> <span class="o">=</span> <span class="n">read_args</span>
         <span class="k">if</span> <span class="n">normalized_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -543,7 +569,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-11 15:02:42.
+      <span class="lastupdated">Last updated on 2026-05-15 21:42:33.
       </span></p>
   </div>
 

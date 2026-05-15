@@ -18,12 +18,11 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/case_transfer_function.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
       <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
@@ -399,8 +398,8 @@ Output data shape: (122880,)
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                                Migrad                                   │
 ├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 5.751 (χ²/ndof = 0.0)      │              Nfcn = 118              │
-│ EDM = 4.54e-06 (Goal: 0.0002)    │                                      │
+│ FCN = 5.938 (χ²/ndof = 0.0)      │              Nfcn = 118              │
+│ EDM = 4.68e-06 (Goal: 0.0002)    │                                      │
 ├──────────────────────────────────┼──────────────────────────────────────┤
 │          Valid Minimum           │   Below EDM threshold (goal x 10)    │
 ├──────────────────────────────────┼──────────────────────────────────────┤
@@ -411,14 +410,14 @@ Output data shape: (122880,)
 ┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
 │   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
 ├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
-│ 0 │ amp  │   0.934   │   0.007   │            │            │         │         │       │
-│ 1 │ f0   │  299.996  │   0.021   │            │            │         │         │       │
-│ 2 │ Q    │   49.5    │    0.5    │            │            │         │         │       │
+│ 0 │ amp  │   0.935   │   0.007   │            │            │         │         │       │
+│ 1 │ f0   │  299.997  │   0.021   │            │            │         │         │       │
+│ 2 │ Q    │   49.4    │    0.5    │            │            │         │         │       │
 └───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
 ┌─────┬────────────────────────────┐
 │     │      amp       f0        Q │
 ├─────┼────────────────────────────┤
-│ amp │ 4.33e-05       -0 -2.29e-3 │
+│ amp │ 4.34e-05       -0 -2.29e-3 │
 │  f0 │       -0 0.000453  -0.1e-3 │
 │   Q │ -2.29e-3  -0.1e-3    0.241 │
 └─────┴────────────────────────────┘
@@ -451,9 +450,9 @@ Output data shape: (122880,)
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 --- Estimated Parameters ---
-Resonance Frequency (f0): 299.9963 Hz (True: 300.0)
-Quality Factor (Q):       49.4769      (True: 50.0)
-Gain (Amp):               0.9342
+Resonance Frequency (f0): 299.9972 Hz (True: 300.0)
+Quality Factor (Q):       49.4273      (True: 50.0)
+Gain (Amp):               0.9346
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -478,7 +477,7 @@ Gain (Amp):               0.9342
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-11 15:02:42.
+      <span class="lastupdated">Last updated on 2026-05-15 21:42:33.
       </span></p>
   </div>
 

@@ -18,7 +18,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/io_formats.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -619,9 +619,9 @@
 <tbody>
 <tr class="row-even"><td><p><strong>CSV</strong> (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.write(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(&quot;data.csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;data.csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.write(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code></p></td>
 <td><p>軽量な交換、目視確認</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> は単一 CSV 読み込みと collection directory の両方に対応</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code> は自動判定されます。単純な CSV 交換は metadata-light です</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>TXT</strong> (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -633,7 +633,7 @@
 <td class="text-center"><p>○ / ○</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code></p></td>
 <td><p>時系列系の科学データ保存</p></td>
-<td><p>direct I/O は TimeSeries 系中心。旧 alias: <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
+<td><p>direct I/O は TimeSeries 系中心。旧 format alias: <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Zarr</strong> (<code class="docutils literal notranslate"><span class="pre">.zarr</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -643,9 +643,9 @@
 </tr>
 <tr class="row-even"><td><p><strong>ROOT</strong> (<code class="docutils literal notranslate"><span class="pre">.root</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">EventTable.read(...,</span> <span class="pre">format=&quot;root&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable.write(...,</span> <span class="pre">format=&quot;root&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EventTable.read(&quot;events.root&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable.write(...,</span> <span class="pre">format=&quot;root&quot;)</span></code></p></td>
 <td><p>EventTable の入出力</p></td>
-<td><p>直 I/O は EventTable のみ</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.root</span></code> は自動判定されます。直 I/O は EventTable のみで、<code class="docutils literal notranslate"><span class="pre">uproot</span></code> が必要です</p></td>
 </tr>
 </tbody>
 </table>
@@ -659,16 +659,16 @@
 
 <span class="n">ascii_data</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
 <span class="n">chunked</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.zarr&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;zarr&quot;</span><span class="p">)</span>
-<span class="n">events</span> <span class="o">=</span> <span class="n">EventTable</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;events.root&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+<span class="n">events</span> <span class="o">=</span> <span class="n">EventTable</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;events.root&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>CSV</strong> は素朴ですが、共有や確認には依然として有用です。</p></li>
+<li><p><strong>CSV</strong> は素朴ですが、共有や確認には依然として有用です。単純な CSV ファイルは metadata-light と考えてください。<code class="docutils literal notranslate"><span class="pre">name</span></code>、<code class="docutils literal notranslate"><span class="pre">channel</span></code>、<code class="docutils literal notranslate"><span class="pre">unit</span></code> まで保持したい場合は HDF5、GWF、Zarr、NetCDF、または manifest 付き collection directory を使います。</p></li>
 <li><p><strong>TXT</strong> の direct I/O はより限定的で、単一 series は <code class="docutils literal notranslate"><span class="pre">format=&quot;txt&quot;</span></code> 明示、複数チャネルは collection directory 前提です。</p></li>
 <li><p><strong>Pickle</strong> の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> 形式としては扱いません。</p></li>
-<li><p><strong>NetCDF4 / Zarr</strong> はこのページでは <strong>TimeSeries 系の direct I/O</strong> としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。</p></li>
+<li><p><strong>NetCDF4 / Zarr</strong> はこのページでは <strong>TimeSeries 系の direct I/O</strong> としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。NetCDF の <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> は <code class="docutils literal notranslate"><span class="pre">nc</span></code> の旧 format token alias であり、<code class="docutils literal notranslate"><span class="pre">.netcdf4</span></code> は公開された自動判定 extension alias ではありません。</p></li>
 <li><p><strong>Zarr</strong> の direct I/O では、配列ごとの timing metadata を明示的に要求します。<code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> を優先し、<code class="docutils literal notranslate"><span class="pre">dt</span></code> は fallback として受け付けます。どちらも無い場合は <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を送出し、legacy store を意図的に救済したい場合だけ <code class="docutils literal notranslate"><span class="pre">sample_rate_override=...</span></code> または <code class="docutils literal notranslate"><span class="pre">dt_override=...</span></code> を指定してください。</p></li>
-<li><p><strong>ROOT</strong> の object-level 変換はここでは扱いません。I/O ガイドでは EventTable の直 I/O のみ扱います。</p></li>
+<li><p><strong>ROOT</strong> の object-level 変換はここでは扱いません。I/O ガイドでは <code class="docutils literal notranslate"><span class="pre">uproot</span></code> を必要とする EventTable の直 I/O のみ扱います。</p></li>
 </ul>
 <p><a id="io-formats-ja-d"></a></p>
 </section>
@@ -887,7 +887,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-11 15:02:42.
+      <span class="lastupdated">Last updated on 2026-05-15 21:42:33.
       </span></p>
   </div>
 

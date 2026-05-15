@@ -18,7 +18,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/io_formats.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -620,9 +620,9 @@ The key rule here is not to mix up “format choice” with “library conversio
 <tbody>
 <tr class="row-even"><td><p><strong>CSV</strong> (<code class="docutils literal notranslate"><span class="pre">.csv</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.write(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(&quot;data.csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;data.csv&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.write(...,</span> <span class="pre">format=&quot;csv&quot;)</span></code></p></td>
 <td><p>Lightweight exchange and inspection</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> supports single-file reads and collection-directory layouts</p></td>
+<td><p>Auto-identifies <code class="docutils literal notranslate"><span class="pre">.csv</span></code>; simple CSV exchange is metadata-light</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>TXT</strong> (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -634,7 +634,7 @@ The key rule here is not to mix up “format choice” with “library conversio
 <td class="text-center"><p>○ / ○</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">.write(...,</span> <span class="pre">format=&quot;nc&quot;)</span></code></p></td>
 <td><p>Scientific storage for time-series-oriented data</p></td>
-<td><p>Direct I/O here is centered on TimeSeries classes; legacy alias: <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
+<td><p>Direct I/O here is centered on TimeSeries classes; legacy format alias: <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Zarr</strong> (<code class="docutils literal notranslate"><span class="pre">.zarr</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
@@ -644,9 +644,9 @@ The key rule here is not to mix up “format choice” with “library conversio
 </tr>
 <tr class="row-even"><td><p><strong>ROOT</strong> (<code class="docutils literal notranslate"><span class="pre">.root</span></code>)</p></td>
 <td class="text-center"><p>○ / ○</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">EventTable.read(...,</span> <span class="pre">format=&quot;root&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable.write(...,</span> <span class="pre">format=&quot;root&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EventTable.read(&quot;events.root&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">EventTable.write(...,</span> <span class="pre">format=&quot;root&quot;)</span></code></p></td>
 <td><p>EventTable I/O</p></td>
-<td><p>Direct I/O here is EventTable only</p></td>
+<td><p>Auto-identifies <code class="docutils literal notranslate"><span class="pre">.root</span></code>; direct I/O here is EventTable only and requires <code class="docutils literal notranslate"><span class="pre">uproot</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -660,16 +660,16 @@ The key rule here is not to mix up “format choice” with “library conversio
 
 <span class="n">ascii_data</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
 <span class="n">chunked</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data.zarr&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;zarr&quot;</span><span class="p">)</span>
-<span class="n">events</span> <span class="o">=</span> <span class="n">EventTable</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;events.root&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+<span class="n">events</span> <span class="o">=</span> <span class="n">EventTable</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;events.root&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>CSV</strong> remains useful for lightweight exchange and inspection.</p></li>
+<li><p><strong>CSV</strong> remains useful for lightweight exchange and inspection. Treat simple CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-backed collection directory when name, channel, and unit metadata must be preserved.</p></li>
 <li><p><strong>TXT</strong> direct I/O is more limited: single-series paths are explicit <code class="docutils literal notranslate"><span class="pre">format=&quot;txt&quot;</span></code>, and multi-channel paths use collection directories.</p></li>
 <li><p><strong>Pickle</strong> portability notes still exist in class references, but Pickle is not a published direct <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> format on this page.</p></li>
-<li><p><strong>NetCDF4 / Zarr</strong> are treated here only as <strong>direct TimeSeries-style I/O</strong>. Field/xarray bridges belong to interop.</p></li>
+<li><p><strong>NetCDF4 / Zarr</strong> are treated here only as <strong>direct TimeSeries-style I/O</strong>. Field/xarray bridges belong to interop. For NetCDF, <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> is a legacy format token alias for <code class="docutils literal notranslate"><span class="pre">nc</span></code>; <code class="docutils literal notranslate"><span class="pre">.netcdf4</span></code> is not a documented auto-identified extension alias.</p></li>
 <li><p><strong>Zarr</strong> direct I/O now expects per-array timing metadata explicitly. <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> is the primary key, <code class="docutils literal notranslate"><span class="pre">dt</span></code> is accepted as a fallback, and reads raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if neither is present unless you intentionally recover a legacy store with <code class="docutils literal notranslate"><span class="pre">sample_rate_override=...</span></code> or <code class="docutils literal notranslate"><span class="pre">dt_override=...</span></code>.</p></li>
-<li><p><strong>ROOT</strong> object-level export/import belongs to interop. This page only covers EventTable direct I/O.</p></li>
+<li><p><strong>ROOT</strong> object-level export/import belongs to interop. This page only covers EventTable direct I/O, which requires <code class="docutils literal notranslate"><span class="pre">uproot</span></code>.</p></li>
 </ul>
 <p><a id="io-formats-en-d"></a></p>
 </section>
@@ -888,7 +888,7 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-11 15:02:42.
+      <span class="lastupdated">Last updated on 2026-05-15 21:42:33.
       </span></p>
   </div>
 

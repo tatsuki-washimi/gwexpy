@@ -18,12 +18,11 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/case_signal_extraction.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
       <script src="../../../../_static/copybutton.js?v=17e82a72"></script>
@@ -304,8 +303,8 @@
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                                Migrad                                   │
 ├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 1.659e+05 (χ²/ndof = 410.6)│              Nfcn = 873              │
-│ EDM = 1.77e-06 (Goal: 0.0002)    │                                      │
+│ FCN = 2.011e+05 (χ²/ndof = 497.8)│              Nfcn = 737              │
+│ EDM = 1.36e-07 (Goal: 0.0002)    │                                      │
 ├──────────────────────────────────┼──────────────────────────────────────┤
 │          Valid Minimum           │   Below EDM threshold (goal x 10)    │
 ├──────────────────────────────────┼──────────────────────────────────────┤
@@ -316,23 +315,23 @@
 ┌───┬────────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
 │   │ Name   │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
 ├───┼────────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
-│ 0 │ amp    │ 392.6e-3  │  0.7e-3   │            │            │   0.1   │    5    │       │
-│ 1 │ freq   │  126.963  │   0.010   │            │            │   110   │   130   │       │
-│ 2 │ phase  │  -24.16   │   0.07    │            │            │         │         │       │
-│ 3 │ amp2   │200.000e-3 │ 0.011e-3  │            │            │    0    │   0.2   │       │
-│ 4 │ freq2  │   17.77   │   0.08    │            │            │    0    │   50    │       │
-│ 5 │ phase2 │   -51.9   │    0.6    │            │            │         │         │       │
+│ 0 │ amp    │ 563.3e-3  │  0.7e-3   │            │            │   0.1   │    5    │       │
+│ 1 │ freq   │  127.722  │   0.007   │            │            │   110   │   130   │       │
+│ 2 │ phase  │  -31.52   │   0.05    │            │            │         │         │       │
+│ 3 │ amp2   │200.0000e-3│ 0.0034e-3 │            │            │    0    │   0.2   │       │
+│ 4 │ freq2  │  16.169   │   0.027   │            │            │    0    │   50    │       │
+│ 5 │ phase2 │  -43.55   │   0.18    │            │            │         │         │       │
 └───┴────────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
-┌────────┬─────────────────────────────────────────────────────────────────────────┐
-│        │         amp        freq       phase        amp2       freq2      phase2 │
-├────────┼─────────────────────────────────────────────────────────────────────────┤
-│    amp │    4.97e-07      0.3e-6     -1.7e-6  -0.077e-15     -7.2e-6     48.5e-6 │
-│   freq │      0.3e-6    0.000103    -0.68e-3  -2.314e-15    -0.36e-3     2.49e-3 │
-│  phase │     -1.7e-6    -0.68e-3     0.00455  15.316e-15       0.002      -0.017 │
-│   amp2 │  -0.077e-15  -2.314e-15  15.316e-15    1.63e-17   3.563e-15 -24.229e-15 │
-│  freq2 │     -7.2e-6    -0.36e-3       0.002   3.563e-15      0.0067      -0.046 │
-│ phase2 │     48.5e-6     2.49e-3      -0.017 -24.229e-15      -0.046        0.31 │
-└────────┴─────────────────────────────────────────────────────────────────────────┘
+┌────────┬───────────────────────────────────────────────────────────────────┐
+│        │        amp       freq      phase       amp2      freq2     phase2 │
+├────────┼───────────────────────────────────────────────────────────────────┤
+│    amp │   4.96e-07         -0     0.4e-6    172e-18    -1.1e-6     7.7e-6 │
+│   freq │         -0   5.38e-05   -0.35e-3  1.143e-15    0.03e-3   -0.21e-3 │
+│  phase │     0.4e-6   -0.35e-3    0.00233 -7.453e-15    -0.2e-3     0.0014 │
+│   amp2 │    172e-18  1.143e-15 -7.453e-15    5.4e-18 -1.054e-15  7.289e-15 │
+│  freq2 │    -1.1e-6    0.03e-3    -0.2e-3 -1.054e-15   0.000723    -4.8e-3 │
+│ phase2 │     7.7e-6   -0.21e-3     0.0014  7.289e-15    -4.8e-3     0.0316 │
+└────────┴───────────────────────────────────────────────────────────────────┘
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -357,7 +356,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-11 15:02:42.
+      <span class="lastupdated">Last updated on 2026-05-15 21:42:33.
       </span></p>
   </div>
 

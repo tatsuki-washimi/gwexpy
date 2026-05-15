@@ -18,7 +18,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -202,7 +202,7 @@
 <td><p>Install the minimal stack, decide whether Conda is required, choose extras, or prepare a contributor setup</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Search Keywords</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">install</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span></code>, <code class="docutils literal notranslate"><span class="pre">conda</span></code>, extras, development version, NDS2, FrameLIB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">install</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span></code>, <code class="docutils literal notranslate"><span class="pre">conda</span></code>, extras, PyPI, NDS2, FrameLIB</p></td>
 </tr>
 </tbody>
 </table>
@@ -220,7 +220,11 @@
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>GWexpy is currently in its <strong>Development Version</strong> and is <strong>not yet published on PyPI or Conda</strong>. For now, install it from the GitHub source repository using the commands on this page.</p>
+<p>GWexpy is published on PyPI (current release: v0.1.3). A native conda-forge
+package is under review in staged-recipes
+(<a class="reference external" href="https://github.com/conda-forge/staged-recipes/pull/33169">https://github.com/conda-forge/staged-recipes/pull/33169</a>) and is not yet
+available on the conda-forge channel. Install <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> from PyPI — including
+inside Conda-managed environments — until the conda-forge package is live.</p>
 </div>
 <p>GWexpy supports <strong>Python 3.11 or later</strong>. You can choose from several installation options (extras) depending on your analysis goals.</p>
 </section>
@@ -235,19 +239,19 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Minimal</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gwexpy</span></code></p></td>
 <td><p>Numerical containers and basic arithmetic. Minimal dependencies.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Recommended</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[analysis,fitting,plotting]</span> <span class="pre">&#64;</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[analysis,fitting,plotting]&quot;</span></code></p></td>
 <td><p>Advanced statistics, curve fitting, and mapping features.</p></td>
 </tr>
 <tr class="row-even"><td><p>GW Analysis</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[gw,io]</span> <span class="pre">&#64;</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[gw,io]&quot;</span></code></p></td>
 <td><p>Frame file support, NDS2 access, and official GW tools.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Dev / Full</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[all]</span> <span class="pre">&#64;</span> <span class="pre">git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;gwexpy[all]&quot;</span></code></p></td>
 <td><p>Enables declared non-GUI optional features.</p></td>
 </tr>
 </tbody>
@@ -264,13 +268,16 @@
 <li><p>Output: a minimal GWexpy environment</p></li>
 </ul>
 <p>If you need NDS2, FrameLIB, <code class="docutils literal notranslate"><span class="pre">pygmt</span></code>, or other binary-heavy tools, skip this section and start with Conda Environment (Recommended / GW Analysis).</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>gwexpy
 </pre></div>
 </div>
 </section>
 <section id="conda-environment-recommended-gw-analysis">
 <h3>Conda Environment (Recommended / GW Analysis)<a class="headerlink" href="#conda-environment-recommended-gw-analysis" title="Link to this heading"></a></h3>
 <p>For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.</p>
+<p>This workflow uses Conda for the environment and binary dependencies, then uses
+PyPI for GWexpy itself. It is different from a future native conda-forge
+<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> package.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>If you use Conda, avoid running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> directly in <code class="docutils literal notranslate"><span class="pre">base</span></code> or in a shared environment for unrelated work. Create a <strong>dedicated environment for GWexpy</strong> first, then install both the Conda-managed binary dependencies and the <code class="docutils literal notranslate"><span class="pre">pip</span></code> packages there. This keeps binary dependency resolution isolated and reduces the risk of breaking the environment.</p>
@@ -286,7 +293,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>gwexpy
 conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-nds2-client<span class="w"> </span>python-framel<span class="w"> </span>ldas-tools-framecpp
 
 <span class="c1"># 2. Install GWexpy with analysis/fitting options</span>
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gw,analysis,fitting]&quot;</span>
 </pre></div>
 </div>
 <p>If you see <code class="docutils literal notranslate"><span class="pre">No</span> <span class="pre">module</span> <span class="pre">named</span> <span class="pre">nds2</span></code> or FrameLIB-related import errors, re-run the <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">...</span></code> step inside that dedicated environment first. If you do not need NDS2 or FrameLIB, the minimal or recommended installation without the <code class="docutils literal notranslate"><span class="pre">gw</span></code> extras is usually sufficient.</p>
@@ -304,6 +311,9 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,all]&quot;</span>
 </pre></div>
 </div>
+<p>Use the developer mode only when you need to edit GWexpy itself or test
+unreleased changes from the repository. For normal use, prefer the PyPI commands
+above.</p>
 </section>
 </section>
 <section id="dependency-troubleshooting">
@@ -412,7 +422,7 @@ Python’s <code class="docutils literal notranslate"><span class="pre">pickle</
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-11 15:02:42.
+      <span class="lastupdated">Last updated on 2026-05-15 21:42:33.
       </span></p>
   </div>
 

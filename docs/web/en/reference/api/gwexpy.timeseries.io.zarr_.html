@@ -17,7 +17,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/api/gwexpy.timeseries.io.zarr_.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -162,7 +162,7 @@ clear error instead of silently assuming 1 Hz.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_timeseries_zarr</span></code>(source, **kwargs)</p></td>
 <td><p>Read a Zarr store and return the first channel.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_timeseriesmatrix_zarr</span></code>(source, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_timeseriesmatrix_zarr</span></code>(source, *[, ...])</p></td>
 <td><p>Read a Zarr store and convert its channels to a matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_timeseriesdict_zarr</span></code>(tsd, target, **kwargs)</p></td>
@@ -205,7 +205,7 @@ that lack per-array timing metadata. Mutually exclusive with
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">gwexpy.timeseries.io.zarr_.</span></span><span class="sig-name descname"><span class="pre">read_timeseriesmatrix_zarr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TimeSeriesMatrix</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/io/zarr_.html#read_timeseriesmatrix_zarr"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gwexpy.timeseries.io.zarr_.</span></span><span class="sig-name descname"><span class="pre">read_timeseriesmatrix_zarr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TimeSeriesMatrix</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/io/zarr_.html#read_timeseriesmatrix_zarr"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Read a Zarr store and convert its channels to a matrix.</p>
 </dd></dl>
 
@@ -223,6 +223,12 @@ that lack per-array timing metadata. Mutually exclusive with
 <dd><p>Write one <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> to a Zarr store.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.timeseries.io.zarr_.</span></span><span class="sig-name descname"><span class="pre">write_timeseriesmatrix_zarr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/io/zarr_.html#write_timeseriesmatrix_zarr"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Write a TimeSeriesMatrix to a Zarr store preserving row/column labels.</p>
+</dd></dl>
+
 </section>
 
 
@@ -234,7 +240,7 @@ that lack per-array timing metadata. Mutually exclusive with
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-11 15:02:42.
+      <span class="lastupdated">Last updated on 2026-05-15 21:42:33.
       </span></p>
   </div>
 
