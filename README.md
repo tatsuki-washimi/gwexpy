@@ -17,10 +17,14 @@
 ## Install
 
 ```bash
-git clone https://github.com/tatsuki-washimi/gwexpy.git
-cd gwexpy
-python -m pip install -e .
+python -m pip install gwexpy
 ```
+
+GWexpy is published on PyPI. The experimental GUI app is not part of the
+supported package surface. You can install the PyPI package inside a
+Conda-managed environment. A native conda-forge package is under review at
+<https://github.com/conda-forge/staged-recipes/pull/33169> and is not yet
+available on the conda-forge channel.
 
 For optional extras, external dependencies, and environment-specific setup, use the official installation guides:
 
@@ -73,6 +77,9 @@ For fitting, I/O, interoperability, and notebook-based workflows, start from the
 
 ## Support
 
+- Lightweight bug reports and feature requests: <https://forms.gle/Ewx5K69KqDvzrJp57>
+- Security reports: see [SECURITY.md](SECURITY.md); do not use the form or
+  public issues for vulnerability details.
 - Issues: <https://github.com/tatsuki-washimi/gwexpy/issues>
 - Discussions: <https://github.com/tatsuki-washimi/gwexpy/discussions>
 - Contributions: pull requests are welcome on GitHub
