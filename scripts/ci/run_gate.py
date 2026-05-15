@@ -26,6 +26,11 @@ def run_cmd(cmd: list[str], *, cwd: Path | None = None) -> None:
         raise SystemExit(completed.returncode)
 
 
+def run_pytest(args: list[str]) -> None:
+    """Run non-GUI pytest gates without loading pytest-qt."""
+    run_cmd(["pytest", "-p", "no:pytest-qt", *args])
+
+
 def remove_generated_build_artifacts(repo_root: Path) -> None:
     """Remove generated artifacts that must not leak into wheel builds."""
     shutil.rmtree(repo_root / "build", ignore_errors=True)
@@ -84,9 +89,8 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         )
         if with_fixtures:
             run_cmd(["python", "tests/fixtures/generate_fixtures.py"])
-        run_cmd(
+        run_pytest(
             [
-                "pytest",
                 "-q",
                 "-m",
                 "not network and not nds and not root",
@@ -110,9 +114,8 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         repo_root = Path.cwd().resolve()
         if with_fixtures:
             run_cmd(["python", "tests/fixtures/generate_fixtures.py"])
-        run_cmd(
+        run_pytest(
             [
-                "pytest",
                 "-q",
                 "-m",
                 "not network and not nds",
@@ -146,9 +149,8 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         return
 
     if gate == "io-optional":
-        run_cmd(
+        run_pytest(
             [
-                "pytest",
                 "-q",
                 "tests/io/test_optional_deps.py",
                 "tests/io/test_netcdf4_reader.py",
@@ -162,9 +164,8 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
     if gate == "io-network-backend":
         if with_fixtures:
             run_cmd(["python", "tests/fixtures/generate_fixtures.py"])
-        run_cmd(
+        run_pytest(
             [
-                "pytest",
                 "-q",
                 "-m",
                 "network or nds",
@@ -172,9 +173,10 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
                 "tests/nds/",
                 "tests/segments/",
                 "tests/timeseries/test_timeseries.py",
+                "--ignore=tests/nds/test_gui_nds_smoke.py",
             ]
         )
-        run_cmd(["pytest", "-q", "tests/io/test_kerberos.py"])
+        run_pytest(["-q", "tests/io/test_kerberos.py"])
         return
 
     if gate == "docs-notebook":
@@ -184,7 +186,7 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
             "GWEXPY_RUN_NOTEBOOK_TESTS",
             "1",
         )
-        run_cmd(["pytest", "-q", "tests/docs/test_docs_notebooks.py"])
+        run_pytest(["-q", "tests/docs/test_docs_notebooks.py"])
         return
 
     if gate == "io-zarr":
@@ -194,13 +196,12 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
             "GWEXPY_ALLOW_ZARR",
             "1",
         )
-        run_cmd(["pytest", "-q", "tests/io/test_zarr_reader.py"])
+        run_pytest(["-q", "tests/io/test_zarr_reader.py"])
         return
 
     if gate == "interop-contract":
-        run_cmd(
+        run_pytest(
             [
-                "pytest",
                 "-q",
                 "tests/interop/test_interop_contract.py",
                 "tests/interop/test_interop_docs_contract_sync.py",
