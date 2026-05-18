@@ -159,6 +159,10 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         )
         return
 
+    if gate == "io-conformance":
+        run_cmd(["pytest", "-q", "tests/io_conformance"])
+        return
+
     if gate == "io-network-backend":
         if with_fixtures:
             run_cmd(["python", "tests/fixtures/generate_fixtures.py"])
@@ -219,6 +223,7 @@ def main(argv: list[str] | None = None) -> int:
         choices=[
             "pr-fast",
             "io-contract",
+            "io-conformance",
             "io-optional",
             "io-network-backend",
             "docs-notebook",
