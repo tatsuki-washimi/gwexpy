@@ -204,10 +204,15 @@ Every format entry must add these fields:
 - `metadata_must_match`: metadata keys that must survive read/write/readback.
 - `multi_file_policy`: one of the values listed above.
 - `coverage_status`: default status for this format in v0.1.4.
-- `ci_jobs`: one or more of `base`, `io-audio`, `io-seismic`, `io-netcdf4`, `io-zarr`,
-  `io-tdms`, `io-root`, `nightly`. These identifiers must match the CI job names in
-  `.github/workflows/` exactly.
-- `missing_dependency_policy`: skip, xfail, or must_raise_import_error.
+- `ci_jobs`: one or more logical gate identifiers: `base`, `io-audio`, `io-seismic`,
+  `io-netcdf4`, `io-zarr`, `io-tdms`, `io-root`, `nightly`. These identifiers are
+  stable contract values, not GitHub Actions display names. The CI implementation
+  must provide an explicit mapping from each logical gate identifier to a workflow
+  job, workflow matrix entry, or `scripts/ci/run_gate.py` target.
+- `missing_dependency_policy`: skip, must_raise_import_error,
+  conditional_registration, or warns_and_skips_optional_metadata. Known bugs must
+  be represented with `coverage_status=planned` or `coverage_status=nightly` plus
+  an issue reference, not by weakening or skipping a blocking conformance row.
 - `security_policy`: object with `trusted_only: bool` and `requires_warning: bool`.
   `trusted_only: true` means the format may only be read when the caller explicitly
   opts in. `requires_warning: true` means GWexpy must emit a visible warning on read.
@@ -220,8 +225,16 @@ following rules.
 
 **No GWexpy import.** Generators must not import `gwexpy` or any submodule of it.
 Enforcement: `tests/io_conformance/conftest.py` runs an import-guard check at
-session start that greps each generator module for `import gwexpy`; the session
-fails immediately if any match is found.
+session start that parses every generator module with `ast` and rejects:
+
+- `ast.Import` / `ast.ImportFrom` nodes targeting `gwexpy` or `gwexpy.*`;
+- literal dynamic imports such as `__import__("gwexpy")` and
+  `importlib.import_module("gwexpy")`;
+- any generator entry point that imports `gwexpy` while executed in a subprocess
+  with an import hook that raises on `gwexpy` and `gwexpy.*`.
+
+A text grep is insufficient because it misses `from gwexpy import ...`, misses lazy
+dynamic imports, and can false-positive on comments.
 
 **Seeded RNG.** All numeric payload generation must use `numpy.random.default_rng(SEED)`
 where `SEED` is a per-format integer constant defined in `generators/__init__.py`.
@@ -297,8 +310,13 @@ tests/io_conformance/
 **Scenario expansion.** `tests/io_conformance/scenarios.py` reads the JSON contract
 and expands every `(format, operation, scenario, class, layout, format_token,
 dependency_mode, status)` tuple into a pytest parametrize ID. The harness must skip
-rows where `status` is `planned` or `not_public`, and xfail rows where
-`dependency_mode` is `optional-missing` and the dependency is absent.
+rows where `status` is `planned` or `not_public`. Rows where `dependency_mode` is
+`optional-missing` are ordinary executable tests; they must assert the documented
+missing-backend behavior, such as a clear `ImportError`, conditional registration
+absence, or a warning that optional metadata was skipped. `missing_dependency_policy=skip`
+is valid only for rows that do not represent a public optional dependency contract.
+The schema validator must reject `skip` for any format that has public read/write
+coverage and non-empty `optional_dependencies`.
 
 **Alias sampling policy.** Running the full scenario matrix for every alias would
 multiply test count by the number of aliases. Instead:
@@ -361,7 +379,7 @@ omitted.
   - `generate_single_channel_multi_file`: blocking
   - `generate_multi_channel_multi_file`: blocking
   - `read_explicit_format`: blocking
-  - `read_auto_identify`: blocking
+  - `read_auto_identify_public`: blocking
   - `read_alias_format`: blocking for every alias
   - `read_single_channel_single_file`: blocking for `TimeSeries`
   - `read_multi_channel_single_file`: blocking for `TimeSeriesDict`
@@ -401,7 +419,7 @@ omitted.
   - `generate_single_channel_single_file`: blocking
   - `generate_multi_channel_single_file`: blocking
   - `read_explicit_format`: blocking
-  - `read_auto_identify`: blocking
+  - `read_auto_identify_public`: blocking
   - `read_alias_format`: blocking for every alias
   - `read_single_channel_single_file`: blocking for `TimeSeriesDict`
   - `read_multi_channel_single_file`: blocking for `TimeSeriesDict`
@@ -451,8 +469,9 @@ omitted.
   - `read_explicit_format`: blocking
   - `read_auto_identify_public`: not_public — the public contract requires explicit
     `format="hdf5"`; auto-identification is not a documented user-facing guarantee
-  - `read_auto_identify_registry`: nightly — the registry can identify HDF5 files
-    but this is not exposed as a public contract
+  - `read_auto_identify_registry`: not_public — schema-v2 declares
+    `registry_auto_identify=false`; make this nightly only if the JSON contract
+    changes
   - `read_single_channel_single_file`: blocking for `TimeSeries`,
     `FrequencySeries`, `Spectrogram`, `Histogram`, `EventTable`
   - `read_multi_channel_single_file`: blocking for `TimeSeriesDict`,
@@ -503,6 +522,8 @@ omitted.
   - `read_explicit_format`: optional_blocking
   - `read_auto_identify_public`: not_public — not a documented user-facing guarantee
     despite the registry identifier
+  - `read_auto_identify_registry`: nightly — schema-v2 declares
+    `registry_auto_identify=true`
   - `read_alias_format`: optional_blocking for `dttxml`
   - `read_required_args`: optional_blocking with `products`
   - `read_missing_required_args`: optional_blocking
@@ -540,7 +561,7 @@ omitted.
   - `generate_multi_channel_single_file`: blocking for single CSV where supported
   - `generate_collection_directory`: blocking for `TimeSeriesDict`
   - `read_explicit_format`: blocking
-  - `read_auto_identify`: blocking
+  - `read_auto_identify_public`: blocking
   - `read_single_channel_single_file`: blocking for `TimeSeries`
   - `read_multi_channel_single_file`: blocking for `TimeSeriesDict`
   - `read_collection_directory`: blocking for `TimeSeriesDict`
@@ -579,7 +600,7 @@ omitted.
   - `generate_single_channel_single_file`: blocking
   - `generate_collection_directory`: blocking for `TimeSeriesDict`
   - `read_explicit_format`: blocking
-  - `read_auto_identify`: not_public
+  - `read_auto_identify_public`: not_public
   - `read_single_channel_single_file`: blocking for `TimeSeries`
   - `read_collection_directory`: blocking for `TimeSeriesDict`
   - `write_single_object`: blocking for `TimeSeries`
@@ -644,7 +665,8 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking for EventTable-like
     tree/table fixture
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking if registry supports it
+  - `read_auto_identify_public`: optional_blocking if public auto-identification
+    is registered
   - `write_single_object`: optional_blocking for `EventTable`
   - `readback_gwexpy`: optional_blocking
   - `readback_native`: optional_blocking with `uproot`
@@ -675,7 +697,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_alias_format`: optional_blocking for `sqlite`, `sqlite3`
   - `read_single_channel_single_file`: optional_blocking for `TimeSeries`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
@@ -708,7 +730,7 @@ omitted.
   - `generate_multi_channel_single_file`: blocking if stereo/multi-channel WAV is
     public for `TimeSeriesDict`
   - `read_explicit_format`: blocking
-  - `read_auto_identify`: blocking
+  - `read_auto_identify_public`: blocking
   - `read_single_channel_single_file`: blocking for `TimeSeries`
   - `read_multi_channel_single_file`: blocking for `TimeSeriesDict`
   - `write_single_object`: blocking for `TimeSeries`
@@ -746,7 +768,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `write_single_object`: optional_blocking
   - `write_collection`: optional_blocking
   - `readback_gwexpy`: optional_blocking
@@ -782,7 +804,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `write_single_object`: optional_blocking
   - `write_collection`: optional_blocking
   - `readback_gwexpy`: optional_blocking
@@ -817,7 +839,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `write_single_object`: optional_blocking
   - `write_collection`: optional_blocking
   - `readback_gwexpy`: optional_blocking
@@ -851,7 +873,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `write_single_object`: optional_blocking
   - `write_collection`: optional_blocking
   - `readback_gwexpy`: optional_blocking
@@ -885,7 +907,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_required_args`: optional_blocking with `timezone`
   - `read_missing_required_args`: blocking
   - `read_single_channel_single_file`: optional_blocking for `TimeSeries`
@@ -920,7 +942,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_single_channel_single_file`: optional_blocking for `TimeSeries`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesMatrix`
@@ -954,7 +976,7 @@ omitted.
   - `generate_multi_channel_single_file`: optional_blocking
   - `generate_multi_channel_multi_file`: nightly
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_alias_format`: optional_blocking for `miniseed`
   - `read_single_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
@@ -989,7 +1011,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: nightly
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_single_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `write_collection`: optional_blocking for `TimeSeriesDict`
@@ -1021,7 +1043,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: nightly
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_single_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `write_collection`: optional_blocking for `TimeSeriesDict`
@@ -1054,7 +1076,7 @@ omitted.
 - Scenarios:
   - `generate_single_channel_single_file`: planned
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `write_unsupported`: blocking
   - `read_optional_dependency_missing`: blocking in base CI
@@ -1082,7 +1104,7 @@ omitted.
 - Scenarios:
   - `generate_single_channel_single_file`: planned
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_alias_format`: optional_blocking for `win32`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `write_unsupported`: blocking
@@ -1112,7 +1134,7 @@ omitted.
 - Scenarios:
   - `generate_single_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_single_channel_single_file`: optional_blocking for `TimeSeries`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
     only if generated multi-channel variant exists
@@ -1175,7 +1197,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_alias_format`: optional_blocking for `netcdf4`
   - `read_single_channel_single_file`: optional_blocking for `TimeSeries`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
@@ -1215,7 +1237,7 @@ omitted.
   - `generate_single_channel_single_file`: optional_blocking
   - `generate_multi_channel_single_file`: optional_blocking
   - `read_explicit_format`: optional_blocking
-  - `read_auto_identify`: optional_blocking
+  - `read_auto_identify_public`: optional_blocking
   - `read_single_channel_single_file`: optional_blocking for `TimeSeries`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesDict`
   - `read_multi_channel_single_file`: optional_blocking for `TimeSeriesMatrix`
@@ -1259,8 +1281,11 @@ Blocking policy checks for all 25 formats:
 
 ### Optional Backend CI Gates
 
-Separate CI jobs should run these groups. The job names below are canonical and must
-match the `ci_jobs` field values in the JSON contract.
+Separate CI jobs or workflow matrix entries should run these groups. The logical
+gate identifiers below are canonical and must match the `ci_jobs` field values in
+the JSON contract. The GitHub Actions workflow may expose different display names,
+but it must document the mapping from each logical identifier to the concrete job
+or `scripts/ci/run_gate.py` target.
 
 - `io-audio`: `flac`, `ogg`, `mp3`, `m4a`, extended `wav`
 - `io-seismic`: `mseed`, `sac`, `gse2`, `knet`, `win`, `ats.mth5`
