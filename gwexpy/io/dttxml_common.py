@@ -496,12 +496,19 @@ def load_dttxml_products(source, *, native: bool = False):
             }
 
     # 1. Time Series (TS)
+    # Return raw dicts (not TimeSeries objects) so that read_timeseriesdict_dttxml
+    # can call info.get("epoch") / info.get("dt") / info.get("data") uniformly.
+    # Returning TimeSeries objects here caused AttributeError because TimeSeries.get()
+    # is the NDS data-fetch method, not dict.get().
     if hasattr(results, "TS"):
         ts_dict = {}
         for ch, info in results.TS.items():
-            ts_dict[ch] = create_series(
-                info.timeseries, dt=info.dt, t0=info.gps_second, name=ch, type="time"
-            )
+            ts_dict[ch] = {
+                "data": info.timeseries,
+                "dt": info.dt,
+                "epoch": info.gps_second,
+                "unit": None,
+            }
         normalized["TS"] = ts_dict
 
     # 2. PSD (actually ASD)
