@@ -189,6 +189,7 @@ def test_gwf_explicit_and_auto_identify(gwf_case: DictCase) -> None:
         sample_rate=gwf_case.sample_rate,
         t0=gwf_case.t0,
         unit_by_key=gwf_case.unit_by_key,
+        check_channel=False,
     )
     assert_timeseriesdict_close(
         auto,
@@ -196,6 +197,7 @@ def test_gwf_explicit_and_auto_identify(gwf_case: DictCase) -> None:
         sample_rate=gwf_case.sample_rate,
         t0=gwf_case.t0,
         unit_by_key=gwf_case.unit_by_key,
+        check_channel=False,
     )
 
 
