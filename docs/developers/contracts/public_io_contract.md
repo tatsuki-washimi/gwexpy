@@ -17,8 +17,8 @@ implementation surface.
 
 ## Schema
 
-The top-level `io_conformance_v3` policy block defines the public I/O gate shape.
-Each format entry contains these fields:
+The raw JSON contract includes a top-level `io_conformance_v3` policy block.
+Each on-disk format entry contains these fields:
 
 - `name`: human-facing label used in docs and reviews
 - `canonical`: canonical format token
@@ -29,10 +29,6 @@ Each format entry contains these fields:
 - `registry_api`: classes that are currently registered in the astropy/gwpy I/O registry
 - `public_auto_identify`: whether published usage may rely on `format=None`
 - `registry_auto_identify`: whether the current implementation can identify the format automatically
-- `fixture_generator`: normalized v3 fixture-generation policy for the published route
-- `coverage_status`: normalized v3 coverage status for the published route
-- `ci_jobs`: normalized v3 CI gate mapping used to enforce the published route
-- `missing_dependency_policy`: normalized v3 policy for unavailable optional dependencies
 - `required_args`: operation-specific required keyword arguments
 - `trusted_only`: whether the format must be restricted to trusted data
 - `optional_dependencies`: optional import/package names used by the published
@@ -43,6 +39,18 @@ Each format entry contains these fields:
   is unavailable
 - `metadata_requirements`: extra metadata rules that are part of the public contract
 - `notes`: short rationale and boundary notes
+
+### Normalized v3 Fields
+
+The conformance loader derives additional v3 policy fields in memory from each
+on-disk format entry plus the top-level `io_conformance_v3` policy block. These
+values are exposed under each normalized entry's `v3` surface; they are not
+required as top-level fields in each JSON format entry.
+
+- `fixture_generator`: normalized fixture-generation policy for the published route
+- `coverage_status`: normalized coverage status for the published route
+- `ci_jobs`: normalized CI gate mapping used to enforce the published route
+- `missing_dependency_policy`: normalized per-operation policy for unavailable optional dependencies
 
 Rules:
 
