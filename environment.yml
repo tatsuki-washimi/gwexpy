@@ -2,6 +2,8 @@ name: gwexpy
 channels:
   - conda-forge
 dependencies:
+  - ldas-tools-framecpp
+  - python-framel
   - pip
   - pip:
       - -r requirements-dev.txt
