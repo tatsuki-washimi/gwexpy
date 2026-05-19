@@ -161,6 +161,17 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
 
     if gate == "io-conformance":
         run_cmd(["pytest", "-q", "tests/io_conformance"])
+        repo_root = Path.cwd().resolve()
+        if str(repo_root) not in sys.path:
+            sys.path.insert(0, str(repo_root))
+        from tests.io_conformance.contract import load_public_io_contract
+        from tests.io_conformance.reporting import summarize_blocking_rows
+        from tests.io_conformance.scenarios import expand_contract_scenarios
+
+        contract = load_public_io_contract()
+        rows = expand_contract_scenarios(contract)
+        summary = summarize_blocking_rows(rows)
+        print(summary["blocking_display"])
         return
 
     if gate == "io-network-backend":

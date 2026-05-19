@@ -5,17 +5,22 @@ from .contract import (
     LOGICAL_CI_JOB_IDS,
     SCHEMA_VERSION_V2,
     SCHEMA_VERSION_V3,
+    ContractCIJobId,
+    CoverageStatus,
     LogicalCIJobId,
     MissingDependencyPolicy,
     ScenarioName,
     ScenarioStatus,
     load_public_io_contract,
+    validate_contract_ci_jobs,
     validate_logical_ci_job_ids,
 )
 from .scenarios import expand_contract_scenarios
 
 __all__ = [
     "CONTRACT_PATH",
+    "ContractCIJobId",
+    "CoverageStatus",
     "LOGICAL_CI_JOB_IDS",
     "LogicalCIJobId",
     "MissingDependencyPolicy",
@@ -25,5 +30,6 @@ __all__ = [
     "ScenarioStatus",
     "expand_contract_scenarios",
     "load_public_io_contract",
+    "validate_contract_ci_jobs",
     "validate_logical_ci_job_ids",
 ]

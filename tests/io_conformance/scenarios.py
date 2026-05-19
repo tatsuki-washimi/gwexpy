@@ -4,6 +4,7 @@ from typing import Any
 
 from .contract import (
     LOGICAL_CI_JOB_IDS,
+    CoverageStatus,
     ScenarioName,
     ScenarioStatus,
     validate_logical_ci_job_ids,
@@ -11,11 +12,7 @@ from .contract import (
 
 
 def _is_core_public_format(entry: dict[str, Any]) -> bool:
-    public_api = entry.get("public_api", {})
-    return bool(
-        (public_api.get("read") or public_api.get("write"))
-        and not entry.get("optional_dependencies")
-    )
+    return entry["v3"]["coverage_status"] == CoverageStatus.BLOCKING.value
 
 
 def _scenario_row(
@@ -27,8 +24,11 @@ def _scenario_row(
         "format": entry["canonical"],
         "scenario": scenario.value,
         "status": status.value,
+        "coverage_status": entry["v3"]["coverage_status"],
         "logical_ci_job_id": LOGICAL_CI_JOB_IDS[scenario.value],
-        "missing_dependency_policy": entry["v3"]["missing_dependency_policy"]["read"],
+        "ci_jobs": entry["v3"]["ci_jobs"],
+        "fixture_generator": entry["v3"]["fixture_generator"],
+        "missing_dependency_policy": entry["v3"]["missing_dependency_policy"],
         "public_auto_identify": entry["public_auto_identify"],
         "registry_auto_identify": entry["registry_auto_identify"],
         "trusted_only": entry["trusted_only"],

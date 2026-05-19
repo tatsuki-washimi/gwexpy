@@ -25,6 +25,18 @@ GENERATOR_SPECS: tuple[GeneratorSpec, ...] = (
         name="audio",
         module_name="tests.io_conformance.generators.audio",
     ),
+    GeneratorSpec(
+        name="hdf5",
+        module_name="tests.io_conformance.generators.hdf5",
+    ),
+    GeneratorSpec(
+        name="hdf_ndscope",
+        module_name="tests.io_conformance.generators.hdf_ndscope",
+    ),
+    GeneratorSpec(
+        name="gwf",
+        module_name="tests.io_conformance.generators.gwf",
+    ),
 )
 
 

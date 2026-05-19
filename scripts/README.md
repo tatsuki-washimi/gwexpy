@@ -17,11 +17,14 @@ Run all scripts from the **repository root**.
 
 Scripts used to reproduce CI gates locally.
 
-- `scripts/ci/run_gate.py`: Run the same command sets as PR Fast and nightly gate jobs.
+- `scripts/ci/run_gate.py`: Run the same command sets as PR Fast, `io-conformance`, and nightly gate jobs.
 
 ```bash
 # I/O contract gate
 python scripts/ci/run_gate.py io-contract
+
+# I/O conformance gate
+python scripts/ci/run_gate.py io-conformance
 
 # Full PR fast validation gate
 python scripts/ci/run_gate.py pr-fast

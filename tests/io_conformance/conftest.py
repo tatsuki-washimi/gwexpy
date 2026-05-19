@@ -110,6 +110,11 @@ def _run_generator_smoke(spec: GeneratorSpec) -> None:
             assert output_dir.exists()
             assert any(output_dir.iterdir())
             assert result is None or isinstance(result, dict)
+            if isinstance(result, dict):
+                for value in result.values():
+                    value_path = pathlib.Path(value)
+                    assert value_path.is_absolute()
+                    assert value_path.is_relative_to(output_dir)
         """
     )
 

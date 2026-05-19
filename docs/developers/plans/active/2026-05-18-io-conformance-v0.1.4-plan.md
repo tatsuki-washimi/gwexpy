@@ -1383,7 +1383,7 @@ v0.1.4 can ship when all of the following are true.
   `missing_dependency_policy` entries.
 - No format with public read or write classes lacks a `fixture_generator` reference.
 
-**Quantitative blocking test targets** (CI must report `blocking_pass / blocking_total`
+**Quantitative blocking test targets** (CI must report `blocked / total`
 ≥ 100% for the base gate):
 
 | Format | Min blocking rows |
@@ -1413,4 +1413,4 @@ only for `read_alias_format` / `write_alias_format` rows, not the full matrix.
   green.
 - Docs and changelog describe the conformance baseline accurately as the first
   systematic baseline, not full exhaustive enforcement.
-- CI outputs a `blocking_pass / blocking_total` summary line per job.
+- CI outputs a `blocked / total` summary line per job.

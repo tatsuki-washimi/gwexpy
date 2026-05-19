@@ -1,5 +1,35 @@
 {
     "schema_version": 2,
+    "io_conformance_v3": {
+        "target_release": "v0.1.4",
+        "ci_jobs": [
+            "base",
+            "io-audio",
+            "io-seismic",
+            "io-netcdf4",
+            "io-zarr",
+            "io-tdms",
+            "io-root",
+            "nightly"
+        ],
+        "base_gate": "io-conformance",
+        "blocking_formats": [
+            "gwf",
+            "hdf.ndscope",
+            "hdf5",
+            "csv",
+            "txt",
+            "wav"
+        ],
+        "fixture_generator_by_format": {
+            "gwf": "gwf",
+            "hdf.ndscope": "hdf_ndscope",
+            "hdf5": "hdf5",
+            "csv": "csv_txt",
+            "txt": "csv_txt",
+            "wav": "audio"
+        }
+    },
     "formats": [
         {
             "name": "gwf",
