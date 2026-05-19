@@ -50,10 +50,12 @@ python -m pytest
 ## Reproducing CI Gates Locally
 
 Gate-equivalent commands are centralized in `scripts/ci/run_gate.py` and are kept in sync with CI jobs.
+The `ci_jobs=base` contract mapping currently points to `python scripts/ci/run_gate.py io-conformance`; optional logical jobs stay as separate future mappings unless they are already documented elsewhere.
 
 ```bash
 python scripts/ci/run_gate.py pr-fast
 python scripts/ci/run_gate.py io-contract
+python scripts/ci/run_gate.py io-conformance
 python scripts/ci/run_gate.py io-optional
 python scripts/ci/run_gate.py io-network-backend
 python scripts/ci/run_gate.py docs-notebook

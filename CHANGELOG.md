@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- **docs/io**: Added `io-conformance` gate guidance and documented the v3 public I/O contract policy fields.
+
 ## [0.1.3] - 2026-05-12
 
 ### Fixed
