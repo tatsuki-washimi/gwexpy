@@ -2,7 +2,29 @@
 
 ## [Unreleased]
 
-- **docs/io**: Added `io-conformance` gate guidance and documented the v3 public I/O contract policy fields.
+- No unreleased changes yet.
+
+## [0.1.4] - 2026-05-20
+
+### Added
+
+- **io/conformance**: Added the first contract-driven I/O conformance baseline for `gwf`, `hdf.ndscope`, `hdf5`, `csv`, `txt`, and `wav`.
+- **io/contracts**: Added v3 public I/O contract policy fields for fixture generation, coverage status, CI jobs, and missing optional dependency behavior.
+- **ci/io**: Added the `io-conformance` gate and expanded I/O gate documentation.
+
+### Fixed
+
+- **io/dttxml**: Fixed `load_dttxml_products()` so DTTXML `TS` entries remain raw dict payloads and do not collide with `TimeSeries.get()`.
+- **io/gwf**: Provisioned the GWF backend for the PR fast gate and tolerated backend-specific GWF channel metadata variance.
+
+### Tests
+
+- **io/conformance**: Added deterministic fixture generators and read/write round-trip coverage for the v0.1.4 blocking format baseline.
+- **io/dttxml**: Added regression coverage for DTTXML `TS` dict parsing through `read_timeseriesdict_dttxml()`.
+
+### Known Issues
+
+- **io/zarr**: The optional `io-zarr` gate can hang in environments where Zarr 3.1.5 stalls during basic `create_array()` fixture generation. Zarr remains outside the v0.1.4 base blocking gate and is tracked for optional-backend hardening.
 
 ## [0.1.3] - 2026-05-12
 
