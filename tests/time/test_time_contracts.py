@@ -117,3 +117,37 @@ def test_interop_gps_to_utc_datetime_returns_aware_utc_and_roundtrips():
 
     gps_back = datetime_utc_to_gps(dt)
     assert float(gps_back) == pytest.approx(GPS_2017_UTC, abs=1e-6)
+
+
+def test_to_gps_dtype_quantity_is_interoperable_with_timeseries_times():
+    """dtype='quantity' output can be compared and used arithmetically with
+    TimeSeries.times (an astropy Quantity in seconds). Addresses issue #395.
+    """
+    import astropy.units as u
+    from gwpy.timeseries import TimeSeries
+
+    gps_start = GPS_2017_UTC
+    n = 16
+    dt_s = 1.0 / 16.0
+    ts = TimeSeries(np.zeros(n), t0=gps_start, dt=dt_s)
+
+    assert ts.times.unit == u.s
+
+    gps_q = gwexpy_time.to_gps(gps_start, dtype="quantity")
+    assert isinstance(gps_q, u.Quantity)
+    assert gps_q.unit == u.s
+
+    # Arithmetic and comparison must not raise TypeError or UnitConversionError.
+    delta = ts.times[0] - gps_q
+    assert delta.unit == u.s
+    assert abs(delta.to(u.s).value) < 1e-6
+
+    mask = ts.times > gps_q
+    assert mask.dtype == bool
+    assert mask.sum() == n - 1  # all samples after t0 are strictly greater
+
+    # Vector: list of GPS floats → Quantity → values match ts.times.
+    gps_arr_q = gwexpy_time.to_gps(ts.times.value.tolist(), dtype="quantity")
+    assert isinstance(gps_arr_q, u.Quantity)
+    assert gps_arr_q.unit == u.s
+    np.testing.assert_allclose(gps_arr_q.value, ts.times.value, rtol=1e-9)

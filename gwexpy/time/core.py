@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 from typing import Any
 
+import astropy.units as u
 import numpy as np
 from astropy.time import Time
 from gwpy.time import from_gps as _gwpy_from_gps
@@ -15,6 +16,29 @@ except ImportError:
     pd = None
 
 __all__ = ["to_gps", "from_gps", "tconvert"]
+
+_VALID_DTYPES = frozenset({None, float, "float", "quantity"})
+
+
+def _validate_dtype(dtype):
+    if dtype not in _VALID_DTYPES:
+        raise ValueError(
+            f"Invalid dtype {dtype!r} for to_gps(). "
+            "Expected one of: None, float, 'float', 'quantity'."
+        )
+
+
+def _apply_dtype(value, dtype):
+    if dtype is None:
+        return value
+    if dtype in (float, "float"):
+        if isinstance(value, np.ndarray):
+            return np.asarray(value, dtype=float)
+        return float(value)
+    # dtype == "quantity"
+    if isinstance(value, np.ndarray):
+        return u.Quantity(np.asarray(value, dtype=float), unit=u.s)
+    return u.Quantity(float(value), unit=u.s)
 
 
 def _is_array(obj):
@@ -64,7 +88,7 @@ def _normalize_time_input(t):
     return t
 
 
-def to_gps(t, *args, **kwargs):
+def to_gps(t, *args, dtype=None, **kwargs):
     """Convert a given time or array of times to GPS seconds.
 
     This is a vectorized extension of `gwpy.time.to_gps`. It supports
@@ -78,33 +102,66 @@ def to_gps(t, *args, **kwargs):
         datetime objects, pandas Timestamps, or arrays of these types.
     *args
         Additional positional arguments passed to `gwpy.time.to_gps`.
+    dtype : {None, float, "float", "quantity"}, optional
+        Controls the return type.
+
+        - ``None`` (default): preserves existing return types without
+          modification. Scalars may return ``LIGOTimeGPS`` (via GWpy);
+          arrays return ``numpy.ndarray`` of float64.
+        - ``float`` or ``"float"``: scalars return Python ``float``; arrays
+          return ``numpy.ndarray`` of float64.
+        - ``"quantity"``: returns ``astropy.units.Quantity`` in seconds for
+          both scalars and arrays. Use this when comparing against or doing
+          arithmetic with ``TimeSeries.times``.
     **kwargs
         Additional keyword arguments passed to `gwpy.time.to_gps`.
 
     Returns
     -------
-    float or numpy.ndarray
-        The equivalent time in GPS seconds. Returns a float for scalar inputs
-        and a numpy.ndarray of floats for array-like inputs.
+    LIGOTimeGPS, float, numpy.ndarray, or astropy.units.Quantity
+        The equivalent time in GPS seconds. The exact type depends on the
+        input shape and the *dtype* argument (see above).
+
+    Raises
+    ------
+    ValueError
+        If *dtype* is not one of the recognised values.
+
+    Examples
+    --------
+    Default (GWpy-compatible) behaviour::
+
+        >>> to_gps("2026-03-04 06:00:00")
+        LIGOTimeGPS(1741057218, 0)
+
+    Interoperable with ``TimeSeries.times``::
+
+        >>> g = to_gps("2026-03-04 06:00:00", dtype="quantity")
+        >>> ts.times > g   # works without TypeError
+        >>> ts.times - g   # works without TypeError
 
     """
+    _validate_dtype(dtype)
     t_norm = _normalize_time_input(t)
 
     if isinstance(t_norm, Time):
-        return t_norm.gps
+        return _apply_dtype(t_norm.gps, dtype)
 
     if not _is_array(t_norm):
         if isinstance(t_norm, np.datetime64):
             t_norm = t_norm.item()
-        return _gwpy_to_gps(t_norm, *args, **kwargs)
+        return _apply_dtype(_gwpy_to_gps(t_norm, *args, **kwargs), dtype)
 
     try:
         arr = np.asarray(t_norm)
         if _is_numeric_array(arr):
-            return arr.astype(float)
-        return Time(t_norm, *args, **kwargs).gps
+            return _apply_dtype(arr.astype(float), dtype)
+        return _apply_dtype(Time(t_norm, *args, **kwargs).gps, dtype)
     except (ValueError, TypeError):
-        return np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm])
+        return _apply_dtype(
+            np.array([_gwpy_to_gps(x, *args, **kwargs) for x in t_norm], dtype=float),
+            dtype,
+        )
 
 
 def from_gps(gps, *args, **kwargs):

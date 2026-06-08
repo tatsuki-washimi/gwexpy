@@ -162,3 +162,111 @@ def test_tconvert_array_datetime_strings():
 def test_tconvert_default_now():
     result = tconvert()
     assert result is not None
+
+
+# ---------------------------------------------------------------------------
+# to_gps — dtype parameter
+# ---------------------------------------------------------------------------
+
+GPS_SCALAR = 1234567890.0
+GPS_VECTOR = [1000000000.0, 1000000001.0]
+
+
+def test_to_gps_dtype_none_scalar_returns_ligo_time_gps():
+    from gwpy.time import LIGOTimeGPS
+
+    result = to_gps(GPS_SCALAR, dtype=None)
+    assert isinstance(result, LIGOTimeGPS)
+    assert float(result) == pytest.approx(GPS_SCALAR)
+
+
+def test_to_gps_dtype_none_vector_returns_ndarray_float64():
+    result = to_gps(GPS_VECTOR, dtype=None)
+    assert isinstance(result, np.ndarray)
+    assert result.dtype == np.float64
+
+
+def test_to_gps_dtype_float_scalar_returns_python_float():
+    result = to_gps(GPS_SCALAR, dtype=float)
+    assert type(result) is float
+    assert result == pytest.approx(GPS_SCALAR)
+
+
+def test_to_gps_dtype_float_string_scalar_returns_python_float():
+    result = to_gps(GPS_SCALAR, dtype="float")
+    assert type(result) is float
+    assert result == pytest.approx(GPS_SCALAR)
+
+
+def test_to_gps_dtype_float_vector_returns_ndarray_float64():
+    result = to_gps(GPS_VECTOR, dtype=float)
+    assert isinstance(result, np.ndarray)
+    assert result.dtype == np.float64
+    np.testing.assert_allclose(result, GPS_VECTOR)
+
+
+def test_to_gps_dtype_quantity_scalar_returns_quantity_seconds():
+    import astropy.units as u
+
+    result = to_gps(GPS_SCALAR, dtype="quantity")
+    assert isinstance(result, u.Quantity)
+    assert result.unit == u.s
+    assert float(result.value) == pytest.approx(GPS_SCALAR)
+
+
+def test_to_gps_dtype_quantity_vector_returns_quantity_seconds():
+    import astropy.units as u
+
+    result = to_gps(GPS_VECTOR, dtype="quantity")
+    assert isinstance(result, u.Quantity)
+    assert result.unit == u.s
+    assert len(result) == 2
+    np.testing.assert_allclose(result.value, GPS_VECTOR)
+
+
+def test_to_gps_dtype_quantity_string_input():
+    import astropy.units as u
+
+    result = to_gps("2017-01-01T00:00:00", dtype="quantity")
+    assert isinstance(result, u.Quantity)
+    assert result.unit == u.s
+    assert result.value > 0
+
+
+def test_to_gps_dtype_quantity_astropy_time_input():
+    import astropy.units as u
+
+    t = Time(1234567890.0, format="gps")
+    result = to_gps(t, dtype="quantity")
+    assert isinstance(result, u.Quantity)
+    assert result.unit == u.s
+    assert float(result.value) == pytest.approx(1234567890.0)
+
+
+def test_to_gps_dtype_float_vector_object_fallback_returns_float64():
+    """Fallback path (per-element conversion) must not produce an object array."""
+    from datetime import datetime, timezone
+
+    datetimes = [
+        datetime(2017, 1, 1, tzinfo=timezone.utc),
+        datetime(2017, 1, 2, tzinfo=timezone.utc),
+    ]
+    result = to_gps(datetimes, dtype=float)
+    assert isinstance(result, np.ndarray)
+    assert result.dtype == np.float64
+
+
+def test_to_gps_invalid_dtype_raises_value_error():
+    with pytest.raises(ValueError, match="Invalid dtype"):
+        to_gps(GPS_SCALAR, dtype="int64")
+
+
+def test_to_gps_invalid_dtype_message_lists_valid_options():
+    with pytest.raises(ValueError, match="None"):
+        to_gps(GPS_SCALAR, dtype="wrong")
+
+
+def test_to_gps_invalid_dtype_raised_before_conversion():
+    """ValueError must be raised immediately, before any time conversion."""
+    with pytest.raises(ValueError, match="Invalid dtype"):
+        to_gps("2017-01-01T00:00:00", dtype="bad")
