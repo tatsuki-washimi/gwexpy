@@ -14,7 +14,7 @@ myst:
 | **Audience** | New users installing GWexpy, users choosing extras, and contributors setting up a local dev environment |
 | **Prerequisites** | Python 3.11+, basic `pip` usage, and basic Conda usage when you need GW binary dependencies |
 | **Use Cases** | Install the minimal stack, decide whether Conda is required, choose extras, or prepare a contributor setup |
-| **Search Keywords** | `install`, `pip`, `conda`, extras, development version, NDS2, FrameLIB |
+| **Search Keywords** | `install`, `pip`, `conda`, extras, PyPI, NDS2, FrameLIB |
 
 ## On This Page
 
@@ -27,7 +27,11 @@ myst:
 - [Next to Read](#next-to-read)
 
 :::{note}
-GWexpy is currently in its **Development Version** and is **not yet published on PyPI or Conda**. For now, install it from the GitHub source repository using the commands on this page.
+GWexpy is published on PyPI (current release: v0.1.3). A native conda-forge
+package is under review in staged-recipes
+(<https://github.com/conda-forge/staged-recipes/pull/33169>) and is not yet
+available on the conda-forge channel. Install `gwexpy` from PyPI — including
+inside Conda-managed environments — until the conda-forge package is live.
 :::
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
@@ -37,10 +41,10 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
 
 | Goal | Installation Command | Features |
 | --- | --- | --- |
-| Minimal | `pip install git+https://github.com/tatsuki-washimi/gwexpy.git` | Numerical containers and basic arithmetic. Minimal dependencies. |
-| **Recommended** | `pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Advanced statistics, curve fitting, and mapping features. |
-| GW Analysis | `pip install "gwexpy[gw,io] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Frame file support, NDS2 access, and official GW tools. |
-| Dev / Full | `pip install "gwexpy[all] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Enables declared non-GUI optional features. |
+| Minimal | `pip install gwexpy` | Numerical containers and basic arithmetic. Minimal dependencies. |
+| **Recommended** | `pip install "gwexpy[analysis,fitting,plotting]"` | Advanced statistics, curve fitting, and mapping features. |
+| GW Analysis | `pip install "gwexpy[gw,io]"` | Frame file support, NDS2 access, and official GW tools. |
+| Dev / Full | `pip install "gwexpy[all]"` | Enables declared non-GUI optional features. |
 
 ## 1. Installation Steps
 
@@ -55,12 +59,16 @@ For users who want to keep dependencies minimal and only use core containers lik
 If you need NDS2, FrameLIB, `pygmt`, or other binary-heavy tools, skip this section and start with [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended--gw-analysis).
 
 ```bash
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+pip install gwexpy
 ```
 
 ### Conda Environment (Recommended / GW Analysis)
 
 For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.
+
+This workflow uses Conda for the environment and binary dependencies, then uses
+PyPI for GWexpy itself. It is different from a future native conda-forge
+`gwexpy` package.
 
 :::{warning}
 If you use Conda, avoid running `pip install` directly in `base` or in a shared environment for unrelated work. Create a **dedicated environment for GWexpy** first, then install both the Conda-managed binary dependencies and the `pip` packages there. This keeps binary dependency resolution isolated and reduces the risk of breaking the environment.
@@ -77,7 +85,7 @@ conda activate gwexpy
 conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
 
 # 2. Install GWexpy with analysis/fitting options
-pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+pip install "gwexpy[gw,analysis,fitting]"
 ```
 
 If you see `No module named nds2` or FrameLIB-related import errors, re-run the `conda install -c conda-forge ...` step inside that dedicated environment first. If you do not need NDS2 or FrameLIB, the minimal or recommended installation without the `gw` extras is usually sufficient.
@@ -95,6 +103,10 @@ git clone https://github.com/tatsuki-washimi/gwexpy.git
 cd gwexpy
 pip install -e ".[dev,all]"
 ```
+
+Use the developer mode only when you need to edit GWexpy itself or test
+unreleased changes from the repository. For normal use, prefer the PyPI commands
+above.
 
 ## 2.1. Dependency Troubleshooting
 
