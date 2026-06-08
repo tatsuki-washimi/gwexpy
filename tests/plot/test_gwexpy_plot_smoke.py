@@ -1,3 +1,7 @@
+import matplotlib
+
+matplotlib.use("Agg")
+
 import numpy as np
 
 
@@ -16,11 +20,9 @@ def test_plot_timeseries_no_matrix_does_not_error():
 
 
 def test_timeseriesdict_plot_not_blank():
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-
     from gwpy.timeseries import TimeSeries
+
     from gwexpy.timeseries import TimeSeriesDict
 
     ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)

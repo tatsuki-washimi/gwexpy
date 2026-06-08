@@ -231,7 +231,11 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
         if separate is None:
             separate = True
         if separate is True and geometry is None:
-            geometry = (len(ref), 1)
+            total_channels = sum(
+                len(item) if type(item).__name__ == "TimeSeriesDict" else 1
+                for item in data_list
+            )
+            geometry = (total_channels, 1)
         return separate, geometry
 
     return separate, geometry

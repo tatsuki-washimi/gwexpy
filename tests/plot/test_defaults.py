@@ -211,7 +211,9 @@ class TestDetermineGeometryAndSeparate:
 
     def test_timeseriesdict_sets_separate_true(self):
         from gwpy.timeseries import TimeSeries
+
         from gwexpy.timeseries import TimeSeriesDict
+
         ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
         tsd = TimeSeriesDict({"A": ts, "B": ts.copy(), "C": ts.copy()})
         sep, geom = determine_geometry_and_separate([tsd])
@@ -219,7 +221,9 @@ class TestDetermineGeometryAndSeparate:
 
     def test_timeseriesdict_geometry_matches_channel_count(self):
         from gwpy.timeseries import TimeSeries
+
         from gwexpy.timeseries import TimeSeriesDict
+
         ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
         tsd = TimeSeriesDict({"A": ts, "B": ts.copy(), "C": ts.copy()})
         sep, geom = determine_geometry_and_separate([tsd])
@@ -227,7 +231,9 @@ class TestDetermineGeometryAndSeparate:
 
     def test_timeseriesdict_explicit_separate_false_respected(self):
         from gwpy.timeseries import TimeSeries
+
         from gwexpy.timeseries import TimeSeriesDict
+
         ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
         tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
         sep, geom = determine_geometry_and_separate([tsd], separate=False)
@@ -236,12 +242,26 @@ class TestDetermineGeometryAndSeparate:
 
     def test_timeseriesdict_explicit_geometry_respected(self):
         from gwpy.timeseries import TimeSeries
+
         from gwexpy.timeseries import TimeSeriesDict
+
         ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
         tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
         sep, geom = determine_geometry_and_separate([tsd], geometry=(1, 2))
         assert sep is True
         assert geom == (1, 2)
+
+    def test_timeseriesdict_multiple_dicts_geometry(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd1 = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        tsd2 = TimeSeriesDict({"C": ts, "D": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd1, tsd2])
+        assert sep is True
+        assert geom == (4, 1)
 
 
 # ---------------------------------------------------------------------------
