@@ -39,7 +39,10 @@ def test_mseed_public_dict_roundtrip_and_alias(tmp_path, fmt):
     back = TimeSeriesDict.read(path, format=fmt)
 
     assert len(back) == 1
-    assert len(next(iter(back.values()))) == len(tsd["SIG"])
+    key = next(iter(back.keys()))
+    assert isinstance(key, str), f"expected str key, got {type(key)}"
+    assert back[key].name == key
+    assert len(back[key]) == len(tsd["SIG"])
 
 
 @pytest.mark.parametrize("fmt", ["sac", "gse2"])
@@ -53,7 +56,10 @@ def test_obsby_backed_public_dict_roundtrip(tmp_path, fmt):
     back = TimeSeriesDict.read(path, format=fmt)
 
     assert len(back) == 1
-    assert len(next(iter(back.values()))) == len(tsd["SIG"])
+    key = next(iter(back.keys()))
+    assert isinstance(key, str), f"expected str key, got {type(key)}"
+    assert back[key].name == key
+    assert len(back[key]) == len(tsd["SIG"])
 
 
 def test_knet_public_surface_is_dict_first(monkeypatch):
@@ -71,7 +77,10 @@ def test_knet_public_surface_is_dict_first(monkeypatch):
     monkeypatch.setattr(seismic_io, "_read_obspy_stream", lambda *a, **k: stream)
     out = TimeSeriesDict.read("dummy.knet", format="knet")
     assert len(out) == 1
-    assert str(next(iter(out.keys()))).endswith("EW")
+    key = next(iter(out.keys()))
+    assert isinstance(key, str), f"expected str key, got {type(key)}"
+    assert key.endswith("EW")
+    assert out[key].name == key
 
 
 def test_win_alias_family_public_surface_is_dict_first(monkeypatch):
