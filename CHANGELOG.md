@@ -11,16 +11,31 @@
 - **io/conformance**: Added the first contract-driven I/O conformance baseline for `gwf`, `hdf.ndscope`, `hdf5`, `csv`, `txt`, and `wav`.
 - **io/contracts**: Added v3 public I/O contract policy fields for fixture generation, coverage status, CI jobs, and missing optional dependency behavior.
 - **ci/io**: Added the `io-conformance` gate and expanded I/O gate documentation.
+- **time**: Added opt-in `dtype=` output modes for `to_gps()`. The default
+  remains GWpy-compatible, while `dtype=float` / `dtype="float"` return plain
+  float values and `dtype="quantity"` returns seconds quantities for direct
+  `.times` comparisons.
 
 ### Fixed
 
 - **io/dttxml**: Fixed `load_dttxml_products()` so DTTXML `TS` entries remain raw dict payloads and do not collide with `TimeSeries.get()`.
 - **io/gwf**: Provisioned the GWF backend for the PR fast gate and tolerated backend-specific GWF channel metadata variance.
 
+### Documentation
+
+- **feedback**: Updated the README, docs hub pages, footer links, roadmap, and
+  troubleshooting pages to point lightweight bug reports and feature requests
+  to the public feedback form. Security reports remain directed to the
+  repository security policy.
+
 ### Tests
 
 - **io/conformance**: Added deterministic fixture generators and read/write round-trip coverage for the v0.1.4 blocking format baseline.
 - **io/dttxml**: Added regression coverage for DTTXML `TS` dict parsing through `read_timeseriesdict_dttxml()`.
+- **netcdf**: Added a fixture-generation contract that requires generated
+  NetCDF fixtures to expose an explicit time coordinate (#393).
+- **timeseries/gwf**: Added regression coverage for multi-channel GWF
+  list-source reads and padded gap reads with `parallel > 1`.
 
 ### Known Issues
 
@@ -263,7 +278,8 @@ First stable release of GWexpy for SoftwareX publication. This release focuses o
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0...v0.1.1

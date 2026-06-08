@@ -8,6 +8,8 @@ pytest.importorskip("netCDF4")
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
+FIXTURE_NETCDF = "tests/fixtures/data/test.nc"
+
 
 class TestNetCDF4Roundtrip:
     @pytest.mark.parametrize("fmt", ("nc", "netcdf4"))
@@ -96,6 +98,27 @@ class TestNetCDF4Roundtrip:
 
         ts_in = read_timeseries_netcdf4(str(path))
         assert len(ts_in) == 20
+
+    def test_bundled_fixture_has_time_coordinate(self):
+        with xr.open_dataset(FIXTURE_NETCDF) as ds:
+            assert "time" in ds.coords
+            np.testing.assert_allclose(np.diff(ds["time"].values), 0.1, atol=1e-6)
+
+    @pytest.mark.parametrize("cls", (TimeSeries, TimeSeriesDict, TimeSeriesMatrix))
+    def test_bundled_fixture_satisfies_time_coordinate_contract(self, cls):
+        loaded = cls.read(FIXTURE_NETCDF, format="nc")
+        assert isinstance(loaded, cls)
+
+        if cls is TimeSeries:
+            assert len(loaded) == 100
+            assert np.isclose(float(loaded.dt.value), 0.1)
+        elif cls is TimeSeriesDict:
+            assert "ch1" in loaded
+            assert len(loaded["ch1"]) == 100
+            assert np.isclose(float(loaded["ch1"].dt.value), 0.1)
+        else:
+            assert loaded.shape[-1] == 100
+            assert np.isclose(float(loaded.dt.value), 0.1)
 
     def test_empty_dataset_raises(self, tmp_path):
         path = tmp_path / "empty.nc"
