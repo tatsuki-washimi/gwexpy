@@ -1,5 +1,7 @@
 """Tests for NetCDF4 reader/writer roundtrip."""
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -165,3 +167,31 @@ class TestNetCDF4Roundtrip:
         assert all(isinstance(k, int) for k in row_keys), "Row keys should be int"
         assert all(isinstance(k, int) for k in col_keys), "Col keys should be int"
         np.testing.assert_allclose(loaded.value, data)
+
+
+class TestNetCDF4FixtureContract:
+    """Verify that the generated test.nc fixture satisfies the reader contract.
+
+    These tests exist to prevent fixture-contract drift: if generate_netcdf4()
+    is ever modified to drop the time coordinate variable, these will fail fast.
+    """
+
+    @pytest.fixture(scope="class")
+    def fixture_path(self):
+        p = Path(__file__).resolve().parents[1] / "fixtures" / "data" / "test.nc"
+        if not p.exists():
+            pytest.skip("test.nc fixture not generated")
+        return p
+
+    def test_timeseriesdict_reads_fixture(self, fixture_path):
+        tsd = TimeSeriesDict.read(str(fixture_path), format="nc")
+        assert "ch1" in tsd
+        assert len(tsd["ch1"]) == 100
+
+    def test_timeseries_reads_fixture(self, fixture_path):
+        ts = TimeSeries.read(str(fixture_path), format="nc")
+        assert len(ts) == 100
+
+    def test_timeseriesmatrix_reads_fixture(self, fixture_path):
+        m = TimeSeriesMatrix.read(str(fixture_path), format="nc")
+        assert len(m) > 0
