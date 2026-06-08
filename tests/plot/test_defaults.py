@@ -209,6 +209,40 @@ class TestDetermineGeometryAndSeparate:
         sep, geom = determine_geometry_and_separate([sg], geometry=(2, 2))
         assert geom == (2, 2)
 
+    def test_timeseriesdict_sets_separate_true(self):
+        from gwpy.timeseries import TimeSeries
+        from gwexpy.timeseries import TimeSeriesDict
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy(), "C": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd])
+        assert sep is True
+
+    def test_timeseriesdict_geometry_matches_channel_count(self):
+        from gwpy.timeseries import TimeSeries
+        from gwexpy.timeseries import TimeSeriesDict
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy(), "C": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd])
+        assert geom == (3, 1)
+
+    def test_timeseriesdict_explicit_separate_false_respected(self):
+        from gwpy.timeseries import TimeSeries
+        from gwexpy.timeseries import TimeSeriesDict
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd], separate=False)
+        assert sep is False
+        assert geom is None
+
+    def test_timeseriesdict_explicit_geometry_respected(self):
+        from gwpy.timeseries import TimeSeries
+        from gwexpy.timeseries import TimeSeriesDict
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd], geometry=(1, 2))
+        assert sep is True
+        assert geom == (1, 2)
+
 
 # ---------------------------------------------------------------------------
 # determine_xlabel

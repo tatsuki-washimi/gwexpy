@@ -13,3 +13,21 @@ def test_plot_timeseries_no_matrix_does_not_error():
     import matplotlib.pyplot as plt
 
     plt.close(plot)
+
+
+def test_timeseriesdict_plot_not_blank():
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    from gwpy.timeseries import TimeSeries
+    from gwexpy.timeseries import TimeSeriesDict
+
+    ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+    tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+
+    plot = tsd.plot()
+
+    assert len(plot.axes) >= 2
+
+    plt.close(plot)

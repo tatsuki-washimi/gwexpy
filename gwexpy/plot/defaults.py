@@ -227,6 +227,13 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
             except (AttributeError, ValueError):
                 return separate, (total_elements, 1)
 
+    if ref_type == "TimeSeriesDict":
+        if separate is None:
+            separate = True
+        if separate is True and geometry is None:
+            geometry = (len(ref), 1)
+        return separate, geometry
+
     return separate, geometry
 
 
