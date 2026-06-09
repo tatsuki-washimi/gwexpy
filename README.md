@@ -14,17 +14,24 @@
 
 **gwexpy** is an extension library for [GWpy](https://gwpy.github.io/) for experimental physics and gravitational-wave data analysis. It adds matrix-aware containers, field operations, fitting workflows, expanded I/O, and interoperability layers while staying close to GWpy-style analysis.
 
+GWexpy is an independent package built on top of GWpy. It is not an official component of the GWpy project.
+
 ## Install
 
 ```bash
 python -m pip install gwexpy
 ```
 
-GWexpy is published on PyPI. The experimental GUI app is not part of the
-supported package surface. You can install the PyPI package inside a
-Conda-managed environment. A native conda-forge package is under review at
-<https://github.com/conda-forge/staged-recipes/pull/33169> and is not yet
-available on the conda-forge channel.
+GWexpy is published on PyPI. A conda-forge feedstock is also available, though
+the conda-forge package may lag the latest PyPI release.
+
+```bash
+python -m pip install gwexpy
+# or, once the desired version is available on conda-forge:
+conda install -c conda-forge gwexpy
+```
+
+The experimental GUI app is not part of the supported package surface.
 
 For optional extras, external dependencies, and environment-specific setup, use the official installation guides:
 
