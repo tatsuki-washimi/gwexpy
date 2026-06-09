@@ -56,18 +56,34 @@ def _trace_to_timeseries(trace, *, unit, timezone, epoch_override):
 
 def _read_obspy_stream(format_name, source, *, pad=np.nan, gap="pad", **kwargs):
     obspy = _import_obspy()
-    if (
-        not isinstance(source, (str, bytes))
-        and not hasattr(source, "__fspath__")
-        and hasattr(source, "name")
-    ):
-        source = source.name
-    try:
-        stream = obspy.read(source, format=format_name, **kwargs)
-    except (OSError, TypeError, ValueError) as exc:
-        # Fallback: try reading without format specifier if specifically WIN/KNET fails obscurely
-        # but usually we want to respect the format_name.
-        raise ValueError(f"Failed to read {format_name} file: {exc}") from exc
+
+    def _normalise_source(item):
+        if (
+            not isinstance(item, (str, bytes))
+            and not hasattr(item, "__fspath__")
+            and hasattr(item, "name")
+        ):
+            return item.name
+        return item
+
+    if isinstance(source, (list, tuple)):
+        if not source:
+            raise ValueError(f"No {format_name} files provided")
+        stream = obspy.Stream()
+        for item in source:
+            item = _normalise_source(item)
+            try:
+                stream += obspy.read(item, format=format_name, **kwargs)
+            except (OSError, TypeError, ValueError, AttributeError) as exc:
+                raise ValueError(
+                    f"Failed to read {format_name} file '{item}': {exc}"
+                ) from exc
+    else:
+        source = _normalise_source(source)
+        try:
+            stream = obspy.read(source, format=format_name, **kwargs)
+        except (OSError, TypeError, ValueError, AttributeError) as exc:
+            raise ValueError(f"Failed to read {format_name} file: {exc}") from exc
 
     gaps = stream.get_gaps()
     if gaps and gap == "raise":

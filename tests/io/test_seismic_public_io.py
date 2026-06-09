@@ -45,6 +45,32 @@ def test_mseed_public_dict_roundtrip_and_alias(tmp_path, fmt):
     assert len(back[key]) == len(tsd["SIG"])
 
 
+def test_mseed_list_of_paths(tmp_path):
+    """TimeSeriesDict.read() should accept a list of miniSEED paths (issue #428)."""
+    pytest.importorskip("obspy")
+
+    # Two contiguous segments of the same channel in separate files
+    ts1 = TimeSeries(np.arange(8, dtype=float), sample_rate=4, name="SIG", t0=0)
+    ts2 = TimeSeries(np.arange(8, dtype=float), sample_rate=4, name="SIG", t0=2)
+    path1 = tmp_path / "a.mseed"
+    path2 = tmp_path / "b.mseed"
+    TimeSeriesDict({"SIG": ts1}).write(path1, format="mseed")
+    TimeSeriesDict({"SIG": ts2}).write(path2, format="mseed")
+
+    result = TimeSeriesDict.read([str(path1), str(path2)], format="mseed")
+
+    assert len(result) == 1
+    assert len(next(iter(result.values()))) == 16
+
+
+def test_mseed_empty_list_raises():
+    """TimeSeriesDict.read() should reject an empty list."""
+    pytest.importorskip("obspy")
+
+    with pytest.raises(ValueError, match="No MSEED files provided"):
+        TimeSeriesDict.read([], format="mseed")
+
+
 @pytest.mark.parametrize("fmt", ["sac", "gse2"])
 def test_obsby_backed_public_dict_roundtrip(tmp_path, fmt):
     pytest.importorskip("obspy")
