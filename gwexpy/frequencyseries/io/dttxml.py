@@ -245,8 +245,19 @@ def read_frequencyseriesmatrix_dttxml(
     return fsm
 
 
+def read_frequencyseries_dttxml(*args, **kwargs) -> FrequencySeries:
+    """Read one DTT XML product and return its first channel."""
+    fsd = read_frequencyseriesdict_dttxml(*args, **kwargs)
+    if len(fsd) == 0:
+        raise ValueError("No channels found in xml.diaggui")
+    return fsd[next(iter(fsd.keys()))]
+
+
 # -- registration
 for _fmt in _DTTXML_FORMATS:
+    io_registry.register_reader(
+        _fmt, FrequencySeries, read_frequencyseries_dttxml, force=True
+    )
     io_registry.register_reader(
         _fmt, FrequencySeriesDict, read_frequencyseriesdict_dttxml, force=True
     )
@@ -263,5 +274,10 @@ io_registry.register_identifier(
 io_registry.register_identifier(
     "xml.diaggui",
     FrequencySeriesDict,
+    lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
+)
+io_registry.register_identifier(
+    "xml.diaggui",
+    FrequencySeriesMatrix,
     lambda *args, **kwargs: _looks_like_dttxml(args[1] if len(args) > 1 else None),
 )
