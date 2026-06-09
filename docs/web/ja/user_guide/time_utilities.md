@@ -81,7 +81,7 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 from gwexpy.time import to_gps, from_gps, tconvert
 
 # 日本語の日時文字列を GPS 秒へ（デフォルト UTC）
-gps = to_gps("2015-09-14 09:50:45")
+gps = to_gps("2015-09-14 09:50:45.391")
 # → 1126259462.391
 
 # GPS 秒を datetime オブジェクトへ
@@ -157,7 +157,7 @@ to_gps("2024-01-01 09:00:00", timezone="Asia/Tokyo")  # -> TypeError
 (time-utils-ja-to-gps)=
 ## `to_gps` — 日時 → GPS 秒
 
-**Signature**: `to_gps(t, *args, **kwargs)`
+**Signature**: `to_gps(t, *args, dtype=None, **kwargs)`
 
 さまざまな時刻表現を GPS 秒に変換します。単一の値（スカラー）だけでなく、リストや配列に対しても効率的なベクトル演算を行います。
 
@@ -171,12 +171,35 @@ to_gps("2024-01-01 09:00:00", timezone="Asia/Tokyo")  # -> TypeError
 from gwexpy.time import to_gps
 
 # ISO 8601 文字列（タイムゾーン指定なしの場合は UTC として扱われます）
-to_gps("2015-09-14 09:50:45 UTC")
+to_gps("2015-09-14 09:50:45.391 UTC")
 # → LIGOTimeGPS(1126259462, 391000000)
 
 # Python datetime（タイムゾーン付き推奨）
 from datetime import datetime, timezone
-to_gps(datetime(2015, 9, 14, 9, 50, 45, tzinfo=timezone.utc))
+to_gps(datetime(2015, 9, 14, 9, 50, 45, 391000, tzinfo=timezone.utc))
+```
+
+### 出力型の選択
+
+デフォルトでは GWpy に合わせ、スカラー入力は `LIGOTimeGPS` を返します。
+特定の表現が必要な場合は `dtype` を指定します。
+
+```python
+from gwexpy.time import to_gps
+
+to_gps("2015-09-14 09:50:45.391 UTC", dtype=float)
+# -> 1126259462.391
+
+gps = to_gps("2015-09-14 09:50:45.391 UTC", dtype="quantity")
+# -> <Quantity 1126259462.391 s>
+```
+
+`dtype="quantity"` は、GWpy/GWexpy の時刻軸と直接比較・差分計算したい場合に使えます。
+
+```python
+threshold = to_gps("2015-09-14 09:50:45.391 UTC", dtype="quantity")
+mask = ts.times > threshold
+offset = ts.times - threshold
 ```
 
 ### Astropy Time
@@ -184,7 +207,7 @@ to_gps(datetime(2015, 9, 14, 9, 50, 45, tzinfo=timezone.utc))
 ```python
 from astropy.time import Time
 
-t = Time("2015-09-14T09:50:45", format="isot", scale="utc")
+t = Time("2015-09-14T09:50:45.391", format="isot", scale="utc")
 to_gps(t)
 # → 1126259462.391
 ```
