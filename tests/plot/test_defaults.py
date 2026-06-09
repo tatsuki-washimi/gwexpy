@@ -305,8 +305,24 @@ class TestDetermineGeometryAndSeparate:
 
         tsd = TimeSeriesDict()
         sep, geom = determine_geometry_and_separate([tsd])
-        assert sep is True
+        # Empty dict: separate stays None, geometry stays None
+        assert sep is None
         assert geom is None
+
+    def test_plain_userlist_counts_as_one(self):
+        from collections import UserList
+
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        # Plain UserList is NOT expanded by _expand_args (falls to else-branch → 1 arg)
+        ul = UserList([ts, ts])
+        sep, geom = determine_geometry_and_separate([tsd, ul])
+        assert sep is True
+        assert geom == (3, 1)
 
     def test_timeseriesdict_mixed_with_3d_spectrogrammatrix_geometry(self):
         from gwpy.timeseries import TimeSeries

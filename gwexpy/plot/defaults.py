@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections import UserDict, UserList
-
 import numpy as np
 from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries
@@ -230,47 +228,54 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
                 return separate, (total_elements, 1)
 
     if ref_type == "TimeSeriesDict":
-        if separate is None:
-            separate = True
-        if separate is True and geometry is None:
-            # Mirror _expand_args(separate=True) expansion counts:
-            # - matrices  → shape[0] (2-D) or shape[0]*shape[1] (3-D+)
-            # - list/tuple/dict/UserList/UserDict → len(item)
-            # - everything else → 1
-            total_channels = 0
-            for item in data_list:
-                item_type = type(item).__name__
-                if item_type in (
-                    "SeriesMatrix",
-                    "TimeSeriesMatrix",
-                    "FrequencySeriesMatrix",
-                ) or item_type.endswith("Matrix"):
-                    try:
-                        if item_type == "SpectrogramMatrix":
-                            # to_series_1Dlist(): 3-D → shape[0] spectrograms,
-                            # 4-D → shape[0]*shape[1] spectrograms
-                            if item.ndim == 3:
-                                total_channels += item.shape[0]
-                            elif item.ndim == 4:
-                                total_channels += item.shape[0] * item.shape[1]
-                            else:
-                                total_channels += 1
+        # Compute total expanded channel count first, mirroring _expand_args(separate=True):
+        # - matrices            → to_series_1Dlist() element count
+        # - list/tuple/dict     → len(item)  (FrequencySeriesList/Dict inherit list/dict)
+        # - SpectrogramList/Dict → len(item)  (inherit UserList/UserDict, checked by name)
+        # - plain UserList/UserDict → 1        (_expand_args falls to else-branch)
+        # - everything else     → 1
+        total_channels = 0
+        for item in data_list:
+            item_type = type(item).__name__
+            if item_type in (
+                "SeriesMatrix",
+                "TimeSeriesMatrix",
+                "FrequencySeriesMatrix",
+            ) or item_type.endswith("Matrix"):
+                try:
+                    if item_type == "SpectrogramMatrix":
+                        # to_series_1Dlist(): 3-D → shape[0], 4-D → shape[0]*shape[1]
+                        if item.ndim == 3:
+                            total_channels += item.shape[0]
+                        elif item.ndim == 4:
+                            total_channels += item.shape[0] * item.shape[1]
                         else:
-                            # SeriesMatrix/TimeSeriesMatrix/FrequencySeriesMatrix:
-                            # to_series_1Dlist() always returns shape[0]*shape[1]
-                            if item.ndim == 2:
-                                total_channels += item.shape[0]
-                            elif item.ndim >= 3:
-                                total_channels += item.shape[0] * item.shape[1]
-                            else:
-                                total_channels += 1
-                    except (AttributeError, ValueError):
-                        total_channels += 1
-                elif isinstance(item, (list, tuple, dict, UserList, UserDict)):
-                    total_channels += len(item)
-                else:
+                            total_channels += 1
+                    else:
+                        # to_series_1Dlist() always returns shape[0]*shape[1]
+                        if item.ndim == 2:
+                            total_channels += item.shape[0]
+                        elif item.ndim >= 3:
+                            total_channels += item.shape[0] * item.shape[1]
+                        else:
+                            total_channels += 1
+                except (AttributeError, ValueError):
                     total_channels += 1
-            if total_channels > 0:
+            elif isinstance(item, (list, tuple, dict)) or item_type in (
+                "SpectrogramList",
+                "SpectrogramDict",
+            ):
+                total_channels += len(item)
+            else:
+                total_channels += 1
+
+        # Only default separate=True and set geometry when channels exist.
+        # An empty TimeSeriesDict (total_channels == 0) keeps the caller's
+        # separate value so gwpy can produce a graceful empty plot.
+        if total_channels > 0:
+            if separate is None:
+                separate = True
+            if separate is True and geometry is None:
                 geometry = (total_channels, 1)
         return separate, geometry
 
