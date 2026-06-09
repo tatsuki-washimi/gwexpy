@@ -40,6 +40,17 @@ def _is_numeric_array(arr):
         return False
 
 
+_VALID_DTYPES = frozenset({None, float, "float", "quantity"})
+
+
+def _validate_dtype(dtype):
+    if dtype not in _VALID_DTYPES:
+        raise ValueError(
+            f"Invalid dtype {dtype!r} for to_gps(). "
+            "Expected one of: None, float, 'float', 'quantity'."
+        )
+
+
 def _as_float_seconds(result):
     if isinstance(result, np.ndarray):
         return result.astype(float)
@@ -117,6 +128,7 @@ def to_gps(t, *args, dtype=None, **kwargs):
         returns seconds as an ``astropy.units.Quantity``.
 
     """
+    _validate_dtype(dtype)
     t_norm = _normalize_time_input(t)
 
     if isinstance(t_norm, Time):

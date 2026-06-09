@@ -159,6 +159,30 @@ def test_to_gps_invalid_dtype_raises():
         to_gps(1000000000.0, dtype="datetime")
 
 
+def test_to_gps_dtype_quantity_string_input():
+    import astropy.units as u
+
+    result = to_gps("2017-01-01T00:00:00", dtype="quantity")
+    assert isinstance(result, u.Quantity)
+    assert result.unit == u.s
+    assert result.value > 0
+
+
+def test_to_gps_dtype_quantity_astropy_time_input():
+    import astropy.units as u
+
+    t = Time(1234567890.0, format="gps")
+    result = to_gps(t, dtype="quantity")
+    assert isinstance(result, u.Quantity)
+    assert result.unit == u.s
+    assert float(result.value) == pytest.approx(1234567890.0)
+
+
+def test_to_gps_invalid_dtype_raised_before_conversion():
+    with pytest.raises(ValueError, match="Invalid dtype"):
+        to_gps("2017-01-01T00:00:00", dtype="bad")
+
+
 def test_to_gps_list_numeric():
     result = to_gps([1000.0, 2000.0])
     assert len(result) == 2
