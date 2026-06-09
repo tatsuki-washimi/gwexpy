@@ -153,6 +153,11 @@ def to_gps(t, *args, dtype=None, **kwargs):
         return _apply_dtype(_gwpy_to_gps(t_norm, *args, **kwargs), dtype)
 
     try:
+        # If the input is already a Quantity, convert to seconds first so that
+        # np.asarray() stripping the unit does not silently misinterpret the
+        # values (e.g. [1000, 2000] ms would become [1000, 2000] s otherwise).
+        if isinstance(t_norm, u.Quantity):
+            t_norm = t_norm.to(u.s).value
         arr = np.asarray(t_norm)
         if _is_numeric_array(arr):
             return _apply_dtype(arr.astype(float), dtype)

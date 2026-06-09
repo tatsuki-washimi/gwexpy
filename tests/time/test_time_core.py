@@ -270,3 +270,14 @@ def test_to_gps_invalid_dtype_raised_before_conversion():
     """ValueError must be raised immediately, before any time conversion."""
     with pytest.raises(ValueError, match="Invalid dtype"):
         to_gps("2017-01-01T00:00:00", dtype="bad")
+
+
+def test_to_gps_dtype_quantity_vector_non_second_unit_converts_correctly():
+    """Quantity arrays in non-second units must be converted before wrapping."""
+    import astropy.units as u
+
+    # 1000 ms = 1 s, 2000 ms = 2 s
+    result = to_gps(np.array([1000.0, 2000.0]) * u.ms, dtype="quantity")
+    assert isinstance(result, u.Quantity)
+    assert result.unit == u.s
+    np.testing.assert_allclose(result.value, [1.0, 2.0])
