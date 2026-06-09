@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections import UserDict, UserList
+
 import numpy as np
 from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries
@@ -231,10 +233,12 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
         if separate is None:
             separate = True
         if separate is True and geometry is None:
-            # Mirror _expand_args(separate=True): list/tuple/dict are extended,
-            # everything else contributes one subplot.
+            # Mirror _expand_args(separate=True): list/tuple/dict/UserList/UserDict
+            # are all extended element-by-element; everything else is one subplot.
+            # UserList/UserDict covers SpectrogramList and SpectrogramDict which
+            # do not inherit directly from list/dict.
             total_channels = sum(
-                len(item) if isinstance(item, (list, tuple, dict)) else 1
+                len(item) if isinstance(item, (list, tuple, dict, UserList, UserDict)) else 1
                 for item in data_list
             )
             geometry = (total_channels, 1)

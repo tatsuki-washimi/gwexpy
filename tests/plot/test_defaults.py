@@ -274,6 +274,20 @@ class TestDetermineGeometryAndSeparate:
         assert sep is True
         assert geom == (4, 1)
 
+    def test_timeseriesdict_mixed_with_spectrogramlist_geometry(self):
+        from gwpy.spectrogram import Spectrogram
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.spectrogram import SpectrogramList
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        sg = Spectrogram(np.ones((16, 8)), t0=0, dt=1, f0=0, df=1)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd, SpectrogramList([sg, sg])])
+        assert sep is True
+        assert geom == (4, 1)
+
 
 # ---------------------------------------------------------------------------
 # determine_xlabel
