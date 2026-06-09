@@ -1,7 +1,7 @@
 """Placeholder readers for unsupported frequency-domain formats."""
 from __future__ import annotations
 
-from astropy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 
 from ..collections import FrequencySeriesDict
 from ..frequencyseries import FrequencySeries
