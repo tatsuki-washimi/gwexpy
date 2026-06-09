@@ -209,6 +209,135 @@ class TestDetermineGeometryAndSeparate:
         sep, geom = determine_geometry_and_separate([sg], geometry=(2, 2))
         assert geom == (2, 2)
 
+    def test_timeseriesdict_sets_separate_true(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy(), "C": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd])
+        assert sep is True
+
+    def test_timeseriesdict_geometry_matches_channel_count(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy(), "C": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd])
+        assert geom == (3, 1)
+
+    def test_timeseriesdict_explicit_separate_false_respected(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd], separate=False)
+        assert sep is False
+        assert geom is None
+
+    def test_timeseriesdict_explicit_geometry_respected(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd], geometry=(1, 2))
+        assert sep is True
+        assert geom == (1, 2)
+
+    def test_timeseriesdict_multiple_dicts_geometry(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd1 = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        tsd2 = TimeSeriesDict({"C": ts, "D": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd1, tsd2])
+        assert sep is True
+        assert geom == (4, 1)
+
+    def test_timeseriesdict_mixed_with_list_geometry(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd, [ts, ts]])
+        assert sep is True
+        assert geom == (4, 1)
+
+    def test_timeseriesdict_mixed_with_spectrogramlist_geometry(self):
+        from gwpy.spectrogram import Spectrogram
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.spectrogram import SpectrogramList
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        sg = Spectrogram(np.ones((16, 8)), t0=0, dt=1, f0=0, df=1)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd, SpectrogramList([sg, sg])])
+        assert sep is True
+        assert geom == (4, 1)
+
+    def test_timeseriesdict_mixed_with_matrix_geometry(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict, TimeSeriesMatrix
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        mat = TimeSeriesMatrix(np.ones((2, 16)), dt=1 / 16)
+        sep, geom = determine_geometry_and_separate([tsd, mat])
+        assert sep is True
+        assert geom == (4, 1)
+
+    def test_empty_timeseriesdict_no_geometry(self):
+        from gwexpy.timeseries import TimeSeriesDict
+
+        tsd = TimeSeriesDict()
+        sep, geom = determine_geometry_and_separate([tsd])
+        # Empty dict: separate stays None, geometry stays None
+        assert sep is None
+        assert geom is None
+
+    def test_plain_userlist_counts_as_one(self):
+        from collections import UserList
+
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        # Plain UserList is NOT expanded by _expand_args (falls to else-branch → 1 arg)
+        ul = UserList([ts, ts])
+        sep, geom = determine_geometry_and_separate([tsd, ul])
+        assert sep is True
+        assert geom == (3, 1)
+
+    def test_timeseriesdict_mixed_with_3d_spectrogrammatrix_geometry(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.spectrogram import SpectrogramMatrix
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        # 3-D SpectrogramMatrix shape (2, 16, 8): to_series_1Dlist returns shape[0]=2
+        sg_mat = SpectrogramMatrix(np.ones((2, 16, 8)), t0=0, dt=1, f0=0, df=1)
+        sep, geom = determine_geometry_and_separate([tsd, sg_mat])
+        assert sep is True
+        assert geom == (4, 1)
+
 
 # ---------------------------------------------------------------------------
 # determine_xlabel
