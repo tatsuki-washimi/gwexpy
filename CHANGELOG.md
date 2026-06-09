@@ -4,6 +4,43 @@
 
 - No unreleased changes yet.
 
+## [0.1.5] - 2026-06-10
+
+This is a patch release focused on plotting and I/O hotfixes.
+
+### Bug fixes
+
+- Fixed `TimeSeriesDict.plot()` so multi-channel dictionaries are expanded into
+  separate subplots instead of producing a blank or invalid figure (#432).
+- Fixed ObsPy-backed seismic readers so `TimeSeriesDict` keys are stable string
+  trace names (e.g. `"IU.ANMO.00.BHZ"`), enabling reliable string-based lookup
+  (#435).
+- Added support for passing a list or tuple of miniSEED paths to
+  `TimeSeriesDict.read(..., format="mseed")` (#433).
+- Fixed `gwexpy.frequencyseries` import-time I/O registration so FrequencySeries
+  read formats are visible through the GWpy default I/O registry (#437).
+
+### Tests
+
+- Added regression tests for `TimeSeriesDict.plot()`.
+- Added seismic I/O tests for string keys, list-of-path miniSEED input, and
+  empty-list rejection.
+- Added subprocess-isolated FrequencySeries I/O registration tests.
+
+### Documentation
+
+- Clarified that GWexpy is an independent package built on top of GWpy and is
+  not an official component of the GWpy project.
+- Updated the README installation notes to reflect that the conda-forge
+  feedstock is available, while conda-forge packages may lag the latest PyPI
+  release.
+
+### Deferred
+
+- Broad FrequencySeries collection read/write registry-backend migration is
+  deferred to #438.
+- Dependency sweep (#431) is deferred to the v0.2.0-prep lane.
+
 ## [0.1.4] - 2026-05-20
 
 ### Added
