@@ -233,14 +233,31 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
         if separate is None:
             separate = True
         if separate is True and geometry is None:
-            # Mirror _expand_args(separate=True): list/tuple/dict/UserList/UserDict
-            # are all extended element-by-element; everything else is one subplot.
-            # UserList/UserDict covers SpectrogramList and SpectrogramDict which
-            # do not inherit directly from list/dict.
-            total_channels = sum(
-                len(item) if isinstance(item, (list, tuple, dict, UserList, UserDict)) else 1
-                for item in data_list
-            )
+            # Mirror _expand_args(separate=True) expansion counts:
+            # - matrices  → shape[0] (2-D) or shape[0]*shape[1] (3-D+)
+            # - list/tuple/dict/UserList/UserDict → len(item)
+            # - everything else → 1
+            total_channels = 0
+            for item in data_list:
+                item_type = type(item).__name__
+                if item_type in (
+                    "SeriesMatrix",
+                    "TimeSeriesMatrix",
+                    "FrequencySeriesMatrix",
+                ) or item_type.endswith("Matrix"):
+                    try:
+                        if item.ndim == 2:
+                            total_channels += item.shape[0]
+                        elif item.ndim >= 3:
+                            total_channels += item.shape[0] * item.shape[1]
+                        else:
+                            total_channels += 1
+                    except (AttributeError, ValueError):
+                        total_channels += 1
+                elif isinstance(item, (list, tuple, dict, UserList, UserDict)):
+                    total_channels += len(item)
+                else:
+                    total_channels += 1
             geometry = (total_channels, 1)
         return separate, geometry
 
