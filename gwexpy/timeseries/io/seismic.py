@@ -104,7 +104,7 @@ def _build_dict(stream, *, channels, unit, timezone, epoch):
             tr, unit=unit, timezone=timezone, epoch_override=epoch
         )
         # Handle duplicate channels if necessary, currently overwrites
-        tsd[ts.channel] = ts
+        tsd[ts.name] = ts
     return tsd
 
 
