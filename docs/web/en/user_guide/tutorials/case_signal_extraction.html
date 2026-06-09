@@ -18,7 +18,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/case_signal_extraction.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../../_static/documentation_options.js?v=fd825880"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -303,35 +303,35 @@
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                                Migrad                                   │
 ├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 1.182e+05 (χ²/ndof = 292.6)│             Nfcn = 1020              │
-│ EDM = 2.12e+03 (Goal: 0.0002)    │                                      │
+│ FCN = 1.046e+05 (χ²/ndof = 259.0)│              Nfcn = 384              │
+│ EDM = 8.47e-06 (Goal: 0.0002)    │                                      │
 ├──────────────────────────────────┼──────────────────────────────────────┤
-│         INVALID Minimum          │   ABOVE EDM threshold (goal x 10)    │
+│          Valid Minimum           │   Below EDM threshold (goal x 10)    │
 ├──────────────────────────────────┼──────────────────────────────────────┤
-│      No parameters at limit      │           Below call limit           │
+│     SOME parameters at limit     │           Below call limit           │
 ├──────────────────────────────────┼──────────────────────────────────────┤
 │             Hesse ok             │         Covariance accurate          │
 └──────────────────────────────────┴──────────────────────────────────────┘
 ┌───┬────────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
 │   │ Name   │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
 ├───┼────────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
-│ 0 │ amp    │ 260.1e-3  │  0.8e-3   │            │            │   0.1   │    5    │       │
-│ 1 │ freq   │  128.06   │   0.05    │            │            │   110   │   130   │       │
-│ 2 │ phase  │  -35.67   │   0.31    │            │            │         │         │       │
-│ 3 │ amp2   │ 195.2e-3  │  0.6e-3   │            │            │    0    │   0.2   │       │
-│ 4 │ freq2  │   4.929   │   0.027   │            │            │    0    │   50    │       │
-│ 5 │ phase2 │   34.06   │   0.18    │            │            │         │         │       │
+│ 0 │ amp    │ 355.0e-3  │  0.8e-3   │            │            │   0.1   │    5    │       │
+│ 1 │ freq   │  123.659  │   0.011   │            │            │   110   │   130   │       │
+│ 2 │ phase  │   -1.83   │   0.07    │            │            │         │         │       │
+│ 3 │ amp2   │200.000e-3 │ 0.006e-3  │            │            │    0    │   0.2   │       │
+│ 4 │ freq2  │   7.92    │   0.05    │            │            │    0    │   50    │       │
+│ 5 │ phase2 │   14.51   │   0.35    │            │            │         │         │       │
 └───┴────────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
-┌────────┬───────────────────────────────────────────────────────┐
-│        │      amp     freq    phase     amp2    freq2   phase2 │
-├────────┼───────────────────────────────────────────────────────┤
-│    amp │ 7.18e-07   7.0e-6 -45.3e-6        0  -2.2e-6  19.6e-6 │
-│   freq │   7.0e-6  0.00223  -0.0145  -5.3e-6  -0.1e-3   0.0011 │
-│  phase │ -45.3e-6  -0.0145   0.0946  34.7e-6   0.8e-3   -0.007 │
-│   amp2 │        0  -5.3e-6  34.7e-6 3.71e-07   1.5e-6 -10.6e-6 │
-│  freq2 │  -2.2e-6  -0.1e-3   0.8e-3   1.5e-6 0.000706  -4.7e-3 │
-│ phase2 │  19.6e-6   0.0011   -0.007 -10.6e-6  -4.7e-3   0.0314 │
-└────────┴───────────────────────────────────────────────────────┘
+┌────────┬─────────────────────────────────────────────────────────────────────────┐
+│        │         amp        freq       phase        amp2       freq2      phase2 │
+├────────┼─────────────────────────────────────────────────────────────────────────┤
+│    amp │    6.39e-07      0.6e-6     -4.1e-6   262.4e-18    -17.9e-6    117.5e-6 │
+│   freq │      0.6e-6    0.000115    -0.75e-3  -743.1e-18    -0.15e-3     0.94e-3 │
+│  phase │     -4.1e-6    -0.75e-3     0.00484  4.6266e-15      0.0009      -0.006 │
+│   amp2 │   262.4e-18  -743.1e-18  4.6266e-15    2.36e-18 -4.5641e-15 30.4690e-15 │
+│  freq2 │    -17.9e-6    -0.15e-3      0.0009 -4.5641e-15     0.00292     -0.0191 │
+│ phase2 │    117.5e-6     0.94e-3      -0.006 30.4690e-15     -0.0191       0.124 │
+└────────┴─────────────────────────────────────────────────────────────────────────┘
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -356,7 +356,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-19 19:43:27.
+      <span class="lastupdated">Last updated on 2026-06-09 19:45:32.
       </span></p>
   </div>
 
@@ -379,7 +379,7 @@
     <p>
       
         <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
-        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="https://forms.gle/c8jJaf9UCs5tb5cC8"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
         <a href="../license.html">License / Disclaimer</a> |
         <a href="../roadmap.html">Roadmap</a>
       

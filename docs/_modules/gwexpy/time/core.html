@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/time/core.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/documentation_options.js?v=fd825880"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -130,6 +130,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_gps</span> <span class="k">as</span> <span class="n">_gwpy_from_gps</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">tconvert</span> <span class="k">as</span> <span class="n">_gwpy_tconvert</span>
@@ -165,6 +166,37 @@
         <span class="k">return</span> <span class="kc">False</span>
 
 
+<span class="n">_VALID_DTYPES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;quantity&quot;</span><span class="p">})</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_VALID_DTYPES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2"> for to_gps(). &quot;</span>
+            <span class="s2">&quot;Expected one of: None, float, &#39;float&#39;, &#39;quantity&#39;.&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_float_seconds</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">arr</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_gps_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="nb">float</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;float&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_as_float_seconds</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;quantity&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_as_float_seconds</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dtype must be None, float, &#39;float&#39;, or &#39;quantity&#39;&quot;</span><span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_time_input</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">pd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">):</span>
@@ -192,7 +224,7 @@
 
 <div class="viewcode-block" id="to_gps">
 <a class="viewcode-back" href="../../../web/ja/reference/api/time.html#gwexpy.time.to_gps">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">to_gps</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_gps</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a given time or array of times to GPS seconds.</span>
 
 <span class="sd">    This is a vectorized extension of `gwpy.time.to_gps`. It supports</span>
@@ -206,33 +238,60 @@
 <span class="sd">        datetime objects, pandas Timestamps, or arrays of these types.</span>
 <span class="sd">    *args</span>
 <span class="sd">        Additional positional arguments passed to `gwpy.time.to_gps`.</span>
+<span class="sd">    dtype : {None, float, &quot;float&quot;, &quot;quantity&quot;}, optional</span>
+<span class="sd">        Output mode for the converted GPS seconds. ``None`` preserves the</span>
+<span class="sd">        default GWpy-compatible behavior. ``float`` or ``&quot;float&quot;`` returns</span>
+<span class="sd">        Python ``float`` for scalar inputs and ``numpy.ndarray`` for array-like</span>
+<span class="sd">        inputs. ``&quot;quantity&quot;`` returns an ``astropy.units.Quantity`` in seconds,</span>
+<span class="sd">        which can be compared with GWpy/GWexpy time axes.</span>
 <span class="sd">    **kwargs</span>
 <span class="sd">        Additional keyword arguments passed to `gwpy.time.to_gps`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    float or numpy.ndarray</span>
-<span class="sd">        The equivalent time in GPS seconds. Returns a float for scalar inputs</span>
-<span class="sd">        and a numpy.ndarray of floats for array-like inputs.</span>
+<span class="sd">    object</span>
+<span class="sd">        The equivalent time in GPS seconds. With ``dtype=None``, this preserves</span>
+<span class="sd">        the existing GWpy-compatible return types. With ``dtype=float`` or</span>
+<span class="sd">        ``dtype=&quot;float&quot;``, returns numeric seconds. With ``dtype=&quot;quantity&quot;``,</span>
+<span class="sd">        returns seconds as an ``astropy.units.Quantity``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_validate_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">t_norm</span> <span class="o">=</span> <span class="n">_normalize_time_input</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t_norm</span><span class="p">,</span> <span class="n">Time</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">t_norm</span><span class="o">.</span><span class="n">gps</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_array</span><span class="p">(</span><span class="n">t_norm</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">t_norm</span><span class="o">.</span><span class="n">gps</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">_is_array</span><span class="p">(</span><span class="n">t_norm</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t_norm</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">):</span>
             <span class="n">t_norm</span> <span class="o">=</span> <span class="n">t_norm</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">_gwpy_to_gps</span><span class="p">(</span><span class="n">t_norm</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_gwpy_to_gps</span><span class="p">(</span><span class="n">t_norm</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t_norm</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t_norm</span><span class="p">,</span> <span class="s2">&quot;to_value&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t_norm</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">unit</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                        <span class="n">t_norm</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">),</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">u</span><span class="o">.</span><span class="n">UnitConversionError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">unit</span><span class="si">!r}</span><span class="s2"> is not convertible to seconds for GPS conversion&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t_norm</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">_is_numeric_array</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">t_norm</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">gps</span>
+        <span class="k">except</span> <span class="n">u</span><span class="o">.</span><span class="n">UnitConversionError</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_gwpy_to_gps</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">t_norm</span><span class="p">])</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t_norm</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">_is_numeric_array</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Time</span><span class="p">(</span><span class="n">t_norm</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">gps</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_gwpy_to_gps</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">t_norm</span><span class="p">])</span></div>
+    <span class="k">return</span> <span class="n">_format_gps_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span></div>
 
 
 
@@ -328,7 +387,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-19 19:43:27.
+      <span class="lastupdated">Last updated on 2026-06-09 19:45:32.
       </span></p>
   </div>
 
@@ -351,7 +410,7 @@
     <p>
       
         <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
-        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="https://forms.gle/c8jJaf9UCs5tb5cC8"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
         <a href="../../../web/en/user_guide/license.html">License / Disclaimer</a> |
         <a href="../../../web/en/user_guide/roadmap.html">Roadmap</a>
       

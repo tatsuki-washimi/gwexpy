@@ -86,6 +86,12 @@ v\ |release| · Python ≥ 3.11 · Last updated: |today|
 
     🚀 Quick Start (Learn the basics in 5 minutes)
 
+.. note::
+
+   Found a bug or want to request a feature? Use the
+   `lightweight feedback form <https://forms.gle/c8jJaf9UCs5tb5cC8>`_.
+   For security reports, do not use this form; follow the repository security policy.
+
 .. _hub-en-workflow-entry:
 
 ----

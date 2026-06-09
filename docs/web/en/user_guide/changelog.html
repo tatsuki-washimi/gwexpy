@@ -17,7 +17,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/changelog.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/documentation_options.js?v=fd825880"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -131,9 +131,11 @@
 <li class="toctree-l3"><a class="reference internal" href="verification_and_quality.html">Verification and Quality Signals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Changelog</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">[0.1.2] - 2026-05-08</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">[0.1.1] - 2026-04-28</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">[0.1.0] - 2026-04-08</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">[0.1.4] - 2026-05-14</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">[0.1.3] - 2026-05-12</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">[0.1.2] - 2026-05-08</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">[0.1.1] - 2026-04-28</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">[0.1.0] - 2026-04-08</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#past-versions">Past Versions</a></li>
 </ul>
 </li>
@@ -176,7 +178,61 @@
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
 <p>Notable changes to the GWexpy project.</p>
 <section id="id1">
-<h2>[0.1.2] - 2026-05-08<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>[0.1.4] - 2026-05-14<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">to_gps()</span></code> now has opt-in <code class="docutils literal notranslate"><span class="pre">dtype=</span></code> output modes. The default remains
+GWpy-compatible, while <code class="docutils literal notranslate"><span class="pre">dtype=float</span></code> / <code class="docutils literal notranslate"><span class="pre">dtype=&quot;float&quot;</span></code> return plain numeric
+seconds and <code class="docutils literal notranslate"><span class="pre">dtype=&quot;quantity&quot;</span></code> returns seconds quantities for direct <code class="docutils literal notranslate"><span class="pre">.times</span></code>
+comparisons.</p></li>
+</ul>
+</section>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>README, docs hub pages, roadmap, troubleshooting pages, and footer links now
+point lightweight bug reports and feature requests to the public feedback
+form. Security reports remain directed to the repository security policy.</p></li>
+</ul>
+</section>
+<section id="tests">
+<h3>Tests<a class="headerlink" href="#tests" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added NetCDF fixture coverage requiring an explicit time coordinate (#393).</p></li>
+<li><p>Added GWF regression coverage for multi-channel list-source reads and padded
+gap reads with <code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h2>[0.1.3] - 2026-05-12<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed multi-file GWF reads for <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> inputs.</p></li>
+<li><p>Fixed ndscope HDF5 auto-detection for <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read()</span></code>.</p></li>
+<li><p>Aligned public I/O docs and contract metadata with current autodetection
+behavior.</p></li>
+<li><p>Preserved original frequency column values in the FrequencySeries CSV fast
+path.</p></li>
+<li><p>Improved zarr 3 matrix round-trip coverage and removed timeout-prone fixture
+behavior.</p></li>
+<li><p>Treated PyGMT installations without a loadable GMT shared library as an
+unavailable optional backend instead of failing at import time.</p></li>
+</ul>
+</section>
+<section id="known-issues">
+<h3>Known Issues<a class="headerlink" href="#known-issues" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Some bundled NetCDF fixture paths can fail the TimeSeries reader
+time-coordinate contract (#393). Generated NetCDF round-trip coverage still
+passes; files should expose an explicit time coordinate.</p></li>
+</ul>
+</section>
+</section>
+<section id="id3">
+<h2>[0.1.2] - 2026-05-08<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <section id="targeted-narrow-hotfix-scope">
 <h3>Targeted Narrow Hotfix Scope<a class="headerlink" href="#targeted-narrow-hotfix-scope" title="Link to this heading"></a></h3>
 <ul class="simple">
@@ -185,18 +241,11 @@
 <li><p>Includes only a minimal #369 landing/demo import hunk for this integration track.</p></li>
 </ul>
 </section>
-<section id="publication-status">
-<h3>Publication Status<a class="headerlink" href="#publication-status" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">v0.1.2</span></code> metadata and release notes are finalized, but publication is not complete yet.</p></li>
-<li><p>Git tag creation, PyPI publication, Zenodo publication, fresh release-smoke reruns, and conda-forge refresh remain deferred release-day follow-up work.</p></li>
-</ul>
 </section>
-</section>
-<section id="id2">
-<h2>[0.1.1] - 2026-04-28<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<section id="added">
-<h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<section id="id4">
+<h2>[0.1.1] - 2026-04-28<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>Added<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Added public contract baselines for <code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code>, histogram/segments helpers, detector/time conversion surfaces, CLI behavior, and plot-helper documentation/tests.</p></li>
 <li><p>Added release-gate checks for metadata consistency, artifact hygiene, and fresh-environment wheel smoke before PyPI publication.</p></li>
@@ -219,18 +268,18 @@
 </ul>
 </section>
 </section>
-<section id="id3">
-<h2>[0.1.0] - 2026-04-08<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<section id="id4">
-<h3>Added<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id6">
+<h2>[0.1.0] - 2026-04-08<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id7">
+<h3>Added<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Redesigned documentation site (Task 1 &amp; 2).</p></li>
 <li><p>Stabilized <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> classes.</p></li>
 <li><p>Enhanced multi-dimensional data support via <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>.</p></li>
 </ul>
 </section>
-<section id="fixed">
-<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading"></a></h3>
+<section id="id8">
+<h3>Fixed<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> for easier citation.</p></li>
 <li><p>Reorganized dependencies and improved OS-specific installation guides.</p></li>
@@ -255,7 +304,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-19 19:43:27.
+      <span class="lastupdated">Last updated on 2026-06-09 19:45:32.
       </span></p>
   </div>
 
@@ -278,7 +327,7 @@
     <p>
       
         <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
-        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="https://forms.gle/c8jJaf9UCs5tb5cC8"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
         <a href="license.html">License / Disclaimer</a> |
         <a href="roadmap.html">Roadmap</a>
       

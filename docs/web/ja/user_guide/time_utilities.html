@@ -18,7 +18,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/time_utilities.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/documentation_options.js?v=fd825880"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -105,11 +105,11 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメント</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">やりたいことから探す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">やりたいことから探す</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">可視化例（Visual Examples）</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#gwpy">GWpy の基礎を学ぶ</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id3">最初に読むページの目安</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id4">最初に読むページの目安</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="installation.html">インストールガイド (Installation)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート (Quickstart)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
@@ -126,7 +126,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#tconvert"><code class="docutils literal notranslate"><span class="pre">tconvert</span></code> — 自動判定変換</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ligotimegps-gps"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> — 高精度 GPS 時刻</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#timeseries">TimeSeries との連携</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id8">次に読む</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">次に読む</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
@@ -309,7 +309,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span><span class="p">,</span> <span class="n">from_gps</span><span class="p">,</span> <span class="n">tconvert</span>
 
 <span class="c1"># 日本語の日時文字列を GPS 秒へ（デフォルト UTC）</span>
-<span class="n">gps</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45&quot;</span><span class="p">)</span>
+<span class="n">gps</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45.391&quot;</span><span class="p">)</span>
 <span class="c1"># → 1126259462.391</span>
 
 <span class="c1"># GPS 秒を datetime オブジェクトへ</span>
@@ -387,7 +387,7 @@
 </section>
 <section id="to-gps-gps">
 <span id="time-utils-ja-to-gps"></span><h2><code class="docutils literal notranslate"><span class="pre">to_gps</span></code> — 日時 → GPS 秒<a class="headerlink" href="#to-gps-gps" title="Link to this heading"></a></h2>
-<p><strong>Signature</strong>: <code class="docutils literal notranslate"><span class="pre">to_gps(t,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code></p>
+<p><strong>Signature</strong>: <code class="docutils literal notranslate"><span class="pre">to_gps(t,</span> <span class="pre">*args,</span> <span class="pre">dtype=None,</span> <span class="pre">**kwargs)</span></code></p>
 <p>さまざまな時刻表現を GPS 秒に変換します。単一の値（スカラー）だけでなく、リストや配列に対しても効率的なベクトル演算を行います。</p>
 <section id="datetime">
 <h3>文字列・datetime オブジェクト<a class="headerlink" href="#datetime" title="Link to this heading"></a></h3>
@@ -399,12 +399,32 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
 
 <span class="c1"># ISO 8601 文字列（タイムゾーン指定なしの場合は UTC として扱われます）</span>
-<span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45 UTC&quot;</span><span class="p">)</span>
+<span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45.391 UTC&quot;</span><span class="p">)</span>
 <span class="c1"># → LIGOTimeGPS(1126259462, 391000000)</span>
 
 <span class="c1"># Python datetime（タイムゾーン付き推奨）</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="n">to_gps</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">))</span>
+<span class="n">to_gps</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">391000</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3>出力型の選択<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p>デフォルトでは GWpy に合わせ、スカラー入力は <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> を返します。
+特定の表現が必要な場合は <code class="docutils literal notranslate"><span class="pre">dtype</span></code> を指定します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
+
+<span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45.391 UTC&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="c1"># -&gt; 1126259462.391</span>
+
+<span class="n">gps</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45.391 UTC&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+<span class="c1"># -&gt; &lt;Quantity 1126259462.391 s&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dtype=&quot;quantity&quot;</span></code> は、GWpy/GWexpy の時刻軸と直接比較・差分計算したい場合に使えます。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">threshold</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="s2">&quot;2015-09-14 09:50:45.391 UTC&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+<span class="n">offset</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span> <span class="o">-</span> <span class="n">threshold</span>
 </pre></div>
 </div>
 </section>
@@ -412,7 +432,7 @@
 <h3>Astropy Time<a class="headerlink" href="#astropy-time" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
 
-<span class="n">t</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="s2">&quot;2015-09-14T09:50:45&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;isot&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;utc&quot;</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="s2">&quot;2015-09-14T09:50:45.391&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;isot&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;utc&quot;</span><span class="p">)</span>
 <span class="n">to_gps</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 <span class="c1"># → 1126259462.391</span>
 </pre></div>
@@ -536,8 +556,8 @@ LIGO データアクセスライブラリで標準的に使用される表現形
 </div>
 </section>
 <hr class="docutils" />
-<section id="id8">
-<h2>次に読む<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<section id="id9">
+<h2>次に読む<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../reference/api/time.html"><span class="std std-doc">API リファレンス</span></a> — <code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code> の完全な API リファレンス</p></li>
 <li><p><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html"><span class="std std-doc">GWpy からの移行</span></a> — GWexpy の全拡張機能の概要</p></li>
@@ -558,7 +578,7 @@ LIGO データアクセスライブラリで標準的に使用される表現形
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-19 19:43:27.
+      <span class="lastupdated">Last updated on 2026-06-09 19:45:32.
       </span></p>
   </div>
 
@@ -581,7 +601,7 @@ LIGO データアクセスライブラリで標準的に使用される表現形
     <p>
       
         <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
-        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="https://forms.gle/c8jJaf9UCs5tb5cC8"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
         <a href="license.html">ライセンス / 免責</a> |
         <a href="roadmap.html">ロードマップ</a>
       

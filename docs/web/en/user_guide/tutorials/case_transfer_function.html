@@ -18,7 +18,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/case_transfer_function.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../../_static/documentation_options.js?v=fd825880"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -398,8 +398,8 @@ Output data shape: (122880,)
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                                Migrad                                   │
 ├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 5.83 (χ²/ndof = 0.0)       │              Nfcn = 118              │
-│ EDM = 4.62e-06 (Goal: 0.0002)    │                                      │
+│ FCN = 6.473 (χ²/ndof = 0.0)      │              Nfcn = 118              │
+│ EDM = 4.35e-06 (Goal: 0.0002)    │                                      │
 ├──────────────────────────────────┼──────────────────────────────────────┤
 │          Valid Minimum           │   Below EDM threshold (goal x 10)    │
 ├──────────────────────────────────┼──────────────────────────────────────┤
@@ -410,16 +410,16 @@ Output data shape: (122880,)
 ┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
 │   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
 ├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
-│ 0 │ amp  │   0.934   │   0.007   │            │            │         │         │       │
-│ 1 │ f0   │  299.997  │   0.021   │            │            │         │         │       │
+│ 0 │ amp  │   0.935   │   0.007   │            │            │         │         │       │
+│ 1 │ f0   │  299.996  │   0.021   │            │            │         │         │       │
 │ 2 │ Q    │   49.4    │    0.5    │            │            │         │         │       │
 └───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
 ┌─────┬────────────────────────────┐
 │     │      amp       f0        Q │
 ├─────┼────────────────────────────┤
 │ amp │ 4.34e-05       -0 -2.29e-3 │
-│  f0 │       -0 0.000454  -0.1e-3 │
-│   Q │ -2.29e-3  -0.1e-3    0.241 │
+│  f0 │       -0 0.000455  -0.1e-3 │
+│   Q │ -2.29e-3  -0.1e-3     0.24 │
 └─────┴────────────────────────────┘
 </pre></div></div>
 </div>
@@ -450,9 +450,9 @@ Output data shape: (122880,)
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 --- Estimated Parameters ---
-Resonance Frequency (f0): 299.9968 Hz (True: 300.0)
-Quality Factor (Q):       49.4100      (True: 50.0)
-Gain (Amp):               0.9343
+Resonance Frequency (f0): 299.9958 Hz (True: 300.0)
+Quality Factor (Q):       49.4017      (True: 50.0)
+Gain (Amp):               0.9345
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -477,7 +477,7 @@ Gain (Amp):               0.9343
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-05-19 19:43:27.
+      <span class="lastupdated">Last updated on 2026-06-09 19:45:32.
       </span></p>
   </div>
 
@@ -500,7 +500,7 @@ Gain (Amp):               0.9343
     <p>
       
         <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
-        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="https://forms.gle/c8jJaf9UCs5tb5cC8"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
         <a href="../license.html">License / Disclaimer</a> |
         <a href="../roadmap.html">Roadmap</a>
       
