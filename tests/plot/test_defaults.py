@@ -263,6 +263,17 @@ class TestDetermineGeometryAndSeparate:
         assert sep is True
         assert geom == (4, 1)
 
+    def test_timeseriesdict_mixed_with_list_geometry(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        sep, geom = determine_geometry_and_separate([tsd, [ts, ts]])
+        assert sep is True
+        assert geom == (4, 1)
+
 
 # ---------------------------------------------------------------------------
 # determine_xlabel
