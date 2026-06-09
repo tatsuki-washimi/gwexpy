@@ -308,6 +308,20 @@ class TestDetermineGeometryAndSeparate:
         assert sep is True
         assert geom is None
 
+    def test_timeseriesdict_mixed_with_3d_spectrogrammatrix_geometry(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.spectrogram import SpectrogramMatrix
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        # 3-D SpectrogramMatrix shape (2, 16, 8): to_series_1Dlist returns shape[0]=2
+        sg_mat = SpectrogramMatrix(np.ones((2, 16, 8)), t0=0, dt=1, f0=0, df=1)
+        sep, geom = determine_geometry_and_separate([tsd, sg_mat])
+        assert sep is True
+        assert geom == (4, 1)
+
 
 # ---------------------------------------------------------------------------
 # determine_xlabel

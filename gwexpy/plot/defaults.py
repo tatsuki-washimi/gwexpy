@@ -246,12 +246,24 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
                     "FrequencySeriesMatrix",
                 ) or item_type.endswith("Matrix"):
                     try:
-                        if item.ndim == 2:
-                            total_channels += item.shape[0]
-                        elif item.ndim >= 3:
-                            total_channels += item.shape[0] * item.shape[1]
+                        if item_type == "SpectrogramMatrix":
+                            # to_series_1Dlist(): 3-D → shape[0] spectrograms,
+                            # 4-D → shape[0]*shape[1] spectrograms
+                            if item.ndim == 3:
+                                total_channels += item.shape[0]
+                            elif item.ndim == 4:
+                                total_channels += item.shape[0] * item.shape[1]
+                            else:
+                                total_channels += 1
                         else:
-                            total_channels += 1
+                            # SeriesMatrix/TimeSeriesMatrix/FrequencySeriesMatrix:
+                            # to_series_1Dlist() always returns shape[0]*shape[1]
+                            if item.ndim == 2:
+                                total_channels += item.shape[0]
+                            elif item.ndim >= 3:
+                                total_channels += item.shape[0] * item.shape[1]
+                            else:
+                                total_channels += 1
                     except (AttributeError, ValueError):
                         total_channels += 1
                 elif isinstance(item, (list, tuple, dict, UserList, UserDict)):
