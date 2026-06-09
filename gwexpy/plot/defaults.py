@@ -258,7 +258,8 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
                     total_channels += len(item)
                 else:
                     total_channels += 1
-            geometry = (total_channels, 1)
+            if total_channels > 0:
+                geometry = (total_channels, 1)
         return separate, geometry
 
     return separate, geometry

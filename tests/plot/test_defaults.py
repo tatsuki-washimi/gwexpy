@@ -300,6 +300,14 @@ class TestDetermineGeometryAndSeparate:
         assert sep is True
         assert geom == (4, 1)
 
+    def test_empty_timeseriesdict_no_geometry(self):
+        from gwexpy.timeseries import TimeSeriesDict
+
+        tsd = TimeSeriesDict()
+        sep, geom = determine_geometry_and_separate([tsd])
+        assert sep is True
+        assert geom is None
+
 
 # ---------------------------------------------------------------------------
 # determine_xlabel
