@@ -95,7 +95,7 @@ class SeriesMatrixStructureMixin:
             meta=self.meta,
             name=self.name,
             epoch=self.epoch,
-            attrs=self.attrs,
+            attrs=deepcopy(self.attrs),
         )
 
     @property
@@ -110,7 +110,7 @@ class SeriesMatrixStructureMixin:
             meta=self.meta,
             name=f"{self.name}.real" if self.name else "",
             epoch=self.epoch,
-            attrs=self.attrs,
+            attrs=deepcopy(self.attrs),
         )
 
     @real.setter
@@ -129,7 +129,7 @@ class SeriesMatrixStructureMixin:
             meta=self.meta,
             name=f"{self.name}.imag" if self.name else "",
             epoch=self.epoch,
-            attrs=self.attrs,
+            attrs=deepcopy(self.attrs),
         )
 
     @imag.setter

@@ -166,7 +166,8 @@ def test_pickle_roundtrip_filters_non_picklable_attrs_entries(matrix_cls):
     expected = matrix.copy()
     del expected.attrs["runtime_callback"]
 
-    restored = pickle.loads(pickle.dumps(matrix))
+    with pytest.warns(UserWarning, match="runtime_callback"):
+        restored = pickle.loads(pickle.dumps(matrix))
 
     assert matrix.attrs["runtime_callback"] is callback
     assert isinstance(restored, matrix_cls)
@@ -181,11 +182,39 @@ def test_default_pickle_filters_attrs_unsafe_for_default_protocol(matrix_cls):
     matrix.attrs["default_protocol_unsafe"] = Protocol5Only()
     matrix.attrs["default_protocol_safe"] = "kept"
 
-    restored = pickle.loads(pickle.dumps(matrix))
+    with pytest.warns(UserWarning, match="default_protocol_unsafe"):
+        restored = pickle.loads(pickle.dumps(matrix))
 
     assert "default_protocol_unsafe" in matrix.attrs
     assert "default_protocol_unsafe" not in restored.attrs
     assert restored.attrs["default_protocol_safe"] == "kept"
+
+
+@pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
+def test_pickle_warns_once_listing_all_dropped_attrs_keys(matrix_cls):
+    matrix = _make_matrix(matrix_cls)
+
+    def callback() -> None:
+        return None
+
+    matrix.attrs["bad_one"] = callback
+    matrix.attrs["bad_two"] = Protocol5Only()
+    matrix.attrs["good"] = "kept"
+
+    with pytest.warns(UserWarning) as record:
+        restored = pickle.loads(pickle.dumps(matrix))
+
+    dropped_warnings = [
+        w for w in record if "cannot be pickled" in str(w.message)
+    ]
+    assert len(dropped_warnings) == 1
+    message = str(dropped_warnings[0].message)
+    assert "bad_one" in message
+    assert "bad_two" in message
+    assert "bad_one" not in restored.attrs
+    assert "bad_two" not in restored.attrs
+    assert restored.attrs["good"] == "kept"
+    assert restored.attrs["pipeline"] == "wave1"
 
 
 @pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)

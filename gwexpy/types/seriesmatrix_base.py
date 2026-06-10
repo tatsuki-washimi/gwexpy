@@ -95,12 +95,19 @@ def _pickle_safe_attrs(attrs: Any, protocol: int) -> dict[str, Any]:
     if not isinstance(attrs, dict):
         return {}
     safe_attrs = {}
+    dropped = []
     for key, value in attrs.items():
         try:
             pickle.dumps((key, value), protocol=protocol)
-        except Exception:
+        except (pickle.PicklingError, TypeError, AttributeError):
+            dropped.append(key)
             continue
         safe_attrs[key] = value
+    if dropped:
+        warnings.warn(
+            f"Dropping attrs entries that cannot be pickled: {dropped}",
+            stacklevel=2,
+        )
     return safe_attrs
 
 

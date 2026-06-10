@@ -77,6 +77,16 @@ class TestAstype:
         assert result.dtype == np.float32
         assert result is not tsm
 
+    def test_astype_attrs_independent(self):
+        # Mutating the result's attrs must not affect the source matrix
+        tsm = _make_tsm()
+        tsm.attrs["tag"] = {"nested": 1}
+        result = tsm.astype(np.float32)
+        result.attrs["tag"]["nested"] = 999
+        result.attrs["extra"] = "added"
+        assert tsm.attrs["tag"]["nested"] == 1
+        assert "extra" not in tsm.attrs
+
 
 # ---------------------------------------------------------------------------
 # real / imag properties
@@ -118,6 +128,16 @@ class TestRealImag:
         # name=None → empty string
         result = tsm.imag
         assert result is not None
+
+    def test_real_imag_attrs_independent(self):
+        # Mutating result attrs must not affect the source matrix
+        tsm = _make_tsm(complex_=True)
+        tsm.attrs["tag"] = "orig"
+        for result in (tsm.real, tsm.imag):
+            result.attrs["tag"] = "mutated"
+            result.attrs["extra"] = "added"
+            assert tsm.attrs["tag"] == "orig"
+            assert "extra" not in tsm.attrs
 
 
 # ---------------------------------------------------------------------------
