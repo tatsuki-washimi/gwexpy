@@ -33,6 +33,9 @@
   errors, empty-list rejection, and clear single-file-only errors.
 - Added regression tests for pickle attrs warnings and attrs independence
   of derived matrices.
+- **frequencyseries/io**: Added registry-backend audit tests and a developer
+  note for FrequencySeries collection read/write fallback (#438). No
+  behaviour change.
 
 ## [0.1.5] - 2026-06-10
 
