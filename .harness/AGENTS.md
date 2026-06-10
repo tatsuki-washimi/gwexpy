@@ -1,6 +1,6 @@
 # GWexpy AI Agent Guidelines
 
-**Last-updated: 2026-04-03**
+**Last-updated: 2026-06-10**
 
 **Summary.**  
 This repository is optimized for collaboration with AI Coding Agents (Claude, Codex, Antigravity, Cursor, GitHub Copilot Workspace, etc.). Agents **must** read and follow these guidelines before performing any code changes, tests, or documentation updates.
@@ -16,6 +16,8 @@ Before any code changes or runs, ensure ALL items below are satisfied:
 - Ensure you have local environment with `.[dev,test,docs]` installed.
 - **Bootstrap the registry**: call `gwexpy.register_all()` or simply `import gwexpy` before using `ConverterRegistry` lookups.  If you see a `KeyError` mentioning "not registered", call `gwexpy.register_all()`.
 - Confirm that changes requiring physics judgement will be flagged for **human review**.
+- For I/O and interop changes, read `docs/developers/contracts/public_io_contract.md` and `docs/developers/contracts/public_interop_contract.md` to understand public interface contracts.
+- After I/O module changes, run smoke test: `conda run -n gwexpy python -c "import gwexpy; gwexpy.register_all()"` to verify plugin registration.
 - Log every high-level action and attach it to the PR (see "Audit & tagging" below).
 
 ---
@@ -32,7 +34,7 @@ Before any code changes or runs, ensure ALL items below are satisfied:
   - Check finite values (`np.isfinite`) before matrix ops.
   - Protect against division-by-zero (use safe eps), regularize ill-conditioned matrices, and document thresholds.
   - Use windowing / zero-padding / overlap rules for FFTs; explicitly mention Fourier normalization convention.
-  - See `docs/developers/plans/numerical_hardening_plan.md` for guidelines and examples.
+  - See `docs_internal/archive/plans/numerical_hardening_plan.md` for guidelines and examples.
 - **GWpy compatibility.** GWexpy extends `gwpy`. New APIs must:
   - Avoid breaking `gwpy` semantics.
   - Provide migration notes if public API diverges.
@@ -62,7 +64,7 @@ Agent runtime and skills live under `.harness/`. For each skill used, read the c
 ├── setup_plan/SKILL.md
 ├── verify_physics/SKILL.md
 ├── visualize_fields/SKILL.md
-└── ... (see .harness/skills_index.md for full list)
+└── ... (see .harness/skills/README.md for full list)
 ```
 
 Project-specific agents (`.harness/agents/`):
@@ -169,6 +171,12 @@ Agents must run and **pass** the following before creating a PR:
 └── scripts/
     └── setup_symlinks.sh      ← Symlink setup for AI tools
 ```
+
+**Current inventory:**
+- **Agents:** 9 (physics-reviewer, gwexpy-tester, gwexpy-linter, risk-labeler, metadata-checker, exception-auditor, gwexpy-compatibility-checker, optional-deps-reviewer, numeric-scale-checker)
+- **Workflows:** 8
+- **Skills:** 41 active (+2 deprecated stubs; 43 directories total)
+- **Rules (common):** 10
 
 **Legacy compatibility:**
 - `.agent/skills` → `../.harness/skills` (symlink)

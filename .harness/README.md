@@ -12,8 +12,8 @@ gwexpy プロジェクトにおける AI エージェント（Claude, Codex, Cur
 │   └── hooks.json          ← Claude Code プロジェクトフック（自動品質チェック）
 ├── agents/                 ← プロジェクト固有のサブエージェント定義（9件）
 ├── workflows/              ← 作業種別ごとの標準手順（8件）
-├── rules/common/           ← プロジェクト固有のルール集（8件）
-├── skills/                 ← 専門タスク向けスキルパッケージ（38件）
+├── rules/common/           ← プロジェクト固有のルール集（10件）
+├── skills/                 ← 専門タスク向けスキルパッケージ（active 41 + deprecated stub 2）
 ├── config/
 │   └── quality-gates/      ← verify-changed-files 用マニフェスト
 └── scripts/
@@ -107,6 +107,9 @@ AI エージェントが常に参照すべきプロジェクト固有の規則�
 | `gwpy-compatibility.md` | GWpy API との互換性維持とマイグレーション指針 |
 | `optional-dependencies.md` | オプション依存の条件インポートパターン |
 | `model-assignment.md` | エージェントモデル選定基準（Haiku/Sonnet/Opus） |
+| `harness-editing.md` | `.harness/` 編集時のガードレールとスコープ管理 |
+| `parallel-worktrees.md` | 並列 worktree 運用時のブランチ・ファイル競合管理 |
+| `planning-docs.md` | 作業計画ドキュメントの標準構造と必須フィールド |
 
 ---
 
@@ -123,13 +126,13 @@ AI エージェントが常に参照すべきプロジェクト固有の規則�
 | `verify_physics` | 物理的整合性の検証 |
 | `fix_errors` | mypy / ruff / 互換性エラーの修正 |
 | `prep_release` | リリース作業全体 |
-| `phase0_exception_sweep` | 広域例外の監査と修正 |
-| `phase1_scale_invariance` | スケール不変性の検証と修正 |
+| agent: `exception-auditor` | 広域例外の監査と修正（旧 `phase0_exception_sweep`） |
+| agent: `numeric-scale-checker` | スケール不変性の検証と修正（旧 `phase1_scale_invariance`） |
 
 ---
 
 ## 参考資料
 
 - **[AGENTS.md](AGENTS.md)** — エージェント向け規範（ビルド/テスト/レビュー手順の正式定義）
-- **[docs_internal/analysis/harness_enhancement_plan.md](../docs_internal/analysis/harness_enhancement_plan.md)** — この `.harness/` 増強計画の設計資料（フェーズ A-F）
+- **[docs_internal/tech_notes/harness_enhancement_plan.md](../docs_internal/tech_notes/harness_enhancement_plan.md)** — この `.harness/` 増強計画の設計資料（フェーズ A-F）
 - **[docs_internal/tech_notes/2026-04-04-harness-optimization-roadmap.md](../docs_internal/tech_notes/2026-04-04-harness-optimization-roadmap.md)** — ai-harness ロードマップとの連携記録

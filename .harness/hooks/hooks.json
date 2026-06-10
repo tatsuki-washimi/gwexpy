@@ -55,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); file=$(printf \"%s\" \"$input\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"tool_input\\\",{}).get(\\\"file_path\\\") or d.get(\\\"tool_input\\\",{}).get(\\\"path\\\",\\\"\\\"))\" 2>/dev/null); [[ \"$file\" == *.py ]] || exit 0; result=$(grep -nE \"^[[:space:]]*(except[[:space:]]+Exception([[:space:]]+as[[:space:]]+[A-Za-z_][A-Za-z0-9_]*)?[[:space:]]*[:(]|except[[:space:]]*:)\" \"$file\" 2>/dev/null); if [ -n \"$result\" ]; then printf \"\\n[gwexpy/except-check] サイレント失敗の可能性 (%s):\\n%s\\n  → 具体的な例外型を指定し、logger.exception() でログを記録してください。\\n  参考: docs_internal/analysis/phase0_exception_analysis.md\\n\" \"$file\" \"$result\" >&2; fi; exit 0'",
+            "command": "bash -c 'input=$(cat); file=$(printf \"%s\" \"$input\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"tool_input\\\",{}).get(\\\"file_path\\\") or d.get(\\\"tool_input\\\",{}).get(\\\"path\\\",\\\"\\\"))\" 2>/dev/null); [[ \"$file\" == *.py ]] || exit 0; result=$(grep -nE \"^[[:space:]]*(except[[:space:]]+Exception([[:space:]]+as[[:space:]]+[A-Za-z_][A-Za-z0-9_]*)?[[:space:]]*[:(]|except[[:space:]]*:)\" \"$file\" 2>/dev/null); if [ -n \"$result\" ]; then printf \"\\n[gwexpy/except-check] サイレント失敗の可能性 (%s):\\n%s\\n  → 具体的な例外型を指定し、logger.exception() でログを記録してください。\\n  参考: docs_internal/tech_notes/phase0_exception_analysis.md\\n\" \"$file\" \"$result\" >&2; fi; exit 0'",
             "async": true,
             "timeout": 10
           }
@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'input=$(cat); file=$(printf \"%s\" \"$input\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"tool_input\\\",{}).get(\\\"file_path\\\") or d.get(\\\"tool_input\\\",{}).get(\\\"path\\\",\\\"\\\"))\" 2>/dev/null); [[ \"$file\" == *.py ]] || exit 0; result=$(grep -nE \"(eps|tol|atol|rtol)\\\\s*=\\\\s*1e-[0-9]+\" \"$file\" 2>/dev/null | grep -v \"^[[:space:]]*#\" | grep -v \"gwexpy\\\\.numerics\"); if [ -n \"$result\" ]; then printf \"\\n[gwexpy/death-floats] Death Floats 候補 (%s):\\n%s\\n  GW strain スケール (~1e-21) に対して不適切な定数の可能性があります。\\n  → gwexpy.numerics の定数を使用するか、スケールを明示したコメントを追加してください。\\n  参考: docs_internal/analysis/phase1_dangerous_defaults.md\\n\" \"$file\" \"$result\" >&2; fi; exit 0'",
+            "command": "bash -c 'input=$(cat); file=$(printf \"%s\" \"$input\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"tool_input\\\",{}).get(\\\"file_path\\\") or d.get(\\\"tool_input\\\",{}).get(\\\"path\\\",\\\"\\\"))\" 2>/dev/null); [[ \"$file\" == *.py ]] || exit 0; result=$(grep -nE \"(eps|tol|atol|rtol)\\\\s*=\\\\s*1e-[0-9]+\" \"$file\" 2>/dev/null | grep -v \"^[[:space:]]*#\" | grep -v \"gwexpy\\\\.numerics\"); if [ -n \"$result\" ]; then printf \"\\n[gwexpy/death-floats] Death Floats 候補 (%s):\\n%s\\n  GW strain スケール (~1e-21) に対して不適切な定数の可能性があります。\\n  → gwexpy.numerics の定数を使用するか、スケールを明示したコメントを追加してください。\\n  参考: docs_internal/tech_notes/phase1_dangerous_defaults.md\\n\" \"$file\" \"$result\" >&2; fi; exit 0'",
             "async": true,
             "timeout": 10
           }
@@ -117,7 +117,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'repo=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; [ -d \"$repo/.git\" ] || exit 0; changed=$(git -C \"$repo\" diff --name-only HEAD 2>/dev/null; git -C \"$repo\" diff --name-only 2>/dev/null; git -C \"$repo\" ls-files --others --exclude-standard 2>/dev/null); api_or_docs_sensitive=$(echo \"$changed\" | grep -E \"^(pyproject\\.toml|gwexpy/_version\\.py|gwexpy/(fields|signal|spectrogram|timeseries|frequencyseries)/)\"); docs_changed=$(echo \"$changed\" | grep -E \"^(docs/|README\\.md$)\"); if [ -n \"$api_or_docs_sensitive\" ] && [ -z \"$docs_changed\" ]; then printf \"\\n[gwexpy/docs-drift-reminder]\\n  API や利用者向け挙動に影響しうる変更がありますが、README.md や docs/ の更新が見当たりません。\\n  ドキュメント更新が不要なら理由を evidence-pack や PR コメントへ記録し、必要なら /docs-sync ワークフローを確認してください。\\n\" >&2; fi; exit 0'",
+            "command": "bash -c 'repo=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; [ -d \"$repo/.git\" ] || exit 0; changed=$(git -C \"$repo\" diff --name-only HEAD 2>/dev/null; git -C \"$repo\" diff --name-only 2>/dev/null; git -C \"$repo\" ls-files --others --exclude-standard 2>/dev/null); api_or_docs_sensitive=$(echo \"$changed\" | grep -E \"^(pyproject\\.toml|gwexpy/_version\\.py|gwexpy/(fields|signal|spectrogram|timeseries|frequencyseries|io|interop)/)\"); docs_changed=$(echo \"$changed\" | grep -E \"^(docs/|README\\.md$)\"); if [ -n \"$api_or_docs_sensitive\" ] && [ -z \"$docs_changed\" ]; then printf \"\\n[gwexpy/docs-drift-reminder]\\n  API や利用者向け挙動に影響しうる変更がありますが、README.md や docs/ の更新が見当たりません。\\n  ドキュメント更新が不要なら理由を evidence-pack や PR コメントへ記録し、必要なら /docs-sync ワークフローを確認してください。\\n  gwexpy/io/ または gwexpy/interop/ の変更がある場合は docs/developers/contracts/ の contract 文書と pytest tests/io/test_io_docs_contract_sync.py での同期確認も行ってください。\\n\" >&2; fi; exit 0'",
             "async": false,
             "timeout": 15
           }
@@ -135,6 +135,18 @@
           }
         ],
         "description": "変更内容から推奨される PR ラベル（needs-physics-review 等）を提案"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'repo=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; [ -d \"$repo/.git\" ] || exit 0; changed=$(git -C \"$repo\" diff --name-only HEAD 2>/dev/null; git -C \"$repo\" diff --name-only 2>/dev/null; git -C \"$repo\" ls-files --others --exclude-standard 2>/dev/null); echo \"$changed\" | grep -qE \"^(pyproject\\.toml|gwexpy/_version\\.py|CITATION\\.cff)$\" || exit 0; result=$(cd \"$repo\" && python scripts/check_release_metadata.py 2>&1); if [ $? -ne 0 ]; then printf \"\\n[gwexpy/version-consistency]\\n  バージョン・メタデータ整合性チェック失敗:\\n%s\\n  scripts/check_release_metadata.py を参照して修正してください。\\n\" \"$result\" >&2; fi; exit 0'",
+            "async": true,
+            "timeout": 15
+          }
+        ],
+        "description": "pyproject.toml / gwexpy/_version.py / CITATION.cff 変更時にリリースメタデータ整合性を確認（非ブロッキング）"
       }
     ]
   }

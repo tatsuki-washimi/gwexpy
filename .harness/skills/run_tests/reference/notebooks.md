@@ -87,3 +87,19 @@ pytest --nbmake -n 1 --nbmake-timeout=600 <notebook.ipynb>
 [tool.pytest.ini_options]
 addopts = "--nbmake-timeout=600"
 ```
+
+## nbmake 失敗の典型パターン
+
+- **未定義名参照**: セル内で `ts`, `fs` などが定義なく参照されている
+- **Deprecation 警告**: `FutureWarning` / `DeprecationWarning` が残存
+- **出力セルの残留**: 実行済み出力がノートブックに保存されたまま
+
+対処:
+
+```bash
+# 出力セルを除去
+python scripts/strip_example_notebook_outputs.py
+
+# ローカルで再現実行
+python scripts/ci/run_gate.py docs-notebook
+```

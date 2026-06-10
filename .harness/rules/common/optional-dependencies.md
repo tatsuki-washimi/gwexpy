@@ -39,3 +39,10 @@ def my_gui_function():
 ## Testing Requirement
 - For any new optional feature, at least one test must verify the "graceful failure" when the dependency is missing (if possible using mock).
 - Standard CI tests should run both with and without these extras.
+
+## License Verification
+
+When mentioning or recording the license of an external package in any document (plans, release notes, changelogs, etc.):
+- **Verify the LICENSE file** in the package's repository directly — do not rely on PyPI classifiers, README badges, or secondary sources.
+- If no LICENSE file exists, treat the package as **All Rights Reserved (not reusable)** and note it explicitly.
+- If the license cannot be confirmed, mark it as **要確認 (unverified)** rather than guessing.
