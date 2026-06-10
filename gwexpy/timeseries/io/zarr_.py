@@ -301,7 +301,7 @@ def read_timeseriesmatrix_zarr(
         ]
         merged = matrices[0]
         for mat in matrices[1:]:
-            merged = merged.append(mat, inplace=False, gap="pad")
+            merged = merged.append(mat, inplace=False, gap="pad", pad=np.nan)
         return merged
 
     zarr = _import_zarr()

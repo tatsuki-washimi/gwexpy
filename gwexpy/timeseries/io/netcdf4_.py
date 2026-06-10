@@ -267,7 +267,7 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
         matrices = [read_timeseriesmatrix_netcdf4(s, **kwargs) for s in sources]
         merged = matrices[0]
         for mat in matrices[1:]:
-            merged = merged.append(mat, inplace=False, gap="pad")
+            merged = merged.append(mat, inplace=False, gap="pad", pad=np.nan)
         return merged
 
     xr = _import_xarray()
