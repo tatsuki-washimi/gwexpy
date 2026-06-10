@@ -25,6 +25,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
 
 HEADER_SIZE_PATTERN = re.compile(r"HeaderSiz[e]?\s*[:=]\s*(\d+)", re.IGNORECASE)
@@ -98,8 +99,10 @@ def read_timeseriesdict_gbd(
 
     Parameters
     ----------
-    source : str or file-like
-        Path or open file object to the GBD file.
+    source : str, file-like, or list of str
+        Path or open file object to the GBD file, or a list of paths.
+        When a list is given, channels found in several files are
+        concatenated along the time axis (gaps padded with ``pad``).
     timezone : str or tzinfo, required
         Local timezone of the logger (IANA name or UTC offset).
     channels : iterable, optional
@@ -116,6 +119,21 @@ def read_timeseriesdict_gbd(
         Additional compatibility arguments accepted and ignored.
 
     """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_gbd,
+            multi,
+            "gbd",
+            pad=pad,
+            timezone=timezone,
+            channels=channels,
+            digital_channels=digital_channels,
+            unit=unit,
+            epoch=epoch,
+            **kwargs,
+        )
+
     if timezone is None:
         raise ValueError("timezone is required for GBD files")
     tzinfo = parse_timezone(timezone)

@@ -20,6 +20,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
 
 logger = logging.getLogger(__name__)
@@ -106,8 +107,10 @@ def read_timeseriesdict_netcdf4(
 
     Parameters
     ----------
-    source : str or path-like
-        Path to a ``.nc`` file.
+    source : str, path-like, or list of str/path-like
+        Path to a ``.nc`` file, or a list of paths.  When a list is
+        given, variables found in several files are concatenated along
+        the time axis and variables unique to one file are merged in.
     channels : iterable of str, optional
         Variable names to read.  If *None*, all variables with a time
         dimension are loaded.
@@ -119,6 +122,18 @@ def read_timeseriesdict_netcdf4(
         Additional keyword arguments forwarded to ``xarray.open_dataset``.
 
     """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_netcdf4,
+            multi,
+            "nc",
+            channels=channels,
+            unit=unit,
+            time_coord=time_coord,
+            **kwargs,
+        )
+
     xr = _import_xarray()
 
     # gwpy's registry may pass a file-like object; extract the path.
@@ -245,6 +260,9 @@ def read_timeseries_netcdf4(source, **kwargs) -> TimeSeries:
 
 def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
     """Read a NetCDF4 file and convert its channels to a matrix."""
+    if isinstance(source, (list, tuple)):
+        return read_timeseriesdict_netcdf4(source, **kwargs).to_matrix()
+
     xr = _import_xarray()
 
     if hasattr(source, "name"):
