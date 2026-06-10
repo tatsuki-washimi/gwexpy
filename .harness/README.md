@@ -13,7 +13,7 @@ gwexpy プロジェクトにおける AI エージェント（Claude, Codex, Cur
 ├── agents/                 ← プロジェクト固有のサブエージェント定義（9件）
 ├── workflows/              ← 作業種別ごとの標準手順（8件）
 ├── rules/common/           ← プロジェクト固有のルール集（10件）
-├── skills/                 ← 専門タスク向けスキルパッケージ（active 41 + deprecated stub 2）
+├── skills/                 ← 専門タスク向けスキルパッケージ（active 43 + deprecated stub 2）
 ├── config/
 │   └── quality-gates/      ← verify-changed-files 用マニフェスト
 └── scripts/

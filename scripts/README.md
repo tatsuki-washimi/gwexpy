@@ -11,6 +11,8 @@ Run all scripts from the **repository root**.
 | `notebook_gen/` | Generate and execute Jupyter notebooks |
 | `validation/` | Physics validation and numerical robustness checks |
 | `dev_tools/` | Development utilities and dependency management |
+| `dev/ci_logs/` | CI log analysis and retrieval utilities |
+| `branding/` | Asset and branding bundle generation |
 | `benchmarks/` | Performance profiling |
 
 ## ci/
@@ -23,9 +25,43 @@ Scripts used to reproduce CI gates locally.
 # I/O contract gate
 python scripts/ci/run_gate.py io-contract
 
+# I/O conformance gate
+python scripts/ci/run_gate.py io-conformance
+
 # Full PR fast validation gate
 python scripts/ci/run_gate.py pr-fast
 ```
+
+## Root-level utility scripts
+
+Repository-wide checks and maintenance utilities.
+
+| Script | Description |
+| --- | --- |
+| `check_docs_sync.py` | Verify that EN and JA documentation are structurally synchronized |
+| `check_external_links.py` | Validate external URLs in documentation |
+| `check_forbidden_artifacts.py` | Block committing generated environments and docs build artifacts |
+| `check_non_ascii.py` | Detect non-ASCII characters in code and docs |
+| `check_release_artifacts.py` | Validate release artifacts before publishing |
+| `check_release_metadata.py` | Check version consistency across `__version__`, `pyproject.toml`, and `CITATION.cff` |
+| `check_repo_hygiene.py` | Guard repository hygiene for changed files, including notebook bloat |
+| `check_terms.py` | Detect discouraged or inappropriate terminology in code and docs |
+| `preflight_doctor.py` | Preflight Doctor — セッション開始前の環境チェックスクリプト |
+| `generate_evidence_pack.py` | Generate an Evidence Pack / Audit Manifest for a PR or task |
+| `generate_hero_plot.py` | Generate hero_plot.png style assets for the GWexpy gateway landing page |
+| `generate_thumbnails.py` | Generate three Visual Examples thumbnail images for the GWexpy hub pages |
+| `extend_fitting_notebook.py` | Extend advanced_fitting.ipynb (EN + JA) with Lorentzian / Voigt spectral-line models |
+| `fix_notebooks_warnings_v3.py` | Notebook warnings fix script v3.1 (Aggressive Reset & Clean Indentation) |
+| `fix_tutorial_notebooks.py` | (用途未記載) |
+| `make_bruco_advanced_notebook.py` | Generate case_bruco_advanced.ipynb (EN + JA) |
+| `make_bruco_ica_notebook.py` | Generate case_bruco_ica_denoising.ipynb (EN + JA) |
+| `make_peak_tracking_notebook.py` | Generate advanced_peak_tracking.ipynb (EN + JA) |
+| `make_schumann_notebook.py` | Generate Schumann resonance analysis tutorial notebooks (EN + JA) |
+| `make_spectrogram_processing_notebook.py` | Generate advanced_spectrogram_processing.ipynb (EN + JA) |
+| `make_violin_mode_notebook.py` | Generate case_violin_mode.ipynb (EN + JA) |
+| `run_quickstart_test.py` | (用途未記載) |
+| `strip_example_notebook_outputs.py` | Strip transient outputs from tracked notebooks before commit |
+| `update_intersphinx_inventories.py` | (用途未記載) |
 
 ## notebook_gen/
 
@@ -66,6 +102,8 @@ These are not tests (not run by pytest) but standalone sanity checks.
 | `verify_timeseries_attrs.py` | Confirm TimeSeries attribute preservation after operations |
 | `audit_numerical_risks.py` | Scan source code for division-by-zero and NaN risks |
 | `validate_io_improvements.py` | Validate I/O reader type annotations and Path support |
+| `check_branding_html.py` | (用途未記載) |
+| `check_og_metadata.py` | (用途未記載) |
 
 ## dev_tools/
 
@@ -76,6 +114,35 @@ Utilities used during development and CI setup.
 | `install_minepy.py` | Build and install the `minepy` (MIC) C extension from source |
 | `fix_scalarfield_notebook.py` | One-off patch for ScalarField notebook cell outputs |
 | `a2_inventory_check_timeseries.py` | Diff public API against a CSV ledger; produces HTML/CSV diff reports |
+| `catalog_legacy_codes.py` | (用途未記載) |
+| `make_calibration_tutorial.py` | Generate Counts → Strain calibration pipeline tutorial notebooks (EN + JA) |
+| `make_dttxml_tutorial.py` | Generate DTTXML calibration tutorial notebooks (EN + JA) |
+| `make_fields_tutorial.py` | Generate multi-dimensional field analysis tutorial notebooks (EN + JA) |
+| `make_finesse_tutorial.py` | Generate Finesse 3 interoperability tutorial notebooks (EN + JA) |
+| `make_glitch_tutorial.py` | Generate glitch analysis (Q-transform/Omega-scan) tutorial notebooks (EN + JA) |
+| `make_modal_tutorial.py` | Generate high-precision modal analysis tutorial notebooks (EN + JA) |
+| `make_physics_validation_tutorial.py` | Generate physical validity checking tutorial notebooks (EN + JA) |
+| `make_provenance_tutorial.py` | Generate HDF5 provenance / reproducible metadata tutorial notebooks (EN + JA) |
+| `make_pycbc_tutorial.py` | Generate PyCBC interoperability tutorial notebooks (EN + JA) |
+| `patch_notebooks.py` | (用途未記載) |
+| `pin_notebook_versions.py` | (用途未記載) |
+
+## branding/
+
+Asset and branding bundle generation for documentation and landing pages.
+
+| Script | Description |
+| --- | --- |
+| `generate_docs_branding.py` | Generate the docs branding asset bundle |
+
+## dev/ci_logs/
+
+CI log analysis and retrieval utilities.
+
+| Script | Description |
+| --- | --- |
+| `analyze_logs.py` | (用途未記載) |
+| `fetch_logs.py` | (用途未記載) |
 
 ## benchmarks/
 

@@ -26,6 +26,19 @@ Write-scope: src/gwexpy/io/formats/  gwexpy/timeseries.py
 - If two workers need the same file, **serialise** the work — do not run concurrently.
 - Scope must be declared in your opening message or plan document.
 
+**scope-lock hook（オプトイン）**: `.harness.local/scope.txt` に 1 行 1 パターンで write-scope を宣言すると、
+`Edit`/`Write` のたびに scope-lock hook が範囲外の編集を自動警告します（ファイルが存在しなければ何もしません）。
+
+```
+# .harness.local/scope.txt の例
+gwexpy/io/
+tests/io/
+```
+
+注意: ディレクトリ宣言には必ず末尾スラッシュを付けること（`gwexpy/io/`）。
+スラッシュなし（`gwexpy/io`）はプレフィックスのグロブ照合となり、
+`gwexpy/io_utils.py` のような別パスが誤ってスコープ内と判定されます。
+
 ## (c) Read-Only Roles
 
 Agents assigned as **reviewer / auditor / explorer** are read-only by default.

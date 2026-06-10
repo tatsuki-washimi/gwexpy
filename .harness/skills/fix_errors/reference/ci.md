@@ -1,5 +1,7 @@
 # CI 失敗対応（CI）
 
+> **全体フロー**: gh CLI での失敗 run 特定からローカル再現・修正・再確認の完全な triage ワークフローは [`../../triage_ci/SKILL.md`](../../triage_ci/SKILL.md) を参照してください。
+
 CI 失敗が発生した場合、ローカル環境で問題を再現・修正する方法を記載します。
 
 ## 基本フロー
@@ -47,6 +49,6 @@ CI 失敗が発生した場合、ローカル環境で問題を再現・修正�
 
 ## トラブルシューティング
 
-- **mypy エラー** → [reference/mypy.md](../mypy.md)
-- **Python 3.9 互換性エラー** → [reference/python39.md](../python39.md)
-- **ノートブック実行エラー** → [reference/notebooks.md](../notebooks.md)
+- **mypy エラー** → [reference/mypy.md](mypy.md)
+- **Python 3.9 互換性エラー** → [reference/python39.md](python39.md)
+- **ノートブック実行エラー** → [reference/notebooks.md](notebooks.md)

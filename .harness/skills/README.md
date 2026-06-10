@@ -1,6 +1,6 @@
 # gwexpy Agent Skills
 
-**総スキル数**: active 41（+ deprecated stub 2）
+**総スキル数**: active 43（+ deprecated stub 2）
 
 Agent Skills は AI エージェントに専門知識と実行能力を提供するオープンスタンダード形式のパッケージです。
 
@@ -54,7 +54,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `gh_pr_comment`          | GitHub PR へのコメント投稿・管理を行う                                   |
 | ~~`phase0_exception_sweep`~~ | *(deprecated → [exception-auditor agent](../agents/exception-auditor.md))* |
 
-### 品質保証・テスト (6)
+### 品質保証・テスト (7)
 
 | スキル                | 説明                                                                  |
 | --------------------- | --------------------------------------------------------------------- |
@@ -64,6 +64,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `audit_api_elements`  | gwexpy の公開 API 要素（関数・クラス・型）の整合性を監査する          |
 | `verify_hardening`    | セキュリティ・堅牢性観点でのコードハードニング検証を行う              |
 | `audit_io_backends`   | I/O バックエンド（GWF, HDF5, Zarr 等）の読み書き整合性を検証する      |
+| `triage_ci`           | CI 失敗時の失敗ジョブ特定からローカル再現・修正・再確認までの triage を行う |
 
 ### 科学・物理検証 (3 active + 1 deprecated)
 
@@ -85,7 +86,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `web_docs_page_rewrite` | `docs/web` の個別ページを要約、早見表、FAQ込みで再設計する |
 | `web_docs_release_gates` | `docs/web` の build、linkcheck、Notebook、ja/en 同期を公開前に確認する |
 
-### プロジェクト管理 (10)
+### プロジェクト管理 (11)
 
 | スキル                 | 説明                                                                         |
 | ---------------------- | ---------------------------------------------------------------------------- |
@@ -99,6 +100,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `learn_skill`          | 会話履歴や作業内容から、再利用可能なエージェントスキルを生成する            |
 | `list_skills`          | 登録されているスキル一覧をカテゴリー別に分類して表示する                    |
 | `recover_quota`        | LLMのクオータを管理・節約し、効率的に回復・継続するための戦略を実行する     |
+| `session_retrospective` | 過去のAIセッション履歴を横断分析し、harness（skills/rules/hooks）の更新候補を抽出する |
 
 ### ユーティリティ (4)
 

@@ -170,12 +170,15 @@ Agents must run and **pass** the following before creating a PR:
 │   └── testing.md
 └── scripts/
     └── setup_symlinks.sh      ← Symlink setup for AI tools
+    
+**Scripts Inventory:**
+- For a complete catalog of scripts in `scripts/`, `scripts/ci/`, `scripts/dev_tools/`, `scripts/validation/`, `scripts/branding/`, and other directories, refer to `scripts/README.md`.
 ```
 
 **Current inventory:**
 - **Agents:** 9 (physics-reviewer, gwexpy-tester, gwexpy-linter, risk-labeler, metadata-checker, exception-auditor, gwexpy-compatibility-checker, optional-deps-reviewer, numeric-scale-checker)
 - **Workflows:** 8
-- **Skills:** 41 active (+2 deprecated stubs; 43 directories total)
+- **Skills:** 43 active (+2 deprecated stubs; 45 directories total)
 - **Rules (common):** 10
 
 **Legacy compatibility:**
