@@ -218,6 +218,24 @@ def test_pickle_warns_once_listing_all_dropped_attrs_keys(matrix_cls):
 
 
 @pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
+def test_pickle_filters_attrs_with_custom_reduce_raising(matrix_cls):
+    matrix = _make_matrix(matrix_cls)
+
+    class BadReduce:
+        def __reduce__(self):
+            raise ValueError("cannot pickle this")
+
+    matrix.attrs["bad_reduce"] = BadReduce()
+    matrix.attrs["good"] = "kept"
+
+    with pytest.warns(UserWarning, match="bad_reduce"):
+        restored = pickle.loads(pickle.dumps(matrix))
+
+    assert "bad_reduce" not in restored.attrs
+    assert restored.attrs["good"] == "kept"
+
+
+@pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
 def test_setstate_backward_compat_without_metadata_dict(matrix_cls):
     matrix = _make_matrix(matrix_cls)
     reconstruct, args, state = matrix.__reduce__()

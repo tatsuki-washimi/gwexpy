@@ -147,7 +147,7 @@ class SeriesMatrixStructureMixin:
             meta=self.meta,
             name=f"{self.name}.conj" if self.name else "",
             epoch=self.epoch,
-            attrs=self.attrs,
+            attrs=deepcopy(self.attrs),
         )
 
     @property
@@ -170,7 +170,7 @@ class SeriesMatrixStructureMixin:
                 meta=new_meta,
                 name=f"{self.name}.T" if self.name else "",
                 epoch=self.epoch,
-                attrs=self.attrs,
+                attrs=deepcopy(self.attrs),
             )
         else:
             # Custom axes transpose
@@ -218,5 +218,5 @@ class SeriesMatrixStructureMixin:
             meta=MetaDataMatrix(new_meta),
             name=self.name,
             epoch=self.epoch,
-            attrs=self.attrs,
+            attrs=deepcopy(self.attrs),
         )

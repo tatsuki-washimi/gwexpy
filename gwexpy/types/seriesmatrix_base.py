@@ -99,7 +99,14 @@ def _pickle_safe_attrs(attrs: Any, protocol: int) -> dict[str, Any]:
     for key, value in attrs.items():
         try:
             pickle.dumps((key, value), protocol=protocol)
-        except (pickle.PicklingError, TypeError, AttributeError):
+        except (
+            pickle.PicklingError,
+            TypeError,
+            AttributeError,
+            ValueError,
+            RuntimeError,
+            RecursionError,
+        ):
             dropped.append(key)
             continue
         safe_attrs[key] = value
