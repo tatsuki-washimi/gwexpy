@@ -1,6 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.6] - 2026-06-11
+
+This is a bugfix and maintenance release: plotting/I/O follow-up fixes
+(#440, #441, #442 via #443), a development dependency sweep (#431), and
+FrequencySeries collection registry audit tests (#438).
 
 ### Bug fixes
 
@@ -24,6 +28,16 @@
 - `SeriesMatrix.astype()`, `.real`, `.imag`, `.conj()`, `.transpose()`/`.T`
   and `.reshape()` now deep-copy `attrs` like `.copy()` does, so mutating
   the result's attrs no longer leaks into the source matrix (#442).
+- Multi-file NetCDF4/Zarr reads into `TimeSeriesMatrix` now preserve the
+  matrix row/column keys instead of collapsing them through the dict-reader
+  shortcut, and NetCDF4 gained a dedicated matrix writer.
+- Multi-file matrix segment merging now passes `pad=np.nan`, so gaps between
+  files are NaN-padded instead of raising.
+
+### Maintenance
+
+- Updated the development dependency group (24 packages) in
+  `requirements-dev.txt` (#431).
 
 ### Tests
 
