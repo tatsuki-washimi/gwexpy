@@ -261,7 +261,14 @@ def read_timeseries_netcdf4(source, **kwargs) -> TimeSeries:
 def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
     """Read a NetCDF4 file and convert its channels to a matrix."""
     if isinstance(source, (list, tuple)):
-        return read_timeseriesdict_netcdf4(source, **kwargs).to_matrix()
+        sources = list(source)
+        if not sources:
+            raise ValueError("no NetCDF4 files provided")
+        matrices = [read_timeseriesmatrix_netcdf4(s, **kwargs) for s in sources]
+        merged = matrices[0]
+        for mat in matrices[1:]:
+            merged = merged.append(mat, inplace=False, gap="pad")
+        return merged
 
     xr = _import_xarray()
 
@@ -413,6 +420,34 @@ def write_timeseries_netcdf4(ts, target, **kwargs):
     )
 
 
+def write_timeseriesmatrix_netcdf4(tsm, target, **kwargs):
+    """Write a TimeSeriesMatrix to a NetCDF4 file preserving row/col keys.
+
+    Each matrix cell is written as a variable keyed by a ``(row_key, col_key)``
+    tuple so that ``gwexpy_row_key``/``gwexpy_col_key`` attributes are encoded
+    and the full matrix structure survives a write→read roundtrip.
+    """
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+    row_keys = list(tsm.row_keys())
+    col_keys = list(tsm.col_keys())
+    n_rows, n_cols, n_samples = tsm.shape
+
+    tsd: TimeSeriesDict = TimeSeriesDict()
+    for i, rk in enumerate(row_keys):
+        for j, ck in enumerate(col_keys):
+            cell_data = np.asarray(tsm[i, j], dtype=np.float64)
+            ts = TimeSeries(
+                cell_data,
+                t0=tsm.t0,
+                dt=tsm.dt,
+                unit=tsm.unit if hasattr(tsm, "unit") else None,
+            )
+            tsd[(rk, ck)] = ts
+
+    write_timeseriesdict_netcdf4(tsd, target, **kwargs)
+
+
 # -- Registration --------------------------------------------------------------
 
 register_timeseries_format(
@@ -423,5 +458,6 @@ register_timeseries_format(
     reader_matrix=read_timeseriesmatrix_netcdf4,
     writer_dict=write_timeseriesdict_netcdf4,
     writer_single=write_timeseries_netcdf4,
+    writer_matrix=write_timeseriesmatrix_netcdf4,
     extension="nc",
 )

@@ -285,15 +285,24 @@ def read_timeseriesmatrix_zarr(
 ) -> TimeSeriesMatrix:
     """Read a Zarr store and convert its channels to a matrix."""
     if isinstance(source, (list, tuple)):
-        tsd = read_timeseriesdict_zarr(
-            source,
-            channels=channels,
-            unit=unit,
-            sample_rate_override=sample_rate_override,
-            dt_override=dt_override,
-            **kwargs,
-        )
-        return tsd.to_matrix()
+        sources = list(source)
+        if not sources:
+            raise ValueError("no Zarr stores provided")
+        matrices = [
+            read_timeseriesmatrix_zarr(
+                s,
+                channels=channels,
+                unit=unit,
+                sample_rate_override=sample_rate_override,
+                dt_override=dt_override,
+                **kwargs,
+            )
+            for s in sources
+        ]
+        merged = matrices[0]
+        for mat in matrices[1:]:
+            merged = merged.append(mat, inplace=False, gap="pad")
+        return merged
 
     zarr = _import_zarr()
 
