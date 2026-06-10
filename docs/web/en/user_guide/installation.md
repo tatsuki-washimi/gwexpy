@@ -27,7 +27,7 @@ myst:
 - [Next to Read](#next-to-read)
 
 :::{note}
-GWexpy is published on PyPI (current release: v0.1.5). A conda-forge feedstock
+GWexpy is published on PyPI (current release: v0.1.6). A conda-forge feedstock
 is also available, though the conda-forge package may lag the latest PyPI
 release. Install from PyPI for the latest version, or use
 `conda install -c conda-forge gwexpy` once the desired version is available on
