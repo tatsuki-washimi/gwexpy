@@ -39,7 +39,6 @@ from gwexpy.frequencyseries import (
     FrequencySeriesMatrix,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -116,8 +115,8 @@ class TestFrequencySeriesDictRegistryBackend:
     def test_gwpy_only_format_is_NOT_reachable_via_dict_read(self):
         """A format registered only in gwpy default_registry is invisible to
         the collection read fallback (which uses astropy.io.registry)."""
-        from gwpy.io.registry import default_registry as gwpy_reg
         from astropy.io.registry import IORegistryError
+        from gwpy.io.registry import default_registry as gwpy_reg
 
         gwpy_format = "gwpy-only-audit-dict"
         gwpy_reg.register_reader(gwpy_format, FrequencySeriesDict, _gwpy_registry_sentinel)
@@ -174,8 +173,8 @@ class TestFrequencySeriesListRegistryBackend:
     def test_gwpy_only_format_is_NOT_reachable_via_list_read(self):
         """A format registered only in gwpy default_registry is invisible to
         the FrequencySeriesList read fallback."""
-        from gwpy.io.registry import default_registry as gwpy_reg
         from astropy.io.registry import IORegistryError
+        from gwpy.io.registry import default_registry as gwpy_reg
 
         gwpy_format = "gwpy-only-audit-list"
         gwpy_reg.register_reader(gwpy_format, FrequencySeriesList, _gwpy_registry_sentinel)
