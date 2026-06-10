@@ -77,6 +77,16 @@ class TestAstype:
         assert result.dtype == np.float32
         assert result is not tsm
 
+    def test_astype_attrs_independent(self):
+        # Mutating the result's attrs must not affect the source matrix
+        tsm = _make_tsm()
+        tsm.attrs["tag"] = {"nested": 1}
+        result = tsm.astype(np.float32)
+        result.attrs["tag"]["nested"] = 999
+        result.attrs["extra"] = "added"
+        assert tsm.attrs["tag"]["nested"] == 1
+        assert "extra" not in tsm.attrs
+
 
 # ---------------------------------------------------------------------------
 # real / imag properties
@@ -119,6 +129,16 @@ class TestRealImag:
         result = tsm.imag
         assert result is not None
 
+    def test_real_imag_attrs_independent(self):
+        # Mutating result attrs must not affect the source matrix
+        tsm = _make_tsm(complex_=True)
+        tsm.attrs["tag"] = "orig"
+        for result in (tsm.real, tsm.imag):
+            result.attrs["tag"] = "mutated"
+            result.attrs["extra"] = "added"
+            assert tsm.attrs["tag"] == "orig"
+            assert "extra" not in tsm.attrs
+
 
 # ---------------------------------------------------------------------------
 # conj
@@ -140,6 +160,14 @@ class TestConj:
         tsm = _make_tsm()
         result = tsm.conj()
         assert result is not None
+
+    def test_conj_attrs_independent(self):
+        # Mutating the result's attrs must not affect the source matrix
+        tsm = _make_tsm(complex_=True)
+        tsm.attrs["tag"] = {"nested": 1}
+        result = tsm.conj()
+        result.attrs["tag"]["nested"] = 999
+        assert tsm.attrs["tag"]["nested"] == 1
 
 
 # ---------------------------------------------------------------------------
@@ -163,6 +191,14 @@ class TestTranspose:
         result = tsm.transpose(2, 0, 1)
         # Returns plain ndarray for custom axes
         assert result.shape == (8, 2, 3)
+
+    def test_transpose_attrs_independent(self):
+        # Mutating the result's attrs must not affect the source matrix
+        tsm = _make_tsm()
+        tsm.attrs["tag"] = {"nested": 1}
+        result = tsm.T
+        result.attrs["tag"]["nested"] = 999
+        assert tsm.attrs["tag"]["nested"] == 1
 
 
 # ---------------------------------------------------------------------------
@@ -193,6 +229,14 @@ class TestReshape:
         tsm = _make_tsm()
         with pytest.raises(ValueError, match="2D or 3D"):
             tsm.reshape(2, 3, 8, 1)
+
+    def test_reshape_attrs_independent(self):
+        # Mutating the result's attrs must not affect the source matrix
+        tsm = _make_tsm(n_rows=2, n_cols=3, n_t=8)
+        tsm.attrs["tag"] = {"nested": 1}
+        result = tsm.reshape(6, 1)
+        result.attrs["tag"]["nested"] = 999
+        assert tsm.attrs["tag"]["nested"] == 1
 
     def test_reshape_with_copy_true(self):
         # Lines 208-210 — copy=True path

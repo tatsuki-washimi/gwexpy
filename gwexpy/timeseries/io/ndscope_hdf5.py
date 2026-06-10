@@ -27,6 +27,7 @@ import h5py
 import numpy as np
 
 from .. import TimeSeries, TimeSeriesDict
+from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
 
 # Dataset names recognised as ndscope data fields.
@@ -104,8 +105,10 @@ def read_timeseriesdict_ndscope_hdf5(
 
     Parameters
     ----------
-    source : str or Path
-        Path to the HDF5 file.
+    source : str, Path, or list of str/Path
+        Path to the HDF5 file, or a list of paths.  When a list is
+        given, channels found in several files are concatenated along
+        the time axis and channels unique to one file are merged in.
     channels : iterable of str, optional
         Channel names to read.  If ``None``, all channels are read.
     start : float, optional
@@ -120,6 +123,18 @@ def read_timeseriesdict_ndscope_hdf5(
     TimeSeriesDict
 
     """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_ndscope_hdf5,
+            multi,
+            "hdf.ndscope",
+            channels=channels,
+            start=start,
+            end=end,
+            **kwargs,
+        )
+
     wanted = set(channels) if channels is not None else None
     out = TimeSeriesDict()
 

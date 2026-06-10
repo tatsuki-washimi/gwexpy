@@ -715,3 +715,28 @@ def test_read_gwf_timeseries_with_single_channel_by_format_gwf():
     assert ts.name == CHANNEL
     if expected:
         assert ts.name in expected
+
+
+def test_safe_get_reader_missing_format_returns_none_without_warning():
+    import warnings
+
+    from gwexpy.timeseries._gwf_io import _safe_get_reader, _safe_get_writer
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert _safe_get_reader("gwexpy-no-such-format", TimeSeries) is None
+        assert _safe_get_writer("gwexpy-no-such-format", TimeSeries) is None
+
+
+def test_safe_get_reader_unexpected_error_warns(monkeypatch):
+    from gwexpy.timeseries import _gwf_io
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("registry broken")
+
+    monkeypatch.setattr(_gwf_io.io_registry, "get_reader", boom)
+    monkeypatch.setattr(_gwf_io.io_registry, "get_writer", boom)
+    with pytest.warns(UserWarning, match="GWF alias registration skipped for 'gwf'"):
+        assert _gwf_io._safe_get_reader("gwf", TimeSeries) is None
+    with pytest.warns(UserWarning, match="GWF alias registration skipped for 'gwf'"):
+        assert _gwf_io._safe_get_writer("gwf", TimeSeries) is None

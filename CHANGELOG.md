@@ -2,7 +2,37 @@
 
 ## [Unreleased]
 
-- No unreleased changes yet.
+### Bug fixes
+
+- Fixed subplot geometry calculation in `Plot` so the expansion count always
+  matches `_expand_args`: all arguments are now counted regardless of order
+  (a leading Spectrogram or matrix no longer hides later containers), the
+  duplicated counting loops were unified into a single helper, and a leading
+  matrix keeps its grid geometry only when it is the sole argument (#440).
+- All TimeSeries readers now handle a list or tuple of paths: formats with
+  well-defined merge semantics (tdms, ats, csv, netcdf4, gbd, ndscope HDF5,
+  zarr, sdb, win, dttxml) concatenate channels along time with NaN gap
+  padding via a shared multi-source helper, while self-contained formats
+  (wav, audio) raise a clear `ValueError` instead of an opaque backend
+  `TypeError` (#441).
+- GWF alias registration no longer swallows unexpected errors silently:
+  expected missing-backend lookups return `None` as before, anything else
+  emits a warning (#442).
+- Pickling a `SeriesMatrix` now emits a warning listing any attrs entries
+  that had to be dropped because they cannot be pickled, instead of
+  dropping them silently (#442).
+- `SeriesMatrix.astype()`, `.real`, `.imag`, `.conj()`, `.transpose()`/`.T`
+  and `.reshape()` now deep-copy `attrs` like `.copy()` does, so mutating
+  the result's attrs no longer leaks into the source matrix (#442).
+
+### Tests
+
+- Added plot geometry tests for mixed-container argument orders, single
+  2D/3D/4D matrices, and parity with `_expand_args` expansion counts.
+- Added multi-source reader tests covering merge, gap padding, overlap
+  errors, empty-list rejection, and clear single-file-only errors.
+- Added regression tests for pickle attrs warnings and attrs independence
+  of derived matrices.
 
 ## [0.1.5] - 2026-06-10
 

@@ -188,3 +188,38 @@ class TestNetCDF4Roundtrip:
         assert all(isinstance(k, int) for k in row_keys), "Row keys should be int"
         assert all(isinstance(k, int) for k in col_keys), "Col keys should be int"
         np.testing.assert_allclose(loaded.value, data)
+
+    def test_matrix_multi_file_preserves_row_col_keys(self, tmp_path):
+        """Reading a list of NetCDF4 matrix files must preserve gwexpy_row/col_key (#443)."""
+        from collections import OrderedDict
+
+        from gwexpy.types.metadata import MetaData, MetaDataDict
+
+        seg1 = TimeSeriesMatrix(
+            np.arange(12, dtype=np.float64).reshape(2, 1, 6),
+            t0=1000000000.0,
+            dt=0.25,
+        )
+        seg2 = TimeSeriesMatrix(
+            np.arange(12, 24, dtype=np.float64).reshape(2, 1, 6),
+            t0=1000000000.0 + 6 * 0.25,
+            dt=0.25,
+        )
+        for seg in (seg1, seg2):
+            seg.rows = MetaDataDict(
+                OrderedDict({"H1": MetaData(), "L1": MetaData()}),
+                expected_size=2,
+                key_prefix="row",
+            )
+
+        path1 = tmp_path / "seg1.nc"
+        path2 = tmp_path / "seg2.nc"
+        seg1.write(str(path1), format="nc")
+        seg2.write(str(path2), format="nc")
+
+        merged = TimeSeriesMatrix.read([str(path1), str(path2)], format="nc")
+
+        assert list(merged.row_keys()) == ["H1", "L1"], (
+            f"row keys lost after multi-file read: {list(merged.row_keys())}"
+        )
+        assert merged.shape[-1] == 12

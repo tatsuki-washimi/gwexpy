@@ -23,6 +23,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._multi import expand_multi_source, read_multi_dict
 
 _DTTXML_FORMATS = ("xml.diaggui", "dttxml")
 
@@ -58,7 +59,27 @@ def read_timeseriesdict_dttxml(
     pad=np.nan,
     **kwargs,
 ) -> TimeSeriesDict:
-    """Read one DiagGUI XML product into a ``TimeSeriesDict``."""
+    """Read one DiagGUI XML product into a ``TimeSeriesDict``.
+
+    A list of paths is also accepted; channels found in several files
+    are concatenated along the time axis (gaps padded with ``pad``) and
+    channels unique to one file are merged in.
+    """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_dttxml,
+            multi,
+            "xml.diaggui",
+            pad=pad,
+            products=products,
+            channels=channels,
+            unit=unit,
+            epoch=epoch,
+            timezone=timezone,
+            **kwargs,
+        )
+
     if products is None:
         raise ValueError("products must be specified for xml.diaggui")
     prod = str(products).upper()

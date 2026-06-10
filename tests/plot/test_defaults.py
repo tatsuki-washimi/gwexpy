@@ -338,6 +338,95 @@ class TestDetermineGeometryAndSeparate:
         assert sep is True
         assert geom == (4, 1)
 
+    def test_spectrogram_first_then_timeseriesdict_geometry(self):
+        from gwpy.spectrogram import Spectrogram
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        sg = Spectrogram(np.ones((16, 8)), t0=0, dt=1, f0=0, df=1)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        # Spectrogram first must still count the trailing dict channels
+        sep, geom = determine_geometry_and_separate([sg, tsd])
+        assert sep is True
+        assert geom == (3, 1)
+
+    def test_spectrogrammatrix_first_then_timeseriesdict_geometry(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.spectrogram import SpectrogramMatrix
+        from gwexpy.timeseries import TimeSeriesDict
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        sg_mat = SpectrogramMatrix(np.ones((2, 16, 8)), t0=0, dt=1, f0=0, df=1)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        # Matrix-first must match the dict-first result (order independence)
+        sep, geom = determine_geometry_and_separate([sg_mat, tsd])
+        assert sep is True
+        assert geom == (4, 1)
+        sep2, geom2 = determine_geometry_and_separate([tsd, sg_mat])
+        assert (sep, geom) == (sep2, geom2)
+
+    def test_single_3d_timeseriesmatrix_keeps_grid_geometry(self):
+        from gwexpy.timeseries import TimeSeriesMatrix
+
+        mat = TimeSeriesMatrix(np.ones((2, 3, 16)), dt=1 / 16)
+        sep, geom = determine_geometry_and_separate([mat])
+        assert sep is True
+        assert geom == (2, 3)
+
+    def test_single_4d_spectrogrammatrix_keeps_grid_geometry(self):
+        from gwexpy.spectrogram import SpectrogramMatrix
+
+        sg_mat = SpectrogramMatrix(np.ones((2, 3, 16, 8)), t0=0, dt=1, f0=0, df=1)
+        sep, geom = determine_geometry_and_separate([sg_mat])
+        assert sep is True
+        assert geom == (2, 3)
+
+    def test_matrix_first_then_timeseriesdict_flattens_to_total(self):
+        from gwpy.timeseries import TimeSeries
+
+        from gwexpy.timeseries import TimeSeriesDict, TimeSeriesMatrix
+
+        ts = TimeSeries(np.ones(16), t0=0, dt=1 / 16)
+        tsd = TimeSeriesDict({"A": ts, "B": ts.copy()})
+        mat = TimeSeriesMatrix(np.ones((2, 3, 16)), dt=1 / 16)
+        # With extra args the (2, 3) grid cannot hold them: 6 + 2 → one column
+        sep, geom = determine_geometry_and_separate([mat, tsd])
+        assert sep is True
+        assert geom == (8, 1)
+
+    def test_2d_matrix_geometry_matches_expand_args(self):
+        from gwexpy.frequencyseries import FrequencySeriesDict, FrequencySeriesList
+        from gwexpy.plot._init_helpers import _expand_args
+        from gwexpy.spectrogram import (
+            SpectrogramDict,
+            SpectrogramList,
+            SpectrogramMatrix,
+        )
+        from gwexpy.timeseries import TimeSeriesMatrix
+        from gwexpy.types import SeriesMatrix
+
+        # 2D input is normalized to shape (2, 1, 16) → expands to 2 elements
+        mat = TimeSeriesMatrix(np.ones((2, 16)), dt=1 / 16)
+        expanded: list = []
+        _expand_args(
+            [mat],
+            True,
+            expanded,
+            SeriesMatrix=SeriesMatrix,
+            SpectrogramMatrix=SpectrogramMatrix,
+            FrequencySeriesList=FrequencySeriesList,
+            FrequencySeriesDict=FrequencySeriesDict,
+            SpectrogramList=SpectrogramList,
+            SpectrogramDict=SpectrogramDict,
+        )
+        sep, geom = determine_geometry_and_separate([mat])
+        assert sep is True
+        assert geom == (len(expanded), 1)
+        assert geom == (2, 1)
+
 
 # ---------------------------------------------------------------------------
 # determine_xlabel

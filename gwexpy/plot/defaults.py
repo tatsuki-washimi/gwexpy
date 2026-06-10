@@ -163,6 +163,40 @@ def determine_norm(data_list, current_value=None):
     return None
 
 
+def _count_expanded(item):
+    """Count the plot elements ``item`` expands to under ``separate=True``.
+
+    Mirrors ``_expand_args(separate=True)`` in ``_init_helpers``:
+    - matrices            → to_series_1Dlist() element count
+    - list/tuple/dict     → len(item)  (FrequencySeriesList/Dict inherit list/dict)
+    - SpectrogramList/Dict → len(item)  (inherit UserList/UserDict, checked by name)
+    - plain UserList/UserDict → 1        (_expand_args falls to else-branch)
+    - everything else     → 1
+    """
+    item_type = type(item).__name__
+    if item_type.endswith("Matrix"):
+        try:
+            if item_type == "SpectrogramMatrix":
+                # to_series_1Dlist(): 3-D → shape[0], 4-D → shape[0]*shape[1]
+                if item.ndim == 3:
+                    return item.shape[0]
+                if item.ndim == 4:
+                    return item.shape[0] * item.shape[1]
+                return 1
+            # to_series_1Dlist() always returns shape[0]*shape[1]
+            if item.ndim >= 2:
+                return item.shape[0] * item.shape[1]
+            return 1
+        except (AttributeError, ValueError):
+            return 1
+    if isinstance(item, (list, tuple, dict)) or item_type in (
+        "SpectrogramList",
+        "SpectrogramDict",
+    ):
+        return len(item)
+    return 1
+
+
 def determine_geometry_and_separate(data_list, separate=None, geometry=None):
     """Determine subplot separation and grid geometry for the plot data."""
     if not data_list:
@@ -171,32 +205,19 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
     ref = data_list[0]
     ref_type = type(ref).__name__
 
-    # Determine total elements to be plotted separately
-    total_elements = 0
-    for item in data_list:
-        item_type = type(item).__name__
-        if item_type in (
-            "SeriesMatrix",
-            "TimeSeriesMatrix",
-            "FrequencySeriesMatrix",
-        ) or item_type.endswith("Matrix"):
-            if item.ndim == 2:
-                total_elements += item.shape[0]
-            elif item.ndim == 3:
-                total_elements += item.shape[0] * item.shape[1]
-            elif item_type == "SpectrogramMatrix" and item.ndim == 4:
-                total_elements += item.shape[0] * item.shape[1]
-            else:
-                total_elements += 1
-        else:
-            total_elements += 1
+    # Total elements produced by _expand_args(separate=True), scanning ALL args
+    total_elements = sum(_count_expanded(item) for item in data_list)
+
+    # A single leading matrix keeps its own grid geometry; with extra
+    # arguments the grid cannot hold them, so fall back to a single column.
+    single_matrix = len(data_list) == 1
 
     # Recognize Spectrograms and SpectrogramMatrix for automatic separation
     if isinstance(ref, Spectrogram) or ref_type == "SpectrogramMatrix":
         if separate is None:
             separate = True
         if separate is True and geometry is None:
-            if ref_type == "SpectrogramMatrix":
+            if ref_type == "SpectrogramMatrix" and single_matrix:
                 # Check for filtered matrix which might have lost ndim or shape
                 try:
                     if ref.ndim == 3:
@@ -218,7 +239,7 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
         if separate is True and geometry is None:
             # Use matrix shape for geometry instead of flattening to single column
             try:
-                if ref.ndim == 3:
+                if ref.ndim == 3 and single_matrix:
                     nrows = ref.shape[0]
                     ncols = ref.shape[1]
                     return separate, (nrows, ncols)
@@ -228,55 +249,14 @@ def determine_geometry_and_separate(data_list, separate=None, geometry=None):
                 return separate, (total_elements, 1)
 
     if ref_type == "TimeSeriesDict":
-        # Compute total expanded channel count first, mirroring _expand_args(separate=True):
-        # - matrices            → to_series_1Dlist() element count
-        # - list/tuple/dict     → len(item)  (FrequencySeriesList/Dict inherit list/dict)
-        # - SpectrogramList/Dict → len(item)  (inherit UserList/UserDict, checked by name)
-        # - plain UserList/UserDict → 1        (_expand_args falls to else-branch)
-        # - everything else     → 1
-        total_channels = 0
-        for item in data_list:
-            item_type = type(item).__name__
-            if item_type in (
-                "SeriesMatrix",
-                "TimeSeriesMatrix",
-                "FrequencySeriesMatrix",
-            ) or item_type.endswith("Matrix"):
-                try:
-                    if item_type == "SpectrogramMatrix":
-                        # to_series_1Dlist(): 3-D → shape[0], 4-D → shape[0]*shape[1]
-                        if item.ndim == 3:
-                            total_channels += item.shape[0]
-                        elif item.ndim == 4:
-                            total_channels += item.shape[0] * item.shape[1]
-                        else:
-                            total_channels += 1
-                    else:
-                        # to_series_1Dlist() always returns shape[0]*shape[1]
-                        if item.ndim == 2:
-                            total_channels += item.shape[0]
-                        elif item.ndim >= 3:
-                            total_channels += item.shape[0] * item.shape[1]
-                        else:
-                            total_channels += 1
-                except (AttributeError, ValueError):
-                    total_channels += 1
-            elif isinstance(item, (list, tuple, dict)) or item_type in (
-                "SpectrogramList",
-                "SpectrogramDict",
-            ):
-                total_channels += len(item)
-            else:
-                total_channels += 1
-
         # Only default separate=True and set geometry when channels exist.
-        # An empty TimeSeriesDict (total_channels == 0) keeps the caller's
+        # An empty TimeSeriesDict (total_elements == 0) keeps the caller's
         # separate value so gwpy can produce a graceful empty plot.
-        if total_channels > 0:
+        if total_elements > 0:
             if separate is None:
                 separate = True
             if separate is True and geometry is None:
-                geometry = (total_channels, 1)
+                geometry = (total_elements, 1)
         return separate, geometry
 
     return separate, geometry

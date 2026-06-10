@@ -216,8 +216,10 @@ def read_timeseriesdict_csv(
 
     Parameters
     ----------
-    source : str or Path
-        Path to a CSV file.
+    source : str, Path, or list of str/Path
+        Path to a CSV file, or a list of paths.  When a list is given,
+        channels found in several files are concatenated along the time
+        axis and channels unique to one file are merged in.
     config : CSVFormatConfig, str, Path, dict, or None
         Column mapping configuration. Can be:
 
@@ -240,6 +242,21 @@ def read_timeseriesdict_csv(
 
     """
     from .. import TimeSeriesDict
+    from ._multi import expand_multi_source, read_multi_dict
+
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_csv,
+            multi,
+            "csv",
+            config=config,
+            channels=channels,
+            timezone=timezone,
+            resample=resample,
+            resample_method=resample_method,
+            **kwargs,
+        )
 
     # --- Resolve config ---
     if config is None:

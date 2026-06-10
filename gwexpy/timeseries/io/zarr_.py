@@ -28,6 +28,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
 
 _MATRIX_ARRAY_PREFIX = "__gwexpy_matrix__"
@@ -187,8 +188,11 @@ def read_timeseriesdict_zarr(
 
     Parameters
     ----------
-    source : str, path-like, or zarr store
-        Path to the ``.zarr`` directory (or any zarr-compatible store).
+    source : str, path-like, zarr store, or list thereof
+        Path to the ``.zarr`` directory (or any zarr-compatible store),
+        or a list of stores.  When a list is given, channels found in
+        several stores are concatenated along the time axis and
+        channels unique to one store are merged in.
     channels : iterable of str, optional
         Array names to read.  If *None*, all arrays in the root group
         are loaded.
@@ -206,6 +210,19 @@ def read_timeseriesdict_zarr(
         Additional keyword arguments forwarded to ``zarr.open_group``.
 
     """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_zarr,
+            multi,
+            "zarr",
+            channels=channels,
+            unit=unit,
+            sample_rate_override=sample_rate_override,
+            dt_override=dt_override,
+            **kwargs,
+        )
+
     zarr = _import_zarr()
 
     # Only coerce to str for path-like objects; pass store objects through
@@ -267,6 +284,26 @@ def read_timeseriesmatrix_zarr(
     **kwargs,
 ) -> TimeSeriesMatrix:
     """Read a Zarr store and convert its channels to a matrix."""
+    if isinstance(source, (list, tuple)):
+        sources = list(source)
+        if not sources:
+            raise ValueError("no Zarr stores provided")
+        matrices = [
+            read_timeseriesmatrix_zarr(
+                s,
+                channels=channels,
+                unit=unit,
+                sample_rate_override=sample_rate_override,
+                dt_override=dt_override,
+                **kwargs,
+            )
+            for s in sources
+        ]
+        merged = matrices[0]
+        for mat in matrices[1:]:
+            merged = merged.append(mat, inplace=False, gap="pad", pad=np.nan)
+        return merged
+
     zarr = _import_zarr()
 
     if isinstance(source, (str, os.PathLike)):
