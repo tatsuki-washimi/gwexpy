@@ -1,0 +1,44 @@
+/* Variant B2 (furo, minimal) — small brand + CJK + whitespace tweaks. */
+
+:root {
+  --gwexpy-accent: #6d6acb;
+}
+
+/* CJK-friendly body font fallback (Japanese authoring). */
+body {
+  font-feature-settings: "palt";
+}
+
+/* Generous whitespace: a touch more breathing room on content. */
+article.bd-article,
+.content,
+main {
+  line-height: 1.7;
+}
+
+/* Calm cards: subtle border, gentle hover lift. */
+.sd-card {
+  border-radius: 10px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.sd-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(109, 106, 203, 0.15);
+}
+
+/* Card thumbnails sit flush at the top with rounded corners. */
+.sd-card .sd-card-img-top {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  object-fit: cover;
+}
+
+/* Accent the primary call-to-action button. */
+.sd-btn-primary {
+  letter-spacing: 0.02em;
+}
+
+/* Slightly larger logo, centered feel in the sidebar. */
+.sidebar-logo {
+  max-width: 70%;
+}
