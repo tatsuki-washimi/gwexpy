@@ -1,9 +1,6 @@
 Spectrogram
 ===========
 
-.. note::
-   Page role: Secondary API category
-
 **Stability:** Stable
 
 .. currentmodule:: gwexpy.spectrogram

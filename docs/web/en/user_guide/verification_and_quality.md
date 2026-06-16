@@ -6,22 +6,9 @@ myst:
 
 # Verification and Quality Signals
 
-> **Page Role:** Transparency guide
-
 This page explains what kinds of public verification signals `gwexpy` exposes today, where those signals come from, and how to interpret their limits.
 
 It is not a single "all features are verified" claim. Instead, it points you to the current evidence sources for notebooks, direct I/O formats, algorithm audits, and repository-level coverage reporting.
-
-## At a Glance
-
-| Item | Details |
-| --- | --- |
-| **Audience** | Users who want to judge how strongly a tutorial, format, or algorithm path is backed by public evidence |
-| **Prerequisites** | None beyond basic familiarity with the user guide |
-| **Use Cases** | Check how notebooks and Doctest-backed examples are exercised, see where I/O support is tied to tests, find algorithm audit evidence, and understand what repository coverage signals do and do not mean |
-| **Search Hints** | verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail |
-
-**Search hints:** verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail
 
 :::{important}
 **Read this page as a transparency map, not as a blanket guarantee**

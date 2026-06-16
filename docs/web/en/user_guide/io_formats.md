@@ -8,23 +8,10 @@ myst:
 
 # File I/O Supported Formats Guide
 
-> **Page Role:** Guide
-
 This is the end-user I/O guide for `gwexpy`.
 This page only covers the public `.read()` / `.write()` / `fetch()` style APIs that users call directly to read, write, or fetch data.
 
 It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. If the question is "how do I convert this object into another library or container?", that belongs to interop instead. For those topics, see the [interop tutorial](tutorials/intro_interop.ipynb) and the [interop API reference](../reference/api/interop).
-
-## At a Glance
-
-| Item | Details |
-| --- | --- |
-| **Audience** | Users choosing a direct file or network I/O path for `gwexpy` objects |
-| **Prerequisites** | Basic familiarity with `TimeSeries` / `TimeSeriesDict`, file extensions, and the difference between direct I/O and interop conversion |
-| **Use Cases** | Pick a supported format, decide when to set `format=`, identify read/write limits, and avoid confusing direct I/O with object conversion |
-| **Search Hints** | file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC |
-
-**Search hints:** file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC
 
 :::{warning}
 **Security Warning: Pickle Files**
@@ -43,16 +30,6 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 - **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
 - **Read-only / write-only matters**: `○ / ×` means a format can be read but not written.
 - For richer direct-I/O objects beyond plain Series, start with **HDF5** for `Spectrogram`, `Histogram`, and `EventTable`. Field-class direct `.read()` / `.write()` is still under audit and is not published as a stable contract on this page.
-
-## Jump Links
-
-- <a href="#io-formats-en-quick">Quick Selection Table</a>
-- <a href="#io-formats-en-basic">Basic `.read()` / `.write()` / `fetch()` Usage</a>
-- <a href="#io-formats-en-a">A. GW Standards</a>
-- <a href="#io-formats-en-b">B. Seismic and Geophysical Observation</a>
-- <a href="#io-formats-en-c">C. General Analysis and Exchange</a>
-- <a href="#io-formats-en-d">D. Loggers and Instrument Formats</a>
-- <a href="#io-formats-en-dev">Developer Notes</a>
 
 <a id="io-formats-en-quick"></a>
 

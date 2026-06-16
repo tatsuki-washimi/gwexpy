@@ -1,15 +1,9 @@
 Reference Topics
 ================
 
-.. note::
-   Page role: Theory and concept landing
-
 **Stability:** Stable
 
 Use this page when you want to browse the reference by concept rather than by class or module name.
-
-**Audience:** Users who know the analytical question they are asking, but need the matching convention, theory note, or helper surface.
-**Use this page for:** Starting from concepts such as Fourier conventions, validation assumptions, spectral estimation, or compatibility layers.
 
 .. list-table::
    :header-rows: 1

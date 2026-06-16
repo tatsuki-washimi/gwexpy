@@ -6,32 +6,8 @@ myst:
 
 # Architecture and Data Flow
 
-**Page role:** Design guide
-
 This section details the design philosophy of `gwexpy` and the internal data handling logic.
 `gwexpy` extends GWpy to provide intuitive multi-channel time-series matrix operations and 4D physical field handling.
-
-**Search hints:** `architecture`, `data flow`, `TimeSeriesMatrix`, `ScalarField`, `flattening`, `Field API`
-
-## At a Glance
-
-The overview table below follows the shared docs table policy. On small screens, horizontal scrolling is preferred over page-local formatting changes.
-
-| Item | Details |
-| --- | --- |
-| **Page Role** | Design guide |
-| **Audience** | Users who want the mental model behind the containers, and contributors orienting themselves to internal data flow |
-| **Prerequisites** | Basic familiarity with `TimeSeries`, `TimeSeriesMatrix`, and `ScalarField` names |
-| **Use Cases** | Understand why Matrix and Field APIs look the way they do before diving into theory or API reference pages |
-| **Search Keywords** | architecture, data flow, `TimeSeriesMatrix`, `ScalarField`, flattening, Field API |
-
-## On This Page
-
-- [How to Read This Page](#how-to-read-this-page)
-- [Design Philosophy](#design-philosophy)
-- [Data Flow Diagram](#data-flow-diagram)
-- [Core Analysis Components](#core-analysis-components)
-- [Related Documents](#related-documents)
 
 (architecture-how-to-read)=
 ## How to Read This Page

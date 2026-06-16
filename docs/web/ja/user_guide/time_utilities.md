@@ -8,29 +8,6 @@ myst:
 
 GWexpy は GWpy の時刻ユーティリティを拡張し、GWpy が対応するスカラーの文字列・datetime に加えて、pandas・NumPy・Astropy オブジェクトに対するベクトル演算をサポートします。
 
-## このページでわかること
-
-| 項目 | 内容 |
-| --- | --- |
-| **ページ種別** | ガイド |
-| **対象読者** | GPS 時刻と UTC 変換を安全に扱いたい利用者、`gwexpy.time` の入口を探している利用者 |
-| **前提** | Python の `datetime`、タイムゾーン、GW 解析で GPS 時刻を使う前提の理解 |
-| **こんなときに読む** | `to_gps` / `from_gps` / `tconvert` の使い分けを知りたい、閏秒やタイムゾーンの罠を避けたい |
-| **検索キーワード** | GPS 時刻, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, 閏秒, timezone |
-
-**検索ヒント:** GPS 時刻, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, 閏秒, timezone
-
-## このページの近道
-
-- [重要な注意事項](#クイックガイド-重要な注意事項-faq)
-- [関数選択早見表](#関数選択早見表)
-- [基本的な使用例](#基本的な使用例-examples)
-- [`to_gps`](#to_gps--日時--gps-秒)
-- [`from_gps`](#from_gps--gps-秒--日時)
-- [`tconvert`](#tconvert--自動判定変換)
-- [`LIGOTimeGPS`](#ligotimegps--高精度-gps-時刻)
-- [TimeSeries との連携](#timeseries-との連携)
-
 ```python
 from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 ```

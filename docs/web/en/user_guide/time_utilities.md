@@ -8,29 +8,6 @@ myst:
 
 `gwexpy` extends GWpy's time utilities to support vector operations on pandas Series, NumPy ndarrays, and Astropy Time objects, in addition to standard string/datetime scalars.
 
-## At a Glance
-
-| Item | Details |
-| --- | --- |
-| **Page Role** | Guide |
-| **Audience** | Users who need safe GPS/UTC conversion and contributors looking for the public `gwexpy.time` entry points |
-| **Prerequisites** | Basic familiarity with Python `datetime`, timezones, and the use of GPS time in GW workflows |
-| **Use Cases** | Choose between `to_gps`, `from_gps`, and `tconvert`, or avoid leap-second and timezone pitfalls |
-| **Search Keywords** | GPS time, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, leap second, timezone |
-
-**Search hints:** GPS time, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, leap second, timezone
-
-## On This Page
-
-- [Quick Guide: Important Considerations](#quick-guide-important-considerations-faq)
-- [Function Selection Quick Reference](#function-selection-quick-reference)
-- [Basic Examples](#basic-examples)
-- [`to_gps`](#to_gps--datetime--gps-seconds)
-- [`from_gps`](#from_gps--gps-seconds--datetime)
-- [`tconvert`](#tconvert--automatic-conversion)
-- [`LIGOTimeGPS`](#ligotimegps--high-precision-gps-time)
-- [TimeSeries Integration](#timeseries-integration)
-
 ```python
 from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 ```

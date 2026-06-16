@@ -1,9 +1,6 @@
 Frequency Series
 ================
 
-.. note::
-   Page role: Secondary API category
-
 **Stability:** Stable
 
 .. currentmodule:: gwexpy.frequencyseries

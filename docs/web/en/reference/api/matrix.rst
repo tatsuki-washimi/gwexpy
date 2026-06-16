@@ -1,9 +1,6 @@
 Matrix Containers
 =================
 
-.. note::
-   Page role: Secondary API category
-
 **Stability:** Stable
 
 Multi-channel containers that group multiple :class:`~gwexpy.timeseries.TimeSeries`,

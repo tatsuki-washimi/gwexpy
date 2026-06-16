@@ -6,8 +6,6 @@ myst:
 
 # Numerical Stability and Precision
 
-**Page role:** Guide
-
 :::{note}
 **Who should read this page?**
 Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to this detailed guide only if:
@@ -17,26 +15,6 @@ Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to
 :::
 
 `gwexpy` is designed to handle data with an extremely wide dynamic range without numerical breakdown.
-
-**Search hints:** `numerical stability`, `NaN`, `Inf`, `whiten`, `eps`, `safe log`, `tol`
-
-## At a Glance
-
-| Item | Details |
-| --- | --- |
-| **Page Role** | Guide |
-| **Audience** | Users seeing `NaN` / `Inf` issues, or users working with extremely small and large amplitudes in the same workflow |
-| **Prerequisites** | Basic familiarity with FFTs, ASD/PSD plots, and whitening |
-| **Use Cases** | Diagnose broken plots, understand when to tune `eps` or `tol`, or review GWexpy's stabilization design |
-| **Search Keywords** | numerical stability, `NaN`, `Inf`, `whiten`, `eps`, safe log, `tol` |
-
-## On This Page
-
-- [TL;DR](#tldr)
-- [Impact of Stabilization (Before & After)](#impact-of-stabilization-before--after)
-- [Core Stabilization Methods and APIs](#core-stabilization-methods-and-apis)
-- [Detailed Explanations and Examples](#detailed-explanations-and-examples)
-- [Recommendations for Users](#recommendations-for-users)
 
 (numerical-stability-en-tldr)=
 ## TL;DR

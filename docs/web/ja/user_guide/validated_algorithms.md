@@ -6,9 +6,6 @@ myst:
 
 # 検証済みアルゴリズム
 
-**ページ種別:** 高度ガイド / 理論補助
-**バッジ:** `Advanced` `Theory companion`
-
 :::{note}
 **このページを読むべき方**:
 - 解析手法の数学的・物理学的な妥当性を確認したい研究者
@@ -23,19 +20,6 @@ myst:
 :::
 
 `gwexpy` で使用されている主要な数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。
-
-**検索のヒント:** `validated algorithms`, `tolerance`, `FFT conventions`, `ホワイトニング`, `GLS`, `MCMC`, `VIF`
-
-## このページの近道
-
-- [検証の基準と計算精度](#検証の基準と計算精度-validation--precision)
-- [客観的証拠](#客観的証拠-objective-evidence)
-- [参照元一覧](#参照元一覧-source-references)
-- [検証済みアルゴリズム要約表](#検証済みアルゴリズム要約表)
-- [読み方ガイド](#読み方ガイド)
-- [各アルゴリズムの詳細と仮定](#各アルゴリズムの詳細と仮定)
-- [監査証跡](#監査証跡-audit-trail)
-- [関連ドキュメント](#validated-algorithms-related-documents-ja)
 
 (validated-algorithms-validation-criteria-ja)=
 ## 検証の基準と計算精度 (Validation & Precision)

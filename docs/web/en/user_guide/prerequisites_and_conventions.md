@@ -9,26 +9,6 @@ myst:
 This page is the entry point for the **shared prerequisites** and **conventions** used across the GWexpy guides and tutorials.
 Page-specific assumptions and mathematical details remain on their original pages; this guide is meant to show where to check first.
 
-## At a Glance
-
-The table below follows the shared table styling used across the docs. On mobile, horizontal scrolling is preferred instead of page-specific table behavior.
-
-| Item | Details |
-| --- | --- |
-| **Page Role** | Guide |
-| **Audience** | Users who want the shared assumptions before diving into tutorials or API pages |
-| **Prerequisites** | Basic Python and NumPy familiarity, with GWpy/GWexpy differences still being learned |
-| **Use Cases** | Review GPS-time assumptions, FFT conventions, and what is preserved from GWpy |
-| **Search Keywords** | prerequisites, conventions, GPS time, FFT, GWpy compatibility, Field API |
-
-## On This Page
-
-- [Environment Prerequisites](#1-environment-prerequisites)
-- [Data and Time Assumptions](#2-data-and-time-assumptions)
-- [FFT and Spectral Conventions](#3-fft-and-spectral-conventions)
-- [GWpy Compatibility and GWexpy Extensions](#4-gwpy-compatibility-and-gwexpy-extensions)
-- [Where to Go Next](#5-where-to-go-next)
-
 (prerequisites-environment)=
 ## 1. Environment Prerequisites
 

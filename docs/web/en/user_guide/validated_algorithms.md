@@ -6,9 +6,6 @@ myst:
 
 # Validated Algorithms
 
-**Page role:** Advanced guide / theory companion
-**Badges:** `Advanced` `Theory companion`
-
 :::{note}
 **Who should read this page?**
 - Researchers who want to verify the mathematical and physical validity of the methods.
@@ -23,19 +20,6 @@ This page intentionally stays under the user guide so readers can discover it fr
 :::
 
 The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability.
-
-**Search hints:** `validated algorithms`, `tolerance`, `FFT conventions`, `whitening`, `GLS`, `MCMC`, `VIF`
-
-## On This Page
-
-- [Validation Criteria and Numerical Precision](#validation-criteria-and-numerical-precision)
-- [Objective Evidence](#objective-evidence)
-- [Source References](#source-references)
-- [Validated Algorithms Summary Table](#validated-algorithms-summary-table)
-- [How to Read This Page](#how-to-read-this-page)
-- [Detailed Algorithm Basis and Assumptions](#detailed-algorithm-basis-and-assumptions)
-- [Audit Trail](#audit-trail)
-- [Related Documents](#validated-algorithms-related-documents)
 
 (validated-algorithms-validation-criteria)=
 ## Validation Criteria and Numerical Precision

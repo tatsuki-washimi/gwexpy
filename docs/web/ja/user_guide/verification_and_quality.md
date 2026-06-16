@@ -6,22 +6,9 @@ myst:
 
 # 検証と品質の見方
 
-> **ページ種別:** 透明性ガイド
-
 このページでは、`gwexpy` が現在どの種類の検証シグナルを公開しているか、その根拠がどこにあるか、そしてその限界をどう読むべきかを整理します。
 
 ここで示すのは「すべての機能が一様に検証済み」という主張ではありません。Notebook、direct I/O、アルゴリズム監査、リポジトリ全体の coverage について、それぞれ別の根拠に辿れるようにするための案内ページです。
-
-## このページでわかること
-
-| 項目 | 内容 |
-| --- | --- |
-| **対象読者** | チュートリアル、I/O 形式、アルゴリズムがどの程度公開根拠に支えられているかを確認したい方 |
-| **前提** | user guide を読める程度の基本知識があれば十分です |
-| **こんなときに読む** | notebook や Doctest 系の例がどう検証されるか知りたい、I/O 対応表とテストの関係を見たい、監査ノートの入口を知りたい、coverage 表示の意味と限界を確認したい |
-| **検索ヒント** | verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail |
-
-**検索ヒント:** verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail
 
 :::{important}
 **このページは「透明性の地図」であって、一括保証ではありません**

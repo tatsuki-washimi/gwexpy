@@ -16,24 +16,6 @@ Refer to this guide if you use `ScalarField` and have the following questions:
 
 This guide explains why `ScalarField` **always maintains its 4-dimensional structure** during indexing operations. This differs from the standard behavior of NumPy or GWpy and is designed as an "invariant" to ensure the integrity of multidimensional physical data.
 
-## At a Glance
-
-The summary table below stays compact to match the shared docs table styling. On narrow screens, horizontal scrolling may be the easiest way to read every column.
-
-| Item | Details |
-| --- | --- |
-| **Page Role** | Guide |
-| **Audience** | Users confused by `ScalarField` slicing results, and users who want to understand why metadata stays attached |
-| **Prerequisites** | Basic familiarity with `ScalarField` shape and ordinary NumPy slicing behavior |
-| **Use Cases** | Understand why `field[0]` stays 4D, use `squeeze()` safely, or diagnose shape mismatch errors |
-| **Search Keywords** | `ScalarField`, slicing, `squeeze`, 4D persistence, shape mismatch, Field API |
-
-## On This Page
-
-- [Why Always Maintain "4D"?](#why-always-maintain-4d)
-- [Practical Operation Examples](#practical-operation-examples)
-- [FAQ](#faq)
-
 (scalarfield-slicing-4d-persistence)=
 ## Why Always Maintain "4D"?
 

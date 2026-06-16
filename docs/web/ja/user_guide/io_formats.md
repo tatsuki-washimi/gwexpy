@@ -8,23 +8,10 @@ myst:
 
 # ファイル I/O 対応フォーマットガイド
 
-> **ページ種別:** ガイド
-
 gwexpy の利用者向け I/O ガイドです。
 このページでは、ユーザーが直接使う `.read()` / `.write()` / `fetch()` 系 API による読み書き・取得だけを扱います。
 
 `to_*()` / `from_*()` による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。質問が「このオブジェクトを別ライブラリや別コンテナへどう変換するか」であれば、それは interop 側の話です。必要な場合は [他ライブラリ連携チュートリアル](tutorials/intro_interop.ipynb) や [Interop API リファレンス](../reference/api/interop) を参照してください。
-
-## このページでわかること
-
-| 項目 | 内容 |
-| --- | --- |
-| **対象読者** | `gwexpy` オブジェクトの直接的な読み書きやネットワーク取得の入口を選びたい利用者 |
-| **前提** | `TimeSeries` / `TimeSeriesDict` の基本、拡張子による形式判定、direct I/O と interop の違い |
-| **こんなときに読む** | 対応形式を選びたい、`format=` を明示すべき場面を知りたい、読み込み専用かどうかを確認したい |
-| **検索キーワード** | file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC |
-
-**検索ヒント:** file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC
 
 :::{warning}
 **セキュリティ警告: Pickle 形式の取り扱い**
@@ -43,16 +30,6 @@ gwexpy の利用者向け I/O ガイドです。
 - **`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは **GBD** です。
 - **Read only / Write only に注意する**: 表の `○ / ×` は「読めるが書けない」「書けるが読めない」を意味します。
 - Series 以外の direct I/O では、まず **HDF5** の `Spectrogram` / `Histogram` / `EventTable` を基準に考えてください。Field 系の direct `.read()` / `.write()` はまだ監査中で、このページでは安定契約として公開していません。
-
-## セクション移動
-
-- <a href="#io-formats-ja-quick">クイック判定表</a>
-- <a href="#io-formats-ja-basic">基本的な使い方</a>
-- <a href="#io-formats-ja-a">A. GW標準</a>
-- <a href="#io-formats-ja-b">B. 地震・地球物理観測</a>
-- <a href="#io-formats-ja-c">C. 汎用・解析用</a>
-- <a href="#io-formats-ja-d">D. 計測機器・ロガー</a>
-- <a href="#io-formats-ja-dev">開発者向け補足</a>
 
 <a id="io-formats-ja-quick"></a>
 

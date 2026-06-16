@@ -6,26 +6,6 @@ myst:
 
 # Installation Guide
 
-## At a Glance
-
-| Item | Details |
-| --- | --- |
-| **Page Role** | Guide |
-| **Audience** | New users installing GWexpy, users choosing extras, and contributors setting up a local dev environment |
-| **Prerequisites** | Python 3.11+, basic `pip` usage, and basic Conda usage when you need GW binary dependencies |
-| **Use Cases** | Install the minimal stack, decide whether Conda is required, choose extras, or prepare a contributor setup |
-| **Search Keywords** | `install`, `pip`, `conda`, extras, PyPI, NDS2, FrameLIB |
-
-## On This Page
-
-- [Install Commands](#en-install-command)
-- [Installation Steps](#1-installation-steps)
-- [Dependency Troubleshooting](#21-dependency-troubleshooting)
-- [Optional Dependencies (Extras) Details](#3-optional-dependencies-extras-details)
-- [OS-Specific Notes](#4-os-specific-notes)
-- [Security Note (Pickle)](#5-security-note-pickle)
-- [Next to Read](#next-to-read)
-
 :::{note}
 GWexpy is published on PyPI (current release: v0.1.5). A conda-forge feedstock
 is also available, though the conda-forge package may lag the latest PyPI

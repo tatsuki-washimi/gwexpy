@@ -7,8 +7,6 @@ myst:
 
 # Interop / 変換ガイド
 
-> **ページ種別:** ガイド
-
 このページは、`gwexpy` の **interop 専用ガイド** です。  
 ここでいう interop は、`to_*()` / `from_*()` を中心とした **変換・橋渡し** を指します。
 
@@ -39,27 +37,6 @@ myst:
 | `nc` | `netcdf4` | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")` | [netCDF4](https://unidata.github.io/netcdf4-python/), [xarray](https://docs.xarray.dev/) |
 | `hdf.ndscope` | `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope HDF5 schema |
 | `xml.diaggui` | `dttxml` | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT XML |
-
-## このページでわかること
-
-| 項目 | 内容 |
-| --- | --- |
-| **対象読者** | `gwexpy` オブジェクトを外部ライブラリ、保存表現、別のデータモデルへ渡したい利用者や開発者 |
-| **前提** | `gwexpy` の主要オブジェクト、direct I/O と interop の違い、連携先ライブラリの基本 |
-| **こんなときに読む** | `to_*()` / `from_*()` の入口を選びたい、公開済みの変換と整理待ちの変換を見分けたい |
-| **検索キーワード** | interop, conversion, `to_*`, `from_*`, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch |
-
-**検索ヒント:** interop, conversion, `to_*`, `from_*`, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch
-
-## セクション移動
-
-- [まず最初に: 読み方](#まず最初に-読み方)
-- [状態ラベル](#状態ラベル)
-- [A. 保存形式・コンテナ変換](#a-保存形式コンテナ変換)
-- [B. 解析ライブラリ・オブジェクト変換](#b-解析ライブラリオブジェクト変換)
-- [C. 機械学習・高速化・配列基盤](#c-機械学習高速化配列基盤)
-- [D. 物理・ドメイン特化ライブラリ](#d-物理ドメイン特化ライブラリ)
-- [優先的に見るべき対象](#優先的に見るべき対象)
 
 (interop-ja-how-to-read)=
 ## まず最初に: 読み方

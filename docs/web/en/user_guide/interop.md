@@ -7,8 +7,6 @@ myst:
 
 # Interop / Conversion Guide
 
-> **Page Role:** Guide
-
 This page is the dedicated **interop guide** for `gwexpy`.  
 Here, interop means **conversion and bridging** centered on `to_*()` / `from_*()` APIs.
 
@@ -39,27 +37,6 @@ Legacy aliases remain supported during the transition, but new examples should p
 | `nc` | `netcdf4` | `TimeSeries.read(..., format="nc")`, `TimeSeriesDict.read(..., format="nc")`, `TimeSeriesMatrix.read(..., format="nc")` | [netCDF4](https://unidata.github.io/netcdf4-python/), [xarray](https://docs.xarray.dev/) |
 | `hdf.ndscope` | `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope HDF5 schema |
 | `xml.diaggui` | `dttxml` | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT XML |
-
-## At a Glance
-
-| Item | Details |
-| --- | --- |
-| **Audience** | Users and contributors who need to move `gwexpy` objects into other libraries, containers, or storage representations |
-| **Prerequisites** | Basic familiarity with `gwexpy` object types, direct I/O versus interop, and the target library or container you want to use |
-| **Use Cases** | Choose a `to_*()` / `from_*()` path, check whether a bridge is public yet, and distinguish storage conversion from object conversion |
-| **Search Keywords** | interop, conversion, `to_*`, `from_*`, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch |
-
-**Search hints:** interop, conversion, `to_*`, `from_*`, xarray, pandas, ROOT, Zarr, NetCDF4, PyTorch
-
-## Jump Links
-
-- [How to Read This Page](#how-to-read-this-page)
-- [Status Labels](#status-labels)
-- [A. Storage Formats and Container Conversion](#a-storage-formats-and-container-conversion)
-- [B. Analysis Library and Object Conversion](#b-analysis-library-and-object-conversion)
-- [C. Machine Learning, Acceleration, and Array Backends](#c-machine-learning-acceleration-and-array-backends)
-- [D. Physics and Domain-Specific Libraries](#d-physics-and-domain-specific-libraries)
-- [What to Prioritize First](#what-to-prioritize-first)
 
 (interop-en-how-to-read)=
 ## How to Read This Page

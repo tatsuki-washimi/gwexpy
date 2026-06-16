@@ -1,9 +1,6 @@
 行列コンテナ (Matrix Containers)
 ================================
 
-.. note::
-   ページ種別: 二次 API カテゴリ
-
 **安定性:** 安定
 
 複数の :class:`~gwexpy.timeseries.TimeSeries`、:class:`~gwexpy.frequencyseries.FrequencySeries`、
