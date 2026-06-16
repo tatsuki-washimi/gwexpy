@@ -107,6 +107,7 @@ Suggested starting points
 .. toctree::
    :maxdepth: 2
    :caption: 🚀 Start
+   :hidden:
 
    user_guide/installation
    user_guide/quickstart
@@ -116,6 +117,7 @@ Suggested starting points
 .. toctree::
    :maxdepth: 2
    :caption: 🎓 Learn
+   :hidden:
 
    user_guide/tutorials/index
    examples/index
@@ -123,6 +125,7 @@ Suggested starting points
 .. toctree::
    :maxdepth: 2
    :caption: 📚 Reference
+   :hidden:
 
    reference/index
    user_guide/io_formats
@@ -140,6 +143,7 @@ Suggested starting points
 .. toctree::
    :maxdepth: 1
    :caption: ℹ️ Info
+   :hidden:
 
    user_guide/roadmap
    user_guide/troubleshooting

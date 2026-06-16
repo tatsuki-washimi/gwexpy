@@ -6,31 +6,9 @@
 Reference
 =========
 
-.. note::
-   Page role: Reference index
-
 **Stability:** Stable
 
 Use this page as the hub for navigating the GWexpy reference. Choose the entry point that matches how you are looking things up: by module, by class name, or by concept/topic.
-
-**Audience:** Users who already know the feature they need and want exact API, class, or topic details.
-**Prerequisites:** Basic familiarity with GWexpy terminology and at least one guide or tutorial path.
-**Use this page for:** Jumping into stable lookup-oriented documentation rather than task-oriented learning.
-**Search hints:** API index, class index, topics, reference, module lookup, class lookup, theory notes
-
-.. note::
-   On this page:
-   Use API Index for subsystem browsing, Class Index for Python class names, and Topics for conventions, theory, and helper material.
-
-.. note::
-   Advanced/theory landing:
-   For validation assumptions, conventions, and audit-backed theory notes, start with :doc:`topics` and then continue to the advanced/theory landing at :doc:`../user_guide/validated_algorithms`.
-
-.. note::
-   Example framing:
-   Goal: find the exact object, module, or topic page behind a name you already know.
-   Inputs: a class name, module family, or concept.
-   Outputs: a stable reference entry point for deeper lookup.
 
 .. _reference-en-entry-table:
 

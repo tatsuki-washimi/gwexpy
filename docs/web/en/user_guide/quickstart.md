@@ -8,24 +8,6 @@ myst:
 
 Get your first analysis plot with GWexpy as quickly as possible.
 
-## At a Glance
-
-| Item | Details |
-| --- | --- |
-| **Page Role** | Guide |
-| **Audience** | First-time users who want one working plot quickly, and GWpy users checking the basic entry point |
-| **Prerequisites** | Python 3.11+, basic `pip` usage, and basic NumPy familiarity |
-| **Use Cases** | Confirm installation, run a 3-line example, or decide what to read next |
-| **Search Keywords** | quickstart, first plot, `TimeSeries`, CSD, minimal example |
-
-## On This Page
-
-- [Quick Install](#en-quickstart-install-command)
-- [3-line Quickstart](#en-quick-demo)
-- [30-min Hands-on (Interactive Tutorial)](#30-min-hands-on-interactive-tutorial)
-- [Multi-channel Analysis Example](#multi-channel-analysis-example)
-- [Next Steps](#next-to-read)
-
 (en-quickstart-install-command)=
 ## Quick Install
 

@@ -108,6 +108,7 @@ GWexpy は GWpy の上に構築されています。GWpy の基本操作は下�
 .. toctree::
    :maxdepth: 2
    :caption: 🚀 導入 (Start)
+   :hidden:
 
    user_guide/installation
    user_guide/quickstart
@@ -117,6 +118,7 @@ GWexpy は GWpy の上に構築されています。GWpy の基本操作は下�
 .. toctree::
    :maxdepth: 2
    :caption: 🎓 学習 (Learn)
+   :hidden:
 
    user_guide/tutorials/index
    examples/index
@@ -124,6 +126,7 @@ GWexpy は GWpy の上に構築されています。GWpy の基本操作は下�
 .. toctree::
    :maxdepth: 2
    :caption: 📚 リファレンス (Reference)
+   :hidden:
 
    reference/index
    user_guide/io_formats
@@ -141,6 +144,7 @@ GWexpy は GWpy の上に構築されています。GWpy の基本操作は下�
 .. toctree::
    :maxdepth: 1
    :caption: ℹ️ その他 (Info)
+   :hidden:
 
    user_guide/roadmap
    user_guide/troubleshooting
