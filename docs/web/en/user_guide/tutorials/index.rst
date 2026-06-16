@@ -6,40 +6,12 @@
 Tutorials (Feature-Oriented Learning)
 =====================================
 
-.. note::
-   Page role: Guide index
-
-Learn how to use **GWexpy** through feature-oriented, interactive examples.
-
-**Audience:** New users, GWpy users, and analysis practitioners who want step-by-step notebook-based learning.
-**Prerequisites:** A working GWexpy environment and familiarity with the basics in :doc:`../getting_started`.
-**Use this page for:** Choosing feature-oriented tutorials by data structure, workflow, and expected difficulty.
-**Search hints:** notebooks, Jupyter, tutorial index, beginner workflow, Field API, signal processing, interoperability
+Learn how to use **GWexpy** through feature-oriented, interactive examples. Each tutorial teaches one class, container, or capability at a time; goal-oriented workflows combining several features live in :doc:`../../examples/index`.
 
 .. tip::
    If you're new to GWexpy, we recommend starting with :doc:`../getting_started`.
 
 These tutorials are generated from Jupyter Notebook source files. To run them locally, download the corresponding ``.ipynb`` from ``docs/web/en/user_guide/tutorials/`` in the repository.
-
-.. note::
-   On this page:
-   Start with sections I-II for fundamentals, jump to III for Field API notebooks, use IV-VI for workflow-oriented analysis, and use VII for table-based segment analysis.
-
-.. note::
-   Naming convention: tutorial titles follow the form "Feature: Task".
-   English pages keep titles English-only, except for API identifiers and library names.
-
-.. note::
-   Each tutorial shows its **difficulty**, **estimated time**, and **primary audience**.
-   Audience labels are normalized to `Beginners`, `GWpy Users`, and `Analysis Practitioners`.
-
-.. note::
-   `Tutorials` are feature-oriented examples that teach one class, container, or capability at a time.
-   Goal-oriented demonstrations that combine multiple features are collected in :doc:`../../examples/index` under `Case Studies`.
-
-.. note::
-   Reference bridge:
-   When you finish a tutorial and need exact classes, methods, or conventions, move to :doc:`../../reference/index`, then continue into :doc:`../../reference/api/index` or :doc:`../../reference/topics`.
 
 .. _tutorials-en-core-entry:
 
@@ -119,13 +91,6 @@ Table-based analysis for time segments.
 - :doc:`Segment Analysis: Basic Pipeline <intro_table>` :bdg-primary:`Beginner` :bdg-secondary:`20 min` :bdg-info:`GWpy Users`
 - :doc:`ASD Analysis: Pipeline <segment_asd_pipeline>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Segment Analysis: Visualization <segment_visualization>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
-
-.. note::
-   Goal-oriented demonstrations live in :doc:`../../examples/index`.
-   See the case studies section for workflows such as noise budgeting,
-   transfer function measurement, ML preprocessing, and event-synchronized analysis.
-   For next steps after this page, see `ML Preprocessing Pipeline` and
-   `Bootstrap PSD and GLS Fitting` there.
 
 .. seealso::
    Next to read:

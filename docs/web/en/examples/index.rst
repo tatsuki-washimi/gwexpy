@@ -6,46 +6,12 @@
 Case Studies (Goal-Oriented Workflows)
 ======================================
 
-.. note::
-   Page role: Guide index
-
-A collection of goal-oriented demonstrations that combine multiple GWexpy features into practical workflows.
-To learn feature-oriented examples first, refer to :doc:`../user_guide/tutorials/index`.
-
-**Audience:** Users who already know the basics and want end-to-end examples mapped to real analysis tasks.
-**Prerequisites:** Familiarity with the relevant core classes, especially from :doc:`../user_guide/tutorials/index` and :doc:`../user_guide/getting_started`.
-**Use this page for:** Finding the canonical public gallery of GWexpy goal-oriented case studies by workflow theme.
-**Search hints:** case studies, gallery, end-to-end workflow, calibration, interoperability, noise hunting, ML
-
-.. note::
-   `Case Studies` are goal-oriented workflow demonstrations, while `Tutorials` are feature-oriented class/capability examples.
-   This page is the canonical public index for all `case_*` notebooks.
-
-.. note::
-   On this page:
-   Section I focuses on calibration and control, II on interoperability and reproducibility, III on statistical and ML workflows, and IV on noise hunting and detector diagnostics.
-
-.. note::
-   Example framing:
-   Goal: pick a workflow family that matches your task.
-   Inputs: familiarity with the relevant GWexpy objects and the notebook environment.
-   Outputs: a case-study notebook path you can read or run locally.
+A collection of goal-oriented demonstrations that combine multiple GWexpy features into practical workflows. To learn feature-oriented examples first, refer to :doc:`../user_guide/tutorials/index`.
 
 .. _examples-en-featured-gallery:
 
 Featured Gallery
 ----------------
-
-.. note::
-   These featured cards reuse the same three teaser thumbnails shown on the homepage.
-   This page remains the canonical gallery: the homepage is a short visual preview, while the full categorized list below is the source of truth.
-
-.. note::
-   Minimal visual index:
-
-   - `Noise Budget` thumbnail -> start in :ref:`section-iv-noise-hunting-and-detector-diagnostics`
-   - `Transfer Function Estimation` thumbnail -> start in :ref:`section-i-calibration-response-and-control`
-   - `Active Damping` thumbnail -> start in :ref:`section-i-calibration-response-and-control`
 
 .. grid:: 3
    :gutter: 3
