@@ -21,13 +21,14 @@ from .generators import GeneratorSpec, iter_generator_specs
 # environments -- and optional-backend generators added for new formats -- do
 # not break unrelated conformance tests.  CI installs the backends, so real
 # generator regressions there still fail loudly.
+# Notably, _BlockGwexpy hook errors ("blocked import: gwexpy") should NOT be
+# treated as missing backends; they indicate a real generator violation.
 _MISSING_BACKEND_MARKERS = (
-    "ModuleNotFoundError",
-    "ImportError",
     "Missing optional dependency",
     "no GWF API available",
     "please install",
     "is required for",
+    "No module named",
 )
 
 

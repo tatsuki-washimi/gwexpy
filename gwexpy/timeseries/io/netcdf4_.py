@@ -31,12 +31,14 @@ def _to_json_native(val):
     """Convert a value to a JSON-serializable Python native type.
 
     numpy integer/float/bool scalars expose .item() which maps to the
-    corresponding Python built-in.  Exotic types (datetime64, timedelta64, …)
-    also have .item() but produce objects that json.dumps() still rejects, so
-    we fall back to str() for anything that remains non-serializable.
+    corresponding Python built-in.  Tuples and lists are recursively converted.
+    Exotic types (datetime64, timedelta64, …) that remain non-serializable
+    fall back to str().
     """
     if hasattr(val, "item"):
         val = val.item()
+    if isinstance(val, (list, tuple)):
+        return [_to_json_native(item) for item in val]
     if not isinstance(val, (bool, int, float, str, type(None))):
         return str(val)
     return val
