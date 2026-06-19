@@ -107,9 +107,11 @@ def _hdf5_expected_values() -> np.ndarray:
 @pytest.fixture(scope="module")
 def gwf_case(tmp_path_factory: pytest.TempPathFactory) -> DictCase:
     path = tmp_path_factory.mktemp("gwf-read") / "frame.gwf"
-    generated = gwf.generate(path.parent)
-    gwf_path = generated["gwf"]
     try:
+        # ``generate`` itself writes a GWF file and so needs the backend;
+        # keep it inside the guard so a missing backend skips rather than errors.
+        generated = gwf.generate(path.parent)
+        gwf_path = generated["gwf"]
         TimeSeriesDict.read(gwf_path, format="gwf")
     except Exception as exc:  # pragma: no cover - depends on optional backend
         _skip_missing_gwf_backend(exc)
