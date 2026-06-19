@@ -283,6 +283,38 @@ def test_hdf5_roundtrip_preserves_matrix_metadata_contract(tmp_path, matrix_cls)
 
 
 @pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
+def test_hdf5_roundtrip_preserves_row_col_key_types(tmp_path, matrix_cls):
+    """HDF5 must round-trip non-string row/col key *types* (C1).
+
+    Previously HDF5 wrote keys as plain strings, so integer/tuple keys read
+    back as ``str``.  NetCDF4/Zarr already JSON-encode keys; HDF5 now matches.
+    """
+    pytest.importorskip("h5py")
+    data = np.arange(2 * 1 * 4, dtype=float).reshape(2, 1, 4)
+    kwargs: dict = {
+        "rows": MetaDataDict(
+            {10: MetaData(), 11: MetaData()}, expected_size=2, key_prefix="row"
+        ),
+        "cols": MetaDataDict(
+            {("H1", "X"): MetaData()}, expected_size=1, key_prefix="col"
+        ),
+    }
+    if matrix_cls is TimeSeriesMatrix:
+        matrix = matrix_cls(data, times=np.arange(4) * u.s, **kwargs)
+    elif matrix_cls is FrequencySeriesMatrix:
+        matrix = matrix_cls(data, frequencies=np.arange(4) * u.Hz, **kwargs)
+    else:
+        matrix = matrix_cls(data, xindex=np.arange(4, dtype=float), **kwargs)
+
+    path = tmp_path / f"{matrix_cls.__name__}_keys.h5"
+    matrix.write(path, format="hdf5")
+    restored = matrix_cls.read(path, format="hdf5")
+
+    assert list(restored.row_keys()) == [10, 11]
+    assert list(restored.col_keys()) == [("H1", "X")]
+
+
+@pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
 @pytest.mark.parametrize("format_name", ("wide", "long"))
 def test_to_pandas_is_a_value_export_not_metadata_roundtrip(matrix_cls, format_name):
     pd = pytest.importorskip("pandas")
@@ -344,3 +376,21 @@ def test_csv_write_is_a_wide_value_export_not_metadata_roundtrip(tmp_path, matri
     assert "H1:E00" not in csv_text
     assert "row_a" not in csv_text
     assert "pipeline" not in csv_text
+
+
+@pytest.mark.parametrize("matrix_cls", MATRIX_CLASSES)
+def test_csv_matrix_read_warns_it_is_a_lossy_value_import(tmp_path, matrix_cls):
+    """Reading a matrix back from CSV must warn (no silent mis-typed roundtrip)."""
+    pytest.importorskip("pandas")
+    matrix = _make_matrix(matrix_cls)
+    path = tmp_path / f"{matrix_cls.__name__}.csv"
+    matrix.write(path, format="csv")
+
+    with pytest.warns(UserWarning, match="value import only"):
+        # The lossy-import warning must fire whether or not a CSV matrix
+        # reader is registered for this class (some classes have none and
+        # raise afterwards -- that is acceptable, the warning is the contract).
+        try:
+            matrix_cls.read(path)
+        except Exception:
+            pass

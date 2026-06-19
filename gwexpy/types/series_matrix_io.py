@@ -15,6 +15,37 @@ if TYPE_CHECKING:
     from gwexpy.types.typing import IndexLike
 
 
+def _to_json_native(value):
+    """Convert scalar-like labels to JSON-serializable native values.
+
+    Mirrors the NetCDF4/Zarr key encoders so HDF5 round-trips row/column key
+    *types* (int, tuple, nested) instead of coercing everything to ``str``.
+    """
+    if hasattr(value, "item"):
+        value = value.item()
+    if isinstance(value, (list, tuple)):
+        return [_to_json_native(item) for item in value]
+    if not isinstance(value, (bool, int, float, str, type(None))):
+        return str(value)
+    return value
+
+
+def _decode_matrix_key(raw):
+    """Deserialize a JSON-encoded row/col key; fall back to string labels."""
+    if isinstance(raw, bytes):
+        raw = raw.decode()
+
+    def _normalize(decoded):
+        if isinstance(decoded, list):
+            return tuple(_normalize(item) for item in decoded)
+        return decoded
+
+    try:
+        return _normalize(json.loads(raw))
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return str(raw)
+
+
 class SeriesMatrixIOMixin:
     """Mixin for SeriesMatrix I/O and display operations."""
 
@@ -174,8 +205,13 @@ class SeriesMatrixIOMixin:
             meta_grp.create_dataset("names", data=names.astype("S"))
             meta_grp.create_dataset("channels", data=channels.astype("S"))
             row_grp = f.create_group("rows")
+            row_grp.attrs["key_format"] = "json"
             row_grp.create_dataset(
-                "keys", data=np.array(list(self.rows.keys()), dtype="S")
+                "keys",
+                data=np.array(
+                    [json.dumps(_to_json_native(k)) for k in self.rows.keys()],
+                    dtype="S",
+                ),
             )
             row_grp.create_dataset(
                 "names",
@@ -190,8 +226,13 @@ class SeriesMatrixIOMixin:
                 data=np.array([str(v.channel) for v in self.rows.values()], dtype="S"),
             )
             col_grp = f.create_group("cols")
+            col_grp.attrs["key_format"] = "json"
             col_grp.create_dataset(
-                "keys", data=np.array(list(self.cols.keys()), dtype="S")
+                "keys",
+                data=np.array(
+                    [json.dumps(_to_json_native(k)) for k in self.cols.keys()],
+                    dtype="S",
+                ),
             )
             col_grp.create_dataset(
                 "names",
@@ -258,6 +299,7 @@ class SeriesMatrixIOMixin:
             The loaded matrix.
 
         """
+        import warnings
         from pathlib import Path
 
         import h5py  # noqa: F401 - availability check
@@ -267,6 +309,23 @@ class SeriesMatrixIOMixin:
             ext = Path(source).suffix.lower()
             if ext in [".h5", ".hdf5", ".hdf"]:
                 format = "hdf5"
+
+        # CSV/Parquet are *wide value exports* (see ``to_pandas``/``write``);
+        # they do not store row/col keys, per-element metadata, units or attrs.
+        # Reading one back rebuilds a matrix with synthetic keys and no
+        # metadata -- warn so this lossy import is not mistaken for a roundtrip.
+        _ext = Path(source).suffix.lower() if not hasattr(source, "read") else ""
+        if (format in {"csv", "parquet"}) or (
+            format is None and _ext in {".csv", ".parquet", ".pq"}
+        ):
+            warnings.warn(
+                "Reading a matrix from CSV/Parquet is a value import only: "
+                "row/column keys, per-element metadata, units and attrs are "
+                "NOT preserved (synthetic keys are generated). Use HDF5, "
+                "NetCDF4 or Zarr for a metadata-preserving round-trip.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         if format != "hdf5":
             # Fall back to unified registry
@@ -327,8 +386,12 @@ class SeriesMatrixIOMixin:
             meta_matrix = MetaDataMatrix(meta_arr)
 
             row_grp = f["rows"]
+            _row_json = row_grp.attrs.get("key_format") == "json"
             row_keys = [
-                k.decode() if isinstance(k, bytes) else k for k in row_grp["keys"][:]
+                _decode_matrix_key(k)
+                if _row_json
+                else (k.decode() if isinstance(k, bytes) else k)
+                for k in row_grp["keys"][:]
             ]
             row_names = [
                 n.decode() if isinstance(n, bytes) else n for n in row_grp["names"][:]
@@ -351,8 +414,12 @@ class SeriesMatrixIOMixin:
             rows = MetaDataDict(rows, expected_size=len(row_keys), key_prefix="row")
 
             col_grp = f["cols"]
+            _col_json = col_grp.attrs.get("key_format") == "json"
             col_keys = [
-                k.decode() if isinstance(k, bytes) else k for k in col_grp["keys"][:]
+                _decode_matrix_key(k)
+                if _col_json
+                else (k.decode() if isinstance(k, bytes) else k)
+                for k in col_grp["keys"][:]
             ]
             col_names = [
                 n.decode() if isinstance(n, bytes) else n for n in col_grp["names"][:]
