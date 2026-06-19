@@ -67,6 +67,31 @@ class TestFromPandasSeries:
         ts2 = TimeSeries.from_pandas(s, unit="m/s")
         assert len(ts2) == len(ts)
 
+    def test_uninferable_index_warns(self):
+        # A non-numeric, non-datetime index cannot yield t0/dt -> warn.
+        s = pd.Series([1.0, 2.0, 3.0], index=["a", "b", "c"])
+        with pytest.warns(UserWarning, match="timing metadata"):
+            ts2 = TimeSeries.from_pandas(s)
+        assert ts2.t0.value == pytest.approx(0.0)
+        assert ts2.dt.value == pytest.approx(1.0)
+
+    def test_user_channel_and_unit(self):
+        s = pd.Series([1.0, 2.0, 3.0], index=["a", "b", "c"])
+        with pytest.warns(UserWarning):
+            ts2 = TimeSeries.from_pandas(s, channel="X1:FOO", unit="m")
+        assert str(ts2.channel) == "X1:FOO"
+        assert str(ts2.unit) == "m"
+
+    def test_explicit_timing_no_warning(self):
+        import warnings
+
+        s = pd.Series([1.0, 2.0, 3.0], index=["a", "b", "c"])
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            ts2 = TimeSeries.from_pandas(s, t0=0.0, dt=0.5)
+        assert ts2.t0.value == pytest.approx(0.0)
+        assert ts2.dt.value == pytest.approx(0.5)
+
 
 class TestToPandasDataFrame:
     def test_dict_to_dataframe(self):

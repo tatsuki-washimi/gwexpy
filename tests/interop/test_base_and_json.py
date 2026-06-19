@@ -7,7 +7,12 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.interop.base import from_plain_array, to_plain_array
+from gwexpy.interop.base import (
+    from_plain_array,
+    resolve_meta,
+    resolve_timing,
+    to_plain_array,
+)
 from gwexpy.interop.json_ import from_dict, from_json, to_dict, to_json
 from gwexpy.timeseries import TimeSeries
 
@@ -82,6 +87,61 @@ class TestFromPlainArray:
 
 
 # ---------------------------------------------------------------------------
+# resolve_meta / resolve_timing
+# ---------------------------------------------------------------------------
+
+
+class TestResolveMeta:
+    def test_user_wins(self):
+        assert resolve_meta("user", "source") == "user"
+
+    def test_falls_back_to_source(self):
+        assert resolve_meta(None, "source") == "source"
+
+    def test_falsy_user_value_preserved(self):
+        # An explicit falsy-but-valid value (e.g. epoch=0) must survive.
+        assert resolve_meta(0, "source") == 0
+        assert resolve_meta("", "source") == ""
+
+
+class TestResolveTiming:
+    def test_user_values_win(self):
+        import warnings
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            t0, dt = resolve_timing(5.0, 0.25, source="x")
+        assert t0 == 5.0
+        assert dt == 0.25
+
+    def test_explicit_zero_no_warning(self):
+        import warnings
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            t0, dt = resolve_timing(0.0, 0.5, source="x")
+        assert t0 == 0.0
+        assert dt == 0.5
+
+    def test_inferred_values_used(self):
+        import warnings
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            t0, dt = resolve_timing(
+                None, None, source="x", inferred_t0=3.0, inferred_dt=2.0
+            )
+        assert t0 == 3.0
+        assert dt == 2.0
+
+    def test_missing_warns_and_defaults(self):
+        with pytest.warns(UserWarning, match="timing metadata"):
+            t0, dt = resolve_timing(None, None, source="x")
+        assert t0 == 0.0
+        assert dt == 1.0
+
+
+# ---------------------------------------------------------------------------
 # to_dict / to_json
 # ---------------------------------------------------------------------------
 
@@ -146,10 +206,52 @@ class TestFromDict:
         np.testing.assert_array_equal(ts.value, [1.0, 2.0, 3.0])
 
     def test_default_t0_dt(self):
+        # Missing t0/dt now fall back to 0/1 with a UserWarning (no longer
+        # silent) -- the values are preserved for backward compatibility.
         d = {"data": [1.0, 2.0]}
-        ts = from_dict(TimeSeries, d)
+        with pytest.warns(UserWarning, match="timing metadata"):
+            ts = from_dict(TimeSeries, d)
         assert ts.t0.value == pytest.approx(0.0)
         assert ts.dt.value == pytest.approx(1.0)
+
+    def test_explicit_t0_zero_no_warning(self):
+        # Falsy-but-valid t0=0.0 must be honoured without a warning.
+        import warnings
+
+        d = {"data": [1.0, 2.0], "dt": 0.5}
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            ts = from_dict(TimeSeries, d, t0=0.0)
+        assert ts.t0.value == pytest.approx(0.0)
+        assert ts.dt.value == pytest.approx(0.5)
+
+    def test_channel_roundtrip(self):
+        ts = TimeSeries(
+            np.arange(3.0), t0=1.0, dt=0.5, unit="m", channel="X1:TEST-CHAN"
+        )
+        d = to_dict(ts)
+        assert d["channel"] == "X1:TEST-CHAN"
+        ts2 = from_dict(TimeSeries, d)
+        assert str(ts2.channel) == "X1:TEST-CHAN"
+
+    def test_channel_none_when_unset(self):
+        ts = TimeSeries(np.ones(3), t0=0, dt=1.0)
+        d = to_dict(ts)
+        assert d["channel"] is None
+        ts2 = from_dict(TimeSeries, d)
+        assert ts2.channel is None
+
+    def test_user_supplied_metadata(self):
+        # Source dict lacks channel/unit; the user can supply them explicitly.
+        d = {"data": [1.0, 2.0, 3.0], "t0": 0.0, "dt": 1.0}
+        ts = from_dict(TimeSeries, d, channel="X1:FOO", unit="m")
+        assert str(ts.channel) == "X1:FOO"
+        assert str(ts.unit) == "m"
+
+    def test_user_arg_overrides_source(self):
+        d = {"data": [1.0, 2.0], "t0": 0.0, "dt": 1.0, "unit": "m"}
+        ts = from_dict(TimeSeries, d, unit="s")
+        assert str(ts.unit) == "s"
 
 
 class TestFromJson:
@@ -159,3 +261,38 @@ class TestFromJson:
         np.testing.assert_allclose(ts2.value, ts.value)
         assert ts2.t0.value == pytest.approx(0.5)
         assert str(ts2.unit) == "m"
+
+    def test_channel_roundtrip(self):
+        ts = TimeSeries(
+            np.arange(4.0), t0=0.5, dt=0.25, unit="m", channel="X1:JSON-CHAN"
+        )
+        ts2 = from_json(TimeSeries, to_json(ts))
+        assert str(ts2.channel) == "X1:JSON-CHAN"
+
+    def test_user_kwargs_forwarded(self):
+        ts = TimeSeries(np.arange(4.0), t0=0.5, dt=0.25)
+        ts2 = from_json(TimeSeries, to_json(ts), channel="X1:FOO")
+        assert str(ts2.channel) == "X1:FOO"
+
+
+# ---------------------------------------------------------------------------
+# Public Mixin pass-through (TimeSeries.from_dict / from_json)
+# ---------------------------------------------------------------------------
+
+
+class TestPublicMixin:
+    def test_from_dict_forwards_kwargs(self):
+        d = {"data": [1.0, 2.0, 3.0], "t0": 0.0, "dt": 1.0}
+        ts = TimeSeries.from_dict(d, channel="X1:FOO", unit="m")
+        assert str(ts.channel) == "X1:FOO"
+        assert str(ts.unit) == "m"
+
+    def test_from_dict_channel_roundtrip(self):
+        ts = TimeSeries(np.arange(3.0), t0=1.0, dt=0.5, channel="X1:MIX")
+        ts2 = TimeSeries.from_dict(ts.to_dict())
+        assert str(ts2.channel) == "X1:MIX"
+
+    def test_from_json_forwards_kwargs(self):
+        ts = TimeSeries(np.arange(3.0), t0=0.0, dt=1.0)
+        ts2 = TimeSeries.from_json(ts.to_json(), channel="X1:BAR")
+        assert str(ts2.channel) == "X1:BAR"

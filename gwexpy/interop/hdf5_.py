@@ -53,17 +53,50 @@ def to_hdf5(
         dset.attrs["channel"] = str(ts.channel)
 
 
-def from_hdf5(cls: type[T], group: h5py.Group, path: str) -> T:
-    """Read TimeSeries from HDF5 group."""
+def from_hdf5(
+    cls: type[T],
+    group: h5py.Group,
+    path: str,
+    *,
+    unit: Optional[str] = None,
+    channel: Optional[str] = None,
+    name: Optional[str] = None,
+    t0: Optional[float] = None,
+    dt: Optional[float] = None,
+) -> T:
+    """Read TimeSeries from HDF5 group.
+
+    The ``channel`` attribute written by :func:`to_hdf5` is restored (closing a
+    write-but-not-read round-trip gap). Metadata absent from the dataset can be
+    supplied explicitly; an explicit argument takes priority over the stored
+    attribute. Missing ``t0``/``dt`` fall back to ``0``/``1`` with a
+    :class:`UserWarning` rather than silently.
+    """
     require_optional("h5py")
+    from .base import resolve_meta, resolve_timing
 
     dset = group[path]
     data = dset[()]
 
     attrs = dset.attrs
-    t0 = attrs.get("t0", 0)
-    dt = attrs.get("dt", 1)
-    unit = attrs.get("unit", "")
-    name = attrs.get("name", None)
+    final_t0, final_dt = resolve_timing(
+        t0,
+        dt,
+        source=f"HDF5 dataset '{path}'",
+        inferred_t0=attrs["t0"] if "t0" in attrs else None,
+        inferred_dt=attrs["dt"] if "dt" in attrs else None,
+    )
+    final_unit = resolve_meta(unit, attrs["unit"] if "unit" in attrs else "")
+    final_name = resolve_meta(name, attrs["name"] if "name" in attrs else None)
+    final_channel = resolve_meta(
+        channel, attrs["channel"] if "channel" in attrs else None
+    )
 
-    return cls(data, t0=t0, dt=dt, unit=unit, name=name)
+    return cls(
+        data,
+        t0=final_t0,
+        dt=final_dt,
+        unit=final_unit,
+        name=final_name,
+        channel=final_channel,
+    )

@@ -89,3 +89,46 @@ class TestFromHdf5:
             to_hdf5(ts, h5f, "ch")
             ts2 = from_hdf5(TimeSeries, h5f, "ch")
         assert str(ts2.unit) == "km"
+
+    def test_channel_roundtrip(self, tmp_path):
+        # W4-9: to_hdf5 writes channel; from_hdf5 must read it back.
+        ts = TimeSeries(
+            np.arange(5.0), t0=0.0, dt=1.0, unit="m", channel="X1:TEST-CHAN"
+        )
+        fp = tmp_path / "ts.h5"
+        with h5py.File(fp, "w") as h5f:
+            to_hdf5(ts, h5f, "ch")
+            ts2 = from_hdf5(TimeSeries, h5f, "ch")
+        assert str(ts2.channel) == "X1:TEST-CHAN"
+
+    def test_user_channel_when_absent(self, tmp_path):
+        ts = _make_ts()  # no channel
+        fp = tmp_path / "ts.h5"
+        with h5py.File(fp, "w") as h5f:
+            to_hdf5(ts, h5f, "ch")
+            ts2 = from_hdf5(TimeSeries, h5f, "ch", channel="X1:SUPPLIED")
+        assert str(ts2.channel) == "X1:SUPPLIED"
+
+    def test_missing_timing_warns(self, tmp_path):
+        # A dataset without t0/dt attributes should warn (not silently default).
+        fp = tmp_path / "raw.h5"
+        with h5py.File(fp, "w") as h5f:
+            h5f.create_dataset("ch", data=np.arange(5.0))
+        with h5py.File(fp, "r") as h5f:
+            with pytest.warns(UserWarning, match="timing metadata"):
+                ts2 = from_hdf5(TimeSeries, h5f, "ch")
+        assert ts2.t0.value == pytest.approx(0.0)
+        assert ts2.dt.value == pytest.approx(1.0)
+
+    def test_explicit_timing_no_warning(self, tmp_path):
+        import warnings
+
+        fp = tmp_path / "raw.h5"
+        with h5py.File(fp, "w") as h5f:
+            h5f.create_dataset("ch", data=np.arange(5.0))
+        with h5py.File(fp, "r") as h5f:
+            with warnings.catch_warnings():
+                warnings.simplefilter("error")
+                ts2 = from_hdf5(TimeSeries, h5f, "ch", t0=0.0, dt=2.0)
+        assert ts2.t0.value == pytest.approx(0.0)
+        assert ts2.dt.value == pytest.approx(2.0)

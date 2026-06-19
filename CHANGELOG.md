@@ -24,6 +24,24 @@
 - `SeriesMatrix.astype()`, `.real`, `.imag`, `.conj()`, `.transpose()`/`.T`
   and `.reshape()` now deep-copy `attrs` like `.copy()` does, so mutating
   the result's attrs no longer leaks into the source matrix (#442).
+- **interop**: `to_xarray()` (and `to_xarray_frequencyseries()`) no longer
+  persist an unset `channel`/`name` as the literal string `"None"`, which
+  previously round-tripped back into a bogus `Channel("None")`. The
+  `channel` metadata now survives `to_dict`/`from_dict`,
+  `to_xarray`/`from_xarray` and `to_hdf5`/`from_hdf5` round-trips.
+
+### Behaviour changes
+
+- **interop**: `TimeSeries.from_dict`/`from_json`/`from_xarray`/`from_pandas`/
+  `from_hdf5_dataset`/`from_netcdf4`/`from_polars` (and the underlying interop
+  helpers) now accept explicit `channel`/`unit`/`name`/`t0`/`dt` keyword
+  arguments to supply metadata the source object cannot carry; an explicit
+  argument always takes priority over a stored value (`user > source`).
+- **interop**: when `t0`/`dt` cannot be recovered or inferred, the converters
+  (`from_dict`, `from_pandas`, `from_hdf5`, `from_netcdf4`, `from_polars`) now
+  fall back to `t0=0`/`dt=1` with a `UserWarning` instead of silently, matching
+  the Zarr reader. The fallback values are unchanged, so this is a backward-
+  compatible (SemVer MINOR) addition; pass `t0=`/`dt=` explicitly to silence it.
 
 ### Tests
 
@@ -36,6 +54,10 @@
 - **frequencyseries/io**: Added registry-backend audit tests and a developer
   note for FrequencySeries collection read/write fallback (#438). No
   behaviour change.
+- **interop**: Added regression tests for the `resolve_timing`/`resolve_meta`
+  helpers, `channel` round-trips across dict/json/xarray/hdf5/netcdf4, the
+  `"None"`-string guard, falsy-zero `t0=0.0` handling, user-supplied metadata
+  overrides, and the new missing-timing `UserWarning` for each converter.
 
 ## [0.1.5] - 2026-06-10
 

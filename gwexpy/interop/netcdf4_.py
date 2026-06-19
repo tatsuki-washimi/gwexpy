@@ -41,10 +41,23 @@ def to_netcdf4(ts, ds, var_name, dim_time="time", time_units=None, overwrite=Fal
     v.units = str(ts.unit)
     if ts.name:
         v.long_name = str(ts.name)
+    # Persist ``channel`` (guarded against the falsy/None case) so it can be
+    # recovered on read -- keeps to_netcdf4/from_netcdf4 round-trip symmetric.
+    if ts.channel:
+        v.channel = str(ts.channel)
 
 
-def from_netcdf4(cls, ds, var_name):
-    """Read from a netCDF4 dataset."""
+def from_netcdf4(
+    cls, ds, var_name, *, unit=None, channel=None, name=None, t0=None, dt=None
+):
+    """Read from a netCDF4 dataset.
+
+    Metadata absent from the variable can be supplied explicitly; an explicit
+    argument takes priority over the stored attribute. Missing ``t0``/``dt``
+    fall back to ``0``/``1`` with a :class:`UserWarning` rather than silently.
+    """
+    from .base import resolve_meta, resolve_timing
+
     v = ds.variables[var_name]
     data = v[:]
 
@@ -54,9 +67,22 @@ def from_netcdf4(cls, ds, var_name):
     if np.ma.is_masked(data):
         data = data.filled(np.nan)  # or specific fill
 
-    t0 = getattr(v, "t0", 0)
-    dt = getattr(v, "dt", 1)
-    unit = getattr(v, "units", "")
-    name = getattr(v, "long_name", var_name)
+    final_t0, final_dt = resolve_timing(
+        t0,
+        dt,
+        source=f"netCDF4 variable '{var_name}'",
+        inferred_t0=getattr(v, "t0", None),
+        inferred_dt=getattr(v, "dt", None),
+    )
+    final_unit = resolve_meta(unit, getattr(v, "units", ""))
+    final_name = resolve_meta(name, getattr(v, "long_name", var_name))
+    final_channel = resolve_meta(channel, getattr(v, "channel", None))
 
-    return cls(data, t0=t0, dt=dt, unit=unit, name=name)
+    return cls(
+        data,
+        t0=final_t0,
+        dt=final_dt,
+        unit=final_unit,
+        name=final_name,
+        channel=final_channel,
+    )
