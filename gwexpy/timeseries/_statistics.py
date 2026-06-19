@@ -90,7 +90,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     # Root-mean-square (gwpy-compatible)
     # ===============================
 
-    def rms(self, stride: Any = 1) -> Any:
+    def rms(self, stride: Any = 1) -> Any:  # type: ignore[override]
         """Calculate the root-mean-square value once per ``stride`` seconds.
 
         gwpy-compatible: returns a new `TimeSeries` holding one RMS value per
