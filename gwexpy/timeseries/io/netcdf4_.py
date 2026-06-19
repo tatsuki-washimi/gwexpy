@@ -62,14 +62,23 @@ def _encode_netcdf_var_name(key) -> str:
 
 
 def _decode_netcdf_key(raw):
-    """Deserialize a key stored as JSON; fall back to str for legacy files."""
+    """Deserialize a key stored as JSON; fall back to str for legacy files.
+
+    Recursively converts nested lists to tuples (matching the Zarr decoder
+    behavior) so that round-trips preserve tuple keys and maintain hashability.
+    """
     if raw is None:
         return None
+
+    def _normalize(decoded):
+        """Recursively convert lists to tuples."""
+        if isinstance(decoded, list):
+            return tuple(_normalize(item) for item in decoded)
+        return decoded
+
     try:
         result = json.loads(raw)
-        if isinstance(result, list):
-            return tuple(result)
-        return result
+        return _normalize(result)
     except (json.JSONDecodeError, TypeError, ValueError):
         return str(raw)
 

@@ -109,7 +109,12 @@ def from_xarray(
     )
 
     _unit = resolve_meta(unit, da.attrs.get("unit"))
-    _channel = resolve_meta(channel, da.attrs.get("channel"))
+    ch = da.attrs.get("channel")
+    # Defend against legacy stores that persisted the literal string "None"
+    # for an unset channel (see the guard in to_xarray).
+    if ch == "None":
+        ch = None
+    _channel = resolve_meta(channel, ch)
     _name = resolve_meta(name, da.name if da.name is not None else da.attrs.get("name"))
 
     return cls(
