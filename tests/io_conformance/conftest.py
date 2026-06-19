@@ -40,7 +40,11 @@ BLOCKED_PREFIX = "gwexpy"
 
 
 def _generator_path(spec: GeneratorSpec) -> Path:
-    return GENERATORS_DIR / f"{spec.name}.py"
+    # Derive the file from the module name's last component (not spec.name):
+    # the Zarr generator module is ``zarr_store`` to avoid shadowing the
+    # third-party ``zarr`` package, while its spec name stays ``zarr``.
+    module_leaf = spec.module_name.rsplit(".", 1)[-1]
+    return GENERATORS_DIR / f"{module_leaf}.py"
 
 
 def _parse_generator_source(path: Path) -> ast.AST:

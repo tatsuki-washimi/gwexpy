@@ -10,7 +10,22 @@ import pytest
 from tests.io_conformance import conftest as guard_conftest
 from tests.io_conformance.generators import GENERATOR_SPECS, iter_generator_specs
 
-_FROZEN_GENERATOR_IDS = ("csv_txt", "audio", "hdf5", "hdf_ndscope", "gwf")
+# (spec.name, spec.module_name) for the frozen generator set, in order.  Most
+# modules share their spec name; the Zarr generator module is ``zarr_store`` so
+# it does not shadow the third-party ``zarr`` package on import.
+_FROZEN_GENERATORS = (
+    ("csv_txt", "tests.io_conformance.generators.csv_txt"),
+    ("audio", "tests.io_conformance.generators.audio"),
+    ("hdf5", "tests.io_conformance.generators.hdf5"),
+    ("hdf_ndscope", "tests.io_conformance.generators.hdf_ndscope"),
+    ("gwf", "tests.io_conformance.generators.gwf"),
+    ("sdb", "tests.io_conformance.generators.sdb"),
+    ("zarr", "tests.io_conformance.generators.zarr_store"),
+)
+
+# Generators whose round-trip is not byte-stable across runs (compared by
+# manifest only).
+_MANIFEST_ONLY_GENERATORS = frozenset({"gwf"})
 
 
 def _file_tree(base_dir: Path) -> tuple[Path, ...]:
@@ -30,11 +45,12 @@ def _read_tree(base_dir: Path) -> dict[Path, bytes]:
 def test_generator_registry_is_frozen_and_stable() -> None:
     specs = iter_generator_specs()
     assert specs == GENERATOR_SPECS
-    assert tuple(spec.name for spec in specs) == _FROZEN_GENERATOR_IDS
+    assert tuple(spec.name for spec in specs) == tuple(
+        name for name, _ in _FROZEN_GENERATORS
+    )
     assert tuple(spec.entrypoint for spec in specs) == ("generate",) * len(specs)
     assert tuple(spec.module_name for spec in specs) == tuple(
-        f"tests.io_conformance.generators.{generator_id}"
-        for generator_id in _FROZEN_GENERATOR_IDS
+        module_name for _, module_name in _FROZEN_GENERATORS
     )
 
 
@@ -45,8 +61,11 @@ def test_generators_are_deterministic_and_confined(tmp_path: Path, spec) -> None
 
     run_a = tmp_path / f"{spec.name}_a"
     run_b = tmp_path / f"{spec.name}_b"
-    result_a = entrypoint(run_a)
-    result_b = entrypoint(run_b)
+    try:
+        result_a = entrypoint(run_a)
+        result_b = entrypoint(run_b)
+    except (ImportError, ModuleNotFoundError) as exc:  # optional backend missing
+        pytest.skip(f"{spec.name} backend unavailable: {exc}")
 
     assert isinstance(result_a, dict)
     assert isinstance(result_b, dict)
@@ -65,7 +84,7 @@ def test_generators_are_deterministic_and_confined(tmp_path: Path, spec) -> None
             assert artifact_path.is_relative_to(output)
 
     assert _file_tree(run_a) == _file_tree(run_b)
-    if spec.name == "gwf":
+    if spec.name in _MANIFEST_ONLY_GENERATORS:
         assert (run_a / "manifest.json").read_bytes() == (
             run_b / "manifest.json"
         ).read_bytes()
