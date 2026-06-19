@@ -42,8 +42,8 @@ dependencies = [
   "matplotlib>=3.5.0",
   "typing_extensions",
   "bottleneck",
-  # File I/O
-  "h5py",
+  # File I/O (upper bound guards against a major-version API break; see D1)
+  "h5py>=3.0,<4",
   # GPS Time (lightweight, widely used)
   "igwn-segments",
   "ligotimegps",
@@ -83,8 +83,10 @@ control = [
 ]
 
 # Seismic and magnetotelluric data
+# (obspy upper-bounded to guard against a major API break; mth5/mtpy/mt_metadata
+# are pre-1.0 and pinned only at the lower bound -- see D1.)
 seismic = [
-  "obspy",
+  "obspy<2",
   "mth5",
   "mtpy",
   "mt_metadata",
@@ -103,18 +105,20 @@ gw = [
 
 # Experimental data I/O
 io = [
-  "nptdms",
+  "nptdms<2",
 ]
 
 # NetCDF4 / xarray time-series I/O
 netcdf4 = [
-  "netCDF4",
+  "netCDF4<2",
   "xarray",
 ]
 
 # Zarr store I/O
+# Upper-bounded after the Zarr 3 API break (#368): pin the tested major range so
+# a future Zarr 4 cannot silently change store behaviour (see D1/D5).
 zarr = [
-  "zarr",
+  "zarr>=2,<4",
 ]
 
 # Advanced plotting
@@ -165,7 +169,7 @@ all = [
   # control
   "control",
   # seismic
-  "obspy",
+  "obspy<2",
   "mth5",
   "mtpy",
   "mt_metadata",
@@ -178,12 +182,12 @@ all = [
   "gwinc",
   "ligo.skymap",
   # io
-  "nptdms",
+  "nptdms<2",
   # netcdf4
-  "netCDF4",
+  "netCDF4<2",
   "xarray",
   # zarr
-  "zarr",
+  "zarr>=2,<4",
   # plotting
   "pygmt",
   # audio
