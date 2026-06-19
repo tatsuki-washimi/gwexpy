@@ -57,3 +57,8 @@ class TestFromTorch:
         assert np.isclose(ts.t0.value, 12345.0)
         assert np.isclose(ts.dt.value, 0.002)
         assert str(ts.unit) == "V"
+
+    def test_2d_tensor_raises(self):
+        t = torch.randn(3, 50, dtype=torch.float64)
+        with pytest.raises(ValueError, match="multi-channel"):
+            from_torch(TimeSeries, t, t0=0.0, dt=0.01, unit="V")
