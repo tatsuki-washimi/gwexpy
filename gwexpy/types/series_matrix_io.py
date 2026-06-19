@@ -318,7 +318,15 @@ class SeriesMatrixIOMixin:
         # they do not store row/col keys, per-element metadata, units or attrs.
         # Reading one back rebuilds a matrix with synthetic keys and no
         # metadata -- warn so this lossy import is not mistaken for a roundtrip.
-        _ext = Path(source).suffix.lower() if not hasattr(source, "read") else ""
+        # ``source`` may be a single path, a file-like object, or a list/tuple
+        # of paths (multi-store reads); only single path-likes have a suffix.
+        import os as _os
+
+        _ext = (
+            Path(source).suffix.lower()
+            if isinstance(source, (str, _os.PathLike))
+            else ""
+        )
         if (format in {"csv", "parquet"}) or (
             format is None and _ext in {".csv", ".parquet", ".pq"}
         ):
