@@ -2037,8 +2037,8 @@ RMS 時系列プロットは実装されていない（Section 10, C-2 の差分
 
 #### 2.1 ローリング RMS の実現方法
 
-gwexpy の `TimeSeries.rms()` はスカラー値を返すため、時系列としての RMS を得るには
-**Spectrogram 経由のバンドパワー集計** を使用する:
+gwexpy の `TimeSeries.rms(stride)` は（gwpy 互換で）全帯域の RMS 時系列を返すが、
+**帯域制限した**ローリング RMS を得るには **Spectrogram 経由のバンドパワー集計** を使用する:
 
 ```python
 # ローリング RMS の計算原理

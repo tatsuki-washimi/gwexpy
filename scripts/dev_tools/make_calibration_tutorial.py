@@ -114,7 +114,7 @@ ts_raw = TimeSeries(noise_counts, t0=t0, sample_rate=fs_hz,
                     name="K1:LSC-DARM_OUT_DQ", unit="ct")
 
 print(f"Signal: {T:.0f} s at {fs_hz} Hz  ({N:,} samples)")
-print(f"RMS (counts): {ts_raw.rms().value:.2f}")
+print(f"RMS (counts): {np.sqrt(np.mean(ts_raw.value**2)):.2f}")
 """),
 
     md("""\
@@ -403,7 +403,7 @@ noise_counts += 150 * np.sin(2*np.pi*120 * t)
 ts_raw = TimeSeries(noise_counts, t0=t0, sample_rate=fs_hz,
                     name="K1:LSC-DARM_OUT_DQ", unit="ct")
 print(f"信号: {T:.0f} s @ {fs_hz} Hz  ({N:,} サンプル)")
-print(f"RMS (カウント): {ts_raw.rms().value:.2f}")
+print(f"RMS (カウント): {np.sqrt(np.mean(ts_raw.value**2)):.2f}")
 """),
 
     md("""\
