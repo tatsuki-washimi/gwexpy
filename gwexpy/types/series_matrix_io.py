@@ -159,10 +159,14 @@ class SeriesMatrixIOMixin:
             df = self.to_pandas(format="wide")
             return df.to_parquet(target, **kwargs)
 
-        # Fall back to unified registry
+        # Fall back to unified registry.  Any failure is re-raised unchanged
+        # when a format was given; only an *unidentified* format gets the
+        # friendlier message.  (The original ``except (KeyError, TypeError,
+        # ValueError, Exception)`` was just ``except Exception`` spelled
+        # redundantly.)
         try:
             return io_registry.write(self, target, format=format, **kwargs)
-        except (KeyError, TypeError, ValueError, Exception):
+        except Exception:
             if format is None:
                 raise ValueError(
                     f"Could not identify format for {target}. "
@@ -328,10 +332,12 @@ class SeriesMatrixIOMixin:
             )
 
         if format != "hdf5":
-            # Fall back to unified registry
+            # Fall back to unified registry.  Re-raise unchanged when a format
+            # was given; only an unidentified format gets the friendlier
+            # message.
             try:
                 return io_registry.read(cls, source, format=format, **kwargs)
-            except (KeyError, TypeError, ValueError, Exception):
+            except Exception:
                 if format is None:
                     raise ValueError(
                         f"Could not identify format for {source}. "

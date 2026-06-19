@@ -92,3 +92,18 @@ class TestSdbReader:
         tsd = read_timeseriesdict_sdb(str(db_path), columns=["outTemp"])
         assert "outTemp" in tsd
         assert "barometer" not in tsd
+
+    def test_unparseable_values_warn_when_coerced_to_nan(self, tmp_path):
+        """Non-numeric values silently NaN'd by errors='coerce' must warn (C7)."""
+        db_path = tmp_path / "bad.sdb"
+        conn = sqlite3.connect(str(db_path))
+        # store the value column as TEXT so a non-numeric entry survives to pandas
+        conn.execute("CREATE TABLE archive (dateTime INTEGER, outTemp TEXT)")
+        rows = [(1700000000, "70.0"), (1700000300, "n/a"), (1700000600, "72.0")]
+        conn.executemany("INSERT INTO archive VALUES (?, ?)", rows)
+        conn.commit()
+        conn.close()
+
+        with pytest.warns(UserWarning, match="non-numeric value"):
+            tsd = read_timeseriesdict_sdb(str(db_path))
+        assert np.isnan(tsd["outTemp"].value[1])

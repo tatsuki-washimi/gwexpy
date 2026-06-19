@@ -84,15 +84,39 @@ def _import_xarray():
 
 
 def _time_coord_name(ds):
-    """Return the name of the time coordinate, or *None*."""
+    """Return the name of the time coordinate, or *None*.
+
+    Prefers an explicitly named coordinate (``time``/``Time``/``TIME``/``t``).
+    Only if none is present does it fall back to a datetime64 coordinate, in
+    which case it warns -- and warns more loudly when the choice is ambiguous
+    (several datetime64 coordinates) -- so a wrong-axis guess is never silent.
+    Pass ``time_coord=`` to the reader to select the axis explicitly.
+    """
+    import warnings
+
     for name in ("time", "Time", "TIME", "t"):
         if name in ds.coords:
             return name
-    # Fallback: first datetime64 coordinate
-    for name, coord in ds.coords.items():
-        if np.issubdtype(coord.dtype, np.datetime64):
-            return name
-    return None
+    # Fallback: datetime64 coordinate(s)
+    datetime_coords = [
+        name
+        for name, coord in ds.coords.items()
+        if np.issubdtype(coord.dtype, np.datetime64)
+    ]
+    if not datetime_coords:
+        return None
+    chosen = datetime_coords[0]
+    if len(datetime_coords) > 1:
+        # Genuinely ambiguous: the "first datetime64" guess may pick the wrong
+        # axis.  Warn instead of choosing silently.
+        warnings.warn(
+            f"NetCDF4 file has no standard time coordinate and multiple "
+            f"datetime64 coordinates {datetime_coords}; guessing '{chosen}'. "
+            f"Pass time_coord=... to choose the time axis explicitly.",
+            UserWarning,
+            stacklevel=2,
+        )
+    return chosen
 
 
 def read_timeseriesdict_netcdf4(

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sqlite3
+import warnings
 from pathlib import Path
 from typing import cast
 
@@ -111,7 +112,18 @@ def read_timeseriesdict_sdb(
     # We expect all columns except potentially descriptive ones (none here) to be numeric
     for col in df.columns:
         if col != "dateTime":
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+            coerced = pd.to_numeric(df[col], errors="coerce")
+            # Count values that were non-null before but became NaN: these are
+            # genuinely unparseable entries silently dropped by errors="coerce".
+            lost = int((coerced.isna() & df[col].notna()).sum())
+            if lost:
+                warnings.warn(
+                    f"SDB column '{col}': {lost} non-numeric value(s) could not "
+                    f"be parsed and were set to NaN.",
+                    UserWarning,
+                    stacklevel=3,
+                )
+            df[col] = coerced
 
     # Check if dateTime is present
     if "dateTime" not in df.columns:
