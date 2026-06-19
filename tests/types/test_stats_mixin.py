@@ -6,6 +6,7 @@ import pytest
 from astropy import units as u
 
 from gwexpy.timeseries import TimeSeries
+from gwexpy.types.series import Series
 from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
@@ -191,9 +192,11 @@ def test_rms_basic():
 
 
 def test_rms_with_unit():
-    # Lines 205-213 — unit branch
-    ts = _make_ts(np.array([1.0, 2.0, 3.0]), unit=u.m)
-    result = ts.rms()
+    # Unit branch of the generic mixin rms (scalar/axis reduction). Uses a
+    # Series (1-D, carries .unit) because TimeSeries.rms is now gwpy-compatible
+    # (a stride trend); see tests/timeseries/test_rms_compat.py for that.
+    s = Series(np.array([1.0, 2.0, 3.0]), unit=u.m)
+    result = s.rms()
     assert hasattr(result, "unit")
     assert result.unit == u.m
 

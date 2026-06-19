@@ -665,6 +665,16 @@ FrequencySeries collection registry audit tests (#438).
 
 ### Bug fixes
 
+- Restored gwpy compatibility for `TimeSeries.rms`: the first positional
+  argument is again `stride` (seconds) and the method returns a new
+  `TimeSeries` holding one RMS value per `stride`-second window (`dt =
+  stride`), matching `gwpy.timeseries.TimeSeries.rms`. The generic numpy-style
+  `rms` (axis reduction) had shadowed it, so `data.rms(10)` raised an
+  `AxisError`. The override lives on the TimeSeries-only mixin, so matrices,
+  `Array`, and `FrequencySeries` keep the generic `rms`. gwexpy additionally
+  preserves the input unit on the result and accepts a time `Quantity` stride
+  (e.g. `10 * u.s`); irregular/sub-sample/zero strides raise a clear
+  `ValueError` (#451).
 - Fixed subplot geometry calculation in `Plot` so the expansion count always
   matches `_expand_args`: all arguments are now counted regardless of order
   (a leading Spectrogram or matrix no longer hides later containers), the
@@ -698,6 +708,12 @@ FrequencySeries collection registry audit tests (#438).
 
 ### Tests
 
+- Added `tests/timeseries/test_rms_compat.py` pinning gwpy-compatible
+  `TimeSeries.rms(stride)` behaviour (gwpy reference parity, positional-int
+  regression for #451, trailing-window drop, NaN-per-window propagation) and
+  the gwexpy enhancements (time/dimensionless `Quantity` stride, unit
+  preservation, and `ValueError` for sub-sample/zero/negative/irregular
+  strides). Re-pointed `test_stats_mixin.py::test_rms_with_unit` onto `Series`.
 - Added plot geometry tests for mixed-container argument orders, single
   2D/3D/4D matrices, and parity with `_expand_args` expansion counts.
 - Added multi-source reader tests covering merge, gap padding, overlap

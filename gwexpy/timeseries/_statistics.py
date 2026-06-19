@@ -19,6 +19,26 @@ from gwexpy.types._stats import StatisticalMethodsMixin
 from ._typing import TimeSeriesAttrs
 
 
+def _stride_to_seconds(stride: Any) -> float:
+    """Coerce an RMS ``stride`` to a float number of seconds.
+
+    Accepts a plain number (interpreted as seconds), a dimensionless
+    `~astropy.units.Quantity` (seconds), or a time ``Quantity`` such as
+    ``10 * u.s``.
+    """
+    if isinstance(stride, (int, float, np.number)):
+        return float(stride)
+    q = u.Quantity(stride)
+    if q.unit == u.dimensionless_unscaled:
+        return float(q.value)
+    try:
+        return float(q.to("s").value)
+    except u.UnitConversionError as exc:
+        raise ValueError(
+            "stride must be given in seconds or as a time Quantity"
+        ) from exc
+
+
 class GrangerResult(float):
     """Subclass of float that holds Granger causality test results.
 
@@ -65,6 +85,73 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     """
 
     # skewness and kurtosis are now inherited from StatisticalMethodsMixin
+
+    # ===============================
+    # Root-mean-square (gwpy-compatible)
+    # ===============================
+
+    def rms(self, stride: Any = 1) -> Any:
+        """Calculate the root-mean-square value once per ``stride`` seconds.
+
+        gwpy-compatible: returns a new `TimeSeries` holding one RMS value per
+        ``stride``-second window (``dt = stride``), mirroring
+        `gwpy.timeseries.TimeSeries.rms`. This overrides the generic numpy-style
+        ``rms`` from :class:`~gwexpy.types._stats.StatisticalMethodsMixin` (which
+        reduces along ``axis``) so that existing gwpy code such as
+        ``data.rms(10)`` keeps working.
+
+        Parameters
+        ----------
+        stride : `float` or `~astropy.units.Quantity`, optional
+            Stride (seconds) between RMS calculations. Accepts a plain number
+            (seconds) or a time ``Quantity`` such as ``10 * u.s``. Defaults to
+            ``1`` second.
+
+        Returns
+        -------
+        rms : `TimeSeries`
+            A new `TimeSeries` of RMS values with ``dt = stride``. Any trailing
+            partial window is dropped, matching gwpy.
+
+        Raises
+        ------
+        ValueError
+            If the series is not regularly sampled, or ``stride`` is shorter
+            than one sample period.
+
+        Notes
+        -----
+        Two intentional, documented improvements over `gwpy`:
+
+        * the input physical unit is **preserved** on the result (the RMS of a
+          signal in metres is in metres), whereas gwpy returns a dimensionless
+          series;
+        * a time ``Quantity`` stride (e.g. ``10 * u.s``) is accepted, whereas
+          gwpy raises ``TypeError``.
+
+        For complex data the gwpy convention ``sqrt(mean(|x|**2))`` is used.
+
+        """
+        if getattr(self, "sample_rate", None) is None:
+            raise ValueError("rms(stride) requires a regularly-sampled TimeSeries")
+        stride_s = _stride_to_seconds(stride)
+        stridesamp = int(stride_s * self.sample_rate.to("Hz").value)
+        if stridesamp < 1:
+            raise ValueError("stride is shorter than one sample period")
+        nsteps = int(self.size // stridesamp)
+        trimmed = np.asarray(self.value)[: nsteps * stridesamp].reshape(
+            nsteps, stridesamp
+        )
+        data = np.sqrt(np.mean(np.abs(trimmed) ** 2, axis=1))
+        name = f"{self.name} {stride_s}-second RMS" if self.name is not None else None
+        return self.__class__(
+            data,
+            channel=self.channel,
+            t0=self.t0,
+            name=name,
+            sample_rate=1.0 / stride_s,
+            unit=self.unit,
+        )
 
     # ===============================
     # Correlation & Causality
