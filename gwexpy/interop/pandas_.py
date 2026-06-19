@@ -155,8 +155,8 @@ def from_pandas_series(
                             "Consider providing dt explicitly if this is unexpected.",
                             UserWarning,
                         )
-        elif isinstance(index, (pd.Index, pd.RangeIndex)) and np.issubdtype(
-            index.dtype, np.number
+        elif isinstance(index, (pd.Index, pd.RangeIndex)) and pd.api.types.is_numeric_dtype(
+            index
         ):
             inferred_t0 = float(index[0])
             if len(index) > 1:
