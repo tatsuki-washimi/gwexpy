@@ -65,6 +65,42 @@ def from_obspy_trace(cls, tr, unit=None, name_policy="id"):
     return _from_obspy_trace_to_ts(cls, tr, unit, name_policy)
 
 
+def _stream_to_tsdict(cls, st, unit=None, name_policy="id"):
+    """Convert an Obspy Stream to a TimeSeriesDict-like collection.
+
+    Each Trace becomes a TimeSeries, keyed by its name (per ``name_policy``).
+    Duplicate keys are made unique to avoid silently overwriting traces.
+    """
+    require_optional("obspy")
+    from gwexpy.interop._registry import ConverterRegistry
+
+    TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+    out = cls()
+    used: dict[str, int] = {}
+    for tr in st:
+        ts = _from_obspy_trace_to_ts(TimeSeries, tr, unit, name_policy)
+        key = ts.name if ts.name is not None else tr.id
+        if key in used:
+            used[key] += 1
+            key = f"{key}_{used[key]}"
+        else:
+            used[key] = 0
+        out[key] = ts
+    return out
+
+
+def _stream_to_tslist(cls, st, unit=None, name_policy="id"):
+    """Convert an Obspy Stream to a TimeSeriesList-like collection."""
+    require_optional("obspy")
+    from gwexpy.interop._registry import ConverterRegistry
+
+    TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+    out = cls()
+    for tr in st:
+        out.append(_from_obspy_trace_to_ts(TimeSeries, tr, unit, name_policy))
+    return out
+
+
 # -----------------------------------------------------------------------------
 # FrequencySeries
 # -----------------------------------------------------------------------------
@@ -294,7 +330,17 @@ def from_obspy(cls, data, **kwargs):
     if isinstance(data, obspy.Stream):
         if "Spectrogram" in cls.__name__:
             return _stream_to_spec(cls, data, **kwargs)
-        # If Stream and target is TimeSeriesDict or similar?
-        # Implementing basic Spectrogram support first.
+        if "Dict" in cls.__name__:
+            return _stream_to_tsdict(cls, data, **kwargs)
+        if "List" in cls.__name__:
+            return _stream_to_tslist(cls, data, **kwargs)
+
+        # Single-series target (TimeSeries / FrequencySeries).
+        if len(data) == 1:
+            return from_obspy(cls, data[0], **kwargs)
+        raise TypeError(
+            f"Cannot convert a Stream with {len(data)} traces to "
+            f"{cls.__name__}; use TimeSeriesDict.from_obspy() instead."
+        )
 
     raise TypeError(f"Unsupported conversion: {type(data)} -> {cls}")
