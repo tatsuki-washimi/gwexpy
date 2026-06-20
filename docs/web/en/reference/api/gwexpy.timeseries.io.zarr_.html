@@ -17,7 +17,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/reference/api/gwexpy.timeseries.io.zarr_.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=59fadc99"></script>
+      <script src="../../../../_static/documentation_options.js?v=6e0256f3"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -181,7 +181,10 @@ clear error instead of silently assuming 1 Hz.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>path-like</em><em>, or </em><em>zarr store</em>) – Path to the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> directory (or any zarr-compatible store).</p></li>
+<li><p><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>path-like</em><em>, </em><em>zarr store</em><em>, or </em><em>list thereof</em>) – Path to the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> directory (or any zarr-compatible store),
+or a list of stores.  When a list is given, channels found in
+several stores are concatenated along the time axis and
+channels unique to one store are merged in.</p></li>
 <li><p><strong>channels</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Array names to read.  If <em>None</em>, all arrays in the root group
 are loaded.</p></li>
 <li><p><strong>unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Physical unit override applied to every channel.</p></li>
@@ -240,7 +243,7 @@ that lack per-array timing metadata. Mutually exclusive with
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-06-09 23:57:10.
+      <span class="lastupdated">Last updated on 2026-06-20 12:28:55.
       </span></p>
   </div>
 

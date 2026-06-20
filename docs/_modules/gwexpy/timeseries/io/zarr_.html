@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/timeseries/io/zarr_.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=59fadc99"></script>
+      <script src="../../../../_static/documentation_options.js?v=6e0256f3"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -154,6 +154,7 @@
 <span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._multi</span><span class="w"> </span><span class="kn">import</span> <span class="n">expand_multi_source</span><span class="p">,</span> <span class="n">read_multi_dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._registration</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_timeseries_format</span>
 
 <span class="n">_MATRIX_ARRAY_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;__gwexpy_matrix__&quot;</span>
@@ -315,8 +316,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    source : str, path-like, or zarr store</span>
-<span class="sd">        Path to the ``.zarr`` directory (or any zarr-compatible store).</span>
+<span class="sd">    source : str, path-like, zarr store, or list thereof</span>
+<span class="sd">        Path to the ``.zarr`` directory (or any zarr-compatible store),</span>
+<span class="sd">        or a list of stores.  When a list is given, channels found in</span>
+<span class="sd">        several stores are concatenated along the time axis and</span>
+<span class="sd">        channels unique to one store are merged in.</span>
 <span class="sd">    channels : iterable of str, optional</span>
 <span class="sd">        Array names to read.  If *None*, all arrays in the root group</span>
 <span class="sd">        are loaded.</span>
@@ -334,6 +338,19 @@
 <span class="sd">        Additional keyword arguments forwarded to ``zarr.open_group``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">multi</span> <span class="o">=</span> <span class="n">expand_multi_source</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">multi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_multi_dict</span><span class="p">(</span>
+            <span class="n">read_timeseriesdict_zarr</span><span class="p">,</span>
+            <span class="n">multi</span><span class="p">,</span>
+            <span class="s2">&quot;zarr&quot;</span><span class="p">,</span>
+            <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">sample_rate_override</span><span class="o">=</span><span class="n">sample_rate_override</span><span class="p">,</span>
+            <span class="n">dt_override</span><span class="o">=</span><span class="n">dt_override</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="n">zarr</span> <span class="o">=</span> <span class="n">_import_zarr</span><span class="p">()</span>
 
     <span class="c1"># Only coerce to str for path-like objects; pass store objects through</span>
@@ -401,6 +418,26 @@
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesMatrix</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a Zarr store and convert its channels to a matrix.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sources</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;no Zarr stores provided&quot;</span><span class="p">)</span>
+        <span class="n">matrices</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">read_timeseriesmatrix_zarr</span><span class="p">(</span>
+                <span class="n">s</span><span class="p">,</span>
+                <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">sample_rate_override</span><span class="o">=</span><span class="n">sample_rate_override</span><span class="p">,</span>
+                <span class="n">dt_override</span><span class="o">=</span><span class="n">dt_override</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sources</span>
+        <span class="p">]</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="n">matrices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">mat</span> <span class="ow">in</span> <span class="n">matrices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">merged</span> <span class="o">=</span> <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="s2">&quot;pad&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged</span>
+
     <span class="n">zarr</span> <span class="o">=</span> <span class="n">_import_zarr</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)):</span>
@@ -710,7 +747,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-06-09 23:57:10.
+      <span class="lastupdated">Last updated on 2026-06-20 12:28:55.
       </span></p>
   </div>
 

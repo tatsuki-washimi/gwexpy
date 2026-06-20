@@ -18,7 +18,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/intro_timeseries.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=59fadc99"></script>
+      <script src="../../../../_static/documentation_options.js?v=6e0256f3"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -363,19 +363,19 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-TimeSeries([1.14047213, 0.99650534, 1.06349037, 0.99743736,
-            0.98188516, 1.02641052, 0.93919873, 1.07487744,
-            0.99260805, 0.88020586, 0.8663617 , 0.93710957,
-            0.90519221, 1.09365634, 1.14438307, 1.06635249,
-            0.80472448, 0.90517856, 0.95727453, 1.0331654 ,
-            1.02044558, 0.916997  , 1.02782597, 0.96016127,
-            1.02161329, 1.15912921, 0.78152347, 0.98231673,
-            0.94433045, 1.04622444, 1.08803799, 0.93657533,
-            0.97466083, 0.99199712, 1.07316198, 0.97467659,
-            1.07441207, 1.02033489, 0.89239958, 1.06693625,
-            0.86061647, 0.96411161, 0.75790894, 0.94122606,
-            0.98351219, 1.07868117, 0.99286155, 1.11226052,
-            1.08207096, 0.87131281],
+TimeSeries([0.78676555, 0.84596496, 0.91628979, 0.93632035,
+            1.09131658, 0.64509813, 0.95117748, 0.87172855,
+            1.16691309, 1.13367895, 1.01512955, 0.78964883,
+            1.0286244 , 0.90179589, 0.94080389, 1.05021992,
+            1.00305333, 1.07372638, 1.02695083, 1.14172383,
+            0.93050576, 0.8159553 , 0.93848673, 1.14888993,
+            1.08312881, 1.08196361, 1.10429536, 0.98166813,
+            0.9593948 , 1.1206315 , 0.9356367 , 0.9793935 ,
+            1.12793468, 0.9762821 , 1.06311106, 0.90039093,
+            1.07863942, 1.05085275, 0.95924894, 0.88633326,
+            0.93452964, 0.96956826, 0.97210207, 1.17072408,
+            1.09199193, 0.98315331, 0.9618699 , 0.99047776,
+            1.11962817, 0.9845888 ],
            unit: V,
            t0: 0.0 s,
            dt: 0.1 s,
@@ -831,7 +831,7 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7f7cbf6ccdd0&gt;
+&lt;matplotlib.legend.Legend at 0x7f833a410790&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1002,17 +1002,17 @@ Pandas interop OK
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 time_utc
-1980-01-06 00:00:19+00:00          -0.153083
-1980-01-06 00:00:19.010000+00:00    0.518349
-1980-01-06 00:00:19.020000+00:00    0.933263
-1980-01-06 00:00:19.030000+00:00    1.012659
-1980-01-06 00:00:19.040000+00:00    0.526150
+1980-01-06 00:00:19+00:00           0.176633
+1980-01-06 00:00:19.010000+00:00    0.451810
+1980-01-06 00:00:19.020000+00:00    0.848232
+1980-01-06 00:00:19.030000+00:00    0.559601
+1980-01-06 00:00:19.040000+00:00    0.366449
                                       ...
-1980-01-06 00:00:23.950000+00:00    0.192841
-1980-01-06 00:00:23.960000+00:00   -0.421508
-1980-01-06 00:00:23.970000+00:00   -0.807943
-1980-01-06 00:00:23.980000+00:00   -0.834145
-1980-01-06 00:00:23.990000+00:00   -0.570882
+1980-01-06 00:00:23.950000+00:00    0.092949
+1980-01-06 00:00:23.960000+00:00   -0.242210
+1980-01-06 00:00:23.970000+00:00   -1.082219
+1980-01-06 00:00:23.980000+00:00   -0.847514
+1980-01-06 00:00:23.990000+00:00   -0.731617
 Name: Sensor 1, Length: 500, dtype: float64
 </pre></div></div>
 </div>
@@ -1044,7 +1044,7 @@ SQLite interop OK: my_sensor
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;sqlite3.Connection at 0x7f7cbcf77f10&gt;
+&lt;sqlite3.Connection at 0x7f833a2e9210&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1164,7 +1164,7 @@ SQLite interop OK: my_sensor
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-06-09 23:57:10.
+      <span class="lastupdated">Last updated on 2026-06-20 12:28:55.
       </span></p>
   </div>
 
