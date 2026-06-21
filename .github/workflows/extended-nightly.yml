@@ -34,18 +34,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v3
-        with:
-          environment-file: environment.yml
-          environment-name: gwexpy
-          create-args: >-
-            python=3.11
-          init-shell: bash
-
-      - name: Provision gwexpy environment
-        run: |
-          python -m pip install -e . --no-deps
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
 
       - name: Run import smoke test
         run: |
@@ -69,26 +59,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v3
+      # environment.yml pins conda-only frame I/O libs (ldas-tools-framecpp,
+      # python-framel) that have no Windows conda-forge build, so micromamba
+      # cannot solve on Windows. The import smoke does not exercise frame I/O,
+      # so use a plain pip install instead.
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          environment-file: environment.yml
-          environment-name: gwexpy
-          create-args: >-
-            python=3.11
-          init-shell: powershell
+          python-version: "3.11"
 
       - name: Provision gwexpy environment
         shell: pwsh
         run: |
-          micromamba activate gwexpy
-          python -m pip install -e . --no-deps
+          python -m pip install --upgrade pip
+          python -m pip install -e .
           python -c "import sys; print(sys.executable)"
 
       - name: Run import smoke test
         shell: pwsh
         run: |
-          micromamba activate gwexpy
           python -c "import gwexpy, numpy as np; from gwexpy import TimeSeries, FrequencySeries, Spectrogram; ts = TimeSeries(np.random.randn(100), sample_rate=1); fs = FrequencySeries(np.abs(np.random.randn(100)), df=1); sg = Spectrogram(np.random.randn(10, 10), dt=1, df=1); print(gwexpy.__version__, ts.duration, fs.f0, sg.shape)"
 
   io-network-backend-gate:
@@ -106,19 +95,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v3
-        with:
-          environment-file: environment.yml
-          environment-name: gwexpy
-          create-args: >-
-            python=3.11
-          init-shell: bash
-
-      - name: Provision gwexpy environment
-        run: |
-          python -m pip install --upgrade pip build
-          python -m pip install -e . --no-deps
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
 
       - name: Run network/backend I/O tests
         run: python scripts/ci/run_gate.py io-network-backend
@@ -139,19 +117,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v3
-        with:
-          environment-file: environment.yml
-          environment-name: gwexpy
-          create-args: >-
-            python=3.11
-          init-shell: bash
-
-      - name: Provision gwexpy environment
-        run: |
-          python -m pip install --upgrade pip build
-          python -m pip install -e . --no-deps
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
 
       - name: Run docs notebook tests
         run: python scripts/ci/run_gate.py docs-notebook
@@ -172,20 +139,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up micromamba
-        uses: mamba-org/setup-micromamba@v3
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
         with:
-          environment-file: environment.yml
-          environment-name: gwexpy
-          create-args: >-
-            python=3.11
-          init-shell: bash
-
-      - name: Provision gwexpy environment
-        run: |
-          python -m pip install --upgrade pip build
-          python -m pip install -e . --no-deps
-          python -m pip install zarr
+          extras: "zarr"
 
       - name: Run Zarr I/O tests
         run: python scripts/ci/run_gate.py io-zarr
