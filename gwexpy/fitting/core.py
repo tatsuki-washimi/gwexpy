@@ -66,6 +66,36 @@ except ImportError:
     corner = None
 
 
+def _validate_sigma(dy):
+    """Return a strictly-positive, real, float ndarray for use as 1/weight.
+
+    ``dy`` is a measurement uncertainty, so both cost classes require a
+    real-valued, strictly-positive sigma. Degenerate inputs are rejected at
+    construction so they cannot silently reach Minuit as an ``inf``/complex
+    chi2 (issue #456):
+
+    - a complex ``dy`` with a non-negligible imaginary part (which makes chi2
+      complex, or would silently discard the imaginary part) -> ``ValueError``;
+      an effectively-real complex array is accepted and its real part used;
+    - any non-finite ``dy`` (NaN/Inf) -> ``ValueError``;
+    - any ``dy <= 0`` (a zero divides residuals to ``inf``) -> ``ValueError``.
+    """
+    dy_arr = np.asarray(dy)
+    if np.iscomplexobj(dy_arr):
+        if np.any(np.abs(dy_arr.imag) > 1e-12 * np.maximum(1.0, np.abs(dy_arr.real))):
+            raise ValueError("dy must be real-valued")
+        dy_arr = dy_arr.real
+    dy_arr = dy_arr.astype(float)
+    if np.any(~np.isfinite(dy_arr)):
+        raise ValueError("dy must be finite; got NaN/Inf")
+    if np.any(dy_arr <= 0):
+        bad = np.where(dy_arr <= 0)[0]
+        raise ValueError(
+            f"dy must be strictly positive; got zeros/negatives at indices {bad}"
+        )
+    return dy_arr
+
+
 class ComplexLeastSquares:
     """Least Squares cost function for complex-valued data.
 
@@ -77,9 +107,10 @@ class ComplexLeastSquares:
     def __init__(self, x, y, dy, model):
         self.x = x
         self.y = y  # Complex data
-        self.dy = (
-            dy  # Error (assumed isotropic for real/imag unless specified otherwise)
-        )
+        # Error, assumed isotropic for real/imag. Enforce a strictly-positive,
+        # real-valued sigma so a zero/complex dy cannot silently produce an
+        # inf/complex chi2 that makes Minuit fail without a diagnostic.
+        self.dy = _validate_sigma(dy)
         self.model = model
 
         # Determine parameters from model (skipping 'x')
@@ -119,7 +150,10 @@ class RealLeastSquares:
     def __init__(self, x, y, dy, model):
         self.x = x
         self.y = y
-        self.dy = dy
+        # Enforce a strictly-positive, real-valued sigma so a zero/complex dy
+        # cannot silently produce an inf chi2 (or discard the imaginary part)
+        # and make Minuit fail without a diagnostic.
+        self.dy = _validate_sigma(dy)
         self.model = model
 
         params = describe(model)[1:]
