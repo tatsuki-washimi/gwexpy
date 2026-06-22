@@ -26,15 +26,16 @@ def test_calculate_roc_returns_bounded_monotonic_rates_and_auc():
 
 
 @pytest.mark.parametrize(
-    ("y_true", "y_score"),
+    ("y_true", "y_score", "match"),
     [
-        (np.ones(4), np.linspace(0.0, 1.0, 4)),
-        (np.zeros(4), np.linspace(0.0, 1.0, 4)),
+        (np.ones(4), np.linspace(0.0, 1.0, 4), "negative class is empty"),
+        (np.zeros(4), np.linspace(0.0, 1.0, 4), "positive class is empty"),
     ],
 )
-def test_calculate_roc_degenerate_class_contract_returns_diagonal(y_true, y_score):
-    fpr, tpr, auc = calculate_roc(y_true, y_score)
-
-    np.testing.assert_array_equal(fpr, np.array([0, 1]))
-    np.testing.assert_array_equal(tpr, np.array([0, 1]))
-    assert auc == pytest.approx(0.5)
+def test_calculate_roc_degenerate_class_contract_raises(y_true, y_score, match):
+    # A degenerate class makes the ROC undefined. The hardened contract raises
+    # ValueError rather than silently returning the chance-level AUC=0.5
+    # default, which was indistinguishable from a real chance-level result
+    # (issue #463).
+    with pytest.raises(ValueError, match=match):
+        calculate_roc(y_true, y_score)
