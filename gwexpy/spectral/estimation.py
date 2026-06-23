@@ -240,7 +240,7 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
         return 1.0
 
     energy = np.sum(win_array**2)
-    if energy == 0:
+    if energy == 0 or not np.isfinite(energy):
         return 1.0
 
     rho_sq_weighted_sum = 0.0
@@ -257,6 +257,14 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
         rho_sq_weighted_sum += weight * (rho**2)
 
     vif = 1.0 + 2.0 * rho_sq_weighted_sum
+    if not np.isfinite(vif) or vif < 1.0:
+        warnings.warn(
+            "calculate_correlation_factor: non-finite or sub-unity VIF; "
+            "falling back to factor=1.0",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return 1.0
     return np.sqrt(vif)
 
 
@@ -466,6 +474,13 @@ def bootstrap_spectrogram(
         raise ValueError("Spectrogram must have at least 2 time bins.")
     if n_boot < 1:
         raise ValueError("n_boot must be >= 1.")
+    if n_boot == 1:
+        warnings.warn(
+            "n_boot=1 produces a zero-width CI (err_low == err_high == 0). "
+            "Use n_boot >= 10 for meaningful confidence intervals.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
     if not (0 < ci < 1):
         raise ValueError("ci must be between 0 and 1.")
 
@@ -491,12 +506,21 @@ def bootstrap_spectrogram(
 
     # 1. Frequency Rebinning
     if rebin_width is not None and rebin_width > 0:
+        if not np.isfinite(rebin_width):
+            raise ValueError(f"rebin_width must be finite, got {rebin_width!r}")
         df = (
             spectrogram.df.value if hasattr(spectrogram.df, "value") else spectrogram.df
         )
         bin_size = int(rebin_width / df)
 
-        if bin_size > 1:
+        if bin_size <= 1:
+            warnings.warn(
+                f"rebin_width={rebin_width} yields bin_size={bin_size} (<= 1 at df={df:.3g}); "
+                "rebinning has no effect and will be skipped.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        elif bin_size > 1:
             n_freq = data.shape[1]
             # Truncate to multiple of bin_size
             n_freq_new = n_freq // bin_size
@@ -630,6 +654,10 @@ def bootstrap_spectrogram(
     else:
         # Generate all bootstrap indices at once using NumPy (ensures reproducibility with seed)
         all_indices = np.random.randint(0, n_time, (n_boot, n_time))
+
+    # SP1: integer-dtype data truncates per-resample mean/median to int.
+    # Cast to at least float64 before calling the resample functions.
+    data = np.asarray(data, dtype=np.result_type(data.dtype, np.float64))
 
     use_numba = HAS_NUMBA and os.environ.get("NUMBA_DISABLE_JIT", "0") not in (
         "1",
@@ -769,14 +797,16 @@ def bootstrap_spectrogram(
         )
 
         if ignore_nan:
-            # masked covariance? np.cov doesn't support nan directly well in all versions
-            # Use pandas or manual? Or just mask?
-            # Simple approach: nan -> mean (impute) or just let np.cov handle if recent enough?
-            # np.cov does NOT handle NaNs.
-            # If robust is needed, maybe skip map or warning?
-            # Hack: zero-fill or mean-fill for covariance calculation if NaNs exist
-            # But if ignore_nan=True, we likely have NaNs.
-            # Let's fill NaNs with column means for covariance purpose
+            # SP4: detect all-NaN columns before mean-imputation; col_mean is NaN
+            # for all-NaN columns, so the imputed covariance is also NaN there.
+            all_nan_cols = np.all(np.isnan(resampled_stats), axis=0)
+            if np.any(all_nan_cols):
+                logger.warning(
+                    "%d frequency bin(s) have all-NaN bootstrap stats; "
+                    "covariance at those frequencies will be NaN "
+                    "(mean imputation collapses to NaN when the entire column is NaN).",
+                    int(all_nan_cols.sum()),
+                )
             stats_filled = resampled_stats.copy()
             col_mean = np.nanmean(stats_filled, axis=0)
             inds = np.where(np.isnan(stats_filled))

@@ -10,6 +10,15 @@ Covers the confirmed findings:
             NaN center/CI via np.nanmedian/np.nanmean. Now a function-level
             logger.warning diagnoses it; the output NaN is preserved (not
             imputed or hidden).
+  G5 SP1 — integer-dtype spectrogram truncated per-resample mean/median;
+            cast to float64 before resampling.
+  G5 SP2 — non-finite VIF (e.g. NaN window) silently propagated NaN CI;
+            now falls back to factor=1.0.
+  G5 SP5 — rebin_width smaller than df converts to bin_size<=1 (silent no-op);
+            now emits RuntimeWarning; non-finite rebin_width raises ValueError.
+  G5 SP7 — n_boot=1 produces zero-width CI; now emits RuntimeWarning.
+  G5 SP4 — all-NaN column in return_map covariance path now emits
+            logger.warning before mean-imputation.
 """
 from __future__ import annotations
 
@@ -97,3 +106,88 @@ def test_valid_iid_bootstrap_path_unchanged():
     result = bootstrap_spectrogram(spec, n_boot=50)
     assert result.size == 5
     assert np.all(np.isfinite(result.value))
+
+
+# --- SP1: integer-dtype truncation -------------------------------------------
+
+
+def test_integer_dtype_spectrogram_produces_float_output():
+    """Integer-valued spectrogram must not truncate bootstrap mean/median to int."""
+    rng = np.random.default_rng(1)
+    data = rng.integers(1, 10, size=(15, 4)).astype(np.int32)
+    times = np.arange(15, dtype=float)
+    frequencies = np.arange(4, dtype=float)
+    spec = Spectrogram(data, times=times, frequencies=frequencies, unit="ct")
+    result = bootstrap_spectrogram(spec, n_boot=100)
+    assert result.value.dtype.kind == "f", "output must be floating-point"
+    assert np.all(np.isfinite(result.value))
+
+
+# --- SP2: non-finite VIF in calculate_correlation_factor ---------------------
+
+
+def test_calculate_correlation_factor_nan_window_returns_1():
+    """NaN window values must not propagate NaN; falls back to factor=1.0."""
+    from gwexpy.spectral.estimation import calculate_correlation_factor
+
+    factor = calculate_correlation_factor(np.full(32, np.nan), 32, 16, 10)
+    assert factor == 1.0
+
+
+def test_calculate_correlation_factor_inf_window_returns_1():
+    """Inf window values must fall back to factor=1.0."""
+    from gwexpy.spectral.estimation import calculate_correlation_factor
+
+    factor = calculate_correlation_factor(np.full(32, np.inf), 32, 16, 10)
+    assert factor == 1.0
+
+
+# --- SP5: rebin no-op warning and non-finite guard ---------------------------
+
+
+def test_rebin_width_smaller_than_df_warns():
+    """rebin_width < df → bin_size=0; must warn rather than silently skip."""
+    spec = _spec(n_time=20, n_freq=8)
+    # df = 1.0 Hz; rebin_width=0.1 < df → bin_size=0
+    with pytest.warns(RuntimeWarning, match="bin_size"):
+        result = bootstrap_spectrogram(spec, n_boot=30, rebin_width=0.1)
+    assert result.size == 8  # rebinning had no effect
+
+
+def test_rebin_width_nonfinite_raises():
+    """Non-finite rebin_width must raise ValueError immediately."""
+    spec = _spec(n_time=20, n_freq=8)
+    with pytest.raises(ValueError, match="finite"):
+        bootstrap_spectrogram(spec, n_boot=30, rebin_width=float("inf"))
+
+
+# --- SP7: n_boot=1 zero-width CI warning -------------------------------------
+
+
+def test_n_boot_1_warns_zero_width_ci():
+    """n_boot=1 makes all CI percentiles equal; must warn."""
+    spec = _spec(n_time=10, n_freq=4)
+    with pytest.warns(RuntimeWarning, match="n_boot=1"):
+        result = bootstrap_spectrogram(spec, n_boot=1)
+    assert result.size == 4
+    np.testing.assert_array_equal(result.error_low.value, 0.0)
+    np.testing.assert_array_equal(result.error_high.value, 0.0)
+
+
+# --- SP4: covariance all-NaN column warning (return_map=True) ----------------
+
+
+def test_return_map_all_nan_column_warns(caplog):
+    """All-NaN column in return_map=True path must emit logger.warning."""
+    spec = _spec(n_time=8, n_freq=4)
+    bad = 1
+    spec.value[:, bad] = np.nan
+
+    with caplog.at_level(logging.WARNING, logger="gwexpy.spectral.estimation"):
+        _, bfm = bootstrap_spectrogram(
+            spec, n_boot=30, ignore_nan=True, return_map=True
+        )
+
+    assert any("NaN" in rec.message for rec in caplog.records)
+    cov = bfm.value if hasattr(bfm, "value") else np.asarray(bfm)
+    assert np.all(np.isnan(cov[bad, :])) or np.all(np.isnan(cov[:, bad]))
