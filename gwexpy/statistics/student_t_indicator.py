@@ -1,6 +1,7 @@
 """gwexpy.statistics.student_t_indicator - Student-t indicator for non-Gaussianity."""
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -93,6 +94,7 @@ def compute_student_t_nu(
 
     n_out = n_times - window + 1
     nu_map = np.zeros((n_out, n_freqs))
+    n_fit_failures = 0
 
     for i in range(n_out):
         for j in range(n_freqs):
@@ -109,8 +111,20 @@ def compute_student_t_nu(
             try:
                 nu, _, _ = stats.t.fit(samples)
                 nu_map[i, j] = nu
-            except Exception:
+            except Exception:  # noqa: BLE001 - scipy fit can fail many ways
+                # Record the failure but defer to a single aggregate warning so
+                # a long series with many failing bins is not silently filled
+                # with NaN (issue #459; aggregate-once per #450/#452 convention).
                 nu_map[i, j] = np.nan
+                n_fit_failures += 1
+
+    if n_fit_failures:
+        warnings.warn(
+            f"compute_student_t_nu: stats.t.fit failed for "
+            f"{n_fit_failures}/{n_out * n_freqs} bins; those nu values are NaN",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     # Center times
     out_times = t[window // 2 : window // 2 + n_out]
