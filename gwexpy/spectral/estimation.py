@@ -519,9 +519,30 @@ def bootstrap_spectrogram(
     # Update n_freq after potentially rebinning/truncating
     n_freq = data.shape[1]
 
+    # Diagnose frequency bins that are entirely NaN across all time segments.
+    # With ignore_nan=True these would silently yield NaN center/CI via
+    # np.nanmedian/np.nanmean (only a low-level NumPy "All-NaN slice" warning).
+    # Surface a function-level diagnostic; the NaN output is preserved (not
+    # imputed) so the caller knows the bin is undefined (issue #460 / G5).
+    if ignore_nan:
+        all_nan_freq = np.all(np.isnan(data), axis=0)
+        if np.any(all_nan_freq):
+            logger.warning(
+                "%d frequency bin(s) are entirely NaN across all time "
+                "segments; bootstrap statistics for those bins will be NaN "
+                "(ignore_nan=True).",
+                int(all_nan_freq.sum()),
+            )
+
     use_median = avg == "median"
 
     # 2. Block Bootstrap
+    # Remember whether block_size was auto-derived (internal estimate) versus
+    # explicitly supplied by the caller, before block_size is overwritten with
+    # the converted sample count. This distinguishes a caller error (explicit
+    # oversized block_size -> ValueError) from an internal over-estimate
+    # (auto-derived oversized block_size -> warn + iid fallback).
+    block_size_from_auto = block_size == "auto"
     if block_size == "auto":
         ratio = _infer_overlap_ratio(spectrogram)
         if ratio is not None and ratio > 1.0:
@@ -545,13 +566,27 @@ def bootstrap_spectrogram(
         block_size = block_size_samples
         logger.debug(f"Converted block_size to {block_size} samples (dt={dt:.3g}s)")
 
-    if block_size is not None and block_size > 1:
-        if block_size >= n_time:
-            # Just one block? or simple bootstrap of blocks?
-            # If block size is entire duration, only 1 possible block.
-            # Assume user knows what they are doing, but warn?
-            pass
+    # Guard against block_size >= n_time. With num_possible_blocks =
+    # n_time - block_size + 1 <= 0 the downstream np.random.randint(0, high<=0)
+    # raises an opaque "low >= high" error. Fail closed for explicit values
+    # (caller error) and fall back to iid bootstrap for auto-derived ones
+    # (internal over-estimate, not the caller's fault) — issue #460 / G5.
+    if block_size is not None and block_size >= n_time:
+        if block_size_from_auto:
+            warnings.warn(
+                f"Auto-derived block_size={block_size} >= n_time={n_time}; "
+                "falling back to iid bootstrap (block_size=None).",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            block_size = None
+        else:
+            raise ValueError(
+                f"block_size ({block_size} samples) must be smaller than the "
+                f"number of time bins (n_time={n_time})."
+            )
 
+    if block_size is not None and block_size > 1:
         # Create list of all possible start indices for blocks
         # Overlapping blocks? Moving block bootstrap usually allows overlapping.
         # "Circular block bootstrap" vs "Moving block bootstrap".
