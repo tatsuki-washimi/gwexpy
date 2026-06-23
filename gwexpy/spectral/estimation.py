@@ -505,9 +505,12 @@ def bootstrap_spectrogram(
             )
 
     # 1. Frequency Rebinning
+    # Validate finiteness first: rebin_width=np.nan would make `nan > 0` False
+    # and slip past the rebin block entirely (silent no-op).
+    if rebin_width is not None and not np.isfinite(rebin_width):
+        raise ValueError(f"rebin_width must be finite, got {rebin_width!r}")
+
     if rebin_width is not None and rebin_width > 0:
-        if not np.isfinite(rebin_width):
-            raise ValueError(f"rebin_width must be finite, got {rebin_width!r}")
         df = (
             spectrogram.df.value if hasattr(spectrogram.df, "value") else spectrogram.df
         )

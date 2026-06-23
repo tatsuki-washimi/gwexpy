@@ -161,6 +161,13 @@ def test_rebin_width_nonfinite_raises():
         bootstrap_spectrogram(spec, n_boot=30, rebin_width=float("inf"))
 
 
+def test_rebin_width_nan_raises():
+    """rebin_width=NaN must raise (nan > 0 is False, would otherwise be a no-op)."""
+    spec = _spec(n_time=20, n_freq=8)
+    with pytest.raises(ValueError, match="finite"):
+        bootstrap_spectrogram(spec, n_boot=30, rebin_width=float("nan"))
+
+
 # --- SP7: n_boot=1 zero-width CI warning -------------------------------------
 
 
