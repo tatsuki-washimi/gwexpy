@@ -414,6 +414,10 @@ class FitResult:
             x0, x1 = x_range
             x_plot = np.linspace(min(x0, x1), max(x0, x1), num_points)
         else:
+            if len(self.x) == 0:
+                raise ValueError(
+                    "FitResult.x is empty; cannot produce plot x range."
+                )
             x_plot = np.linspace(min(self.x), max(self.x), num_points)
         y_plot = self.model(x_plot, **self.params)
         ax.plot(x_plot, y_plot, label=kwargs.pop("label", "Fit"), **kwargs)
@@ -687,6 +691,12 @@ class FitResult:
         float_params = [p for p in self.minuit.parameters if not self.minuit.fixed[p]]
         ndim = len(float_params)
 
+        if ndim == 0:
+            raise ValueError(
+                "run_mcmc() requires at least one free parameter. "
+                "All parameters are currently fixed."
+            )
+
         # Dictionary of fixed parameters
         fixed_params = {
             p: self.minuit.values[p]
@@ -932,6 +942,10 @@ class FitResult:
             fig, ax = plt.subplots()
 
         # Generate x values for plotting
+        if len(self.x) == 0:
+            raise ValueError(
+                "FitResult.x is empty; cannot produce plot x range."
+            )
         x_plot = np.linspace(np.min(self.x), np.max(self.x), num_points)
 
         # Get random subset of samples
