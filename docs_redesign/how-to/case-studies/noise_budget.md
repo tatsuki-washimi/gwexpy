@@ -42,5 +42,5 @@ residual points at an unmodelled coupling.
 
 :::{seealso}
 For the underlying container behaviour, see the
-[Reference: Containers](../../reference/containers.md) page.
+[container reference](../../reference/index.md).
 :::

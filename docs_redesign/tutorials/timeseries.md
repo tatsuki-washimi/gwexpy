@@ -53,5 +53,5 @@ coh = fsm.coherence(fsm)
 
 You now have the core workflow. Continue with the
 [noise-budget case study](../how-to/case-studies/noise_budget.md), or browse
-the [container reference](../reference/containers.md).
+the [container reference](../reference/index.md).
 :::
