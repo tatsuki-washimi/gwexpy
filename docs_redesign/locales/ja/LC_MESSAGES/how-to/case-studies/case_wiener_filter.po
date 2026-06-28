@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_wiener_filter.ipynb:10002
+#: fa5ef89f4da4410c85fed37c32f799e0
+msgid "Wiener Filtering: Coherent Noise Subtraction"
+msgstr "ウィーナーフィルタ: コヒーレント雑音の差し引き"
+
+#: ../../how-to/case-studies/case_wiener_filter.ipynb:20002
+#: 538138e658954b73b7a646166620add8
+msgid ""
+"A multichannel Wiener filter is useful when several witness sensors contain "
+"**overlapping views of the same physical noise sources**. Treating those "
+"witnesses independently can double-count the noise and over-subtract the "
+"target."
+msgstr ""
+"複数の witness センサーが **同じ物理ノイズ源を重なって見ている** とき、各 witness "
+"を独立に引くと二重差し引きが起きることがあります。"
+
+#: ../../how-to/case-studies/case_wiener_filter.ipynb:20004
+#: edb3200823df4deb9fdd70ca274e5148
+msgid ""
+"This compact public case study promotes the legacy MIMO notebook and focuses"
+" on the core matrix workflow."
+msgstr ""
+"この notebook は legacy の MIMO 例を公開 docs 向けに整理し、多入力ウィーナーフィルタ行列の物理的意味に絞っています。"
+
+#: ../../how-to/case-studies/case_wiener_filter.ipynb:40002
+#: 829388d53fe8483b9446621c00c4d456
+msgid "1. Estimate the multichannel correlation matrices"
+msgstr "1. 相互相関行列を推定する"
+
+#: ../../how-to/case-studies/case_wiener_filter.ipynb:40004
+#: 0328e1f07e3b434f8d76f479d6bec21d
+msgid ""
+"The key point is that the witnesses are not independent. The `Cxx` matrix "
+"captures witness-to-witness correlation, and `Cyx` captures how the target "
+"correlates with those witnesses."
+msgstr ""
+"重要なのは witness 同士が独立ではないことです。`Cxx` が witness 間相関、`Cyx` が target と witness "
+"の相関を表します。"
+
+#: ../../how-to/case-studies/case_wiener_filter.ipynb:60002
+#: d97b14930a324d48939554dbae1e8a7f
+msgid "2. Project and subtract the coherent noise"
+msgstr "2. 予測して差し引く"
+
+#: ../../how-to/case-studies/case_wiener_filter.ipynb:60004
+#: b6715d698d9544c09fcf4299ec2ec14f
+msgid ""
+"Only the coherent, witness-predictable part should be removed. Irreducible "
+"target noise should remain."
+msgstr "差し引くべきなのは witness で再構成できるコヒーレント成分だけであり、target 固有の不可避雑音は残るはずです。"

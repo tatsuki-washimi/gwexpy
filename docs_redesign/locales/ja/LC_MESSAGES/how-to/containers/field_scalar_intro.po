@@ -1,0 +1,397 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10002
+#: 258580ede43a427489180ac73d7f2449
+msgid "Field API: ScalarField Basics"
+msgstr "Field API: ScalarField の基本"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10004
+#: 98c1904d870549c787b74ec269e30b18
+msgid ""
+"This notebook teaches the basic usage of the `ScalarField` class in "
+"`gwexpy`."
+msgstr "このノートブックでは、`gwexpy` の `ScalarField` クラスの基本的な使い方を学びます。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10006
+#: ac8c18d9241540f08758e0e9b3f236ed
+msgid "What is ScalarField?"
+msgstr "ScalarField とは？"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10008
+#: 45f972f0df8a47669da37adbb92802c2
+msgid ""
+"`ScalarField` is a specialized class for handling 4-dimensional data "
+"consisting of time and 3D space. It represents the spacetime structure of "
+"physical fields and provides the following features:"
+msgstr ""
+"`ScalarField` は、時間と3次元空間の4次元データを扱うための特殊なクラスです。物理場の時空間構造を表現し、以下の機能を提供します："
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10010
+#: 3aedcef8085d4d7d8af36772c8d2564f
+msgid "**Axis 0 (time axis)**: Time domain ↔ Frequency domain transformations"
+msgstr "**軸0（時間軸）**: 時間ドメイン ↔ 周波数ドメインの変換"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10011
+#: 1fd72fcd7bc04ec694c1894df07f513a
+msgid ""
+"**Axes 1-3 (spatial axes)**: Real space ↔ K-space (wavenumber space) "
+"transformations"
+msgstr "**軸1-3（空間軸）**: 実空間 ↔ K空間（波数空間）の変換"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10012
+#: 673511ce31264400bc06eade3c0553f4
+msgid ""
+"**4D structure preservation**: Always maintains 4 dimensions even when "
+"sliced"
+msgstr "**4D構造の保持**: スライシングしても常に4次元を維持"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10013
+#: 891d9ed048844d54980eb7cc11bb0279
+msgid ""
+"**Batch operations**: Bulk processing of multiple fields using `FieldList` "
+"and `FieldDict`"
+msgstr "**バッチ操作**: `FieldList` と `FieldDict` による複数フィールドの一括処理"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10014
+#: 51c0c8523cd64e3cab99f552e36fb03f
+msgid ""
+"**Signal processing**: PSD calculation, frequency-space mapping, cross-"
+"correlation, coherence maps"
+msgstr "**信号処理**: PSD計算、周波数-空間マッピング、相互相関、コヒーレンスマップ"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10016
+#: eb5d517628c5452e8bb56122e109c8e2
+msgid "Related API and theory"
+msgstr "関連 API と理論"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10018
+#: ../../how-to/containers/field_scalar_intro.ipynb:420008
+#: 4fccbad21d104f958c8ece9330fa6205 9f903b5e26c24511aeae7f30e2edb678
+msgid ""
+"**Related API**: [Fields API](../../reference/api/fields.rst), ScalarField "
+"guide"
+msgstr ""
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:10019
+#: 9e9c8cae869749378a6157c2400aa10e
+msgid ""
+"**Related theory**: [Architecture and Data "
+"Flow](../../explanation/architecture.md), [Validated "
+"Algorithms](../../explanation/validated_algorithms.md)"
+msgstr ""
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:20002
+#: 842cb3a693c347dab09f34b69ebcb8b6
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:20004
+#: 9b463ca3d5ec45fda9bb6c3cc3340eb5
+msgid "Import the necessary libraries."
+msgstr "必要なライブラリをインポートします。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:50002
+#: b901b43134b445aca4865739ea6d471d
+msgid "1. ScalarField Initialization and Metadata"
+msgstr "1. ScalarField の初期化とメタデータ"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:50004
+#: 525750de1ed24517ab53c6392845e5bc
+msgid "Create a `ScalarField` object and check its metadata."
+msgstr "`ScalarField` オブジェクトを作成し、そのメタデータを確認します。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:70002
+#: 8406c5d377784884a0375cf43ccf90fd
+msgid "Checking Metadata"
+msgstr "メタデータの確認"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:70004
+#: aad03c0c9f8c4bb599461a83af3944c3
+msgid "`axis0_domain`: Domain of axis 0 (\"time\" or \"frequency\")"
+msgstr "`axis0_domain`: 軸0のドメイン（\"time\" または \"frequency\"）"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:70005
+#: 935fd4d020b74013aff177a21a440062
+msgid "`space_domains`: Domain of each spatial axis (\"real\" or \"k\")"
+msgstr "`space_domains`: 各空間軸のドメイン（\"real\" または \"k\"）"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:70006
+#: 825dcdfcebd54b4783248ef204742fe9
+msgid "`axis_names`: Name of each axis"
+msgstr "`axis_names`: 各軸の名前"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:70008
+#: de0fb1c00a274429abe66e48ed2c38fc
+msgid "These metadata are automatically updated during FFT transformations."
+msgstr "これらのメタデータは、FFT変換時に自動的に更新されます。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:80002
+#: afc291a056d04470a286709aca5795b6
+msgid "2. Slicing with 4D Structure Preservation"
+msgstr "2. 4D構造を保持するスライシング"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:80004
+#: ff36c0ca3a044b8abde8267059613e64
+msgid ""
+"An important feature of `ScalarField` is that it **always maintains 4 "
+"dimensions even when sliced**. Even when using integer indices, they are "
+"automatically converted to length-1 slices."
+msgstr ""
+"`ScalarField` の重要な特徴は、**スライシングしても常に4次元を維持する**ことです。 "
+"整数インデックスを使っても、自動的に長さ1のスライスに変換されます。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:80007
+#: 3fd496cfda6043019b4df26e2c1edbd6
+msgid ""
+"**Caution:** avoid calling `np.squeeze()` (or any equivalent shape-dropping "
+"step) unless you explicitly want to leave the Field API. Keeping singleton "
+"axes preserves axis metadata and makes later FFT or plotting steps less "
+"error-prone."
+msgstr ""
+"**注意:** `np.squeeze()` のような軸を落とす処理は、Field API "
+"の外に出たい場合に限って使ってください。長さ1の軸を保つことで、軸メタデータが維持され、その後の FFT や可視化でも扱いを誤りにくくなります。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:110002
+#: 417523310aa647488cab3c909f3f23d1
+msgid ""
+"This behavior maintains the consistency of ScalarField objects, and metadata"
+" (axis names and domain information) are never lost."
+msgstr "この挙動により、ScalarFieldオブジェクトの一貫性が保たれ、メタデータ（軸名やドメイン情報）が失われることがありません。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:120002
+#: df33e117fadf4d01968c9c1e35381628
+msgid "3. Time-Frequency Transformation (FFT on Axis 0)"
+msgstr "3. 時間-周波数変換（軸0のFFT）"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:120004
+#: 1ffbea55809746cf9cad03cb1e9d4808
+msgid ""
+"You can transform the time axis to the frequency axis using the `fft_time()`"
+" and `ifft_time()` methods. The same normalization as GWpy's "
+"`TimeSeries.fft()` is adopted."
+msgstr ""
+"`fft_time()` と `ifft_time()` メソッドを使って、時間軸を周波数軸に変換できます。 GWpy の "
+"`TimeSeries.fft()` と同じ正規化を採用しています。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:150002
+#: f5dea2127adc44e1b7854be8c1de161f
+msgid "Inverse FFT (Frequency → Time)"
+msgstr "逆FFT（周波数 → 時間）"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:150004
+#: d4baf44b2c144395b48b7c66c5e50af3
+msgid "You can return to the original time domain with `ifft_time()`."
+msgstr "`ifft_time()` で元の時間ドメインに戻すことができます。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:170002
+#: ec0ac47ed5724053b2c4f3e1e44ee4ea
+msgid "4. Real Space-K Space Transformation (FFT on Spatial Axes)"
+msgstr "4. 実空間-K空間変換（空間軸のFFT）"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:170004
+#: bc16036795e746c1b9518b50ebe245cd
+msgid ""
+"You can transform spatial axes to wavenumber space (K-space) using "
+"`fft_space()` and `ifft_space()`. Signed FFT with angular wavenumber k = 2π "
+"/ λ is used."
+msgstr ""
+"`fft_space()` と `ifft_space()` を使って、空間軸を波数空間（K空間）に変換できます。 角波数 k = 2π / λ "
+"の符号付きFFTを使用します。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:200002
+#: 59911f43b58249dabc8fb896a9fe159c
+msgid "Wavelength Calculation"
+msgstr "波長の計算"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:200004
+#: f766cb81755745b1bf19131b7434176e
+msgid ""
+"In K-space, you can calculate the wavelength using the `wavelength()` "
+"method."
+msgstr "K空間では、`wavelength()` メソッドで波長を計算できます。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:220002
+#: 32b1b83a60ab4af49a7abbd906073083
+msgid "FFT on All Spatial Axes"
+msgstr "全空間軸のFFT"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:220004
+#: 6bfd3ed18f4f4eee8e34dc8a71e51b77
+msgid ""
+"If you omit the `axes` parameter, you can FFT all spatial axes together."
+msgstr "`axes` パラメータを省略すると、全空間軸をまとめてFFTできます。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:240002
+#: c1b371b39ab240d88db755901ac06855
+msgid "5. Batch Operations with FieldList and FieldDict"
+msgstr "5. FieldList と FieldDict によるバッチ操作"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:240004
+#: 9f45bfc8b85f499f90540f6d34db4100
+msgid ""
+"To process multiple `ScalarField` objects together, use `FieldList` or "
+"`FieldDict`."
+msgstr ""
+"複数の `ScalarField` オブジェクトをまとめて処理するには、`FieldList` または `FieldDict` を使用します。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:250002
+#: 1746647c11a6415b88e2f6a156665560
+msgid "FieldList"
+msgstr ""
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:250004
+#: 1e9a384f901a4d92ae4210c65a3086ee
+msgid ""
+"Manage multiple fields in list format and apply FFT operations in bulk."
+msgstr "リスト形式で複数のフィールドを管理し、一括でFFT操作を適用できます。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:280002
+#: a2374affa11b49378ea24383878b41b8
+msgid "FieldDict"
+msgstr ""
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:280004
+#: 2980f652dad14d37b9df9a45f70614f9
+msgid "Manage named fields in dictionary format."
+msgstr "辞書形式で名前付きフィールドを管理します。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:310002
+#: b4f567955595480fa0b6b514e7aeb6d0
+msgid "6. Signal Processing and Analysis"
+msgstr "6. 信号処理と解析"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:310004
+#: cff52860ee9244738ec9e299ab70983c
+msgid ""
+"As important signal processing techniques for physical field analysis, we "
+"demonstrate the following:"
+msgstr "物理場の解析において重要な信号処理手法として、以下を実演します："
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:310005
+#: b35959e2cdac48f1ae7df750650c732b
+msgid ""
+"**PSD calculation**: Power spectral density in time and spatial directions"
+msgstr "**PSD計算**: 時間・空間方向のパワースペクトル密度"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:310006
+#: bc46ce78b1594ee8922e74139ffad7c5
+msgid "**Frequency-space mapping**: Visualize how frequency changes spatially"
+msgstr "**周波数-空間マッピング**: 空間的に周波数がどう変化するか可視化"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:310007
+#: 071e677a55ca463b825f70acda12c3e4
+msgid "**Cross-correlation**: Estimate signal propagation delays"
+msgstr "**相互相関**: 信号の伝搬遅延の推定"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:310008
+#: 1ead9dd700124cbb93f8f505526ca0bb
+msgid "**Coherence map**: Visualize spatial coherence"
+msgstr "**コヒーレンスマップ**: 空間的なコヒーレンスの可視化"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:330002
+#: be482ee9de674194b416cbd346267c61
+msgid "Power Spectral Density (PSD)"
+msgstr "パワースペクトル密度 (PSD)"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:330004
+#: 486061bfb15d40f1b164770f448e6229
+msgid ""
+"Calculate the PSD at a specific location and check frequency components."
+msgstr "特定の位置でのPSDを計算し、周波数成分を確認します。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:350002
+#: e3628be3086845418fe40708095ae460
+msgid "Frequency-Space Mapping (Coming Soon)"
+msgstr "周波数-空間マッピング（近日公開）"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:350004
+#: a458622f2e0e4ac39c6a47cec8d07106
+msgid ""
+"**Note**: The `plot_freq_space()` visualization method is planned for a "
+"future release."
+msgstr "**注意**: `plot_freq_space()` 可視化メソッドは今後のリリースで提供予定です。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:350006
+#: 1389b80c270d4e17968bb0422ee70b5c
+msgid ""
+"For now, you can manually extract and plot frequency-space data using "
+"standard matplotlib:"
+msgstr "現時点では、標準のmatplotlibを使用して周波数-空間データを手動で抽出・プロット可能です："
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:350013
+#: 142e2ba28ae943af81b91023e6e05695
+msgid ""
+"This section will be updated once the visualization API is implemented."
+msgstr "このセクションは、可視化APIが実装され次第更新されます。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:370002
+#: 1b1cae6956774b849f12ffe1d0479717
+msgid "Cross-Correlation and Delay Estimation"
+msgstr "相互相関と遅延推定"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:370004
+#: 5a72d3e810944e7893f25ec9dfbeda82
+msgid ""
+"Calculate cross-correlation between a reference point (source position) and "
+"other locations to visualize signal propagation delays."
+msgstr "基準点（ソース位置）と他の位置との相互相関を計算し、信号の伝搬遅延を可視化します。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:390002
+#: 025661c4e64c4b02b7f30f0ad79e1d6d
+msgid ""
+"The V-shaped pattern shows that the signal propagates from x=1.0m in both "
+"directions."
+msgstr "傾きがV字型になっていることから、信号が x=1.0m から両側に伝搬していることがわかります。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:400002
+#: 89a6bde877fe4530a958ec80b2257c8f
+msgid "Coherence Map"
+msgstr "コヒーレンスマップ"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:400004
+#: 917f022741fa422c855192e3d7bec65e
+msgid "Display spatial coherence at a specific frequency (here 30Hz)."
+msgstr "特定周波数（ここでは30Hz）における空間的なコヒーレンスを表示します。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:420002
+#: bba3a06b5c254dea99c4c439ef378cd0
+msgid "6. Verification of Numerical Invariants"
+msgstr "6. 数値的不変量の検証"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:420004
+#: ab63ca0c7b0b45c2b727645b3cd344bf
+msgid ""
+"To verify the accuracy of FFT transformations, we confirm that round-trip "
+"transformations can reconstruct the original data."
+msgstr "FFT変換の正確性を検証するため、往復変換（round-trip）が元のデータを再構成できることを確認します。"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:420006
+#: a56eb6d34d5642cd924d0c0de7bded3f
+msgid "Next links"
+msgstr "次に見る項目"
+
+#: ../../how-to/containers/field_scalar_intro.ipynb:420009
+#: ea543672e2fe4845936cc09aeb368111
+msgid ""
+"**Related theory**: [Scalar Field Slicing Guide](../scalarfield_slicing.md),"
+" [Validated Algorithms](../../explanation/validated_algorithms.md)"
+msgstr ""

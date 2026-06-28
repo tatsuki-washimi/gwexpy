@@ -1,0 +1,238 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/intro_plotting.ipynb:10002 75356f4afe83499bb8dabf46d0a6b1e3
+msgid "Plotting: Basics"
+msgstr "Plotting: 基本"
+
+#: ../../tutorials/intro_plotting.ipynb:10004 9aae3857633b4c6bb879ef991abaaf49
+msgid ""
+"This notebook introduces the enhanced plotting capabilities of `gwexpy`. We "
+"demonstrate the \"nice\" default settings (automatic figsize adjustment, "
+"logarithmic axes, layout, axis labels) for matrix data structures such as "
+"`TimeSeriesMatrix` and `FrequencySeriesMatrix`, as well as collections like "
+"`SpectrogramList`."
+msgstr ""
+"このノートブックでは、`gwexpy` の強化されたプロット機能を紹介します。 `TimeSeriesMatrix` や "
+"`FrequencySeriesMatrix` などの行列データ構造、および `SpectrogramList` "
+"などのコレクションに対する、「いい感じ」のデフォルト設定（figsize自動調整、対数軸、レイアウト、軸ラベル）についてデモを行います。"
+
+#: ../../tutorials/intro_plotting.ipynb:30002 5068504c6d064ad0adeb5701113dbf39
+msgid "1. TimeSeriesMatrix Plotting"
+msgstr ""
+
+#: ../../tutorials/intro_plotting.ipynb:30004 46eb74eac3fe4fe4b6863050733065d3
+msgid ""
+"`TimeSeriesMatrix` manages time series data with a 3-dimensional structure "
+"(Row, Col, Time). When calling `.plot()`, the following optimizations are "
+"applied:"
+msgstr ""
+"`TimeSeriesMatrix` は (Row, Col, Time) の3次元構造を持つ時系列データを管理します。 `.plot()` "
+"を呼び出すと、以下の最適化が行われます："
+
+#: ../../tutorials/intro_plotting.ipynb:30006 5cbc2ac2b33249ce8a16e95d0cae9508
+msgid ""
+"**Axis Labels**: \"Time [s]\" or \"Time [s] from ...\" is automatically set "
+"by `determine_xlabel`."
+msgstr ""
+"**軸ラベル**: `determine_xlabel` により \"Time [s]\" や \"Time [s] from ...\" "
+"が自動設定されます。"
+
+#: ../../tutorials/intro_plotting.ipynb:30007 9c3e9945f37d4afab86b605e83259336
+msgid ""
+"**Auto-GPS**: For time axes, the `auto-gps` scale is applied by default to "
+"properly handle GPS time (large offsets)."
+msgstr ""
+"**Auto-GPS**: 時間軸の場合、デフォルトで `auto-gps` スケールが適用され、GPS時刻（大きなオフセット）が適切に処理されます。"
+
+#: ../../tutorials/intro_plotting.ipynb:30008 5588ced1b7344a0da84ca7fe2939b36b
+msgid ""
+"**Layout**: The `figsize` is automatically adjusted according to the row and"
+" column structure."
+msgstr "**レイアウト**: 行・列の構造に合わせて `figsize` が自動調整されます。"
+
+#: ../../tutorials/intro_plotting.ipynb:50002 5d2ce9dc14e7499cadf0f5edb1b69619
+msgid "2. FrequencySeriesMatrix Plotting"
+msgstr ""
+
+#: ../../tutorials/intro_plotting.ipynb:50004 30dcb9abda4e4aa9a0debb67fd3b2da3
+msgid ""
+"`FrequencySeriesMatrix` manages frequency data with a 3-dimensional "
+"structure (Row, Col, Frequency). It typically holds results from spectral "
+"analysis. Features of `.plot()`:"
+msgstr ""
+"`FrequencySeriesMatrix` は (Row, Col, Frequency) の3次元構造を持つ周波数データを管理します。 "
+"一般的なスペクトル解析の結果などを保持します。 `.plot()` の特徴："
+
+#: ../../tutorials/intro_plotting.ipynb:50007 4142f53c551846e88cd09c7f46965339
+msgid ""
+"**Logarithmic Axes**: The X-axis (frequency) and Y-axis (amplitude) are "
+"automatically set to logarithmic scale depending on conditions such as data "
+"size."
+msgstr "**対数軸**: データサイズ等の条件に応じて、X軸（周波数）やY軸（振幅）が自動的に対数スケールになります。"
+
+#: ../../tutorials/intro_plotting.ipynb:50008 25c1132276814dca92051691eba545bf
+msgid "**Axis Labels**: \"Frequency [Hz]\" and \"[unit]\" are automatically set."
+msgstr "**軸ラベル**: \"Frequency [Hz]\" や \"[unit]\" が自動設定されます。"
+
+#: ../../tutorials/intro_plotting.ipynb:70002 f88d7d547a284106a0b8e8d0a9d8af98
+msgid "3. FrequencySeriesList Plotting (Reference)"
+msgstr "3. FrequencySeriesList Plotting (参考)"
+
+#: ../../tutorials/intro_plotting.ipynb:70004 c91c9521af7941f88055f1be5df693a7
+msgid ""
+"`FrequencySeriesList` (or Dict) is a simple list without a grid structure. "
+"It can also be plotted in the same way."
+msgstr ""
+"`FrequencySeriesList` (または Dict) は、グリッド構造を持たない単純なリストです。 これも同様にプロット可能です。"
+
+#: ../../tutorials/intro_plotting.ipynb:100002
+#: d5729b5ad5ee48d6b400484d5e3ad1a2
+msgid "4. SpectrogramList Plotting"
+msgstr ""
+
+#: ../../tutorials/intro_plotting.ipynb:100004
+#: 00a3f9d922c549e4a4a00e3fe303cc7a
+msgid ""
+"Plotting of `SpectrogramList` applies a vertical layout with `geometry=(N, "
+"1)` by default, along with a logarithmic colorbar. Since spectrograms also "
+"have a time axis, the `auto-gps` feature works when GPS time is provided."
+msgstr ""
+"`SpectrogramList` のプロットは、デフォルトで `geometry=(N, 1)` "
+"の縦並びレイアウト、対数カラーバーなどが適用されます。 スペクトログラムも時間軸を持つため、GPS時刻を与えると `auto-gps` が機能します。"
+
+#: ../../tutorials/intro_plotting.ipynb:120002
+#: f48b9a3328cf400cb15c19709d704359
+msgid "4. Adaptive Plotting Optimization (Decimation)"
+msgstr ""
+
+#: ../../tutorials/intro_plotting.ipynb:120004
+#: cc03551fd30047bba655edca7a39c7aa
+msgid ""
+"When plotting a `TimeSeries` with a large amount of data, decimation (Min-"
+"Max Decimation) is automatically applied to maintain rendering performance."
+msgstr ""
+"大量のデータを持つ `TimeSeries` をプロットする際、描画パフォーマンスを維持するために自動的に間引き（Min-Max "
+"Decimation）を適用します。"
+
+#: ../../tutorials/intro_plotting.ipynb:120005
+#: 4d6d4e4dde4a4ef68c58fb57380645c7
+msgid ""
+"**Automatic Application**: By default, it is triggered when the number of "
+"samples exceeds 50,000."
+msgstr "**自動適用**: デフォルトではサンプル数が 50,000 を超える場合に発動します。"
+
+#: ../../tutorials/intro_plotting.ipynb:120006
+#: bea85a94ee02429c8251b372f878ad14
+msgid ""
+"**Peak Preservation**: The Min-Max algorithm reduces the number of data "
+"points (default ~10,000 points) while preserving the waveform envelope "
+"(maximum and minimum)."
+msgstr ""
+"**ピーク維持**: Min-Max アルゴリズムにより、波形のエンベロープ（最大・最小）を保持したままデータ点を削減（デフォルト "
+"約10,000点）します。"
+
+#: ../../tutorials/intro_plotting.ipynb:120007
+#: 5c087b8c408440eb94fb7b10f359bf21
+msgid ""
+"**Customization**: Can be controlled with the `decimate_threshold` and "
+"`decimate_points` arguments."
+msgstr "**カスタマイズ**: `decimate_threshold` や `decimate_points` 引数で制御可能です。"
+
+#: ../../tutorials/intro_plotting.ipynb:140002
+#: 3b1fc9ca4fe645be9c0f7f5d2b77a1a5
+msgid "Application to Collections/Matrices and Parameter Specification"
+msgstr "コレクション・行列への適用とパラメータ指定"
+
+#: ../../tutorials/intro_plotting.ipynb:140004
+#: 4c8ff24b97db404d995c58074734d888
+msgid ""
+"It also works transparently with `TimeSeriesList` and `TimeSeriesMatrix`. "
+"You can also force it to apply by lowering the threshold."
+msgstr ""
+"`TimeSeriesList` や `TimeSeriesMatrix` でも透過的に機能します。また、閾値を下げて強制的に適用させることも可能です。"
+
+#: ../../tutorials/intro_plotting.ipynb:160002
+#: d7846c515efd4d369a5bb3a57d7e5b23
+msgid "5. Spectrogram Summary Plotting"
+msgstr ""
+
+#: ../../tutorials/intro_plotting.ipynb:160004
+#: 66f807ff28ed43b1ad717cfee94377f9
+msgid ""
+"`plot_summary` is a feature that vertically arranges multiple `Spectrogram` "
+"objects and plots `FrequencySeries` statistics (10%, 50%, 90% percentiles) "
+"on the right side of each. This is very useful when checking the time "
+"evolution of spectrograms alongside their overall frequency characteristics."
+msgstr ""
+"`plot_summary` は、複数の `Spectrogram` を垂直に並べ、それぞれの右側に `FrequencySeries` "
+"の統計量（10%, 50%, 90% パーセンタイル）をプロットする機能です。 "
+"スペクトログラムの時間変化と、その全体的な周波数特性を並べて確認する際に非常に便利です。"
+
+#: ../../tutorials/intro_plotting.ipynb:160007
+#: af0bd3625065433bbbb5ecbb75b36704
+msgid ""
+"**Automatic Synchronization**: The color axis of the spectrogram and the "
+"vertical axis of the FrequencySeries are automatically synchronized."
+msgstr "**自動同期**: スペクトログラムのカラー軸と FrequencySeries の縦軸が自動的に同期します。"
+
+#: ../../tutorials/intro_plotting.ipynb:160008
+#: edc8df09a49f44458cc0c82a27fb2032
+msgid ""
+"**MMM Plot**: Uses `plot_mmm` to display Min/Median/Max (or any percentiles)"
+" with shaded areas."
+msgstr ""
+"**MMMプロット**: `plot_mmm` を用いて、Min/Median/Max（または任意のパーセンタイル）を塗りつぶし付きで表示します。"
+
+#: ../../tutorials/intro_plotting.ipynb:180002
+#: e4c730ef2374469cad6f414dbc160349
+msgid "6. PairPlot Example"
+msgstr ""
+
+#: ../../tutorials/intro_plotting.ipynb:180004
+#: f0768206d463427f8be075aadbad475e
+msgid "Below is a basic usage example of `gwexpy.plot.PairPlot`."
+msgstr "以下は `gwexpy.plot.PairPlot` の基本的な使用例です。"
+
+#: ../../tutorials/intro_plotting.ipynb:180005
+#: a39bb5fecae24766866bc9d84191fa26
+msgid "Create two `TimeSeries` with different sampling rates"
+msgstr "2 つの `TimeSeries` を同じ長さ・サンプリングレート・時間範囲で作成"
+
+#: ../../tutorials/intro_plotting.ipynb:180006
+#: 2533e038380e4380ad54fb3daeae9ec9
+msgid ""
+"`PairPlot` requires the input series to already have the same length, sample"
+" rate, and time span; align them explicitly with `resample()` and `crop()` "
+"before plotting if needed"
+msgstr "入力が異なる場合は、事前に `resample()` と `crop()` で明示的に揃えてから `PairPlot` に渡します"
+
+#: ../../tutorials/intro_plotting.ipynb:180007
+#: 37864bb9d8884a35a6f468c0df3fe463
+msgid "With `corner=True` (default), only the lower-left triangle is drawn"
+msgstr "`corner=True`（デフォルト）により左下三角だけが描画されます"
+
+#: ../../tutorials/intro_plotting.ipynb:180009
+#: b9113209bf2c4c94ac700d589a99c230
+msgid ""
+"When executed, histograms appear on the diagonal and 2D histograms on the "
+"off-diagonal."
+msgstr "実行すると、対角にヒストグラム、非対角に 2D ヒストグラムが表示されます。"

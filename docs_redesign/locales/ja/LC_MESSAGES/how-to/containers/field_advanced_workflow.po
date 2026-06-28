@@ -1,0 +1,187 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10002
+#: 97ed841b98fd47f9859db6178bcab4b8
+msgid "Field API: Advanced Analysis Workflow"
+msgstr "Field API: 高度解析ワークフロー"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10004
+#: a388ba4da4c54cc0871e37dab3ae77d1
+msgid ""
+"This tutorial demonstrates practical workflows combining ScalarField with "
+"advanced time-frequency analysis methods."
+msgstr "このチュートリアルでは、ScalarField と高度な時間-周波数解析手法を組み合わせた実践的なワークフローを紹介します。"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10006
+#: 46989527617443799e488460cab8b4c4
+msgid "What You'll Learn"
+msgstr "学べること"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10008
+#: 5126afe0a7894c62b227c28a88a48a24
+msgid "Extract time-series from ScalarField for analysis"
+msgstr "ScalarField から時系列データを抽出して解析する"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10009
+#: ee09270ea28b4e2899ff3d5935d662fb
+msgid "Apply HHT, STLT, Wavelet transforms"
+msgstr "HHT、STLT、Wavelet 変換を適用する"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10010
+#: ad5dd08e13574c4893b4f4d33a4a3bf3
+msgid "Reconstruct analyzed data back into Field structure"
+msgstr "解析済みデータを Field 構造に再構成する"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10011
+#: d75f4ed4c3d54f86834f95464e90ef10
+msgid "Batch processing with FieldList"
+msgstr "FieldList を使ったバッチ処理"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10013
+#: 5c2b94e51d534e4d9d55e761f262ed03
+msgid "Use Case: Seismic Array Analysis"
+msgstr "ユースケース：地震アレイ解析"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:10015
+#: 726615afc19e4e789a3ecee008e6e73c
+msgid ""
+"We'll analyze a 3D seismic array where each spatial point records time-"
+"varying ground motion."
+msgstr "各空間点が時間変動する地動を記録する3次元地震アレイを解析します。"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:30002
+#: c72d3aa6652d4ab79ed8c2368ed88ee1
+msgid "Step 1: Create Synthetic Seismic Field"
+msgstr "ステップ 1：合成地震フィールドの作成"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:30004
+#: d56306a94b404a11ba1996e06d2a52f2
+msgid ""
+"Simulate ground motion from a seismic wave propagating through a 3D grid."
+msgstr "3次元グリッドを伝搬する地震波による地動をシミュレートします。"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:50002
+#: fdef6d21b1d0402897248f1d3ba7c57a
+msgid "Step 2: Extract TimeSeries for Analysis"
+msgstr "ステップ 2：解析用の TimeSeries 抽出"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:50004
+#: 81421f2aaf3846e1b13ad1f96ae1d477
+msgid ""
+"Extract time-series from specific spatial locations for detailed analysis."
+msgstr "特定の空間位置から時系列データを抽出し、詳細な解析を行います。"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:70002
+#: df4a86f8c282450d99dd9455eab259b4
+msgid "Step 3: Apply STLT to Detect Damping"
+msgstr "ステップ 3：STLT による減衰検出"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:70004
+#: 4518befef7ea4bceac212f0ef1245102
+msgid ""
+"Use Short-Time Laplace Transform to identify decay rates in the seismic "
+"signal."
+msgstr "Short-Time Laplace Transform を用いて、地震信号の減衰率を特定します。"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:90002
+#: 46597be2b9b940bdbea9341098ea1e62
+msgid "Step 4: Batch Processing with FieldList"
+msgstr "ステップ 4：FieldList によるバッチ処理"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:90004
+#: 5b9177dec1594a9c8aa7d7923c0d5583
+msgid "Process multiple spatial slices in parallel using FieldList."
+msgstr "FieldList を使用して、複数の空間スライスを並列的に処理します。"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:110002
+#: 7437919e8a5847679cf0ace2bf376172
+msgid "Step 5: Reconstruct Field from Processed Data"
+msgstr "ステップ 5：処理済みデータからの Field 再構成"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:110004
+#: 1cc15cf50a384c9e93f1e5f79dd1ed7a
+msgid ""
+"After analysis, reconstruct the Field structure to maintain 4D organization."
+msgstr "解析後、4次元構造を維持するために Field 構造を再構成します。"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130002
+#: 95b99a0fe7844f468df8f9c35fd6c637
+msgid "Summary: Field × Advanced Analysis Best Practices"
+msgstr "まとめ：Field × 高度解析のベストプラクティス"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130004
+#: 210c583d50954427817d87b8e26ccbb2
+msgid "Workflow Pattern"
+msgstr "ワークフローパターン"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130016
+#: 234d8fa324fc4c2fabb21fa9019b715f
+msgid "Key Techniques"
+msgstr "主要テクニック"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130018
+#: 74facf0965394eafaf488924b0b30b2c
+msgid "**Extraction**: `field[:, x, y, z].to_timeseries()` for point analysis"
+msgstr "**抽出**: `field[:, x, y, z].to_timeseries()` でポイント解析"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130019
+#: 0caeac2a6cda4741b535a1d352421dc1
+msgid "**Batch Processing**: Use FieldList for parallel operations"
+msgstr "**バッチ処理**: FieldList で並列操作"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130020
+#: a4a8b56d8b3b4c89bcb6a011bd87979f
+msgid ""
+"**Transform Cycle**: `fft_time()` → process → `ifft_time()` preserves 4D"
+msgstr "**変換サイクル**: `fft_time()` → 処理 → `ifft_time()` で4D構造を保持"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130021
+#: bfa18a6e5b2b4edc96dd1f6e9e719982
+msgid "**Slicing**: Maintain 4D structure even when selecting single indices"
+msgstr "**スライシング**: 単一インデックス選択時でも4D構造を維持"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130023
+#: 8d80dd2bdedc4293bae9c51d3e0b22f8
+msgid "When to Use What"
+msgstr "手法の使い分け"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130025
+#: b4d96923b57e47f9849c90a19d73d4c4
+msgid "**Point analysis**: Extract TimeSeries, apply HHT/STLT/Wavelet"
+msgstr "**ポイント解析**: TimeSeries を抽出し、HHT/STLT/Wavelet を適用"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130026
+#: f6e54be0496c4928b303fa6ec6763159
+msgid "**Spatial patterns**: Use `fft_space()` for k-space analysis"
+msgstr "**空間パターン**: `fft_space()` で K空間解析"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130027
+#: ca3b0a490fcc41e4ab9a0cfd49499dec
+msgid "**Batch operations**: FieldList for multiple realizations"
+msgstr "**バッチ操作**: FieldList で複数の実現値を処理"
+
+#: ../../how-to/containers/field_advanced_workflow.ipynb:130028
+#: 825de6d9aa064140b9d6048057960744
+msgid ""
+"**Full 4D transforms**: `fft_time()` + `fft_space()` for frequency-"
+"wavenumber"
+msgstr "**全4D変換**: `fft_time()` + `fft_space()` で周波数-波数解析"

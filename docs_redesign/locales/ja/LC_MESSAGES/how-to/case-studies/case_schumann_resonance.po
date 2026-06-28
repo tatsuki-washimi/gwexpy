@@ -1,0 +1,519 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10002
+#: 3737a63e67764cda85814293c58acdd3
+msgid "Case Study: Schumann Resonance Analysis"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10004
+#: 9a25330b14904eb2917ac8c659be8c2d
+msgid ""
+"**Schumann resonances** are global electromagnetic resonances excited by "
+"lightning discharges in the Earth–ionosphere cavity.  They appear as narrow "
+"spectral peaks at approximately 7.83, 14.3, 20.8, and 26.4 Hz — squarely in "
+"the sensitive band of second-generation gravitational-wave detectors such as"
+" KAGRA."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10009
+#: cd5a51b3bb144302a4023965c9ac14d7
+msgid ""
+"This notebook demonstrates an end-to-end characterisation workflow using "
+"gwexpy:"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10011
+#: 059059356f4a4e36b68fd912b1ea2875
+msgid ""
+"**Bootstrap PSD** (`bootstrap_spectrogram`) — robust spectral estimation "
+"with asymmetric confidence intervals"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10013
+#: f3ecaaec5882409fb8be8e7822100677
+msgid ""
+"**Lorentzian Q-factor fit** (`fit_series` + `lorentzian_q`) — measure "
+"resonance frequency, quality factor, and amplitude of each mode"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10015
+#: c1746d413ed34cf88bc36902ae5d6248
+msgid ""
+"**Covariance structure** (`BifrequencyMap`) — visualise inter-bin "
+"correlations returned by the bootstrap; used automatically for GLS fitting"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10017
+#: 8554f01283cb457c9bf63169b2649725
+msgid ""
+"**Temporal tracking** — monitor mode amplitude over the observation window"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10019
+#: 90c037b6baf9498d92e4c7421e22bfae
+msgid ""
+"The physical question is whether the observed ELF peaks behave like global "
+"magnetic resonances, with shared narrowband structure and correlated "
+"amplitude changes, rather than local magnetic contamination or fitting "
+"artefacts."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10021
+#: 13f6e0260b944dfc8a43bad2c6ce6787
+msgid "**Prerequisites**:"
+msgstr "**前提条件**:"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10022
+#: 8ab384a73ff044e79fb150a37d4727a4
+msgid "[Spectrogram basics](../../tutorials/intro_spectrogram.ipynb)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10023
+#: 148289e3684142f2977c73e6f044f7bf
+msgid "[Advanced Fitting](../fitting/advanced_fitting.ipynb)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:10024
+#: 104a5ecdd9b543a1a4dbb0204fc75714
+msgid "[Bootstrap PSD & GLS Fitting](case_bootstrap_gls_fitting.ipynb)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:20002
+#: c0d4acd823aa46c386ce3cb5b49c10a2
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:40002
+#: 59abbe8c42de4dc69e917d04696e6724
+msgid "1. Mock Data: Magnetometer with Schumann Resonances"
+msgstr "1. モックデータ: シューマン共鳴を含む磁力計データ"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:40004
+#: da398766af744a1592689d2fcf47ed18
+msgid ""
+"We simulate a single-axis magnetometer (ELF band) measuring Earth's "
+"background electromagnetic field.  The four Schumann resonances are "
+"generated as **narrowband noise with Lorentzian spectral shape** "
+"(characterised by frequency and Q-factor), superimposed on a broadband noise"
+" floor."
+msgstr ""
+"地球の背景電磁場を測定する 1 軸磁力計 (ELF 帯) をシミュレートします。 4 つのシューマン共鳴を "
+"**ローレンツ型スペクトル形状の狭帯域ノイズ** として生成し、 広帯域ノイズフロアに重ね合わせます。"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: e746e459d98e4478829988b22585a87f
+msgid "Mode"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 145cd2c9511a4a3798377aaf74d521b5
+msgid "Frequency"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 2b8607c903904532b4ba0d9431ce89cc
+msgid "Q"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: f948a6ec1f5d4e3ab83cafbb387406d0
+msgid "Peak ASD"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: d70a3627866c459c9849e6e8862172b5
+msgid "SR1"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 91b7651320e547b58d9b4f8d500f8c8e
+msgid "7.83 Hz"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: c91d4d0f0cd740b99e57cd1478be8cfe
+msgid "5.0"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 46b1311b182640c999706f8a28f115ae
+msgid "4.0 nT/√Hz"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 26cb9cfb92ca42b18dc16aa4e84f5f6d
+msgid "SR2"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 79c51e027d884cfd8f92700765d53119
+msgid "14.3 Hz"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: e15ad11fb9b54c7fbc32171032e2d448
+msgid "4.5"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 3ba7875e433d4a6ebf005240eaeca006
+msgid "2.5 nT/√Hz"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 588d2f2701ec4cedb41d2c00c440c471
+msgid "SR3"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: cc2db9aedf834c6eb80983efc10db362
+msgid "20.8 Hz"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 2db22edee464406794b9569676d3a697
+msgid "4.0"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: fc22bfc6e85842ddb42b94b51442c0f9
+msgid "1.5 nT/√Hz"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: b985462c9c4c4878bec4d9808f265197
+msgid "SR4"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: eb83ed8a2e4f4f5a8277966279d9cacc
+msgid "26.4 Hz"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 527bdf7abc83474ab122135f3229bb2c
+msgid "3.5"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: bacaaec385fd42a1a1ff413263ba2f50
+msgid "1.0 nT/√Hz"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:40016
+#: 22fe9ad155434ce6a288bac83ee57fa9
+msgid ""
+"**Common mistake**: treating every low-frequency peak as Schumann structure."
+" Local magnetic lines and anthropogenic combs can live in the same band, so "
+"later sections focus on width, covariance, and temporal coherence rather "
+"than frequency alone."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:70002
+#: 5ce113582df046348bca2803c261dd58
+msgid "2. Bootstrap PSD Estimation"
+msgstr "2. ブートストラップ PSD 推定"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:70004
+#: 9b15102de6814128a8a9e104338d2af5
+msgid ""
+"`bootstrap_spectrogram` resamples the spectrogram's time columns to produce "
+"a **robust PSD estimate** (median or mean) together with asymmetric "
+"confidence intervals.  When `return_map=True` it also returns the "
+"**covariance `BifrequencyMap`** `cov_map(f1, f2)` — a 2-D matrix quantifying"
+" correlations between frequency bins, which is used in the GLS fitting step."
+msgstr ""
+"`bootstrap_spectrogram` はスペクトログラムの時間カラムをリサンプリングし、 **ロバストな PSD 推定値** "
+"(中央値または平均値) と非対称信頼区間を提供します。 `return_map=True` にすると、周波数ビン間の相関を定量化する **共分散 "
+"`BifrequencyMap`** `cov_map(f1, f2)` も返します。これは次のステップの GLS フィットに使用されます。"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:70010
+#: 339dec2893a24b7fa452d7e7647ac96a
+msgid ""
+"**Failure-prone pattern**: using the bootstrap only for error bars and then "
+"fitting with diagonal-only uncertainties. In narrowband magnetic data, "
+"inter-bin covariance is part of the signal model, not optional decoration."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:100002
+#: 8117130444144bc79969839db609bd5d
+msgid "3. Lorentzian Q-Factor Fitting"
+msgstr "3. ローレンツ Q ファクターフィット"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:100004
+#: d443c4816df24e14bbba3a20cd314647
+msgid ""
+"Each Schumann mode is modelled as a **Lorentzian peak** parameterised by "
+"Q-factor:"
+msgstr "各シューマンモードを **Q ファクター型ローレンツ分布** でモデル化します:"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:100006
+#: 4342b953834a4fcf9a7340cf89f65b22
+#, python-brace-format
+msgid ""
+"S(f) = \\frac{A\\,\\gamma^2}{(f - f_0)^2 + \\gamma^2}, \\quad \\gamma = "
+"\\frac{f_0}{2Q}"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:100008
+#: f5f9095c0b254ef18542d92efb0eee77
+msgid ""
+"`fit_series` minimises a **Generalised Least Squares** (GLS) cost by passing"
+" the covariance BifrequencyMap directly via `cov=cov_map`.  This accounts "
+"for correlations between overlapping FFT segments and gives correct "
+"parameter uncertainties."
+msgstr ""
+"`fit_series` に `cov=cov_map` を渡すことで、オーバーラップ FFT セグメント間の 相関を考慮した **一般化最小二乗法 "
+"(GLS)** でフィットを行い、正しいパラメータ誤差が得られます。"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:100013
+#: 3d9cf05210104a00917f9c3fcf9e4cef
+msgid ""
+"**Common mistake**: over-interpreting the fitted Q when the fit window "
+"includes multiple overlapping peaks or a strong local baseline slope. A good"
+" Q estimate requires one dominant mode plus an uncertainty model that "
+"matches the PSD estimator."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:130002
+#: 341ec86abecb4c2699e3563ad0d05d5c
+msgid "4. Covariance Structure via BifrequencyMap"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:130004
+#: 85617cea34ef4e5a8d25c398c5b9adc9
+msgid ""
+"The bootstrap covariance map `cov_map(f1, f2)` returned by "
+"`bootstrap_spectrogram` encodes **how strongly spectral estimates at "
+"different frequencies are correlated**. For magnetometer data with narrow "
+"resonances, we expect:"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:130008
+#: 5c1dd04c982a4d4d92ab54e774af4189
+msgid ""
+"**High covariance along the diagonal** (`f1 ≈ f2`) at each resonance "
+"frequency → adjacent bins share correlated noise from overlapping FFT "
+"windows."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:130010
+#: 1ef55868cb23459db8b0025e8d4d5e2d
+msgid ""
+"**Off-diagonal structure** near resonances → the peak broadens beyond one "
+"bin."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:130012
+#: c38b2e14fbe544529f1f4388eecfc560
+msgid "`BifrequencyMap` methods used here:"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:130013
+#: 8cf5a0ba762b42f0aee13a5ab84c2243
+msgid ""
+"`.diagonal(method='mean')` — returns the variance profile (diagonal of the "
+"matrix)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:130014
+#: 297fc1201b9748f1bf3487884975ae37
+msgid ""
+"`.get_slice(at=f0, axis='f1')` — returns a 1-D covariance slice at fixed f1"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:130016
+#: 96c1d29d3cb94ac894c85b09f1aa4c0f
+msgid ""
+"If the map is nearly structureless away from the diagonal, that is often a "
+"hint that the chosen FFT or averaging setup is too coarse to resolve the "
+"resonance physics you are trying to measure."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:160002
+#: 381edd7b7778495b94af9fbb889d083a
+msgid "5. Temporal Amplitude Tracking"
+msgstr "5. 振幅の時間追跡"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:160004
+#: 88d383fb662741929dcfe1a34161d768
+msgid ""
+"Schumann resonance amplitude varies with global lightning activity (diurnal "
+"cycle, seasonal effects).  We extract the band-averaged power around each "
+"mode from the spectrogram and convert to an **ASD time series** to monitor "
+"evolution."
+msgstr ""
+"シューマン共鳴の振幅は世界的な落雷活動に応じて変動します (日変化・季節変化)。 スペクトログラムから各モード周辺の帯域内平均パワーを抽出し、 "
+"**ASD 時系列**に変換して時間変化を監視します。"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:160008
+#: 12cf09a444de458aa59ffdaa9e649888
+msgid ""
+"**Failure mode to watch for**: band averages that are too wide mix "
+"neighbouring modes and local disturbances; bands that are too narrow become "
+"sensitive to bin-to-bin jitter. Choose a window that tracks one resonance "
+"family across the full observation span."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180002
+#: 401875a95191432ba9299761e70adb3d
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 5c27e02f814346718fe5e18fa2f5eb3e
+msgid "Step"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 224806d5ae3c4cb3824585f446ba4a03
+msgid "Tool"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 2e624ddf78bb4a8d88c3f8b872dd4c73
+msgid "Output"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 05113d53f6d24e90adde71a4cf139bb9
+msgid "Robust PSD"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 1bb0cbbcf75542509138fddc62a63962
+msgid "`bootstrap_spectrogram(return_map=True)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 6b6e78d791ce43999e9f3378b1d449b0
+msgid "Median PSD + 1σ band"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 1750dc41747b4cf5a195f565a7ef1060
+msgid "Uncertainty model"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 7964f4a425a4446080c99f543600b34e
+msgid "`BifrequencyMap` (from bootstrap)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: b67aeb2227f74f798ae3eb14ee9fa650
+msgid "Inter-bin covariance matrix"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 1349f6f32c834d42989d3c5ffb484626
+msgid "Peak characterisation"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 3ca7783537eb4042870c2184ac1894b6
+msgid "`fit_series(lorentzian_q, cov=cov_map)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 87baffd9892f4dbcae5dfe6e7a5cff7e
+msgid "f₀, Q, amplitude per mode"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 9c1fc717b24d443a995bb8f696c0e4f3
+msgid "Temporal monitoring"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: 213cd555d62f40879c562e7504287993
+msgid "`Spectrogram.crop_frequencies()`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb
+#: a7925731bfd4481689d6d9701f9e03bb
+msgid "Amplitude time series"
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180011
+#: 2d132db5054443ffbecc6f26abf567de
+msgid "Key takeaways"
+msgstr "重要なポイント"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180013
+#: c3ae7437a27a46b494bb3417b7a9c2b7
+msgid ""
+"**Bootstrap resampling** gives reliable uncertainty estimates for narrow "
+"spectral peaks where single-segment estimates are noisy."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180015
+#: 1995e0e66a674af2a4a9c547a6102cc2
+msgid ""
+"**BifrequencyMap covariance** is essential for proper GLS fitting: passing "
+"`cov=cov_map` to `fit_series` automatically accounts for inter-bin "
+"correlations."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180017
+#: bf71dbb77f6543d396c70d486c6861ac
+msgid ""
+"The `lorentzian_q` parameterisation directly gives the physically meaningful"
+" **Q-factor** of each Schumann mode."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180019
+#: da5284b02c5a4a7daf775d752df505c7
+msgid ""
+"The full pipeline applies unchanged to real KAGRA PEM magnetometer data."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180020
+#: 85816a0c3a2449d5bb66ab4997604708
+msgid ""
+"Robust identification depends on combining frequency, width, covariance "
+"structure, and time evolution rather than matching canonical Schumann "
+"frequencies alone."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180022
+#: a756e0e2260b44d6972eab2733ea9671
+msgid "Next steps"
+msgstr "次のステップ"
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180024
+#: 2d87c763b3a54ad7ba00aa56792b2a3b
+msgid ""
+"Load real data: `TimeSeries.read('K1:PEM-MAG_EXV_EAST_X_DQ', start, end)`."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180025
+#: 5f4faf681d874e09a16bae5e52b1e57f
+msgid ""
+"Compute multi-channel Schumann coherence with `BifrequencyMap.propagate()` "
+"to estimate the magnetic coupling contribution to DARM noise."
+msgstr ""
+
+#: ../../how-to/case-studies/case_schumann_resonance.ipynb:180027
+#: 8051b76069b34290b5adc8000ba14a70
+msgid "Track daily/seasonal variations by looping over GPS time segments."
+msgstr ""

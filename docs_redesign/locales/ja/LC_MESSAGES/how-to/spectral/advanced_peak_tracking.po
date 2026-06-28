@@ -1,0 +1,188 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:10002
+#: 35421f6592274c97b63f6d7ea727076f
+msgid "Peak Tracking: Time Evolution"
+msgstr "ピーク追跡: 時間変化の解析"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:10004
+#: 760184f29f884f10bf9b57eab3f500e7
+msgid ""
+"This tutorial extends "
+"[advanced_peak_detection.ipynb](advanced_peak_detection.ipynb) by showing "
+"how to **track spectral lines through time** using a spectrogram."
+msgstr ""
+"このチュートリアルは [advanced_peak_detection.ipynb](advanced_peak_detection.ipynb) "
+"の続編です。 スペクトログラムを使って**スペクトル線を時間方向に追跡**する方法を解説します。"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:10007
+#: a0c696d4c27341829185e650702fa73a
+msgid "Real-world examples:"
+msgstr "典型的な応用例："
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:10008
+#: a1ce7d5369674cc6beb52733172777b4
+msgid "Power-line harmonics drifting with mains frequency"
+msgstr "商用電源周波数変動に伴うハム波のドリフト"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:10009
+#: 9bb36370bc864a15890dea2dc8291cab
+msgid "Violin-mode resonances shifting with temperature"
+msgstr "バイオリンモード共振周波数の温度依存ドリフト"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:10010
+#: 37bfa1fbec1d473d9db46c7dfd631300
+msgid "Calibration lines with intentional frequency modulation"
+msgstr "周波数変調されたキャリブレーション注入ライン"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:10012
+#: cb3bf98c3a904bfb8f489842b26493db
+msgid ""
+"**Strategy**: compute a spectrogram → detect peaks per frame → connect with "
+"*nearest-neighbour* algorithm."
+msgstr "**戦略**: スペクトログラムを計算 → 各フレームでピーク検出 → *最近傍法* で時刻間を接続。"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:30002
+#: 300cfbea29f34929ad0b24c7055dfcf9
+msgid "1. Synthetic Data"
+msgstr "1. 合成データの準備"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:30004
+#: ffb1e68f4fee4a3c95d74a311af87fb5
+msgid "Two spectral lines embedded in white Gaussian noise:"
+msgstr "白色ガウスノイズに埋め込まれた 2 本のスペクトル線："
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: a11c0801b87c484eae9e5c46b82dae1c
+msgid "Line"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: 365c3374b8fd42ee9f5dc7496eea717c
+msgid "Behaviour"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: b9832c52770a46bc81b232bf615dfa5e
+msgid "Amplitude"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: 2878cc77bf4d48618ff748548460b91e
+msgid "1"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: 0702a7c2fea64ceab3edeeb91f83aa40
+msgid "58 → 62 Hz linear drift"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: ab25d64f9af04f61aefcbe0b8831ffae
+msgid "0.5"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: 6abe0f58444649d98761d7022d67a828
+msgid "2"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: 3b7e0385f4ba4c55b9607713a43122c2
+msgid "120 Hz ± 0.5 Hz sinusoidal wobble"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb
+#: b6ebcc1749e7489d8335936d6efae261
+msgid "0.3"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:50002
+#: 70dc64683ba24293b0250c0807d59010
+msgid "2. Spectrogram Overview"
+msgstr "2. スペクトログラム概観"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:50004
+#: 894891d07a344a7f9d4768d612419d62
+msgid ""
+"`ts.spectrogram2(fftlength, overlap)` returns a time–frequency power map. "
+"The diagonal streak (Line 1 drift) and slightly wavy horizontal stripe (Line"
+" 2 wobble) are already visible."
+msgstr ""
+"`ts.spectrogram2(fftlength, overlap)` で時間-周波数パワーマップを取得します。 斜めのストリーク（ライン 1 "
+"のドリフト）とわずかに波打つ水平ストライプ （ライン 2 のウォブル）がすでに見えています。"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:70002
+#: 6f405389d3084e77aa18483a5411ef29
+msgid "3. Frame-by-Frame Peak Detection"
+msgstr "3. フレーム毎のピーク検出"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:70004
+#: 514bd6c88e504b73866506688b669fb9
+msgid ""
+"`spec.value[t, :]` is the 1-D PSD array at time index `t`. Pass it to "
+"`scipy.signal.find_peaks` with a height threshold and a minimum-distance "
+"constraint (in frequency bins)."
+msgstr ""
+"`spec.value[t, :]` は時刻インデックス `t` の 1 次元 PSD 配列です。 高さ閾値と最小周波数間隔制約を指定して "
+"`scipy.signal.find_peaks` に渡します。"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:90002
+#: 083508e8996e41ca8f85386e0dda2627
+msgid "4. Single-Line Tracking  (nearest-neighbour)"
+msgstr "4. 単一ライン追跡（最近傍法）"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:90004
+#: 96ff771ca6cd4c1eb44628c12a1f8d4e
+msgid "**Algorithm**"
+msgstr "**アルゴリズム**"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:90018
+#: 6b1e3b5aaa4945b4990424fa3124c241
+msgid ""
+"Updating the seed at each step lets the tracker follow a slowly drifting "
+"line rather than locking to the initial frequency."
+msgstr "各ステップで seed を更新することが重要です。 これによりゆっくりドリフトするラインを追いかけられます。"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:110002
+#: 0b002d12a8fb4c1bbc19ad4fb90d14ea
+msgid "5. Multi-Line Tracking"
+msgstr "5. 複数ライン同時追跡"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:110004
+#: c751d1e883604d3f9808a4cdbf8c43c2
+msgid ""
+"Run one tracker per seed frequency and overlay results on the spectrogram "
+"for visual verification."
+msgstr "seed 周波数ごとにトラッカーを走らせ、結果をスペクトログラムに オーバーレイして視覚的に確認します。"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:130002
+#: a3dc8b8dca1244608e95ff5f1f0a57ac
+msgid "6. Frequency Drift Visualisation"
+msgstr "6. 周波数ドリフトの可視化"
+
+#: ../../how-to/spectral/advanced_peak_tracking.ipynb:130004
+#: e0e3414955c64650b63b9b755ecbfc03
+msgid ""
+"Wrap each track in a `TimeSeries` to plot frequency evolution and compute "
+"basic drift statistics."
+msgstr "各トラック結果を `TimeSeries` でラップして周波数変化をプロットし、 ドリフト統計を計算します。"

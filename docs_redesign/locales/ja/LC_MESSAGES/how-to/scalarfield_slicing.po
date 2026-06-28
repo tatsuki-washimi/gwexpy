@@ -1,0 +1,325 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/scalarfield_slicing.md 9ad8db6d20934e5a808c67ee486f02a9
+msgid ""
+"Learn why ScalarField slicing in GWexpy preserves 4D structure, how metadata"
+" survives indexing, and when squeeze() is safe."
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:7 e3e8f00dd20a4dccb2e2522fb1bfed05
+msgid "Scalar Field Slicing Guide (Why 4D is Preserved)"
+msgstr "スカラーフィールドのスライス操作ガイド (4次元を維持する理由)"
+
+#: ../../how-to/scalarfield_slicing.md:10 76a5a55ae0b9494fbde842ff7deb0283
+msgid ""
+"**Who should read this page?** Refer to this guide if you use `ScalarField` "
+"and have the following questions:"
+msgstr "**このページを読むべき方**: `ScalarField` を使用していて以下の疑問を感じた場合に参照してください。"
+
+#: ../../how-to/scalarfield_slicing.md:12 3595e846817e413eb9cec21505127132
+msgid "Why does `field[0]` remain 4D instead of becoming a 1D array?"
+msgstr "`field[0]` としたのに 1次元配列にならず、4次元のままなのはなぜか？"
+
+#: ../../how-to/scalarfield_slicing.md:13 472c51053c964908bfb4fa4ae780579a
+msgid "Why do I get `Shape Mismatch` errors during indexing operations?"
+msgstr "インデクシング操作時に `Shape Mismatch` エラーが発生するのはなぜか？"
+
+#: ../../how-to/scalarfield_slicing.md:14 093a95383a624db99272ac0b86e80919
+msgid "When is it safe to use `squeeze()`, and when should it be avoided?"
+msgstr "`squeeze()` を使って良いタイミングと、使ってはいけないタイミングはいつか？"
+
+#: ../../how-to/scalarfield_slicing.md:17 670dedca2aa9481aadb671b05f3e83e8
+msgid ""
+"This guide explains why `ScalarField` **always maintains its 4-dimensional "
+"structure** during indexing operations. This differs from the standard "
+"behavior of NumPy or GWpy and is designed as an \"invariant\" to ensure the "
+"integrity of multidimensional physical data."
+msgstr ""
+"`ScalarField` がインデクシング操作時に**4次元構造を常に維持する**挙動について説明します。これは NumPy や GWpy "
+"の標準的な挙動とは異なり、多次元物理データの整合性を保つための「不変条件」として設計されています。"
+
+#: ../../how-to/scalarfield_slicing.md:20 ce54f248930e43b29f6a7695638fe601
+msgid "Why Always Maintain \"4D\"?"
+msgstr "なぜ「4次元」を維持し続けるのか？"
+
+#: ../../how-to/scalarfield_slicing.md:22 27e4f57ed8554cf6ae77420312a4ddc1
+msgid ""
+"A `ScalarField` represents a physical \"field\" with four axes: (time, "
+"frequency, x, y). The reasons for not reducing dimensions (Rank Loss) like "
+"NumPy does are based on the **Four Pillars of Persistence**:"
+msgstr ""
+"`ScalarField` は (時間, 周波数, x, y) の 4 つの軸を持つ物理的な「場」を表現します。NumPy "
+"のようにスライス時に次元を削減（Rank Loss）しない理由は、主に以下の **4つの柱** によります。"
+
+#: ../../how-to/scalarfield_slicing.md:24 83dda5f04f7a4b83a33232742ca9f021
+msgid ""
+"**Domain Protection**: Reducing dimensions causes the loss of metadata "
+"associated with those axes (e.g., `t0`, `f0`, `dx`), making it impossible to"
+" map back to the original physical space."
+msgstr ""
+"**ドメイン情報の保護**: 次元を削ると、その軸に紐付いた `t0`, `f0`, `dx` "
+"などのメタデータが消失し、元の物理空間へ戻れなくなります。"
+
+#: ../../how-to/scalarfield_slicing.md:25 e541dce4793d45aba392ed4babf9dae3
+msgid ""
+"**FFT/Transformation Consistency**: Always being 4D allows immediate "
+"multidimensional operations like `fft()`, `ifft()`, and `spatial_filter()` "
+"on any slice."
+msgstr ""
+"**FFT/変換の整合性**: 常に 4D であることで、どの断面に対しても即座に `fft()`, `ifft()`, "
+"`spatial_filter()` などの多次元演算が可能です。"
+
+#: ../../how-to/scalarfield_slicing.md:26 bca8ad2d369e484a90858195507b90d9
+msgid ""
+"**Stream Processing Safety**: The number of dimensions remains constant when"
+" passing objects between functions, improving program robustness."
+msgstr "**ストリーム処理の安全性**: 関数間で受け渡しをする際、次元数が変動しないためプログラムの堅牢性が向上します。"
+
+#: ../../how-to/scalarfield_slicing.md:27 dfcfe28c8fee4051b7641bff2fa86821
+msgid ""
+"**Broadcast Consistency**: Dimensional alignment (`reshape`) intent becomes "
+"explicit in the code because the object is always 4D."
+msgstr "**ブロードキャストの一貫性**: 常に 4D であるため、計算時の次元合わせ（reshape）の意図がコード上で明確になります。"
+
+#: ../../how-to/scalarfield_slicing.md:30 e3d12fd0ec09455ca8cc040719a9b9b7
+msgid "NumPy vs GWexpy Slicing Behavior"
+msgstr "NumPy vs GWexpy の挙動比較"
+
+#: ../../how-to/scalarfield_slicing.md:32 add9faa1895a40c789f2913ba9ed9a82
+msgid ""
+"![4D Dimension Persistence comparison between NumPy and "
+"GWexpy](../_static/images/scalarfield_slicing_4d_persistence.png)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:32 ccb0db3acf154d65bf3de7e4333aa612
+msgid "4D Dimension Persistence comparison between NumPy and GWexpy"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 b3f3a5ed9f014cc5bf9ae3ddc9fa4ef7
+msgid "Operation Example"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 6720e90a8f714449984f07ab45e14da5
+msgid "Result Shape (NumPy)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 3de58fed3b0843398bdaf3720320ff3c
+msgid "Result Shape (Field)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 ce80e291a45745c7a39bcd007387cfb0
+msgid "Physical Meaning"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 c4be23dd3e1b41d4a07aa7f4b093719f
+msgid "`field[5]`"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 d2b54f821ece4451830b9c814bb1196c
+msgid "3D (Rank Loss)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 288ee4dde64140729fc9a9cb8ccf25ac
+msgid "**4D (1, F, X, Y)**"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 d120ae8999484993841d1204d904b2c0
+msgid "Snapshot at a specific time (metadata preserved)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 248143e5bb0b4c24a5853ecf1dc22d87
+msgid "`field[:, :, 3, 3]`"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 74d771f7ddd84f0d89f5c5c4c97b1d75
+msgid "2D (Rank Loss)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 01d08edca493463fbe026df34570126b
+msgid "**4D (T, F, 1, 1)**"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 64d8e28cad9d414eb0b296e2edc9349e
+msgid "Time-series at a specific spatial point (metadata preserved)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 64700e57ac854b6aae740c25e94a7096
+msgid "`field[10:20]`"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 269e507d5c8e42a1a2b8801b2ab6acce
+msgid "4D (Maintained)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 c7801f2b7c20499d8d4aace0fde66a9f
+msgid "**4D (10, F, X, Y)**"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:9 6939fba0cf914ac298374e41d2423d2d
+msgid "Time interval extraction"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:43 c160235a93644d338d7353477d5ce330
+msgid ""
+"**Critical Warning: Using `.squeeze()`** When you call `squeeze()` to reduce"
+" dimensions, **all metadata (coordinate information) associated with the "
+"removed axes is completely lost.** Since you can no longer reconstruct the "
+"correct physical axes for operations like `field.fft()`, we strongly "
+"recommend using `squeeze()` only at the \"final output stage,\" such as for "
+"plotting or saving to CSV."
+msgstr ""
+"**`.squeeze()` 使用時の重大な警告** `squeeze()` "
+"を呼び出して次元を削減すると、**削減された軸に紐付くメタデータ（座標情報）は完全に失われます。** 一度は削ったデータから `field.fft()`"
+" などを実行しても、正しい物理軸を再構成できなくなるため、`squeeze()` はプロットや CSV "
+"保存などの「最終出力段階」でのみ使用することを強く推奨します。"
+
+#: ../../how-to/scalarfield_slicing.md:51 63223c55173a45d0bd646d1fab5c2bef
+msgid "Practical Operation Examples"
+msgstr "実践的な操作例"
+
+#: ../../how-to/scalarfield_slicing.md:53 a1d0f8a9c7934249bb96e848f804b23d
+msgid "1. Slicing Behavior"
+msgstr "1. スライシングの挙動"
+
+#: ../../how-to/scalarfield_slicing.md:55 34f1a1e9f58e485ca733801d307de339
+msgid "Purpose: show that axis metadata stays attached after indexing"
+msgstr "目的: インデクシング後も軸メタデータが残ることを確認する"
+
+#: ../../how-to/scalarfield_slicing.md:56 177b4a5a39a14926a9b66dcc999f5fb0
+msgid "Input: a `ScalarField` with shape `(100, 50, 10, 10)`"
+msgstr "入力: shape `(100, 50, 10, 10)` の `ScalarField`"
+
+#: ../../how-to/scalarfield_slicing.md:57 de43f6d99f9344e9995b5e5dbc4066e1
+msgid "Output: `snapshot` and `plane` objects that keep singleton axes"
+msgstr "出力: 長さ 1 の軸を保った `snapshot` と `plane`"
+
+#: ../../how-to/scalarfield_slicing.md:75 903230f4337d4d88921d1a97e560afe0
+msgid "2. When to Reduce Dimensions (`squeeze`)"
+msgstr "2. 次元を削減したい場合 (`squeeze`)"
+
+#: ../../how-to/scalarfield_slicing.md:77 8366c74eb5f54844a60e092cf253278a
+msgid ""
+"If you intentionally want to treat the data as 1D or 2D (e.g., for plotting "
+"or input to an external library), explicitly call `.squeeze()`."
+msgstr ""
+"意図的に 1次元や 2次元として扱いたい場合（例：プロットや外部ライブラリへの入力）は、明示的に `.squeeze()` を呼び出します。"
+
+#: ../../how-to/scalarfield_slicing.md:79 e882db85e3fd4b3ab22200668ba1ccd1
+msgid "Purpose: reduce dimensions only at the final output step"
+msgstr "目的: 最終出力段階でだけ次元を落とす"
+
+#: ../../how-to/scalarfield_slicing.md:80 a6c8585740184816a6e48b5f28366f4c
+msgid "Input: a sliced `ScalarField`"
+msgstr "入力: 空間点を切り出した `ScalarField`"
+
+#: ../../how-to/scalarfield_slicing.md:81 1020b9bdccdc4638832f1ea30db6d001
+msgid "Output: a 1D array suitable for plotting or external libraries"
+msgstr "出力: 外部ライブラリに渡しやすい 1 次元配列"
+
+#: ../../how-to/scalarfield_slicing.md:89 c47aff3e41aa4148b072bf376b519fff
+msgid ""
+"Specifying `axis=` makes it explicit which singleton axes you are removing "
+"and reduces the risk of dropping a dimension you still need."
+msgstr "`axis=` を明示すると、「どの 1 要素軸を落とすのか」がコード上で分かりやすくなり、意図しない次元削減を避けやすくなります。"
+
+#: ../../how-to/scalarfield_slicing.md:91 f92da4b8981c4a3ab12738e8e9cb2fa3
+msgid "3. Broadcasting Considerations"
+msgstr "3. ブロードキャスト演算の注意点"
+
+#: ../../how-to/scalarfield_slicing.md:93 ce49d38cdafc44e09685833dcf1d3421
+msgid ""
+"Since `ScalarField` is always 4D, you must match the shape when adding or "
+"subtracting NumPy arrays."
+msgstr "`ScalarField` は常に 4次元であるため、NumPy 配列を加減算する場合は形状を合わせる必要があります。"
+
+#: ../../how-to/scalarfield_slicing.md:95 b88a630f14894dc085164c88fb309f7c
+msgid "Purpose: avoid shape mismatch during broadcasting"
+msgstr "目的: ブロードキャスト時の shape mismatch を避ける"
+
+#: ../../how-to/scalarfield_slicing.md:96 e9a38d74ce804d8893f045fa73da4695
+msgid "Input: a `ScalarField` plus a 1D calibration array"
+msgstr "入力: `ScalarField` と 1 次元補正係数"
+
+#: ../../how-to/scalarfield_slicing.md:97 49a6b90e502346ddbd33f977a0c3b886
+msgid "Output: an explicit `reshape(...)` that documents intent"
+msgstr "出力: 意図が明示された `reshape(...)` 付き演算"
+
+#: ../../how-to/scalarfield_slicing.md:108 d02e42f3c0434c1fbf72cf0af6a5cfc0
+msgid ""
+"The `reshape(3, 1, 1, 1)` form means \"these 3 values belong to the "
+"frequency axis, and the same value is broadcast across time, x, and y.\""
+msgstr ""
+"ここで `reshape(3, 1, 1, 1)` としているのは、「3 要素の補正係数が周波数軸に対応し、時間・x・y "
+"方向には同じ値を使う」ことを明示するためです。"
+
+#: ../../how-to/scalarfield_slicing.md:113 4ea021de3b07476ebc668a69c2082feb
+msgid "FAQ"
+msgstr "よくある質問 (FAQ)"
+
+#: ../../how-to/scalarfield_slicing.md:115 0c5d9ce572ff4ae89db1f9b82d844f96
+msgid "Q: Isn't it inconvenient for 1D calculations if it's always 4D?"
+msgstr "Q: 常に 4次元だと、1次元の計算時に不便ではありませんか？"
+
+#: ../../how-to/scalarfield_slicing.md:116 552896b3a6fd40a68d57c622f272b41a
+msgid ""
+"**A:** `ScalarField` is designed for handling data that has spatial and "
+"temporal extent as a \"field.\" If you are working with simple, single-"
+"channel time-series data, we recommend using the `TimeSeries` class from the"
+" start."
+msgstr ""
+"**A:** `ScalarField` "
+"は空間・時間の広がりを持つデータを「場」として扱うためのクラスです。単一チャンネルの単純な時系列を扱う場合は、最初から `TimeSeries` "
+"クラスを使用することをお勧めします。"
+
+#: ../../how-to/scalarfield_slicing.md:118 d23e3e57696a428eb7ff7f84c8f7964a
+msgid "Q: What happens if I extract a scalar like `ScalarField[0, 0, 0, 0]`?"
+msgstr "Q: `ScalarField[0, 0, 0, 0]` とスカラー抽出した場合は？"
+
+#: ../../how-to/scalarfield_slicing.md:119 dfab893276784f8aae23854f929067a8
+msgid ""
+"**A:** If all indices are scalars, a standard Python scalar or NumPy scalar "
+"is returned."
+msgstr "**A:** インデックスがすべてスカラーの場合は、通常の Python スカラー値または NumPy スカラーが返されます。"
+
+#: ../../how-to/scalarfield_slicing.md:122 a094e5a2cb62471ab405c48106830a0f
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../../how-to/scalarfield_slicing.md:124 45382562df7e4a3da516178e4b821e66
+msgid "[ScalarField introduction tutorial](../tutorials/index.md)"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:125 6b52e259c8a640358de3b7265bb2d6a7
+msgid "[Field module API reference](../reference/api/fields.rst)"
+msgstr "[フィールド API リファレンス](../reference/api/fields.rst)"
+
+#: ../../how-to/scalarfield_slicing.md:126 6d72b4363c894e9dad4f3e008fb32d70
+msgid ""
+"[Numerical stability](../explanation/numerical_stability.md) - Precision "
+"management for 4D operations"
+msgstr ""
+
+#: ../../how-to/scalarfield_slicing.md:127 3951003669194759b9641cc44f20c00e
+msgid ""
+"[Architecture and Data Flow](../explanation/architecture.md) - Where the "
+"Field API fits in the broader design"
+msgstr ""

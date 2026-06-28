@@ -1,0 +1,548 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:1
+#: 75589577f0ce4ec19659be20d2a84e95
+msgid "Migration Guide for GWpy Users"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:3
+#: 4aab16456a75481f851e125b26c34bc8
+msgid ""
+"This page is the **entry point for moving from GWpy to GWexpy**.   It is not"
+" intended to be a full API catalog. The goal is to understand, quickly, what"
+" still works as-is and where the high-value differences start."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:6
+#: edb7d54ccb974bebab9c3f13ed1e9f23
+msgid ""
+"If you want a **difference-oriented index of added APIs**, see [GWpy "
+"Difference API Index](../reference/gwpy_added_api.md).   If you want the "
+"full API surface regardless of GWpy compatibility, use the [API "
+"Reference](../reference/index.md)."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:9
+#: 9018c1961453476f9ec88ad3224164ba
+msgid "What to lock in first"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:11
+#: d8d25fceaa5d4706b4c8a2124456d783
+msgid ""
+"**Single-channel workflows are often still familiar.** For `TimeSeries` / "
+"`FrequencySeries` / `Spectrogram`, many basic read, plot, and spectral-"
+"analysis paths can be tried first by swapping imports to `gwexpy`."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:13
+#: 8374d83539024021b75008548eca9797
+msgid ""
+"**The biggest shift is multi-channel processing.** Instead of manually "
+"looping over `TimeSeriesDict`, you can convert it with `to_matrix()` and "
+"treat the channel set as a batch-analysis container."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:15
+#: 7c84980ad45846aa9bbd3c473359f066
+msgid ""
+"**The Field API is a GWexpy-only extension.** `ScalarField` and `FieldList` "
+"/ `FieldDict` cover spatially indexed data and batch operations across "
+"multiple fields, which GWpy does not provide as a standard layer."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:17
+#: 94939d5447b64ddba44da3bd53908abc
+msgid ""
+"**Some external-library calls move onto the data object itself.** "
+"Representative examples are `.find_peaks()`, `.fit()`, `.hht()`, and "
+"`.arima()`."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:19
+#: 71d17e5592b14e29b29aeca3324a0432
+msgid ""
+"**Direct I/O and interop have their own guides.** Treat [File I/O Supported "
+"Formats Guide](../how-to/io_formats.md) as the source of truth for "
+"`read(..., format=...)` / `write(..., format=...)`, and [Interop / "
+"Conversion Guide](../how-to/interop.md) as the source of truth for `to_*()` "
+"/ `from_*()` conversions."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:22
+#: 3244c4b9ef574aa49a503f210acb1f02
+msgid "Where migration usually pays off first"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 7d1efdfb42c2426cbe18a993835abd21
+msgid "Goal"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 2d0e17e565dd4fc599809f3db8bad870
+msgid "First difference to check"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 10f38d02d3034ca497cc51cf53b258c6
+msgid "Where to go next"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 9028caa36d2e49d48ff53742b7669688
+msgid "Analyse many channels together"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 03df2defdf35454f972c59faf26f4273
+msgid "`TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix`"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md
+#: ../../explanation/gwexpy_for_gwpy_users.md:71
+#: a05e13876d58415b9ffb6d8f1ea4c174 d837527567474756a3ce922e7358758b
+msgid "[Matrix Tutorial](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 79e6312dbc664d9a9c05bcbbb7d2601a
+msgid "Work with spatially indexed data or multiple fields together"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 8ccabd7b2d5f4bd0bf4cbca4bfb45680
+msgid "`ScalarField`, `FieldList`, `FieldDict`"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 308b870902bd49a49d495ba8e68e0f3e
+msgid ""
+"[Field API Intro](../tutorials/index.md), [GWpy Difference API "
+"Index](../reference/gwpy_added_api.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 4a151f19f76b434db7b66068e26f6f22
+msgid "Reduce direct SciPy / Statsmodels plumbing"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 81a300b7772c4529b40fa222bcb56816
+msgid "added object-level APIs"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md
+#: ../../explanation/gwexpy_for_gwpy_users.md:72
+#: ../../explanation/gwexpy_for_gwpy_users.md:109
+#: ../../explanation/gwexpy_for_gwpy_users.md:194
+#: ../../explanation/gwexpy_for_gwpy_users.md:238
+#: 5789ba15517b46eb9a6e0a86414af8de 5c27bfd7d2284882a8ac8172a1bb6738
+#: 704c3127bb0e47968358ecc4ee05e051 c630907051244511ae68edd70c49b66c
+#: df3d2eac949d4a3bbff288083f704d0e e4fac8b0624848c2a1202801ce0b79ab
+msgid "[GWpy Difference API Index](../reference/gwpy_added_api.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 780303e18fda43f49b6e6fc434715453
+msgid "Move existing single-channel code quickly"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md c219f56ffd654a7dbcafec93831feac8
+msgid "swap imports first, then add difference APIs only where needed"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md
+#: ../../explanation/gwexpy_for_gwpy_users.md:147
+#: 87dab211b2934fb9829535c229cc845f 92385ebcb25743ab877fda77228a9d98
+msgid "[Quickstart](../tutorials/quickstart.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 0341ce95c3fa4f28a043974c81d6ad2d
+msgid "Understand result-sharing behavior"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md 5484bedab5e44c198a07365f4423efac
+msgid "Transparent Pickle compatibility"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:32
+#: cebabd55599b4360b8d717a3906fd439
+msgid "Recipe 1: Move manual `TimeSeriesDict` loops toward `TimeSeriesMatrix`"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:34
+#: 6e783cd6ce8e408683526e936af6aec0
+msgid ""
+"In GWpy-style code, pairwise comparisons or per-channel spectral logic often"
+" become explicit loops.   In GWexpy, `to_matrix()` is the main entry point "
+"for treating the whole channel set as a batch-analysis object."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:37
+#: ../../explanation/gwexpy_for_gwpy_users.md:81
+#: ../../explanation/gwexpy_for_gwpy_users.md:120
+#: ../../explanation/gwexpy_for_gwpy_users.md:156
+#: ../../explanation/gwexpy_for_gwpy_users.md:204
+#: ../../explanation/gwexpy_for_gwpy_users.md:246
+#: 000d04e9017d416f896e698061c7425d 2ef7cd33618d48b7b8e3daaacfa2eb46
+#: 35e37d7b36d34902be8672199a93d6a9 6fb5d410d93d418f9964c9ae415160aa
+#: 7adccf10768b4b978d3ebd974b9f4e18 c77208a3744d43fd85ce1849a97d584f
+msgid "GWpy style"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:52
+#: ../../explanation/gwexpy_for_gwpy_users.md:92
+#: ../../explanation/gwexpy_for_gwpy_users.md:130
+#: ../../explanation/gwexpy_for_gwpy_users.md:169
+#: ../../explanation/gwexpy_for_gwpy_users.md:218
+#: ../../explanation/gwexpy_for_gwpy_users.md:263
+#: 0b60ab66c9904aa1b80544aea909bc55 35dca2bd02a849bd9248072ace96d052
+#: 7c261e469b694543a2a09d8d40cc27e2 8ec1442754a14890bf8f5b374c5c5d1f
+#: ad528cfd95bb4c16ba86b77b71905066 bfcf9f518d7d4aecbe06525e98ee16e4
+msgid "GWexpy style"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:64
+#: ../../explanation/gwexpy_for_gwpy_users.md:186
+#: ../../explanation/gwexpy_for_gwpy_users.md:278
+#: 315f4e4fd4ea4a2e8e7b3e1e92f9fe67 5c7e1ed1c5fa4f67b1843816241fca27
+#: b8418801a4254d22b062f1309258b888
+msgid "This difference matters when:"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:66
+#: 39b3e47c4d144573af3dbd4b5b86d734
+msgid "you want fewer manual loops and more object-level batch operations"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:67
+#: 7001d74042a14ea8b6e00ec71f17f48a
+msgid ""
+"you want multi-channel analysis to stay in `TimeSeriesMatrix` / "
+"`FrequencySeriesMatrix`"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:69
+#: ../../explanation/gwexpy_for_gwpy_users.md:107
+#: ../../explanation/gwexpy_for_gwpy_users.md:145
+#: ../../explanation/gwexpy_for_gwpy_users.md:191
+#: ../../explanation/gwexpy_for_gwpy_users.md:236
+#: ../../explanation/gwexpy_for_gwpy_users.md:285
+#: 77a8d99158a84d498f3efcfd2b918ff9 8617d345cfde469a97862d9ea38fa8c4
+#: 9e1491b8bd52410d902039dd53d02562 a689d67533bb4eaf9887818d0440683d
+#: b9e10b84e3894a40a0eb43dd1658dbf2 cd558be72eb14f7c920b5ab7c9e1d763
+msgid "Related pages:"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:73
+#: c6f13e4b69c849c396084bc363fc4051
+msgid "[TimeSeriesDict Reference](../reference/api/timeseries.rst)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:74
+#: cf9a08785ea44e519e560a5bbf919c62
+msgid "[TimeSeriesMatrix Reference](../reference/api/timeseries.rst)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:76
+#: c6856e40ca33427fac0c1c8187a0c43e
+msgid "Recipe 2: Pull external function calls back onto the data object"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:78
+#: f6ad61d96c524309998bdf7f02853cb4
+msgid ""
+"In GWpy-based code, the natural pattern is often “extract arrays, then call "
+"SciPy or Statsmodels directly.”   In GWexpy, part of that workflow is "
+"exposed as methods on the data object itself."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:101
+#: c805b065ab464c07a0efe55e0d421319
+msgid "The same direction applies to other added APIs in `gwexpy`, including:"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:103
+#: 1accd406502b4afbbce0c972487ccefe
+msgid "`.fit()` for object-level fitting workflows"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:104
+#: 0153c31856d34404ad89b4e994efef96
+msgid "`.hht()` for Hilbert-Huang Transform analysis"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:105
+#: 473ede8749774429a29e410c17476f01
+msgid "`.arima()` for time-series modelling and forecasting"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:110
+#: ../../explanation/gwexpy_for_gwpy_users.md:290
+#: 3fa27ea650804855b90716f2d5a3e6ce 780d24ae36684f6aad780211ed28a15e
+msgid "[Frequency Series Tutorial](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:111
+#: e194a679bf9d48c187405b71fef8c68c
+msgid "[Fitting](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:112
+#: c3c3aac298884284a0c07531cf8c64bf
+msgid "[HHT](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:113
+#: 6b160ab834a34fd5b38bc116b857d568
+msgid "[ARIMA](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:115
+#: f88cf57cd00c43edbb40d900a8f42275
+msgid "Recipe 3: Single-channel code often does not need a full rewrite"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:117
+#: 1ac4a4fd23984a399f7ad664e721ab91
+msgid ""
+"If you already know GWpy’s base classes, you do not need to redesign "
+"everything up front.   In many cases, the practical migration path is: "
+"change imports first, then adopt GWexpy-specific APIs only where they help."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:140
+#: dbfc4ad42cac496a8952a9d709df304c
+msgid "Practical reading of this difference:"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:142
+#: 18877354a8ab4990995df703175b3d2e
+msgid "start by carrying over existing single-channel workflows"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:143
+#: 58b76ced678747ddb51f5083dc49c2da
+msgid ""
+"add GWexpy-only APIs later, where multi-channel or higher-level analysis "
+"benefits matter"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:148
+#: fdde32d7b9c84bdc9f63076ccdce8c3d
+msgid "[Tutorial Index](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:149
+#: 2b52e5c9e2134a278b50be0be91b9997
+msgid "[API Reference](../reference/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:151
+#: 29491880f056471b87aa9e616da1265e
+msgid "Recipe 4: Group `ScalarField` objects with `FieldList` / `FieldDict`"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:153
+#: c00263bfba524a76aa93a0271cce415b
+msgid ""
+"Typical GWpy migration paths focus on series-like objects, and GWpy does not"
+" provide a standard container layer for field-like data with shared spatial "
+"metadata. In GWexpy, you can keep a single field in `ScalarField` and manage"
+" multiple related fields through `FieldList` / `FieldDict`."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:188
+#: c7b48512a20f458fb348df55389ae2c7
+msgid ""
+"you want multiple fields to share unit/axis/domain checks instead of "
+"managing metadata by hand"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:189
+#: 19b2ff3bb61148ed9297753d3af66a0e
+msgid ""
+"you want spatial transforms or selections to stay at the collection level "
+"rather than writing field-by-field loops"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:193
+#: fdc209ffc02b4bf786f60da2726a6845
+msgid "[Field API Intro](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:195
+#: 8448845292674efa8a689a7832593d30
+msgid "[ScalarField Reference](../reference/api/fields.rst)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:196
+#: bd7e6ffa42c846809b91b015adcd851e
+msgid "[FieldList Reference](../reference/api/fields.rst)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:197
+#: 33b0d4398fe64fbe871194218da021cc
+msgid "[FieldDict Reference](../reference/api/fields.rst)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:199
+#: 596de40978c84db4bf104a4f090cde76
+msgid "Recipe 5: Read Pickle sharing in terms of compatibility"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:201
+#: 61b6ad9d7e8c4437acefe021a13b92be
+msgid ""
+"GWexpy is designed with result sharing in mind, including cases where the "
+"receiver does not have GWexpy installed.   The point here is not generic "
+"Pickle safety advice, but what a GWpy user can expect operationally."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:233
+#: 47b3332ea36542b49d2eb1e294f00eae
+msgid "Only load Pickle data from trusted sources."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:239
+#: 6799f86b4b144873bb49e78cec405609
+msgid "[Installation Guide](../tutorials/installation.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:241
+#: 646f4b86f0d54142a7ce779c676851ea
+msgid "Recipe 6: Bridge to python-control"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:243
+#: 97947c5f60cc4bfa8e7a87712ea421ae
+msgid ""
+"In GWpy-based code, using `control.bode()` or similar functions requires "
+"manually extracting a `FrequencySeries` value as a numpy array and passing "
+"it to `control.frd()`.   In GWexpy, `to_control_frd()` handles the "
+"conversion in one call, removing that boilerplate."
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:280
+#: c4e032c674bd495d82b93a20d5cc26e7
+msgid ""
+"you want to treat an ASD / PSD spectrum directly as a control-system FRD "
+"model"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:281
+#: 93f4a05a3da74952926c728627aa9dae
+msgid ""
+"you want to skip manual numpy extraction before passing data to "
+"`control.bode()` / `control.nichols()` / `control.nyquist()`"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:282
+#: edbf545c23e7428f90734fb603d73f23
+msgid ""
+"you want to restore a processed FRD back to a `FrequencySeries` and feed it "
+"into an existing plot or statistics pipeline"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:283
+#: 543a53be8b0148e28f9f9695277e56e3
+msgid ""
+"you want to convert each channel in a multi-channel spectrum with "
+"`FrequencySeriesDict.to_control_frd()`"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:287
+#: 3b787296c92d47f0b88b5180423636a8
+msgid "[Interop / Conversion Guide](../how-to/interop.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:288
+#: 07fce72b81db4f8e891b5dc2a119e46d
+msgid ""
+"[python-control API Reference](../reference/api/gwexpy.interop.control_.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:289
+#: 8afbdac36fac42a08feb1d1eb13f4983
+msgid "[Active Damping Tutorial](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:292
+#: 36022abd92a44d9fb0878d8f4aefd354
+msgid "Treat direct I/O and external-library conversion as separate guides"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:294
+#: d5d632005d534ab68897c03410ce8dc0
+msgid ""
+"This page intentionally does not duplicate the I/O-format list or the "
+"external-library conversion list.   Use the dedicated guides below as the "
+"source of truth:"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:297
+#: 42f0e86737c946f7b035a2e7c290c7d4
+msgid ""
+"Direct I/O: [File I/O Supported Formats Guide](../how-to/io_formats.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:298
+#: 3c4af4c8d61e41308e2363e761c96cec
+msgid ""
+"External-library conversion: [Interop / Conversion Guide](../how-"
+"to/interop.md)"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:300
+#: fe72ed10a32749f7993ce63dadc3c3bc
+msgid "Next Steps"
+msgstr "次のステップ"
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:302
+#: cf20124dc3b945b182ea9e3f52e93c97
+msgid ""
+"[GWpy Difference API Index](../reference/gwpy_added_api.md) - look up added "
+"APIs from a difference-oriented view"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:303
+#: 4a0861affb2841fca06c5542c96933c1
+msgid ""
+"[Field API Intro](../tutorials/index.md) - see how `ScalarField`, "
+"`FieldList`, and `FieldDict` fit together"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:304
+#: 1b228074cdcb4502b7043745de67e1af
+msgid ""
+"[Tutorial Index](../tutorials/index.md) - move from migration recipes into "
+"worked examples"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:305
+#: 4063a4b55d8c461284eb4627c13c5990
+msgid ""
+"[File I/O Supported Formats Guide](../how-to/io_formats.md) - check "
+"supported read/write formats"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:306
+#: b31b1288e9cf4c0590d84e23f2193973
+msgid ""
+"[Interop / Conversion Guide](../how-to/interop.md) - check bridges to "
+"external libraries"
+msgstr ""
+
+#: ../../explanation/gwexpy_for_gwpy_users.md:307
+#: 86186c22bfa34b98b65d124f258e159e
+msgid "[API Reference](../reference/index.md) - inspect the full API surface"
+msgstr ""

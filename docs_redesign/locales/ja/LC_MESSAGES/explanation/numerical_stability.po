@@ -1,0 +1,386 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../explanation/numerical_stability.md a07030b94eeb45389114455f5574ed00
+msgid ""
+"Understand GWexpy numerical stability behavior, including whitening eps "
+"handling, safe log plotting, NaN and Inf failure modes, and when users "
+"should tune parameters."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:7 27a762670fed441cbfb0a2d47885cedc
+msgid "Numerical Stability and Precision"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:10
+#: b64f471c2697462e97d122957019c68f
+msgid ""
+"**Who should read this page?** Standard analysis in `gwexpy` works out-of-"
+"the-box with high stability. Refer to this detailed guide only if:"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:12
+#: f35fc25d44e947b3913d8037bcf24406
+msgid ""
+"You see \"holes\" or \"unusual colors\" in your plots caused by `NaN` or "
+"`Inf`."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:13
+#: d866497cc0ae4dbe837ffee25e3f24e1
+#, python-brace-format
+msgid ""
+"You are working with extremely small signals (below $10^{-23}$) or huge "
+"signals (above 1) simultaneously."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:14
+#: 0ac9d9dcfbf24981aa69a7847b459589
+msgid ""
+"You want to deeply understand the numerical behavior of algorithms and tune "
+"parameters like `eps` or `tol`."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:17
+#: 0ca0feb90f2d4484bb0bdad73ca9a843
+msgid ""
+"`gwexpy` is designed to handle data with an extremely wide dynamic range "
+"without numerical breakdown."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:20
+#: aa9ec29c3a1040ceae0cfe73a48ac32e
+msgid "TL;DR"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:22
+#: 3dc0418b5174423e8a12a6217d79667c
+msgid "For normal analysis, start by trusting the default `gwexpy` settings."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:23
+#: 5516fda47c25406fbd6fb36e18cdb3a3
+msgid ""
+"Do not add manual offsets such as `+ 1e-20` before plotting unless you have "
+"a concrete reason."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:24
+#: f79a9772307849faade0c5d0f968acaa
+msgid ""
+"Tune parameters only when you actually observe `NaN` / `Inf`, work with "
+"extreme amplitudes, or need algorithm-level validation."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:27
+#: 2e34e93d589c4cdd9886cb5d30e8b19c
+msgid "Impact of Stabilization (Before & After)"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:29
+#: 27342a4fd1bb41dd9454c954ef2954f8
+msgid ""
+"A comparison between standard methods (simple `log10` or fixed `eps`) and "
+"`gwexpy`'s robust numerical stabilization algorithms."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:31
+#: 81e17a01c9d64d2d8ddaed86d1fac392
+msgid ""
+"![Numerical stabilization comparison: Noisy visualization with NaN/Inf "
+"artifacts (Left) vs. Clean gravitational-wave signal "
+"(Right)](../_static/images/numerical_stability_comparison.png)"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:31
+#: 669a5022f9184c88b887e5f5714012f2
+msgid ""
+"Numerical stabilization comparison: Noisy visualization with NaN/Inf "
+"artifacts (Left) vs. Clean gravitational-wave signal (Right)"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 25b45a51d8544b098dceabbaeda17a9f
+msgid "Item"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 2e6b7b83569c45d3a971376c9186cb20
+msgid "Standard path"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 1de6613c493a416eb784684544d61957
+msgid "GWexpy path"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 87ec0227dd7847e7a183607b7840c7fe
+msgid "**Zero Values**"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 21d8a0042b0549dcb19c7c14842809a6
+msgid "`log10(0)` produces `-inf`, causing blank holes in plots"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 05d300d187ae45a79bd724dce5ab78e4
+msgid ""
+"**Safe Log** automatically sets an optimal floor based on the max value"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 0757db92d0764359bb928fc0501c4d1b
+msgid "**Micro-signals**"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 95db2f0a7faf4121943c407b81e15e62
+msgid "Rounded to zero by fixed `eps=1e-12`, causing signal loss"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 f370732a0f1b4c8abc6d692964d82243
+msgid "**Adaptive Whitening** (`eps=\"auto\"`) maintains signal sensitivity"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 6ae9c82d475c493082c205dceac533ab
+msgid "**Failures**"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 d3a627998ceb4c3fba37a0e31a9c7218
+msgid "`NaN` propagates, making the entire dataset uncomputable"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 bb5e0e9274224aa2ab06148035ba23ee
+msgid "Pre/Post-computation validation protects data integrity"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:42
+#: 6d2abef2b732431ea81812a784bbea9a
+msgid "Core Stabilization Methods and APIs"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 3f0b2ed9497848d8a5ece05bbfe01f61
+msgid "Method"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 7ab08015a3984ec6a4d89b6957dcf3c6
+msgid "Target API"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 d8b6a1791bb14aa8a5801eb13ed2ca6d
+msgid "Issues Resolved"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 96a1a8e041104f9481436281a03462bd
+msgid "Configuration Hint"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 b88edc6b43584f9dbf96b96019dd53c5
+msgid "**Adaptive Whitening**"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 bf5bb24fa1ac45ad8950702b4faff8db
+msgid "`.whiten()`"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 27767873eecf418d89e808cfa98de420
+msgid "Zero-division / Signal loss"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 e5cff828a9044f9a905f76e51b590f32
+msgid "`eps=\"auto\"` is recommended"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 24a5ba2acea8470fb4087f2d888b259a
+msgid "**Safe Log**"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 00d541eb707143598e4a77c97081e6ba
+msgid "`.plot()`, `.spectrogram()`"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 c3c421b5eba14d4aaa90383274fc8035
+msgid "`-inf` holes in plots"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 1026260cb6194f9db2dffe6fe9e1d5c9
+msgid "Adjustable via `dynamic_range`"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 55efd9799fcb45aea7dc16d993695d64
+msgid "**Internal Standardization**"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 5ecf9107896e406b834efe1ba67563df
+msgid "`ica_fit()`"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 6658549fc1404720988de7bf18a0704c
+msgid "Non-convergence"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 67fa76f630884f159d88a17f66017b92
+msgid "Works regardless of input amplitude"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 d0837897d1e5446cbc0bdbeb006ad73e
+msgid "**Relative Tolerance**"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 45dae00ff5394150aed601e023cbec72
+msgid "Various"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 5665010950b741588f484d940ef4ab75
+msgid "Early termination"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:9 172430b052f24613997a829a0d2d2697
+msgid "Auto-scales `tol` based on variance"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:54
+#: 578fd3f2f9e746478b75fe997de43589
+msgid "Detailed Explanations and Examples"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:56
+#: 9203be3a9f144014ad54d0a055337b3d
+msgid "1. Adaptive Whitening"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:58
+#: e07c5e0b1efb4ce8990f97ccf018ec87
+msgid ""
+"**Goal:** Avoid signal loss caused by a fixed `eps`. **Input:** A "
+"`TimeSeries` containing very small amplitudes. **Output:** A whitened series"
+" with automatic scaling."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:62
+#: 6e001a95b9824addbd72e1d2d2a5b1e2
+msgid ""
+"Standard whitening often uses a fixed normalization parameter (`eps`) to "
+"prevent division by zero. If this value is too large, micro-signals are "
+"lost."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:64
+#: f3739cdfe04644ba8da6140c81a3289c
+msgid "❌ Bad Example: Fixed eps causing signal loss"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:70
+#: 509b0426f4264759a5f42f17c8979f82
+msgid "✅ Good Example: GWexpy's `eps=\"auto\"`"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:71
+#: 3501e0edac5f4345a96ca1ae897ed0c1
+msgid ""
+"`gwexpy` dynamically scales `eps` relative to the data range and uses a "
+"`SAFE_FLOOR` (1e-50) for singularities."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:81
+#: baab5dee76e04e2d865a800e6fe059c2
+msgid "2. Safe Logarithmic Scaling (Safe Log)"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:83
+#: b18e5cf92eca4425b1be53f4fb95dd71
+msgid ""
+"**Goal:** Prevent `-inf` values and broken plots when zeros are present. "
+"**Input:** ASD/PSD-like data with zeros or very quiet regions. **Output:** A"
+" stable visualization with a dynamic floor."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:87
+#: 2ddd3e48175c48c88f669d5f80137c38
+msgid ""
+"Prevents `-inf` values when visualizing spectrograms or PSDs containing "
+"zeros or quiet regions."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:89
+#: 8f7f7cb84c4c4ab4bda0127bfb9dbc10
+msgid "❌ Bad Example: Numerical errors via manual conversion"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:94
+#: 7240c76021764fc8afab35d2e2155313
+msgid "✅ Good Example: Automatic dynamic floor"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:95
+#: a704eedf4af84ab49efb295933761f5d
+msgid ""
+"`gwexpy` calculates a safe floor based on the maximum value in the data."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:105
+#: 4a2945c342104600b4dabd42944ab720
+msgid "Recommendations for Users"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:107
+#: 698b24cc3f0543e8b1dfff51316b123d
+msgid ""
+"**Avoid Manual Offsets**: Do not add arbitrary small values like `data + "
+"1e-20` before plotting. `gwexpy` handles this internally."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:108
+#: d60b87ea15cf4100b7b924f26ca1b8af
+msgid ""
+"**Trust the Defaults**: Default parameters for `whiten()` and `ica_fit()` "
+"are tuned for numerical safety."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:109
+#: 2bdde0ea00cd429386235df3ac5f2bfe
+msgid ""
+"**Check Warnings**: `gwexpy` issues informative warnings with suggested "
+"fixes for truly unstable operations."
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:111
+#: 1708ca51207f4e80a1ae4be3450cc725
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../../explanation/numerical_stability.md:113
+#: dd3b26ebb2d3486c88ef34c5598f2f88
+msgid "[Signal Processing API Reference](../reference/api/signal.rst)"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:114
+#: d701ba9c3b9b411dbe0dc1f4bbd46271
+msgid "[Validated Algorithms](validated_algorithms.md)"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
+
+#: ../../explanation/numerical_stability.md:115
+#: 024a2adc279b41aabc268846399720c3
+msgid ""
+"[Glossary](../reference/index.md) — Definitions for `NaN/Inf propagation` "
+"and more"
+msgstr ""
+
+#: ../../explanation/numerical_stability.md:116
+#: b2f2dc37a9e44e0aa11ac882ec32a2dc
+msgid ""
+"[Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared "
+"FFT and numerical assumptions across the docs"
+msgstr ""

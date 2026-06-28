@@ -36,6 +36,17 @@ myst_heading_anchors = 3
 # Do not execute notebooks in this prototype.
 nb_execution_mode = "off"
 
+# -- Internationalization (gettext single-source) ----------------------------
+# English is the single source; Japanese is delivered via gettext catalogs in
+# ``locales/ja/LC_MESSAGES/*.po`` instead of a parallel source tree.
+#   sphinx-build -b gettext .  _build/gettext     # extract .pot
+#   sphinx-intl update -p _build/gettext -l ja    # create/update .po
+#   sphinx-build -b html -D language=ja . _build/html/ja
+language = "en"
+locale_dirs = ["locales/"]
+gettext_compact = False  # one .pot per source doc (enables selective seeding)
+gettext_uuid = True
+
 # -- autodoc / autosummary ---------------------------------------------------
 # Document the real, installed ``gwexpy`` package.
 autosummary_generate = True
@@ -102,6 +113,8 @@ html_css_files = ["custom.css"]
 html_logo = "_static/branding/logo.svg"
 html_favicon = "_static/images/favicon.svg"
 html_title = "GWexpy"
+# Base URL lets the language switcher compute the counterpart-language page URL.
+html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/"
 
 html_theme_options = {
     # Top navbar layout (Diataxis sections live in the center).
@@ -141,9 +154,64 @@ html_context = {
     "github_version": "main",
     "doc_path": "docs_redesign",
     "default_mode": "auto",
+    # Languages offered by the navbar switcher. EN is served at the site root,
+    # JA under the ``/ja/`` subdirectory (a single source, two builds).
+    "languages": [
+        ("en", "English", ""),
+        ("ja", "日本語", "ja/"),
+    ],
+    # Base URL the switcher uses to build the counterpart-language page URL.
+    "lang_base": "https://tatsuki-washimi.github.io/gwexpy/",
 }
 
 # Sidebar: keep the left sidebar clean (navigation only).
 html_sidebars = {
     "index": [],  # Homepage: no left sidebar for a clean hero.
 }
+
+
+# -- i18n fix for notebooks --------------------------------------------------
+# Sphinx's i18n transform re-parses each translated ``msgstr`` with the source
+# document's parser. For ``.ipynb`` docs that is myst-nb's notebook reader,
+# which expects JSON and therefore crashes on a translated Markdown string
+# (myst-nb keys the reader off ``env.doc2path(docname)``, ignoring source_path).
+# A msgstr is always inline Markdown, never a notebook, so for notebook docs we
+# re-parse it with the plain MyST Markdown parser instead.
+def setup(app):
+    from sphinx.transforms import i18n as _i18n
+
+    _orig_publish_msgstr = _i18n.publish_msgstr
+
+    def _publish_msgstr(app, source, source_path, source_line, config, settings):
+        if source_path and str(source_path).endswith(".ipynb"):
+            import contextlib
+            from docutils.io import StringInput
+            from sphinx.io import SphinxI18nReader
+            from myst_parser.parsers.sphinx_ import MystParser
+
+            rst_prolog = config.rst_prolog
+            config.rst_prolog = None
+            try:
+                reader = SphinxI18nReader()
+                reader.setup(app)
+                parser = MystParser()
+                parser.set_application(app)
+                doc = reader.read(
+                    source=StringInput(
+                        source=source,
+                        source_path=f"{source_path}:{source_line}:<translated>",
+                    ),
+                    parser=parser,
+                    settings=settings,
+                )
+                with contextlib.suppress(IndexError):
+                    return doc[0]
+                return doc
+            finally:
+                config.rst_prolog = rst_prolog
+        return _orig_publish_msgstr(
+            app, source, source_path, source_line, config, settings
+        )
+
+    _i18n.publish_msgstr = _publish_msgstr
+    return {"parallel_read_safe": True, "parallel_write_safe": True}

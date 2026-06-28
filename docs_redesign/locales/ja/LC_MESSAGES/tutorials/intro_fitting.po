@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/intro_fitting.ipynb:10002 5913891db4164da5a4551129d6cc920e
+msgid "Fitting: Basics"
+msgstr "フィッティング: 基本"
+
+#: ../../tutorials/intro_fitting.ipynb:10004 6a52b097c9984496910f1266039c2c35
+msgid ""
+"**Goal**: Learn how to fit models to GW data using Ordinary Least Squares "
+"(OLS) and Generalized Least Squares (GLS)."
+msgstr "**目的**: 通常最小二乗法（OLS）および一般化最小二乗法（GLS）を使用して GW データにモデルをフィットする方法を学びます。"
+
+#: ../../tutorials/intro_fitting.ipynb:10006 7491c371d9e741809902e4d5cd00318e
+msgid ""
+"GWexpy uses **iminuit** as its primary optimization engine and provides "
+"specialized cost functions for spectral data with correlations."
+msgstr ""
+"GWexpy は主要な最適化エンジンとして **iminuit** を使用し、相関を持つスペクトルデータ用の特化したコスト関数を提供します。"
+
+#: ../../tutorials/intro_fitting.ipynb:20002 51bf6a501fbe40119a18435ccd4a70e7
+msgid "1. Simple OLS Fit"
+msgstr "1. 単純な OLS フィット"
+
+#: ../../tutorials/intro_fitting.ipynb:20004 c6a513c6fe05462f8da03ada4cf19b10
+msgid "We start with a simple power-law fit using diagonal errors (OLS)."
+msgstr "対角誤差（OLS）を使った単純なべき乗則フィットから始めます。"
+
+#: ../../tutorials/intro_fitting.ipynb:40002 356e614ee7004fe7b62a44e9cde7a9c4
+msgid "2. Generalized Least Squares (GLS)"
+msgstr "2. 一般化最小二乗法（GLS）"
+
+#: ../../tutorials/intro_fitting.ipynb:40004 b63f2c337a9844cda2a47606d8fee3c0
+msgid ""
+"When data points are correlated (e.g., in a PSD estimate with overlapping "
+"windows), we use the covariance matrix $\\Sigma$."
+msgstr "データ点が相関している場合（例：重なり窓を使った PSD 推定）、共分散行列 $\\Sigma$ を使用します。"
+
+#: ../../tutorials/intro_fitting.ipynb:60002 e6330b8b366a4a6987db493c06f1e0b6
+msgid "3. High-level Integration"
+msgstr "3. 高レベル統合パイプライン"
+
+#: ../../tutorials/intro_fitting.ipynb:60004 259aefa013e24d2793ed349ba45172ef
+msgid ""
+"In real analysis, we often estimate the covariance matrix from the data "
+"itself using bootstrap methods. GWexpy provides an integrated pipeline for "
+"this."
+msgstr ""
+"実際の解析では、ブートストラップ法を使ってデータ自体から共分散行列を推定することが多いです。GWexpy はこのための統合パイプラインを提供しています。"
+
+#: ../../tutorials/intro_fitting.ipynb:80002 70db53b90ab549d69e7bdc36e44d5c12
+msgid "4. Exercises"
+msgstr "4. 演習"
+
+#: ../../tutorials/intro_fitting.ipynb:80004 364360b916be4ae7bea87fd9100195af
+msgid ""
+"**Parameter Bounds**: Modify the OLS fit to restrict `a > 0` using the "
+"`limits` argument in `fit_series`."
+msgstr ""
+"**パラメータ制約**: `fit_series` の `limits` 引数を使って `a > 0` となるよう OLS フィットを修正してください。"
+
+#: ../../tutorials/intro_fitting.ipynb:80005 89c1c3a997fe4153a22136894ec6a92c
+msgid ""
+"**MCMC**: Enable MCMC in Section 3 by setting `run_mcmc=True` (requires "
+"`emcee`)."
+msgstr ""
+"**MCMC**: セクション 3 で `run_mcmc=True` を設定して MCMC を有効にしてください（`emcee` が必要）。"
+
+#: ../../tutorials/intro_fitting.ipynb:90002 87d1d8945cd84d15841a21bee8f2a531
+msgid "5. Quick Check (NBMAKE)"
+msgstr "5. 検証セル（NBMAKE）"

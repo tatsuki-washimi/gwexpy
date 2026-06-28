@@ -1,0 +1,284 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/gui.md:1 5e90f04a0b4f412ca1b6b411cb9bc4b2
+msgid "Graphical User Interface (GUI, Experimental)"
+msgstr "グラフィカルユーザーインターフェース（GUI、試作版）"
+
+#: ../../how-to/gui.md:3 65a106fc91e6434b9ed027af48f42339
+msgid "Overview"
+msgstr "概要"
+
+#: ../../how-to/gui.md:5 ed6fdd32151e468da3fcb237ecf4b794
+msgid "**Status:** Experimental, source/development track only"
+msgstr "**ステータス:** 試作版（ソース / 開発環境専用）"
+
+#: ../../how-to/gui.md:7 7c7c9a912d634c86ab57778f0aeb8973
+msgid ""
+"The GWexpy source tree includes a **PyQt5-based GUI** for interactive data "
+"exploration and visualization. However, the GUI should currently be treated "
+"as an **experimental, prototype-stage interface**, not as a finalized end-"
+"user product. For reproducible and fully supported workflows, the **Python "
+"API** remains the primary interface."
+msgstr ""
+"GWexpy のソースツリーには **PyQt5 ベースの GUI** が含まれており、対話的なデータ探索と可視化が可能です。ただし現時点では、GUI "
+"は **試作段階 / 実験的インターフェース**として扱ってください。再現性やサポートの観点では、**Python API** "
+"が引き続き主要インターフェースです。"
+
+#: ../../how-to/gui.md:9 dbcc6e2703544cb08e55c765b13a2a4b
+msgid ""
+"The GUI app and `gwexpy.gui` package are **not included in the first PyPI "
+"distribution**. The first PyPI release focuses on the Python library API; "
+"GUI stabilization is tracked separately as post-release work."
+msgstr ""
+"GUI アプリと `gwexpy.gui` package は **初回 PyPI 配布物には含めません**。初回 PyPI リリースは Python "
+"ライブラリ API を主対象とし、GUI の安定化は post-release 作業として別に扱います。"
+
+#: ../../how-to/gui.md:11 a66ef625b5cf415d88719c2634ed4b99
+msgid "Installation"
+msgstr "インストール"
+
+#: ../../how-to/gui.md:13 745bfa39b055496f954e97884c918226
+msgid ""
+"For source checkout or development use, install GWexpy from a local clone "
+"and install the GUI dependencies explicitly:"
+msgstr ""
+"ソース checkout または開発用途では、ローカル clone から GWexpy を入れたうえで GUI 依存関係を明示的にインストールします："
+
+#: ../../how-to/gui.md:22 52b2538bd4194d6cbcec3639e9965191
+msgid "This installs additional dependencies:"
+msgstr "これにより、以下の追加の依存パッケージがインストールされます："
+
+#: ../../how-to/gui.md:23 3a25fee4220d428f980f9a7bbc09b241
+msgid "`PyQt5` - GUI framework"
+msgstr "`PyQt5` - GUI フレームワーク"
+
+#: ../../how-to/gui.md:24 bd44939c51b743bc83a619562b436dff
+msgid "`pyqtgraph` / `qtpy` - interactive plotting and Qt abstraction"
+msgstr "`pyqtgraph` / `qtpy` - インタラクティブ表示と Qt 抽象化"
+
+#: ../../how-to/gui.md:25 d51a9933eae94fb68b0b24bacfc56d4c
+msgid "`sounddevice` - audio-related GUI features"
+msgstr "`sounddevice` - 音声系 GUI 機能"
+
+#: ../../how-to/gui.md:27 dfe4707dcc6b4a6ea014f6b6424af305
+msgid "Launching the GUI"
+msgstr "GUI を起動する"
+
+#: ../../how-to/gui.md:29 e1d0509b4e01455e81367cb21d3fcce2
+msgid ""
+"After installing the GUI dependencies from a source checkout or development "
+"install, launch the module directly:"
+msgstr "ソース checkout または開発インストールで GUI 依存関係を入れた後は、モジュールを直接起動します："
+
+#: ../../how-to/gui.md:35 77b906e97433476a92182811c4981397
+msgid ""
+"The first PyPI release does not install a `gwexpy.gui` console script or "
+"ship the `gwexpy.gui` package."
+msgstr ""
+"初回 PyPI リリースでは `gwexpy.gui` console script も `gwexpy.gui` package も配布しません。"
+
+#: ../../how-to/gui.md:37 9cd3913fc3b0486796445c7987dc6081
+msgid "Programmatically"
+msgstr "プログラム内での起動"
+
+#: ../../how-to/gui.md:50 8c61e510b52c4d2fb4e3493e904f46b9
+msgid "Supported File Formats"
+msgstr "対応ファイル形式"
+
+#: ../../how-to/gui.md:52 f7e6369331264f46b2080c69978831a1
+msgid "The GUI supports loading data in the following formats:"
+msgstr "GUI は以下の形式でのデータ読み込みに対応しています："
+
+#: ../../how-to/gui.md:54 91b8f490a7b840039121471ca6c063bc
+msgid "**GBD** (GRAPHTEC binary)"
+msgstr "**GBD** (GRAPHTEC バイナリ)"
+
+#: ../../how-to/gui.md:55 8614a89aecc14f55821c1a65d98ff833
+msgid "**HDF5** (HDF5-based time series)"
+msgstr "**HDF5** (HDF5 ベースの時系列)"
+
+#: ../../how-to/gui.md:56 5abd5a7fee7d4330a21e1e2a3a60e0ee
+msgid "**FITS** (Flexible Image Transport System)"
+msgstr ""
+
+#: ../../how-to/gui.md:57 6a524c3f84074fe38ad2ad1d38e9241e
+msgid "**MiniSEED** (seismic data)"
+msgstr "**MiniSEED** (地震波データ)"
+
+#: ../../how-to/gui.md:58 9e4289f5684a4ef79d2f74210c358ae9
+msgid "**Text/CSV** (comma/space-separated)"
+msgstr "**テキスト/CSV** (カンマまたはスペース区切り)"
+
+#: ../../how-to/gui.md:60 b2c0c2636f43465e9a74c067e1c30eaa
+msgid "Open files via:"
+msgstr "ファイルを開く方法："
+
+#: ../../how-to/gui.md:61 0e904b7ec6784ab6ad76093b992195a8
+msgid "**File → Open** or press `Ctrl+O`"
+msgstr "**File → Open** またはキーボードの `Ctrl+O` を押す"
+
+#: ../../how-to/gui.md:62 f9b4fce63d034e77a478a3965bae9a90
+msgid "Select the data file from your filesystem"
+msgstr "ファイルシステムからデータファイルを選択する"
+
+#: ../../how-to/gui.md:63 66bfc79b92644105900646ed0c46093b
+msgid "The data will be loaded and displayed in the main plotting area"
+msgstr "データが読み込まれ、メインプロット領域に表示されます"
+
+#: ../../how-to/gui.md:65 c626336c50464d2592a3f351dd3c952f
+msgid "Features"
+msgstr "主な機能"
+
+#: ../../how-to/gui.md:67 539b25da6fe74f5097ba7a1900b0e842
+msgid "Data Visualization"
+msgstr "データ可視化"
+
+#: ../../how-to/gui.md:68 a4c4df012d8942f595bca3f646ea9505
+msgid "Interactive time series plots"
+msgstr "インタラクティブな時系列プロット"
+
+#: ../../how-to/gui.md:69 d9414a0ea3054fa694c8a27f15f1109c
+msgid "Spectrogram generation"
+msgstr "スペクトログラムの生成"
+
+#: ../../how-to/gui.md:70 d071501f338a417985f56864dac1a699
+msgid "Frequency domain analysis"
+msgstr "周波数領域解析"
+
+#: ../../how-to/gui.md:71 c32a5159be38444ca5ad494ed3606030
+msgid "Multi-channel support"
+msgstr "マルチチャンネル対応"
+
+#: ../../how-to/gui.md:73 e52dc22026f742a09cc94e3a87cabf52
+msgid "Data Inspection"
+msgstr "データ検査"
+
+#: ../../how-to/gui.md:74 4ea6f24471404b45b0fa5f1c19531d6c
+msgid "View metadata (sampling rate, units, duration)"
+msgstr "メタデータの表示（サンプリングレート、単位、期間）"
+
+#: ../../how-to/gui.md:75 24730de5c33949c18c0bbaf434937244
+msgid "Zoom and pan controls"
+msgstr "ズームとパンコントロール"
+
+#: ../../how-to/gui.md:76 ad8ea5ab85db45e2bb857004988db306
+msgid "Cursor position indicator"
+msgstr "カーソル位置インジケータ"
+
+#: ../../how-to/gui.md:78 3c9bed8bbfe74fd1800a1574fedbc2bd
+msgid "Export"
+msgstr "エクスポート"
+
+#: ../../how-to/gui.md:79 ff1e3ddf6b5c451d9875611d22d64f8f
+msgid "Save figures as images (PNG, PDF, etc.)"
+msgstr "図を画像として保存（PNG、PDF など）"
+
+#: ../../how-to/gui.md:80 b0ff2bfb32cc4f6ca82e35ecad2b2b9c
+msgid "Export processed data"
+msgstr "処理済みデータをエクスポート"
+
+#: ../../how-to/gui.md:82 ddfd673dcba946aa9ded0cf8a633061d
+msgid "Known Limitations"
+msgstr "既知の制限事項"
+
+#: ../../how-to/gui.md:84 28bafa7379784875a2ce288e2bd7eed4
+msgid ""
+"The GUI is still a prototype-stage feature. Behavior, supported workflows, "
+"and screen layout may change without the same compatibility expectations as "
+"the core Python API."
+msgstr ""
+"GUI はまだ試作段階の機能であり、挙動・対応ワークフロー・画面構成は今後変更される可能性があります。コア Python API "
+"と同等の互換性保証は想定していません。"
+
+#: ../../how-to/gui.md:85 cede42314b7a4eeeb040eeac4c451ebc
+msgid ""
+"The GUI is optimized for single-file analysis. For batch processing, use the"
+" Python API."
+msgstr "GUI は単一ファイルの解析に最適化されています。バッチ処理には Python API の使用をお勧めします。"
+
+#: ../../how-to/gui.md:86 faf0776af2da40028ecb11a205047840
+msgid ""
+"Memory usage increases with file size. For large datasets, consider using "
+"the API with streaming options."
+msgstr ""
+"メモリ使用量はファイルサイズとともに増加します。大規模なデータセットについては、API のストリーミングオプションの使用を検討してください。"
+
+#: ../../how-to/gui.md:87 306125f201354da7a010aba511e56285
+msgid ""
+"Some advanced analysis features (e.g., matched filtering, machine learning "
+"pipelines) are not available in the GUI. Use the Python API for these "
+"workflows."
+msgstr ""
+"一部の高度な解析機能（マッチドフィルタリング、機械学習パイプラインなど）は GUI では利用できません。これらのワークフローについては、Python "
+"API を使用してください。"
+
+#: ../../how-to/gui.md:89 dae141eb8ff64d489713e8d4e68d841c
+msgid "Troubleshooting"
+msgstr "トラブルシューティング"
+
+#: ../../how-to/gui.md:91 4ce52f14a8ce44ba95ebd693948ba9bd
+msgid "\"ModuleNotFoundError: No module named 'PyQt5'\""
+msgstr ""
+
+#: ../../how-to/gui.md:93 b2b754ea9e5444fe8187fe057c914ce5
+msgid ""
+"Ensure that the GUI dependencies were installed in a source checkout or "
+"development environment:"
+msgstr "ソース checkout または開発環境で GUI 依存関係がインストールされていることを確認してください："
+
+#: ../../how-to/gui.md:99 c986a5d334f44503ab56c26085e6a248
+msgid "GUI does not launch"
+msgstr "GUI が起動しない"
+
+#: ../../how-to/gui.md:101 fc15181925b74dc69c1696e75ba83cd3
+msgid ""
+"Check that your system has a display (X11 on Linux, native on "
+"macOS/Windows):"
+msgstr "システムにディスプレイがあることを確認してください（Linux の X11、macOS/Windows はネイティブ）："
+
+#: ../../how-to/gui.md:108 ad8357b9247249138efdde1734784f95
+msgid "File does not load"
+msgstr "ファイルが読み込めない"
+
+#: ../../how-to/gui.md:110 8924ee15c799429897d042ad1521bb62
+msgid ""
+"Verify that the file exists and is in a supported format. Check the console "
+"output for error messages:"
+msgstr "ファイルが存在し、対応形式であることを確認してください。コンソール出力でエラーメッセージを確認してください："
+
+#: ../../how-to/gui.md:116 9895ee59158b43efb4d52073e0a93512
+msgid "See Also"
+msgstr "関連項目"
+
+#: ../../how-to/gui.md:118 0ea3304c80fe4edda75522b6f79e72e0
+#, python-brace-format
+msgid ""
+"{doc}`Python API Documentation <../reference/index>` - For programmatic data"
+" analysis"
+msgstr ""
+
+#: ../../how-to/gui.md:119 4c505d768628432da7fee8b521955de1
+#, python-brace-format
+msgid ""
+"{doc}`Tutorials <../tutorials/index>` - Interactive examples for learning "
+"GWexpy"
+msgstr ""

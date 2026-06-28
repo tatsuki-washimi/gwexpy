@@ -1,0 +1,80 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:10002
+#: 1897ad1c68de4324b5b7f1e0feacce37
+msgid "Control Analysis: Plant Modeling from Measured Response"
+msgstr "制御解析: 実測応答からのプラントモデリング"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:20002
+#: 6aa48a1a4b4840b6952309524b29bbba
+msgid ""
+"This notebook promotes the legacy system-identification example into the "
+"public tutorial set. The modeling step matters because a controller should "
+"be designed against the part of the response that is both **physically "
+"meaningful** and **measured with high coherence**."
+msgstr ""
+"この notebook は legacy の system identification 例を公開 docs "
+"用に整理したものです。大切なのは、**高コヒーレンスで物理的に意味のある帯域だけを使ってモデルを当てる** ことです。"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:20004
+#: 0ba7079db89b495ab696bb47acd9c296
+msgid ""
+"We regenerate a resonant plant, estimate its transfer function, select a "
+"trustworthy frequency range, and fit a compact second-order model."
+msgstr "ここでは共振プラントを再生成し、伝達関数を測り、信頼できる周波数点だけを選んで 2 次モデルを当てます。"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:40002
+#: 82a0cc05d3d348d3b8678adcf615739f
+msgid "1. Keep only the physically trustworthy band"
+msgstr "1. 高コヒーレンス帯域だけを残す"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:40004
+#: 8e5cc8eb2b974a789a63b79a2b414f8b
+msgid ""
+"A good model fit uses frequencies where the plant dominates and the "
+"measurement is coherent. Low-coherence points usually indicate noise "
+"domination or unmodeled dynamics."
+msgstr "低コヒーレンス点は雑音優勢または非線形性の疑いがあるので、そこを含めてしまうとプラントの物理量より推定器の都合をフィットしてしまいます。"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:60002
+#: 2b2413972bd541a2bbcf9398af08f093
+msgid "2. Fit a resonator model"
+msgstr "2. 共振モデルを当てる"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:60004
+#: 5ac627bc746e4b899e1c86ca4cf3d900
+msgid ""
+"The fitted parameters have direct physical meaning: gain sets actuation "
+"scale, `f0` gives the resonance frequency, and `Q` gives the damping width."
+msgstr "フィットで得たいのはゲイン、共振周波数 `f0`、減衰幅を表す `Q` で、どれも制御設計にそのまま効くパラメータです。"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:80002
+#: 201d84d306894890b75ee56f7812cdb1
+msgid "3. Compare the fitted model with the measurement"
+msgstr "3. 測定とモデルを比較する"
+
+#: ../../how-to/control/advanced_control_modeling.ipynb:80004
+#: 19ad10e74a5442c5a97f964772880b69
+msgid ""
+"A credible plant model should match both the peak location and the width of "
+"the measured resonance, not just one point on the curve."
+msgstr "よいモデルはピーク位置だけでなく、ピーク幅と位相回転も再現します。そこまで合って初めて制御設計に使えるプラントと言えます。"

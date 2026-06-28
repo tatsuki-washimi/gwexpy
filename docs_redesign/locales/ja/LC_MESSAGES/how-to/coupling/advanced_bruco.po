@@ -1,0 +1,312 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10002
+#: 95b34cf7545e4143ad0942e88f9d13e5
+msgid "Bruco: Basics"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10004
+#: f92b3d19576c40e3a1e838a49295c9fc
+msgid ""
+"Bruco is a tool for computing **\"Brute force coherence\"**. It calculates "
+"the coherence between the main channel (target) of gravitational wave "
+"detectors (LIGO or Virgo) and numerous auxiliary channels to identify noise "
+"sources. Physically, the goal is not just to rank channels, but to test "
+"whether a witness can plausibly explain excess DARM power in a specific "
+"frequency band and therefore point to an actionable coupling path."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10007
+#: d2606992a3104dbea0266fc03a1b23b9
+msgid "Coherence Calculation with Parallel Processing"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10009
+#: 0ef4b08621e54fa49f2581f7f9b8f28a
+msgid ""
+"Parallel execution is performed across multiple CPU cores using Python's "
+"`multiprocessing` module."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10011
+#: f97f3877c35748a5b1a754ab10278b2a
+msgid ""
+"**Task Division**: The entire auxiliary channel list is divided according to"
+" the number of CPUs and assigned to each process."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10012
+#: 1995ef140df8420598967d007786fa64
+msgid "**Data Acquisition and Preprocessing**:"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10013
+#: 70ba5faabf984ab79010264a7a2fc84c
+msgid "Acquire data for each auxiliary channel."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10014
+#: 4c45fb10177c486ea34073ad495cae7b
+msgid "Skip if the data is constant (flat)."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10015
+#: bafe3727865746f08631c850b6a99c96
+msgid ""
+"If the sampling rate is higher than the output request rate (`outfs`), "
+"downsample using the `decimate` function."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10016
+#: 0ac3aac3f1f0439191d36ce3983dcc83
+msgid "**Coherence Calculation**:"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10017
+#: 515ddff50efb4a33922baf86fe5e9300
+msgid ""
+"Calculate the FFT and PSD (Power Spectral Density) of the auxiliary channel."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10018
+#: 717b7072381d4f8f9c5d33756c319530
+msgid "Calculate the CSD (Cross Spectral Density) with the target channel."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10019
+#: 6b54da4b24024392ac1c4912fbe13444
+msgid "Calculate the coherence using the following formula:"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10020
+#: 5b772eaed5014616a574be61b5c63239
+msgid "**Selection of Top N**:"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10021
+#: efbbd6e687b148b398db58ed8a20f975
+msgid ""
+"For all frequency bins, if the calculated coherence value is higher than the"
+" existing top list (`top`), update the value. This efficiently records only "
+"the highly correlated top channels instead of keeping results for all "
+"channels."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10022
+#: a1caec18147641718a4ffd45eb7ad8e5
+msgid "**Result Aggregation and Output**:"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10023
+#: 6816c0acc1374be1a0a09d7aa9fb6ae2
+msgid ""
+"Combine and sort `cohtab` (coherence values) and `idxtab` (channel IDs) "
+"returned from each process to create the final top list."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10024
+#: 3fe222e6b8084caead44f0568df7b732
+msgid ""
+"**HTML Report Generation**: Use `markup.py` to generate `index.html`. This "
+"includes tables of top correlated channels for each frequency (with heatmap-"
+"style coloring) and links to plot images."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10025
+#: b70b9ef686fd4302ba3cc98de0b081f6
+msgid ""
+"**Plot Generation**: Use `matplotlib` to generate coherence and spectrum "
+"graphs (PNG or PDF)."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10027
+#: 120cfcb1e0204e69b3bccf926d38ac7e
+msgid ""
+"This implementation is characterized by the use of **pre-computed FFTs**, "
+"**parallel processing**, and a **memory-efficient Top-N recording method** "
+"to efficiently process large amounts of channel data."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10029
+#: 34148218b5634f09a2628f334945ba6a
+msgid "The original Bruco implementation is available at:"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10030
+#: d9bb600c807b47808e1210e41a9fab2e
+msgid "https://github.com/mikelovskij/bruco"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10032
+#: 44795da0f8904d1db57b27ec3e375f72
+msgid "Refer to this for design details and CLI behavior."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10034
+#: d18f41f272064c758b051d29c08a2a9a
+msgid ""
+"This notebook demonstrates the advantages of using the `gwexpy` `Bruco` "
+"module **as a Python library** by showing interactive analysis, flexible "
+"data manipulation, and advanced hypothesis testing."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10036
+#: e458202326f24ca5a6cba0d67ed677e1
+msgid ""
+"We do not use real data, but instead utilize pseudo-data generated with "
+"`gwpy` / `numpy`."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10037
+#: 4aec629ec1e347d38b00af4f9b042127
+msgid ""
+"We demonstrate rapid hypothesis testing for \"nonlinear coupling\" and "
+"\"modulation\" scenarios that are difficult with the CLI, using the Python "
+"API."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:10039
+#: 2dbd24d52a4142788ca6f70c03c00ea7
+msgid ""
+"**Common mistake**: interpreting a large coherence peak as proof of causal "
+"coupling. Coherence is a ranking tool, not a proof. Before acting on a "
+"channel, verify that the witness is physically upstream of DARM, check for "
+"common drivers, and confirm that the feature survives reasonable changes in "
+"windowing, preprocessing, and segment choice."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:20002
+#: 3ecd4c988ee14c788e8e6282e39eb105
+msgid "Setup and Mock Data Generation"
+msgstr "セットアップとモックデータ生成"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:20004
+#: 315ea8fcd5f0408d8017a38684f17bc2
+msgid ""
+"**What we do**: Create pseudo-data for target/auxiliary channels and prepare"
+" `TimeSeries` to feed into Bruco. **Why it's important**: In actual "
+"operations, data is acquired from NDS or frames, but being able to freely "
+"design signals in a notebook accelerates hypothesis testing."
+msgstr ""
+"**何をするか**: ターゲット/補助チャンネルの擬似データを作り、Brucoに食わせるための `TimeSeries` を準備します。 "
+"**なぜ重要か**: 実運用ではNDSやフレームから取得しますが、ノートブック上で自由に信号を設計できると仮説検証が加速します。"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:50002
+#: 9e919a34e2a143e2aadca8e92c01af0a
+msgid "Section 1: Running Basic Bruco Analysis (Reproduction in Jupyter)"
+msgstr "Section 1: 基本的なBruco解析の実行 (Jupyter上での再現)"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:50004
+#: 0ed1578818804b1ab5610cba82ae3a28
+msgid ""
+"**What we do**: Run brute force coherence analysis with the `Bruco` class "
+"and verify results with tables and plots. **Why it's important**: With the "
+"Python API, you can quickly try \"culprit searches\" while interactively "
+"changing conditions and visualizations."
+msgstr ""
+"**何をするか**: `Bruco` クラスで総当たりコヒーレンス解析を実行し、結果をテーブルとプロットで確認します。 **なぜ重要か**: "
+"Python APIなら、対話的に条件や可視化を変えながら“犯人探し”を素早く試せます。"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:100002
+#: 6331c69166244568ba9a977a27fa009f
+msgid ""
+"Section 2: Advanced Preprocessing and Hypothesis Testing (Deep Dive: "
+"Nonlinear & Bilinear)"
+msgstr "Section 2: 高度な前処理と仮説検証 (Deep Dive: Nonlinear & Bilinear)"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:100004
+#: 267fbeac032349e79f2d069066183f0f
+msgid ""
+"**What we do**: Assume noise that cannot be explained by existing linear "
+"correlations and test hypotheses of nonlinear coupling (squared) and "
+"modulation (product). **Why it's important**: Using `FastCoherenceEngine`, "
+"you can rapidly test virtual channels without recalculating the target FFT."
+msgstr ""
+"**何をするか**: 既存の線形相関だけでは説明できないノイズを想定し、非線形結合（2乗）や変調（積）を仮説として検定します。 **なぜ重要か**: "
+"`FastCoherenceEngine` を使うと、ターゲットのFFTを再計算せずに仮想チャンネルを高速に試せます。"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:100007
+#: a83b00d5ed6b4fc7b148a64c5f57b5ab
+msgid ""
+"**Physical intent**: these virtual channels encode a coupling model such as "
+"`fast × slow`, where a fast carrier is modulated by a slow alignment, "
+"control, or environmental drift."
+msgstr ""
+"**物理的意図**: こうした仮想チャンネルは `fast × slow` "
+"のような結合モデルを表し、高周波キャリアが低周波のアライメント変動・制御揺らぎ・環境ドリフトで変調される状況を検証します。"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:100009
+#: 367434b9e54b4dc180fb796b3be5f14b
+msgid ""
+"**Failure-prone pattern**: if you skip the high-pass / band-pass isolation "
+"and multiply broadband channels directly, the product is often dominated by "
+"irrelevant low-frequency power and the resulting coherence becomes hard to "
+"interpret."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:100011
+#: cb8ec48ce4204f768601d43179ea4cf5
+msgid "**Checklist before trusting a virtual witness**:"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:100012
+#: a914a501fca94fe2a15bdfe31fd5170e
+msgid "the witness construction matches a plausible coupling mechanism,"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:100013
+#: f68cc8db88964dd695a6be63e852b75c
+msgid "the modulation band is narrow enough to be physically meaningful,"
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:100014
+#: 26000acc115d4a3eac8da76c1814eaca
+msgid ""
+"the recovered coherence appears where the sidebands or line wandering "
+"actually live, not everywhere."
+msgstr ""
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:140002
+#: a290db97499a467b8d3eb37c94379227
+msgid "Section 3: Connection to Downstream Analysis (Actionable Outcome)"
+msgstr "Section 3: 下流解析への接続 (Actionable Outcome)"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:140004
+#: 1faca2b2fdd640979e473c0ad999e730
+msgid ""
+"**What we do**: Use the most significant noise hypothesis to estimate the "
+"residual spectrum and assess BNS Range improvement. **Why it's important**: "
+"Rather than stopping at \"finding\" Bruco results, we can connect them to "
+"sensitivity improvement and noise subtraction workflows."
+msgstr ""
+"**何をするか**: もっとも寄与が大きいノイズ仮説を用いて残差スペクトルを推定し、BNS Rangeの改善量を見積もります。 **なぜ重要か**: "
+"Bruco結果を“見つけて終わり”にせず、感度改善やノイズ除去ワークフローにつなげられます。"
+
+#: ../../how-to/coupling/advanced_bruco.ipynb:140007
+#: d987fd5efe0140998bdf3c51da53baa9
+msgid ""
+"**Common mistake**: reading the projected residual as a guaranteed "
+"subtraction result. The projection assumes the witness is representative and"
+" well-conditioned; if the witness is contaminated, delayed, or only "
+"intermittently coupled, the predicted improvement can be too optimistic. "
+"Treat this section as a screening step before a full subtraction study."
+msgstr ""

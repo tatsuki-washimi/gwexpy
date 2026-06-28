@@ -1,0 +1,210 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/quickstart.md 848e903a5c58474ba009345dbf98bfd4
+msgid ""
+"Start GWexpy quickly with a GitHub install command, a 3-line first plot, and"
+" pointers to the next tutorials and migration guides."
+msgstr ""
+
+#: ../../tutorials/quickstart.md:7 1d3e87e1e4324f06b5e97378dc6a1003
+msgid "Quickstart"
+msgstr "クイックスタート (Quickstart)"
+
+#: ../../tutorials/quickstart.md:9 b6f22ad4a0bf4d99a3394ddddc667397
+msgid "Get your first analysis plot with GWexpy as quickly as possible."
+msgstr "GWexpy を使って、最初の解析図を最短で作成しましょう。"
+
+#: ../../tutorials/quickstart.md:12 35f195cd2daa4e30a9d7f46fcc2872f1
+msgid "Quick Install"
+msgstr "クイックインストール (Quick Install)"
+
+#: ../../tutorials/quickstart.md:14 0dd1ba18de434b8899ea2b941be05a89
+msgid ""
+"GWexpy is currently in development and is **not yet published on PyPI or "
+"Conda**, so install it directly from the GitHub source repository for now:"
+msgstr ""
+"GWexpy は現在開発版で、**PyPI / Conda にはまだ公開されていない**ため、まずは GitHub "
+"のソースリポジトリから直接インストールしてください："
+
+#: ../../tutorials/quickstart.md:16 eee5e9447b3f4225b0acd5b31970de0c
+msgid "Purpose: install the current development build as quickly as possible"
+msgstr "目的: 開発版を最短でインストールする"
+
+#: ../../tutorials/quickstart.md:17 c048b76fd8a349569aef131b6e0be7af
+msgid "Input: Python 3.11+ with `pip`"
+msgstr "入力: Python 3.11 以上と `pip`"
+
+#: ../../tutorials/quickstart.md:18 de9dade8dfda4da2ac2f9fe70fbcf958
+msgid "Output: a local GWexpy installation ready for the first example"
+msgstr "出力: 最初のサンプルを実行できる GWexpy 環境"
+
+#: ../../tutorials/quickstart.md:24 396a1d6bdd814aabb94c5e7059fa468d
+msgid ""
+"If you need a Conda-managed environment, GW binary dependencies such as NDS2"
+" / FrameLIB, or optional tools such as `pygmt`, start with the [Installation"
+" Guide](installation.md) instead of adding those packages ad hoc after this "
+"quick install."
+msgstr ""
+"Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、`pygmt` "
+"などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda "
+"前提手順から始めてください。"
+
+#: ../../tutorials/quickstart.md:27 4c9c07bf1a25480682016fd625a6159f
+msgid "3-line Quickstart"
+msgstr "3行で最初の図を出す (3-line Quickstart)"
+
+#: ../../tutorials/quickstart.md:29 c7aa666115344553948399b4e3a0395f
+msgid ""
+"GWexpy's `TimeSeries` can be created directly from NumPy arrays and features"
+" built-in plotting capabilities."
+msgstr "GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。"
+
+#: ../../tutorials/quickstart.md:31 0991a6f8f45444e490d1f2cd054270b4
+msgid "Purpose: display a first plot from a random time series"
+msgstr "目的: ランダムな時系列から最初のプロットを 1 枚表示する"
+
+#: ../../tutorials/quickstart.md:32 6777f9fc4dd24716b4557b5221eeff77
+msgid "Input: a 4096-sample NumPy array, sample rate 4096 Hz, and `t0=0`"
+msgstr "入力: 4096 サンプルの NumPy 配列、サンプルレート 4096 Hz、開始時刻 `t0=0`"
+
+#: ../../tutorials/quickstart.md:33 166e42e99692497c9a52bf52e475fa56
+msgid "Output: a `TimeSeries` object and a rendered plot"
+msgstr "出力: `TimeSeries` オブジェクトと描画ウィンドウ"
+
+#: ../../tutorials/quickstart.md:43 d3d0347db7584fef8b95c9b1fcff8430
+msgid "30-min Hands-on (Interactive Tutorial)"
+msgstr "30分で学べるハンズオン (Interactive Tutorial)"
+
+#: ../../tutorials/quickstart.md:45 6426cd4ac7e645ae83f08a0e12e6db93
+msgid "For a more practical workflow, we recommend the following lesson."
+msgstr ""
+
+#: ../../tutorials/quickstart.md:47 850704dcabdb49c6ae5a359975622490
+msgid "🧪 GWexpy Basic Hands-on"
+msgstr "🧪 GWexpy 基本ハンズオン"
+
+#: ../../tutorials/quickstart.md:49 af648cf750d64b54901c34304c90bcfd
+msgid "[TimeSeries basics lesson](intro_timeseries.ipynb)"
+msgstr ""
+
+#: ../../tutorials/quickstart.md:51 b689e7c6616c4d6e9ced795eeaf386f5
+msgid ""
+"Experience everything from loading data to frequency analysis (ASD/CSD) and "
+"matrix manipulation using the latest Field API."
+msgstr "データの読み込みから、周波数解析（ASD/CSD）、最新のフィールド API による行列操作までを一通り体験します。"
+
+#: ../../tutorials/quickstart.md:53 fc0f0c3310a54bbaa4535ef4f0fa4616
+msgid "Core Concepts"
+msgstr "主要概念 (Core Concepts)"
+
+#: ../../tutorials/quickstart.md:55 f3a29564e42c467ea53db9edc0f1f85b
+msgid "The two pillars to mastering GWexpy."
+msgstr "GWexpy を使いこなすための 2 つの重要な柱です。"
+
+#: ../../tutorials/quickstart.md:57 e9a2bc61084b48cdaf4da58612985778
+msgid ""
+"**TimeSeries / FrequencySeries**:  Basic classes for handling single-channel"
+" data. High compatibility with GWpy allows you to run existing code as is."
+msgstr ""
+
+#: ../../tutorials/quickstart.md:59 7c343f89c79a48e38e1f24108da2a9c7
+msgid ""
+"**TimeSeriesMatrix / ScalarField**: New APIs for handling multi-channel "
+"(matrix format) or multi-dimensional field-like data. Large-scale analysis "
+"with over 100 channels can be handled safely with a single line of code."
+msgstr ""
+
+#: ../../tutorials/quickstart.md:62 5d087eecdd2a4a5b9bbefc40a72a497e
+msgid "Multi-channel Analysis Example"
+msgstr "複数チャンネルの解析例"
+
+#: ../../tutorials/quickstart.md:64 4c863474d6104f3e9ddc554ac9005299
+msgid ""
+"Minimal example for calculating cross-spectral density (CSD) between two "
+"channels."
+msgstr "複数チャンネル間のクロススペクトル密度（CSD）を計算する最小例です。"
+
+#: ../../tutorials/quickstart.md:66 f9bd7d97edfb4adea7508c679141ee5c
+msgid "Purpose: compute cross-spectral density from two `TimeSeries` channels"
+msgstr "目的: 2 チャンネルの `TimeSeries` からクロススペクトル密度を計算する"
+
+#: ../../tutorials/quickstart.md:67 6a8f7211909047d4896fb35f8523be10
+msgid "Input: a two-channel `TimeSeriesDict` and `fftlength=1`"
+msgstr "入力: 2 チャンネルの `TimeSeriesDict` と `fftlength=1`"
+
+#: ../../tutorials/quickstart.md:68 e62d54a125624c358b5b2d136c430d03
+msgid "Output: a `csd` object and a plotted CSD result"
+msgstr "出力: `csd` オブジェクトと CSD プロット"
+
+#: ../../tutorials/quickstart.md:85 6a926eb907ae4312b8d28d781bc427e6
+msgid ""
+"This example selects the two channels from the `TimeSeriesDict` and stores "
+"the resulting cross-spectral density in `csd`."
+msgstr ""
+"ここでは `TimeSeriesDict` から対象の 2 チャンネルを取り出し、チャンネル間のクロススペクトル密度を `csd` として得ています。"
+
+#: ../../tutorials/quickstart.md:87 90435aff9917472da316cd4ab2a099ed
+msgid "Need Help?"
+msgstr "困ったときは"
+
+#: ../../tutorials/quickstart.md:89 070f4e36b6ba4aefa53cf793e049353d
+msgid ""
+"If you encounter errors or plots do not appear, check the [Troubleshooting "
+"Guide](../how-to/troubleshooting.md). If the problem is really an "
+"environment setup issue, return to the [Installation Guide](installation.md)"
+" for the Conda-first workflow."
+msgstr ""
+
+#: ../../tutorials/quickstart.md:91 256fcd535cfe4443bacd5a5f3a1e061a
+msgid "<a id=\"next-to-read\"></a> <a id=\"next-steps\"></a>"
+msgstr ""
+
+#: ../../tutorials/quickstart.md:94 f58917129dd943ae8aec47ced31e7e2c
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../../tutorials/quickstart.md:96 0ee78b4594af41b8a667eb10e84615e0
+msgid "[Installation Guide](installation.md) - Setting up your environment."
+msgstr "[インストールガイド](installation.md) - 環境の構築"
+
+#: ../../tutorials/quickstart.md:97 19f85b69aa8a4a10893bac799c39e513
+msgid ""
+"[Troubleshooting Guide](../how-to/troubleshooting.md) - Reverse-lookup fixes"
+" by symptom."
+msgstr ""
+
+#: ../../tutorials/quickstart.md:98 985b5c18447a4aaf87e0f9ceda4fc845
+msgid "[Getting Started](getting_started.md) - Systematic learning roadmap."
+msgstr "[はじめに](getting_started.md) - 体系的な学習ロードマップ"
+
+#: ../../tutorials/quickstart.md:99 6c93d1df8cf9408f8f7de8f3c89f536c
+msgid ""
+"[Prerequisites and "
+"Conventions](../explanation/prerequisites_and_conventions.md) - Review FFT, "
+"GPS time, and compatibility assumptions first."
+msgstr ""
+
+#: ../../tutorials/quickstart.md:100 0a59bc532d5946f38b0765545c5fc724
+msgid ""
+"[Migration from GWpy](../explanation/gwexpy_for_gwpy_users.md) - Difference "
+"guide for existing users."
+msgstr ""

@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../about/changelog.md:1 dd5e66a73d334b059f249cf9f3d65bb4
+msgid "Changelog"
+msgstr ""
+
+#: ../../about/changelog.md:3 566309ab9def469a87fadb8634137bdb
+msgid "Notable changes to the GWexpy project."
+msgstr ""
+
+#: ../../about/changelog.md:5 6bc87e5f1c4d44f292b14fc21b913f57
+msgid "[0.1.4] - 2026-05-14"
+msgstr ""
+
+#: ../../about/changelog.md:6 ../../about/changelog.md:47
+#: ../../about/changelog.md:62 06dca752f70244aea28fb6ea973174ce
+#: 121805fad17e4c46a40e5e9d4e362fbe f43fa228d7f94e53befeb0fcee95c2e6
+msgid "Added"
+msgstr ""
+
+#: ../../about/changelog.md:7 c42f01a0559a49f4bd061ab8b7d30122
+msgid ""
+"`to_gps()` now has opt-in `dtype=` output modes. The default remains "
+"GWpy-compatible, while `dtype=float` / `dtype=\"float\"` return plain "
+"numeric seconds and `dtype=\"quantity\"` returns seconds quantities for "
+"direct `.times` comparisons."
+msgstr ""
+
+#: ../../about/changelog.md:12 0400fac2f92d452699c7240877fafe1d
+msgid "Documentation"
+msgstr ""
+
+#: ../../about/changelog.md:13 b501be334f184691b49120aaa06edc1b
+msgid ""
+"README, docs hub pages, roadmap, troubleshooting pages, and footer links "
+"now point lightweight bug reports and feature requests to the public "
+"feedback form. Security reports remain directed to the repository "
+"security policy."
+msgstr ""
+
+#: ../../about/changelog.md:17 5935251afa754dabb93d8b7249590bb0
+msgid "Tests"
+msgstr ""
+
+#: ../../about/changelog.md:18 7ccc2e48b86c4823bd105af95e8d4b88
+msgid ""
+"Added NetCDF fixture coverage requiring an explicit time coordinate "
+"(#393)."
+msgstr ""
+
+#: ../../about/changelog.md:19 42801dfa28ac489e95391345c9d0dafc
+msgid ""
+"Added GWF regression coverage for multi-channel list-source reads and "
+"padded gap reads with `parallel > 1`."
+msgstr ""
+
+#: ../../about/changelog.md:22 307beb3b57ea496db6ed22e7b82351a0
+msgid "[0.1.3] - 2026-05-12"
+msgstr ""
+
+#: ../../about/changelog.md:23 ../../about/changelog.md:67
+#: 018fb653650a48e4a4e4d7538c9f325b 4739fb9637594982940fa6950d408efb
+msgid "Fixed"
+msgstr ""
+
+#: ../../about/changelog.md:24 123e5450dd6c4270b6fe0acc0758dc66
+msgid "Fixed multi-file GWF reads for `TimeSeries` and `TimeSeriesDict` inputs."
+msgstr ""
+
+#: ../../about/changelog.md:25 38c82fefecad44bdb5503669427744ed
+msgid "Fixed ndscope HDF5 auto-detection for `TimeSeriesMatrix.read()`."
+msgstr ""
+
+#: ../../about/changelog.md:26 36cf884b6ace4cc19219a1f92e96214f
+msgid ""
+"Aligned public I/O docs and contract metadata with current autodetection "
+"behavior."
+msgstr ""
+
+#: ../../about/changelog.md:28 857181ed60474944b92424be088f677e
+msgid ""
+"Preserved original frequency column values in the FrequencySeries CSV "
+"fast path."
+msgstr ""
+
+#: ../../about/changelog.md:30 a37bc2eaef004d58bb15b0f2029f7107
+msgid ""
+"Improved zarr 3 matrix round-trip coverage and removed timeout-prone "
+"fixture behavior."
+msgstr ""
+
+#: ../../about/changelog.md:32 b550d66abcfb45a2ad2069e037c64488
+msgid ""
+"Treated PyGMT installations without a loadable GMT shared library as an "
+"unavailable optional backend instead of failing at import time."
+msgstr ""
+
+#: ../../about/changelog.md:35 503a7782109343b4baebafcfe71fbe6d
+msgid "Known Issues"
+msgstr ""
+
+#: ../../about/changelog.md:36 44d114d7e8704a0c8e6d23e0a406d3da
+msgid ""
+"Some bundled NetCDF fixture paths can fail the TimeSeries reader time-"
+"coordinate contract (#393). Generated NetCDF round-trip coverage still "
+"passes; files should expose an explicit time coordinate."
+msgstr ""
+
+#: ../../about/changelog.md:40 1458e5b6e5814e23991606b48892186f
+msgid "[0.1.2] - 2026-05-08"
+msgstr ""
+
+#: ../../about/changelog.md:41 8e64ee9723eb4750b602b44c2aca7701
+msgid "Targeted Narrow Hotfix Scope"
+msgstr ""
+
+#: ../../about/changelog.md:42 67ec5680ff4f4ed78107e9c0f2dfe4ce
+msgid ""
+"Narrow compatibility fixes for GWpy4 public I/O proxy imports and GWF "
+"list/dict read behavior."
+msgstr ""
+
+#: ../../about/changelog.md:43 6c4ef6799ed4477a8ca17f90c5c8fc40
+msgid ""
+"Targeted auto-identify/read-path fixes for histogram HDF5, ATS/MTH5, "
+"audio, seismic, SegmentTable span CSV, and FrequencySeries DTT XML flows."
+msgstr ""
+
+#: ../../about/changelog.md:44 5d12a46edcac468a810a5657d0e20fe9
+msgid ""
+"Includes only a minimal #369 landing/demo import hunk for this "
+"integration track."
+msgstr ""
+
+#: ../../about/changelog.md:46 39e637662ad24c8e86fa74fe680ea4ca
+msgid "[0.1.1] - 2026-04-28"
+msgstr ""
+
+#: ../../about/changelog.md:48 e032f9d6db754f5b98bcdee5f50608e0
+msgid ""
+"Added public contract baselines for `SegmentTable`, histogram/segments "
+"helpers, detector/time conversion surfaces, CLI behavior, and plot-helper"
+" documentation/tests."
+msgstr ""
+
+#: ../../about/changelog.md:49 9108e19422ff4108a1e65552b19a30b4
+msgid ""
+"Added release-gate checks for metadata consistency, artifact hygiene, and"
+" fresh-environment wheel smoke before PyPI publication."
+msgstr ""
+
+#: ../../about/changelog.md:51 16124deb51da49dda377e6e183711c9d
+msgid "Changed"
+msgstr ""
+
+#: ../../about/changelog.md:52 bf75ce502b964bf9abfaf96394493c0e
+msgid ""
+"Clarified installation guidance around optional extras, source installs, "
+"and future release-channel transitions."
+msgstr ""
+
+#: ../../about/changelog.md:54 18602cd1bed84211849a2a002ddf96f7
+msgid "Known Limitations And Follow-Ups"
+msgstr ""
+
+#: ../../about/changelog.md:55 4aa48fbd35ca445786036d76162a58ed
+msgid ""
+"PyPI publication is still a human-controlled final step for issue #293. "
+"Public install docs intentionally remain GitHub/source-based until the "
+"first PyPI release is actually published; switch them to `pip install "
+"gwexpy` only after publication and post-publish smoke succeed."
+msgstr ""
+
+#: ../../about/changelog.md:56 d83ca8897aab4b71af10ccce95c7f591
+msgid ""
+"`conda-forge` packaging is not published yet. Issue #294 remains the "
+"follow-up for the staged-recipes submission and fresh conda-environment "
+"smoke tests."
+msgstr ""
+
+#: ../../about/changelog.md:57 d46f0b60a3d544e1920f6d9773b285f4
+msgid ""
+"Open numerical and analysis audit follow-ups remain for noise contracts "
+"(#278), astro range assumptions and unit handling (#282), "
+"Bruco/coupling/response workflow semantics (#284), and "
+"preprocessing/decomposition/forecasting contracts (#288). Current "
+"docs/test baselines record present behavior, but these surfaces still "
+"have deferred policy decisions."
+msgstr ""
+
+#: ../../about/changelog.md:58 c5a0d670d294456db407b195831ff842
+msgid ""
+"GUI and visual-surface follow-ups remain open for payload metadata, "
+"labels, colorbars, plot-helper semantics, and residual public-doc drift "
+"(#274, #275, #283). The GUI should still be treated as experimental."
+msgstr ""
+
+#: ../../about/changelog.md:59 9196e57fea334270a5addac7f5146468
+msgid ""
+"Local validation follow-up #335 tracks an intermittent one-process "
+"`pytest tests/ -q` exit 139. Split-suite validation passed and remains "
+"the current evidence base, but the single-process crash is not yet "
+"explained."
+msgstr ""
+
+#: ../../about/changelog.md:61 da274b4d47f54bafa797f6161d4ac844
+msgid "[0.1.0] - 2026-04-08"
+msgstr ""
+
+#: ../../about/changelog.md:63 2a78b27c7233407c913a14a44c8ed472
+msgid "Redesigned documentation site (Task 1 & 2)."
+msgstr ""
+
+#: ../../about/changelog.md:64 f2002af0f04b4c3a948d4eae8feac175
+msgid "Stabilized `SeriesMatrix` classes."
+msgstr ""
+
+#: ../../about/changelog.md:65 ef47c2e0e532438da66976bb72ad4e5f
+msgid "Enhanced multi-dimensional data support via `ScalarField`."
+msgstr ""
+
+#: ../../about/changelog.md:68 f612c04eae8c4c9abf684eec99165d4e
+msgid "Added `CITATION.cff` for easier citation."
+msgstr ""
+
+#: ../../about/changelog.md:69 5d04804cd2124551ab6f6eb20fb22d80
+msgid "Reorganized dependencies and improved OS-specific installation guides."
+msgstr ""
+
+#: ../../about/changelog.md:71 0d8fcbe0f51e44baababbe3c662d5a43
+msgid "Past Versions"
+msgstr ""
+
+#: ../../about/changelog.md:73 a2a9b77988104bcfa077cdc9f3903885
+msgid ""
+"For more details, please visit [GitHub Releases](https://github.com"
+"/tatsuki-washimi/gwexpy/releases)."
+msgstr ""
+

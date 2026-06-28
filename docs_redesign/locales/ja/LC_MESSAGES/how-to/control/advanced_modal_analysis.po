@@ -1,0 +1,274 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10002
+#: 2e7df26a82cf4d14bb5c7fafb1d67ce2
+msgid "High-Precision Modal Analysis of Suspension Systems"
+msgstr "懸架系の高精度モーダル解析"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10004
+#: ef4b871dc1c348c49d5cbc656892dbf8
+msgid ""
+"**Operational Modal Analysis (OMA)** extracts resonance frequencies, damping"
+" ratios, and mode shapes from measured vibration data without requiring a "
+"known excitation force.  This is the standard approach for identifying the "
+"mechanical eigenmodes of KAGRA's suspension systems (TypeA, TypeB, TypeBp) "
+"using ambient motion or swept-sine measurements."
+msgstr ""
+"**運用モーダル解析（OMA: Operational Modal Analysis）** は、既知の "
+"励振力なしに振動データから共振周波数、減衰比、モード形状を抽出する手法です。 KAGRA "
+"の懸架系（TypeA、TypeB、TypeBp）の固有振動モード同定に使われています。"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10010
+#: b83ec0cd8c454909b511f910e060ac15
+msgid "**What this tutorial covers:**"
+msgstr "**このチュートリアルで学ぶこと：**"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10011
+#: f6a25087338d40b2b5e087da04299273
+msgid ""
+"Generating a synthetic multi-DOF Frequency Response Function (FRF) matrix"
+msgstr "多自由度 FRF（周波数応答関数）行列の合成"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10012
+#: 31748f35c8fa46e6a5c6a70324c2fffc
+msgid ""
+"Running OMA with **pyOMA** (falls back to analytic extraction when "
+"unavailable)"
+msgstr "**pyOMA** を使った OMA 実行（未インストール時は解析的フォールバック）"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10013
+#: 29c07105ebf14b30aa8380b7a97adec8
+msgid ""
+"Converting pyOMA results to gwexpy with "
+"`FrequencySeries.from_pyoma_results()`"
+msgstr "`FrequencySeries.from_pyoma_results()` で gwexpy に変換する"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10014
+#: c39aa009bd914a53b8cdcf16a324d7d8
+msgid "Visualising mode shapes, damping vs. frequency, and FRF reconstruction"
+msgstr "モード形状・減衰比の可視化と FRF 再構成"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10016
+#: 984024330932443585371a92a6bc7bf6
+msgid ""
+"**Note**: This notebook is self-contained; all cells run without pyOMA. "
+"Install it with `pip install pyOMA` for real OMA analysis."
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:10019
+#: 48f735d4baaf448499938e41b169f02c
+msgid ""
+"**Relation to `case_violin_mode.ipynb`**: The violin-mode tutorial focuses "
+"on a single channel and spectral peak fitting.  This tutorial handles "
+"**multi-channel FRF matrices** and full **mode-shape extraction** — the "
+"foundation for actuation matrix calibration and active modal damping."
+msgstr ""
+"**`case_violin_mode.ipynb` との違い：** バイオリンモードチュートリアルは "
+"単一チャネルのスペクトルピークフィッティングに特化しています。 本チュートリアルは**多チャネル FRF 行列**と**完全なモード形状抽出**を扱い、"
+" 作動行列較正（MODAL2COIL マトリクス）や能動制振フィルタ設計の基礎になります。"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:20002
+#: a5f841ba78534129a9a57792660f112f
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:40002
+#: 017bdebfef9e41179985809a46f27c34
+msgid "1. Synthetic Multi-DOF FRF"
+msgstr "1. 合成多自由度 FRF 行列"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:40004
+#: f5a978a4e1eb462ba147b30d80ac34f9
+msgid ""
+"We simulate a **3-DOF chain suspension** — a simplified model of the KAGRA "
+"Type-B intermediate-mass (IM) stage — with three coupled pendulum modes.  "
+"The FRF matrix `H[i,j](f)` gives the response of DOF *i* to a force applied "
+"at DOF *j*."
+msgstr ""
+"3 自由度チェーン懸架系（KAGRA TypeB 中間質量ステージの簡略モデル）を シミュレートします。FRF 行列 `H[i,j](f)` は DOF"
+" *j* への力に対する DOF *i* の応答を表します。"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:60002
+#: e62bd9a4da47455a9ea2a24787395147
+msgid "2. Wrap the FRF in a gwexpy FrequencySeriesMatrix"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:60004
+#: 1343d43e193c40bcb348b113e002b0fe
+msgid ""
+"Before running OMA we can already import the FRF into gwexpy using "
+"`build_frf_matrix()` — the same helper used internally by "
+"`from_pyoma_results()`."
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:80002
+#: 9b9a60427f9549ffaf005e83d907c426
+msgid "3. Operational Modal Analysis with pyOMA"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:80004
+#: 0d1b0e5461dd4989ae0f57f1fdae9fee
+msgid ""
+"We use the **Frequency Domain Decomposition (FDD)** algorithm from pyOMA. "
+"The `from_pyoma_results()` converter then packages the extracted modal "
+"parameters into either a `pandas.DataFrame` (parameter summary) or a "
+"`FrequencySeriesMatrix` (reconstructed mode shapes)."
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:100002
+#: cdddd9cc92914513b9a507739e16d2ed
+msgid "4. Convert to gwexpy — Modal Summary DataFrame"
+msgstr "4. gwexpy への変換 — モーダルサマリー DataFrame"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:120002
+#: c1d594e01d584f8791375c7fbb3a378b
+msgid "5. Mode-Shape Visualisation"
+msgstr "5. モード形状の可視化"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:140002
+#: 4fe8740f2e204744adeedb6b920f0412
+msgid "6. Damping vs. Frequency — Quality Assessment"
+msgstr "6. 減衰比 vs. 周波数"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:160002
+#: 8c28f22d873347029f0861a778e101a6
+msgid "7. FRF Reconstruction from Mode Shapes"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:160004
+#: e8749c4c2d6647dbae4257f88a09e930
+msgid ""
+"A key validation step: reconstruct the FRF from the extracted mode "
+"parameters and compare with the measured FRF.  Good agreement confirms the "
+"modal identification is accurate."
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:180002
+#: 3bf6d7e3cf944ee5b5dbcae00e8680ec
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: 0cf06f554bdd4c339aff12b1ed0f3eb7
+msgid "Step"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: d72175b7ce4d497aba6e5bf5393062bb
+msgid "API"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: a2c63ebbcc76443d95588570aee030f6
+msgid "Output"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: eaad85d682f94596a307c17d8f74dee4
+msgid "Build FRF matrix"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: 08aef93a5b694dfcacae4047133602f7
+msgid "`build_frf_matrix(cls, freqs, H, ...)`"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: ab2efdfa97a841fbaf6810d7340ffa19 e09bf5bcb7794816b4f27d5de3119b4d
+msgid "FrequencySeriesMatrix"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: d142f322b58b4eecad6283816ed4ec6e
+msgid "OMA parameter extraction"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: bb135e3eb60e48b3972600b78f22d494
+msgid "`ModeFDD` (pyOMA) or analytic peak-picking"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: 0d2dbdd04ecb48228f7264ebbb5f8b5f
+msgid "frequencies, damping, mode shapes"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: a35947c261ad443e8d21bce3b8564c2c
+msgid "Modal summary"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: 5f5ea89405994619ae696a53e89acd6b
+msgid "`build_mode_dataframe(fn, zeta, mode_shapes=...)`"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: 22a5fc35237e49dd9af6b6c7d75b4f0c
+msgid "pandas.DataFrame"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: eba34383357945138a8f0e182202fe96
+msgid "FRF reconstruction"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb
+#: 099429ac444e4fca95614110ba42b58c
+msgid "Modal superposition"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:180011
+#: 4abb62a8c9b94060a1f36bc9a886c527
+msgid "**Compared to `case_violin_mode.ipynb`:**"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:180012
+#: 83db91b4f0ff4b9e858d44c5e9fc5a9b
+msgid "Violin-mode: single-channel, narrow-band peak fitting"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:180013
+#: c2bd966f19a84f279bd840203c3eaed3
+msgid ""
+"This tutorial: **multi-channel FRF matrix**, full mode shapes, OMA workflow"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:180015
+#: c155d561ed8c4950a17d3f182ecb4c84
+msgid "**Applications at KAGRA:**"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:180016
+#: be3d190891184f2697a4b6f257af2d36
+msgid "TypeA/TypeB/TypeBp suspension eigenmode identification"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:180017
+#: 8c5a5f97d650414b9c184e701636c768
+msgid "Actuation matrix calibration (MODAL2COIL matrix)"
+msgstr ""
+
+#: ../../how-to/control/advanced_modal_analysis.ipynb:180018
+#: 9de9a22ccd75421a9b7acaef9ffcf312
+msgid "Active damping filter design"
+msgstr ""

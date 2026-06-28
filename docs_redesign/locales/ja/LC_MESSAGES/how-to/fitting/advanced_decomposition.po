@@ -1,0 +1,310 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:10002
+#: ea595409979241a6b73b86474493413f
+msgid "Decomposition Analysis: PCA, ICA, and Eigenmodes"
+msgstr "分解解析: PCA・ICA と固有モード"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:10004
+#: 16bd59e19cd8433aaa9a511ba058b16a
+msgid ""
+"This tutorial covers **Principal Component Analysis (PCA)** and "
+"**Independent Component Analysis (ICA)** using `TimeSeriesMatrix`."
+msgstr ""
+"このチュートリアルでは `TimeSeriesMatrix` を使った **主成分分析（PCA）** と **独立成分分析（ICA）** を解説します。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:10006
+#: cd0a6167d9564156a46d17ade22eaf7e
+msgid ""
+"Both methods are available as high-level methods on `TimeSeriesMatrix` via "
+"`pca()` / `ica()`, wrapping scikit-learn internally."
+msgstr ""
+"どちらも `tsm.pca()` / `tsm.ica()` という高レベル API として利用可能で、内部では scikit-learn "
+"をラップしています。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:10008
+#: 9383624ae6c64ca1aa1ed96269cd4eec
+msgid "**Use cases:**"
+msgstr "**代表的なユースケース:**"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:10009
+#: 32c73f03d8c548fb9606c4b0e947c5f7
+msgid ""
+"PCA: dimensionality reduction, decorrelation of correlated sensor channels"
+msgstr "PCA: 次元削減、相関センサーチャンネルの非相関化"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:10010
+#: cc6e9ff04ae44c138d711fe3f7aed340
+msgid ""
+"ICA: blind source separation (BSS), e.g., separating physical signals from "
+"environmental noise"
+msgstr "ICA: 盲目信号分離（BSS）— 環境ノイズから物理信号を分離する"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:10012
+#: ddd294fc3cee40abb284e0b3532d2dc6
+msgid ""
+"**Legacy migration note:**   If your code used `sklearn.decomposition.PCA` "
+"or `sklearn.decomposition.FastICA` directly, you can replace them with "
+"`matrix.pca()` and `matrix.ica()`.   See the [Migration Guide for GWpy "
+"Users](../../explanation/gwexpy_for_gwpy_users.md) and [GWpy Difference API "
+"Index](../../reference/gwpy_added_api.md) for before/after migration "
+"examples."
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:30002
+#: 722ce2eef2c64bba97f612d4c571abe7
+msgid "1. Prepare Synthetic Multi-channel Data"
+msgstr "1. マルチチャンネル合成データの準備"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:30004
+#: f02d0aeaf10e4ea8baac4d804722f587
+msgid "We simulate a realistic scenario:"
+msgstr "現実的なシナリオを再現します:"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:30005
+#: 25dacbdad7af4560b2d537e01c87d7eb
+msgid "Two **hidden sources**: a 10 Hz sine wave and broadband noise"
+msgstr "**隠れた信号源** 2本: 10 Hz サイン波とブロードバンドノイズ"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:30006
+#: 43c796dc258a41aebaab17df81389a81
+msgid "Four **observed channels**: linear mixtures of the hidden sources"
+msgstr "**観測チャンネル** 4本: 信号源の線形混合"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:30008
+#: 031dacec77b249e195160d6d35228cfd
+msgid ""
+"This mirrors real-world scenarios in gravitational-wave detectors where "
+"physical signals are mixed across multiple sensor channels."
+msgstr "これは重力波検出器で複数のセンサーに物理信号が混合して現れる状況を模倣しています。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:50002
+#: b364fe1959e34032a7b37c1f8c86db81
+msgid "2. PCA – Dimensionality Reduction"
+msgstr "2. PCA – 次元削減"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:50004
+#: d18361a9f2e84540aacdd4a8075fc611
+msgid ""
+"`TimeSeriesMatrix.pca()` returns the score matrix and, optionally, a "
+"`PCAResult` object containing the fitted model."
+msgstr "`TimeSeriesMatrix.pca()` はスコア行列と、オプションで `PCAResult` オブジェクトを返します。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:90002
+#: 8e250f36b3b6488cbdeb119e1052b80d
+msgid "3. ICA – Blind Source Separation"
+msgstr "3. ICA – 盲目信号分離"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:90004
+#: a35d805495a24eebad5c67aa90051051
+msgid "`TimeSeriesMatrix.ica()` runs FastICA and returns a source matrix."
+msgstr "`TimeSeriesMatrix.ica()` は FastICA を実行し、独立成分行列を返します。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:90006
+#: 5e7b1370931e4416b12413a67353175b
+msgid ""
+"Unlike PCA (which finds directions of maximum variance), ICA finds "
+"statistically independent sources — making it more suitable for separating "
+"physically distinct noise contributions."
+msgstr "PCA が分散最大方向を探すのに対し、ICA は統計的に独立な成分を探すため、 物理的に異なるノイズ源の分離に適しています。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:120002
+#: 057e7f9621644f29bc8723f75a2546ca
+msgid "4. Preprocessing: Standardization and Whitening"
+msgstr "4. 前処理：標準化とホワイトニング"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:120004
+#: e5ad0b6bcd2b4fc3ae21dcda814eb01d
+msgid ""
+"ICA (and PCA) require data to be scaled appropriately. `TimeSeriesMatrix` "
+"provides built-in preprocessing:"
+msgstr "ICA・PCA にはスケーリングが重要です。`TimeSeriesMatrix` には組み込み前処理が備わっています:"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 1f4c27d35404400fa51029cdf28c9cd3 90c70bd943eb459eb458418d213cc9e5
+msgid "Method"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: e7c2686a0e60497dbfe1aeb4b6e74a0f
+msgid "Description"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: fb5dfb89078d43769bbe16e2cdfbb1a7
+msgid "`.standardize(method='zscore')`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 68149ea8c7a9468bab02ef85d6f9d104
+msgid "Zero mean, unit variance per channel"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 851dd4e3b42c4c848a748291848daad4
+msgid "`.standardize(method='robust')`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: cf3e55bc6c184c5ebab36930b9ccef87
+msgid "Median / MAD scaling (robust to outliers)"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 1ff828efa4b14b6abd155a52638af2ca
+msgid "`.whiten_channels()`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 8f295e2735e542fea5d1e8257fa59018
+msgid "PCA whitening – decorrelates channels"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:120012
+#: 59819a6cb6ef485e92972436b03a5567
+msgid ""
+"The `pca()` and `ica()` methods accept a `scale` parameter to apply these "
+"internally."
+msgstr "`pca()` / `ica()` には `scale` パラメータで内部適用も可能です。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:140002
+#: 149830d904244d6493257196f0c5a0fb
+msgid "5. Handling Missing Values (NaN)"
+msgstr "5. 欠損値 (NaN) の取り扱い"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:140004
+#: 0a979535dc214f538300fc0b357f8519
+msgid ""
+"Real detector data often contains gaps. Use `nan_policy='impute'` to handle "
+"NaNs before decomposition."
+msgstr "実際のデータには観測ギャップがある場合があります。`nan_policy='impute'` で分解前に補完できます。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:160002
+#: 58e02d13ce8e4b7cb8910446c01bff81
+msgid "6. Migration from scikit-learn"
+msgstr "6. scikit-learn からの移行ガイド"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:160004
+#: 4bd1576a883b4dd2964e731296fd38d4
+msgid "**Before (scikit-learn directly):**"
+msgstr "**移行前（scikit-learn 直接使用）:**"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:160019
+#: 45e0a7f142454d29ab15b3d4802f3b2a
+msgid "**After (gwexpy):**"
+msgstr "**移行後（gwexpy）:**"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:160026
+#: 489f3f09ce024bdabe7d0d55e975ab70
+msgid "The gwexpy API automatically:"
+msgstr "gwexpy API が自動で行うこと:"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:160027
+#: ad97408076674ae0a05d25f8669b71ad
+msgid "Preserves time axis (`dt`, `t0`, `times`) in the output matrix"
+msgstr "時間軸（`dt`、`t0`、`times`）を出力行列に引き継ぎ"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:160028
+#: 9f520feb0c064a7082a27b5263db0966
+msgid "Keeps unit metadata"
+msgstr "単位メタデータを保持"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:160029
+#: 690e53db7b1a4546bafd3f487c34c7b6
+msgid "Provides direct plotting via `.plot()`"
+msgstr "`.plot()` で直接プロット可能"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:160030
+#: da00ba8edc2a409785daa4f94fa30dc5
+msgid "Handles NaN policies and scaling internally"
+msgstr "NaN 処理・スケーリングを内部で処理"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:170002
+#: e92fd3a5cf594ae39d42e15400db28b5
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: d9ef00559f344a73a307221d53893e23
+msgid "Key parameters"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: cd63b1e2768148d4a886fe8750f8095a
+msgid "Output"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: cd218e8a52894a178979125ba197921b
+msgid "`tsm.pca(n_components, return_model=True)`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 12d7ffa185054ecd80c1587d3a07fa42
+msgid "`scale`, `nan_policy`, `whiten`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: f437bc4278f048268b4be5b86bc608f6
+msgid "`(scores_matrix, PCAResult)`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 2e065fbe426b4f58846030f46d6f0488
+msgid "`tsm.ica(n_components, random_state)`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 65f03ff0cff8430ab031eda33b91ec1a
+msgid "`scale`, `nan_policy`, `prewhiten`, `fun`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb
+#: 3eee0d0535e746cfabd0a7f9a06e2bec
+msgid "`sources_matrix`"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:170009
+#: 8358918d624f42ca8b9c223dbac5f85f
+msgid ""
+"Both methods return `TimeSeriesMatrix` objects, so all downstream operations"
+" (`.plot()`, `.asd()`, `.coherence()`) work without any additional "
+"conversion."
+msgstr ""
+"どちらのメソッドも `TimeSeriesMatrix` を返すので、`.plot()`, `.asd()`, `.coherence()` "
+"などの後続操作がそのまま使えます。"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:170011
+#: 4ab0dd0255af48fea8ff4ebe31b4824c
+msgid "**See also:**"
+msgstr "**関連チュートリアル:**"
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:170012
+#: 0c0661815c10445fa09aa92fa3da85e7
+msgid "[TimeSeriesMatrix Tutorial](../../tutorials/matrix_timeseries.ipynb)"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_decomposition.ipynb:170013
+#: 8d920a360f274857bd910a46ee570793
+msgid ""
+"[ML Preprocessing Pipeline](../case-studies/case_ml_preprocessing.ipynb)"
+msgstr ""

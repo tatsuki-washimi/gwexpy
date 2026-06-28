@@ -1,0 +1,307 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../explanation/physics_models.md:1 612308253a33459a9a552e97ba3ddb3d
+msgid "Physics Models and Analysis Theory"
+msgstr "物理モデルと解析理論"
+
+#: ../../explanation/physics_models.md:3 4c0164d0c4e344159a646090b5a3e5c6
+msgid ""
+"This page explains the advanced models and analytical theories implemented "
+"in `gwexpy` for handling specific physical phenomena and hardware responses."
+msgstr "`gwexpy` に実装されている、特定の物理現象やハードウェア応答を扱うための高度なモデルについて解説します。"
+
+#: ../../explanation/physics_models.md:5 22c14132ca934afc971d26080a92cbf5
+msgid "Response and Coupling Functions"
+msgstr "応答関数と結合関数 (Response & Coupling)"
+
+#: ../../explanation/physics_models.md:7 f89fc6c2f29b4ccd95107e87dc4fa29c
+msgid "Automatic Excitation Detection"
+msgstr "励起セグメントの自動検出"
+
+#: ../../explanation/physics_models.md:9 9990901174f14d6a9c6b5c546944331b
+msgid ""
+"Extracts stable intervals for analysis from data containing injections (such"
+" as swept sine or stepped sine). By tracking power in specific frequency "
+"bands on a spectrogram, it identifies segments that exceed thresholds, "
+"eliminating the need for manual time-range specification."
+msgstr ""
+"インジェクション（スウェプトサインやステップサインなど）を含むデータから、解析に有効な安定区間を自動的に抽出します。スペクトログラム上で特定の周波数バンドのパワーを追跡し、閾値を超えたセグメントを抽出することで、手動での時刻指定を不要にします。"
+
+#: ../../explanation/physics_models.md:11 aa404bf17d764380a118f52681153d60
+msgid "Coupling Function (:term:`Coupling Function`; CF)"
+msgstr "結合関数 (:term:`Coupling Function`; CF)"
+
+#: ../../explanation/physics_models.md:13 5204e8aa057d4abab16ed6b4131250c8
+msgid ""
+"Estimates coupling functions while accounting for background noise. By "
+"comparing power during injection and background periods for both the target "
+"and witness signals, it isolates the true coupling degree."
+msgstr ""
+"バックグラウンドノイズを考慮した結合関数の推定を行います。 "
+"ターゲット信号と参照信号（ウィットネス信号）の両方について、インジェクション時とバックグラウンド時のパワーを比較することで、真の結合度を推定します。"
+
+#: ../../explanation/physics_models.md:15 9419954c09624bea8d943cfb514dc57b
+msgid ""
+"\n"
+"\\text{CF}(f) = \\sqrt{\\frac{P_{\\text{tgt,inj}}(f) - P_{\\text{tgt,bkg}}(f)}{P_{\\text{wit,inj}}(f) - P_{\\text{wit,bkg}}(f)}}\n"
+msgstr ""
+
+#: ../../explanation/physics_models.md 36d5376d155046afad459aef77f36006
+msgid "Variable"
+msgstr ""
+
+#: ../../explanation/physics_models.md 1b74ec5adfbd4b62ac7812d3c3bc599e
+msgid "Definition"
+msgstr ""
+
+#: ../../explanation/physics_models.md e0dd3bbbb4b340b896e6699c9035b604
+msgid "Physical Meaning"
+msgstr ""
+
+#: ../../explanation/physics_models.md 28af81e2ed6c4745a69886e42e8411fa
+msgid "$f$"
+msgstr ""
+
+#: ../../explanation/physics_models.md 0b13dbc3fe144b3bb76fa456a276ee47
+msgid "Frequency"
+msgstr ""
+
+#: ../../explanation/physics_models.md 0815ced4000e49b0a4b889c282231dc9
+msgid "Frequency point for analysis"
+msgstr ""
+
+#: ../../explanation/physics_models.md 7a4216c3b66748c6ae77c847ee07348c
+msgid "$P_{\\text{tgt,inj}}(f)$"
+msgstr ""
+
+#: ../../explanation/physics_models.md 296f9e1e0125479ba41d9dcbe7d4c0f1
+msgid "Target signal power (during injection)"
+msgstr ""
+
+#: ../../explanation/physics_models.md fa349aae2f174dbab75e29706053f0b7
+msgid "Power distribution of the main signal during excitation"
+msgstr ""
+
+#: ../../explanation/physics_models.md 3f1999e27db646ff84852597c5b77417
+msgid "$P_{\\text{tgt,bkg}}(f)$"
+msgstr ""
+
+#: ../../explanation/physics_models.md 5d8877451aae4ee0b6a7d4ba59d4610e
+msgid "Target signal power (during background)"
+msgstr ""
+
+#: ../../explanation/physics_models.md 32a4f298b69e4887a3c61f10724cba2e
+msgid "Noise floor of the main signal without excitation"
+msgstr ""
+
+#: ../../explanation/physics_models.md 43c6c9ac900a4285a27f8ca708678b14
+msgid "$P_{\\text{wit,inj}}(f)$"
+msgstr ""
+
+#: ../../explanation/physics_models.md 30c24078d981428a83ecde6f49574d5c
+msgid "Witness signal power (during injection)"
+msgstr ""
+
+#: ../../explanation/physics_models.md 389b7f66b62241078969da619439893d
+msgid "Power of the reference signal (e.g., environmental noise)"
+msgstr ""
+
+#: ../../explanation/physics_models.md 860e2a74dd48469fb8380c4bab07e960
+msgid "$P_{\\text{wit,bkg}}(f)$"
+msgstr ""
+
+#: ../../explanation/physics_models.md 3b6d5adcbfa94feda0489843b2bb8cde
+msgid "Witness signal power (during background)"
+msgstr ""
+
+#: ../../explanation/physics_models.md adb11ac04a1a458397510a9cec4f1418
+msgid "Noise floor of the reference signal without excitation"
+msgstr ""
+
+#: ../../explanation/physics_models.md:27 bf80ed8c61b24ec4b8926b7cded55e15
+#, python-brace-format
+msgid ""
+"**Related API**: {doc}`../reference/api/timeseries` "
+"(`TimeSeriesDict.calculate_coupling`)"
+msgstr ""
+"**関連 API**: {doc}`../reference/api/timeseries` "
+"(`TimeSeriesDict.calculate_coupling`)"
+
+#: ../../explanation/physics_models.md:31 c1a529d742c848c28299db2167b91e5d
+msgid "Built-in Noise Models"
+msgstr "組み込みノイズモデル"
+
+#: ../../explanation/physics_models.md:33 a8524d2744014d1cbd72397d76f9b753
+msgid ""
+"Provides physically motivated noise generators for use as initial models in "
+"simulations or fitting."
+msgstr "シミュレーションやフィッティングの初期モデルとして利用可能な、物理的に裏付けられたノイズジェネレーターを提供しています。"
+
+#: ../../explanation/physics_models.md:35 368f2934122c4cab9457e98f74e38338
+msgid "1. Schumann Resonance (:term:`Schumann Resonance`)"
+msgstr "1. シューマン共鳴 (:term:`Schumann Resonance`)"
+
+#: ../../explanation/physics_models.md:37 868b8687b9f8487d9398fbfd4fe391e9
+msgid ""
+"Models magnetic noise corresponding to the resonance modes of the Earth-"
+"ionosphere cavity. It reproduces the low-frequency magnetic background by "
+"superimposing multiple independent Lorentzian profiles."
+msgstr ""
+"地球-電離層空洞の共振モードに対応する地磁気ノイズをモデル化します。 "
+"複数の独立したローレンツプロファイル（Lorentzian）を重畳することで、低周波領域の磁場バックグラウンドを再現します。"
+
+#: ../../explanation/physics_models.md:39 f98dfca8c9334f64ab34a94609049934
+#, python-brace-format
+msgid ""
+"**Related API**: {doc}`../reference/api/signal` (`generate_schumann_model`)"
+msgstr ""
+"**関連 API**: {doc}`../reference/api/signal` (`generate_schumann_model`)"
+
+#: ../../explanation/physics_models.md:41 d786abb5c8fd4bc8b1dff090f4e0d9bf
+msgid "2. Voigt Profile"
+msgstr "2. フォークト関数 (Voigt Profile)"
+
+#: ../../explanation/physics_models.md:43 4ea47304bb304bc6bcd7ff31d85993e4
+msgid ""
+"Generates peak shapes found in atomic physics or high-Q mechanical "
+"resonances, which combine Gaussian (Doppler broadening, etc.) and Lorentzian"
+" (collision/natural broadening, etc.) characteristics. It is calculated "
+"efficiently using the Faddeeva function."
+msgstr ""
+"原子物理学や高 Q "
+"値のメカニカル共振で見られる、ガウシアン（ドップラー広がり等）とローレンツィアン（衝突広がり・自然広がり等）が組み合わさったピーク形状を生成します。内部では"
+" Faddeeva 関数を用いて効率的かつ正確に計算されます。"
+
+#: ../../explanation/physics_models.md:45 f730060311d445fd99176bb6a60187e4
+#, python-brace-format
+msgid "**Related API**: {doc}`../reference/api/signal` (`voigt_profile`)"
+msgstr "**関連 API**: {doc}`../reference/api/signal` (`voigt_profile`)"
+
+#: ../../explanation/physics_models.md:49 717e52f4658141b8b284436617233734
+msgid "Advanced Analysis Engines and Algorithms"
+msgstr "高度な解析エンジンとアルゴリズム"
+
+#: ../../explanation/physics_models.md:51 919370007c0b46ecac04fc8dd57c2d9f
+msgid "1. Independent and Principal Component Analysis (ICA/PCA)"
+msgstr "1. 独立成分分析・主成分分析 (ICA/PCA)"
+
+#: ../../explanation/physics_models.md:53 b65d3c75fefb4396b48f23a8598968fc
+msgid ""
+"The ICA/PCA implementation in `gwexpy` is optimized for physical data "
+"characteristics:"
+msgstr "`gwexpy` の ICA/PCA 実装は、物理データの特性に合わせて以下の最適化を行っています。"
+
+#: ../../explanation/physics_models.md:55 79d74fff3d7e4451b6a840750c3a2814
+msgid ""
+"**Unit Variance Standardization**: Standardizes data to unit variance "
+"internally to improve convergence, then restores (re-scales) the original "
+"physical scale after computation."
+msgstr ""
+"**単位分散標準化**: アルゴリズムの収束性を高めるため、内部でデータを単位分散に標準化し、演算後に元の物理スケールを復元（再スケーリング）します。"
+
+#: ../../explanation/physics_models.md:56 fb28610e77b249578905b1c0ddc4ba79
+msgid ""
+"**Spatio-temporal Metadata Inheritance**: Automatically inherits the GPS "
+"time conventions from the input data for each statistically extracted "
+"component."
+msgstr "**時空メタデータの継承**: 統計的に抽出された各成分に対し、入力データが保持していた GPS 時刻規約を自動的に継承させます。"
+
+#: ../../explanation/physics_models.md:58 e8dfc6419b514df6995273e63199e382
+#, python-brace-format
+msgid "**Related API**: {doc}`../reference/api/signal` (ICA, PCA)"
+msgstr "**関連 API**: {doc}`../reference/api/signal` (ICA, PCA)"
+
+#: ../../explanation/physics_models.md:60 7259188ee46c425db54766a8cd98ba9c
+msgid "2. Fast Correlation Engine (:term:`Bruco`)"
+msgstr "2. 高速相関計算エンジン (:term:`Bruco`)"
+
+#: ../../explanation/physics_models.md:62 6473209c3ddd4417a8b5b72dbf4e7c00
+msgid ""
+"The `FastCoherenceEngine` scans thousands of auxiliary channels for "
+"contributions to a target signal with extreme speed."
+msgstr "`FastCoherenceEngine` は、数千の補助チャネルからターゲット信号への寄与を高速にスキャンするために設計されています。"
+
+#: ../../explanation/physics_models.md:64 8fb3d990b2cf4ee9bb37dc6551dd1e62
+msgid ""
+"**FFT Caching**: Reuses FFT results for a common target signal in memory."
+msgstr "**FFT キャッシング**: 共通のターゲット信号に対する FFT 計算結果をメモリ内で再利用。"
+
+#: ../../explanation/physics_models.md:65 8f5a3f391b1e4496b4a5194837308a24
+msgid ""
+"**Sparse-like Computation**: Skips non-correlated channels early to focus "
+"resources on significant contributors."
+msgstr "**疎行列演算**: 相関のないチャネルを早期にスキップし、計算リソースを重要チャネルに集中させます。"
+
+#: ../../explanation/physics_models.md:67 180137e02bba4f61ba427293864ca001
+#, python-brace-format
+msgid ""
+"**Related API**: {doc}`../reference/api/timeseries` "
+"(`TimeSeriesDict.scan_coherence`)"
+msgstr ""
+"**関連 API**: {doc}`../reference/api/timeseries` "
+"(`TimeSeriesDict.scan_coherence`)"
+
+#: ../../explanation/physics_models.md:69 1d6f111297004ccd81288b55341dd2b0
+msgid "3. Bayesian Inference and GLS Fitting"
+msgstr "3. ベイズ推定と GLS フィッティング"
+
+#: ../../explanation/physics_models.md:71 f9d3efd86db44d66af23dfa156086700
+msgid ""
+"Handles parameter estimation for multidimensional data with complex error "
+"structures."
+msgstr "複雑な誤差構造を持つ多次元データのパラメータ推定を行います。"
+
+#: ../../explanation/physics_models.md:73 80c1c9ab7ebb43cfb3683207a81ab0b4
+msgid ""
+"**GLS (Generalized Least Squares)**: Applies statistically justified "
+"weighting when bins at different frequencies have correlated (non-diagonal) "
+"covariance."
+msgstr ""
+"**GLS (Generalized Least Squares)**: "
+"各周波数点のビン間に相関（非対角の共分散）がある場合に、統計的に正当な重み付けを行います。"
+
+#: ../../explanation/physics_models.md:74 49e0c59c29974bb89eefd3f73c5ef59a
+msgid ""
+"**MCMC Integration**: Uses `emcee` for posterior sampling, enabling robust "
+"fitting even for non-linear physical models."
+msgstr ""
+"**MCMC 統合**: `emcee` を用いた事後分布のサンプリングにより、非線形な物理モデルに対しても頑健なフィッティングが可能です。"
+
+#: ../../explanation/physics_models.md:76 98ae76c04a334d45a25d0b618e5ff530
+#, python-brace-format
+msgid "**Related API**: {doc}`../reference/api/analysis`"
+msgstr ""
+
+#: ../../explanation/physics_models.md:78 1f75d4d7674e49ae8a558f286a5ac6b1
+msgid "Related Documents"
+msgstr "関連ドキュメント"
+
+#: ../../explanation/physics_models.md:80 0566829b14db4497867d78ee70418d14
+#, python-brace-format
+msgid "{doc}`architecture` — Internal data structures and engine design"
+msgstr "{doc}`architecture` — 内部データ構造とエンジンの設計"
+
+#: ../../explanation/physics_models.md:81 5a400d617aab4d218d61f37b7412f872
+#, python-brace-format
+msgid ""
+"{doc}`validated_algorithms` — Validation reports for mathematical formulas"
+msgstr "{doc}`validated_algorithms` — 各数式の妥当性検証レポート"

@@ -1,0 +1,333 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10002
+#: 0f589e05ec37461696bd28956deef0d8
+msgid "Case Study: GBD Format I/O"
+msgstr "ケーススタディ: GBD 形式 I/O"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10004
+#: f5303e5c789944aaadbc7ec9f531ca09
+msgid ""
+"This tutorial demonstrates reading and writing **GBD** files — the native "
+"binary format of **GRAPHTEC data loggers** (GL Series) widely used in KAGRA "
+"and other experiments for PEM/environmental monitoring."
+msgstr ""
+"このチュートリアルでは、**GBD** ファイルの読み込みと書き出しについて解説します。GBD は、KAGRA 等の実験において "
+"PEM（環境モニタリング）に広く使用されている **GRAPHTEC 製データロガー** (GL シリーズ) のネイティブバイナリ形式です。"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10006
+#: d7ca31268ef0495eaa7b036fd551fa69
+msgid "What is GBD?"
+msgstr "GBD とは？"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10008
+#: 6441e3fc3850418f94c88a5d69a74023
+msgid "GBD (GRAPHTEC Binary Data) is a proprietary format featuring:"
+msgstr "GBD (GRAPHTEC Binary Data) は以下のような特徴を持つ独自形式です："
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10009
+#: 520d01c21b4048dcadaf1eedbef95b2f
+msgid ""
+"ASCII header with metadata (channel names, sample rate, local timestamp, "
+"amplitude ranges)"
+msgstr "メタデータを含む ASCII ヘッダー（チャンネル名、サンプリングレート、ローカル時刻、振幅レンジ等）"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10010
+#: 1f1ff179be52499ea51de0519f2c9a8a
+msgid "Binary data block (float32/int16 depending on model)"
+msgstr "バイナリデータブロック（モデルにより float32 または int16）"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10011
+#: 8564aba6bd834da9a6cf014d58734aec
+msgid "Multi-channel recording (up to 32 channels simultaneously)"
+msgstr "マルチチャンネル記録（最大 32 チャンネル同時記録）"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10012
+#: dabf54ec6ddf43fca6ab0ddc4fbeca16
+msgid "Optional digital (logic) channels"
+msgstr "任意のデジタル（ロジック）チャンネル"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:10014
+#: 1d88bc09a4ee43b5b28c3a9791944a75
+msgid ""
+"**Legacy migration note:**   The `gbd2gwf.py` and `read_gbd.py` scripts in "
+"legacy KAGRA repositories have been consolidated into "
+"`gwexpy.timeseries.io.gbd`.   See the [File I/O Supported Formats "
+"Guide](../io_formats.md) for the current public direct-I/O contract."
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:30002
+#: 297c25d9219145e1a7c29d3f92607914
+msgid "1. Create a Synthetic GBD File for Demonstration"
+msgstr "1. デモンストレーション用合成 GBD ファイルの作成"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:30004
+#: a2ba56705ef547258d4f2e14931ac384
+msgid ""
+"We synthesize a minimal valid GBD file so this tutorial runs without "
+"requiring real hardware."
+msgstr "実機がなくても実行できるように、最小限の有効な GBD ファイルを合成します。"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:30006
+#: e51dd648a48b4dfdba4ef5927d8025bb
+msgid "The GBD structure is:"
+msgstr "GBD の構造は以下の通りです："
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:50002
+#: 0e53a2e7f5914329bc3a5252f72fc99c
+msgid "2. Read GBD File into TimeSeriesDict"
+msgstr "2. TimeSeriesDict への読み込み"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:50004
+#: 286be691d96d42458247274954890ffa
+msgid ""
+"Use `TimeSeriesDict.read()` with `format='gbd'`. The `timezone` parameter is"
+" required because GBD timestamps are stored in local time."
+msgstr ""
+"`TimeSeriesDict.read()` で `format='gbd'` を指定します。GBD "
+"内の時刻はローカルタイムで記録されているため、`timezone` パラメータが必要になります。"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:90002
+#: d9fbe08c239649fabe236af12f58ec7e
+msgid "3. Signal Analysis on GBD Data"
+msgstr "3. GBD データに対する解析"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:90004
+#: 73e2dc4a368a401ba7f2e0b73cfa3079
+msgid "Once loaded, all gwexpy analysis methods are available."
+msgstr "読み込まれたデータは標準的な gwexpy オブジェクトであるため、すべての解析メソッドが利用可能です。"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:130002
+#: 1669fa02f9cb46acba340a89881baa2c
+msgid "4. TimeSeriesMatrix from GBD"
+msgstr "4. TimeSeriesMatrix による読み込み"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:130004
+#: 70deda245cd84930959b7ef121b6d424
+msgid ""
+"For batch multi-channel analysis, load directly into a `TimeSeriesMatrix`."
+msgstr "一括分析を行う場合は、`TimeSeriesMatrix` に直接読み込むことができます。"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:150002
+#: 1cce526302dc434faa924a4f2e62ca7d
+msgid "5. Timezone Handling"
+msgstr "5. タイムゾーンの扱い"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:150004
+#: 28c459df5222490f8ac2cb2fe311fe57
+msgid ""
+"GBD files store timestamps in **local time** (the logger's clock). gwexpy "
+"converts these to GPS time automatically using the `timezone` parameter."
+msgstr ""
+"GBD ファイルにはローカル時刻が格納されています。gwexpy は `timezone` パラメータを使用してこれらを自動的に GPS 時刻（UTC "
+"ベース）に変換します。"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: eb810a6c126f4dbc9ad8a4f05bb96f65
+msgid "Timezone"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 4fc00fcad35a43f68b0839f35d223dd6
+msgid "IANA name"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 2f7d82ebd822461c8ec9c282704997c7
+msgid "UTC offset"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: e2d5f029a08245aba081fbf11511580b
+msgid "Japan Standard Time (KAGRA)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 100f213d31d341bcb1528575fe81da13
+msgid "`'Asia/Tokyo'`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 985b11b9df684778a740f2aa8306c77e
+msgid "+09:00"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 38da44a9759747488c02a3ccd09c7268
+msgid "US Eastern (LIGO Hanford, LLO)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 63a22ea732ad4cc896d62bcdd06bff5f
+msgid "`'US/Eastern'`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 82cdb8db26cd4238af0d2ceca3b4bd46
+msgid "−05:00 / −04:00"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: dc49575ed9d64f5c9e7eee8e2f81cebe
+msgid "Europe/Central (Virgo)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: dbc8a5bcb6954469b3acd998a6b9e093
+msgid "`'Europe/Rome'`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 85c37e1ae0b54938800851b4c58f2dd4
+msgid "+01:00 / +02:00"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: b3b6289199fc48b7a95739c4f8b9871d
+msgid "UTC"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: d730a3a96df04dbd9e9590ec6e10cf1a
+msgid "`'UTC'`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: e8b93d04e2e64b6a880c61a42e6f6e3a
+msgid "±00:00"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:170002
+#: 1d64793793c64951bf7f8fda09a59cc5
+msgid "6. Migration Guide: Legacy gbd2gwf.py → gwexpy"
+msgstr "6. 移行ガイド: 従来の gbd2gwf.py → gwexpy"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:170004
+#: 75454a93fa3d4f4ebf650368479fca9a
+msgid "**Before (legacy scripts):**"
+msgstr "**Before (従来のスクリプト):**"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:170031
+#: be76afa7e2c7464eafb8bd909824457e
+msgid "**After (gwexpy):**"
+msgstr "**移行後（gwexpy）:**"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:180002
+#: 280fbb1b048f41669d254b69f0fa990e
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: fa7aa9a6130d437c9a26e8a524523cb9
+msgid "Task"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 873d51fdb05346bfb77bce2f30a7da6d
+msgid "API"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 7ae2c10781ad4711bd0d852738b99cd9
+msgid "Read all channels"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 2097d1d4b46847779d05fb1725ff9c58
+msgid "`TimeSeriesDict.read(path, format='gbd', timezone='Asia/Tokyo')`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: ccc39c22632443918a721112811d2aae
+msgid "Read subset"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 53a33bb2448a42899db0913bf4500e5d
+msgid "Add `channels=['CH0', 'CH1']`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 86a9718f94a149efa3629e68b2061a65
+msgid "Read single channel"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 59ff98faa2194404919892f96e3f54d5
+msgid "`TimeSeries.read(path, format='gbd', timezone=..., channels=['CH0'])`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: d99471579e0a483891af6a7fc188a6e7
+msgid "Read as matrix"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 5b1f1acfea764f1da740a99e2b8a9639
+msgid ""
+"`TimeSeriesMatrix.read(path, format='gbd', timezone=..., channels=...)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 15d40d95139f45b9b871b91fb3143244
+msgid "Auto-detect digital channels"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: d3e5302828b74c508fe8875b89dc7874
+msgid "Channels named `ALARM`, `LOGIC*`, `PULSE*` are binarized"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 2bba6d87ec5f4d74b143af80d02b7d1d
+msgid "Override digital channels"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 135a84ddf6254cfeb3115c1523532c40
+msgid "`digital_channels=['CH2_LOGIC', ...]`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: 71ca9634e51b4ab3a69ddbe8f6c77ace
+msgid "Override GPS epoch"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb
+#: e2052177f12a41128846d95a89bed411
+msgid "`epoch=1234567890` (GPS seconds)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:180014
+#: f5721ac0259042e1b7a32d442208b7cc
+msgid "**See also:**"
+msgstr "**関連チュートリアル:**"
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:180015
+#: 29318c95d88a4154a9b88a2264e29ec5
+msgid "[Intro TimeSeries](../../tutorials/intro_timeseries.ipynb)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_gbd_format.ipynb:180016
+#: bbad287cfad347f1b1fa79b6bf6b72a4
+msgid "[Interoperability Basics](../viz/intro_interop.ipynb)"
+msgstr ""

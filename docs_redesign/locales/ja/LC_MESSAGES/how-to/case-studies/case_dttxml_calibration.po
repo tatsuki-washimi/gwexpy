@@ -1,0 +1,346 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:10002
+#: 502b04555ede4cddbd1f565d2cd243d0
+msgid "Reading and Using DTT XML Files with gwexpy"
+msgstr "gwexpy で DTT XML ファイルを読み込む"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:10004
+#: 3920b441883b43d19d29699ee1cbc6a7
+msgid ""
+"[DTT (Diagnostic Tool for Transfer functions)](https://dtt.ligo.org/) is the"
+" standard measurement tool used at gravitational-wave detector sites to "
+"acquire transfer functions, power spectral densities, and coherence "
+"functions. Measurement results are saved as **DTT XML** files."
+msgstr ""
+"[DTT（Diagnostic Tool for Transfer functions）](https://dtt.ligo.org/)は、 "
+"重力波検出器サイトで標準的に使われる伝達関数測定ツールです。 測定結果は **DTT XML** ファイルとして保存されます。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:10009
+#: a224ae11f7fc4e0387159fb35c141304
+msgid "This tutorial shows how to:"
+msgstr "このチュートリアルでは以下を学びます："
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:10010
+#: a230654f10c8456e8d62b1fc3ec8aab1
+msgid ""
+"Inspect channels stored in a DTT XML file with `extract_xml_channels()`"
+msgstr "`extract_xml_channels()` でファイル内のチャネルを確認する"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:10011
+#: 15a4c18dd3af4aea9567f5ec3fe4c02a
+msgid "Load all measurement products with `load_dttxml_products()`"
+msgstr "`load_dttxml_products()` で全測定量を読み込む"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:10012
+#: 387e9d8417e144f78a7850a30141ef17
+msgid "Visualise a **Bode plot** (magnitude + phase) and **coherence**"
+msgstr "**Bode プロット**（振幅・位相）と**コヒーレンス**を可視化する"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:10013
+#: 69ab09085750405195aafc782e94a651
+msgid "Fit a resonant-system model to the transfer function"
+msgstr "gwexpy のフィッティング機能で共振パラメータを推定する"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:10015
+#: e8561bc180e645f29cd028041bb8d9b5
+msgid ""
+"This notebook complements `case_transfer_function.ipynb`, which demonstrates"
+" TF estimation from raw time series.  Here the data is already the *result* "
+"of a measurement saved by DTT."
+msgstr ""
+"`case_transfer_function.ipynb`（時系列から伝達関数を推定するチュートリアル）の 発展版として、**DTT "
+"が出力した測定済み結果**を直接扱うワークフローを示します。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:20002
+#: 19afb5fc0f10409bbc71c966871aaa1d
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:40002
+#: 971537ccf2684ed69e1dd5cbed6e09b1
+msgid "1. Create a Synthetic DTT XML File"
+msgstr "1. 合成 DTT XML ファイルの作成"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:40004
+#: 55d6a9470543429a889e205027bc7847
+msgid ""
+"A real workflow starts from an existing `.xml` file produced by DTT. For "
+"reproducibility we generate a synthetic file that mimics the structure of "
+"real KAGRA suspension transfer-function measurements."
+msgstr "実際の運用では既存の `.xml` ファイルを使いますが、 ここでは KAGRA 懸架系の伝達関数測定を模した合成ファイルを生成します。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:40008
+#: 1e7188b7d5a74983b96e83a7adb6ccc3
+msgid "The file contains three measurement products:"
+msgstr "生成するファイルには以下の3種類の測定量が含まれます："
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 707aa62ab3eb44628c56205e801aaa2f
+msgid "Product"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: a9083b593ce04533887d3573b59cff75
+msgid "Type"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 3effc7b1c56e49eeafb68ae0f25c50ee
+msgid "Description"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 07e314f36703422ea11ee55bff406cf9
+msgid "PSD"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: c7fe196a2e294ab1b994a2c20d087233 e83e429a7036418983ff4294817cee44
+msgid "real"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 31e6ed13606c4214a27734a09c2fe726
+msgid "Input excitation PSD"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 16ba75f5436447adb51f9f9aaf3d167b
+msgid "TF"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 44a4c6f68db74204baa7fe42817b82d6
+msgid "complex"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: d21d994934f24d448221503d498092c4
+msgid "Displacement / Excitation transfer function"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: caed2cd68e3447429d3c54afc9c9d029
+msgid "COH"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 2c6b5177abd44f2789e453b4e185cb52
+msgid "Coherence between displacement and excitation"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:60002
+#: f86af2d673d8452bbb5d8b75c0175b01
+msgid "2. Inspect Channels"
+msgstr "2. チャネルの確認"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:60004
+#: 28070d3e13ef4c6896f8b30358980689
+msgid ""
+"`extract_xml_channels()` returns a list of channel names and their active "
+"status without loading the full data — useful for a quick scan of large "
+"files."
+msgstr ""
+"`extract_xml_channels()` はデータ本体を読み込まずにチャネル名と "
+"アクティブ状態だけを返します。大容量ファイルのクイックスキャンに便利です。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:80002
+#: a03df13383fb438dba89d3144dda22c9
+msgid "3. Load Measurement Products"
+msgstr "3. 測定量の読み込み"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:80004
+#: 417a0e65fc3b410788cd10ef0e462b46
+msgid ""
+"`load_dttxml_products()` returns a dictionary keyed by product type. Each "
+"product is itself a dict with numpy arrays for data and frequency axis."
+msgstr "`load_dttxml_products()` は測定量の種類をキーとする辞書を返します。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:80016
+#: d821d1edf9984ae3bd2cef6709f070b2
+msgid ""
+"Pass `native=True` to use gwexpy's built-in XML parser instead of the "
+"`dttxml` package — this is recommended when the dttxml package is "
+"unavailable or when you encounter the known phase-loss bug for complex "
+"responses."
+msgstr ""
+"`native=True` を指定すると gwexpy 組み込みパーサーを使用します。 dttxml "
+"パッケージの複素数位相損失バグを回避できるため推奨です。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:100002
+#: 6a3fc4dc269e4a4fac261de6a519101d
+msgid "4. Bode Plot — Transfer Function"
+msgstr "4. Bode プロット — 伝達関数の可視化"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:100004
+#: 6e21d69984694c96967d75b01bdf2e79
+msgid ""
+"Extract the TF product and wrap the data in a `FrequencySeries` to access "
+"gwexpy's plotting and fitting methods."
+msgstr "TF データを取り出し、振幅と位相を周波数の関数としてプロットします。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:120002
+#: 793df9e715ad4a9ebd0dcbf92249bc41
+msgid "5. Coherence"
+msgstr "5. コヒーレンス"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:120004
+#: 4234bfbb9d7549b4b649a53979313d80
+msgid ""
+"The coherence indicates the signal-to-noise quality of the measurement. "
+"Values close to 1 mean the output is well explained by the input; values "
+"below ~0.9 suggest the measurement is unreliable at those frequencies."
+msgstr ""
+"コヒーレンスは測定の信頼性指標です。1 に近いほど出力が入力で よく説明されることを意味します。0.9 以下の周波数帯は "
+"信頼性が低く、フィッティングの対象から外すことが推奨されます。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:140002
+#: bc5b1b2666e547c491857d17f5c4e9fd
+msgid "6. Fitting a Resonant-System Model"
+msgstr "6. 共振モデルのフィッティング"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:140004
+#: 4d9efc4e5b9248e1be422a7a24a26fa5
+msgid ""
+"Transfer functions near a mechanical resonance follow a second-order "
+"response:"
+msgstr "機械的共振付近の伝達関数は2次系で近似できます："
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:140006
+#: b109d832dacb40209baef72a9cdbbb0b
+#, python-brace-format
+msgid "H(f) = \\frac{A \\, f_0^2}{f_0^2 - f^2 + i\\, f f_0 / Q}"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:140008
+#: f6f341aa2d4740c7a444979858a4bd43
+msgid ""
+"We use `gwexpy.fitting` to extract $f_0$ (resonance frequency), $Q$ (quality"
+" factor), and $A$ (gain) directly from the DTT XML data."
+msgstr ""
+"gwexpy のフィッティング機能を使って、 共振周波数 $f_0$、Q 値、ゲイン $A$ を DTT XML データから直接推定します。"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170002
+#: 5b20aed483d34462b04771cd68633dbb
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 4fabc3b43a114f59afecf3728fc4b0c8
+msgid "Step"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: f8468ad42d7043dd9a5a8ccaeb418507
+msgid "gwexpy API"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: cbf454af24904051adbc4752723433b6
+msgid "Output"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 01db431fb4af41669025fd3f68434c39
+msgid "Inspect channels"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: f040187988c647c79023142d9768f351
+msgid "`extract_xml_channels(path)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: c4ebf4b3157040b2ad59fda2adcb4546
+#, python-brace-format
+msgid "list of `{\"name\", \"active\"}`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: d2ffd80d72a7408c963acdb7f16da891
+msgid "Load all products"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: cc1d348e1cda497a8b7bc6390d1d2cdd
+msgid "`load_dttxml_products(path, native=True)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 609a622f0a314b14894b71cb917d6957
+msgid "dict of TF / PSD / COH arrays"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: a643349d240644fe8b6cf9d351d3b65f
+msgid "Visualise TF"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: e9cb4e12cc884a61a75d77d9a265b13d
+msgid "`FrequencySeries` + matplotlib"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 6e4e6723fbae45168d459aa6958eb020
+msgid "Bode plot"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 141ba2593d844358b6fd4e2b44ef2b20
+msgid "Fit resonance"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 66c413300eb24498bc2bd6b328341b1c
+msgid "`fit_series(freqs, data, model, p0)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb
+#: 9f8e139eef5e45cd850b4a0eb5544859
+msgid "$f_0$, $Q$, $A$"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170011
+#: 398bfcfdb8e444c8ad21add30bfdc260
+msgid "**Tips for real measurements:**"
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170012
+#: 0a8c7c4ae8404a58985eed3eb73cc780
+msgid ""
+"Pass `native=False` to use the `dttxml` package when installed (faster for "
+"large files)."
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170013
+#: ed6bb77e30124b2c9d38cff0d6de68f0
+msgid "Use `native=True` if you observe phase flips in complex TF products."
+msgstr ""
+
+#: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170014
+#: 1e6aa11eb6c749a99d832ea1ef15a4bd
+msgid ""
+"The `load_dttxml_products()` dict keys follow DTT's product naming: "
+"`\"TF\"`, `\"STF\"`, `\"PSD\"`, `\"ASD\"`, `\"CSD\"`, `\"COH\"`, `\"TS\"`."
+msgstr ""

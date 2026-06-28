@@ -1,0 +1,102 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:10002
+#: ebde292b391647e1b6ab1fd119848b38
+msgid "Signal Extraction: Weak Signal Recovery from Colored Noise"
+msgstr "信号抽出: 色付き雑音からの微弱信号回収"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:20002
+#: 03aa8763547d4cbbb3ce9f9bd35065e5
+msgid ""
+"This case study promotes the legacy weak-signal notebook into the public "
+"gallery. The core physics question is how to recover a narrowband signal "
+"whose amplitude is far below the raw time-domain noise."
+msgstr ""
+"このケーススタディは legacy の weak-signal notebook を公開 gallery "
+"向けに整理したものです。物理的に見たいのは、生波形では見えない狭帯域信号をどうやって回収するかです。"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:20004
+#: c9fd42f8ebfd4760b9eab03d7ad8279b
+msgid ""
+"The workflow is: simulate a weak injected tone, identify it spectrally, "
+"isolate it with a band-pass filter, and fit a compact sinusoidal model."
+msgstr "ここでは弱い単色線を注入し、ASD で候補周波数を見つけ、band-pass で取り出してから簡単な正弦波モデルを当てます。"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:20006
+#: c4fffc484ebc47c380bbf050022cb7a6
+msgid ""
+"**Related API**: [Time Series API](../../reference/api/timeseries.rst), "
+"[Signal API](../../reference/api/signal.rst)"
+msgstr ""
+"**関連 API**: [Time Series API](../../reference/api/timeseries.rst), [Signal "
+"API](../../reference/api/signal.rst)"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:20007
+#: 0279889bcc57468992583904f3a4a08c
+msgid ""
+"**Related theory**: [Validated "
+"Algorithms](../../explanation/validated_algorithms.md), [Numerical "
+"Stability](../../explanation/numerical_stability.md)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:40002
+#: 17302f6e31234c91ab112ffa1d441e49
+msgid "1. Find the candidate frequency band"
+msgstr "1. 候補帯域を見つける"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:40004
+#: bba40a56603d426b94038f0fccdf2844
+msgid ""
+"ASD averaging reduces estimator variance so the narrowband tone can emerge "
+"as a statistically visible line even when the time-domain waveform looks "
+"noise dominated."
+msgstr "ASD の平均化は推定分散を減らすので、時間波形では見えない狭帯域線が統計的に見えるようになります。"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:60002
+#: 154bf4a43876412ea3d7bf6268dd02fd
+msgid "2. Filter and fit the recovered signal"
+msgstr "2. フィルタしてフィットする"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:60004
+#: 10c10c08cfdb44c0a6e6d5a0a9ea8208
+msgid ""
+"The band-pass is chosen to keep the injected line while rejecting unrelated "
+"broadband power. Making the band too narrow or too wide would respectively "
+"distort the tone or let too much noise back in."
+msgstr ""
+"band-pass は注入線を残しつつ不要な広帯域成分を落とすためのものです。帯域を狭くしすぎると波形を歪め、広くしすぎると雑音を戻してしまいます。"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:60006
+#: a0e617692ded4c149779f1b743b98d7f
+msgid ""
+"**Related API**: [Time Series API](../../reference/api/timeseries.rst), "
+"[Fitting API](../../reference/api/fitting.rst)"
+msgstr ""
+"**関連 API**: [Time Series API](../../reference/api/timeseries.rst), [Fitting "
+"API](../../reference/api/fitting.rst)"
+
+#: ../../how-to/case-studies/case_signal_extraction.ipynb:60007
+#: 60455f4c3b5548f59847ea8b47af2605
+msgid ""
+"**Related theory**: [Validated "
+"Algorithms](../../explanation/validated_algorithms.md)"
+msgstr ""

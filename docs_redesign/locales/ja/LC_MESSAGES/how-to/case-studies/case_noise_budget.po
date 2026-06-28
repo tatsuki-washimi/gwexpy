@@ -1,0 +1,196 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:10002
+#: 4225c58e95ed4500b7a7f91d061caed8
+msgid "**Case navigation:**"
+msgstr "**ケーススタディのフロー:**"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:10003
+#: b3c8366b6daa4ac2be6c94f5468b1a79
+msgid "Back to the canonical gallery: [Case Studies](index.md)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:10004
+#: f6246868e0374f47afeb286d26d162fd
+msgid ""
+"Related reference surfaces: [Reference Index](../../reference/index.md), "
+"[API: Frequency Series](../../reference/api/frequencyseries.rst), Reference "
+"Topics"
+msgstr ""
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:10005
+#: 1ecbca648d5546c78534b397157043ec
+msgid ""
+"Neighboring featured workflows: [Transfer Function "
+"Measurement](case_transfer_function.ipynb), [Active "
+"Damping](case_active_damping.ipynb)"
+msgstr ""
+"前後の注目ワークフロー: [伝達関数推定](case_transfer_function.ipynb), "
+"[アクティブダンピング](case_active_damping.ipynb)"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20002
+#: 6020ee071bde431ea549d2d349cc073f
+msgid "Noise Budgeting and Multi-Channel Correlation Analysis"
+msgstr "ノイズバジェッティングと多チャンネル相関解析"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20004
+#: b1e94d24cb8e41ea9afa2731c5bcc315
+msgid ""
+"In precision measurements (such as gravitational wave detectors), "
+"identifying the origin of noise contained in the main observation data is "
+"extremely important. This process is called **Noise Budgeting**."
+msgstr ""
+"精密計測（重力波検出器など）において、メインの観測データに含まれる雑音が「何に由来するのか」を特定することは極めて重要です。このプロセスを "
+"**Noise Budgeting（ノイズバジェッティング）** と呼びます。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20006
+#: 5ec5c312e60b4d7b8f6b877a709f083c
+msgid ""
+"The sensitivity curve of a gravitational wave detector is limited by ground "
+"vibrations at low frequencies, thermal noise at mid frequencies, and "
+"statistical noise (shot noise) at high frequencies, exhibiting a "
+"characteristic \"U-shaped\" profile."
+msgstr ""
+"重力波検出器の感度曲線は、低周波では地面振動、中周波では熱雑音、高周波では統計的なノイズ（ショットノイズ）によって制限され、特徴的な「下に凸」の形状を示します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20008
+#: 9a6e54e718564a4cb349cbf80971717e
+msgid ""
+"In this tutorial, we will demonstrate the analysis with the following flow:"
+msgstr "このチュートリアルでは、以下の流れで解析を実演します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20010
+#: 2b0251d9582d473e93ba59e159dc15d1
+msgid ""
+"**Multi-Channel Data Simulation**: In addition to the main channel, we "
+"generate auxiliary channels for ground vibrations, magnetic field "
+"fluctuations, circuit noise, etc."
+msgstr "**多チャンネルデータのシミュレーション**: メインチャンネルに加え、地面振動、磁場変動、回路ノイズなどの補助チャンネルを生成します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20011
+#: 4bf7b8c0ba804812b6d7f0a8a0d7ff3c
+msgid ""
+"**Coherence Mapping**: Calculate the coherence between the main channel and "
+"each auxiliary channel to identify the primary noise sources."
+msgstr ""
+"**相関解析 (Coherence Mapping)**: メインチャンネルと各補助チャンネルのコヒーレンスを計算し、主なノイズ源を特定します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20012
+#: 799b79933b7c4035af58e80081625278
+msgid ""
+"**Transfer Function Estimation**: Estimate the \"coupling strength (transfer"
+" function)\" from the auxiliary channels to the main channel."
+msgstr "**結合関数の推定 (Transfer Function)**: 補助チャンネルからメインへの「漏れ込み量（伝達関数）」を推定します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20013
+#: 0cc8aeb099fa4afd871b7c7c0729d25d
+msgid ""
+"**Noise Projection**: Using the transfer function, convert (project) the "
+"noise from the auxiliary channels into the units of the main channel."
+msgstr ""
+"**ノイズ投影 (Noise Projection)**: 伝達関数を用いて、補助チャンネルのノイズをメインチャンネルの単位に変換（投影）します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:20014
+#: 61ec8b18d4c0409997ed5af7b8d5c014
+msgid ""
+"**Noise Budget Visualization (Noise Budget Plot)**: Overlay all noise "
+"sources to reveal the breakdown of the observed \"U-shaped\" spectrum."
+msgstr ""
+"**ノイズ予算の可視化 (Noise Budget Plot)**: "
+"すべてのノイズ源を重ね合わせ、観測された「U字型」スペクトルの内訳を明らかにします。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:40002
+#: 31e05bec24b04edfa9524fe2e3fc5543
+msgid "1. Multi-Channel Data Simulation (Creating a U-Shaped Spectrum)"
+msgstr "1. 多チャンネルデータのシミュレーション (U字型スペクトルの作成)"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:40004
+#: 3614b66638004abab20686d28770bed8
+msgid ""
+"We create a sensitivity curve that mimics a gravitational wave detector."
+msgstr "重力波検出器を模した感度曲線を作成します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:40005
+#: 20d2d5fe89434a169a32ec5215bd96cc
+msgid ""
+"`MAIN`: The observation target. Has a \"U-shaped\" spectrum dominated by "
+"ground vibrations in the low-frequency region and actuator/circuit system "
+"noise in the high-frequency region."
+msgstr "`MAIN`: 観測対象。低域で地面振動、高域でアクチュエータ/回路系のノイズが支配的な「下に凸」のスペクトルを持ちます。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:40006
+#: 9913164f252440318ed864d7d91475cf
+msgid "`AUX_SEIS`: Monitors low-frequency ground vibrations."
+msgstr "`AUX_SEIS`: 低周波の地面振動をモニター。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:40007
+#: c8e3550cde7346a68a57490df7d093f6
+msgid "`AUX_MAG`: Magnetic field monitor (including 60Hz power line)."
+msgstr "`AUX_MAG`: 磁場モニター（60Hzの電源ラインを含む）。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:40008
+#: 7817a67a9ff74484943f28a696149bfa
+msgid ""
+"`AUX_ELEC`: High-frequency noise source (e.g., control system or readout "
+"circuit noise)."
+msgstr "`AUX_ELEC`: 高周波側のノイズ源（例：制御システムや読み出し回路のノイズ）。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:60002
+#: fde966c17b464ec78cf721405735107e
+msgid "2. Coherence Mapping"
+msgstr "2. 相関解析 (Coherence Mapping)"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:60004
+#: 94547ce65ccd40958f96fa2f010b53f5
+msgid ""
+"We check which sensors have high coherence with the left side, bottom, and "
+"right side of the \"U-shape\" of the main channel."
+msgstr "メインチャンネルの「U字」の左側、底、右側で、それぞれどのセンサーと高いコヒーレンスを持っているかを確認します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:80002
+#: 6ab7b6f3ed254ac38a1ac08b5686f486
+msgid "3. Transfer Function Estimation"
+msgstr "3. 結合関数の推定"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:80004
+#: 62bb0418db324bfa9e4e5c53108d0149
+msgid ""
+"We estimate the coupling coefficients (transfer functions) in each frequency"
+" band."
+msgstr "各帯域における漏れ込み係数（伝達関数）を推定します。"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:100002
+#: 9a5ecbae89274a7996aa504890b4736b
+msgid "4. Noise Projection"
+msgstr "4. ノイズ投影 (Noise Projection)"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:120002
+#: f0f00a069f7f462789dad5cea88daa85
+msgid "5. Noise Budget Visualization (Noise Budget Plot)"
+msgstr "5. ノイズ予算の可視化 (Noise Budget Plot)"
+
+#: ../../how-to/case-studies/case_noise_budget.ipynb:120004
+#: 14f8a3ece10a425bb20385ca58efff46
+msgid ""
+"We display how the \"U-shaped\" noise of the main channel is explained and "
+"decomposed."
+msgstr "「下に凸」のメインチャンネルのノイズが、どのように解説・分解されるかを表示します。"

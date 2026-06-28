@@ -1,0 +1,334 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10002
+#: 6eae9dd19e094a2a9b82a3b8bfb971ec
+msgid "Calibration Pipeline: Counts → Strain"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10004
+#: 814bd8f14adb4ea599951a048c004a01
+msgid ""
+"Gravitational-wave detectors record data in *digital counts* — raw ADC "
+"output. Before any astrophysical analysis the data must be converted to "
+"physical strain $h(f)$ or displacement $x(f)$ by applying a **calibration "
+"transfer function**."
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10008
+#: 446ea5cf540745c28aad72e22f305b00
+msgid "KAGRA's calibration pipeline involves two steps:"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10010
+#: ad4d90ac3ce84d99acc3bb08edfd848a
+msgid ""
+"**Coupling factor measurement** — a known signal (swept or stepped sine) is "
+"injected via the photon calibrator (PCal) and the detector response is "
+"measured using `ResponseFunctionAnalysis`."
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10013
+#: c8fde7b6c6474897a27a5c94f591f88c
+msgid ""
+"**Calibration application** — the raw spectrum is divided by the coupling "
+"function to produce a calibrated strain-equivalent ASD."
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10016
+#: 8192c597b63745bf9e5c7bb74987ac88
+msgid "**What this tutorial covers:**"
+msgstr "**このチュートリアルで学ぶこと：**"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10017
+#: 893f0b507d6b4fa9be31bb77324d82d6
+msgid "Generating synthetic uncalibrated data (counts) with realistic noise"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10018
+#: 8f88e3f21a5b4d86944f55e8d54ccafd
+msgid ""
+"Using `ResponseFunctionAnalysis` to extract coupling factors from a stepped-"
+"sine injection"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10020
+#: 6bdb4bffe042450f960e449f0d014cbd
+msgid "Fitting a frequency-dependent calibration model"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10021
+#: 4f24f5b2090447ed93d00200270bb79d
+msgid "Applying the calibration and producing a strain-calibrated ASD"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10023
+#: 0706a19862cd4acc883089fd4acb3b7f
+msgid "**Related tutorials:**"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10024
+#: a2a9357ebd5e45ccb3945bf287df7d3c
+msgid ""
+"`case_dttxml_calibration.ipynb` — loading pre-measured TF from DTT XML files"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10025
+#: 5f8761cc346048b2a85c65c035396ef4
+msgid ""
+"`case_transfer_function.ipynb` — estimating TF directly from time series"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:20002
+#: 175d7a7929774d228fc90947df4402fe
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:40002
+#: 4d42ec96400d432bb8255e8d2989a532
+msgid "1. Synthetic Uncalibrated Data"
+msgstr "1. 合成未キャリブレーションデータの生成"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:40004
+#: 4e39603286cc42869e1c1258b665d342
+msgid ""
+"We create a synthetic DARM (Differential Arm length) signal in counts. The "
+"system has:"
+msgstr "DARM（差動アーム長）信号をカウント単位でシミュレートします。 システムは以下のノイズ成分を持ちます："
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:40006
+#: df647fa709014fdc8966f9b5631f84fa
+msgid "**Optical cavity pole** at 50 Hz (single-pole low-pass response)"
+msgstr "**光学キャビティポール** 50 Hz（単極低域通過特性）"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:40007
+#: be12bd2f01f243b883bfdb679aee48d7
+msgid "**Seismic wall** rising below 10 Hz as 1/f^4"
+msgstr "**地震ノイズ** 10 Hz 以下で 1/f^4 で上昇"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:40008
+#: 4cc7d21ec7684ac69a6806f08780bb25
+msgid "**Shot noise** floor flat above ~100 Hz"
+msgstr "**ショットノイズ** 100 Hz 以上でフラット"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:40009
+#: 0aa3f5c1d7814bf79327dc40c56710fe
+msgid "**Lines** at 60 Hz (power) and 120 Hz (harmonic)"
+msgstr "**電源周波数干渉** 60 Hz および 120 Hz"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:60002
+#: e9f516c8c1fd41fdb9af98be2373644e
+msgid "2. Stepped-Sine Injection Campaign"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:60004
+#: 51bd3962677046ccb5deba4d4884a2de
+msgid ""
+"In a real calibration run, a PCal signal is injected at a series of discrete"
+" frequencies while the detector is locked.  Each frequency step typically "
+"lasts 30–120 s."
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:60008
+#: 9a0e949b7f8649639b838e57eb7b4418
+msgid ""
+"We synthesise an injection campaign with 6 frequencies spanning 10–1000 Hz."
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:80002
+#: 2f718dfe69ad4d2e81efa2662df15039
+msgid "3. Extract Coupling Factors"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:80004
+#: e40c75d24ac3451c98adc33244ebf865
+msgid ""
+"`ResponseFunctionAnalysis.compute()` automatically detects the injection "
+"steps in the witness channel and estimates the coupling factor at each "
+"injected frequency."
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:80008
+#: 55cfe1f7ab4b4266b58637ccaf310c6d
+msgid "The coupling factor $C(f_i)$ is defined as:"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:80010
+#: a009c7fcfce84c9f94b36bed115544a1
+msgid ""
+"C(f_i) = "
+"\\frac{\\text{ASD}_{\\text{target}}(f_i)}{\\text{ASD}_{\\text{witness}}(f_i)}"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:100002
+#: fce7711c11ad4207b06f5b8f4dbcead4
+msgid "4. Fit the Calibration Transfer Function"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:100004
+#: 7b3b27ddc0bd40d1aebe4eca5c4830e0
+msgid "We fit a single-pole model to the measured coupling factors:"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:100006
+#: 7921f44ee4ca458587e073bd17bbd035
+msgid "C(f) = \\frac{C_0}{1 + i\\,f / f_\\text{pole}}"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:100008
+#: 31b6130e4c35447b9f852c286467b6a2
+msgid "The fit gives us a smooth, continuous calibration function."
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:130002
+#: 715da27ddb934f1994f0fa30f1dc47f9
+msgid "5. Apply Calibration — Counts → Metres ASD"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:130004
+#: fca2512784c4494cb5491aa7e45fa300
+msgid ""
+"With the calibration function in hand, we apply it to the raw DARM ASD to "
+"produce a calibrated displacement ASD in metres per root-Hz."
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150002
+#: 2c0a8874973e449d81379765d7037213
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: 56eed877e7dc4d7181de59efa1bf3d2b
+msgid "Step"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: ca3b5a088ab04c799730344e612a599e
+msgid "API"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: ffc526875e8d4fa7b1eccdf005006270
+msgid "Purpose"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: 6f17ea71ec494f15a171a8afc4b3e32a
+msgid "Stepped-sine injection"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: 91d94ab3631440dba96c65739445684f
+msgid "`TimeSeries` + synthetic signal"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: cc8bef42e4ae49bc80431fbd9a4ebb47
+msgid "Inject known signal"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: e1d43ea6d8c44686b295aef809c62125
+msgid "Step detection + coupling"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: 6dda0a8c384d45e69a1577f9a6723583
+msgid "`ResponseFunctionAnalysis.compute()`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: c6bf1f0b9e294beabaa3eae8e566f1a8
+msgid "Extract C(f) at each freq"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: 32c329198c524ad581197c48991809e2
+msgid "Calibration model fit"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: fde50d3e15be42989f6c8c0eedc15cf1
+msgid "`fit_series(cf, model, p0)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: eebeaffc2b9e4d81a8d413ddfe5f8c7c
+msgid "Smooth continuous C(f)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: 76ee60ef2f4d4a40ab71723e4094b8fe
+msgid "Apply calibration"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: 38af83713b1847edb1228de14dd53ca4
+msgid "ASD / C(f)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb
+#: a88e9a4bb3a94e1ba358acb5912b00ad
+msgid "Counts → metres/strain"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150011
+#: de09c9a70e7c424ea178af4131893482
+msgid "**Physical constants used from `gwexpy.numerics.constants`:**"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150012
+#: e9a1df4fb22e4f8e94db0be520f3e680
+msgid "`SAFE_FLOOR` — prevents log(0) in ASD estimation"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150013
+#: 1071207569e645aa8e3f730f80089712
+msgid "`EPS_PSD` — regularises Welch estimator denominators"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150015
+#: 36661c615ac74b07b4bcf229501189a1
+msgid "**In real KAGRA calibration:**"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150016
+#: 389eb8f082d44aefb2772ae1904f367e
+msgid "PCal amplitude is independently measured by the PCal power monitor"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150017
+#: 905d12379e5744928bdcbc90f02497d6
+msgid ""
+"The calibration transfer function has both optical and electrical components"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150018
+#: 1fe0f8f73b2d4cbaaa4dedf5722e94e8
+msgid ""
+"Time-varying parameters (finesse, input power) require continuous monitoring"
+msgstr ""
+
+#: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150019
+#: 5cd5c9b8db0d43c9847b15c19a37e617
+msgid ""
+"See `case_dttxml_calibration.ipynb` for loading pre-measured TF from DTT XML"
+msgstr ""

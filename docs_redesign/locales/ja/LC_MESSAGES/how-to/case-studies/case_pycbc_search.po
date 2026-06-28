@@ -1,0 +1,312 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10002
+#: 0f686bd79fc040eb86cbdf0824503759
+msgid "PyCBC Interoperability: From gwexpy Preprocessing to GW Search"
+msgstr "PyCBC 連携：gwexpy 前処理から重力波探索まで"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10004
+#: d583a30772f649b98f5841a3514fd24f
+msgid ""
+"[PyCBC](https://pycbc.org/) is a Python toolkit for gravitational-wave data "
+"analysis, including matched-filter searches for compact binary coalescences "
+"(CBC).  gwexpy provides **bidirectional converters** between its own data "
+"types and PyCBC's `TimeSeries` / `FrequencySeries`."
+msgstr ""
+"[PyCBC](https://pycbc.org/) は連星合体（CBC）のマッチトフィルター探索や "
+"パラメータ推定を行う重力波データ解析ツールキットです。 gwexpy は自身のデータ型と PyCBC の `TimeSeries` / "
+"`FrequencySeries` 間の **双方向コンバータ**を提供します。"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10009
+#: ae6b94ee5fe34a2e8605b9c2a1cea5d5
+msgid "This enables a natural workflow where:"
+msgstr "これにより、以下のような自然なワークフローが実現します："
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10010
+#: 51a1a385934c4a31ba97936f69e1b27a
+msgid ""
+"**gwexpy** handles data loading, preprocessing, and noise characterisation"
+msgstr "**gwexpy**: データ読み込み、前処理、ノイズ特性評価"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10011
+#: 6465b658e02746e79a02287723a3f513
+msgid "**PyCBC** performs the matched-filter search or parameter estimation"
+msgstr "**PyCBC**: マッチトフィルター探索やパラメータ推定"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10012
+#: 4559170150f249a7a7c6ecbbed9cfe4c
+msgid "**gwexpy** post-processes and visualises the search output"
+msgstr "**gwexpy**: 探索結果の後処理と可視化"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10014
+#: 4091ce0a2c414c5a88367dd1d5eb2589
+msgid "**What this tutorial covers:**"
+msgstr "**このチュートリアルで学ぶこと：**"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10015
+#: 17fb7a0762c145c9badabd36b5cc45af
+msgid "Converting a gwexpy `TimeSeries` to PyCBC and back"
+msgstr "gwexpy `TimeSeries` を PyCBC に変換して戻す"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10016
+#: e9cd6ac98bb24effb470df699c2ebef7
+msgid "Converting a gwexpy `FrequencySeries` (ASD) to a PyCBC PSD"
+msgstr "gwexpy `FrequencySeries`（ASD）を PyCBC PSD に変換する"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10017
+#: da7e3a7f8e2f472085b265e9d0dcc1d2
+msgid ""
+"Full preprocessing pipeline: conditioning → matched filter (simulated CBC)"
+msgstr "完全な前処理パイプライン：コンディショニング → マッチトフィルター"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10018
+#: bd2df52589b4483c8bf4d373c0632a66
+msgid "Visualising matched-filter SNR time series with gwexpy"
+msgstr "gwexpy で SNR 時系列を可視化する"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:10020
+#: e103e1e1a41b4820b7c2c05aa19366c5
+msgid ""
+"**Note**: This notebook works without a PyCBC installation. When PyCBC is "
+"absent the matched-filter step uses a simplified analytic substitute so "
+"every cell still executes. Install PyCBC with `pip install pycbc` for real "
+"searches."
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:20002
+#: 984463f4c3d14a9e8d0186ceb790f14b
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:40002
+#: a73c6848c2d54b6186dc64f35e11ca0c
+msgid "1. Synthetic DARM Data with an Injected CBC Signal"
+msgstr "1. CBC 信号を注入した合成 DARM データ"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:40004
+#: b862e0ddae514c6e84f36c0931f4152c
+msgid ""
+"We create a 64 s segment of coloured noise and inject a synthetic binary "
+"neutron star (BNS) inspiral — a chirp signal that sweeps from ~30 Hz to "
+"~1000 Hz in the last few seconds before merger."
+msgstr ""
+"64 s のカラードノイズに合成 BNS (連星中性子星) インスパイラルを注入します。 チャープ信号は合体直前の数秒で ~30 Hz から ~1000"
+" Hz に掃引します。"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:60002
+#: 9fae084dc4b84741a0a4433eaead70de
+msgid "2. gwexpy → PyCBC Conversion"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:60004
+#: 564b290b27af4adf8140c8b81e14fc19
+msgid ""
+"`to_pycbc_timeseries()` maps a gwexpy `TimeSeries` to a "
+"`pycbc.types.TimeSeries`.  Metadata (t0, dt, unit) is preserved."
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:80002
+#: deb382f326c04dfc9eb81bcde974299e
+msgid "3. PSD / ASD Conversion"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:80004
+#: 8bf2eb227a0747b9bb271d24ea39d8f4
+msgid ""
+"A matched filter requires a **noise PSD** to whiten the data. We estimate "
+"the ASD from the gwexpy `TimeSeries` and convert it to a PyCBC "
+"`FrequencySeries` for use as the matched-filter PSD."
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:100002
+#: 0ee9cb8c374446c98bccbc3145bb1195
+msgid "4. Matched-Filter Search (BNS Template)"
+msgstr "4. マッチトフィルター探索（BNS テンプレート）"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:100004
+#: 75b042b641d14fa1adf57bc8ba5423a0
+msgid ""
+"A matched filter computes the cross-correlation between the data and a "
+"template waveform, normalised by the noise PSD.  The peak of the normalised "
+"SNR time series $\\rho(t)$ indicates the merger time."
+msgstr ""
+"マッチトフィルターはデータとテンプレート波形の相互相関を ノイズ PSD で正規化して計算します。 正規化 SNR 時系列 $\\rho(t)$ "
+"のピークが合体時刻を示します。"
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:100008
+#: a3d65f1b29aa49179f47202560c1fa87
+msgid ""
+"\\rho(t) = \\frac{4}{\\sigma} \\, \\text{Re} \\int_0^\\infty "
+"\\frac{\\tilde{d}(f)\\,\\tilde{h}^*(f)}{S_n(f)} e^{2\\pi i f t} \\, df"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:120002
+#: 586384346c434054b8c22878af1f95a9
+msgid "5. Visualise the SNR Time Series"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:120004
+#: 3abb308b4ee34cd2b23fcbc9d0f30934
+msgid ""
+"Plot the matched-filter SNR as a function of time, with the injected merger "
+"time marked."
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:140002
+#: 11f4b2f061c2473d8af4a9259cbea3cc
+msgid "6. Conversion Reference"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: ccee682a99544e84a9a407cbe00e9f8c
+msgid "gwexpy object"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: b90f7526d2ce4e6db75c9857913d608b
+msgid "To PyCBC"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 6ac0cb6ef4f640cc9cae92b3e80cf7f1
+msgid "From PyCBC"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 869dd29122754932b67b24dcc1d1e6bd
+msgid "`TimeSeries`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: a69dd9346e9b4640b0a729725b857686
+msgid "`to_pycbc_timeseries(ts)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 327d53d7cbf24a968944db04dcfc5942
+msgid "`from_pycbc_timeseries(TimeSeries, pycbc_ts)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 3b9831967c2940ad84aec2e912df968a
+msgid "`FrequencySeries`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 042195c630574a07bcab10e1f790182c
+msgid "`to_pycbc_frequencyseries(fs)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: aca4935ffaf24e819f72e53302da0e79
+msgid "`from_pycbc_frequencyseries(FrequencySeries, pycbc_fs)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:140009
+#: 4fa429c489ad4f7e98c4011edc8436a7
+msgid "**Preserved metadata:**"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 245ca9049cba4954aa0b265111eb67ea
+msgid "Attribute"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: e0f45c66eb6045d992c661d09a205f6b
+msgid "gwexpy"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 04c9b39bbf6d41e4a942320b6aa45488
+msgid "PyCBC"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: c5b4e6b1106341bda70f7db9a349e1b4
+msgid "Sample rate"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: bc626c2dc27a4683abdced322fcb6632
+msgid "`ts.sample_rate`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 0b3181a598be4e35b29f32915e3835ca
+msgid "`1 / pycbc_ts.delta_t`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: a77fd647b4d442b5aee77628c6b966c7
+msgid "Start time"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: c481989768a049a2be8f9b3ced3143a8
+msgid "`ts.t0.value`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 27e2f4f87d844abb83947de6d0d29a06
+msgid "`float(pycbc_ts.start_time)`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 9210ef45c35b457680b199eca0873f63
+msgid "Frequency resolution"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: 13c9a474dbac419dbeb95c81ff442589
+msgid "`fs.df.value`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb
+#: f8a47cf4991e4f85abddf689e71e4972
+msgid "`pycbc_fs.delta_f`"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:140017
+#: cb2d13baec8c4d898bcfc761d5dbc904
+msgid "**Typical workflow:**"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:140018
+#: b6a9bb467dd14d9bb48dc9c56f99de84
+msgid "Load / preprocess data with gwexpy (`read`, `whiten`, `crop`)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:140019
+#: 06711f7251b04e279828943b12f4dc19
+msgid "Estimate PSD with gwexpy (`ts.asd()`)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:140020
+#: 60bc531a04744cb4ac671e3445dbd2e9
+msgid "Convert to PyCBC for matched filter or PE"
+msgstr ""
+
+#: ../../how-to/case-studies/case_pycbc_search.ipynb:140021
+#: e341942d06534e13acc18ffd85b81e92
+msgid "Convert SNR time series back to gwexpy for visualisation and archiving"
+msgstr ""

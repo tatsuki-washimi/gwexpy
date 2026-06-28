@@ -1,0 +1,700 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10002
+#: 9975c959e2cd41489448b73ee0815faf
+msgid "Case Study: Bootstrap PSD and GLS Fitting"
+msgstr "ケーススタディ: Bootstrap PSD と GLS フィッティング"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10004
+#: 27879cd1c8ab4ff784d401e32c35b2b5
+msgid "This tutorial demonstrates the integrated workflow of:"
+msgstr "このチュートリアルでは、以下の統合的なワークフローを実演します。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10006
+#: 74aec612f0f2477b84771588a6b99b05
+msgid ""
+"**Bootstrap PSD estimation** with VIF (Variance Inflation Factor) & Block "
+"correction"
+msgstr "**Bootstrap PSD 推定**: VIF（分散膨張因子）およびブロック補正を用いた推定"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10007
+#: 16a5e1f35129419d9b0058d02cd698a9
+msgid "**Error correlation matrix** construction using `BifrequencyMap`"
+msgstr "**誤差相関行列**の構築: `BifrequencyMap` を使用"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10008
+#: a5488695af6d4466800281b091cb2c7f
+msgid "**Generalized Least Squares (GLS) Fitting** for model estimation"
+msgstr "**一般化最小二乗法（GLS）フィッティング**: モデルパラメータの推定"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10009
+#: 4b4b0137570a4083978e7e0f868e3da7
+msgid "**MCMC integration** for uncertainty evaluation"
+msgstr "**MCMC との統合**: 不確かさの評価"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10010
+#: f2f754546eeb4b4d80a0f260f50a0ca6
+msgid ""
+"**GLS vs OLS comparison** to demonstrate the importance of frequency "
+"correlations"
+msgstr "**GLS と OLS の比較**: 周波数相関を考慮することの重要性を実証"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10012
+#: 58f2819a928c4aca8c98ceab2a0aa14f
+msgid "Scenario"
+msgstr "シナリオ"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10014
+#: 854041eaf84547648108a813e0366707
+msgid "We analyze a time-series containing:"
+msgstr "以下の成分を含む時系列データを解析します。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10015
+#: 6d0f5b4a0cea42418e16041d03135079
+msgid "**Colored noise** (power-law background)"
+msgstr "**カラードノイズ**（べき乗則のバックグラウンド）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10016
+#: 45a7d8bf8f3549f48d29c28df21de2a4
+msgid "**Resonant peak** (Lorentzian profile)"
+msgstr "**共振ピーク**（ローレンツ型プロファイル）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10018
+#: b62a58b5910b4dc3ab3964b998e5bf44
+msgid ""
+"Our goal is to accurately estimate the peak parameters (frequency, Q-factor,"
+" amplitude) with proper uncertainty quantification that accounts for "
+"frequency bin correlations."
+msgstr ""
+"本チュートリアルの目的は、周波数ビン間の相関を適切に考慮した不確かさの定量化のもとで、ピークパラメータ（周波数、Q 値、振幅）を正確に推定することです。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10020
+#: 5f930ad855954a70ad852e1820362fe0
+msgid "Learning Objectives"
+msgstr "学習目標"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10022
+#: 9942c8c85b114cc5a2394d68c1259451
+msgid "By the end of this tutorial, you will understand:"
+msgstr "このチュートリアルを終えると、以下を理解できるようになります。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10023
+#: b5ab80c59c084accbe4728daa75571d3
+msgid "How overlapping FFT segments introduce frequency correlations"
+msgstr "オーバーラップする FFT セグメントが周波数相関をどのように導入するか"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10024
+#: 91dcf6ae371a4ff2baddf5682d5526e7
+msgid "How Bootstrap methods estimate the full covariance matrix"
+msgstr "Bootstrap 法が完全な共分散行列をどのように推定するか"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10025
+#: 3051e5c8ae324bbb81b8a9af346eefc8
+msgid "Why GLS outperforms OLS when correlations exist"
+msgstr "相関が存在する場合に GLS が OLS よりも優れている理由"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10026
+#: f22c08207c024fc8b1397bdab1daa59b
+msgid "How to integrate MCMC for robust uncertainty estimation"
+msgstr "ロバストな不確かさ推定のための MCMC の統合方法"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10028
+#: 122d050e8a6a45598ccaf5cff1f2ac13
+msgid "Related API and theory"
+msgstr "関連 API と理論"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10030
+#: 2bc50c1125a44deb94abc575a62a9dcc
+msgid ""
+"**Related API**: [Spectral API](../../reference/api/spectral.rst), [Fitting "
+"API](../../reference/api/fitting.rst)"
+msgstr ""
+"**関連 API**: [Spectral API](../../reference/api/spectral.rst), [Fitting "
+"API](../../reference/api/fitting.rst)"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:10031
+#: 62c563177ca448eebbf39e3c6857cb01
+msgid ""
+"**Related theory**: [Validated "
+"Algorithms](../../explanation/validated_algorithms.md)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:20002
+#: 961a343e96554760be4e259cf46fcdf8
+msgid "1. Setup and Data Preparation"
+msgstr "1. セットアップとデータの準備"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:20004
+#: 6423db44f2e14cb0886e72bad6b873f3
+msgid "1.1 Imports and Parameters"
+msgstr "1.1 インポートとパラメータ"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:50002
+#: 0441aa9e1ebd4c58912950536ac9a7cd
+msgid "1.2 Generate Colored Noise + Resonant Peak"
+msgstr "1.2 カラードノイズ + 共振ピークの生成"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:50004
+#: ddc07efd190d4572b6474deba82e1007
+msgid "We create a time-series with:"
+msgstr "以下の成分を含む時系列データを作成します。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:50005
+#: 7e82c905232846f7816e9f64523fde7f
+msgid "**Background**: Pink noise (power-law ASD)"
+msgstr "**バックグラウンド**: ピンクノイズ（べき乗則 ASD）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:50006
+#: 5e10efca2b2843aeaf33163ee98c45c3
+msgid "**Signal**: Damped oscillation representing a resonant peak"
+msgstr "**信号**: 共振ピークを表す減衰振動"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:80002
+#: eaa720a17e7048709241dddfb322665e
+msgid "2. Spectrogram Construction"
+msgstr "2. スペクトログラムの構築"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:80004
+#: 5b2524e3bd2645ac8484fcc05c199159
+msgid "2.1 FFT Parameters"
+msgstr "2.1 FFT パラメータ"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:80006
+#: e58fc32143b64b07b18f2818f3666756
+msgid ""
+"We choose parameters to balance frequency resolution and statistical "
+"reliability:"
+msgstr "周波数分解能と統計的信頼性のバランスをとるパラメータを選択します。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:80008
+#: 6b06af46c21143138f277ec746fc5d20
+msgid "**fftlength**: Determines frequency resolution (df = 1/fftlength)"
+msgstr "**fftlength**: 周波数分解能を決定（df = 1/fftlength）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:80009
+#: 008c088ab0c94c1eb2ba5dc85d083448
+msgid "**stride**: Time step between spectrogram bins (typically = fftlength)"
+msgstr "**stride**: スペクトログラムのビン間の時間ステップ（通常 = fftlength）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:80010
+#: b5da946d302449f9bba7605ac68fb84f
+#, python-format
+msgid ""
+"**overlap**: Overlap within each time-bin (for Welch averaging, 50% "
+"recommended)"
+msgstr "**overlap**: 各タイムビン内でのオーバーラップ（Welch 平均化に対して 50% 推奨）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:80011
+#: 6f7f01379a484df9aec704d9f85573e5
+msgid "**window**: Hann window minimizes spectral leakage"
+msgstr "**window**: Hann 窓によりスペクトル漏洩を最小化"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:100002
+#: d3abeef69ede4e75b44b1daa906be658
+msgid "2.2 Generate Spectrogram"
+msgstr "2.2 スペクトログラムの生成"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130002
+#: b68f1f390d444543a7c21eb4d71de225
+msgid "3. Bootstrap PSD Estimation with Covariance Matrix"
+msgstr "3. Bootstrap PSD 推定と共分散行列"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130004
+#: 5367c3af1d80441abd9860c02ec8d071
+msgid "3.1 Why Bootstrap?"
+msgstr "3.1 Bootstrap を使う理由"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130006
+#: 5d13e95fcffb45da82d8b67f59a1152e
+msgid ""
+"Standard PSD estimation assumes frequency bins are **independent**, but this"
+" breaks down when:"
+msgstr "標準的な PSD 推定は周波数ビンが**独立**であることを仮定しますが、以下の場合にこの仮定は破れます。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130007
+#: 256db7ed18ac424c88e57bc47d58607b
+#, python-format
+msgid "Segments **overlap** (50% overlap introduces ~50% correlation)"
+msgstr "セグメントが**オーバーラップ**している場合（50% オーバーラップで約 50% の相関が発生）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130008
+#: 39bc6e842df74231aed552641a194799
+msgid "**Windowing** spreads spectral power across adjacent bins"
+msgstr "**窓関数**がスペクトルパワーを隣接ビンに拡散させる場合"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130010
+#: 8ec19e8015d340b6ae4b914e471fe21a
+msgid "Bootstrap resampling captures these correlations by:"
+msgstr "Bootstrap リサンプリングは以下の手順でこれらの相関を捕捉します。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130011
+#: 494e27a00868431db8d90f3c0feec9b8
+msgid "Resampling segments with replacement"
+msgstr "セグメントを復元抽出でリサンプリング"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130012
+#: b5bbbc4eca374eccad99e370db1db091
+msgid "Computing statistics for each resample"
+msgstr "各リサンプルに対して統計量を計算"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130013
+#: e0e159bc13174fecaa9023dd18980b47
+msgid "Building the empirical covariance matrix"
+msgstr "経験的共分散行列を構築"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:130015
+#: 67be7efa75da467198a400835816ed4b
+msgid "3.2 Bootstrap Parameters"
+msgstr "3.2 Bootstrap パラメータ"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:150002
+#: df67dea724024702aace19ef4cb53005
+msgid "3.3 Run Bootstrap Estimation"
+msgstr "3.3 Bootstrap 推定の実行"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:150004
+#: be9ab3a33c6142b7b4c69636074c8547
+msgid "Using `return_map=True` returns both:"
+msgstr "`return_map=True` を指定すると、以下の両方が返されます。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:150005
+#: 2b6041754dd4445492cee22900490d87
+msgid ""
+"`psd_boot`: FrequencySeries with error bands (`error_low`, `error_high`)"
+msgstr "`psd_boot`: 誤差バンド（`error_low`, `error_high`）付きの FrequencySeries"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:150006
+#: db4a54efb34d4c7db9ad6af9ff55147b
+msgid "`cov_map`: BifrequencyMap containing the full covariance matrix"
+msgstr "`cov_map`: 完全な共分散行列を含む BifrequencyMap"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:170002
+#: 1f442a54254d479dbf79df01aa9f4e0a
+msgid "3.4 VIF (Variance Inflation Factor) Verification"
+msgstr "3.4 VIF（分散膨張因子）の検証"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:170004
+#: 683023b37f8b4622b22b0124def3555c
+#, python-format
+msgid ""
+"The VIF quantifies how overlapping segments inflate variance compared to "
+"independent segments. For 50% overlap with Hann window, VIF ≈ 1.89 (Percival"
+" & Walden 1993, Eq. 56)."
+msgstr ""
+"VIF は、独立セグメントと比較して、オーバーラップするセグメントが分散をどの程度膨張させるかを定量化します。 50% オーバーラップの Hann "
+"窓に対して、VIF は約 1.89 です（Percival & Walden 1993, Eq. 56）。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:190002
+#: 42597442c6ac4cfa92930349d6ce172a
+msgid "3.5 Visualize Bootstrap Results"
+msgstr "3.5 Bootstrap 結果の可視化"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:210002
+#: 7fe193d6ab0f46fbb9977703726cfe7a
+msgid "**Key Observations:**"
+msgstr "**主な観察結果:**"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:210003
+#: b7a7fb645891416493c8a32197eedf83
+msgid ""
+"Adjacent frequency bins show **~0.25 correlation** from 50% time-segment "
+"overlap"
+msgstr "隣接する周波数ビンは、50% の時間セグメントオーバーラップにより**約 0.25 の相関**を示す"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:210004
+#: e9ddbfa3b9614211aacfc67ff913e471
+msgid ""
+"Correlation matrix shows **band-diagonal structure** (decay with distance)"
+msgstr "相関行列は**帯状対角構造**（距離とともに減衰）を示す"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:210005
+#: 28914a429b2b474b93fb760f8bc2d2ac
+msgid "With no rebinning, correlations between neighboring bins are preserved"
+msgstr "リビニングなしでは、隣接ビン間の相関が保存される"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:210006
+#: 0ab74052d5ef47b4a4dffb60689a98e2
+msgid "Bootstrap captures this correlation in the covariance matrix"
+msgstr "Bootstrap はこの相関を共分散行列に反映する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:210007
+#: 9477d596d4104d918815b5c64ae01588
+msgid "GLS fitting **utilizes** correlations; OLS **ignores** them"
+msgstr "GLS フィッティングは相関を**活用**し、OLS は相関を**無視**する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:220002
+#: 3b5f3a73b54e4e7983f08bbdc4e0f462
+msgid "4. Model Definition and GLS Fitting"
+msgstr "4. モデル定義と GLS フィッティング"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:220004
+#: 2bb3a5ea12424607b456667c249b5151
+msgid "4.1 Define PSD Model"
+msgstr "4.1 PSD モデルの定義"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:220006
+#: c5358bfbaa874c32a88ffb46fdb0b473
+msgid "We fit a model consisting of:"
+msgstr "以下の成分からなるモデルをフィットします。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:220007
+#: 79b91e62f8d74b55891c5da2c6164608
+#, python-brace-format
+msgid "**Power-law background**: $A_{bg} (f/f_{ref})^{\\alpha}$"
+msgstr "**べき乗則バックグラウンド**: $A_{bg} (f/f_{ref})^{\\alpha}$"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:220008
+#: 1d53750670a444cabe5fca9dd97a8ece
+#, python-brace-format
+msgid ""
+"**Lorentzian peak**: $A_{peak} \\frac{\\gamma^2}{(f-f_0)^2 + \\gamma^2}$ "
+"where $\\gamma = f_0/(2Q)$"
+msgstr ""
+"**ローレンツ型ピーク**: $A_{peak} \\frac{\\gamma^2}{(f-f_0)^2 + \\gamma^2}$（ただし "
+"$\\gamma = f_0/(2Q)$）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:240002
+#: a0b2c4c801cb4a21b179e5810078ab4d
+msgid "4.2 Prepare Data for Fitting"
+msgstr "4.2 フィッティング用データの準備"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:240004
+#: fc41f77b56284b7690b14480a1c34873
+msgid ""
+"We crop the frequency range to focus on the region around the peak, and "
+"prepare the corresponding covariance sub-matrix."
+msgstr "ピーク周辺の周波数範囲にクロップし、対応する共分散部分行列を準備します。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:260002
+#: 36a73728eebd42bdbc9bbceefc5071d4
+msgid "4.3 Initial Parameter Guesses and Bounds"
+msgstr "4.3 初期パラメータの推定値と範囲"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:260004
+#: 0323009f6502475c90e5ac955f72ab48
+msgid ""
+"Good initial guesses help the optimizer converge to the correct minimum."
+msgstr "適切な初期推定値を設定することで、最適化が正しい最小値に収束しやすくなります。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:260006
+#: 2dd914a3d446461d8146df70f8d8e9fc
+msgid ""
+"In this synthetic example, the center frequency is known to be near 100 Hz "
+"and the resonance is a moderately broad commissioning line rather than an "
+"arbitrarily narrow delta-like feature. Use bounds to encode that prior "
+"knowledge so the optimizer does not explain broadband structure by pushing "
+"`f0` or `Q` into nonphysical corners."
+msgstr ""
+"この合成例では中心周波数が 100 Hz 付近だと分かっており、対象は極端に鋭いデルタ線ではなく、ある程度幅を持つ commissioning line"
+" です。その事前知識を bounds に入れて、`f0` や `Q` が不自然な端へ逃げることで広帯域構造を説明してしまうのを防ぎます。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:290002
+#: 2e3ea193920241eda0303fbbe7c26b1e
+msgid "4.4 Run GLS Fitting"
+msgstr "4.4 GLS フィッティングの実行"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:290004
+#: 81952970bfe84c7d9417bcf3a5fbdd8e
+msgid ""
+"By passing `cov=BifrequencyMap`, `fit_series` automatically uses "
+"**Generalized Least Squares** which accounts for the full covariance "
+"structure."
+msgstr ""
+"`cov=BifrequencyMap` を渡すことで、`fit_series` "
+"は完全な共分散構造を考慮した**一般化最小二乗法（GLS）**を自動的に使用します。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:290006
+#: 02ef8dcff82c43fdbc6a629bd6e52929
+msgid ""
+"For the notebook-sized example here, GLS usually finishes in seconds, while "
+"the MCMC step below is typically the longest part and often takes on the "
+"order of minutes depending on walker count, step count, and hardware."
+msgstr ""
+"このノートブック規模の例では、GLS は通常数秒で終わります。一方、後半の MCMC は walker 数・step "
+"数・計算機性能に応じて、分単位の実行時間になることがあります。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:310002
+#: 695ed920f1334bbd8a6786f5a74768e0
+msgid "4.5 Analyze Fit Results"
+msgstr "4.5 フィッティング結果の解析"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:310004
+#: 807dd2b8247d4792877146fab62631b3
+msgid ""
+"For commissioning use, treat `f0` and `Q` as the primary diagnostics. The "
+"absolute `A_peak` normalization is more sensitive to window leakage, "
+"bootstrap median bias, and the PSD/ASD convention than the line center or "
+"linewidth, so read it as an effective line-strength parameter rather than "
+"the most robust truth-matching check."
+msgstr ""
+"commissioning で主要な診断量として重視すべきなのは `f0` と `Q` です。 絶対的な `A_peak` の規格化は、window "
+"leakage、bootstrap median のバイアス、PSD/ASD 規約の影響を line center や linewidth "
+"より強く受けます。そのため、ここでは厳密な真値一致よりも effective line-strength parameter として読みます。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:340002
+#: 333d56ccecee46f69e66e077b897da13
+msgid "5. MCMC Uncertainty Evaluation"
+msgstr "5. MCMC による不確かさの評価"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:340004
+#: e090f4385ffb48c9bd77126f894624c9
+msgid ""
+"MCMC (Markov Chain Monte Carlo) provides a more robust estimation of "
+"parameter uncertainties and correlations. Treat it as the expensive "
+"validation pass after the faster GLS estimate."
+msgstr ""
+"MCMC（マルコフ連鎖モンテカルロ法）は、パラメータの不確かさと相関のより頑健な推定を提供します。 まず GLS で初期評価を行い、MCMC "
+"は計算コストの高い確認段階として使うのが実務的です。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:340007
+#: 37daa0d85eb74050baa1d522aeb23bae
+msgid "5.1 Run MCMC"
+msgstr "5.1 MCMC の実行"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:360002
+#: 643a2d38fe6145078e5fea27ebee30f1
+msgid "5.2 Convergence Diagnostics"
+msgstr "5.2 収束診断"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:380002
+#: caeeab6c5208440d810290613273b60e
+msgid "5.3 Corner Plot and Trace Plots"
+msgstr "5.3 コーナープロットとトレースプロット"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:410002
+#: 5fd35f19e89c423aa7cde6aa793f354d
+msgid "6. GLS vs OLS Comparison"
+msgstr "6. GLS と OLS の比較"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:410004
+#: 13f1b642194242b8b2bfd2dc5de8c2a9
+msgid "6.1 Run OLS Fit (Diagonal Covariance Only)"
+msgstr "6.1 OLS フィッティングの実行（対角共分散のみ）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:410006
+#: 52d1408373ed46fdb84ec5d9c4a25e84
+msgid ""
+"OLS (Ordinary Least Squares) ignores off-diagonal correlations, using only "
+"the diagonal variances."
+msgstr "OLS（通常最小二乗法）は非対角相関を無視し、対角分散のみを使用します。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:430002
+#: fd11b8b1a3364e8c9228a8e34ed8e2de
+msgid "6.2 Compare GLS and OLS Results"
+msgstr "6.2 GLS と OLS の結果比較"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460002
+#: 9e27eef295a54355b2dcd7603f6238ab
+msgid "6.3 Key Insights"
+msgstr "6.3 重要な知見"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460004
+#: 60fafe2a8f734b72aec13faa4308e920
+msgid "**GLS errors are typically larger than OLS errors** because:"
+msgstr "**GLS の誤差は一般的に OLS の誤差よりも大きくなります。** その理由は以下の通りです。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460006
+#: 5f918e17030b49c088a39e93402651c6
+msgid ""
+"**OLS underestimates uncertainties** by ignoring positive correlations "
+"between adjacent bins"
+msgstr "**OLS は不確かさを過小評価**する（隣接ビン間の正の相関を無視するため）"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460007
+#: 22372b08bfb04a81a8c6be45385573cf
+msgid "**GLS properly accounts** for the reduced effective degrees of freedom"
+msgstr "**GLS は有効自由度の減少を適切に考慮**する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460008
+#: 480e9fc841844e2a8171811d254ff312
+msgid ""
+"The error ratio (GLS/OLS > 1) reflects the **true impact of correlations**"
+msgstr "誤差比（GLS/OLS > 1）は**相関の真の影響**を反映する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460010
+#: 8142a7ab34694c52b71fd735a3ba641e
+msgid "**Expected with ~0.25 correlation**: GLS errors 10-30% larger than OLS"
+msgstr "**約 0.25 の相関が存在する場合の期待値**: GLS 誤差は OLS より 10-30% 大きくなる"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460012
+#: d4a8611ca13d4ca995b7b78d857bb9bf
+msgid "**Why GLS differs from OLS**:"
+msgstr "**GLS が OLS と異なる理由**:"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460013
+#: 1ed41f269aee4afd9b0d4c37826a5af3
+msgid "OLS assumes independence → underestimates uncertainties"
+msgstr "OLS は独立性を仮定 → 不確かさを過小評価"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460014
+#: 2b908ef1753148b4acf38f0fc1925d4d
+msgid "GLS accounts for correlation → reduces effective degrees of freedom"
+msgstr "GLS は相関を考慮 → 有効自由度を削減"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460015
+#: b5a3c2c4bcfb484dba7d9e60d3acc43f
+msgid "Error ratio (GLS/OLS) quantifies correlation impact"
+msgstr "誤差比（GLS/OLS）は相関の影響を定量化"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460016
+#: af66365448cb44678679ddb6e0af64fa
+#, python-format
+msgid ""
+"With 50% overlap: ~0.25 correlation leads to meaningful GLS vs OLS "
+"differences"
+msgstr "50% オーバーラップの場合: 約 0.25 の相関が GLS と OLS の間に有意な差をもたらす"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460018
+#: 83aa19b38fcd49828ff59f8b61913f17
+msgid "**Practical implications:**"
+msgstr "**実用上の示唆:**"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460019
+#: 49d54249e1a848a9b55861ea89a6a63d
+msgid "OLS may produce overconfident (too small) error bars"
+msgstr "OLS は過信した（小さすぎる）誤差バーを生成する可能性がある"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460020
+#: 4638d4223fa948ccbdc17a5316a94e4e
+msgid "GLS provides more honest uncertainty estimates"
+msgstr "GLS はより正直な不確かさの推定を提供する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:460021
+#: 8b0ee4ac0380450f8cc2181fb0f7dfe9
+msgid "For precision measurements, GLS is essential"
+msgstr "精密測定においては GLS が不可欠である"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470002
+#: 36dc0e52bdf54c9199a4b086e87ebc94
+msgid "7. Summary and Best Practices"
+msgstr "7. まとめとベストプラクティス"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470004
+#: 90e38a88a3bf4843ac262046065044ab
+msgid "Key Takeaways"
+msgstr "主なポイント"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470006
+#: 34b85605a04041bba04f7b228e1b1c28
+msgid ""
+"**Bootstrap PSD estimation** provides both the spectrum and its full "
+"covariance matrix"
+msgstr "**Bootstrap PSD 推定**はスペクトルとその完全な共分散行列の両方を提供する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470007
+#: 64d9ca83fcca4892a08b3d23c1f934df
+msgid ""
+"**Overlapping segments** introduce correlations that standard methods ignore"
+msgstr "**オーバーラップするセグメント**は標準的な手法では無視される相関を導入する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470008
+#: a326613221894196bccb7421493c61af
+msgid ""
+"**GLS fitting** properly weights data according to the covariance structure"
+msgstr "**GLS フィッティング**は共分散構造に基づいてデータを適切に重み付けする"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470009
+#: 0109438c00574a4eb2f396048975c916
+msgid "**MCMC** provides robust posterior distributions for complex models"
+msgstr "**MCMC** は複雑なモデルに対してロバストな事後分布を提供する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470010
+#: 11c0f2a75e604048865a0720e555d3a1
+msgid "**OLS underestimates errors** when correlations are present"
+msgstr "**OLS は相関が存在する場合に誤差を過小評価**する"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470012
+#: fd96943af97742aab53c865f63f4378a
+msgid "Recommended Workflow"
+msgstr "推奨ワークフロー"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470030
+#: 097b23f67434447b95124f0d63c75173
+msgid "Common Pitfalls"
+msgstr "よくある落とし穴"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470032
+#: 8ff159dc323c4860a49d34aa68234c04
+msgid "**Using OLS for correlated data** → underestimated errors"
+msgstr "**相関のあるデータに OLS を使用**する → 誤差の過小評価"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470033
+#: 526e00a4bdd846c7a8cf9dcaf2756c14
+msgid "**Too few bootstrap samples** → noisy covariance estimate"
+msgstr "**Bootstrap サンプル数が少なすぎる** → 共分散推定にノイズが混入"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470034
+#: 6b23ee2aa97c4b3f842d6854d396ca04
+msgid "**Poor initial guesses** → fit may converge to local minimum"
+msgstr "**初期推定値が不適切** → 局所最小値に収束する可能性"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:470035
+#: 478a1835986141a190b8409cfe5f3000
+msgid "**Forgetting to crop covariance** → dimension mismatch errors"
+msgstr "**共分散のクロップを忘れる** → 次元の不一致エラー"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:480002
+#: d53eed0caa7949799b75327768ff8031
+msgid "Appendix: BifrequencyMap Operations"
+msgstr "付録: BifrequencyMap の操作"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:480004
+#: 3baba3b934154f4db9af73e798db1f79
+msgid "Quick reference for common `BifrequencyMap` operations."
+msgstr "`BifrequencyMap` の一般的な操作のクイックリファレンスです。"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:500004
+#: 68a39e859db540bebbb2e231bbaa3f9b
+msgid "Further Reading"
+msgstr "参考文献"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:500006
+#: 52a3399097f441dcb3a2957150e4ea16
+msgid ""
+"**Percival & Walden (1993)**: Spectral Analysis for Physical Applications - "
+"VIF derivation"
+msgstr ""
+"**Percival & Walden (1993)**: Spectral Analysis for Physical Applications - "
+"VIF の導出"
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:500007
+#: 613d73e0817c4882bb18c153927611b6
+msgid ""
+"**gwexpy API**: [Spectral module](../../reference/api/spectral.rst), "
+"[Fitting module](../../reference/api/fitting.rst)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:500008
+#: 25b74eb50d944683a0902b641f723145
+msgid ""
+"**Related theory**: [Validated "
+"Algorithms](../../explanation/validated_algorithms.md), [Numerical "
+"Stability](../../explanation/numerical_stability.md)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_bootstrap_gls_fitting.ipynb:500009
+#: 138921f4c5e64c23b7a1552e95b84ea1
+msgid ""
+"**Related tutorials**: [Advanced "
+"Fitting](../fitting/advanced_fitting.ipynb), [Noise "
+"Budget](case_noise_budget.ipynb)"
+msgstr ""

@@ -1,0 +1,255 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:10002
+#: 5dbadcbb7c1940d69524da80c01d00de
+msgid "Spectrogram: Normalization and Cleaning"
+msgstr "スペクトログラム: 正規化とクリーニング"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:10004
+#: 6df179b5fc9b4622b6291f33d65716cb
+msgid ""
+"This tutorial demonstrates two groups of spectrogram post-processing tools "
+"available in **gwexpy**:"
+msgstr "このチュートリアルでは **gwexpy** が提供するスペクトログラム後処理ツール 2 種類を解説します："
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: d999eb94edc24f21b89fcd14ae99d9e4
+msgid "API"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: ef74b46d6be84c9e955c337180b1640a
+msgid "Purpose"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 3e4a3489c7bc4d4384b5215b3f1c918b
+msgid "`Spectrogram.normalize()`"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 966ef578a4ec4ca88004b644b5cb2827
+msgid "Convert raw power to SNR or relative units"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 0ad1678dff8542a8b62321dd01ac2b44
+msgid "`Spectrogram.clean()`"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 183b0c92f8f34231ad7bd5a0cfd24d38
+msgid "Remove glitches, trends, and persistent lines"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:10012
+#: c957ee2393464362956cc2c68a416770
+msgid ""
+"**Prerequisites:** [Spectrogram "
+"Basics](../../tutorials/intro_spectrogram.ipynb)"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:30002
+#: 0739cd3df98d43d79290f2710c2da025
+msgid "1. Synthetic Data"
+msgstr "1. 合成データの準備"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:30004
+#: 71e87397f37d4cb9a3cc2c5f0c81cfe9
+msgid "We build a 2-minute strain time series containing:"
+msgstr "以下を含む 2 分間の strain 時系列を生成します："
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:30006
+#: 273ec118bd0b4673a07273590a6f00da
+msgid ""
+"**Stationary Gaussian noise** with a slowly drifting amplitude (non-"
+"stationarity)"
+msgstr "**定常ガウスノイズ**（ゆっくり変化する振幅 → 非定常）"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:30007
+#: 682bee14651a4bc8873629eeac23093e
+msgid "**Persistent narrowband line** at 60 Hz (power-line coupling)"
+msgstr "**60 Hz 持続ライン**（電源ハム）"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:30008
+#: 010797630d8046e695797c85749f6940
+msgid "**Transient glitches** at 15 s, 45 s, and 90 s"
+msgstr "**過渡グリッチ**（15 s, 45 s, 90 s）"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:50002
+#: d5db621bbceb4b5d940c31cd06262435
+msgid "2. Baseline Spectrogram"
+msgstr "2. ベースライン スペクトログラム"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:50004
+#: adccea27ba7546f491b28f3e6271d74a
+msgid ""
+"The raw spectrogram already shows glitches (bright vertical stripes), the 60"
+" Hz line (bright horizontal stripe), and the time-varying noise floor."
+msgstr "生スペクトログラムには、グリッチ（明るい縦縞）、60 Hz ライン（明るい横縞）、 時間変動するノイズフロアがすでに見えています。"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:70002
+#: 5fef28b72ab845a69d89a11dc035924d
+msgid "3. Normalization"
+msgstr "3. 正規化"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:70004
+#: ced44aecc6f14a848fb1ac06f803be87
+msgid "3a. SNR Spectrogram (`method='snr'`)"
+msgstr "3a. SNR スペクトログラム (`method='snr'`)"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:70006
+#: a7b3b1b60be848419536c101b760e900
+msgid ""
+"The most common normalization for transient searches: divide each time slice"
+" by the **median PSD** along the time axis.   Result is a dimensionless "
+"**SNR²** map where the stationary background ≈ 1."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:90002
+#: 19608fb43c6e4015a2f14fa4ca37c1c9
+msgid "3b. Other Normalization Methods"
+msgstr "3b. その他の正規化メソッド"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: a67183c20d444eeaa4d0559fc5b94d7b
+msgid "`method=`"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 15d853722254481f8a42a1c702520b27
+msgid "Denominator"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 484a4eeec97042419d135b13f15bcc51
+msgid "`'median'`"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: bba4760177964105829f9d8a99eb072d
+msgid "Median PSD per frequency bin (identical to `'snr'`)"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 072a10e670b04a1a9c5f6345d280d0b6
+msgid "`'mean'`"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 4e36b7f539624a7888a560184047e578
+msgid "Mean PSD per frequency bin"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: b737836c8af948f8bb2d7e023f38b287
+msgid "`'percentile'`"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb
+#: 4d150e163883489b8415131e514e3de8
+msgid "Nth-percentile PSD (controlled by `percentile=`)"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:110002
+#: 7a8b213ec6ee4cdf85b00f37ae032877
+msgid "3c. Reference Normalization (`method='reference'`)"
+msgstr "3c. 参照スペクトル正規化 (`method='reference'`)"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:110004
+#: 986812e4ddf64e689ddd3beb29729952
+msgid ""
+"Supply your own reference spectrum — useful when you want to compare against"
+" a specific quiet period or an independently measured noise floor."
+msgstr "独自の参照スペクトルを渡して正規化します。 特定の静粛期間や独立計測したノイズフロアとの比較に有用です。"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:130002
+#: d0f9788854d34640b0d6fc27ba831e5b
+msgid "4. Cleaning"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:130004
+#: d5c4fb2867a942d3b8b975c74434eb7d
+msgid "4a. Threshold Cleaning (`method='threshold'`)"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:130006
+#: 48c43762b550416d96462de435256a32
+msgid ""
+"Pixels that exceed `median + threshold × MAD` (per frequency bin) are "
+"flagged as outliers and replaced.  Replacement strategy is controlled by "
+"`fill=` (`'median'`, `'nan'`, `'zero'`, or `'interpolate'`)."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:130010
+#: 1796073847954a00a58a76d0bf7f9924
+msgid ""
+"This removes short-duration **glitches** that appear as bright vertical "
+"streaks."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:150002
+#: 5f8078933ac341c19677b138b0e77652
+msgid "4b. Rolling-Median Detrending (`method='rolling_median'`)"
+msgstr "4b. ローリング中央値デトレンド (`method='rolling_median'`)"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:150004
+#: b3a6f1257d624ad6bc236bfd19af4b6e
+msgid ""
+"Divide each column by a running median along the time axis.   This removes "
+"**slow non-stationary trends** without distorting short-duration features."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:170002
+#: 36e19580c9ac45a4a80ef8a817fc6ab4
+msgid "4c. Persistent Line Removal (`method='line_removal'`)"
+msgstr "4c. 持続ライン除去 (`method='line_removal'`)"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:170004
+#: 2d30120a00694580b7a44dd824a5a1ab
+msgid ""
+"A frequency bin is flagged as a persistent line if it exceeds "
+"`amplitude_threshold × global_median` for more than `persistence_threshold` "
+"fraction of time bins.   Detected bins are replaced with their time-median."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:190002
+#: 44173b08c9c94d6a9cb0124d52a38f81
+msgid "4d. Full Cleaning Pipeline (`method='combined'`)"
+msgstr "4d. 完全クリーニングパイプライン (`method='combined'`)"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:190004
+#: 5fe9c56104af47e7a58cd35e4b15774f
+msgid ""
+"Runs threshold → rolling-median → line-removal in sequence.   Recommended as"
+" a one-stop solution for commissioning-style data quality checks."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:210002
+#: ea30f2f523354ada949c41562dabd3d5
+msgid "5. Summary"
+msgstr "5. まとめ"
+
+#: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:210004
+#: a0e65abbcd96407b9aeb3e5027ec5a0d
+msgid "All methods and their purposes:"
+msgstr "全メソッドと目的の一覧："

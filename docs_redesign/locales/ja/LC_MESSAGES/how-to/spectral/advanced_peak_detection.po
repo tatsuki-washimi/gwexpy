@@ -1,0 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/spectral/advanced_peak_detection.ipynb:10002
+#: f46c3a5f90a2498d9da9994064baea45
+msgid "Peak Detection: Basics"
+msgstr "ピーク検出: 基本"
+
+#: ../../how-to/spectral/advanced_peak_detection.ipynb:10004
+#: a81ec10dae974f9db18c8879725b8281
+msgid ""
+"`gwexpy` provides the `find_peaks` method for easily detecting peaks in "
+"signals contained in `TimeSeries` or `FrequencySeries`. This internally "
+"wraps `scipy.signal.find_peaks`, but allows intuitive parameter "
+"specification using physical units (Hz, seconds, etc.)."
+msgstr ""
+"`gwexpy` では、`TimeSeries` や `FrequencySeries` に含まれる信号のピークを簡単に検出するための "
+"`find_peaks` メソッドを提供しています。これは内部的に `scipy.signal.find_peaks` "
+"をラップしていますが、物理単位（Hz, 秒など）を用いた直感的なパラメータ指定が可能です。"
+
+#: ../../how-to/spectral/advanced_peak_detection.ipynb:10006
+#: 453da7ff699442b5afba75c535cbcfa1
+msgid "The `find_peaks` method returns the following two items:"
+msgstr "`find_peaks` メソッドは、以下の2つを返します。"
+
+#: ../../how-to/spectral/advanced_peak_detection.ipynb:10007
+#: fe84bf8b2878493b9fbd22c481645b5e
+msgid "**Peak Series**: A new Series object containing only the peak points"
+msgstr "**Peak Series**: ピーク点のみを抽出した新しい Series オブジェクト"
+
+#: ../../how-to/spectral/advanced_peak_detection.ipynb:10008
+#: a301273e1f0b46089ada592627403ef6
+msgid ""
+"**Properties**: A dictionary of peak properties (such as prominence and "
+"width) returned by scipy"
+msgstr "**Properties**: scipy が返すピーク特性（プロミネンスや幅など）の辞書"
+
+#: ../../how-to/spectral/advanced_peak_detection.ipynb:30002
+#: f94fcf79dd0c4f3290f5448ad04d5f1a
+msgid "1. Peak Detection in FrequencySeries"
+msgstr "1. FrequencySeries でのピーク検出"
+
+#: ../../how-to/spectral/advanced_peak_detection.ipynb:50002
+#: d6182745d16e4af98bea238da86d57a6
+msgid "2. Constraints Using Physical Units (Distance & Width)"
+msgstr "2. 物理単位による制約 (Distance & Width)"
+
+#: ../../how-to/spectral/advanced_peak_detection.ipynb:70002
+#: cc92d9e452b446faa8b907de441732d3
+msgid "3. Peak Detection in TimeSeries"
+msgstr "3. TimeSeries でのピーク検出"

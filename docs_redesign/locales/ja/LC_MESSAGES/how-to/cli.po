@@ -1,0 +1,151 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/cli.md:1 b44f20bbb1454e07bdfe57661a7d71a1
+msgid "Command-Line Interface (CLI, Experimental)"
+msgstr "コマンドラインインターフェース（CLI、試作版）"
+
+#: ../../how-to/cli.md:3 5d545bf61ae74c8ba15410c4726ac996
+msgid "Overview"
+msgstr "概要"
+
+#: ../../how-to/cli.md:5 0727466020094100a478ead2b0d1d175
+msgid "**Status:** Experimental"
+msgstr "**ステータス:** 試作版（安定性ラベル）"
+
+#: ../../how-to/cli.md:7 ca5f1d6fdd8a4a3397bd2606630c0ddb
+msgid ""
+"The GWexpy CLI is currently a **minimal placeholder interface** and should "
+"be treated as an **experimental, prototype-stage feature**. At present, "
+"GWexpy is intended to be used primarily through the **Python API** for "
+"interactive analysis and scripting."
+msgstr ""
+"GWexpy CLI は現在 "
+"**最小限のプレースホルダ的インターフェース**であり、**試作段階の機能**として扱ってください。現時点では、GWexpy は主に **Python "
+"API** を用いた対話的解析およびスクリプティングで利用することを想定しています。"
+
+#: ../../how-to/cli.md:9 41fa887e42f24a95b58dc0ceeaf07b65
+msgid "Current Status"
+msgstr "現在のステータス"
+
+#: ../../how-to/cli.md:11 6acbf56f9a3744fe8da78a2897179d85
+msgid ""
+"The GWexpy CLI is in **early development / prototype stage**. The "
+"implemented behavior is currently limited to version display and a small "
+"informational help message. Advanced analysis workflows are not yet exposed "
+"as stable GWexpy subcommands, and the interface should not yet be treated as"
+" a finalized public workflow surface."
+msgstr ""
+"GWexpy CLI は **初期開発 / "
+"試作段階**です。現在実装されているのはバージョン表示と簡単な案内メッセージが中心であり、高度な解析ワークフローは安定したサブコマンドとしてはまだ公開されていません。完成済みのユーザー向け"
+" CLI とみなす段階ではありません。"
+
+#: ../../how-to/cli.md:13 8f53a859b3b74111b6bc6efdbf6fbca9
+msgid "Available Commands"
+msgstr "利用可能なコマンド"
+
+#: ../../how-to/cli.md:15 dab7c32a86844a01819af534a08aab49
+msgid "`gwexpy --version`"
+msgstr ""
+
+#: ../../how-to/cli.md:17 3a7ebebf829244c69d78f716239473a1
+msgid "Display the installed GWexpy version:"
+msgstr "インストールされている GWexpy のバージョンを表示します："
+
+#: ../../how-to/cli.md:23 e23765635a7140e98329faae90bdc613
+msgid "Output:"
+msgstr "出力："
+
+#: ../../how-to/cli.md:28 7b29cb09a7984b44bcf112dd5c85ce78
+msgid "`gwexpy --help`"
+msgstr ""
+
+#: ../../how-to/cli.md:30 56364bc15f424e3f88cb7c51fb9c23e7
+msgid "Show general help information:"
+msgstr "一般的なヘルプ情報を表示します："
+
+#: ../../how-to/cli.md:36 647378abe3e2400d8b97c0b73b1b4e4f
+msgid "Using GWpy CLI"
+msgstr "GWpy CLI の使用"
+
+#: ../../how-to/cli.md:38 380ac0ed73a34318bbc2d97ba70514d5
+msgid ""
+"If you need GWpy's command-line tools, refer to the [GWpy "
+"Documentation](https://gwpy.readthedocs.io/en/latest/cli/) directly. GWexpy "
+"does not currently provide a documented compatibility layer that forwards "
+"the full GWpy CLI surface."
+msgstr ""
+"GWpy のコマンドラインツールを利用したい場合は、[GWpy "
+"ドキュメント](https://gwpy.readthedocs.io/en/latest/cli/)を直接参照してください。GWexpy "
+"は現在、GWpy CLI 全体を透過的に転送する互換レイヤを文書化していません。"
+
+#: ../../how-to/cli.md:40 6035a3db8d7b4ea1b185618d76e3fe34
+msgid ""
+"**Note:** For complex analysis pipelines, gravitational wave parameter "
+"estimation, and custom data processing, the **Python API** is recommended. "
+"See the [Getting Started](../tutorials/getting_started.md) guide for API "
+"examples."
+msgstr ""
+
+#: ../../how-to/cli.md:42 3b503937b81f4ad180ce11f25c28f566
+msgid "Future Development"
+msgstr "今後の開発予定"
+
+#: ../../how-to/cli.md:44 61c5f6a14ba64819a7020276e2447134
+msgid "Future GWexpy releases will add specialized subcommands for:"
+msgstr "今後の GWexpy リリースでは、以下の専門的なサブコマンドを追加予定です："
+
+#: ../../how-to/cli.md:45 322ea77f120b4c22bb54c62cae48e258
+msgid "Data ingestion and validation"
+msgstr "データ取り込みと検証"
+
+#: ../../how-to/cli.md:46 1d1b3c9b930040c7801dfae2f4b3aa52
+msgid "Noise characterization"
+msgstr "ノイズ特性評価"
+
+#: ../../how-to/cli.md:47 577e785eb1404d55981ceea38edf2707
+msgid "Time-frequency analysis"
+msgstr "時間-周波数解析"
+
+#: ../../how-to/cli.md:48 a24a97014baa4c5bbb1425aeba4a2591
+msgid "Event localization"
+msgstr "イベント位置決定"
+
+#: ../../how-to/cli.md:50 9f85adfee5614b6d8b36a96ff88bc301
+msgid ""
+"For planned features and timeline, see the public "
+"[Roadmap](../explanation/roadmap.md)."
+msgstr ""
+
+#: ../../how-to/cli.md:52 ef3f51aa696c41f7904a0c3f37fbd475
+msgid "Troubleshooting"
+msgstr "トラブルシューティング"
+
+#: ../../how-to/cli.md:54 c3a9dd1c2cc44a5081e840b384e66816
+msgid ""
+"If the `gwexpy` command is not found after installation, ensure that "
+"`gwexpy` was installed in the correct environment:"
+msgstr ""
+"インストール後に `gwexpy` コマンドが見つからない場合は、GWexpy が正しい環境にインストールされていることを確認してください："
+
+#: ../../how-to/cli.md:60 a3ac38e15b664061850027e4b98e4478
+msgid "Verify the installation:"
+msgstr "インストールを確認します："

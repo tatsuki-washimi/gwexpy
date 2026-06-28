@@ -1,0 +1,235 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/intro_spectrogram.ipynb:10002
+#: a9d2d7c92c3e4aac890cfd018075f21f
+msgid "Spectrogram: Basics"
+msgstr "Spectrogram: 基本"
+
+#: ../../tutorials/intro_spectrogram.ipynb:10004
+#: 51f0b6abe1274bb0826c246261201b2b
+msgid ""
+"This notebook introduces the newly added `SpectrogramList` and "
+"`SpectrogramDict` classes in `gwexpy`."
+msgstr ""
+"このノートブックでは、`gwexpy` で新しく導入された `SpectrogramList` および `SpectrogramDict` "
+"クラスの使い方を紹介します。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:10006
+#: 389fb67c50a640e188fc262a31065b2c
+msgid ""
+"These classes are containers for managing multiple spectrogram data "
+"(`gwpy.spectrogram.Spectrogram`) collectively and performing batch "
+"operations (cropping, rebinning, plotting, etc.). They have a similar "
+"interface to `TimeSeriesList` / `TimeSeriesDict` which handle time series "
+"data, but are specialized for 2D data (time × frequency)."
+msgstr ""
+"これらのクラスは、複数のスペクトログラムデータ（`gwpy.spectrogram.Spectrogram`）をまとめて管理し、一括して処理（クロップ、再ビン化、プロットなど）を行うためのコンテナです。"
+" 時系列データを扱う `TimeSeriesList` / `TimeSeriesDict` と似たインターフェースを持っていますが、2次元データ（時間"
+" × 周波数）を扱う点が特徴です。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:30002
+#: 43f49b908d6f403995353e2b045f478e
+msgid "1. Data Preparation"
+msgstr "1. データの準備"
+
+#: ../../tutorials/intro_spectrogram.ipynb:30004
+#: 36a8f8e81533420c8f5745f5baaa29bd
+msgid ""
+"First, let's create demo spectrogram data. Here, we generate time series "
+"data containing sine waves at different frequencies and convert them using "
+"the `spectrogram()` method."
+msgstr ""
+"まずはデモ用のスペクトログラムデータを作成します。 ここでは、異なる周波数のサイン波を含む時系列データを生成し、それを `spectrogram()` "
+"メソッドで変換して使用します。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:50002
+#: 4e6f85e232fb4b049b7e9b8277609ae6
+msgid "2. Basic Operations with SpectrogramList"
+msgstr "2. SpectrogramList の基本操作"
+
+#: ../../tutorials/intro_spectrogram.ipynb:50004
+#: c7329fe75fb44334abde7529cf3fae7b
+msgid ""
+"`SpectrogramList` behaves like a list, but can only store `Spectrogram` "
+"objects. You can pass a list during initialization or add items using the "
+"`append()` method."
+msgstr ""
+"`SpectrogramList` はリストのように振る舞いますが、格納できるのは `Spectrogram` オブジェクトのみです。 "
+"初期化時にリストを渡すか、`append()` メソッドで追加します。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:70002
+#: f653ebf076a54ff397ffabe619741b13
+msgid "Batch Processing: Cropping Time Axis (`crop`)"
+msgstr "バッチ処理: 時間軸の切り出し (`crop`)"
+
+#: ../../tutorials/intro_spectrogram.ipynb:70004
+#: aaa361cef43846b5838c70cbd378ceee
+msgid ""
+"Performs batch cropping of the time axis for all spectrograms in the list. "
+"**Note:** Since spectrograms have large data volumes, operations like "
+"cropping may return new objects (copies) without modifying the original "
+"data."
+msgstr ""
+"リスト内のすべてのスペクトログラムに対して、一括で時間軸の切り出しを行います。 **注意:** "
+"スペクトログラムはデータ量が大きいため、クロップなどの操作は元のデータを変更せず、新しいオブジェクト（コピー）を返すことがあります。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:90002
+#: 916b6eb0053345d4bed080e72ceb56fd
+msgid "Batch Processing: Cropping Frequency Axis (`crop_frequencies`)"
+msgstr "バッチ処理: 周波数軸の切り出し (`crop_frequencies`)"
+
+#: ../../tutorials/intro_spectrogram.ipynb:90004
+#: 304da40e33d5460bbd88e8c497dbf218
+msgid ""
+"If there's a compatible method in gwpy's `Spectrogram`, it will be used; "
+"otherwise, filtering is performed by specifying the frequency axis."
+msgstr "gwpyの `Spectrogram` に互換性のあるメソッドがあればそれを使用し、なければ周波数軸を指定してフィルタリングを行います。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:110002
+#: ae74981793024b49b74b131b361c877a
+msgid "3. Using SpectrogramDict"
+msgstr "3. SpectrogramDict の利用"
+
+#: ../../tutorials/intro_spectrogram.ipynb:110004
+#: e8bc78a149944c3689853017cc8f55ea
+msgid ""
+"`SpectrogramDict` is convenient when you want to manage spectrograms with "
+"names (keys)."
+msgstr "名前（キー）付きで管理したい場合は `SpectrogramDict` が便利です。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:130002
+#: 8f8f2cbb1c1449f7b5ff8c3dfe44295f
+msgid "4. Visualization (`plot`)"
+msgstr "4. 可視化 (`plot`)"
+
+#: ../../tutorials/intro_spectrogram.ipynb:130004
+#: 35d07f1a51d44d7abbedd1bb411e4a8f
+msgid ""
+"Calling the `.plot()` method on a list or dictionary allows you to plot all "
+"contained spectrograms together. Internally, it uses `gwpy.plot.Plot`."
+msgstr ""
+"リストや辞書の `.plot()` メソッドを呼ぶと、含まれるすべてのスペクトログラムをまとめてプロットできます。 内部では "
+"`gwpy.plot.Plot` を使用しています。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:150002
+#: e1d40c12e0ed4d50b5cc64ab89efe34c
+msgid "5. Conversion to Matrix Format and Deep Learning Integration"
+msgstr "5. 行列形式への変換と Deep Learning 連携"
+
+#: ../../tutorials/intro_spectrogram.ipynb:150004
+#: 9dbeb29a87ad4bc4b290f01b0ed82654
+msgid ""
+"Using `to_matrix()`, you can create a `SpectrogramMatrix` object with a 3D "
+"array `(Channels, Time, Frequency)` that stacks each spectrogram."
+msgstr ""
+"`to_matrix()` を使用すると、各スペクトログラムを積み重ねた 3次元配列 `(Channels, Time, Frequency)` を持つ"
+" `SpectrogramMatrix` オブジェクトを作成できます。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:150006
+#: 5ab3e8c1bbbf4c5f9f935984771d4d27
+msgid ""
+"This is very convenient when creating inputs for machine learning models "
+"(PyTorch, TensorFlow, etc.)."
+msgstr "これは機械学習モデル（PyTorch, TensorFlowなど）への入力を作成する際に非常に便利です。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:170002
+#: 6ab6755529824f4cb064ea55d7cbb585
+msgid ""
+"If PyTorch or CuPy is installed, you can directly convert to Tensors, etc."
+msgstr "PyTorchやCuPyがインストールされていれば、そのままTensor等に変換可能です。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:180002
+#: 71692e0cbe1f4fbe91ed86462a20ce85
+msgid "Common Mistakes and Failure Modes"
+msgstr "よくある落とし穴と失敗モード"
+
+#: ../../tutorials/intro_spectrogram.ipynb:180004
+#: 6eb3f06f27214373b5489a853e8080fd
+msgid ""
+"**Reading color intensity as absolute amplitude without checking settings**:"
+" different normalization, color limits, or log scaling choices can change "
+"the visual impression without changing the underlying data."
+msgstr "**色の明るさをそのまま絶対振幅だと読むこと**: 正規化、カラースケール、対数表示の設定が違うと、同じデータでも印象が大きく変わります。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:180005
+#: c0ef7a938bfa455fb9c6600ef9790ebb
+msgid ""
+"**Over-interpreting time or frequency localization**: `fftlength`, `stride`,"
+" and windowing create a resolution tradeoff. A narrow-looking feature in the"
+" image is not automatically narrow in the signal model."
+msgstr ""
+"**時間分解能と周波数分解能を同時に高く見積もること**: `fftlength`、`stride`、window "
+"の選び方にはトレードオフがあり、画像で細く見える構造がそのまま物理的に鋭いとは限りません。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:180006
+#: 8645b6f23ae842a1ae31ac24777e8d62
+msgid ""
+"**Comparing panels with unmatched axes**: if `sharex` / `sharey` or explicit"
+" ranges are inconsistent, visual differences may come from plotting choices "
+"rather than spectral structure."
+msgstr ""
+"**軸のそろっていない図を直接比較すること**: `sharex` / `sharey` "
+"や表示範囲が一致していないと、差がスペクトル構造ではなく描画条件から生じます。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:180007
+#: 251111c0656b47b1841af1ab069655bd
+msgid ""
+"**Treating cropped output as a new physical measurement**: `crop` and "
+"`crop_frequencies` only restrict the displayed or retained region; they do "
+"not regenerate the spectrogram with different estimation parameters."
+msgstr ""
+"**切り出し後の結果を新しい推定だと誤解すること**: `crop` や `crop_frequencies` "
+"は表示・保持範囲を制限する操作であり、推定パラメータを変えて再計算したわけではありません。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:180008
+#: 3c8a1df2d01642d0aa09e9671df7f088
+msgid ""
+"**Feeding matrices into ML pipelines without tracking axis meaning**: "
+"`SpectrogramMatrix` stores `(Channels, Time, Frequency)`. Swapping axes "
+"silently can produce convincing but incorrect downstream results."
+msgstr ""
+"**行列化した後に軸の意味を見失うこと**: `SpectrogramMatrix` は `(Channels, Time, Frequency)` "
+"の順です。軸入れ替えを誤ると、もっともらしいが誤った ML 入力になります。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:180009
+#: e98823d0f52c4b71a6dea1aa60d2eefd
+msgid ""
+"**Ignoring noise-floor context**: a bright band is not automatically "
+"significant. Interpret peaks relative to baseline structure, leakage, and "
+"the chosen spectrogram parameters."
+msgstr ""
+"**ノイズ床を無視してピークを解釈すること**: 明るい帯が見えても、背景ノイズ、リーケージ、推定条件との相対比較なしには有意性を判断できません。"
+
+#: ../../tutorials/intro_spectrogram.ipynb:190002
+#: ffb709cdff634bb796f86776a1e96029
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../tutorials/intro_spectrogram.ipynb:190004
+#: bd77788167d845668079ebff7fa48c3a
+msgid ""
+"This concludes the introduction to the basic usage of `SpectrogramList` and "
+"`SpectrogramDict`. Please make use of these classes when batch preprocessing"
+" large amounts of spectrogram data or creating comparison plots."
+msgstr ""
+"これで `SpectrogramList` と `SpectrogramDict` の基本的な使い方の紹介を終わります。 "
+"大量のスペクトログラムデータを一括で前処理したり、比較プロットを行う際にぜひ活用してください。"

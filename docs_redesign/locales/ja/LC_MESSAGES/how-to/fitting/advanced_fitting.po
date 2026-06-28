@@ -1,0 +1,288 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:10002
+#: 8b35348bdb5640e2ab088c8a99e137f9
+msgid "Fitting: Spectral Line Analysis"
+msgstr "フィッティング: スペクトル線解析"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:10004
+#: d49e093a387249ad9c8d76884b138f83
+msgid ""
+"This notebook demonstrates how to easily fit `TimeSeries` or "
+"`FrequencySeries` data using the `gwexpy.fitting` module. The backend uses "
+"`iminuit`, enabling least-squares fitting with error consideration."
+msgstr ""
+"[![Open In Colab](https://colab.research.google.com/assets/colab-"
+"badge.svg)](https://colab.research.google.com/github/tatsuki-"
+"washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_fitting.ipynb)"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:30002
+#: feabf6f5d6ca4b8899b70b83767cd7bc
+msgid "1. Data Preparation"
+msgstr "1. データの準備"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:30004
+#: efcbe7157f4a49f0a0e4690d222eae30
+msgid "Here we create dummy data by adding noise to a Gaussian function."
+msgstr "ここでは、ガウス関数にノイズを加えたダミーデータを作成します。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:50002
+#: 84fe1549a96444719a42f67f7525672e
+msgid "2. Performing the Fit"
+msgstr "2. フィッティングの実行"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:50004
+#: 3b8cbfcd3d1449889b7ecd24dae894c2
+msgid ""
+"Use the `ts.fit()` method to perform fitting. Specify the model function and"
+" initial parameter values `p0` as arguments."
+msgstr "`ts.fit()` メソッドを使用してフィッティングを行います。 引数にはモデル関数と、パラメータの初期値 `p0` を指定します。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:50007
+#: 6431926a109342bc9b639ea025a457aa
+msgid ""
+"For narrow or localized peaks, constrain the center and width to physically "
+"meaningful ranges so the optimizer does not wander into a noise-only local "
+"minimum."
+msgstr "狭いピークや局在したピークでは、中心周波数と幅に物理的に妥当な範囲を与え、ノイズだけの局所解へ流れないようにします。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:70002
+#: 2f14fb2f8e4a44d9a70cb5b7b10328ac
+msgid "3. Retrieving Results and Plotting"
+msgstr "3. 結果の取得とプロット"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:70004
+#: e5787790aab343299d2e36ba24ec33b4
+msgid ""
+"You can retrieve the best-fit parameters, errors, Chi2 values, etc. from the"
+" `FitResult` object. Additionally, the `.plot()` method makes it easy to "
+"visualize the results."
+msgstr ""
+"`FitResult` オブジェクトから、ベストフィットパラメータや誤差、Chi2 値などを取得できます。 また、`.plot()` "
+"メソッドで簡単に結果を可視化できます。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:90002
+#: efea0cd121b149e2abfbe9a02c71d490
+msgid "4. Specifying Models by String"
+msgstr "3. 文字列によるモデル指定"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:90004
+#: 1ea0e616796940e588f7292efcda4684
+msgid ""
+"Instead of defining a model function, you can specify a predefined model "
+"name as a string. Currently supported models: `'gaus'`, `'exp'`, `'pol0'`, "
+"`'pol1'`, ... `'pol9'`, `'landau'`, etc."
+msgstr ""
+"モデル関数を定義する代わりに、定義済みのモデル名を文字列で指定することもできます。 現在サポートされているモデル: `'gaus'`, `'exp'`,"
+" `'pol0'`, `'pol1'`, ... `'pol9'`, `'landau'` など。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:90007
+#: 3f3c953c53594877803aca6bcc30f6b0
+msgid ""
+"Below is an example using `'gaus'`. Restrict the fit window to the actual "
+"visible peak so the predefined model is solving the same problem as the "
+"callable example above."
+msgstr ""
+"以下は `'gaus'` を指定してフィッティングを行う例です。こちらも、目に見えているピーク帯域だけを切り出して callable "
+"版と同じ問題設定に揃えます。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:110002
+#: 5cfe058b93554b7c9e177ea862784115
+msgid "5. Complex Number Fitting (Transfer Functions)"
+msgstr "4. 複素数フィッティング (伝達関数)"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:110004
+#: 5dc3dde5775a43a8846e4faecee27f6e
+#, python-brace-format
+msgid ""
+"You can also fit complex data such as transfer functions. The cost function "
+"$\\chi^2 = \\sum (Re_{diff})^2 + \\sum (Im_{diff})^2$ is minimized, fitting "
+"real and imaginary parts simultaneously. The result plots automatically "
+"become Bode plots (magnitude and phase)."
+msgstr ""
+"伝達関数などの複素数データに対してもフィッティングを行えます。 コスト関数として $\\chi^2 = \\sum (Re_{diff})^2 + "
+"\\sum (Im_{diff})^2$ を最小化し、実部と虚部を同時にフィットします。 結果のプロットは自動的にボード線図（振幅・位相）になります。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:140002
+#: b2e13b5dd2c6415c8c9a3bc0595b1356
+msgid "6. MCMC Analysis (emcee)"
+msgstr "5. MCMC 解析 (emcee)"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:140004
+#: 365a25c4945f48b194b93ed6dee5d4b9
+msgid ""
+"Using the maximum likelihood estimate obtained from `iminuit` as the initial"
+" value, you can perform MCMC (Markov Chain Monte Carlo) analysis using "
+"`emcee`."
+msgstr ""
+"`iminuit` で得られた最尤推定値を初期値として、`emcee` を用いた MCMC (Markov Chain Monte Carlo) "
+"解析を行うことができます。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:140006
+#: 01cdca7443634876849d63c915f5f7d2
+msgid "**Note:** To use this feature, `emcee` and `corner` must be installed."
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:160002
+#: edad8d07694e46ef91178ba74da9110c
+msgid "Example Usage of New Common Models"
+msgstr "新しい共通モデルの使用例"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:160004
+#: 1ac064a42155436da30878dc9b168a64
+msgid ""
+"These are usage examples of `power_law` and `damped_oscillation` added to "
+"`gwexpy.fitting.models`."
+msgstr ""
+"`gwexpy.fitting.models` に追加された `power_law` と `damped_oscillation` の使用例です。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:180002
+#: 40e5b74b556747278b273b869262216f
+msgid "7. Spectral Line Fitting: Lorentzian and Voigt Profiles"
+msgstr "7. スペクトル線フィッティング：ローレンツ関数と Voigt プロファイル"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:180004
+#: 7d7e59640fda46c4b0d72d56da76eecb
+msgid ""
+"In gravitational-wave detector commissioning, narrowband resonances "
+"(mechanical modes, violin modes, line injections) appear as sharp peaks in "
+"ASD spectra.   Three profiles are commonly used:"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb
+#: 4478d8209c734bb786426d96dd5f93b0
+msgid "Model"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb
+#: d4858ba7ca0344a0a11d8ffea94f062b
+msgid "When to use"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb
+#: 6ba675faec944fed84dabf465eb2271a
+msgid "**Gaussian**"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb
+#: 66670e31938c4e02ace15a0c5638069e
+msgid "Doppler- or pressure-broadened lines; truly symmetric noise peaks"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb
+#: 3bedf6af183d4dda9f7e4aa0bedfee55
+msgid "**Lorentzian**"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb
+#: 4b722fec209249c58f78ca2f43826ca3
+msgid "Resonances with a single loss mechanism (Q-limited linewidth)"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb
+#: e3685ea0da7e4b65beeaa7a8f1c2f60d
+msgid "**Voigt**"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb
+#: 0ccb2a2f51264baabcfd6a9c0be90e68
+msgid ""
+"Composite broadening (Gaussian instrument resolution + Lorentzian damping)"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:180014
+#: e52eff8f54c74040a65103d2ec1aaa2e
+msgid ""
+"All three are available in `gwexpy.fitting.models` and can be referenced by "
+"string."
+msgstr "いずれも `gwexpy.fitting.models` に実装済みで、文字列名での指定が可能です。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:190002
+#: b049fbccc25641e4b7a4cb160f5d3327
+msgid "7a. Lorentzian (HWHM parameterisation)"
+msgstr "7a. ローレンツ関数（HWHM パラメータ化）"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:190004
+#: 757cdb5265834c3294430bcc2784a6d0
+#, python-brace-format
+msgid "f(x) = \\frac{A\\,\\gamma^2}{(x - x_0)^2 + \\gamma^2}"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:190006
+#: d58a05fb9056478b8c297e8c0d9a836a
+msgid "`A` : peak amplitude"
+msgstr "`A` : ピーク振幅"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:190007
+#: d3149b36194e4c9998c35b95260e10bc
+msgid "`x0`: centre frequency"
+msgstr "`x0`: 中心周波数"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:190008
+#: 5ee33357a54649de9115042e9687602a
+msgid "`gamma`: half-width at half-maximum (HWHM)"
+msgstr "`gamma`: 半値半幅 (HWHM)"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:210002
+#: ea66605d7a2441aab8cd1aa6eab22a2e
+msgid "7b. Lorentzian Q-factor parameterisation"
+msgstr "7b. ローレンツ Q 値パラメータ化"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:210004
+#: 51f6246282d44f68891f6ac72679c2d3
+msgid ""
+"For resonators it is often more natural to express the linewidth via the "
+"quality factor $Q = x_0 / (2\\gamma)$:"
+msgstr "共振器では線幅を品質係数 $Q = x_0 / (2\\gamma)$ で表すと直感的です："
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:210007
+#: b7b254e6ab9e44d9ac58053f472c1e44
+#, python-brace-format
+msgid ""
+"f(x) = \\frac{A\\,\\gamma^2}{(x - x_0)^2 + \\gamma^2}, \\quad \\gamma = "
+"\\frac{x_0}{2Q}"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:210009
+#: 1073968d44654ffda413e507876d2ae9
+msgid "Use `'lorentzian_q'` to fit directly in terms of `(A, x0, Q)`."
+msgstr "`'lorentzian_q'` を使うと `(A, x0, Q)` を直接フィットできます。"
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:230002
+#: b29602fca9c24d97b8f47270c3f753b2
+msgid "7c. Voigt Profile"
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:230004
+#: e34f82bae27b4717a2df48fbc6fb2c2d
+msgid ""
+"The Voigt profile is the convolution of a Gaussian (width $\\sigma$) and a "
+"Lorentzian (HWHM $\\gamma$).  It is computed via the **Faddeeva function** "
+"for efficiency."
+msgstr ""
+
+#: ../../how-to/fitting/advanced_fitting.ipynb:230007
+#: 7d323dd4847c42e58128470e4c43d8bd
+msgid ""
+"Use it when the line shows both instrument-resolution broadening (Gaussian) "
+"and intrinsic damping (Lorentzian)."
+msgstr ""

@@ -1,0 +1,535 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../explanation/verification_and_quality.md
+#: 665118ee924a4fa0ab15a641369860a0
+msgid ""
+"Understand what GWexpy validates publicly for notebooks, direct I/O formats,"
+" algorithm audit notes, and repository coverage signals, and where each "
+"evidence source lives."
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:7
+#: 8edb9900e3214d129eec1e06866219f7
+msgid "Verification and Quality Signals"
+msgstr "検証と品質の見方"
+
+#: ../../explanation/verification_and_quality.md:9
+#: 3a7e8ab5e3864a778ffae5dd08e4d3c1
+msgid ""
+"This page explains what kinds of public verification signals `gwexpy` "
+"exposes today, where those signals come from, and how to interpret their "
+"limits."
+msgstr ""
+"このページでは、`gwexpy` が現在どの種類の検証シグナルを公開しているか、その根拠がどこにあるか、そしてその限界をどう読むべきかを整理します。"
+
+#: ../../explanation/verification_and_quality.md:11
+#: 0bd581933e764f5bb948b9742e331613
+msgid ""
+"It is not a single \"all features are verified\" claim. Instead, it points "
+"you to the current evidence sources for notebooks, direct I/O formats, "
+"algorithm audits, and repository-level coverage reporting."
+msgstr ""
+"ここで示すのは「すべての機能が一様に検証済み」という主張ではありません。Notebook、direct I/O、アルゴリズム監査、リポジトリ全体の "
+"coverage について、それぞれ別の根拠に辿れるようにするための案内ページです。"
+
+#: ../../explanation/verification_and_quality.md:14
+#: acf33b4fc56240898e7713942bf7d958
+msgid "**Read this page as a transparency map, not as a blanket guarantee**"
+msgstr "**このページは「透明性の地図」であって、一括保証ではありません**"
+
+#: ../../explanation/verification_and_quality.md:16
+#: c8a85c2ffc5f476c9d0dd7516cda95a9
+msgid ""
+"Different parts of the project are verified in different ways. Some "
+"module/docstring examples are exercised in nightly CI, some notebooks are "
+"fully executed, some heavy notebooks are only structure-checked, and some "
+"optional-dependency tests can be skipped when the backend is unavailable."
+msgstr ""
+"検証の方法は対象ごとに異なります。module / docstring 例が Nightly CI で検証される部分もあれば、Notebook の中には"
+" CI で全実行されるものもあり、重い notebook のように構造確認中心のものもあります。optional dependency "
+"を持つテストは、環境によって skip される場合もあります。"
+
+#: ../../explanation/verification_and_quality.md:19
+#: 5342d223c812402fad36642a946c74c7
+msgid "Public Evidence Sources"
+msgstr "公開されている根拠の入口"
+
+#: ../../explanation/verification_and_quality.md:13
+#: 46494255c10b49e6a78e93b3b03c0958
+msgid "Area"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: 5701c2ec0e3b4ae9b2832916910ff173
+msgid "Public source"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: 73cb9aab8f2740bc9b4173637e9a7ab4
+msgid "What it tells you"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: f8ec1ff4bcc24735a5833dee4d25704f
+msgid "Notebook tutorials"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: bb455a05e0894d40b619e621e90cc9ff
+msgid ""
+"[Notebook Policy](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md)"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: bc32f1131ae44c29989e31869b89bb92
+msgid ""
+"Which notebook classes are treated as `Light`, `Heavy`, or `Display-only`, "
+"and how CI handles each class"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: ca376516c00c4921aab7b3e172d8bb38
+msgid "Module/docstring examples"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: dd9cc24a54e349809451292da77fff5b
+msgid ""
+"[Extended nightly workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml)"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: 9f2f4bcc644c4abfb622ec4c58d1ef32
+msgid ""
+"Which nightly CI path runs `pytest --Doctest-modules` against `tests/` and "
+"`gwexpy/`, useful as public evidence for docstring-level example execution "
+"scope"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: 75d2ece689294b7b92e32f0cb185761a
+msgid "Direct I/O formats"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: 2dcce7c1e4274f6e896982aa028410d5
+msgid ""
+"[SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md)"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: f62d087a91434a7f91ce1a0db678ad42
+msgid ""
+"Which public format families are tied to which tests and which backends are "
+"optional"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: 3c02386e23414187a4ff0919aa19b243
+msgid "Algorithm audit trail"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: ../../explanation/verification_and_quality.md:95
+#: 5998505f546e4f2aba539af946ee31ca 9d08540bd5c54451a1fc4485e7b3e2e1
+msgid "[Validated Algorithms](validated_algorithms.md)"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
+
+#: ../../explanation/verification_and_quality.md:13
+#: 3f9f3fea214c49d8a87421db77b0671e
+msgid ""
+"Numerical tolerances, assumptions, and links to audit evidence for selected "
+"high-value algorithms"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: 01c5c75d950d4a2a8315cfe5b12e55e9
+msgid "Repository coverage signal"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: 0ccbc8cbf6ca45a59f9ce4747e4baa8f
+msgid ""
+"[README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the "
+"linked [Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:13
+#: c47acc40cd604fd8951f435cb442bd17
+msgid ""
+"Where repository-level line coverage is surfaced publicly, useful as a broad"
+" signal rather than a per-feature proof"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:29
+#: 05f34d6b69fa4f3d8c31ffbde9255d6f
+msgid "Notebook Validation Policy"
+msgstr "Notebook の検証方針"
+
+#: ../../explanation/verification_and_quality.md:31
+#: 53cdb1cb6199436dabed9a450f370cb6
+msgid ""
+"The public notebook policy is defined in the repository's [Notebook "
+"Policy](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md)."
+msgstr ""
+"公開 notebook の扱いは、リポジトリ内の [Notebook Policy](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) に基づきます。"
+
+#: ../../explanation/verification_and_quality.md:33
+#: 429e70514274404484c3dec86fef82a4
+msgid "The current public model is:"
+msgstr "現時点の公開方針は次のとおりです。"
+
+#: ../../explanation/verification_and_quality.md:35
+#: 39955ff9ad964af29a883a078d039d8b
+msgid ""
+"Module and docstring examples in `tests/` and `gwexpy/` are exercised in the"
+" public [extended nightly workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) via `pytest"
+" --Doctest-modules`."
+msgstr ""
+"`tests/` と `gwexpy/` にある module / docstring 例は、公開されている [extended nightly "
+"workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) で `pytest "
+"--doctest-modules` により検証されます。"
+
+#: ../../explanation/verification_and_quality.md:36
+#: 6915e48b5251463c90f83a858ae23c30
+msgid ""
+"**Light** notebooks are classified for full execution and validation in CI "
+"through `papermill`."
+msgstr ""
+"**Light** notebook は、Notebook Policy 上では CI で `papermill` により全実行される想定です。"
+
+#: ../../explanation/verification_and_quality.md:37
+#: c7ceba45c59d4d36bae609ac4bc4fdc0
+msgid ""
+"**Heavy** notebooks are kept in CI, but the policy describes them as `nbval "
+"--nbval-lax` checks rather than guaranteed full execution."
+msgstr ""
+"**Heavy** notebook は CI 対象ではありますが、全セル実行を常に保証するものではなく、構造確認や収集確認に寄せて扱われます。"
+
+#: ../../explanation/verification_and_quality.md:38
+#: 8343287995704bf89e4c4d3020ef7d45
+msgid ""
+"**Display-only** notebooks prioritize curated outputs and are outside normal"
+" execution validation, or limited to load-style checks."
+msgstr ""
+"**Display-only** notebook は整えた出力の保持を重視しており、「CI で毎回全実行される "
+"notebook」と同義ではありません。"
+
+#: ../../explanation/verification_and_quality.md:39
+#: 56e89ff9f03447b2a94a2bfcf6ffa657
+msgid ""
+"The public [docs PR workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) also executes "
+"changed notebooks with `papermill` before building Sphinx HTML."
+msgstr ""
+"公開されている [docs PR workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) では、docs Pull Request"
+" で変更された notebook に対して `papermill` が実行されます。"
+
+#: ../../explanation/verification_and_quality.md:40
+#: f7e44fcbd15c445da3ee012e24f53213
+#, python-brace-format
+msgid ""
+"Public tutorial notebooks under `docs/web/{en,ja}/user_guide/tutorials/` are"
+" treated as the authoritative published copies."
+msgstr "公開 notebook のメインのは `docs/web/{en,ja}/user_guide/tutorials/` に置かれます。"
+
+#: ../../explanation/verification_and_quality.md:42
+#: 62cdbab5786c4b42a9c996256e8d328c
+msgid ""
+"This is why a notebook or docstring example being present in the docs is a "
+"useful signal, but not enough on its own to infer that every published "
+"sample is executed in every PR, nightly, and release path."
+msgstr ""
+"したがって、「公開 docs に notebook や例がある」こと自体は有益なシグナルですが、それだけで「あらゆる PR / Nightly / "
+"release 経路で毎回一律に実行・保証される」とまでは読まない方が安全です。"
+
+#: ../../explanation/verification_and_quality.md:44
+#: e0223d419e2442488368e9e3336dff38
+msgid "Current CI Coverage and Its Limits"
+msgstr "現在の CI カバレッジとその限界"
+
+#: ../../explanation/verification_and_quality.md:46
+#: d196f18c3df14d1ea33770f2f9d77554
+msgid ""
+"The current public evidence supports a narrower statement than \"all sample "
+"code is universally guaranteed.\""
+msgstr "現在の公開根拠から言えるのは、「すべてのサンプルコードが一律に保証される」よりも狭い範囲です。"
+
+#: ../../explanation/verification_and_quality.md:48
+#: a6175fc268ca4b6d8d9cde2d7b851e64
+msgid ""
+"The extended nightly workflow shows that `gwexpy` already runs automated "
+"Doctest coverage for module/docstring examples."
+msgstr ""
+"extended nightly workflow により、module / docstring 例には自動 Doctest 系のカバレッジがあります。"
+
+#: ../../explanation/verification_and_quality.md:49
+#: f025b244714744c486fdf1349cab1643
+msgid ""
+"The same nightly workflow shows that notebook handling is class-dependent: "
+"`Light` notebooks are executed with `papermill`, while `Heavy` notebooks are"
+" checked with `nbval --nbval-lax`."
+msgstr ""
+"同じ Nightly CI でも notebook の扱いは分類依存で、`Light` は `papermill`、`Heavy` は `nbval "
+"--nbval-lax` です。"
+
+#: ../../explanation/verification_and_quality.md:50
+#: d7c2815835c44250b5c56ac6752d53e3
+msgid ""
+"The docs PR workflow shows that notebooks changed in docs pull requests are "
+"executed with `papermill` before the docs build."
+msgstr "docs PR workflow では、docs PR で変更された notebook に対して `papermill` が実行されます。"
+
+#: ../../explanation/verification_and_quality.md:52
+#: 06049545a5464320935370bb2d032d15
+msgid "Read those signals carefully:"
+msgstr "このシグナルは次のように読んでください。"
+
+#: ../../explanation/verification_and_quality.md:54
+#: c917fae601ff4ce1846e5fe042fec807
+msgid ""
+"They show that public examples are not unmanaged; some are exercised "
+"automatically in CI today."
+msgstr "公開例が完全に放置されているわけではなく、現在も自動検証の経路があります。"
+
+#: ../../explanation/verification_and_quality.md:55
+#: 368e6774192c4b058cd46244bec2883e
+msgid ""
+"They do **not** mean every published code block is executed in every "
+"workflow."
+msgstr "ただし、すべての公開コード片が、すべての workflow で毎回実行されることを意味しません。"
+
+#: ../../explanation/verification_and_quality.md:56
+#: 4ef42e1ceac340398c70f4ae9eb7491e
+msgid ""
+"They do **not** mean Doctest or notebook coverage is a single release-"
+"blocking gate for the whole documentation set."
+msgstr ""
+"Doctest や notebook 検証が、ドキュメント全体に対する単一の release-blocking gate だという意味でもありません。"
+
+#: ../../explanation/verification_and_quality.md:57
+#: 8abef3f241e84996b869c925f11868d0
+msgid ""
+"They do **not** remove the need to check notebook class, optional "
+"dependencies, and workflow scope before treating an example as strongly "
+"guaranteed."
+msgstr ""
+"強い保証として読む前に、notebook の分類、optional dependency、どの workflow "
+"がその対象を見ているかを確認する必要があります。"
+
+#: ../../explanation/verification_and_quality.md:59
+#: cda4fd80a5e5494e86d768a744838cde
+msgid "Direct I/O Verification Visibility"
+msgstr "direct I/O の検証可視化"
+
+#: ../../explanation/verification_and_quality.md:61
+#: e98a4b050f04460bbab0f904a94b38b2
+msgid ""
+"The public [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) is the main visibility "
+"layer for direct I/O verification."
+msgstr ""
+"public direct I/O の検証可視化では、[SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) が主要な入口です。"
+
+#: ../../explanation/verification_and_quality.md:63
+#: 45d8ddea37804c82b44a664e293e815d
+msgid "Use it when you need to answer questions such as:"
+msgstr "この表は、たとえば次のような疑問に答えるときに使います。"
+
+#: ../../explanation/verification_and_quality.md:65
+#: f8b735acfe484782b5ad9c264484d66b
+msgid "\"Is this format publicly documented as supported?\""
+msgstr "「この format は公開対応としてどこまで見てよいか」"
+
+#: ../../explanation/verification_and_quality.md:66
+#: f1007c9494c943f7ac8e342095051d5d
+msgid "\"Which test file is meant to back this format claim?\""
+msgstr "「この format claim はどのテストファイルに紐づいているか」"
+
+#: ../../explanation/verification_and_quality.md:67
+#: 5150734cb7334c7bbaef99b74ebb7360
+msgid "\"Does this route depend on an optional backend?\""
+msgstr "「この経路は optional backend に依存するのか」"
+
+#: ../../explanation/verification_and_quality.md:69
+#: f1588db4daca465f86b19bb3bbce5c5c
+msgid ""
+"The matrix is especially useful together with the [File I/O Supported "
+"Formats Guide](../how-to/io_formats.md):"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:71
+#: 6fe9f7083b1748d1a2f9bbd42d3a2211
+msgid ""
+"the user guide explains how to choose and call a public direct-I/O path,"
+msgstr "user guide 側は「どう選ぶか」「どう呼ぶか」を説明し、"
+
+#: ../../explanation/verification_and_quality.md:72
+#: d1723c0a0bbd444ba03731ad8e28fd00
+msgid "the matrix shows which tests are intended to back that path,"
+msgstr "matrix 側は「どのテストが根拠か」を示し、"
+
+#: ../../explanation/verification_and_quality.md:73
+#: 3d682d22077e4d6c8e699a61bc698c5e
+msgid ""
+"and the notes clarify when optional dependencies can cause skips instead of "
+"hard failures."
+msgstr "備考が optional dependency や skip 条件を補います。"
+
+#: ../../explanation/verification_and_quality.md:75
+#: d703d35192824d77a3257d384016d96e
+msgid "Coverage Signals and Their Limits"
+msgstr "coverage 表示の読み方と限界"
+
+#: ../../explanation/verification_and_quality.md:77
+#: 02531e4193954e3d88898ba5c9cd4579
+msgid ""
+"`gwexpy` publishes a repository-level coverage signal through "
+"[Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy), and the repository "
+"[README.md](https://github.com/tatsuki-washimi/gwexpy) surfaces that badge "
+"and link publicly."
+msgstr ""
+"`gwexpy` は [Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy) "
+"によって、リポジトリ全体の coverage シグナルを公開しています。`README.md` にも codecov "
+"の状態バッジとリンクがあり、公開された確認入口として辿れます。"
+
+#: ../../explanation/verification_and_quality.md:79
+#: 35a52566b5a140d2b1230614a2d6f0ca
+msgid "Read that signal conservatively:"
+msgstr "ただし、この値は慎重に読む必要があります。"
+
+#: ../../explanation/verification_and_quality.md:81
+#: 241aa4ef4eba44fbba2d2afc79b728e8
+msgid "it is useful for understanding overall automated test health,"
+msgstr "自動テスト全体の健康度をざっくり把握するには有用です。"
+
+#: ../../explanation/verification_and_quality.md:82
+#: 3cba5430ebd94c5685529741ebe35924
+msgid ""
+"it does **not** prove that every algorithm branch, notebook, or optional-"
+"backend path is equally exercised,"
+msgstr ""
+"一方で、すべてのアルゴリズム分岐、すべての notebook、すべての optional-backend "
+"経路が同じ強さで実行されていることまでは保証しません。"
+
+#: ../../explanation/verification_and_quality.md:83
+#: 35ebcd85a9574276875997e8eb351d04
+msgid ""
+"and it should be read alongside page-specific evidence such as the notebook "
+"policy, I/O matrix, and audit notes."
+msgstr "実際の判断では、Notebook Policy、I/O matrix、アルゴリズム監査ノートと併読してください。"
+
+#: ../../explanation/verification_and_quality.md:85
+#: e2e23ec5f0d44f86b6c112e25cd872f0
+msgid "What This Page Does Not Claim"
+msgstr "このページが主張しないこと"
+
+#: ../../explanation/verification_and_quality.md:87
+#: c8bd6edd77454941bdda68a15125e34e
+msgid ""
+"It does **not** claim that every public notebook is fully executed in every "
+"CI run."
+msgstr "すべての公開 notebook が、すべての CI 実行で全セル再実行されるとは主張しません。"
+
+#: ../../explanation/verification_and_quality.md:88
+#: 59e06d65d2cf4a6faff0999d25d35356
+msgid ""
+"It does **not** claim that every docstring example or sample code block is "
+"executed in every PR, nightly, and release workflow."
+msgstr ""
+"すべての docstring 例やサンプルコード片が、すべての PR / Nightly / release workflow "
+"で毎回実行されるとは主張しません。"
+
+#: ../../explanation/verification_and_quality.md:89
+#: a1f76d1a850a4d998ff33a3733e46a5a
+msgid ""
+"It does **not** claim that every optional dependency is present in every "
+"test environment."
+msgstr "すべての optional dependency が、すべての test 環境に入っているとは主張しません。"
+
+#: ../../explanation/verification_and_quality.md:90
+#: 309f6cf26a4c449589e694e285a6f026
+msgid ""
+"It does **not** replace the algorithm-specific assumptions and tolerances "
+"documented on [Validated Algorithms](validated_algorithms.md)."
+msgstr ""
+"[検証済みアルゴリズム](validated_algorithms.md) "
+"に書かれた個別の前提条件や許容誤差を、このページが置き換えるものではありません。"
+
+#: ../../explanation/verification_and_quality.md:91
+#: 1213cf7a0739413cb73b65ec3fdf4e11
+msgid ""
+"It does **not** turn repository-wide line coverage into a substitute for "
+"per-feature scientific validation."
+msgstr ""
+"repository-wide の line coverage を、そのまま feature "
+"単位の科学的妥当性の証明に読み替えるべきだとは主張しません。"
+
+#: ../../explanation/verification_and_quality.md:93
+#: 81343a6d57124859ba5686618d4ec302
+msgid "Related Pages"
+msgstr "関連ページ"
+
+#: ../../explanation/verification_and_quality.md:96
+#: 7080cea0df05428caab6db4f1c8bfcda
+msgid "[File I/O Supported Formats Guide](../how-to/io_formats.md)"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:97
+#: 65a0188981cd49e7bc45d2517589ff96
+msgid "[Troubleshooting](../how-to/troubleshooting.md)"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:99
+#: 651d81b66f054e21a99a3e8bf2f7f414
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../../explanation/verification_and_quality.md:101
+#: 7996d8a86ab24c828154f2cdc5081444
+msgid ""
+"[Validated Algorithms](validated_algorithms.md) for algorithm-specific "
+"assumptions, tolerances, and audit links"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md) でアルゴリズム単位の前提条件、許容誤差、監査リンクを確認する"
+
+#: ../../explanation/verification_and_quality.md:102
+#: 8e09f0b167904ee8a4810fbca0040dd5
+msgid ""
+"[File I/O Supported Formats Guide](../how-to/io_formats.md) for direct user-"
+"facing format choice and backend notes"
+msgstr ""
+
+#: ../../explanation/verification_and_quality.md:103
+#: b49d2ea232d147f3b39ace43534d9c88
+msgid ""
+"[Troubleshooting](../how-to/troubleshooting.md) if you need error-first "
+"guidance after checking the public verification signals"
+msgstr ""

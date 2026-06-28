@@ -1,0 +1,255 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:10002
+#: d72158a471644c56ab0fff0ed2d4555f
+msgid "Correlation Analysis: Statistical Methods"
+msgstr "相関解析: 統計的手法"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:10004
+#: 6010fcbd30ff466d82962c8644d63c46
+msgid ""
+"gwexpy makes it easy to calculate statistical correlations between "
+"TimeSeries objects. This is useful for noise hunting and investigating "
+"nonlinear coupling."
+msgstr ""
+"gwexpyでは、TimeSeriesオブジェクト間の統計的相関を簡単に計算できます。これはノイズハンティングや非線形結合の調査に役立ちます。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:10006
+#: 609dccec917448a182f749eb23003507
+msgid "Supported methods:"
+msgstr "サポートされている手法:"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:10007
+#: d84050467631460591f00d201b8a256e
+msgid "**Pearson (PCC)**: Linear correlation."
+msgstr "**Pearson (PCC)**: 線形相関。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:10008
+#: 531e42f7c5d649a19c6f7c3fda9dd1f0
+msgid ""
+"**Kendall (Ktau)**: Rank correlation (robust to outliers, non-parametric)."
+msgstr "**Kendall (Ktau)**: 順位相関（外れ値に強く、ノンパラメトリック）。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:10009
+#: c82bfb52e83444c0a794e69158357828
+msgid ""
+"**MIC**: Maximal Information Coefficient (robust to nonlinear relationships,"
+" requires `minepy` via `python scripts/install_minepy.py`)."
+msgstr ""
+"**MIC**: Maximal Information Coefficient（非線形関係に対してロバスト、`minepy`が必要、`python "
+"scripts/install_minepy.py`で構築）。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:30002
+#: 7ca56ea0449a49b186f40cb5213ea143
+msgid "Pairwise Correlation"
+msgstr "ペアごとの相関"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:60002
+#: ec64136c686d43fc8e4123f7c96f9369
+msgid ""
+"**Note — automatic resampling**: If two time series have different sample "
+"rates, gwexpy will automatically resample one to match the other and emit a "
+"`UserWarning`. To suppress this, ensure both series share the same sample "
+"rate before calling correlation methods."
+msgstr ""
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:90002
+#: 1892d56bd63f46b085c76a4c0ce7b730
+msgid "Correlation Vector (Noise Hunting)"
+msgstr "相関ベクトル (ノイズハンティング)"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:90004
+#: 2fe8a908954a4acbab377e973eff974e
+msgid ""
+"When investigating noise sources, we often want to check correlations "
+"between a target channel (e.g., DARM) and hundreds of auxiliary channels. "
+"`TimeSeriesMatrix.correlation_vector` efficiently computes this ranking."
+msgstr ""
+"ノイズ源を調査する際、ターゲットチャンネル（例：DARM）と数百の補助チャンネルとの間の相関を確認したいことがよくあります。 "
+"`TimeSeriesMatrix.correlation_vector` はこのランキングを効率的に計算します。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:140002
+#: 2a07cba65b254f39912af3a30472c5c7
+msgid "Partial Correlation (Confound Control)"
+msgstr "偏相関（共通要因の除去）"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:140004
+#: 4ea53d754c7a489e85b3e402333a62ac
+msgid ""
+"Partial correlation estimates direct coupling by removing shared confounds."
+msgstr "共通の要因を取り除いて、直接的な結びつきを評価します。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:160002
+#: 1bb95aa9a86c4578a59c5fdde3b46784
+msgid "Association Edges and Graphs"
+msgstr "Association Edges / グラフ化"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:160004
+#: a75372cf62254476ab778c7843190037
+msgid "Use a target TimeSeries against a TimeSeriesMatrix to build edges."
+msgstr "ターゲット時系列に対して行列の各チャンネルを評価し、エッジを作成します。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:180002
+#: 777938855eb94c5399464acbef3f72fc
+msgid "Visualization: Edge Ranking and Partial-Corr Heatmap"
+msgstr "可視化: エッジランキングと偏相関ヒートマップ"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:200002
+#: 873f5ef81abb4ad3aa00a03397f6accb
+msgid "FastMI (Experimental)"
+msgstr "FastMI（実験的）"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:200004
+#: 70734862da184dff88f95b4b90c78ed0
+msgid ""
+"FastMI is a fast mutual-information (MI) estimator based on a copula "
+"formulation (empirical CDF), a probit transform, and an FFT-based self-"
+"consistent density estimate."
+msgstr ""
+"FastMI は、copula（経験CDF）+ probit 変換 + FFT ベースの self-consistent 密度推定を用いた相互情報量 "
+"(MI) 推定です。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:200006
+#: 0139548864864ff5823ee7000930f478
+msgid ""
+"API: `TimeSeries.fastmi(other, grid_size=..., quantile=..., eps=...)` or "
+"`correlation(other, method=\"fastmi\")`"
+msgstr ""
+"API: `TimeSeries.fastmi(other, grid_size=..., quantile=..., eps=...)` または "
+"`correlation(other, method=\"fastmi\")`"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:200007
+#: 28f3cf31dbfd4f398d4fdb18f50573c7
+msgid ""
+"Output: MI in **nats** (>= 0). Larger means stronger dependence (linear or "
+"nonlinear)."
+msgstr "出力: MI（**nats**、0以上）。値が大きいほど依存が強い（線形/非線形を問わない）。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:200008
+#: 246dca7358154c0d9d899f94fe2f5f27
+msgid "Parameters:"
+msgstr "パラメータ:"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:200009
+#: cb5ff03783e1441fb45bed15a32777fa
+msgid "`grid_size`: FFT grid resolution (trade-off: accuracy vs speed)."
+msgstr "`grid_size`: FFT グリッド分解能（精度と速度のトレードオフ）。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:200010
+#: e16984b4d5444e638877e4d7c34d5973
+msgid "`quantile`: trims extreme probit tails for numerical stability."
+msgstr "`quantile`: probit の極端な裾をトリムして安定化。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:200011
+#: 86e5dc6b80cb4bd4a452bc18b703d69c
+msgid "`eps`: floor for probabilities/densities to avoid `log(0)`."
+msgstr "`eps`: `log(0)` 回避のための下限。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:220002
+#: f54aab79c15848259bc607c461c68056
+msgid "CAGMon-style Association Graph (Minimal)"
+msgstr "CAGMon 風の Association Graph（最小実装）"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:220004
+#: 7b67b3502d9842b3b6cc53c712a8b119
+msgid "Use the edge list and optionally build a graph for visualization."
+msgstr "エッジリストからグラフを作り、必要なら可視化します。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:240002
+#: a822b700dca3425291f7afb286dfa911
+msgid "Advanced Statistics"
+msgstr "高度な統計解析 (Advanced Statistics)"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:240004
+#: 82f1d9f97af94d55816c12b0100e0dfa
+msgid ""
+"gwexpy provides advanced statistical capabilities not only for correlation "
+"but also for examining data distribution shape and causality."
+msgstr "gwexpyは、相関だけでなく、データの分布形状や因果関係を調べるための高度な統計機能も提供しています。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:240006
+#: ea7a439f6f2c4f37b4831b3fd31d1f5e
+msgid "**Skewness**: Asymmetry of the distribution."
+msgstr "**Skewness (歪度)**: 分布の非対称性。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:240007
+#: e01f4988211944c09c135d52c0e66c7c
+msgid "**Kurtosis**: Heaviness of distribution tails (presence of outliers)."
+msgstr "**Kurtosis (尖度)**: 分布の裾の重さ（外れ値の多さ）。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:240008
+#: 13963540b9164d629faa0482f7418e52
+msgid "**Distance Correlation (dCor)**: Measure of nonlinear dependency."
+msgstr "**Distance Correlation (dCor)**: 非線形な依存関係の尺度。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:240009
+#: 7aa64343e6f34efea21eb774e6c3ce33
+msgid ""
+"**Granger Causality**: Causality between time series (contribution to "
+"prediction)."
+msgstr "**Granger Causality**: 時系列間の因果関係（予測への寄与）。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:250002
+#: 78784468b21141cbbae78a6e32e9f173
+msgid "Detecting Non-Gaussian Noise (Skewness / Kurtosis)"
+msgstr "非ガウス性ノイズの検出 (Skewness / Kurtosis)"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:270002
+#: a720e8de1f7748629741a01224c0a5c4
+msgid "Detecting Nonlinear Dependency (Distance Correlation)"
+msgstr "非線形依存性の検出 (Distance Correlation)"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:270004
+#: 08f08d0ddb084ab3afe1b8ada1b6c02d
+msgid ""
+"Let's examine the relationship between the sine wave data (`ts_c`) and "
+"linear data (`ts_a`) using dCor. We can detect relationships that Pearson "
+"correlation cannot capture."
+msgstr ""
+"先ほどの正弦波データ(`ts_c`)と線形データ(`ts_a`)の関係をdCorで見てみましょう。Pearson相関では捉えられなかった関係が検出できます。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:290002
+#: 51800ffc3eea4e3e8bb9db43d3bc2099
+msgid "Estimating Causality (Granger Causality)"
+msgstr "因果関係の推定 (Granger Causality)"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:290004
+#: 31b67b32266b465288d04be811351bf1
+msgid ""
+"Tests whether past values of one time series help predict future values of "
+"another time series."
+msgstr "ある時系列の過去の値が、別の時系列の未来の値を予測するのに役立つかどうかを検定します。"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:310002
+#: de672e2f07f348de853aa73d1698ae8f
+msgid "Fast Mutual Information (fastmi)"
+msgstr "高速相互情報量推定 (fastmi)"
+
+#: ../../how-to/fitting/advanced_correlation.ipynb:310004
+#: e5a1fe0a11074cfcb819bda8cd4ad4b2
+msgid ""
+"`fastmi` is a fast mutual-information (MI) estimator based on a copula "
+"formulation, a probit transform, and an FFT-based density estimate. It "
+"captures complex nonlinear dependencies that Pearson correlation might miss."
+msgstr ""
+"`fastmi` は、コピュラ（Copula）定式化、プロビット（Probit）変換、およびFFTベースの密度推定に基づく高速な相互情報量（Mutual"
+" Information）推定器です。Pearson相関が見逃す可能性のある複雑な非線形依存関係を捉えることができます。"

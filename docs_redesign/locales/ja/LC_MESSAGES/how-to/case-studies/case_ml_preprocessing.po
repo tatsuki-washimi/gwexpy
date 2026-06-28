@@ -1,0 +1,266 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:10002
+#: c1048cee86494c41b2330ab34da39875
+msgid "Case Study: ML Preprocessing Pipeline"
+msgstr "ケーススタディ: ML 前処理パイプライン"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:10004
+#: 7e9f733577a74ebd96bfe8285e8963de
+msgid ""
+"The `MLPreprocessor` class provides a scikit-learn-style transformer API for"
+" preprocessing gravitational-wave data for machine learning applications. It"
+" implements the preprocessing pipeline used in DeepClean v2, including:"
+msgstr ""
+"`MLPreprocessor` クラスは、重力波データを機械学習向けに前処理するための scikit-learn スタイルの transformer "
+"API を提供します。DeepClean v2 で使用されている前処理パイプラインを実装しており、以下の機能を含みます。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:10006
+#: 6c0a245f97514f0b89e896508eb88405
+msgid ""
+"**Data splitting**: Time-ordered train/validation split with integer-second "
+"alignment"
+msgstr "**データ分割**: 整数秒アライメントによる時間順の訓練/検証分割"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:10007
+#: c086c489b03542e19d58b3bb6c2af9e4
+msgid ""
+"**Bandpass filtering**: Butterworth filter with multiple frequency bands"
+msgstr "**バンドパスフィルタリング**: 複数周波数帯域に対応した Butterworth フィルタ"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:10008
+#: 1ba7113a6d3245cf97a56bf4c9e72e3a
+msgid ""
+"**Standardization**: Channel-wise normalization (Z-score or robust MAD-"
+"based)"
+msgstr "**標準化**: チャンネルごとの正規化（Z スコアまたはロバスト MAD ベース）"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:10010
+#: 246d7f1282164d1a93d225698280679d
+msgid ""
+"This preprocessing is applicable to any machine learning model (DeepClean, "
+"Random Forest, XGBoost, etc.), not just deep learning."
+msgstr ""
+"この前処理は、ディープラーニングに限らず、あらゆる機械学習モデル（DeepClean、Random Forest、XGBoost など）に適用できます。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:10012
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210017
+#: 705edeffcb514633abd9558d4782f751 980e394d439f435299af04a3e9aa4f5a
+msgid ""
+"**Related API**: [Preprocessing API](../../reference/api/preprocessing.rst),"
+" [Time Series API](../../reference/api/timeseries.rst)"
+msgstr ""
+"**関連 API**: [Preprocessing API](../../reference/api/preprocessing.rst), "
+"[Time Series API](../../reference/api/timeseries.rst)"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:10013
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210018
+#: 5e52c3358e7d4fd2b94b51f78eeeae0a ecd2407119cd44a899ed0295a30721b7
+msgid ""
+"**Related theory**: [Validated "
+"Algorithms](../../explanation/validated_algorithms.md), [Numerical "
+"Stability](../../explanation/numerical_stability.md)"
+msgstr ""
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:40002
+#: b5bc4aae01764361889ebf6513c1dfb1
+msgid "Basic Usage"
+msgstr "基本的な使い方"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:40004
+#: 6893ee51ea3e45a682d13242bc77f3eb
+msgid ""
+"Let's create some dummy data representing auxiliary (witness) channels and a"
+" target strain channel."
+msgstr "補助（ウィットネス）チャンネルとターゲットの strain チャンネルを表すダミーデータを作成しましょう。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:60002
+#: 715dd8ac3bab452383b3a2759ff40a69
+msgid "Preprocessing Pipeline"
+msgstr "前処理パイプライン"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:60004
+#: 1d0b2c14f593489b9136cb7f67498cda
+msgid "The typical workflow is:"
+msgstr "一般的なワークフローは以下のとおりです。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:60005
+#: 1101842d404741c283416cad1022c1c4
+msgid "**split()**: Divide data into train/validation sets"
+msgstr "**split()**: データを訓練セットと検証セットに分割する"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:60006
+#: 00670a7cac904be0be547c01c3874713
+msgid "**fit()**: Learn statistics and filter coefficients from training data"
+msgstr "**fit()**: 訓練データから統計量とフィルタ係数を学習する"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:60007
+#: 73a34af1a8fe4f21859595f0caadb3b8
+msgid "**transform()**: Apply preprocessing to train/validation data"
+msgstr "**transform()**: 訓練/検証データに前処理を適用する"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:60009
+#: cc7d221600fc49c7b9caef22e40d1074
+msgid ""
+"**Axis-order note:** in this notebook, witness inputs `X` stay in GWexpy's "
+"channel-first order `(n_channels, 1, n_samples)`. Many ML libraries expect "
+"batch-major tensors later, so transpose only at the dataset/model boundary "
+"and keep the preprocessing steps in the original axis order."
+msgstr ""
+"**軸順序の注意:** このノートブックでは、ウィットネス入力 `X` は GWexpy の channel-first 順序 "
+"`(n_channels, 1, n_samples)` のまま扱います。後段の ML ライブラリでは batch-major "
+"テンソルを要求することがありますが、転置はデータセット化やモデル入力の境界でだけ行い、前処理中は元の軸順序を保ってください。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:90002
+#: 2b1282c9f54a4177a22f393de89ae936
+msgid "Data Splitting Visualization"
+msgstr "データ分割の可視化"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:90004
+#: d554f09df8bd499ea7f6ef28d42603b2
+msgid ""
+"The split is time-ordered (first portion for training, last for validation) "
+"with integer-second alignment to match DeepClean v2 behavior."
+msgstr "分割は時間順（前半が訓練用、後半が検証用）で行われ、DeepClean v2 の動作に合わせて整数秒でアライメントされます。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:110002
+#: ff223a15353540f78d4ed53859ee7d97
+msgid "Filtering and Standardization Effects"
+msgstr "フィルタリングと標準化の効果"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:110004
+#: fc2f547536a7462d948d4bcdb52c4bf8
+msgid "**Important**:"
+msgstr "**重要**:"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:110005
+#: 669447b0d0fc4ea58e0bf5a4e8fbfa6f
+msgid "**Witness channels (X)** are NOT filtered, only standardized"
+msgstr "**ウィットネスチャンネル (X)** はフィルタリングされず、標準化のみが適用されます"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:110006
+#: bb22f0dadb044a1e8257d20c89599306
+msgid "**Target channel (y)** is filtered THEN standardized"
+msgstr "**ターゲットチャンネル (y)** はフィルタリング後に標準化されます"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:110008
+#: 04b3e7e1d6464be4ae7b0404e1ae0d2f
+msgid "This follows DeepClean v2's processing order."
+msgstr "これは DeepClean v2 の処理順序に従っています。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:130002
+#: 27fb69f0f66a4a0c971a78e8f7fe38e0
+msgid "Frequency Domain Analysis"
+msgstr "周波数領域解析"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:150002
+#: f170245f7a3a4ebdb3493d0863d694c6
+msgid "PyTorch Integration"
+msgstr "PyTorch 連携"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:150004
+#: 5e4da89fd5984e96832f19d320677bcb
+msgid ""
+"The preprocessed data can be used with `TimeSeriesWindowDataset` for deep "
+"learning models."
+msgstr "前処理済みデータは、ディープラーニングモデル用に `TimeSeriesWindowDataset` と組み合わせて使用できます。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:170002
+#: 3f78d4cd62e041839cfbd5340dc9e27b
+msgid "Advanced Topics"
+msgstr "発展的な話題"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:170004
+#: 02471e65ecf442429d09eda959becc4a
+msgid "Multiple Frequency Bands"
+msgstr "複数の周波数帯域"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:170006
+#: d772c62121f64a38910bbf2818ef7831
+msgid ""
+"You can filter multiple frequency bands simultaneously (results are summed)."
+msgstr "複数の周波数帯域を同時にフィルタリングできます（結果は合算されます）。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:190002
+#: 615be22f8e694cd4a05d84388f5763d3
+msgid "Robust Standardization"
+msgstr "ロバスト標準化"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:190004
+#: 914b604621204404ac40e71ef482f7e2
+msgid ""
+"For data with outliers, use `robust` (MAD-based) standardization instead of "
+"z-score."
+msgstr "外れ値を含むデータに対しては、Z スコアの代わりに `robust`（MAD ベース）標準化を使用します。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210002
+#: 6149dafc97c24c039bb5fcfe4178d586
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210004
+#: 6c153276d1874fc08d6a1e2b9f4e2912
+msgid "The `MLPreprocessor` provides:"
+msgstr "`MLPreprocessor` は以下の機能を提供します。"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210006
+#: 1ef7906ad78f4b3c86be26d4bc01e3df
+msgid "**Flexible preprocessing** for any ML model (not just DeepClean)"
+msgstr "**柔軟な前処理**: あらゆる ML モデルに対応（DeepClean に限定されない）"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210007
+#: c447f06a587f49de9d4062a610c04093
+msgid "**DeepClean v2 compatibility** with identical processing order"
+msgstr "**DeepClean v2 互換**: 同一の処理順序を再現"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210008
+#: 40397e9953424498be85ac69670c23c1
+msgid "**Easy integration** with PyTorch, scikit-learn, XGBoost, etc."
+msgstr "**容易な統合**: PyTorch、scikit-learn、XGBoost などとの連携が容易"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210009
+#: e1a87a6ac1754b039242a156ab782e2f
+msgid ""
+"**Robust handling** of edge cases (single channel, outliers, zero variance)"
+msgstr "**ロバストな処理**: エッジケース（単一チャンネル、外れ値、ゼロ分散）への対応"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210011
+#: 7ee2a3603aef46558463e6415ea3fa3c
+msgid "**Key processing order**:"
+msgstr "**処理順序のポイント**:"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210012
+#: f7b134cba99847a6a598b39c5fb435dc
+msgid "Witness channels (X): Standardization only (no filtering)"
+msgstr "ウィットネスチャンネル (X): 標準化のみ（フィルタリングなし）"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210013
+#: 14f9882103c34bffac594161ea0c95af
+msgid "Target channel (y): Filtering → Standardization"
+msgstr "ターゲットチャンネル (y): フィルタリング → 標準化"
+
+#: ../../how-to/case-studies/case_ml_preprocessing.ipynb:210015
+#: 90b1dd338db942019a47c16fd9ac0ec6
+msgid ""
+"For more details, see the [API "
+"documentation](../../reference/api/preprocessing.rst)."
+msgstr "詳細は [API ドキュメント](../../reference/api/preprocessing.rst) を参照してください。"

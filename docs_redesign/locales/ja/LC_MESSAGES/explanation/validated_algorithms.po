@@ -1,0 +1,1019 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../explanation/validated_algorithms.md 0f21b9191e524413a9a5e2e090c55b32
+msgid ""
+"Review GWexpy validated algorithms, numerical tolerances, assumptions, audit"
+" evidence, and bridges to theory, API, and tutorials."
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:7
+#: 69ded7740b8642a2901970af13310823
+msgid "Validated Algorithms"
+msgstr "検証済みアルゴリズム"
+
+#: ../../explanation/validated_algorithms.md:10
+#: be500659dc1d4521b75de991172fe72d
+msgid "**Who should read this page?**"
+msgstr "**このページを読むべき方**:"
+
+#: ../../explanation/validated_algorithms.md:11
+#: 486ffb0b5cd74cf6beb9ff2e4c47d86d
+msgid ""
+"Researchers who want to verify the mathematical and physical validity of the"
+" methods."
+msgstr "解析手法の数学的・物理学的な妥当性を確認したい研究者"
+
+#: ../../explanation/validated_algorithms.md:12
+#: fac689d7b09746bfb480bb3eb33638ab
+msgid ""
+"Developers who need to know the numerical tolerances between GWexpy and "
+"external libraries (SciPy, LALSuite, etc.)."
+msgstr "外部ライブラリ（SciPy, LALSuite 等）と GWexpy の数値的な計算誤差を知りたい開発者"
+
+#: ../../explanation/validated_algorithms.md:13
+#: 81333ec478d9482d8bafdbb895a6280b
+msgid ""
+"Users who need to check the data characteristics (stationarity, Gaussianity,"
+" etc.) assumed by each algorithm."
+msgstr "使用するアルゴリズムが前提としているデータ特性（定常性、ガウス性など）を確認したい方"
+
+#: ../../explanation/validated_algorithms.md:17
+#: ea2cb9e955864b10b654ae716e48d1b1
+msgid "**Advanced validation/theory companion**"
+msgstr "**高度な検証・理論ページです**"
+
+#: ../../explanation/validated_algorithms.md:19
+#: c40080f8e05b4ace8ce8f53482eaae1a
+msgid ""
+"This page intentionally stays under the user guide so readers can discover "
+"it from feature docs, but it is not an onboarding page. Treat it as the "
+"advanced/theory landing for audit-oriented reading across the API reference,"
+" theory notes, and targeted tutorials. For first-use guidance, start with "
+"[Getting Started](../tutorials/getting_started.md), [Prerequisites and "
+"Conventions](prerequisites_and_conventions.md), or the linked tutorials for "
+"each method."
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:22
+#: 0209c270bfef45c2b69d2a8bbdd79c45
+msgid ""
+"The numerical algorithms implemented in `gwexpy` have undergone a rigorous "
+"validation process to ensure scientific accuracy and reliability."
+msgstr "`gwexpy` で使用されている主要な数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。"
+
+#: ../../explanation/validated_algorithms.md:25
+#: 1ffacfa46e83451e8036ab647c4db82a
+msgid "Validation Criteria and Numerical Precision"
+msgstr "検証の基準と計算精度 (Validation & Precision)"
+
+#: ../../explanation/validated_algorithms.md:27
+#: 52cc1440ca3249679a829674157f9a9d
+msgid ""
+"Algorithms labeled as \"Validated\" meet the following standards and achieve"
+" specific precision (tolerance) benchmarks:"
+msgstr "「検証済み」と表記されるアルゴリズムは、以下の基準に基づき、指定の精度（Tolerance）を達成しています。"
+
+#: ../../explanation/validated_algorithms.md:29
+#: cd545f785dea421194107e4be3350b1f
+#, python-brace-format
+msgid ""
+"**Tolerance**: We generally use $10^{-12}$ (relative error) as the passing "
+"criterion. This indicates no significant logic differences beyond standard "
+"double-precision rounding errors."
+msgstr ""
+"**一致率 (Tolerance)**: $10^{-12}$ (相対誤差) "
+"を原則的なパス基準としています。これは倍精度浮動小数点演算において、丸め誤差以外の有意なロジック差異がないことを示します。"
+
+#: ../../explanation/validated_algorithms.md:30
+#: 980a895a24eb4d7a9d59cb93a623948e
+msgid ""
+"**Invariance**: All algorithms are verified for \"Scale Invariance,\" "
+"ensuring results remain consistent even after scaling data (e.g., "
+"multiplying by 1000)."
+msgstr ""
+"**物理的不変性 (Invariance)**: スケール変換（データの 1000 倍など）をしても結果が整合する「Scale "
+"Invariance」を全アルゴリズムで検証しています。"
+
+#: ../../explanation/validated_algorithms.md:33
+#: 2d6e2712223048b5b8d0bd3e3b1a1c3c
+msgid "Objective Evidence"
+msgstr "客観的証拠 (Objective Evidence)"
+
+#: ../../explanation/validated_algorithms.md:35
+#: deaef32b13504745ab8837859f0d4c61
+msgid ""
+"The summaries on this page are backed by the public evidence trail collected"
+" here."
+msgstr "このページの要約は、このページ内に整理した公開向けの検証証跡に基づいています。"
+
+#: ../../explanation/validated_algorithms.md:37
+#: f74db5e479624fe59093410f786ddccc
+msgid ""
+"The evidence table is intentionally column-dense so the audit trail stays on"
+" one page. On mobile, horizontal scrolling is expected and should align with"
+" the shared table CSS used across the docs."
+msgstr ""
+"この証拠表は監査証跡を 1 ページにまとめるため、列数を多めに保っています。モバイルでは共有 CSS に合わせた横スクロール前提で読むのが自然です。"
+
+#: ../../explanation/validated_algorithms.md:16
+#: d8c40a0b8a92472187c8773c71e80012
+msgid "Evidence type"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 3892842d10644f3c82c292e66e4a5003
+msgid "Public source"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 0f0fac69ab044d52ae46715c13f3661a
+msgid "What it shows"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 7f2ebf6692d3491d83175ecbb8e17adb
+msgid "Audit scope"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: e38af53e5fdf48ed88444710408207b8
+#, python-brace-format
+msgid "{ref}`Validation summary <validated-algorithms-summary-table>`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 52dccbb1738941d4b002da5e7cc8d988
+msgid ""
+"Which algorithms were reviewed and which numerical questions were checked"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: d09ea991123443d987c53bb31de84bc5
+msgid "Consolidated findings"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 0b9e5f23b9fb47c89dcabc115876ff83
+#, python-brace-format
+msgid "{ref}`Per-algorithm sections <validated-algorithms-detail-sections>`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: bf293c6a5bdb46fc9ffc7dba97f24a21
+msgid ""
+"Cross-reviewed findings, severity, and agreement across independent audits"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: f02b3bf808824cb5a23dc6e67977cd59
+msgid "Fix history"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 6e9528acd717455dbfc6eb15106f7f2b
+#, python-brace-format
+msgid "{ref}`Audit Trail <validated-algorithms-audit-trail>`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 75bee6df674048dfb6cacaf4b1d5a702
+msgid "What changed after the review findings were merged and addressed"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 3be32f265bba4430be122a5da42233dd
+msgid "Field-specific physics review"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 99d72bfae1dc4dffa3c828f006be4366
+#, python-brace-format
+msgid "{ref}`k-space calculation <validated-en-k-space>`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: b0cb543a1ea94ce599d3b03dee0fc352
+msgid "Physics and axis-consistency review for `ScalarField` FFT behavior"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:47
+#: c4751c3fe25e4f92adf259edcc4820ea
+msgid "Source References"
+msgstr "参照元一覧 (Source References)"
+
+#: ../../explanation/validated_algorithms.md:49
+#: fec7790c36814ff0888695d579d69a97
+msgid ""
+"Use the source keys below in the per-algorithm sections so the bibliography "
+"and source trail stay centralized on this page."
+msgstr "各アルゴリズム節では、文献・内部資料の参照をこの一覧のキーに寄せて、出典管理をこのページで一元化します。"
+
+#: ../../explanation/validated_algorithms.md:16
+#: 892e522c05e24b7db8d57ec19a1d6415
+msgid "Key"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 09a2153f961a44c382f94b5b8e3ee667
+msgid "Source"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 3c0cc637ccbc4b1fa441ba8165be3635
+msgid "Used for"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 82cf865ef7cf496b83dcf65fe58d3957
+msgid "`S1`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 4698d73c0e614cbfb7facc389f2a49a8
+msgid "Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 7a981705b86a4ac1af65d2b60432dcab
+msgid "k-space calculation and FFT-axis interpretation"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 7349c3a8f2d346e6bdc1040a82835483
+msgid "`S2`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 724c644b58514642a761e99c3730f9cb
+msgid ""
+"Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications*"
+" (1993), Eq.(56)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: d4e38e5c6cca457db32246f8bf5b225d
+msgid "Welch overlap / VIF correction"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 90422cad5c4448e59245d4f515f4d2d5
+msgid "`S3`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: ../../explanation/validated_algorithms.md:104
+#: ../../explanation/validated_algorithms.md:129
+#: ../../explanation/validated_algorithms.md:156
+#: ../../explanation/validated_algorithms.md:188
+#: ../../explanation/validated_algorithms.md:211
+#: ../../explanation/validated_algorithms.md:236
+#: 23ce76505925465abc15bb775462de73 85ac58a3971141ac8c625fc72dd1d3ca
+#: 8ba534396279497b97f8f3c6aa5816e0 b34a99b2b0c54809a71c7e11a82e7a8e
+#: b4c19f39a73c40299a2b3073f1e8071a bade44f81d17414794572e96d68ad398
+#: c9775533996e407ba0ea22e70438f9d1
+msgid "[Prerequisites and Conventions](prerequisites_and_conventions.md)"
+msgstr "[前提条件と規約](prerequisites_and_conventions.md)"
+
+#: ../../explanation/validated_algorithms.md:16
+#: 2f34bb68ae4c4314bca9793d2f51960e
+msgid ""
+"Time-system assumptions and FFT-related conventions referenced by validation"
+" notes"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: d5af904610c240c28ea3ec303ca7aa7a
+msgid "`S4`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: ../../explanation/validated_algorithms.md:130
+#: ../../explanation/validated_algorithms.md:212
+#: ../../explanation/validated_algorithms.md:235
+#: 3123312247d346d09ebd61d0fe0b9ae3 69ae0a60c2b14990809cc82bf38ee171
+#: 9125387214fc44c0a18c29a20f623592 9ad23e2b5c3345c69b65c267f0efef1d
+msgid "[Numerical Stability](numerical_stability.md)"
+msgstr "[数値安定性](numerical_stability.md)"
+
+#: ../../explanation/validated_algorithms.md:16
+#: 0a1800f4df154cff9c0b679fdaf0cc47
+msgid ""
+"Adaptive stabilization guidance for whitening and related preprocessing "
+"paths"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 454d276d946446eb81bdd6cb9e23d526
+msgid "`S5`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 9ed94195f88c4802b9dfacbbcbf72743
+#, python-brace-format
+msgid ""
+"{ref}`Objective Evidence <validated-en-objective-evidence>` and the Audit "
+"Trail below"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 92d7b9024ee9496db13721c3b78135b5
+msgid ""
+"Repository-backed implementation evidence for transient FFT behavior and "
+"complex GLS / MCMC handling"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:60
+#: 40787ed4082943a68a442a4314d77139
+msgid "Validated Algorithms Summary Table"
+msgstr "検証済みアルゴリズム要約表"
+
+#: ../../explanation/validated_algorithms.md:16
+#: d32c5f4450494dc6aee9f694d8389c4a
+msgid "Algorithm"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 088b31f8fcc54d3fb0354d6cc8b92c03
+msgid "Primary API"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: a27e8efa51814b3dbfff3ccdeb3da338
+msgid "API page"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 4dae5917e3634d188e442235834210a7
+msgid "Evidence"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 8137528b22ab4aa48b48cefe4dd974a1
+msgid "Related tutorial"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: a91e3bcdbdb74ff1b762073c94a7bd33
+msgid "**k-space calculation**"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: db6bcac93d3242538c87e8d80c349107
+msgid "`ScalarField.fft_space()`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 6a0015b6e53f492fa3034701aa061d8d
+msgid ""
+"[Fields API](../reference/api/fields.rst) / "
+"[ScalarField](../reference/api/fields.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 3fa343240bda4824a8ae44a407270a0c 5aa28e957cee40f4b2d4b927f2a28df9
+#: 7edc9a6e62d646d38f57c450f08d616d c6a89cb435044c65aeaa80fab6c67069
+#: f4f61998a53c4eef9d0e0d946f74ed77 ff7a30c036b24a34a12d704a3dc614cc
+#, python-brace-format
+msgid "{ref}`Objective Evidence <validated-en-objective-evidence>`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: ../../explanation/validated_algorithms.md:97
+#: 8814c89d47fa45399613c7c13ad9d5ee a85d3a4bdae746d798b8e95920096940
+msgid "[Field Intro](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 54130c7883e6447188e263204c316b1c
+msgid "**Transient FFT**"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: f1ec2e129e8a450096e5d1aa844b68ae
+msgid "`TimeSeries.fft(mode=\"transient\")` / `TimeSeries._fft_transient`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 78fe58f4dfc74d6cb8719df6213d6b50 abf57e4e9e3d4021a4f3bfba760f4574
+msgid ""
+"[Time Series API](../reference/api/timeseries.rst) / "
+"[TimeSeries](../reference/api/timeseries.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: ec00bb33643b4b19ae96fcca396695ff
+msgid "[Signal Extraction](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 03dc8e1eff4c45a7b72fd7ed5d0240a6
+msgid "**VIF correction**"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: ad743ecad89149b7ad4f6a2cd685ae52
+msgid "`calculate_correlation_factor()`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 63eb7c92e81142da8f4db183d1d3016e
+msgid ""
+"[Spectral API](../reference/api/spectral.rst) / [Spectral "
+"Estimation](../reference/api/spectral.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 9691978e5c93435cb3aa90f2a7017fb6 df9ef49fd0244d478e7028005147fa22
+msgid "[Bootstrap Guide](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 9e361cb10e834878a697b5c8fcd7dc16
+msgid "**Forecast timing**"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: eb5764f67eee453d9b4114098157ac8c
+msgid "`ArimaResult.forecast()`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 562622edaaad4305a837450a0b23d7cb
+msgid "[Advanced ARIMA](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: a5c98de722a34267b1de2d13925a2e36
+msgid "**MCMC / GLS likelihood**"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 72fa9bbf7c774afcb98b71b0afd26db7
+msgid "`fit_series()` / `GeneralizedLeastSquares`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: b412d18c7d8b4047892fbacfe11174ec
+msgid ""
+"[Fitting API](../reference/api/fitting.rst) / "
+"[gwexpy.fitting](../reference/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 1f8d8c62d7a943e29274581256043ca4
+msgid "**Adaptive whitening**"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: 7a37a114279e4258a6c2da4c2cc634dd
+msgid "`whiten()` / `WhiteningModel`"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: ../../explanation/validated_algorithms.md:232
+#: ../../explanation/validated_algorithms.md:259
+#: 26bf8cca2ae34f2e973db3d05660604d 8db1dc9c3713424095a7d79b2215949f
+#: 98e55e6c325e452298f1b07182685791
+msgid "[Preprocessing API](../reference/api/preprocessing.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:16
+#: ../../explanation/validated_algorithms.md:229
+#: 7ff7e8d3086a431e868b4dd98d00cfd5 ef57bc2c5f6645b0bf91e8ad5dc6989b
+msgid "[ML Preprocessing Case Study](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:74
+#: 31db1e0e1c9c4c5192e67a15f7e27431
+msgid "How to Read This Page"
+msgstr "このページの読み方"
+
+#: ../../explanation/validated_algorithms.md:76
+#: d98cc92a1aa3485d8a842573de39719c
+msgid ""
+"If you want the shared prerequisites, time-system assumptions, and FFT "
+"conventions first, start with [Prerequisites and "
+"Conventions](prerequisites_and_conventions.md)."
+msgstr ""
+"共通の前提条件、時刻系、FFT 規約を先に整理したい場合は [前提条件と規約](prerequisites_and_conventions.md) "
+"を入口にしてください。"
+
+#: ../../explanation/validated_algorithms.md:77
+#: 2659d21570ad4108a74727195df5a0ee
+msgid ""
+"If you want hands-on usage before reading the audit notes, use the exact "
+"tutorial linked in the summary table rather than the general tutorial index."
+msgstr "監査メモより先に手を動かしたい場合は、要約表にある個別チュートリアルから該当手法だけ読むのが最短です。"
+
+#: ../../explanation/validated_algorithms.md:78
+#: ce532f1a552544e4869197bee06aeeee
+msgid ""
+"If you want the implementation-facing APIs first, start with [Fields "
+"API](../reference/api/fields.rst), [Time Series "
+"API](../reference/api/timeseries.rst), [Spectral "
+"API](../reference/api/spectral.rst), [Fitting "
+"API](../reference/api/fitting.rst), and [Preprocessing "
+"API](../reference/api/preprocessing.rst)."
+msgstr ""
+"実装側の API を先に確認したい場合は [フィールド API](../reference/api/fields.rst), [Time Series "
+"API](../reference/api/timeseries.rst), [Spectral "
+"API](../reference/api/spectral.rst), [Fitting "
+"API](../reference/api/fitting.rst), [前処理 "
+"API](../reference/api/preprocessing.rst) を参照してください。"
+
+#: ../../explanation/validated_algorithms.md:79
+#: f1851e1f7aa447519a1b263fdb7498dc
+#, python-brace-format
+msgid ""
+"If you want the repository-backed evidence behind the summaries, continue to"
+" the {ref}`Objective Evidence <validated-en-objective-evidence>`, "
+"{ref}`Source References <validated-en-source-references>`, and Audit Trail "
+"sections below."
+msgstr ""
+"検証の背景や監査メモまで追いたい場合は、後述の {ref}`客観的証拠 <validated-ja-objective-"
+"evidence>`、{ref}`参照元一覧 <validated-ja-source-references>`、Audit Trail "
+"を参照してください。"
+
+#: ../../explanation/validated_algorithms.md:82
+#: 7ebb19bcdb804f20a314e8b369e3c851
+msgid "Detailed Algorithm Basis and Assumptions"
+msgstr "各アルゴリズムの詳細と仮定"
+
+#: ../../explanation/validated_algorithms.md:85
+#: cda2f0e8446648c78d80af7fb6b0d784
+msgid "1. k-space Calculation"
+msgstr "1. k-space 計算"
+
+#: ../../explanation/validated_algorithms.md:86
+#: 294f73a9cba34f3eb6feace32bf363af
+#, python-brace-format
+msgid "**Target**: {meth}`gwexpy.fields.ScalarField.fft_space`"
+msgstr "**対象**: {meth}`gwexpy.fields.ScalarField.fft_space`"
+
+#: ../../explanation/validated_algorithms.md:88
+#: 08908a59171040c492ace6aced27ae29
+msgid ""
+"Angular wavenumber calculation follows the standard physics definition $k = "
+"2\\pi / \\lambda$."
+msgstr "角波数の計算は、物理学の標準定義 $k = 2\\pi / \\lambda$ に従っています。"
+
+#: ../../explanation/validated_algorithms.md:90
+#: ../../explanation/validated_algorithms.md:115
+#: ../../explanation/validated_algorithms.md:142
+#: ../../explanation/validated_algorithms.md:174
+#: ../../explanation/validated_algorithms.md:196
+#: ../../explanation/validated_algorithms.md:222
+#: 3d71b0971eee4f6da9d64cf54353a80a 44bef4662f00484daf447d35ead17ee9
+#: 4d9dd6731f4746bcb0730ea82a19d11c 80c70518f49d401882cec8ff21f38914
+#: 8a997559d29349188cc0538da8dd5306 f8106c86ce7044b6bcd2e273c9ec6987
+msgid "**Assumptions**:"
+msgstr "**前提条件・仮定**:"
+
+#: ../../explanation/validated_algorithms.md:91
+#: 017a8dcddb44422692e66a2b3ee7eed8
+msgid "Spatial coordinates ($x, y$) must be **Uniformly Spaced**."
+msgstr "空間座標 ($x, y$) が**等間隔（Uniform Grid）**であること。"
+
+#: ../../explanation/validated_algorithms.md:92
+#: 824bb05103f04e13a845e5bbf275ae67
+msgid ""
+"For non-uniform grids, a correct wavenumber axis cannot be obtained without "
+"prior interpolation."
+msgstr "非等間隔グリッドの場合は、事前に補間を行わない限り正しい波数軸は得られません。"
+
+#: ../../explanation/validated_algorithms.md:94
+#: 0fae3aee0e004315bee9bcf9fe04f8c2
+#, python-brace-format
+msgid "**Source reference**: {ref}`S1 <validated-en-source-references>`"
+msgstr "**参照元**: {ref}`S1 <validated-ja-source-references>`"
+
+#: ../../explanation/validated_algorithms.md:96
+#: ../../explanation/validated_algorithms.md:121
+#: ../../explanation/validated_algorithms.md:148
+#: ../../explanation/validated_algorithms.md:180
+#: ../../explanation/validated_algorithms.md:202
+#: ../../explanation/validated_algorithms.md:228
+#: 0a0cccd8170342e28c27ad1430c4ce00 6a233363157f49ca90ee8f60b2e911e6
+#: b6552b63365a4d29964fc7a04eddae0e c7a6b453bf3548ac877d6264a7b0e0f9
+#: df96de836ba04bdaa8932d23df29a6e8 f811cc90a9ed4a49926316396a0e6d82
+msgid "**Related tutorial**"
+msgstr "**関連チュートリアル**"
+
+#: ../../explanation/validated_algorithms.md:99
+#: ../../explanation/validated_algorithms.md:124
+#: ../../explanation/validated_algorithms.md:151
+#: ../../explanation/validated_algorithms.md:183
+#: ../../explanation/validated_algorithms.md:205
+#: ../../explanation/validated_algorithms.md:231
+#: 8c5f59e2c7a440e581f1a9fa68d2887a 9ca2eeb3d41b4be2bb3d6dcf39e0a17d
+#: b88cfd2d598e477692a765bdb7bc93cc c90dd4da1eea43f1abd491abf6dc1df2
+#: d12c8e6240934301a12318ce1bba0360 e1b684c9cc4543daa5f91001f04a47e6
+msgid "**Related API**"
+msgstr "**関連 API**"
+
+#: ../../explanation/validated_algorithms.md:100
+#: ../../explanation/validated_algorithms.md:255
+#: 6bc74ab3154b49ecb1cde93a492cd28f 7b96f2a986824b479e7960c1d13bf3b6
+msgid "[Fields API](../reference/api/fields.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:101
+#: 19348c1a36124cba959816b7fedf87f1
+msgid "[ScalarField](../reference/api/fields.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:103
+#: ../../explanation/validated_algorithms.md:128
+#: ../../explanation/validated_algorithms.md:155
+#: ../../explanation/validated_algorithms.md:187
+#: ../../explanation/validated_algorithms.md:210
+#: ../../explanation/validated_algorithms.md:234
+#: 66a11fc8cc1d4babb43fa68091c38ca1 a3cc0516de5148bc9d1c4d38f7d627dc
+#: c4059367d2b6496e959c63b131603408 dadeb638784d4385a0ab38dd24bd6a60
+#: f44cf9d99d1d44f1a69ccbf0d4560cdd fd353d4cd3284ba9afaad9a3f6485d1c
+msgid "**Related theory**"
+msgstr "**関連理論**"
+
+#: ../../explanation/validated_algorithms.md:105
+#: c67f788e3aab4ccd8bb263b0bc5eae00
+msgid "[Architecture and Data Flow](architecture.md)"
+msgstr "[アーキテクチャとデータフロー](architecture.md)"
+
+#: ../../explanation/validated_algorithms.md:110
+#: ed45ea9566f44a6cac651c0812b9c6d8
+msgid "2. Transient FFT (Amplitude Spectrum)"
+msgstr "2. 振幅スペクトル（トランジェントFFT）"
+
+#: ../../explanation/validated_algorithms.md:111
+#: 681b7dabd76c40239cfbb990e60d1c4b
+msgid "**Target**: `TimeSeries._fft_transient`"
+msgstr "**対象**: `TimeSeries._fft_transient`"
+
+#: ../../explanation/validated_algorithms.md:113
+#: d04a768c767e4354a91d2492f5291625
+msgid ""
+"Uses an amplitude-preserving convention rather than density, allowing direct"
+" reading of time-domain peak amplitudes."
+msgstr "密度スペクトル（PSD）ではなく、時間領域の**ピーク振幅**を直接読み取れる振幅規約を採用しています。"
+
+#: ../../explanation/validated_algorithms.md:116
+#: 5c77bcc095cd463abc45bc68e5cfa813
+msgid ""
+"No window function is applied to the input signal (assumes Rectangular "
+"window)."
+msgstr "入力信号に窓関数が適用されていないこと（矩形窓を前提）。"
+
+#: ../../explanation/validated_algorithms.md:117
+#: ccead58c4d9341dfb5d0bc0688bbf8dd
+msgid ""
+"For data with windows already applied, separate correction for coherent gain"
+" is required."
+msgstr "窓関数適用済みのデータに対しては、別途コヒーレント・ゲインによる補正が必要です。"
+
+#: ../../explanation/validated_algorithms.md:119
+#: ../../explanation/validated_algorithms.md:200
+#: 20ca2fa8b6ae4fd3b4722b761610c8e9 f4993afe8695468fa75e4cdc8a08efd5
+#, python-brace-format
+msgid "**Source reference**: {ref}`S5 <validated-en-source-references>`"
+msgstr "**参照元**: {ref}`S5 <validated-ja-source-references>`"
+
+#: ../../explanation/validated_algorithms.md:122
+#: 8b8df17c55924b67a28e76b4e749dc82
+msgid "[Signal Extraction tutorial](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:125
+#: ../../explanation/validated_algorithms.md:184
+#: ../../explanation/validated_algorithms.md:206
+#: ../../explanation/validated_algorithms.md:256
+#: 765c90960d634cb0819df40763a2a055 8b67f309d83e4a809d66f463781d1266
+#: a901a36fc0264215bd387f85ce1efa7c f400d2a95d684b69808b0ddd6805ff22
+msgid "[Time Series API](../reference/api/timeseries.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:126
+#: ../../explanation/validated_algorithms.md:185
+#: e535ee8d50fa4424b04518725f49b000 ef8dfa91146e4b3a82bee3f867684271
+msgid "[TimeSeries](../reference/api/timeseries.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:135
+#: 2c82b0b918b645d2bc936255a0395e8f
+msgid "3. VIF (Variance Inflation Factor)"
+msgstr "3. VIF (分散膨張係数)"
+
+#: ../../explanation/validated_algorithms.md:136
+#: 88df0b24147549518152f114799ea210
+#, python-brace-format
+msgid ""
+"**Target**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`"
+msgstr ""
+"**対象**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`"
+
+#: ../../explanation/validated_algorithms.md:138
+#: faa686a4c77f490b97f2eb8e977011ac
+msgid ""
+"Corrects for the reduction in effective sample size caused by overlapping "
+"segments in spectral estimation methods like Welch's."
+msgstr "Welch 法等におけるセグメント間のオーバーラップによる有効サンプル数の減少を補正します。"
+
+#: ../../explanation/validated_algorithms.md:140
+#: 885b7ff51cb54558bb6115782f0a8694
+msgid ""
+"Here, VIF is not meant as the regression-style Variance Inflation Factor "
+"used in multicollinearity diagnostics. In the codebase it is exposed as "
+"`calculate_correlation_factor()` because the API is describing the concrete "
+"operation: computing the overlap-induced correlation correction factor."
+msgstr ""
+"ここでの VIF は回帰分析の Variance Inflation Factor "
+"をそのまま指すのではなく、**オーバーラップ窓による分散膨張補正をコード上で `calculate_correlation_factor()` "
+"として実装したもの**です。理論名と関数名が異なるのは、API では「相関補正係数を計算する」役割を明示するためです。"
+
+#: ../../explanation/validated_algorithms.md:143
+#: 778b13c28ea34c79be86de762622f691
+msgid "The data must be **Weakly Stationary**."
+msgstr "データが**弱定常 (Weakly Stationary)** であること。"
+
+#: ../../explanation/validated_algorithms.md:144
+#: e7e555373ec24fe98101e4ddaf11caa6
+msgid ""
+"VIF may under- or over-estimate variance if non-stationary glitches or step "
+"responses are present."
+msgstr "非定常なグリッチやステップ応答が含まれる場合、VIF は分散を過小または過大評価する可能性があります。"
+
+#: ../../explanation/validated_algorithms.md:146
+#: 0c846bc1a072467eb91b44c9c36bcf34
+#, python-brace-format
+msgid "**Source reference**: {ref}`S2 <validated-en-source-references>`"
+msgstr "**参照元**: {ref}`S2 <validated-ja-source-references>`"
+
+#: ../../explanation/validated_algorithms.md:149
+#: ../../explanation/validated_algorithms.md:203
+#: 14c4bcefa21e4aa38835263b60c1d9d0 9e69f1cb1a944d2eb7076e6b436d715e
+msgid "[Bootstrap GLS fitting case study](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:152
+#: ../../explanation/validated_algorithms.md:257
+#: 06efab095a20495093079401700c7800 c1c67328750c4d77894b14fa5ed67141
+msgid "[Spectral API](../reference/api/spectral.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:153
+#: 0f1d35ba1d404120847bb0847c1f6bd5
+msgid "[Spectral Estimation](../reference/api/spectral.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:161
+#: ddecf2e8f72948c7b3cb8904c15f1008
+msgid "4. Forecast Timestamp (ARIMA)"
+msgstr "4. 予測タイムスタンプ (ARIMA)"
+
+#: ../../explanation/validated_algorithms.md:162
+#: 44e1e7ba1f3645fdb3a49fc457a71273
+#, python-brace-format
+msgid "**Target**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`"
+msgstr "**対象**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`"
+
+#: ../../explanation/validated_algorithms.md:164
+#: cecd1205e77e4816934e4f852756e0b9
+msgid ""
+"Maintains GPS continuity according to LIGO conventions for future timestamp "
+"prediction."
+msgstr "GPS 時刻系における連続性を保証するため、LIGO 規約に従った歩進計算を行います。"
+
+#: ../../explanation/validated_algorithms.md:166
+#: 7896b8a70e6241818dd2f3c8433a8ebb
+msgid "A representative update rule is `forecast_t0 = t0 + n_obs * dt`, where"
+msgstr "代表的な更新式は `forecast_t0 = t0 + n_obs * dt` です。ここで、"
+
+#: ../../explanation/validated_algorithms.md:168
+#: a318bd970e3948f1b5af09585a61de81
+msgid "`t0`: start GPS time of the original series"
+msgstr "`t0`: 元データ系列の開始 GPS 時刻"
+
+#: ../../explanation/validated_algorithms.md:169
+#: d57253b4f64645dc92f032ee144fd65a
+msgid "`n_obs`: number of observed samples used for the fit"
+msgstr "`n_obs`: 学習に使った観測点数"
+
+#: ../../explanation/validated_algorithms.md:170
+#: 6a449ee3ccf44cd2975c24ed978c785a
+msgid "`dt`: sampling interval in seconds"
+msgstr "`dt`: サンプル間隔（秒）"
+
+#: ../../explanation/validated_algorithms.md:172
+#: c96cdc9097db43dda5f786238a6c6425
+msgid ""
+"This is the quantity mapping assumed when forecast timestamps are extended "
+"forward."
+msgstr "を表します。"
+
+#: ../../explanation/validated_algorithms.md:175
+#: de04456646d648c893b30ba1762400ed
+msgid "The time system must be **GPS Time (no leap seconds)**."
+msgstr "時刻系は **GPS 時刻（閏秒なし）** であること。"
+
+#: ../../explanation/validated_algorithms.md:176
+#: 2b2703d553304d97a83b6d9c959b68bb
+msgid ""
+"Using this in time systems with leap seconds (like UTC) will result in a "
+"1-second offset in future predictions."
+msgstr "UTC 等の閏秒が存在する時刻系でそのまま使用すると、将来予測時に 1 秒のズレが生じます。"
+
+#: ../../explanation/validated_algorithms.md:178
+#: 499432555a9d45e2a4dc959a77130fe7
+#, python-brace-format
+msgid "**Source reference**: {ref}`S3 <validated-en-source-references>`"
+msgstr "**参照元**: {ref}`S3 <validated-ja-source-references>`"
+
+#: ../../explanation/validated_algorithms.md:181
+#: 664b46cd803a41b393587ee5a0b0bbc1
+msgid "[Advanced ARIMA tutorial](../tutorials/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:191
+#: 4b94bec56fe5494ab2233d2e25dbd3a2
+msgid "5. MCMC / GLS Likelihood"
+msgstr "5. MCMC / GLS 尤度"
+
+#: ../../explanation/validated_algorithms.md:192
+#: cf78511580e14cc5833828193223368a
+msgid "**Target**: `run_mcmc`, `GLS`"
+msgstr "**対象**: `run_mcmc`, `GLS`"
+
+#: ../../explanation/validated_algorithms.md:194
+#: a74ac31298524a80975f93cef9a5f124
+msgid ""
+"For complex-valued residuals, the MCMC likelihood path assumes a Hermitian "
+"quadratic form `r.conj() @ cov_inv @ r` and then takes the real part. In "
+"practice, this means the API can accept complex residual vectors without "
+"silently dropping the imaginary component."
+msgstr ""
+"MCMC の対数尤度計算では、複素残差に対してもエルミート形式 `r.conj() @ cov_inv @ r` "
+"の実部を用いる実装を前提にしています。つまり、**複素データを API にそのまま渡した場合でも、内部では複素共役を考慮した二次形式で評価**されます。"
+
+#: ../../explanation/validated_algorithms.md:197
+#: e3d1116952594c5da47809cbd66c1f63
+msgid "`cov_inv` should be close to Hermitian positive-definite."
+msgstr "共分散行列 `cov_inv` がエルミート正定値に近いこと。"
+
+#: ../../explanation/validated_algorithms.md:198
+#: 6445f1a4874c40c9bd8e0543f50da4e5
+msgid ""
+"The implementation is intended for a circular-complex-Gaussian-style "
+"treatment of residuals rather than a naive \"real-part only\" model."
+msgstr "複素残差は circular complex Gaussian に準じた扱いを想定しており、単純に実部だけへ切り捨てる挙動ではありません。"
+
+#: ../../explanation/validated_algorithms.md:207
+#: ../../explanation/validated_algorithms.md:258
+#: 12f486eece1e42f4960f36c1988405e3 c5645878a2844b54b805d89db880437e
+msgid "[Fitting API](../reference/api/fitting.rst)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:208
+#: c3fba33b09584002ba78ac002a6f07bb
+msgid "[gwexpy.fitting](../reference/index.md)"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:217
+#: 77fb1da21cd24ee0b99add7dc6d546c1
+msgid "6. Adaptive Whitening"
+msgstr "6. 適応ホワイトニング"
+
+#: ../../explanation/validated_algorithms.md:218
+#: ca246758572649f4baac0d3599ae20ef
+msgid "**Target**: `whiten()`, `WhiteningModel`, `.whiten(eps=\"auto\")`"
+msgstr "**対象**: `whiten()`, `WhiteningModel`, `.whiten(eps=\"auto\")`"
+
+#: ../../explanation/validated_algorithms.md:220
+#: afba739db27844879467805f405884e7
+msgid ""
+"Adaptive whitening uses an automatically chosen stabilization parameter so "
+"that PSD-based normalization remains well behaved in the presence of very "
+"small bins or local numerical underflow."
+msgstr ""
+"適応ホワイトニングでは、自動的に決まる安定化パラメータを用いて、非常に小さい PSD "
+"ビンや局所的な数値アンダーフローがあっても正規化が破綻しにくいようにしています。"
+
+#: ../../explanation/validated_algorithms.md:223
+#: 7112254276b34fb5b414358cc7f66eab
+msgid ""
+"The data are treated as locally quasi-stationary over the FFT segments used "
+"for whitening."
+msgstr "ホワイトニングに用いる FFT セグメントの範囲では、データが局所的に準定常とみなせること。"
+
+#: ../../explanation/validated_algorithms.md:224
+#: 71fa8c24e94d4c35bb813778741db355
+msgid ""
+"The adaptive `eps` path is intended to stabilize small denominators, not to "
+"compensate for a badly chosen whitening window or clearly non-stationary "
+"bursts."
+msgstr "適応 `eps` は小さい分母を安定化するためのものであり、明らかに非定常なバーストや不適切な窓長設定まで補償するものではありません。"
+
+#: ../../explanation/validated_algorithms.md:226
+#: f7b84f57b54145edb0894f4c2ad33ac7
+#, python-brace-format
+msgid "**Source reference**: {ref}`S4 <validated-en-source-references>`"
+msgstr "**参照元**: {ref}`S4 <validated-ja-source-references>`"
+
+#: ../../explanation/validated_algorithms.md:241
+#: 28e6f1fbf43c4e9089e5b6ada46c19e6
+msgid "Audit Trail"
+msgstr "監査証跡 (Audit Trail)"
+
+#: ../../explanation/validated_algorithms.md:243
+#: db8f769db1d64dc58b88ed428e441074
+msgid ""
+"The public audit trail is summarized on this page so readers do not need to "
+"follow developer-only or historical review artifacts. The validation summary"
+" table above records the reviewed algorithm families, while each per-"
+"algorithm section records the public-facing assumptions, implementation "
+"status, and related theory links."
+msgstr ""
+"公開向けの監査証跡は、開発者向け・履歴管理用のレビュー資料へ直接誘導せず、 このページ内に要約しています。上の検証サマリ表で対象アルゴリズム群を示し、 "
+"各アルゴリズム別セクションで公開向けの前提、実装状況、関連理論への導線を記録しています。"
+
+#: ../../explanation/validated_algorithms.md:249
+#: a19195da477b4692a31a0b5d220f1f97
+msgid "Related Documents for Validation"
+msgstr "検証向け関連ドキュメント"
+
+#: ../../explanation/validated_algorithms.md:251
+#: d274f25472db4591bd40f233c9574bd3
+msgid "[Numerical Stability](numerical_stability.md) - Precision management"
+msgstr "[数値安定性](numerical_stability.md) - 数値安定性（精度管理）"
+
+#: ../../explanation/validated_algorithms.md:252
+#: 17608ba69831432eb39ad2711806b7e9
+msgid ""
+"[Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared "
+"assumptions for time systems and FFT conventions"
+msgstr "[前提条件と規約](prerequisites_and_conventions.md) - 時刻系と FFT 規約の共通前提"
+
+#: ../../explanation/validated_algorithms.md:253
+#: df6394c1c654453d990f93ad24cc404d
+msgid ""
+"[Verification and Quality Signals](verification_and_quality.md) - Public "
+"notebook, I/O, and coverage evidence map"
+msgstr ""
+"[検証と品質の見方](verification_and_quality.md) - notebook、I/O、coverage "
+"の公開根拠をまとめて確認する"
+
+#: ../../explanation/validated_algorithms.md:254
+#: 75cb5fd0178a4225bb212481ae388cf8
+msgid "[Glossary](../reference/index.md) - Glossary of algorithms"
+msgstr ""
+
+#: ../../explanation/validated_algorithms.md:262
+#: 864aa1f2786d458cbcd5834be9390a34
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../../explanation/validated_algorithms.md:264
+#: c05b4dca13914399b6ae93ae7c8aad5c
+msgid ""
+"[Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared "
+"assumptions behind the validation notes"
+msgstr ""
+"[前提条件と規約](prerequisites_and_conventions.md) - このページの前提になる時刻系と FFT 規約を整理する"
+
+#: ../../explanation/validated_algorithms.md:265
+#: f4fedcc9459d4712a494cb852c6822c7
+msgid ""
+"[Numerical Stability](numerical_stability.md) - Stabilization behavior "
+"referenced by adaptive whitening"
+msgstr "[数値安定性](numerical_stability.md) - 適応ホワイトニングなど安定化の挙動を補う"
+
+#: ../../explanation/validated_algorithms.md:266
+#: c40ce60c6dbf4d709f26e3280c641122
+msgid ""
+"[Architecture and Data Flow](architecture.md) - Container and API design "
+"context behind the validated methods"
+msgstr "[アーキテクチャとデータフロー](architecture.md) - 検証対象 API がどの設計の上にあるかを確認する"
+
+#: ../../explanation/validated_algorithms.md:267
+#: 2d55e56b654043408c62cf0f693dbe3e
+msgid ""
+"[Tutorial Index](../tutorials/index.md) - Task-oriented notebooks that show "
+"the methods in use"
+msgstr ""

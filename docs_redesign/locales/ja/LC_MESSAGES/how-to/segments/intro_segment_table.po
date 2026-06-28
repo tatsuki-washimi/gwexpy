@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/segments/intro_segment_table.ipynb:10002
+#: 02fdacc174114c08818c0be1aaaf6cbb
+msgid "SegmentTable: Basics"
+msgstr ""
+
+#: ../../how-to/segments/intro_segment_table.ipynb:10005
+#: a1cd49f15e3a4a5880d2778d3a237283
+msgid ""
+"For a more comprehensive guide including visualization, GravitySpy "
+"integration, and advanced operations, see the [Table / Segment User "
+"Guide](intro_table.ipynb)."
+msgstr ""
+
+#: ../../how-to/segments/intro_segment_table.ipynb:10008
+#: 9a28372b82544b409ac26d2de4e6077e
+msgid "GWpy base classes and gwexpy extensions"
+msgstr ""
+
+#: ../../how-to/segments/intro_segment_table.ipynb:10010
+#: 2909ba1e65db48f18664ed372809366c
+msgid ""
+"Segment analysis builds on GWpy types. Each row span is still represented by"
+" `gwpy.segments.Segment`, and payload columns can hold GWpy `TimeSeries` or "
+"`FrequencySeries` objects directly."
+msgstr ""
+
+#: ../../how-to/segments/intro_segment_table.ipynb:10012
+#: 9062c71d4e5d4a46ad327acdde7917e8
+msgid ""
+"On top of that, gwexpy adds `SegmentTable` as an extension of "
+"`gwpy.table.Table`, plus lazy payload handling via `SegmentCell`, and table-"
+"oriented batch helpers such as `apply()`, `map()`, `crop()`, and `asd()`. In"
+" practice, you keep GWpy base classes for the actual data objects while "
+"gwexpy adds the workflow layer for processing many segments together."
+msgstr ""
+
+#: ../../how-to/segments/intro_segment_table.ipynb:30002
+#: d77f6a34dd804f9ba228ac4a9676f11d
+msgid "Delayed Loading with SegmentCell"
+msgstr "SegmentCell による遅延ロード"
+
+#: ../../how-to/segments/intro_segment_table.ipynb:30004
+#: 9eaa6621b4fa490ea14afd6ff359748e
+msgid ""
+"You can add payload columns that are only loaded when needed. This is useful"
+" for handling large datasets."
+msgstr "必要になるまでデータをロードしない「ペイロード列」を追加できます。これは巨大なデータのバッチ処理に非常に有効です。"
+
+#: ../../how-to/segments/intro_segment_table.ipynb:50002
+#: b3cc4c19af544b6fbe37ea8269bf6f1f
+msgid "Row-wise Processing"
+msgstr "行単位の処理"
+
+#: ../../how-to/segments/intro_segment_table.ipynb:50004
+#: 86dc825478144f13a91afd2505d68611
+msgid ""
+"`SegmentTable` provides an `apply()` method to process each row and collect "
+"results into new columns."
+msgstr "`SegmentTable` は `apply()` メソッドを提供し、各行を処理して新しい列として統合できます。"
+
+#: ../../how-to/segments/intro_segment_table.ipynb:70002
+#: 51dcdeb76495420aa4cc33049906f6c3
+msgid "Fetch and Conversion"
+msgstr "明示的ロードとデータ変換"
+
+#: ../../how-to/segments/intro_segment_table.ipynb:70004
+#: 2de50115b91748dab0e52bdd51cd0192
+msgid ""
+"You can explicitly load lazy cells with `fetch()` or `materialize()`. "
+"Converting to pandas gives you a standard DataFrame for meta columns."
+msgstr ""
+"`fetch()` や `materialize()` を使ってデータを明示的にロードできます。`to_pandas()` を使うと、通常の "
+"pandas DataFrame として扱えます。"

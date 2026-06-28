@@ -1,0 +1,385 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:10002
+#: 47ab4e8c3ee34164a1c900638d395bba
+msgid "HHT: Analysis"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:10004
+#: 6f2e7a6925e24f76a808e9c8297bd339
+msgid ""
+"This tutorial explains the procedure for **Hilbert-Huang Transform (HHT)** "
+"analysis using **gwexpy**. HHT is well-suited for analyzing nonlinear and "
+"non-stationary signals, and is a powerful method for extracting local "
+"frequency variations (instantaneous frequency) that cannot be captured by "
+"traditional Fourier or wavelet transforms. The sample code in this tutorial "
+"uses `TimeSeries.hht()`."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:10008
+#: d8fd70fd305746ab835099a36a40e6ef
+msgid "HHT consists of two main steps:"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:10009
+#: 8af9f672b5124879ac2a27b17f71668f
+msgid ""
+"**Empirical Mode Decomposition (EMD)**: Decomposes the signal into Intrinsic"
+" Mode Functions (IMFs)."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:10010
+#: a71c63ac68694f6e93786cfd9efffeaa
+msgid ""
+"**Hilbert Spectral Analysis**: Applies the Hilbert transform to each IMF to "
+"calculate instantaneous amplitude and instantaneous frequency."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:10012
+#: 60c5cd644f864e418f8a746eaa18fd11
+msgid ""
+"**Note**: To use this feature, the `PyEMD` (EMD-signal) package must be "
+"installed."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30002
+#: 00088fdbbfc8405096f35fa64acbaf75
+msgid "1. Theoretical Background and Advantages of HHT"
+msgstr "1. HHTの理論的背景と利点"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30004
+#: 7e51f56baedf450ea26567605a3b3f2f
+msgid "What is HHT (Hilbert-Huang Transform)?"
+msgstr "HHT（ヒルベルト–黄変換）とは？"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30005
+#: ef9d30a8e36844e5962cf2487cc590bc
+msgid ""
+"HHT is a powerful method for analyzing nonlinear and non-stationary signal "
+"data. It consists of two main processes:"
+msgstr "HHT は非線形・非定常な信号データを解析するための強力な手法です。 主に2つのプロセスで構成されます:"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30008
+#: 5bf3eb5a9d8844779a21f0cfaf045b9a
+msgid ""
+"**EMD (Empirical Mode Decomposition)**: Decomposes the original signal into "
+"a sum of Intrinsic Mode Functions (IMFs) with different frequency scales."
+msgstr "**EMD（経験的モード分解）**: 元の信号を、それぞれ異なる周波数スケールを持つ固有モード関数（IMF）の和に分解します。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30009
+#: ad1cd78e17cc4af680202cfb38c55685
+msgid ""
+"**HSA (Hilbert Spectral Analysis)**: Applies the Hilbert transform to each "
+"IMF to calculate **Instantaneous Frequency** and instantaneous amplitude."
+msgstr "**HSA（ヒルベルトスペクトル解析）**: 各 IMF にヒルベルト変換を適用し、**瞬時周波数**と瞬時振幅を算出します。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30011
+#: be9f667650f94f91b11331e730e59905
+msgid "Differences from Traditional STFT"
+msgstr "従来の STFT との違い"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30012
+#: 10154736947843ca9410c48ba3dc4252
+msgid ""
+"Short-Time Fourier Transform (STFT) and wavelet transforms have a trade-off "
+"between time resolution and frequency resolution (limited by the uncertainty"
+" principle). In contrast, HHT adaptively generates basis functions based on "
+"local time scales, so it is not subject to this limitation and can achieve "
+"**high time and frequency resolution** simultaneously."
+msgstr ""
+"短時間フーリエ変換（STFT）やウェーブレット変換では、時間分解能と周波数分解能の間にトレードオフ（不確定性原理による制限）があります。 一方、HHT "
+"は局所的な時間スケールに基づいて適応的に基底関数を生成するため、この制限を受けず、**高い時間・周波数分解能を同時に実現**できます。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30015
+#: c096b745031948a49884bef7ab29dbb6
+msgid "EEMD (Ensemble EMD)"
+msgstr "EEMD（アンサンブル EMD）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30016
+#: ccc7bdf2ae49409195627d3765b715b7
+msgid ""
+"In standard EMD, \"mode mixing\" can occur where different frequency "
+"components are mixed within a single IMF due to intermittent signals or "
+"noise. To solve this, **EEMD (Ensemble EMD)** has been proposed."
+msgstr ""
+"標準的な EMD では、断続的な信号やノイズにより、1つの IMF に異なる周波数成分が混在する「モード混合」が生じることがあります。 "
+"これを解決するため、**EEMD（Ensemble EMD）** が提案されています。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30018
+#: e8832f3a03ec429b8d52662670eb89fa
+msgid ""
+"Generate multiple ensemble members by adding white noise to the original "
+"signal."
+msgstr "元の信号に白色ノイズを加えた複数のアンサンブルメンバーを生成する"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30019
+#: ee32017c7052473db554ede1018f0f28
+msgid "Perform EMD on each signal."
+msgstr "各信号に EMD を実行する"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30020
+#: 5c759ac6056142f98f930825d20501fd
+msgid ""
+"Take the ensemble average of the resulting IMFs to cancel out the noise and "
+"stably extract physically meaningful modes."
+msgstr "得られた IMF のアンサンブル平均を取り、ノイズをキャンセルして物理的に意味のあるモードを安定して抽出する"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:30022
+#: 42e049e8f46545f784e107c869b4c3ee
+msgid ""
+"**Physical intent**: in CCSN-like signals we care about whether an extracted"
+" ridge tracks a real mode family, such as SASI or a proto-neutron-star "
+"oscillation, rather than a basis artefact created by a fixed window."
+msgstr ""
+"**物理的意図**: CCSN 由来の信号では、固定窓が作る見かけの筋ではなく、SASI "
+"や原始中性子星振動のような実在するモード族を追跡できるかが重要です。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:40002
+#: 8f7e53d57111464c98878cfc64eb48ee
+msgid "2. Simulation: Reproducing SASI Modes"
+msgstr "2. シミュレーション：SASIモードの再現"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:40004
+#: f0ee685c154d4bb59e7b7cd9955cc0be
+msgid ""
+"In gravitational wave analysis of core-collapse supernovae (CCSN), the "
+"instability called **SASI (Standing Accretion Shock Instability)** is an "
+"important observation target. Here, we create a **Sine-Gaussian** signal "
+"simulating gravitational waves from SASI and analyze it (Reference: Takeda "
+"et al. 2021)."
+msgstr ""
+"重力崩壊型超新星（CCSN）の重力波解析において、**SASI（定在降着衝撃不安定性）** と呼ばれる不安定性は重要な観測対象です。 "
+"ここでは、SASIからの重力波を模した **サイン・ガウシアン** 信号を生成して解析します（参考文献: Takeda et al. 2021）。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:40007
+#: baad14b03e734e8b977bc8b8f40a967f
+msgid ""
+"The Sine-Gaussian signal is expressed by the following equation: $$ h(t) = A"
+" \\exp\\left( - \\left( \\frac{2\\pi (t - t_0)}{t_{\\text{width}}} "
+"\\right)^2 \\right) \\sin(2\\pi f_0 t) $$"
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:60002
+#: 579a94db72d144ee915fadabd88ee863
+msgid "3. Comparative Analysis: STFT vs HHT"
+msgstr "3. 比較分析：STFT vs HHT"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:60004
+#: d9dd79a995cf4cecac906dea4f2dd586
+msgid ""
+"We apply STFT (spectrogram) and HHT (Hilbert spectrum) to the same signal "
+"and compare their resolution differences."
+msgstr "同じ信号に STFT（スペクトログラム）と HHT（ヒルベルトスペクトル）を適用し、分解能の違いを比較します。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:60006
+#: f51fb3a41be144b696732c145b48d386
+msgid ""
+"**Note**: In the following results, STFT may appear more robust to noise and"
+" the signal may look cleaner. This is because standard EMD is susceptible to"
+" noise and causes \"mode mixing.\" This problem is dramatically improved by "
+"using **EEMD**, which we will introduce in the next section, but let's first"
+" check the basic behavior of HHT."
+msgstr ""
+"**注意**: 以下の結果では、STFT の方がノイズに対してロバストに見え、信号がよりクリアに見える場合があります。 これは、標準的な EMD "
+"がノイズの影響を受けやすく「モード混合」を起こすためです。 この問題は、次のセクションで紹介する **EEMD** "
+"を使用することで大幅に改善されますが、まずは HHT の基本的な動作を確認しましょう。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:60010
+#: 50f4a59c41e242f38335008c79516196
+msgid ""
+"**Common mistake**: reading every sharp HHT ridge as a physical mode. If the"
+" ridge fragments when you perturb the padding, decomposition method, or IMF "
+"count, it is more likely a decomposition artefact than a robust signal "
+"feature."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:80002
+#: 6ab223192559467ba0343233e9f52e35
+msgid "4. Application: Mode Extraction and Parameter Estimation with EEMD"
+msgstr "4. 応用：EEMDによるモード抽出とパラメータ推定"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:80004
+#: e7ef8ea7875d46e58a10501debd7e646
+msgid "Applying EEMD"
+msgstr "EEMDの適用"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:80005
+#: a25b279d1850485ea8ab9e9120473a7d
+msgid ""
+"In the simple EMD results above, the frequency may oscillate due to the "
+"influence of noise, or the original 130Hz signal may be split into multiple "
+"IMFs (mode mixing). Using **EEMD (Ensemble EMD)** can improve this."
+msgstr ""
+"上記の単純な EMD の結果では、ノイズの影響により周波数が振動したり、本来の 130Hz 信号が複数の IMF "
+"に分割される（モード混合）ことがあります。 **EEMD（Ensemble EMD）** を使用することでこれを改善できます。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:80008
+#: c715be3a56814a49b5f93fc4edff029d
+msgid ""
+"In **Sasaoka et al. (2024)**, it was shown that in gravitational wave "
+"analysis from CCSN, using EEMD (or CEEMD) can accurately extract the "
+"oscillation modes of the proto-neutron star (PNS) and estimate PNS physical "
+"quantities (mass-to-radius ratio $M/R^2$) from the frequency evolution."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:80010
+#: 291cb0a0ef154280aa522fa2eeddccef
+msgid ""
+"The following code is an example of running EEMD using gwexpy's "
+"`TimeSeries.hht()`."
+msgstr "以下のコードは、gwexpy の `TimeSeries.hht()` を使用して EEMD を実行する例です。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:80012
+#: d508f676136244bf9c6b8bec09321d56
+msgid ""
+"**Failure mode to watch for**: increasing `eemd_trials` can stabilise IMFs, "
+"but it does not rescue a poor band selection or a signal dominated by "
+"broadband transients. If the target physics is a narrow drifting mode, crop "
+"to a plausible time/frequency region first instead of hoping EEMD will "
+"separate everything automatically."
+msgstr ""
+
+#: ../../how-to/spectral/advanced_hht.ipynb:100002
+#: ed181e89b54c4a00aa90b01e4abbd847
+msgid "5. Hilbert Spectrum (HHTSpectrogram)"
+msgstr "5. ヒルベルトスペクトル (HHTSpectrogram)"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:100004
+#: 4be78d6e3a434a5295c768e76e3c57e8
+msgid ""
+"By specifying `output='spectrogram'`, you can obtain a time-frequency map. "
+"By default, `HHTSpectrogram.plot()` uses a logarithmic scale."
+msgstr ""
+"`output='spectrogram'` を指定すると時間-周波数マップを得られます。`HHTSpectrogram.plot()` "
+"は既定で対数スケールです。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:120002
+#: 4ffc8f85ed9b4e10a62148daeacd5872
+msgid "6. Low-level APIs (Optional)"
+msgstr "6. 低レベルAPIについて（任意）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:120004
+#: 70e97de073ab44c18619253999ea6598
+msgid ""
+"For more fine-grained control, you can directly use the following methods:"
+msgstr "詳細制御が必要な場合は以下を直接使用できます:"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:120005
+#: 8b076156e9a14a0a9511022df72196b3
+msgid "`emd()` for decomposition."
+msgstr "`emd()`（分解）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:120006
+#: 82e4154c9f874ff691589171f08b3bba
+msgid "`hilbert_analysis()` for IA/IF calculation."
+msgstr "`hilbert_analysis()`（IA/IF）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:120007
+#: 501564eb35fc420d84003fc0f174e538
+msgid "`instantaneous_frequency()` / `envelope()` for individual IMFs."
+msgstr "`instantaneous_frequency()` / `envelope()`（個別 IMF）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:120009
+#: 7f30b592a22f48ad814057ce58ff5dc1
+msgid "However, using `hht()` is recommended for general analysis."
+msgstr "通常の解析では `hht()` が推奨です。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:130002
+#: fc741552baa048c49654f545ed60c88a
+msgid "Hints"
+msgstr "ヒント"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:130003
+#: 9cbe5cef15544024b564c98f63ed2ba3
+#, python-brace-format
+msgid ""
+"Edge effects are common in Hilbert analysis. Consider using "
+"`hilbert_kwargs={'pad': N}` to mitigate this, and ignore the very ends of "
+"the data."
+msgstr "端点効果が出やすいので `hilbert_kwargs={'pad': N}` を検討し、端は無視してください。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:130004
+#: 0fbb765d899841498818026cd92b4262
+msgid ""
+"If you need smoother IMFs, increase `eemd_trials` (this will increase "
+"computation time)."
+msgstr "より滑らかな IMF が必要なら `eemd_trials` を増やします（計算時間増）。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:130005
+#: 0d1393f48bdb42df80365f0a8570f10a
+msgid "For strict reproducibility, use `emd_method='emd'`."
+msgstr "再現性重視なら `emd_method='emd'` を使います。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:130006
+#: 633abdd16fd84598906d30b37368cc5c
+msgid ""
+"Do not interpret negative or rapidly sign-flipping instantaneous frequency "
+"samples near amplitude nulls; mask low-amplitude regions before turning IF "
+"into physics."
+msgstr ""
+"振幅が極端に小さい区間では瞬時周波数が負になったり激しく符号反転したりしやすいので、そのまま物理量として読まず低振幅領域をマスクしてください。"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:140002
+#: 61d7c9b6bd05490ba476c8a5e77ee33f
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:140003
+#: fdc97308a827498e99e375d9d79996d6
+msgid ""
+"Using `TimeSeries.hht()` allows you to practically apply the theoretical "
+"power of HHT:"
+msgstr "`TimeSeries.hht()` を使うと、理論的な強力さを持つ HHT を実践的に活用できます:"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:140004
+#: dd62e0bae8d248959049ec70152c6067
+msgid ""
+"Tracking instantaneous frequencies of non-stationary signals like SASI "
+"(Section 2)."
+msgstr "SASI などの非定常重力波信号の瞬時周波数追跡（§2）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:140005
+#: e1737d51f153486a90e3693329eec654
+msgid "Confirming superior resolution compared to STFT (Section 3)."
+msgstr "STFT との比較による分解能の優位性確認（§3）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:140006
+#: 0e1da62c90624017b37a2d6d194f3309
+msgid ""
+"Resolving mode mixing and estimating physical quantities using EEMD (Section"
+" 4)."
+msgstr "EEMD によるモード混合の解消と物理量推定（§4）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:140007
+#: 5d5c0f2b7e4f4872aed257f0a9e04e19
+msgid "Obtaining time-frequency maps with `output='spectrogram'` (Section 5)."
+msgstr "`output='spectrogram'` で時間-周波数マップを取得（§5）"
+
+#: ../../how-to/spectral/advanced_hht.ipynb:140009
+#: cbadfb8247c04b5ea5181c8149fca21a
+msgid ""
+"In practice, the reliable workflow is: isolate the physics you care about, "
+"verify that the IMF/ridge is stable under modest analysis changes, and only "
+"then interpret the instantaneous frequency as a mode tracker."
+msgstr ""
+"実運用では、狙う物理を先に切り出し、IMF や ridge "
+"が小さな解析条件変更に対して安定かを確かめ、その後ではじめて瞬時周波数をモード追跡へ解釈するのが安全です。"
