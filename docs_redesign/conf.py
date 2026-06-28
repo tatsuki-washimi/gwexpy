@@ -85,8 +85,6 @@ html_theme_options = {
     # Secondary (right) sidebar with in-page table of contents.
     "secondary_sidebar_items": ["page-toc", "sourcelink"],
     "show_toc_level": 2,
-    # Light/dark with a toggle (default respects system).
-    "default_mode": "auto",
     # Icon links.
     "icon_links": [
         {
