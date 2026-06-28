@@ -22,7 +22,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:10002
 #: 0c0db946ab3349398a69456816c677b0
 msgid "Bruco: Bilinear Coupling and AM/FM Demodulation"
-msgstr ""
+msgstr "Bruco: バイリニアカップリングと AM/FM 復調"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:10004
 #: ed2374b16c8149be90ecd7d7088045cd
@@ -92,47 +92,47 @@ msgstr "DARM チャンネルには Gaussian フロアに加え、以下の 2 種
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 6a9b606611e549dab7ce3a7704ebfcd6
 msgid "Noise type"
-msgstr ""
+msgstr "ノイズ種別"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: ca0ff333cf81483cae8aead39c11a581
 msgid "Mechanism"
-msgstr ""
+msgstr "機構"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 182cbe44aab44d6296aecbd70cd5116f
 msgid "Signature"
-msgstr ""
+msgstr "特徴"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 96807e2826f3474db9f4d5aa464bdd96
 msgid "**Bilinear**"
-msgstr ""
+msgstr "**バイリニア**"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 9428368e31da43099b05b837826d2e35
 msgid "`DARM += α · fast_witness × slow_witness`"
-msgstr ""
+msgstr "`DARM += α · fast × slow`"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 16717a7a7b7e4bb79c41529079fcb394
 msgid "Sidebands around fast-channel frequency"
-msgstr ""
+msgstr "fast チャンネル周波数付近にサイドバンド"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 84e368685ba7407a97f8d79c11f05353
 msgid "**AM line**"
-msgstr ""
+msgstr "**AM ライン**"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 346105c589bf4b5a8fa6dafa02e7eec6
 msgid "`DARM += A(t) · sin(2π·30Hz·t)` where A(t) ∝ slow_env"
-msgstr ""
+msgstr "`DARM += A(t) · sin(2π·30Hz·t)`, A(t) ∝ 環境ドリフト"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 4b3bb46eef17496abe104208084011ba
 msgid "30 Hz line whose amplitude fluctuates"
-msgstr ""
+msgstr "振幅が揺らぐ 30 Hz ライン"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:40011
 #: 71dfe24390414c02aa790aed8b4eeb38
@@ -266,17 +266,17 @@ msgstr "まとめ"
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 13e68b99ce384dc9bf44f71279670745
 msgid "Step"
-msgstr ""
+msgstr "ステップ"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: c698c4a7c0634b01bd72ebe18dba72b3
 msgid "Tool"
-msgstr ""
+msgstr "ツール"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 024b8214acd347f8b4327620667f46d4
 msgid "Purpose"
-msgstr ""
+msgstr "目的"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 378c06a6a8e949eba26e7cf1161894db
@@ -286,12 +286,12 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 71c3844acf3a41b38e04e56a4579d801
 msgid "Mock data"
-msgstr ""
+msgstr "モックデータ"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 2ad08e43f99445208511164a83141267
 msgid "Bilinear noise + AM line"
-msgstr ""
+msgstr "バイリニアノイズ + AM ライン"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: c3cec767c75f485caaca1f312715163d
@@ -301,12 +301,12 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 2d3e3bb8921c459db98f2935a0cecdfe
 msgid "`Bruco.compute()` (linear)"
-msgstr ""
+msgstr "`Bruco.compute()`（線形）"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: d6e8e002446641deb269383af441b265
 msgid "Baseline — misses nonlinear coupling"
-msgstr ""
+msgstr "ベースライン確認 — 非線形カップリングは見えない"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 4746d1ee3339463d9ea2a8f1c5c3b150
@@ -321,7 +321,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: 8123bb45a78842928766a347afbb470b
 msgid "Detect bilinear coupling"
-msgstr ""
+msgstr "バイリニアカップリング検出"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: d876fb29687c485cb064124bc8cad1f2
@@ -336,7 +336,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: c2540682055745cdb8754ccfe6ad48c0
 msgid "Extract AM/FM from spectral line"
-msgstr ""
+msgstr "スペクトル線の AM/FM 成分抽出"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: e8768ed69a2c46d2bfcdaf2f136550ff
@@ -351,7 +351,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb
 #: d3fad3adae9b4629b53d203235606fa6
 msgid "Identify modulation source"
-msgstr ""
+msgstr "変調源の特定"
 
 #: ../../how-to/case-studies/case_bruco_advanced.ipynb:160012
 #: 72103f66adf44de0bd2a3b2558fb2139

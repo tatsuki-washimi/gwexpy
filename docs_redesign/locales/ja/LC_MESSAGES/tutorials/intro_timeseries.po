@@ -153,14 +153,14 @@ msgid ""
 "3. Spectral Analysis and CorrelationWhile inheriting GWpy's functionality, "
 "`mode=\"transient\"` FFT for transient signals and transfer function "
 "calculation via direct FFT ratio have been added."
-msgstr ""
+msgstr "3. スペクトル解析と相関"
 
 #: ../../tutorials/intro_timeseries.ipynb:120002
 #: c7f2133ef7014e55972a843db7101f56
 msgid ""
 "Extended FFTUsing `mode=\"transient\"` enables zero-padding, adjustment to "
 "fast lengths, and individual left/right padding specifications."
-msgstr ""
+msgstr "拡張された FFT"
 
 #: ../../tutorials/intro_timeseries.ipynb:140002
 #: dab7f34c61d148a188e151e805dd6ba3
@@ -168,7 +168,7 @@ msgid ""
 "Transfer Function and Cross-Correlation (xcorr)With `transfer_function`, you"
 " can choose not only the Welch method (`mode=\"steady\"`) but also direct "
 "FFT ratio (`mode=\"transient\"`)."
-msgstr ""
+msgstr "伝達関数 (Transfer Function) と相互相関 (xcorr)"
 
 #: ../../tutorials/intro_timeseries.ipynb:160002
 #: 2c7035fb864d42e09d515017704dd22d
@@ -181,7 +181,7 @@ msgid ""
 "method and extracting a slice (`Plane2D`) at a specific time.This example "
 "also demonstrates specifying `frequencies` (Hz) to evaluate STLT at "
 "arbitrary frequency points."
-msgstr ""
+msgstr "STLT (Short-Time Laplace Transform)"
 
 #: ../../tutorials/intro_timeseries.ipynb:180002
 #: e08dcab494854347b0ab500cbdf1b690
@@ -189,7 +189,7 @@ msgid ""
 "4. Hilbert-Huang Transform (HHT)Hilbert-Huang Transform (HHT) functionality "
 "for nonlinear and non-stationary signal analysis.Combines Empirical Mode "
 "Decomposition (EMD) and Hilbert spectral analysis."
-msgstr ""
+msgstr "4. Hilbert-Huang Transform (HHT)"
 
 #: ../../tutorials/intro_timeseries.ipynb:200002
 #: dbfe81d9a7544e69bf011c6f783159bb
@@ -197,35 +197,35 @@ msgid ""
 "5. Statistics and PreprocessingMissing value imputation, standardization, "
 "ARIMA models, Hurst exponent, and rolling statistics are available as "
 "TimeSeries methods."
-msgstr ""
+msgstr "5. 統計・前処理"
 
 #: ../../tutorials/intro_timeseries.ipynb:220002
 #: cda8ab35297f45ab99a3f26f40b50877
 msgid ""
 "Peak Detection (Find Peaks)Wraps `scipy.signal.find_peaks` to detect peaks "
 "in time series data."
-msgstr ""
+msgstr "ピーク検出 (Find Peaks)"
 
 #: ../../tutorials/intro_timeseries.ipynb:240002
 #: c7be85825225458eaede5226bd54a016
 msgid ""
 "ARIMA Model and Hurst ExponentNote: These features require libraries such as"
 " `statsmodels` and `hurst`."
-msgstr ""
+msgstr "ARIMAモデルとハースト指数"
 
 #: ../../tutorials/intro_timeseries.ipynb:260002
 #: bd960129e06d4acdbb05c6979e958c5b
 msgid ""
 "Rolling StatisticsSimilar to Pandas, `rolling_mean`, `std`, `median`, `min`,"
 " `max` are available."
-msgstr ""
+msgstr "ローリング統計量 (Rolling Statistics)"
 
 #: ../../tutorials/intro_timeseries.ipynb:280002
 #: 3f72199b02d14672b9e85f803d280018
 msgid ""
 "6. Resampling and ReindexingThe `asfreq` method allows assignment to a fixed"
 " grid, and the `resample` method enables \"time bin aggregation\"."
-msgstr ""
+msgstr "6. リサンプリングと再インデックス"
 
 #: ../../tutorials/intro_timeseries.ipynb:310002
 #: 4f19864b06f9433084d7db9edd1c3e36
@@ -233,14 +233,14 @@ msgid ""
 "7. Function Fitting`gwexpy` provides powerful fitting functionality based on"
 " `iminuit`. To avoid polluting GWpy's original classes, the `.fit()` method "
 "is opt-in."
-msgstr ""
+msgstr "7. 関数によるフィッティング"
 
 #: ../../tutorials/intro_timeseries.ipynb:330002
 #: 46dee003fd444be88f9e378e8818b10c
 msgid ""
 "8. InteroperabilityInterconversion with major data science and machine "
 "learning libraries is very smooth."
-msgstr ""
+msgstr "8. 相互運用性"
 
 #: ../../tutorials/intro_timeseries.ipynb:390002
 #: afa4b0d380bd485c86f0fc82d5f6c3cd

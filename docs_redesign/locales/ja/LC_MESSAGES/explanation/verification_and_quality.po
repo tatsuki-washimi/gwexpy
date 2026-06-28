@@ -76,22 +76,22 @@ msgstr "公開されている根拠の入口"
 #: ../../explanation/verification_and_quality.md:13
 #: 46494255c10b49e6a78e93b3b03c0958
 msgid "Area"
-msgstr ""
+msgstr "対象"
 
 #: ../../explanation/verification_and_quality.md:13
 #: 5701c2ec0e3b4ae9b2832916910ff173
 msgid "Public source"
-msgstr ""
+msgstr "公開資料"
 
 #: ../../explanation/verification_and_quality.md:13
 #: 73cb9aab8f2740bc9b4173637e9a7ab4
 msgid "What it tells you"
-msgstr ""
+msgstr "何がわかるか"
 
 #: ../../explanation/verification_and_quality.md:13
 #: f8ec1ff4bcc24735a5833dee4d25704f
 msgid "Notebook tutorials"
-msgstr ""
+msgstr "Notebook チュートリアル"
 
 #: ../../explanation/verification_and_quality.md:13
 #: bb455a05e0894d40b619e621e90cc9ff
@@ -105,12 +105,12 @@ msgstr ""
 msgid ""
 "Which notebook classes are treated as `Light`, `Heavy`, or `Display-only`, "
 "and how CI handles each class"
-msgstr ""
+msgstr "`Light` / `Heavy` / `Display-only` の分類と、CI がそれぞれをどう扱うか"
 
 #: ../../explanation/verification_and_quality.md:13
 #: ca376516c00c4921aab7b3e172d8bb38
 msgid "Module/docstring examples"
-msgstr ""
+msgstr "module / docstring 例"
 
 #: ../../explanation/verification_and_quality.md:13
 #: dd9cc24a54e349809451292da77fff5b
@@ -126,11 +126,13 @@ msgid ""
 "`gwexpy/`, useful as public evidence for docstring-level example execution "
 "scope"
 msgstr ""
+"`tests/` と `gwexpy/` に対して `pytest --doctest-modules` を回している Nightly CI "
+"の公開根拠。docstring 例の実行範囲を読む入口です"
 
 #: ../../explanation/verification_and_quality.md:13
 #: 75d2ece689294b7b92e32f0cb185761a
 msgid "Direct I/O formats"
-msgstr ""
+msgstr "direct I/O 形式"
 
 #: ../../explanation/verification_and_quality.md:13
 #: 2dcce7c1e4274f6e896982aa028410d5
@@ -144,12 +146,12 @@ msgstr ""
 msgid ""
 "Which public format families are tied to which tests and which backends are "
 "optional"
-msgstr ""
+msgstr "どの公開 format 群に、どのテストファイルが対応づけられているかと、どこに optional backend があるか"
 
 #: ../../explanation/verification_and_quality.md:13
 #: 3c02386e23414187a4ff0919aa19b243
 msgid "Algorithm audit trail"
-msgstr ""
+msgstr "アルゴリズム監査"
 
 #: ../../explanation/verification_and_quality.md:13
 #: ../../explanation/verification_and_quality.md:95
@@ -162,12 +164,12 @@ msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
 msgid ""
 "Numerical tolerances, assumptions, and links to audit evidence for selected "
 "high-value algorithms"
-msgstr ""
+msgstr "数値許容誤差、前提条件、監査証跡へのリンク"
 
 #: ../../explanation/verification_and_quality.md:13
 #: 01c5c75d950d4a2a8315cfe5b12e55e9
 msgid "Repository coverage signal"
-msgstr ""
+msgstr "リポジトリ全体の coverage"
 
 #: ../../explanation/verification_and_quality.md:13
 #: 0ccbc8cbf6ca45a59f9ce4747e4baa8f
@@ -175,6 +177,8 @@ msgid ""
 "[README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the "
 "linked [Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
 msgstr ""
+"[README の codecov バッジ](https://github.com/tatsuki-washimi/gwexpy) "
+"と、そのリンク先である [Codecov ダッシュボード](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
 
 #: ../../explanation/verification_and_quality.md:13
 #: c47acc40cd604fd8951f435cb442bd17
@@ -182,6 +186,7 @@ msgid ""
 "Where repository-level line coverage is surfaced publicly, useful as a broad"
 " signal rather than a per-feature proof"
 msgstr ""
+"リポジトリ全体の line coverage がどこで公開されているかを示す入口。feature 単位の証明ではなく、全体傾向のシグナルとして使います"
 
 #: ../../explanation/verification_and_quality.md:29
 #: 05f34d6b69fa4f3d8c31ffbde9255d6f

@@ -119,52 +119,52 @@ msgstr ""
 
 #: ../../explanation/numerical_stability.md:9 25b45a51d8544b098dceabbaeda17a9f
 msgid "Item"
-msgstr ""
+msgstr "項目"
 
 #: ../../explanation/numerical_stability.md:9 2e6b7b83569c45d3a971376c9186cb20
 msgid "Standard path"
-msgstr ""
+msgstr "一般的な経路"
 
 #: ../../explanation/numerical_stability.md:9 1de6613c493a416eb784684544d61957
 msgid "GWexpy path"
-msgstr ""
+msgstr "GWexpy の経路"
 
 #: ../../explanation/numerical_stability.md:9 87ec0227dd7847e7a183607b7840c7fe
 msgid "**Zero Values**"
-msgstr ""
+msgstr "**ゼロ値の扱い**"
 
 #: ../../explanation/numerical_stability.md:9 21d8a0042b0549dcb19c7c14842809a6
 msgid "`log10(0)` produces `-inf`, causing blank holes in plots"
-msgstr ""
+msgstr "`log10(0)` により `-inf` が発生し、図が白く抜ける"
 
 #: ../../explanation/numerical_stability.md:9 05d300d187ae45a79bd724dce5ab78e4
 msgid ""
 "**Safe Log** automatically sets an optimal floor based on the max value"
-msgstr ""
+msgstr "**Safe Log** により最大値から適切なフロアを自動設定"
 
 #: ../../explanation/numerical_stability.md:9 0757db92d0764359bb928fc0501c4d1b
 msgid "**Micro-signals**"
-msgstr ""
+msgstr "**微小信号**"
 
 #: ../../explanation/numerical_stability.md:9 95db2f0a7faf4121943c407b81e15e62
 msgid "Rounded to zero by fixed `eps=1e-12`, causing signal loss"
-msgstr ""
+msgstr "固定 `eps=1e-12` 等で丸められ、信号消失"
 
 #: ../../explanation/numerical_stability.md:9 f370732a0f1b4c8abc6d692964d82243
 msgid "**Adaptive Whitening** (`eps=\"auto\"`) maintains signal sensitivity"
-msgstr ""
+msgstr "**適応ホワイトニング** (`eps=\"auto\"`) で信号感度を維持"
 
 #: ../../explanation/numerical_stability.md:9 6ae9c82d475c493082c205dceac533ab
 msgid "**Failures**"
-msgstr ""
+msgstr "**計算不能点**"
 
 #: ../../explanation/numerical_stability.md:9 d3a627998ceb4c3fba37a0e31a9c7218
 msgid "`NaN` propagates, making the entire dataset uncomputable"
-msgstr ""
+msgstr "`NaN` が伝播し、全領域が計算不能になる"
 
 #: ../../explanation/numerical_stability.md:9 bb5e0e9274224aa2ab06148035ba23ee
 msgid "Pre/Post-computation validation protects data integrity"
-msgstr ""
+msgstr "演算前後のバリデーションにより属性を保護"
 
 #: ../../explanation/numerical_stability.md:42
 #: 6d2abef2b732431ea81812a784bbea9a
@@ -173,23 +173,23 @@ msgstr ""
 
 #: ../../explanation/numerical_stability.md:9 3f0b2ed9497848d8a5ece05bbfe01f61
 msgid "Method"
-msgstr ""
+msgstr "メソッド"
 
 #: ../../explanation/numerical_stability.md:9 7ab08015a3984ec6a4d89b6957dcf3c6
 msgid "Target API"
-msgstr ""
+msgstr "対象 API"
 
 #: ../../explanation/numerical_stability.md:9 d8b6a1791bb14aa8a5801eb13ed2ca6d
 msgid "Issues Resolved"
-msgstr ""
+msgstr "解決する問題"
 
 #: ../../explanation/numerical_stability.md:9 96a1a8e041104f9481436281a03462bd
 msgid "Configuration Hint"
-msgstr ""
+msgstr "設定のヒント"
 
 #: ../../explanation/numerical_stability.md:9 b88edc6b43584f9dbf96b96019dd53c5
 msgid "**Adaptive Whitening**"
-msgstr ""
+msgstr "**適応ホワイトニング**"
 
 #: ../../explanation/numerical_stability.md:9 bf5bb24fa1ac45ad8950702b4faff8db
 msgid "`.whiten()`"
@@ -197,11 +197,11 @@ msgstr ""
 
 #: ../../explanation/numerical_stability.md:9 27767873eecf418d89e808cfa98de420
 msgid "Zero-division / Signal loss"
-msgstr ""
+msgstr "ゼロ除算・信号埋没"
 
 #: ../../explanation/numerical_stability.md:9 e5cff828a9044f9a905f76e51b590f32
 msgid "`eps=\"auto\"` is recommended"
-msgstr ""
+msgstr "デフォルトの `eps=\"auto\"` を推奨"
 
 #: ../../explanation/numerical_stability.md:9 24a5ba2acea8470fb4087f2d888b259a
 msgid "**Safe Log**"
@@ -213,15 +213,15 @@ msgstr ""
 
 #: ../../explanation/numerical_stability.md:9 c3c421b5eba14d4aaa90383274fc8035
 msgid "`-inf` holes in plots"
-msgstr ""
+msgstr "`-inf` によるプロットの穴"
 
 #: ../../explanation/numerical_stability.md:9 1026260cb6194f9db2dffe6fe9e1d5c9
 msgid "Adjustable via `dynamic_range`"
-msgstr ""
+msgstr "`dynamic_range=200` 等で調整可能"
 
 #: ../../explanation/numerical_stability.md:9 55efd9799fcb45aea7dc16d993695d64
 msgid "**Internal Standardization**"
-msgstr ""
+msgstr "**内部標準化 (ICA)**"
 
 #: ../../explanation/numerical_stability.md:9 5ecf9107896e406b834efe1ba67563df
 msgid "`ica_fit()`"
@@ -229,27 +229,27 @@ msgstr ""
 
 #: ../../explanation/numerical_stability.md:9 6658549fc1404720988de7bf18a0704c
 msgid "Non-convergence"
-msgstr ""
+msgstr "振幅依存による不収束"
 
 #: ../../explanation/numerical_stability.md:9 67fa76f630884f159d88a17f66017b92
 msgid "Works regardless of input amplitude"
-msgstr ""
+msgstr "入力振幅を気にせず実行可能"
 
 #: ../../explanation/numerical_stability.md:9 d0837897d1e5446cbc0bdbeb006ad73e
 msgid "**Relative Tolerance**"
-msgstr ""
+msgstr "**相対許容誤差**"
 
 #: ../../explanation/numerical_stability.md:9 45dae00ff5394150aed601e023cbec72
 msgid "Various"
-msgstr ""
+msgstr "各種数値計算"
 
 #: ../../explanation/numerical_stability.md:9 5665010950b741588f484d940ef4ab75
 msgid "Early termination"
-msgstr ""
+msgstr "スケール違いによる早期終了"
 
 #: ../../explanation/numerical_stability.md:9 172430b052f24613997a829a0d2d2697
 msgid "Auto-scales `tol` based on variance"
-msgstr ""
+msgstr "データの分散に基づき `tol` を自動計算"
 
 #: ../../explanation/numerical_stability.md:54
 #: 578fd3f2f9e746478b75fe997de43589

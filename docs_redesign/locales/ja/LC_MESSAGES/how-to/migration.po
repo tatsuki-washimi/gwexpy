@@ -6,32 +6,32 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy \n"
+"Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-28 19:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
 #: ../../how-to/migration.md:1 da2bd9bb0a304582a0b6ac296e9d3a90
 msgid "Migrating to GWexpy v0.1.1"
-msgstr ""
+msgstr "GWexpy v0.1.1 への移行"
 
 #: ../../how-to/migration.md:3 54832ca15ec2498a97eb0fca3f6e480c
 msgid ""
 "This guide summarizes the breaking changes introduced in `v0.1.1` and "
 "provides migration paths for existing code."
-msgstr ""
+msgstr "このガイドは `v0.1.1` で導入された互換性のない変更点をまとめ、既存コードの移行方法を示します。"
 
 #: ../../how-to/migration.md:5 797e3f248f494eeea87cd9f6a2a3970d
 msgid "1. Lorentzian Peak Parameters"
-msgstr ""
+msgstr "1. ローレンツ型ピークのパラメータ"
 
 #: ../../how-to/migration.md:7 acb109fdb0a54f1d9bf9435016e04aa6
 msgid ""
@@ -40,41 +40,46 @@ msgid ""
 "Width at Half Maximum) to better align with the underlying mathematical "
 "implementation and typical spectral modeling conventions."
 msgstr ""
+"`gwexpy.noise.peaks.lorentzian_line()` の `fwhm`（半値全幅, Full Width at Half "
+"Maximum）パラメータは、内部の数学的実装や一般的なスペクトルモデリングの慣習に合わせて `gamma`（半値半幅, Half Width at "
+"Half Maximum）に改名されました。"
 
 #: ../../how-to/migration.md:9 ../../how-to/migration.md:29
 #: ../../how-to/migration.md:49 055ef8506a5045868bf7fa75cf7e51a1
 #: 999048ad8d734d09a44fb5a66e0af066 da06c467ca2041d692ab3d36e6be6292
 msgid "How to Migrate"
-msgstr ""
+msgstr "移行方法"
 
 #: ../../how-to/migration.md:10 fc44d66acaf1492a834ebaeaf7e1267a
 msgid ""
 "If you were using `fwhm`, simply divide your value by 2 and pass it as "
 "`gamma`."
-msgstr ""
+msgstr "`fwhm` を使用していた場合は、値を 2 で割って `gamma` として渡すだけです。"
 
 #: ../../how-to/migration.md:12 ../../how-to/migration.md:32
 #: ../../how-to/migration.md:52 0d25ffd9139549a4ac0f290d335000d1
 #: 77c3f95393614801a300704545b61982 ac643e41ae924d89a98988c46108ac4d
 msgid "**Old (v0.1.0):**"
-msgstr ""
+msgstr "**旧 (v0.1.0):**"
 
 #: ../../how-to/migration.md:18 ../../how-to/migration.md:38
 #: ../../how-to/migration.md:59 1f4e426ba9f342e685ef30136c6c9f03
 #: 25fa5310d89d43c49254b6b47fdb2948 a4324022426d467ca5bd6872b2344d17
 msgid "**New (v0.1.1):**"
-msgstr ""
+msgstr "**新 (v0.1.1):**"
 
 #: ../../how-to/migration.md:25 10b956bf12d4421eab99902475fd2c5d
 msgid "2. Spectral Fitting (Generalized Least Squares)"
-msgstr ""
+msgstr "2. スペクトルフィッティング（一般化最小二乗法）"
 
 #: ../../how-to/migration.md:27 0757a1290fb045138b63403ca4ffece8
 msgid ""
-"The `stride` parameter has been removed from `fit_bootstrap_spectrum()` "
-"as it was an unsupported keyword argument that caused errors in the "
-"underlying `scipy.signal.periodogram` calls."
+"The `stride` parameter has been removed from `fit_bootstrap_spectrum()` as "
+"it was an unsupported keyword argument that caused errors in the underlying "
+"`scipy.signal.periodogram` calls."
 msgstr ""
+"`stride` パラメータは `fit_bootstrap_spectrum()` から削除されました。これは内部の "
+"`scipy.signal.periodogram` 呼び出しでエラーを引き起こす、サポートされていないキーワード引数だったためです。"
 
 #: ../../how-to/migration.md:30 3920fab19bcb424983e3bfc01bd1c748
 msgid ""
@@ -82,21 +87,25 @@ msgid ""
 "`fit_bootstrap_spectrum` calls. The function now correctly manages data "
 "segmentation through `fftlength` and `overlap`."
 msgstr ""
+"`fit_bootstrap_spectrum` の呼び出しから `stride` "
+"キーワード引数を削除するだけです。この関数は現在、`fftlength` と `overlap` を通じてデータのセグメント分割を正しく管理します。"
 
 #: ../../how-to/migration.md:45 c107aa0246534edf81421d9439e73466
 msgid "3. SegmentTable Lazy Loading"
-msgstr ""
+msgstr "3. SegmentTable の遅延読み込み"
 
 #: ../../how-to/migration.md:47 0e69c59b42934886a19bc610e92982a2
 msgid ""
-"The `loader` argument in `SegmentTable.add_series_column()` now expects a"
-" callable that takes a single `segment` argument (`loader(segment)`), "
-"rather than a factory that takes an index (`loader(i)`)."
+"The `loader` argument in `SegmentTable.add_series_column()` now expects a "
+"callable that takes a single `segment` argument (`loader(segment)`), rather "
+"than a factory that takes an index (`loader(i)`)."
 msgstr ""
+"`SegmentTable.add_series_column()` の `loader` "
+"引数は、インデックスを取るファクトリ（`loader(i)`）ではなく、単一の `segment` "
+"引数を取る呼び出し可能オブジェクト（`loader(segment)`）を期待するようになりました。"
 
 #: ../../how-to/migration.md:50 f70ef3f441244996a251f97d63bc3e86
 msgid ""
 "Update your loader functions to accept the `segment` (span) of the row "
 "directly."
-msgstr ""
-
+msgstr "loader 関数を、行の `segment`（区間）を直接受け取るよう更新してください。"
