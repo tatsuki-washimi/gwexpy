@@ -42,15 +42,13 @@ ts.plot().show()
 
 ## 30-min Hands-on (Interactive Tutorial)
 
-For a more practical workflow, we recommend the following tutorial. You can run it immediately on Google Colab.
+For a more practical workflow, we recommend the following lesson.
 
 ### 🧪 GWexpy Basic Hands-on
 
-[See the tutorial index](index.md)
+[TimeSeries basics lesson](intro_timeseries.ipynb)
 
 Experience everything from loading data to frequency analysis (ASD/CSD) and matrix manipulation using the latest Field API.
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb)
 
 ## Core Concepts
 

@@ -4,6 +4,8 @@ Learning-oriented lessons. If you are new to GWexpy, start here and work
 through the pages in order. Each tutorial is a guided, hands-on lesson that
 builds a complete result.
 
+## Start here
+
 ::::{grid} 1 1 2 2
 :gutter: 3
 
@@ -27,20 +29,83 @@ The shortest path from import to a first result.
 
 A fuller orientation to the core concepts and workflow.
 :::
+::::
 
-:::{grid-item-card} {octicon}`pulse;1.5em;sd-mr-1` Your first time-series matrix
-:link: timeseries
+## Core lessons
+
+Work through these in order to learn the primary containers and operations.
+
+::::{grid} 1 2 2 3
+:gutter: 3
+
+:::{grid-item-card} {octicon}`pulse;1.5em;sd-mr-1` TimeSeries basics
+:link: intro_timeseries
 :link-type: doc
 
-Load multi-channel data, inspect it, and compute a spectrum in ten minutes.
+Signal processing, spectral analysis and interoperability on a time series.
+:::
+
+:::{grid-item-card} {octicon}`graph;1.5em;sd-mr-1` FrequencySeries basics
+:link: intro_frequencyseries
+:link-type: doc
+
+Work in the frequency domain with spectra and transfer functions.
+:::
+
+:::{grid-item-card} {octicon}`pulse;1.5em;sd-mr-1` Spectrogram basics
+:link: intro_spectrogram
+:link-type: doc
+
+Build and read time-frequency representations.
+:::
+
+:::{grid-item-card} {octicon}`paintbrush;1.5em;sd-mr-1` Plotting basics
+:link: intro_plotting
+:link-type: doc
+
+Make and customize publication-ready figures.
+:::
+
+:::{grid-item-card} {octicon}`beaker;1.5em;sd-mr-1` Fitting basics
+:link: intro_fitting
+:link-type: doc
+
+Fit models to data with iminuit-backed helpers.
+:::
+
+:::{grid-item-card} {octicon}`broadcast;1.5em;sd-mr-1` Noise generation basics
+:link: intro_noise
+:link-type: doc
+
+Synthesize colored and physically motivated noise for tests.
+:::
+
+:::{grid-item-card} {octicon}`stack;1.5em;sd-mr-1` TimeSeriesMatrix basics
+:link: matrix_timeseries
+:link-type: doc
+
+Handle multi-channel data with the matrix container.
 :::
 ::::
 
 ```{toctree}
 :hidden:
+:caption: Start here
 
 installation
 quickstart
 getting_started
-timeseries
+```
+
+```{toctree}
+:hidden:
+:caption: Core lessons
+
+intro_timeseries
+intro_frequencyseries
+intro_spectrogram
+intro_plotting
+intro_fitting
+intro_noise
+matrix_timeseries
 ```

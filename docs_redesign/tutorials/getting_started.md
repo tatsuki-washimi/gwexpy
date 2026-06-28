@@ -42,18 +42,18 @@ Start with the [Installation Guide](installation.md) to prepare a Python 3.11+ e
 
 We recommend learning the primary containers in the following order:
 
-1. [Basic Time Series](index.md)
-2. [Basic Frequency Series](index.md)
-3. [Basic Spectrograms](index.md)
-4. [Plot Customization](index.md)
+1. [Basic Time Series](intro_timeseries.ipynb)
+2. [Basic Frequency Series](intro_frequencyseries.ipynb)
+3. [Basic Spectrograms](intro_spectrogram.ipynb)
+4. [Plot Customization](intro_plotting.ipynb)
 
 ### 3. Advanced Analysis
 
-Refer to these guides based on your needs:
+When you need a specific technique, see these how-to recipes:
 
-* **Multi-channel & Matrix Processing**: [Using Matrix Containers](index.md)
-* **High-dimensional Data**: [Field API Intro](index.md) / [ScalarField Slicing Guide](../how-to/scalarfield_slicing.md)
-* **Signal Processing**: [Fitting](index.md) / [HHT](index.md) / [ARIMA](index.md)
+* **Multi-channel & Matrix Processing**: [TimeSeriesMatrix basics](matrix_timeseries.ipynb) / [Matrix containers](../how-to/containers/index.md)
+* **High-dimensional Data**: [Field API basics](../how-to/containers/field_scalar_intro.ipynb) / [ScalarField slicing guide](../how-to/scalarfield_slicing.md)
+* **Signal Processing**: [Fitting](intro_fitting.ipynb) / [HHT](../how-to/spectral/advanced_hht.ipynb) / [ARIMA](../how-to/fitting/advanced_arima.ipynb)
 
 ### 4. Practical Applications
 
