@@ -25,6 +25,8 @@ msgid ""
 "supported formats, read/write limits, fetch routes, and when to set format= "
 "explicitly."
 msgstr ""
+"サポート形式、読み書きの制限、取得経路、`format=` を明示すべき場面を含め、GWexpy における適切な直接ファイル／ネットワーク I/O "
+"経路を選びましょう。"
 
 #: ../../how-to/io_formats.md:7 18e5a70524a44ae88d525888ab315edf
 msgid "<a id=\"io-formats-en-top\"></a>"
@@ -51,6 +53,10 @@ msgid ""
 "instead. For those topics, see the [interop tutorial](../tutorials/index.md)"
 " and the [interop API reference](../reference/api/interop.rst)."
 msgstr ""
+"このページは `to_*()` / `from_*()` の変換や、xarray・ROOT オブジェクト・Zarr "
+"配列へのオブジェクトブリッジは**扱いません**。「このオブジェクトを別のライブラリやコンテナに変換するには？」という問いであれば、それは "
+"interop に属します。それらの話題については [interop チュートリアル](../tutorials/index.md) と "
+"[interop API リファレンス](../reference/api/interop.rst) を参照してください。"
 
 #: ../../how-to/io_formats.md:17 15ab5eea69554e829c6b2c695f043969
 msgid "**Security Warning: Pickle Files**"
@@ -141,7 +147,7 @@ msgstr ""
 
 #: ../../how-to/io_formats.md:34 647a8435cbdf48bd90c2fe41fbb2f8b2
 msgid "Jump Links"
-msgstr ""
+msgstr "ジャンプリンク"
 
 #: ../../how-to/io_formats.md:36 ec0c315751a9480ba00bb71a70495e44
 msgid "<a href=\"#io-formats-en-quick\">Quick Selection Table</a>"
@@ -272,6 +278,8 @@ msgid ""
 " GW Standards** because they are common GW data entry points. In the tables "
 "below, they are labeled as `network path`."
 msgstr ""
+"**注**：`NDS2` と `GWOSC` はファイル形式ではありません。一般的な GW データの入口であるため、**A. GW "
+"Standards** に含めています。以下の表では `network path` として表示されます。"
 
 #: ../../how-to/io_formats.md:57 1607b087ae1d486b94e9a7be7f4702de
 msgid "<a id=\"io-formats-en-basic\"></a>"
@@ -506,7 +514,7 @@ msgstr "未導入時の挙動"
 
 #: ../../how-to/io_formats.md:16 d1d2390d86bb4dad8190d6a46c2939b5
 msgid "**WAV metadata**"
-msgstr ""
+msgstr "**WAV メタデータ**"
 
 #: ../../how-to/io_formats.md:16 a09468a9c22c46f3bf1ea14ae5c73094
 msgid "`tinytag`"
@@ -524,6 +532,9 @@ msgid ""
 "Guide](../tutorials/installation.md). Basic WAV read/write remains "
 "available."
 msgstr ""
+"`tinytag` が無い場合、`.read(..., extract_metadata=True)` "
+"は警告を出してメタデータをスキップします。[インストールガイド](../tutorials/installation.md) の `audio` または"
+" `all` extra でインストールしてください。基本的な WAV の読み書きは引き続き利用できます。"
 
 #: ../../how-to/io_formats.md:16 0e6dd1a0ae904b03b508485ec2fe6ce3
 #: 383fd33d05f0434fbe1b21f07bb5a723
@@ -1529,21 +1540,21 @@ msgstr "関連ページ"
 
 #: ../../how-to/io_formats.md:313 0a6c94481bef4bbabb03f47f078ff03a
 msgid "[Interop tutorial](../tutorials/index.md)"
-msgstr ""
+msgstr "[Interop チュートリアル](../tutorials/index.md)"
 
 #: ../../how-to/io_formats.md:314 fb859a681f7e46268097c97c56db9dc0
 msgid "[Interop API reference](../reference/api/interop.rst)"
-msgstr ""
+msgstr "[Interop API リファレンス](../reference/api/interop.rst)"
 
 #: ../../how-to/io_formats.md:315 8d37b966021e4fcebc9e4bb91bd2c7d9
 msgid ""
 "[Verification and Quality "
 "Signals](../explanation/verification_and_quality.md)"
-msgstr ""
+msgstr "[検証と品質シグナル](../explanation/verification_and_quality.md)"
 
 #: ../../how-to/io_formats.md:316 be063236f5e54e9aa7234c3e74212537
 msgid "[Installation guide](../tutorials/installation.md)"
-msgstr ""
+msgstr "[インストールガイド](../tutorials/installation.md)"
 
 #: ../../how-to/io_formats.md:318 617f45ac87a9492d92c35a3f5e278089
 msgid "Next to Read"
@@ -1554,18 +1565,21 @@ msgid ""
 "[Interop / Conversion Guide](interop.md) for `to_*()` / `from_*()` bridges "
 "and object-level conversion"
 msgstr ""
+"`to_*()` / `from_*()` のブリッジとオブジェクト単位の変換については [Interop / 変換ガイド](interop.md)"
 
 #: ../../how-to/io_formats.md:321 17093170d2074a7dbd2995352a8eb4d2
 msgid ""
 "[GPS Time Utility Functions](time_utilities.md) if your I/O workflow needs "
 "timezone or GPS-time handling"
 msgstr ""
+"I/O ワークフローでタイムゾーンや GPS 時刻の扱いが必要なら [GPS 時刻ユーティリティ関数](time_utilities.md)"
 
 #: ../../how-to/io_formats.md:322 6daa7c46ff854e54a8b48d3f5a32ec7c
 msgid ""
 "[Installation guide](../tutorials/installation.md) if you need optional "
 "dependencies before using a format backend"
 msgstr ""
+"フォーマットのバックエンドを使う前にオプション依存が必要なら [インストールガイド](../tutorials/installation.md)"
 
 #: ../../how-to/io_formats.md:324 53ec0e052cd24e9bac3d7026a6867b9d
 msgid "Page-End Navigation"
