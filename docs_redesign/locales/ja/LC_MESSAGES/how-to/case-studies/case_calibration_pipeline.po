@@ -32,11 +32,14 @@ msgid ""
 "physical strain $h(f)$ or displacement $x(f)$ by applying a **calibration "
 "transfer function**."
 msgstr ""
+"重力波検出器はデータを *デジタルカウント*（生の ADC "
+"出力）として記録します。天体物理学的な解析を行う前に、**較正伝達関数**を適用して、データを物理的なひずみ $h(f)$ または変位 $x(f)$ "
+"に変換する必要があります。"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10008
 #: 446ea5cf540745c28aad72e22f305b00
 msgid "KAGRA's calibration pipeline involves two steps:"
-msgstr ""
+msgstr "KAGRA の較正パイプラインは 2 つのステップから成ります："
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10010
 #: ad4d90ac3ce84d99acc3bb08edfd848a
@@ -45,13 +48,16 @@ msgid ""
 "injected via the photon calibrator (PCal) and the detector response is "
 "measured using `ResponseFunctionAnalysis`."
 msgstr ""
+"**結合係数の測定** — "
+"フォトンキャリブレータ（PCal）を介して既知の信号（スイープまたはステップ正弦波）を注入し、`ResponseFunctionAnalysis` "
+"を用いて検出器応答を測定します。"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10013
 #: c8fde7b6c6474897a27a5c94f591f88c
 msgid ""
 "**Calibration application** — the raw spectrum is divided by the coupling "
 "function to produce a calibrated strain-equivalent ASD."
-msgstr ""
+msgstr "**較正の適用** — 生スペクトルを結合関数で割り、較正済みのひずみ換算 ASD を生成します。"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10016
 #: 8192c597b63745bf9e5c7bb74987ac88
@@ -61,41 +67,41 @@ msgstr "**このチュートリアルで学ぶこと：**"
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10017
 #: 893f0b507d6b4fa9be31bb77324d82d6
 msgid "Generating synthetic uncalibrated data (counts) with realistic noise"
-msgstr ""
+msgstr "現実的なノイズを含む合成未較正データ（カウント）の生成"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10018
 #: 8f88e3f21a5b4d86944f55e8d54ccafd
 msgid ""
 "Using `ResponseFunctionAnalysis` to extract coupling factors from a stepped-"
 "sine injection"
-msgstr ""
+msgstr "ステップ正弦波注入から結合係数を抽出するための `ResponseFunctionAnalysis` の利用"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10020
 #: 6bdb4bffe042450f960e449f0d014cbd
 msgid "Fitting a frequency-dependent calibration model"
-msgstr ""
+msgstr "周波数依存の較正モデルのフィッティング"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10021
 #: 4f24f5b2090447ed93d00200270bb79d
 msgid "Applying the calibration and producing a strain-calibrated ASD"
-msgstr ""
+msgstr "較正の適用とひずみ較正済み ASD の生成"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10023
 #: 0706a19862cd4acc883089fd4acb3b7f
 msgid "**Related tutorials:**"
-msgstr ""
+msgstr "**関連チュートリアル：**"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10024
 #: a2a9357ebd5e45ccb3945bf287df7d3c
 msgid ""
 "`case_dttxml_calibration.ipynb` — loading pre-measured TF from DTT XML files"
-msgstr ""
+msgstr "`case_dttxml_calibration.ipynb` — DTT XML ファイルからの測定済み伝達関数の読み込み"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:10025
 #: 5f8761cc346048b2a85c65c035396ef4
 msgid ""
 "`case_transfer_function.ipynb` — estimating TF directly from time series"
-msgstr ""
+msgstr "`case_transfer_function.ipynb` — 時系列から直接伝達関数を推定"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:20002
 #: 175d7a7929774d228fc90947df4402fe
@@ -105,7 +111,7 @@ msgstr "準備"
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:40002
 #: 4d42ec96400d432bb8255e8d2989a532
 msgid "1. Synthetic Uncalibrated Data"
-msgstr "1. 合成未キャリブレーションデータの生成"
+msgstr "1\\. 合成未キャリブレーションデータの生成"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:40004
 #: 4e39603286cc42869e1c1258b665d342
@@ -137,7 +143,7 @@ msgstr "**電源周波数干渉** 60 Hz および 120 Hz"
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:60002
 #: e9f516c8c1fd41fdb9af98be2373644e
 msgid "2. Stepped-Sine Injection Campaign"
-msgstr "2. ステップサイン注入キャンペーン"
+msgstr "2\\. ステップサイン注入キャンペーン"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:60004
 #: 51bd3962677046ccb5deba4d4884a2de
@@ -146,17 +152,18 @@ msgid ""
 " frequencies while the detector is locked.  Each frequency step typically "
 "lasts 30–120 s."
 msgstr ""
+"実際の較正運転では、検出器がロックされた状態で、一連の離散的な周波数で PCal 信号を注入します。各周波数ステップは通常 30〜120 秒続きます。"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:60008
 #: 9a0e949b7f8649639b838e57eb7b4418
 msgid ""
 "We synthesise an injection campaign with 6 frequencies spanning 10–1000 Hz."
-msgstr ""
+msgstr "ここでは 10〜1000 Hz にわたる 6 周波数の注入キャンペーンを合成します。"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:80002
 #: 2f718dfe69ad4d2e81efa2662df15039
 msgid "3. Extract Coupling Factors"
-msgstr "3. カップリング係数の抽出"
+msgstr "3\\. カップリング係数の抽出"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:80004
 #: e40c75d24ac3451c98adc33244ebf865
@@ -165,11 +172,13 @@ msgid ""
 "steps in the witness channel and estimates the coupling factor at each "
 "injected frequency."
 msgstr ""
+"`ResponseFunctionAnalysis.compute()` は witness "
+"チャンネル内の注入ステップを自動的に検出し、各注入周波数における結合係数を推定します。"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:80008
 #: 55cfe1f7ab4b4266b58637ccaf310c6d
 msgid "The coupling factor $C(f_i)$ is defined as:"
-msgstr ""
+msgstr "結合係数 $C(f_i)$ は次のように定義されます："
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:80010
 #: a009c7fcfce84c9f94b36bed115544a1
@@ -181,12 +190,12 @@ msgstr ""
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:100002
 #: fce7711c11ad4207b06f5b8f4dbcead4
 msgid "4. Fit the Calibration Transfer Function"
-msgstr "4. キャリブレーション伝達関数のフィッティング"
+msgstr "4\\. キャリブレーション伝達関数のフィッティング"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:100004
 #: 7b3b27ddc0bd40d1aebe4eca5c4830e0
 msgid "We fit a single-pole model to the measured coupling factors:"
-msgstr ""
+msgstr "測定された結合係数に単極モデルをフィットします："
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:100006
 #: 7921f44ee4ca458587e073bd17bbd035
@@ -196,12 +205,12 @@ msgstr ""
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:100008
 #: 31b6130e4c35447b9f852c286467b6a2
 msgid "The fit gives us a smooth, continuous calibration function."
-msgstr ""
+msgstr "このフィットにより、滑らかで連続的な較正関数が得られます。"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:130002
 #: 715da27ddb934f1994f0fa30f1dc47f9
 msgid "5. Apply Calibration — Counts → Metres ASD"
-msgstr "5. キャリブレーション適用 — Counts → メートル ASD"
+msgstr "5\\. キャリブレーション適用 — Counts → メートル ASD"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:130004
 #: fca2512784c4494cb5491aa7e45fa300
@@ -209,6 +218,7 @@ msgid ""
 "With the calibration function in hand, we apply it to the raw DARM ASD to "
 "produce a calibrated displacement ASD in metres per root-Hz."
 msgstr ""
+"較正関数が得られたら、それを生の DARM ASD に適用し、metres per root-Hz 単位の較正済み変位 ASD を生成します。"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150002
 #: 2c0a8874973e449d81379765d7037213
@@ -293,42 +303,42 @@ msgstr "カウント → メートル/歪み"
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150011
 #: de09c9a70e7c424ea178af4131893482
 msgid "**Physical constants used from `gwexpy.numerics.constants`:**"
-msgstr ""
+msgstr "**`gwexpy.numerics.constants` から使用される物理定数：**"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150012
 #: e9a1df4fb22e4f8e94db0be520f3e680
 msgid "`SAFE_FLOOR` — prevents log(0) in ASD estimation"
-msgstr ""
+msgstr "`SAFE_FLOOR` — ASD 推定における log(0) を防止"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150013
 #: 1071207569e645aa8e3f730f80089712
 msgid "`EPS_PSD` — regularises Welch estimator denominators"
-msgstr ""
+msgstr "`EPS_PSD` — Welch 推定器の分母を正則化"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150015
 #: 36661c615ac74b07b4bcf229501189a1
 msgid "**In real KAGRA calibration:**"
-msgstr ""
+msgstr "**実際の KAGRA 較正では：**"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150016
 #: 389eb8f082d44aefb2772ae1904f367e
 msgid "PCal amplitude is independently measured by the PCal power monitor"
-msgstr ""
+msgstr "PCal 振幅は PCal パワーモニターによって独立に測定される"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150017
 #: 905d12379e5744928bdcbc90f02497d6
 msgid ""
 "The calibration transfer function has both optical and electrical components"
-msgstr ""
+msgstr "較正伝達関数は光学的成分と電気的成分の両方を持つ"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150018
 #: 1fe0f8f73b2d4cbaaa4dedf5722e94e8
 msgid ""
 "Time-varying parameters (finesse, input power) require continuous monitoring"
-msgstr ""
+msgstr "時間変化するパラメータ（フィネス、入力パワー）は継続的なモニタリングを必要とする"
 
 #: ../../how-to/case-studies/case_calibration_pipeline.ipynb:150019
 #: 5cd5c9b8db0d43c9847b15c19a37e617
 msgid ""
 "See `case_dttxml_calibration.ipynb` for loading pre-measured TF from DTT XML"
-msgstr ""
+msgstr "DTT XML からの測定済み伝達関数の読み込みについては `case_dttxml_calibration.ipynb` を参照"

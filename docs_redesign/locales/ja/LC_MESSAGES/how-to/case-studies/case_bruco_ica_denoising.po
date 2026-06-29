@@ -64,19 +64,19 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10013
 #: 09c47f34b4f043368477a78791f7c160
 msgid "**Prerequisites**: Familiarity with"
-msgstr ""
+msgstr "**前提条件**：以下に慣れていること"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10014
 #: 4749261f3edb4a75aa401c6f2e9cc592
 msgid "[Bruco tutorial](../coupling/advanced_bruco.ipynb) — Bruco basics"
-msgstr ""
+msgstr "[Bruco チュートリアル](../coupling/advanced_bruco.ipynb) — Bruco の基礎"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10015
 #: 2aa59253b750455ea73abe0d14617e94
 msgid ""
 "[PCA/ICA tutorial](../fitting/advanced_decomposition.ipynb) — decomposition "
 "basics"
-msgstr ""
+msgstr "[PCA/ICA チュートリアル](../fitting/advanced_decomposition.ipynb) — 分解の基礎"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:20002
 #: a1eebfb038dd4aab86cf27b603c48fbd
@@ -86,7 +86,7 @@ msgstr "準備"
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:40002
 #: ffbfbd50a4b24e6f8d671e2582930605
 msgid "1. Mock Data Generation"
-msgstr "1. モックデータ生成"
+msgstr "1\\. モックデータ生成"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:40004
 #: 9f3f4bfc48db4dca9ca63c346ad9d3ed
@@ -116,7 +116,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:70002
 #: cef1967e74f049f0bdcf895620cc7c91
 msgid "2. Bruco: Identify Correlated Auxiliary Channels"
-msgstr "2. Bruco: 相関補助チャンネルの特定"
+msgstr "2\\. Bruco: 相関補助チャンネルの特定"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:70004
 #: 295749949c684af995072aec021dc683
@@ -135,11 +135,13 @@ msgid ""
 "here as a physics filter so the decomposition focuses on channels that "
 "plausibly share the 116 Hz contamination."
 msgstr ""
+"**よくある誤り**：利用可能なすべての witness を ICA に投入すること。ここでは Bruco を物理的なフィルタとして用い、116 Hz "
+"の汚染をもっともらしく共有するチャンネルに分解を集中させます。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110002
 #: a26d05dfaa384b11ae046801e403b84f
 msgid "3. ICA: Separate Noise Sources"
-msgstr "3. ICA: ノイズ源の分離"
+msgstr "3\\. ICA: ノイズ源の分離"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110004
 #: 32daa9be9419474d954fd2bc1c193c0b
@@ -169,6 +171,8 @@ msgid ""
 " Always inspect spectra and channel loadings before deciding which component"
 " represents the line you want to subtract."
 msgstr ""
+"**注意すべき失敗モード**：ICA "
+"成分は物理的重要度で自動的に並べられるわけではなく、各成分の符号／スケールは任意です。どの成分が差し引きたい線を表すかを判断する前に、必ずスペクトルとチャンネル負荷を確認してください。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:120002
 #: 60b65c259d354f71957e00a8c3b16f98
@@ -178,6 +182,9 @@ msgid ""
 "consider increasing `max_iter` or `tol` in the ICA parameters. Results may "
 "still be usable even without full convergence."
 msgstr ""
+"**注 — ICA の収束**：FastICA "
+"は一部のデータセットでは既定の反復回数内で収束しないことがあります。`ConvergenceWarning` が表示された場合は、ICA パラメータの "
+"`max_iter` または `tol` を増やすことを検討してください。完全には収束していなくても、結果が利用可能な場合があります。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:120004
 #: f991c1cd42424c08ac0f7dc6d316a921
@@ -187,11 +194,13 @@ msgid ""
 "subtraction weights are hard to trust. Prefer a small set of informative but"
 " not perfectly redundant channels."
 msgstr ""
+"二つ目のよくある失敗モードはランク落ちです。ほぼ同一の witness を ICA "
+"に投入すると、分解が不安定になり、差し引きの重みが信頼しにくくなります。情報量はあるが完全には冗長でない少数のチャンネルを選ぶようにしてください。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:150002
 #: 837850ffad7341f5852b75456d90a89c
 msgid "4. Noise Subtraction and ASD Comparison"
-msgstr "4. ノイズ差し引きと ASD 比較"
+msgstr "4\\. ノイズ差し引きと ASD 比較"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:150004
 #: 42d6ab9f0d094411a8ce553acdd62926
@@ -208,6 +217,8 @@ msgid ""
 "the targeted coupling mechanism; otherwise you risk removing unrelated "
 "detector structure along with the line."
 msgstr ""
+"**よくある誤り**：非ガウス的に見える ICA 成分をすべて差し引くこと。スペクトル内容と witness "
+"負荷が対象とする結合メカニズムに一致する成分だけを差し引いてください。さもないと、線とともに無関係な検出器構造まで除去してしまう恐れがあります。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180002
 #: 89dae26688334726a103d539dfc44389
@@ -232,7 +243,7 @@ msgstr "返り値"
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
 #: 74cf981d644646469c00ade2de43271a
 msgid "1. Coherence scan"
-msgstr "1. コヒーレンス スキャン"
+msgstr "1\\. コヒーレンス スキャン"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
 #: d7063e89014b471293cf320ab7912fd6
@@ -247,7 +258,7 @@ msgstr "各周波数での最相関チャンネル"
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
 #: bc345c1c179b4196b9a42a0995e146a4
 msgid "2. Source separation"
-msgstr "2. ノイズ源分離"
+msgstr "2\\. ノイズ源分離"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
 #: 0fb076f63cab4a65a5c8e1a1f9de40c3
@@ -262,7 +273,7 @@ msgstr "独立成分 + 混合行列"
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
 #: 32d84488b26440c798559d959733695d
 msgid "3. Noise subtraction"
-msgstr "3. ノイズ差し引き"
+msgstr "3\\. ノイズ差し引き"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
 #: 48134f8550f24611b0817f8d157329dc
@@ -284,28 +295,28 @@ msgstr "重要なポイント"
 msgid ""
 "**Bruco** efficiently narrows down thousands of channels to the few that "
 "matter."
-msgstr ""
+msgstr "**Bruco** は数千のチャンネルを、重要な少数へと効率的に絞り込みます。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180013
 #: f7d12b45f4824e4b877e2edb65694d12
 msgid ""
 "**ICA** goes beyond coherence: it separates *independent* source "
 "contributions even when multiple sensors share a common noise."
-msgstr ""
+msgstr "**ICA** はコヒーレンスを超えます。複数のセンサーが共通のノイズを共有している場合でも、*独立な*ソースの寄与を分離します。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180015
 #: f9f9fd38c3cd455ea21d4a5f6baa8881
 msgid ""
 "The mixing matrix `A` provides a direct subtraction formula without time-"
 "domain filtering."
-msgstr ""
+msgstr "混合行列 `A` は、時間領域フィルタリングなしで直接的な差し引きの式を与えます。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180016
 #: 16d6823850454746a62d5f3164720a67
 msgid ""
 "Stable subtraction depends on witness selection and component "
 "identification, not on the ICA solver alone."
-msgstr ""
+msgstr "安定した差し引きは、ICA ソルバーだけでなく、witness の選択と成分の同定に依存します。"
 
 #: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180018
 #: c04b5da895cf45ac82682e7319e583cb

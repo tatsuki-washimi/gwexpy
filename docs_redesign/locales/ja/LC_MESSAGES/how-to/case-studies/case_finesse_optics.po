@@ -68,6 +68,9 @@ msgid ""
 "it synthesises equivalent data analytically so every cell still executes. "
 "Install Finesse 3 with `pip install finesse` to run the real simulation."
 msgstr ""
+"**注**：このノートブックは自己完結型です。Finesse 3 "
+"がインストールされていない場合は、等価なデータを解析的に合成するため、すべてのセルが実行されます。実際のシミュレーションを実行するには `pip "
+"install finesse` で Finesse 3 をインストールしてください。"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:20002
 #: 592b5c6353f44be380975ad7a7fef0ce
@@ -77,7 +80,7 @@ msgstr "準備"
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:40002
 #: 79e068bf1f574961a959203c5abaf826
 msgid "1. Finesse 3 Model — Fabry-Pérot Cavity"
-msgstr "1. Finesse 3 モデル — Fabry-Pérot キャビティ"
+msgstr "1\\. Finesse 3 モデル — Fabry-Pérot キャビティ"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:40004
 #: b06d443253ff4b6cab63da12004132b5
@@ -102,7 +105,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:60002
 #: 75e178d0a175450897efbb1c4f86f528
 msgid "2. Multi-DOF Transfer Function Matrix"
-msgstr "2. 多自由度（マルチ DOF）伝達関数マトリクス"
+msgstr "2\\. 多自由度（マルチ DOF）伝達関数マトリクス"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:60004
 #: e2892acded954c919b8d74b28a6e6700
@@ -118,7 +121,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:80002
 #: 4d9747d2b05e4809bc49589519fcd885
 msgid "3. Noise Projection"
-msgstr "3. ノイズプロジェクション"
+msgstr "3\\. ノイズプロジェクション"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:80004
 #: 7a1c2f4a687d41dbb4384b57a9c146cc
@@ -126,36 +129,38 @@ msgid ""
 "`from_finesse_noise` converts a Finesse 3 `NoiseProjectionSolution` to a "
 "`FrequencySeriesDict` keyed by `\"<output_node>: <noise_source>\"`."
 msgstr ""
+"`from_finesse_noise` は Finesse 3 の `NoiseProjectionSolution` "
+"を、`\"<output_node>: <noise_source>\"` をキーとする `FrequencySeriesDict` に変換します。"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:80007
 #: a6f0c5f8a41c437ab426adc7f4da31c9
 msgid "Typical noise sources in an optical cavity:"
-msgstr ""
+msgstr "光共振器における典型的なノイズ源："
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:80008
 #: f352fd448f0a42239492a18c735a66a3
 msgid "**laser_freq** — laser frequency noise"
-msgstr ""
+msgstr "**laser_freq** — レーザー周波数ノイズ"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:80009
 #: 6c4715be97124945ac86a5e55a860e34
 msgid "**laser_amp** — laser amplitude noise"
-msgstr ""
+msgstr "**laser_amp** — レーザー振幅ノイズ"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:80010
 #: 5654348f331e44a595a20bc9f8d023eb
 msgid "**shot** — shot noise at the detector"
-msgstr ""
+msgstr "**shot** — 検出器におけるショットノイズ"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:80011
 #: becde1d26d2f4119b69f0e1a6aeb92a8
 msgid "**thermal_mir** — mirror thermal noise (coating + substrate)"
-msgstr ""
+msgstr "**thermal_mir** — 鏡の熱雑音（コーティング＋基板）"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:100002
 #: 445d5b9fe6e34063a3c15ddd3294a116
 msgid "4. Simulation vs. Measurement Overlay"
-msgstr "4. シミュレーション vs. 測定データのオーバーレイ比較"
+msgstr "4\\. シミュレーション vs. 測定データのオーバーレイ比較"
 
 #: ../../how-to/case-studies/case_finesse_optics.ipynb:100004
 #: 4f5974daef444ae297801991ed861cd1

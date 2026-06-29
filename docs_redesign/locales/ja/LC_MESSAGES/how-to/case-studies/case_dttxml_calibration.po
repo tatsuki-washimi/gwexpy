@@ -79,7 +79,7 @@ msgstr "準備"
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:40002
 #: 971537ccf2684ed69e1dd5cbed6e09b1
 msgid "1. Create a Synthetic DTT XML File"
-msgstr "1. 合成 DTT XML ファイルの作成"
+msgstr "1\\. 合成 DTT XML ファイルの作成"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:40004
 #: 55d6a9470543429a889e205027bc7847
@@ -152,7 +152,7 @@ msgstr "変位と励振間のコヒーレンス"
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:60002
 #: f86af2d673d8452bbb5d8b75c0175b01
 msgid "2. Inspect Channels"
-msgstr "2. チャネルの確認"
+msgstr "2\\. チャネルの確認"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:60004
 #: 28070d3e13ef4c6896f8b30358980689
@@ -167,7 +167,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:80002
 #: a03df13383fb438dba89d3144dda22c9
 msgid "3. Load Measurement Products"
-msgstr "3. 測定量の読み込み"
+msgstr "3\\. 測定量の読み込み"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:80004
 #: 417a0e65fc3b410788cd10ef0e462b46
@@ -190,7 +190,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:100002
 #: 6a3fc4dc269e4a4fac261de6a519101d
 msgid "4. Bode Plot — Transfer Function"
-msgstr "4. Bode プロット — 伝達関数の可視化"
+msgstr "4\\. Bode プロット — 伝達関数の可視化"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:100004
 #: 6e21d69984694c96967d75b01bdf2e79
@@ -202,7 +202,7 @@ msgstr "TF データを取り出し、振幅と位相を周波数の関数とし
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:120002
 #: 793df9e715ad4a9ebd0dcbf92249bc41
 msgid "5. Coherence"
-msgstr "5. コヒーレンス"
+msgstr "5\\. コヒーレンス"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:120004
 #: 4234bfbb9d7549b4b649a53979313d80
@@ -217,7 +217,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:140002
 #: bc5b1b2666e547c491857d17f5c4e9fd
 msgid "6. Fitting a Resonant-System Model"
-msgstr "6. 共振モデルのフィッティング"
+msgstr "6\\. 共振モデルのフィッティング"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:140004
 #: 4d9efc4e5b9248e1be422a7a24a26fa5
@@ -324,7 +324,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170011
 #: 398bfcfdb8e444c8ad21add30bfdc260
 msgid "**Tips for real measurements:**"
-msgstr ""
+msgstr "**実測定のためのヒント：**"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170012
 #: 0a8c7c4ae8404a58985eed3eb73cc780
@@ -332,11 +332,12 @@ msgid ""
 "Pass `native=False` to use the `dttxml` package when installed (faster for "
 "large files)."
 msgstr ""
+"インストールされている場合に `dttxml` パッケージを使用するには `native=False` を渡します（大きなファイルでは高速です）。"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170013
 #: ed6bb77e30124b2c9d38cff0d6de68f0
 msgid "Use `native=True` if you observe phase flips in complex TF products."
-msgstr ""
+msgstr "複素 TF プロダクトで位相の反転が見られる場合は `native=True` を使用してください。"
 
 #: ../../how-to/case-studies/case_dttxml_calibration.ipynb:170014
 #: 1e6aa11eb6c749a99d832ea1ef15a4bd
@@ -344,3 +345,5 @@ msgid ""
 "The `load_dttxml_products()` dict keys follow DTT's product naming: "
 "`\"TF\"`, `\"STF\"`, `\"PSD\"`, `\"ASD\"`, `\"CSD\"`, `\"COH\"`, `\"TS\"`."
 msgstr ""
+"`load_dttxml_products()` の辞書キーは DTT "
+"のプロダクト命名に従います：`\"TF\"`、`\"STF\"`、`\"PSD\"`、`\"ASD\"`、`\"CSD\"`、`\"COH\"`、`\"TS\"`。"

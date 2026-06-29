@@ -74,11 +74,14 @@ msgid ""
 "`gwexpy.timeseries.io.gbd`.   See the [File I/O Supported Formats "
 "Guide](../io_formats.md) for the current public direct-I/O contract."
 msgstr ""
+"**レガシー移行に関する注記：**   レガシー KAGRA リポジトリにあった `gbd2gwf.py` および `read_gbd.py` "
+"スクリプトは `gwexpy.timeseries.io.gbd` に統合されました。   現在の公開ダイレクト I/O 契約については [ファイル "
+"I/O 対応フォーマットガイド](../io_formats.md) を参照してください。"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb:30002
 #: 297c25d9219145e1a7c29d3f92607914
 msgid "1. Create a Synthetic GBD File for Demonstration"
-msgstr "1. デモンストレーション用合成 GBD ファイルの作成"
+msgstr "1\\. デモンストレーション用合成 GBD ファイルの作成"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb:30004
 #: a2ba56705ef547258d4f2e14931ac384
@@ -95,7 +98,7 @@ msgstr "GBD の構造は以下の通りです："
 #: ../../how-to/case-studies/case_gbd_format.ipynb:50002
 #: 0e53a2e7f5914329bc3a5252f72fc99c
 msgid "2. Read GBD File into TimeSeriesDict"
-msgstr "2. TimeSeriesDict への読み込み"
+msgstr "2\\. TimeSeriesDict への読み込み"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb:50004
 #: 286be691d96d42458247274954890ffa
@@ -109,7 +112,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_gbd_format.ipynb:90002
 #: d9fbe08c239649fabe236af12f58ec7e
 msgid "3. Signal Analysis on GBD Data"
-msgstr "3. GBD データに対する解析"
+msgstr "3\\. GBD データに対する解析"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb:90004
 #: 73e2dc4a368a401ba7f2e0b73cfa3079
@@ -119,7 +122,7 @@ msgstr "読み込まれたデータは標準的な gwexpy オブジェクトで�
 #: ../../how-to/case-studies/case_gbd_format.ipynb:130002
 #: 1669fa02f9cb46acba340a89881baa2c
 msgid "4. TimeSeriesMatrix from GBD"
-msgstr "4. TimeSeriesMatrix による読み込み"
+msgstr "4\\. TimeSeriesMatrix による読み込み"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb:130004
 #: 70deda245cd84930959b7ef121b6d424
@@ -130,7 +133,7 @@ msgstr "一括分析を行う場合は、`TimeSeriesMatrix` に直接読み込�
 #: ../../how-to/case-studies/case_gbd_format.ipynb:150002
 #: 1cce526302dc434faa924a4f2e62ca7d
 msgid "5. Timezone Handling"
-msgstr "5. タイムゾーンの扱い"
+msgstr "5\\. タイムゾーンの扱い"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb:150004
 #: 28c459df5222490f8ac2cb2fe311fe57
@@ -219,7 +222,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_gbd_format.ipynb:170002
 #: 1d64793793c64951bf7f8fda09a59cc5
 msgid "6. Migration Guide: Legacy gbd2gwf.py → gwexpy"
-msgstr "6. 移行ガイド: 従来の gbd2gwf.py → gwexpy"
+msgstr "6\\. 移行ガイド: 従来の gbd2gwf.py → gwexpy"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb:170004
 #: 75454a93fa3d4f4ebf650368479fca9a
@@ -290,17 +293,17 @@ msgstr ""
 #: ../../how-to/case-studies/case_gbd_format.ipynb
 #: 15d40d95139f45b9b871b91fb3143244
 msgid "Auto-detect digital channels"
-msgstr ""
+msgstr "デジタルチャンネルの自動検出"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb
 #: d3e5302828b74c508fe8875b89dc7874
 msgid "Channels named `ALARM`, `LOGIC*`, `PULSE*` are binarized"
-msgstr ""
+msgstr "`ALARM`、`LOGIC*`、`PULSE*` という名前のチャンネルは 2 値化されます"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb
 #: 2bba6d87ec5f4d74b143af80d02b7d1d
 msgid "Override digital channels"
-msgstr ""
+msgstr "デジタルチャンネルの上書き指定"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb
 #: 135a84ddf6254cfeb3115c1523532c40
@@ -310,7 +313,7 @@ msgstr ""
 #: ../../how-to/case-studies/case_gbd_format.ipynb
 #: 71ca9634e51b4ab3a69ddbe8f6c77ace
 msgid "Override GPS epoch"
-msgstr ""
+msgstr "GPS エポックの上書き指定"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb
 #: e2052177f12a41128846d95a89bed411
@@ -325,9 +328,9 @@ msgstr "**関連チュートリアル:**"
 #: ../../how-to/case-studies/case_gbd_format.ipynb:180015
 #: 29318c95d88a4154a9b88a2264e29ec5
 msgid "[Intro TimeSeries](../../tutorials/intro_timeseries.ipynb)"
-msgstr ""
+msgstr "[TimeSeries 入門](../../tutorials/intro_timeseries.ipynb)"
 
 #: ../../how-to/case-studies/case_gbd_format.ipynb:180016
 #: bbad287cfad347f1b1fa79b6bf6b72a4
 msgid "[Interoperability Basics](../viz/intro_interop.ipynb)"
-msgstr ""
+msgstr "[相互運用の基礎](../viz/intro_interop.ipynb)"
