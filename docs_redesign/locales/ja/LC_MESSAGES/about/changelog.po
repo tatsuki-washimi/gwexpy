@@ -44,6 +44,9 @@ msgid ""
 "seconds and `dtype=\"quantity\"` returns seconds quantities for direct "
 "`.times` comparisons."
 msgstr ""
+"`to_gps()` にオプトインの `dtype=` 出力モードを追加しました。既定は GWpy 互換のままで、`dtype=float` / "
+"`dtype=\"float\"` は素の数値秒を返し、`dtype=\"quantity\"` は `.times` と直接比較できる秒の "
+"quantity を返します。"
 
 #: ../../about/changelog.md:12 0400fac2f92d452699c7240877fafe1d
 msgid "Documentation"
@@ -55,6 +58,7 @@ msgid ""
 " point lightweight bug reports and feature requests to the public feedback "
 "form. Security reports remain directed to the repository security policy."
 msgstr ""
+"README、ドキュメントのハブページ、ロードマップ、トラブルシューティングページ、フッターのリンクが、軽微なバグ報告と機能要望を公開フィードバックフォームへ案内するようになりました。セキュリティ報告は引き続きリポジトリのセキュリティポリシーに向けられます。"
 
 #: ../../about/changelog.md:17 5935251afa754dabb93d8b7249590bb0
 msgid "Tests"
@@ -63,13 +67,15 @@ msgstr "テスト (Tests)"
 #: ../../about/changelog.md:18 7ccc2e48b86c4823bd105af95e8d4b88
 msgid ""
 "Added NetCDF fixture coverage requiring an explicit time coordinate (#393)."
-msgstr ""
+msgstr "明示的な時間座標を要求する NetCDF フィクスチャのカバレッジを追加しました（#393）。"
 
 #: ../../about/changelog.md:19 42801dfa28ac489e95391345c9d0dafc
 msgid ""
 "Added GWF regression coverage for multi-channel list-source reads and padded"
 " gap reads with `parallel > 1`."
 msgstr ""
+"マルチチャンネルのリストソース読み込みと、`parallel > 1` でのパディングされたギャップ読み込みについて、GWF "
+"の回帰テストカバレッジを追加しました。"
 
 #: ../../about/changelog.md:22 307beb3b57ea496db6ed22e7b82351a0
 msgid "[0.1.3] - 2026-05-12"
@@ -83,35 +89,37 @@ msgstr "修正 (Fixed)"
 #: ../../about/changelog.md:24 123e5450dd6c4270b6fe0acc0758dc66
 msgid ""
 "Fixed multi-file GWF reads for `TimeSeries` and `TimeSeriesDict` inputs."
-msgstr ""
+msgstr "`TimeSeries` および `TimeSeriesDict` 入力に対する複数ファイル GWF 読み込みを修正しました。"
 
 #: ../../about/changelog.md:25 38c82fefecad44bdb5503669427744ed
 msgid "Fixed ndscope HDF5 auto-detection for `TimeSeriesMatrix.read()`."
-msgstr ""
+msgstr "`TimeSeriesMatrix.read()` における ndscope HDF5 の自動検出を修正しました。"
 
 #: ../../about/changelog.md:26 36cf884b6ace4cc19219a1f92e96214f
 msgid ""
 "Aligned public I/O docs and contract metadata with current autodetection "
 "behavior."
-msgstr ""
+msgstr "公開 I/O ドキュメントと契約メタデータを、現在の自動検出の挙動に合わせました。"
 
 #: ../../about/changelog.md:28 857181ed60474944b92424be088f677e
 msgid ""
 "Preserved original frequency column values in the FrequencySeries CSV fast "
 "path."
-msgstr ""
+msgstr "FrequencySeries の CSV 高速パスで、元の周波数列の値を保持するようにしました。"
 
 #: ../../about/changelog.md:30 a37bc2eaef004d58bb15b0f2029f7107
 msgid ""
 "Improved zarr 3 matrix round-trip coverage and removed timeout-prone fixture"
 " behavior."
-msgstr ""
+msgstr "zarr 3 の行列往復変換カバレッジを改善し、タイムアウトしやすいフィクスチャの挙動を除去しました。"
 
 #: ../../about/changelog.md:32 b550d66abcfb45a2ad2069e037c64488
 msgid ""
 "Treated PyGMT installations without a loadable GMT shared library as an "
 "unavailable optional backend instead of failing at import time."
 msgstr ""
+"読み込み可能な GMT 共有ライブラリを持たない PyGMT "
+"インストールを、インポート時に失敗させるのではなく、利用不可のオプションバックエンドとして扱うようにしました。"
 
 #: ../../about/changelog.md:35 503a7782109343b4baebafcfe71fbe6d
 msgid "Known Issues"
@@ -123,6 +131,8 @@ msgid ""
 "coordinate contract (#393). Generated NetCDF round-trip coverage still "
 "passes; files should expose an explicit time coordinate."
 msgstr ""
+"同梱の一部 NetCDF フィクスチャパスは、TimeSeries リーダーの時間座標契約に失敗することがあります（#393）。生成された NetCDF"
+" 往復変換カバレッジは引き続き通過します。ファイルは明示的な時間座標を公開すべきです。"
 
 #: ../../about/changelog.md:40 1458e5b6e5814e23991606b48892186f
 msgid "[0.1.2] - 2026-05-08"
