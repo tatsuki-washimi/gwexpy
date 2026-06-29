@@ -73,6 +73,8 @@ msgid ""
 "**Note**: This notebook is self-contained; all cells run without pyOMA. "
 "Install it with `pip install pyOMA` for real OMA analysis."
 msgstr ""
+"**注意**: このノートブックは自己完結しており、すべてのセルは pyOMA なしで実行できます。実際の OMA 解析を行うには `pip "
+"install pyOMA` でインストールしてください。"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:10019
 #: 48f735d4baaf448499938e41b169f02c
@@ -119,6 +121,8 @@ msgid ""
 "`build_frf_matrix()` — the same helper used internally by "
 "`from_pyoma_results()`."
 msgstr ""
+"OMA を実行する前でも、`build_frf_matrix()` を使って FRF を gwexpy に取り込めます。これは "
+"`from_pyoma_results()` が内部で使うものと同じヘルパーです。"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:80002
 #: 9b9a60427f9549ffaf005e83d907c426
@@ -133,6 +137,9 @@ msgid ""
 "parameters into either a `pandas.DataFrame` (parameter summary) or a "
 "`FrequencySeriesMatrix` (reconstructed mode shapes)."
 msgstr ""
+"pyOMA の **周波数領域分解 (FDD)** アルゴリズムを使用します。続いて `from_pyoma_results()` "
+"コンバータが、抽出したモーダルパラメータを `pandas.DataFrame`（パラメータ要約）または "
+"`FrequencySeriesMatrix`（再構成したモード形状）としてまとめます。"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:100002
 #: cdddd9cc92914513b9a507739e16d2ed
@@ -161,6 +168,8 @@ msgid ""
 "parameters and compare with the measured FRF.  Good agreement confirms the "
 "modal identification is accurate."
 msgstr ""
+"重要な検証ステップです。抽出したモードパラメータから FRF を再構成し、実測 FRF "
+"と比較します。よく一致すれば、モード同定が正確であることを確認できます。"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:180002
 #: 3bf6d7e3cf944ee5b5dbcae00e8680ec
@@ -240,35 +249,35 @@ msgstr "モーダル重ね合わせ"
 #: ../../how-to/control/advanced_modal_analysis.ipynb:180011
 #: 4abb62a8c9b94060a1f36bc9a886c527
 msgid "**Compared to `case_violin_mode.ipynb`:**"
-msgstr ""
+msgstr "**`case_violin_mode.ipynb` との比較:**"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:180012
 #: 83db91b4f0ff4b9e858d44c5e9fc5a9b
 msgid "Violin-mode: single-channel, narrow-band peak fitting"
-msgstr ""
+msgstr "バイオリンモード: 単一チャンネル・狭帯域のピークフィッティング"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:180013
 #: c2bd966f19a84f279bd840203c3eaed3
 msgid ""
 "This tutorial: **multi-channel FRF matrix**, full mode shapes, OMA workflow"
-msgstr ""
+msgstr "本チュートリアル: **多チャンネル FRF 行列**、完全なモード形状、OMA ワークフロー"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:180015
 #: c155d561ed8c4950a17d3f182ecb4c84
 msgid "**Applications at KAGRA:**"
-msgstr ""
+msgstr "**KAGRA での応用:**"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:180016
 #: be3d190891184f2697a4b6f257af2d36
 msgid "TypeA/TypeB/TypeBp suspension eigenmode identification"
-msgstr ""
+msgstr "TypeA / TypeB / TypeBp 防振系の固有モード同定"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:180017
 #: 8c5a5f97d650414b9c184e701636c768
 msgid "Actuation matrix calibration (MODAL2COIL matrix)"
-msgstr ""
+msgstr "アクチュエーション行列の較正（MODAL2COIL 行列）"
 
 #: ../../how-to/control/advanced_modal_analysis.ipynb:180018
 #: 9de9a22ccd75421a9b7acaef9ffcf312
 msgid "Active damping filter design"
-msgstr ""
+msgstr "アクティブ制振フィルタの設計"

@@ -31,23 +31,25 @@ msgid ""
 "`(time, x, y, z)`.  This enables analysis of phenomena that have both "
 "temporal and spatial structure — such as:"
 msgstr ""
+"`gwexpy.fields` モジュールは gwexpy を **4 次元の時空間データ** `(time, x, y, z)` "
+"へ拡張します。これにより、時間構造と空間構造の両方を持つ現象を解析できます。例えば："
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10008
 #: f9f0835bec7847c5a6c3672dca0aa2d1
 msgid "**Optical beam profiles** measured across a mirror surface"
-msgstr ""
+msgstr "鏡面上で測定した**光ビームプロファイル**"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10009
 #: a214268d357b43eabdc6b54fec7b4ac1
 msgid "**Seismic wavefield maps** from distributed accelerometer arrays"
-msgstr ""
+msgstr "分散配置した加速度計アレイによる**地震波動場マップ**"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10010
 #: dcd62b6511a94770a31c3633704168b3
 msgid ""
 "**Environmental field maps** (magnetic, acoustic, temperature) around the "
 "detector"
-msgstr ""
+msgstr "検出器周辺の**環境場マップ**（磁場・音響・温度）"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10013
 #: d1115c193ae7473aa5aba9eeebba803d
@@ -57,32 +59,32 @@ msgstr "**このチュートリアルで学ぶこと：**"
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10014
 #: 6e46465d968e411e954780649babada3
 msgid "Creating synthetic beam and wavefield data with `ScalarField`"
-msgstr ""
+msgstr "`ScalarField` による合成ビーム・波動場データの生成"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10015
 #: 38a09947afc64d54b499b211c793c7db
 msgid "Spatial statistics: mean profile, variance map, and spatial PSD"
-msgstr ""
+msgstr "空間統計: 平均プロファイル、分散マップ、空間 PSD"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10016
 #: 295c21726a4049a6a7995600c60f9dc6
 msgid "Coherence map: how coherent is the field across space?"
-msgstr ""
+msgstr "コヒーレンスマップ: 場が空間的にどれだけコヒーレントか"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10017
 #: d73421d2131746e78a9b966ccdf0619a
 msgid "Time-delay map: estimating signal propagation velocity"
-msgstr ""
+msgstr "時間遅延マップ: 信号の伝播速度の推定"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10018
 #: 9979c839d2d64c4a993d1aa2ba54f3de
 msgid "`VectorField` operations: gradient, curl (rotation), norm"
-msgstr ""
+msgstr "`VectorField` の演算: 勾配、回転 (curl)、ノルム"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10019
 #: 8eed4826d01747f79a554c1baa0b6d1e
 msgid "k-space analysis: from spatial FFT to wavenumber spectrum"
-msgstr ""
+msgstr "k 空間解析: 空間 FFT から波数スペクトルへ"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:10021
 #: 45f47481a6c34c92a4ee24be18b05cf0
@@ -92,6 +94,8 @@ msgid ""
 "analysis** — coherence maps, time-delay estimation, and wavenumber spectra —"
 " building on those foundations."
 msgstr ""
+"**`field_scalar_intro.ipynb` との関係**: あちらのノートブックは `ScalarField` "
+"データ構造を紹介します。本チュートリアルはそれを土台に、コヒーレンスマップ・時間遅延推定・波数スペクトルといった**高度な空間解析**に焦点を当てます。"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:20002
 #: cd71e834c6ec40f89362faf13de6fb4a
@@ -110,13 +114,15 @@ msgid ""
 "beam measured at 64 spatial points across a 1 m × 1 m mirror surface at 100 "
 "time steps."
 msgstr ""
+"1 m × 1 m の鏡面上の 64 空間点で、100 時間ステップにわたり測定したレーザービームの光強度を表す 4 次元 `ScalarField` "
+"を作成します。"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:40008
 #: 88d8d635961b4708956708bc9601771f
 msgid ""
 "The beam has a Gaussian profile with a slow random walk in centroid position"
 " — simulating thermal drift of the optic."
-msgstr ""
+msgstr "ビームはガウス型プロファイルを持ち、重心位置がゆっくりとランダムウォークします。これは光学素子の熱ドリフトを模擬したものです。"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:60002
 #: b267b729e38a404f81bdb1c39c9671ab
@@ -130,6 +136,7 @@ msgid ""
 "where intensity fluctuates most — typically at the beam edge where pointing "
 "jitter is amplified."
 msgstr ""
+"時間方向に平均すると平均的なビーム形状が得られます。分散マップは強度の揺らぎが最も大きい場所を示し、通常はポインティングジッタが増幅されるビーム端になります。"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:80002
 #: 7b1db05279704b4bace12cc1e803821d
@@ -143,6 +150,8 @@ msgid ""
 "spatial x-axis.  The wavenumber spectrum reveals the spatial frequency "
 "content of the beam — a Gaussian beam has a Gaussian wavenumber spectrum."
 msgstr ""
+"`spectral_density(axis='x')` は空間 x "
+"軸に沿ったパワースペクトル密度を計算します。波数スペクトルはビームの空間周波数成分を明らかにします。ガウスビームの波数スペクトルはガウス型になります。"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:100002
 #: 2d23ec053bfd418f87b63b825c884cb0
@@ -173,6 +182,8 @@ msgid ""
 "specific frequency indicates correlated oscillation — e.g. a common seismic "
 "mode or an optical cavity resonance seen across multiple positions."
 msgstr ""
+"`coherence_map()` "
+"は、各空間位置と基準位置との間のコヒーレンスを周波数の関数として計算します。特定の周波数で高いコヒーレンスが見られる場合は相関した振動を示します。例えば共通の地震モードや、複数位置で観測される光共振器の共鳴です。"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:140002
 #: ecc699436a37466681fd17960cc992bb
@@ -186,6 +197,8 @@ msgid ""
 "`VectorField` stores multiple `ScalarField` components.  Here we compute the"
 " beam intensity gradient — useful for wavefront sensing."
 msgstr ""
+"磁場や速度のようなベクトル的性質を持つ物理場には、`VectorField` が複数の `ScalarField` "
+"成分を保持します。ここではビーム強度の勾配を計算します。これは波面センシングに有用です。"
 
 #: ../../how-to/coupling/advanced_field_analysis.ipynb:160002
 #: cd38f27b6f71421bbac8f01477f24751

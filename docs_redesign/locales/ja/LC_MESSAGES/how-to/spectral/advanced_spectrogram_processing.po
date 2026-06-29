@@ -66,7 +66,7 @@ msgstr "グリッチ・トレンド・持続的ラインの除去"
 msgid ""
 "**Prerequisites:** [Spectrogram "
 "Basics](../../tutorials/intro_spectrogram.ipynb)"
-msgstr ""
+msgstr "**前提:** [スペクトログラムの基本](../../tutorials/intro_spectrogram.ipynb)"
 
 #: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:30002
 #: 0739cd3df98d43d79290f2710c2da025
@@ -124,6 +124,8 @@ msgid ""
 " by the **median PSD** along the time axis.   Result is a dimensionless "
 "**SNR²** map where the stationary background ≈ 1."
 msgstr ""
+"トランジェント探索で最も一般的な正規化です。各時間スライスを、時間軸に沿った **中央値 PSD** で割ります。結果は無次元の **SNR²** "
+"マップとなり、定常背景は ≈ 1 になります。"
 
 #: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:90002
 #: 19608fb43c6e4015a2f14fa4ca37c1c9
@@ -199,13 +201,15 @@ msgid ""
 "flagged as outliers and replaced.  Replacement strategy is controlled by "
 "`fill=` (`'median'`, `'nan'`, `'zero'`, or `'interpolate'`)."
 msgstr ""
+"（周波数ビンごとに）`median + threshold × MAD` を超えるピクセルを外れ値として検出し、置換します。置換方法は "
+"`fill=`（`'median'`、`'nan'`、`'zero'`、`'interpolate'`）で制御します。"
 
 #: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:130010
 #: 1796073847954a00a58a76d0bf7f9924
 msgid ""
 "This removes short-duration **glitches** that appear as bright vertical "
 "streaks."
-msgstr ""
+msgstr "これにより、明るい縦縞として現れる短時間の **グリッチ** を除去します。"
 
 #: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:150002
 #: 5f8078933ac341c19677b138b0e77652
@@ -217,7 +221,7 @@ msgstr "4b. ローリング中央値デトレンド (`method='rolling_median'`)"
 msgid ""
 "Divide each column by a running median along the time axis.   This removes "
 "**slow non-stationary trends** without distorting short-duration features."
-msgstr ""
+msgstr "各列を時間軸方向の移動中央値で割ります。これにより、短時間の特徴を歪めることなく **ゆっくりとした非定常トレンド** を除去します。"
 
 #: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:170002
 #: 36e19580c9ac45a4a80ef8a817fc6ab4
@@ -231,6 +235,8 @@ msgid ""
 "`amplitude_threshold × global_median` for more than `persistence_threshold` "
 "fraction of time bins.   Detected bins are replaced with their time-median."
 msgstr ""
+"ある周波数ビンが、時間ビンの `persistence_threshold` を超える割合で `amplitude_threshold × "
+"global_median` を上回る場合、定常的なラインとして検出されます。検出されたビンは時間中央値で置換されます。"
 
 #: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:190002
 #: 44173b08c9c94d6a9cb0124d52a38f81
@@ -242,7 +248,7 @@ msgstr "4d. 完全クリーニングパイプライン (`method='combined'`)"
 msgid ""
 "Runs threshold → rolling-median → line-removal in sequence.   Recommended as"
 " a one-stop solution for commissioning-style data quality checks."
-msgstr ""
+msgstr "しきい値処理 → 移動中央値 → ライン除去 を順に実行します。コミッショニング的なデータ品質チェックのワンストップ手段として推奨します。"
 
 #: ../../how-to/spectral/advanced_spectrogram_processing.ipynb:210002
 #: ea30f2f523354ada949c41562dabd3d5

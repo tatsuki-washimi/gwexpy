@@ -34,32 +34,35 @@ msgid ""
 "traditional Fourier or wavelet transforms. The sample code in this tutorial "
 "uses `TimeSeries.hht()`."
 msgstr ""
+"このチュートリアルでは、**gwexpy** を用いた **ヒルベルト・ファン変換 (HHT)** 解析の手順を解説します。HHT "
+"は非線形・非定常な信号の解析に適しており、従来のフーリエ変換やウェーブレット変換では捉えられない局所的な周波数変動（瞬時周波数）を抽出する強力な手法です。このチュートリアルのサンプルコードは"
+" `TimeSeries.hht()` を使用します。"
 
 #: ../../how-to/spectral/advanced_hht.ipynb:10008
 #: d8fd70fd305746ab835099a36a40e6ef
 msgid "HHT consists of two main steps:"
-msgstr ""
+msgstr "HHT は主に 2 つのステップから構成されます："
 
 #: ../../how-to/spectral/advanced_hht.ipynb:10009
 #: 8af9f672b5124879ac2a27b17f71668f
 msgid ""
 "**Empirical Mode Decomposition (EMD)**: Decomposes the signal into Intrinsic"
 " Mode Functions (IMFs)."
-msgstr ""
+msgstr "**経験的モード分解 (EMD)**: 信号を固有モード関数 (IMF) に分解します。"
 
 #: ../../how-to/spectral/advanced_hht.ipynb:10010
 #: a71c63ac68694f6e93786cfd9efffeaa
 msgid ""
 "**Hilbert Spectral Analysis**: Applies the Hilbert transform to each IMF to "
 "calculate instantaneous amplitude and instantaneous frequency."
-msgstr ""
+msgstr "**ヒルベルトスペクトル解析**: 各 IMF にヒルベルト変換を適用し、瞬時振幅と瞬時周波数を計算します。"
 
 #: ../../how-to/spectral/advanced_hht.ipynb:10012
 #: 60c5cd644f864e418f8a746eaa18fd11
 msgid ""
 "**Note**: To use this feature, the `PyEMD` (EMD-signal) package must be "
 "installed."
-msgstr ""
+msgstr "**注意**: この機能を使うには、`PyEMD` (EMD-signal) パッケージのインストールが必要です。"
 
 #: ../../how-to/spectral/advanced_hht.ipynb:30002
 #: 00088fdbbfc8405096f35fa64acbaf75
@@ -211,6 +214,8 @@ msgid ""
 "count, it is more likely a decomposition artefact than a robust signal "
 "feature."
 msgstr ""
+"**よくある誤り**: 鋭い HHT のリッジをすべて物理的なモードと解釈してしまうこと。パディング・分解手法・IMF "
+"数を変えるとリッジが分裂する場合、それは頑健な信号特徴というより分解由来のアーティファクトである可能性が高いです。"
 
 #: ../../how-to/spectral/advanced_hht.ipynb:80002
 #: 6ab223192559467ba0343233e9f52e35
@@ -240,6 +245,8 @@ msgid ""
 "oscillation modes of the proto-neutron star (PNS) and estimate PNS physical "
 "quantities (mass-to-radius ratio $M/R^2$) from the frequency evolution."
 msgstr ""
+"**Sasaoka et al. (2024)** では、CCSN からの重力波解析において、EEMD（または CEEMD）を用いることで原始中性子星 "
+"(PNS) の振動モードを正確に抽出し、その周波数進化から PNS の物理量（質量・半径比 $M/R^2$）を推定できることが示されました。"
 
 #: ../../how-to/spectral/advanced_hht.ipynb:80010
 #: 291cb0a0ef154280aa522fa2eeddccef
@@ -257,6 +264,9 @@ msgid ""
 "to a plausible time/frequency region first instead of hoping EEMD will "
 "separate everything automatically."
 msgstr ""
+"**注意すべき失敗モード**: `eemd_trials` を増やすと IMF "
+"は安定しやすくなりますが、不適切な帯域選択や、広帯域トランジェントが支配的な信号を救えるわけではありません。対象の物理が狭帯域でドリフトするモードなら、EEMD"
+" がすべてを自動分離してくれることを期待せず、まず妥当な時間・周波数領域に切り出してください。"
 
 #: ../../how-to/spectral/advanced_hht.ipynb:100002
 #: ed181e89b54c4a00aa90b01e4abbd847

@@ -169,7 +169,7 @@ msgstr ""
 #: ../../how-to/coupling/advanced_bruco.ipynb:10032
 #: 44795da0f8904d1db57b27ec3e375f72
 msgid "Refer to this for design details and CLI behavior."
-msgstr ""
+msgstr "設計の詳細や CLI の挙動はこちらを参照してください。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10034
 #: d18f41f272064c758b051d29c08a2a9a
@@ -178,13 +178,15 @@ msgid ""
 "module **as a Python library** by showing interactive analysis, flexible "
 "data manipulation, and advanced hypothesis testing."
 msgstr ""
+"このノートブックでは、対話的な解析・柔軟なデータ操作・高度な仮説検証を示すことで、`gwexpy` の `Bruco` モジュールを **Python "
+"ライブラリとして** 使う利点を紹介します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10036
 #: e458202326f24ca5a6cba0d67ed677e1
 msgid ""
 "We do not use real data, but instead utilize pseudo-data generated with "
 "`gwpy` / `numpy`."
-msgstr ""
+msgstr "実データは使わず、`gwpy` / `numpy` で生成した擬似データを利用します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10037
 #: 4aec629ec1e347d38b00af4f9b042127
@@ -192,7 +194,7 @@ msgid ""
 "We demonstrate rapid hypothesis testing for \"nonlinear coupling\" and "
 "\"modulation\" scenarios that are difficult with the CLI, using the Python "
 "API."
-msgstr ""
+msgstr "CLI では難しい「非線形カップリング」や「変調」のシナリオに対する迅速な仮説検証を、Python API を用いて示します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10039
 #: 2dbd24d52a4142788ca6f70c03c00ea7
@@ -203,6 +205,9 @@ msgid ""
 "common drivers, and confirm that the feature survives reasonable changes in "
 "windowing, preprocessing, and segment choice."
 msgstr ""
+"**よくある誤り**: "
+"大きなコヒーレンスピークを因果的カップリングの証拠と解釈すること。コヒーレンスはランキングのための道具であり、証明ではありません。あるチャンネルに基づいて対処する前に、そのウィットネスが物理的に"
+" DARM の上流にあることを確認し、共通の駆動源がないか調べ、窓関数・前処理・セグメント選択を妥当な範囲で変えても特徴が残ることを確かめてください。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:20002
 #: 3ecd4c988ee14c788e8e6282e39eb105
@@ -272,28 +277,30 @@ msgid ""
 "irrelevant low-frequency power and the resulting coherence becomes hard to "
 "interpret."
 msgstr ""
+"**失敗しやすいパターン**: "
+"ハイパス／バンドパスによる分離を省いて広帯域チャンネルを直接掛け合わせると、その積はしばしば無関係な低周波パワーに支配され、得られるコヒーレンスの解釈が難しくなります。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:100011
 #: cb8ec48ce4204f768601d43179ea4cf5
 msgid "**Checklist before trusting a virtual witness**:"
-msgstr ""
+msgstr "**仮想ウィットネスを信頼する前のチェックリスト**:"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:100012
 #: a914a501fca94fe2a15bdfe31fd5170e
 msgid "the witness construction matches a plausible coupling mechanism,"
-msgstr ""
+msgstr "ウィットネスの構成が妥当なカップリング機構に対応していること、"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:100013
 #: f68cc8db88964dd695a6be63e852b75c
 msgid "the modulation band is narrow enough to be physically meaningful,"
-msgstr ""
+msgstr "変調帯域が物理的に意味を持つ程度に十分狭いこと、"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:100014
 #: 26000acc115d4a3eac8da76c1814eaca
 msgid ""
 "the recovered coherence appears where the sidebands or line wandering "
 "actually live, not everywhere."
-msgstr ""
+msgstr "回復したコヒーレンスが、至る所ではなく、実際にサイドバンドやラインの揺らぎが存在する場所に現れること。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:140002
 #: a290db97499a467b8d3eb37c94379227
@@ -320,3 +327,5 @@ msgid ""
 "intermittently coupled, the predicted improvement can be too optimistic. "
 "Treat this section as a screening step before a full subtraction study."
 msgstr ""
+"**よくある誤り**: "
+"射影された残差を、保証された差し引き結果として読むこと。射影はウィットネスが代表性を持ち良条件であることを前提とします。ウィットネスが汚染されている、遅延がある、または断続的にしか結合していない場合、予測される改善は楽観的すぎることがあります。この節は、完全な差し引き検討の前のスクリーニングステップとして扱ってください。"

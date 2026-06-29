@@ -71,6 +71,9 @@ msgid ""
 "`UserWarning`. To suppress this, ensure both series share the same sample "
 "rate before calling correlation methods."
 msgstr ""
+"**注 — 自動リサンプリング**: 2 つの時系列のサンプルレートが異なる場合、gwexpy "
+"は一方をもう一方に合わせて自動的にリサンプリングし、`UserWarning` "
+"を出力します。これを抑制するには、相関メソッドを呼ぶ前に両系列のサンプルレートを揃えてください。"
 
 #: ../../how-to/fitting/advanced_correlation.ipynb:90002
 #: 1892d56bd63f46b085c76a4c0ce7b730

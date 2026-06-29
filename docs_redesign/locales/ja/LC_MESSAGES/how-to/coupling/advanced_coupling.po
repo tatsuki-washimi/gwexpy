@@ -77,6 +77,10 @@ msgid ""
 "Users](../../explanation/gwexpy_for_gwpy_users.md) and [GWpy Difference API "
 "Index](../../reference/gwpy_added_api.md) for migration guidance."
 msgstr ""
+"**レガシー移行メモ:** PSD を手動で計算し、それらを割り、scipy "
+"で独自のしきい値を適用していたレガシーコードは、このワークフローがすべて置き換えます。移行の案内は [GWpy "
+"ユーザー向け移行ガイド](../../explanation/gwexpy_for_gwpy_users.md) と [GWpy 差分 API "
+"一覧](../../reference/gwpy_added_api.md) を参照してください。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:20002
 #: 2b8e190842c142a49afb441bcc029201
@@ -86,6 +90,9 @@ msgid ""
 "distribution becomes less accurate. A `UserWarning` will be raised in this "
 "case. Consider using `PercentileThreshold` for short data segments."
 msgstr ""
+"**注 — SigmaThreshold の統計的妥当性**: 平均化セグメント数 `n_avg` が 10 未満の場合、χ²(2K) "
+"分布のガウス近似の精度が低下します。この場合は `UserWarning` が出力されます。短いデータセグメントでは "
+"`PercentileThreshold` の使用を検討してください。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:40002
 #: 1124d249c1a24df993383bad1f5f1bbd
@@ -242,13 +249,14 @@ msgid ""
 "measurable excess, gwexpy computes an **upper limit** on the coupling "
 "function."
 msgstr ""
+"ウィットネスは励起されているがターゲットに測定可能な過剰が見られない周波数では、gwexpy はカップリング関数の **上限値** を計算します。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:160006
 #: fc71ce675b14410a8c95c2e84c6fc41b
 msgid ""
 "This is useful for setting constraints even when the coupling is below the "
 "noise floor."
-msgstr ""
+msgstr "これは、カップリングがノイズフロア以下の場合でも制約を与えるのに有用です。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:180002
 #: 680888a6e7f1458abaf5d38948e19852
@@ -268,4 +276,4 @@ msgstr "[Bruco ノイズハンティング](advanced_bruco.ipynb)"
 #: ../../how-to/coupling/advanced_coupling.ipynb:180026
 #: 2f6185706afe4ba68b44e82b290d9b0b
 msgid "[Advanced Correlation Analysis](../fitting/advanced_correlation.ipynb)"
-msgstr ""
+msgstr "[相関解析の応用](../fitting/advanced_correlation.ipynb)"

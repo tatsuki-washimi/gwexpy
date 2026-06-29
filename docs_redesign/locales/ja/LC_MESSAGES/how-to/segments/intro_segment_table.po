@@ -22,7 +22,7 @@ msgstr ""
 #: ../../how-to/segments/intro_segment_table.ipynb:10002
 #: 02fdacc174114c08818c0be1aaaf6cbb
 msgid "SegmentTable: Basics"
-msgstr ""
+msgstr "SegmentTable: 基本"
 
 #: ../../how-to/segments/intro_segment_table.ipynb:10005
 #: a1cd49f15e3a4a5880d2778d3a237283
@@ -31,11 +31,13 @@ msgid ""
 "integration, and advanced operations, see the [Table / Segment User "
 "Guide](intro_table.ipynb)."
 msgstr ""
+"可視化、GravitySpy 連携、高度な操作を含むより包括的なガイドは、[Table / Segment "
+"ユーザーガイド](intro_table.ipynb) を参照してください。"
 
 #: ../../how-to/segments/intro_segment_table.ipynb:10008
 #: 9a28372b82544b409ac26d2de4e6077e
 msgid "GWpy base classes and gwexpy extensions"
-msgstr ""
+msgstr "GWpy の基本クラスと gwexpy の拡張"
 
 #: ../../how-to/segments/intro_segment_table.ipynb:10010
 #: 2909ba1e65db48f18664ed372809366c
@@ -44,6 +46,8 @@ msgid ""
 " `gwpy.segments.Segment`, and payload columns can hold GWpy `TimeSeries` or "
 "`FrequencySeries` objects directly."
 msgstr ""
+"セグメント解析は GWpy の型を土台にしています。各行の区間は引き続き `gwpy.segments.Segment` で表され、ペイロード列は "
+"GWpy の `TimeSeries` や `FrequencySeries` オブジェクトを直接保持できます。"
 
 #: ../../how-to/segments/intro_segment_table.ipynb:10012
 #: 9062c71d4e5d4a46ad327acdde7917e8
@@ -54,6 +58,10 @@ msgid ""
 " practice, you keep GWpy base classes for the actual data objects while "
 "gwexpy adds the workflow layer for processing many segments together."
 msgstr ""
+"その上で gwexpy は、`gwpy.table.Table` の拡張として `SegmentTable` を追加し、`SegmentCell` "
+"による遅延ペイロード処理や、`apply()`・`map()`・`crop()`・`asd()` "
+"といったテーブル指向のバッチヘルパーを提供します。実際には、データオブジェクト自体には GWpy "
+"の基本クラスをそのまま使い、多数のセグメントをまとめて処理するワークフロー層を gwexpy が追加する、という形になります。"
 
 #: ../../how-to/segments/intro_segment_table.ipynb:30002
 #: d77f6a34dd804f9ba228ac4a9676f11d
