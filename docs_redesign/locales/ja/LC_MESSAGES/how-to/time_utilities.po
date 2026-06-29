@@ -25,10 +25,12 @@ msgid ""
 " from_gps, tconvert, LIGOTimeGPS, vectorized inputs, and timezone edge "
 "cases."
 msgstr ""
+"GWexpy の GPS 時刻ユーティリティガイドです。to_gps、from_gps、tconvert、LIGOTimeGPS "
+"の使い分け、ベクトル入力、タイムゾーンや閏秒の注意点を整理します。"
 
 #: ../../how-to/time_utilities.md:7 49f6e0984ad046aea8e0a0abae23497a
 msgid "GPS Time Utility Functions (`gwexpy.time`)"
-msgstr ""
+msgstr "GPS 時刻ユーティリティ (`gwexpy.time`)"
 
 #: ../../how-to/time_utilities.md:9 5e8070d775984c21806c9611bcf2dacc
 msgid ""
@@ -36,70 +38,80 @@ msgid ""
 "pandas Series, NumPy ndarrays, and Astropy Time objects, in addition to "
 "standard string/datetime scalars."
 msgstr ""
+"GWexpy は GWpy の時刻ユーティリティを拡張し、標準的な文字列・datetime のスカラーに加えて、pandas Series・NumPy "
+"ndarray・Astropy Time オブジェクトに対するベクトル演算をサポートします。"
 
 #: ../../how-to/time_utilities.md:16 517bdc53e2d14279ae92b233c5f35b34
 msgid "Quick Guide: Important Considerations (FAQ)"
-msgstr ""
+msgstr "クイックガイド: 重要な注意事項 (FAQ)"
 
 #: ../../how-to/time_utilities.md:18 1a492ad28c3246c79543977fc6c9b1e2
 msgid ""
 "It is important to understand these fundamental behaviors before performing "
 "conversions."
-msgstr ""
+msgstr "変換を行う前に、以下の基本特性を理解しておくことが重要です。"
 
 #: ../../how-to/time_utilities.md:20 19ba4466bb404ec6b5aa3fcc6afcc6bf
 msgid "Handling Leap Seconds"
-msgstr ""
+msgstr "閏秒 (Leap Seconds) の扱い"
 
 #: ../../how-to/time_utilities.md:21 9221632f0060478f808eb43566cb6b12
 msgid ""
 "**GPS Time**: Continuous seconds starting from 1980-01-06 00:00:00 UTC. It "
 "does not include leap seconds."
-msgstr ""
+msgstr "**GPS 時刻**: 1980年1月6日 00:00:00 UTC を起点とし、閏秒を含まない連続した秒数としてカウントされます。"
 
 #: ../../how-to/time_utilities.md:22 23e53dff79284b68ae8c9ba070516926
 msgid ""
 "**Conversion**: When converting to/from UTC, `astropy.time`'s IERS leap "
 "second tables are automatically applied."
-msgstr ""
+msgstr "**変換**: UTC との変換時には、`astropy.time` が保持する IERS 閏秒テーブルが自動的に適用されます。"
 
 #: ../../how-to/time_utilities.md:23 3cc4f69061ed4e0db5ae8e928e86690d
 msgid ""
 "**Note**: For future dates or very recent leap seconds, you may need to "
 "update `astropy` data or use the latest IERS table."
 msgstr ""
+"**注意**: 未来の時刻や、直近で追加された閏秒を含む変換を行う場合は、`astropy` のデータ更新や最新の IERS "
+"テーブルが必要になる場合があります。"
 
 #: ../../how-to/time_utilities.md:25 12253fa5c8af4393a6f971eabf992190
 msgid "Strings Without Timezones"
-msgstr ""
+msgstr "タイムゾーンのない文字列の扱い"
 
 #: ../../how-to/time_utilities.md:26 6a1ef1743b0142d597dc604d34789ab9
 msgid ""
 "Strings like `\"2015-09-14 09:50:45\"` without a timezone are treated as "
 "**UTC by default** in `to_gps` and `tconvert`."
 msgstr ""
+"`\"2015-09-14 09:50:45\"` のようにタイムゾーンが指定されていない文字列を `to_gps` や `tconvert` "
+"に渡すと、**デフォルトで UTC** として解釈されます。"
 
 #: ../../how-to/time_utilities.md:27 3c02d0d465b643a8a643f2169c0cc691
 msgid ""
 "For reliable local time conversion, always include the timezone name (e.g., "
 "`\"Asia/Tokyo\"`) or provide a timezone-aware `datetime` object."
 msgstr ""
+"ローカル時刻として確実に変換したい場合は、必ずタイムゾーン名（例: `\"Asia/Tokyo\"`）を文字列に含めるか、タイムゾーン付きの "
+"`datetime` オブジェクトを渡してください。"
 
 #: ../../how-to/time_utilities.md:29 46dfe6eb08e749d588446d7a904182f8
 msgid "Common Failure Modes"
-msgstr ""
+msgstr "よくある失敗とエラー条件"
 
 #: ../../how-to/time_utilities.md:30 d8c11722a13b4f2ea42cbd7b4f0af91c
 msgid ""
 "Strings that cannot be parsed as datetimes, such as `to_gps(\"not-a-time\")`"
 " or `tconvert(\"not-a-time\")`, fail with `ValueError`."
 msgstr ""
+"`to_gps(\"not-a-time\")` や `tconvert(\"not-a-time\")` "
+"のように日時として解釈できない文字列は、`ValueError` で失敗します。"
 
 #: ../../how-to/time_utilities.md:31 e39088e8705847e189660dbb3d96bb12
 msgid ""
 "Inputs that cannot be converted to numeric GPS seconds, such as "
 "`from_gps(\"abc\")`, fail with `ValueError`."
-msgstr ""
+msgstr "`from_gps(\"abc\")` のように GPS 秒として数値化できない入力は、`ValueError` で失敗します。"
 
 #: ../../how-to/time_utilities.md:32 5e07f37547cf4d3ab6cfc9e70f01c62d
 msgid ""
@@ -107,12 +119,16 @@ msgid ""
 " raise `TypeError` in the current implementation. Pass the timezone in the "
 "string itself or use a timezone-aware `datetime`."
 msgstr ""
+"`to_gps(..., timezone=\"Asia/Tokyo\")` のような未対応キーワード引数は、現在の実装では受け付けず "
+"`TypeError` になります。タイムゾーンは文字列本体または timezone-aware `datetime` で指定してください。"
 
 #: ../../how-to/time_utilities.md:33 4dc86f5672cc46e79ccff57117d8a9cd
 msgid ""
 "Naive `datetime` inputs are treated as UTC. If you mean a local civil time, "
 "use a timezone-aware `datetime`."
 msgstr ""
+"naive な `datetime` 入力は UTC として扱われます。ローカルの時刻を表したい場合は、timezone-aware "
+"`datetime` を使ってください。"
 
 #: ../../how-to/time_utilities.md:34 3852c3de5848442aadaf526d197b0caf
 msgid ""
@@ -120,14 +136,16 @@ msgid ""
 "guarantee automatic resolution. Prefer explicit UTC offsets or timezone-"
 "aware `datetime` objects for boundary cases."
 msgstr ""
+"夏時間の切替などで曖昧になるローカル時刻について、このページは自動解決を保証しません。境界となる時刻では、明示的な UTC オフセットまたは "
+"timezone-aware `datetime` を推奨します。"
 
 #: ../../how-to/time_utilities.md:36 81167eb403b64806ad91a503a25fd826
 msgid "Function Selection Quick Reference"
-msgstr ""
+msgstr "関数選択早見表"
 
 #: ../../how-to/time_utilities.md:38 c99907c4c2c04382ba18fe46813c4b27
 msgid "Choose the most appropriate function for your goal."
-msgstr ""
+msgstr "目的に応じて最適な関数を選択してください。"
 
 #: ../../how-to/time_utilities.md c0021368e6434a089361708cd792e556
 msgid "Goal"
@@ -314,10 +332,11 @@ msgid ""
 "efficient vectorized operations on lists, arrays, and Series in addition to "
 "individual scalars."
 msgstr ""
+"さまざまな時刻表現を GPS 秒に変換します。単一の値（スカラー）だけでなく、リスト・配列・Series に対しても効率的なベクトル演算を行います。"
 
 #: ../../how-to/time_utilities.md:141 5c6b9a25b8a64c48900b526a48d59ed7
 msgid "Working with Strings and DateTime Objects"
-msgstr ""
+msgstr "文字列・datetime オブジェクトの利用"
 
 #: ../../how-to/time_utilities.md:143 1741c805f35d4eaa815f457cc4c8da1e
 msgid "Purpose: convert a scalar datetime-like value into GPS seconds"
@@ -333,23 +352,24 @@ msgstr ""
 
 #: ../../how-to/time_utilities.md:159 b4ec28822b124f1ba2016ee6f859ec18
 msgid "Choosing the Output Type"
-msgstr ""
+msgstr "出力型の選択"
 
 #: ../../how-to/time_utilities.md:161 a616697c8bae489bb5aac5da8bc7a3d3
 msgid ""
 "By default, scalar calls mirror GWpy and return `LIGOTimeGPS`. Use `dtype` "
 "when you need a specific representation:"
 msgstr ""
+"デフォルトでは GWpy に合わせ、スカラー入力は `LIGOTimeGPS` を返します。特定の表現が必要な場合は `dtype` を指定します："
 
 #: ../../how-to/time_utilities.md:174 b3e0691866254b40b613c7b83e685310
 msgid ""
 "`dtype=\"quantity\"` is useful for direct comparison or arithmetic with "
 "GWpy/GWexpy time axes:"
-msgstr ""
+msgstr "`dtype=\"quantity\"` は、GWpy/GWexpy の時刻軸と直接比較・差分計算したい場合に使えます："
 
 #: ../../how-to/time_utilities.md:183 00f1c247c0e24adaaa10096734cf7b9c
 msgid "Working with pandas (Vectorized)"
-msgstr ""
+msgstr "pandas での利用（ベクトル対応）"
 
 #: ../../how-to/time_utilities.md:186 b7d94ca5f05841d7941bd86b332bb35b
 msgid "Input: a pandas `Series`"
@@ -477,12 +497,14 @@ msgid ""
 "[API Reference](../reference/api/time.rst) — Complete API reference for "
 "`gwexpy.time`"
 msgstr ""
+"[API リファレンス](../reference/api/time.rst) — `gwexpy.time` の完全な API リファレンス"
 
 #: ../../how-to/time_utilities.md:279 fe62db5df309426baf7bf35c09a8a824
 msgid ""
 "[Migration from GWpy](../explanation/gwexpy_for_gwpy_users.md) — Overview of"
 " all GWexpy extensions"
 msgstr ""
+"[GWpy からの移行](../explanation/gwexpy_for_gwpy_users.md) — GWexpy の全拡張機能の概要"
 
 #: ../../how-to/time_utilities.md:280 09a8280e553a46d594920fe5afa3530f
 msgid ""
@@ -490,3 +512,5 @@ msgid ""
 "Conventions](../explanation/prerequisites_and_conventions.md) — Shared "
 "assumptions for GPS time, timezones, and FFT behavior"
 msgstr ""
+"[前提条件と規約](../explanation/prerequisites_and_conventions.md) — GPS "
+"時刻・タイムゾーン・FFT の共通前提"
