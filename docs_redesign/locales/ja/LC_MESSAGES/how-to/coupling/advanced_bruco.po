@@ -49,62 +49,62 @@ msgstr "並列処理によるコヒーレンス計算"
 msgid ""
 "Parallel execution is performed across multiple CPU cores using Python's "
 "`multiprocessing` module."
-msgstr ""
+msgstr "Pythonの `multiprocessing` モジュールを使用して複数のCPUコアで並列実行されます。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10011
 #: f97f3877c35748a5b1a754ab10278b2a
 msgid ""
 "**Task Division**: The entire auxiliary channel list is divided according to"
 " the number of CPUs and assigned to each process."
-msgstr ""
+msgstr "**タスク分割**: 全補助チャンネルリストをCPU数に応じて分割し、各プロセスに割り当てます。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10012
 #: 1995ef140df8420598967d007786fa64
 msgid "**Data Acquisition and Preprocessing**:"
-msgstr ""
+msgstr "**データ取得と前処理**:"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10013
 #: 70ba5faabf984ab79010264a7a2fc84c
 msgid "Acquire data for each auxiliary channel."
-msgstr ""
+msgstr "各補助チャンネルのデータを取得します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10014
 #: 4c45fb10177c486ea34073ad495cae7b
 msgid "Skip if the data is constant (flat)."
-msgstr ""
+msgstr "データが一定（フラット）の場合はスキップします。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10015
 #: bafe3727865746f08631c850b6a99c96
 msgid ""
 "If the sampling rate is higher than the output request rate (`outfs`), "
 "downsample using the `decimate` function."
-msgstr ""
+msgstr "サンプリングレートが出力要求レート (`outfs`) より高い場合、`decimate` 関数を用いてダウンサンプリングします。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10016
 #: 0ac3aac3f1f0439191d36ce3983dcc83
 msgid "**Coherence Calculation**:"
-msgstr ""
+msgstr "**コヒーレンス算出**:"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10017
 #: 515ddff50efb4a33922baf86fe5e9300
 msgid ""
 "Calculate the FFT and PSD (Power Spectral Density) of the auxiliary channel."
-msgstr ""
+msgstr "補助チャンネルのFFTとPSD（パワースペクトル密度）を計算します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10018
 #: 717b7072381d4f8f9c5d33756c319530
 msgid "Calculate the CSD (Cross Spectral Density) with the target channel."
-msgstr ""
+msgstr "ターゲットチャンネルとのCSD（クロススペクトル密度）を計算します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10019
 #: 6b54da4b24024392ac1c4912fbe13444
 msgid "Calculate the coherence using the following formula:"
-msgstr ""
+msgstr "コヒーレンス  を以下の式で計算します："
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10020
 #: 5b772eaed5014616a574be61b5c63239
 msgid "**Selection of Top N**:"
-msgstr ""
+msgstr "**Top N の選出**:"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10021
 #: efbbd6e687b148b398db58ed8a20f975
@@ -114,11 +114,12 @@ msgid ""
 "the highly correlated top channels instead of keeping results for all "
 "channels."
 msgstr ""
+"すべての周波数ビンについて、計算されたコヒーレンス値が既存の上位リスト（`top`）よりも高い場合、その値を更新します。これにより、全チャンネルの結果を保持するのではなく、相関の高い上位チャンネルのみを効率的に記録します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10022
 #: a1caec18147641718a4ffd45eb7ad8e5
 msgid "**Result Aggregation and Output**:"
-msgstr ""
+msgstr "**結果の集約と出力**:"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10023
 #: 6816c0acc1374be1a0a09d7aa9fb6ae2
@@ -126,6 +127,7 @@ msgid ""
 "Combine and sort `cohtab` (coherence values) and `idxtab` (channel IDs) "
 "returned from each process to create the final top list."
 msgstr ""
+"各プロセスから返された `cohtab`（コヒーレンス値）と `idxtab`（チャンネルID）を結合・ソートし、最終的な上位リストを作成します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10024
 #: 3fe222e6b8084caead44f0568df7b732
@@ -134,13 +136,15 @@ msgid ""
 "includes tables of top correlated channels for each frequency (with heatmap-"
 "style coloring) and links to plot images."
 msgstr ""
+"**HTMLレポート作成**: `markup.py` を使用して `index.html` "
+"を生成します。これには、周波数ごとの上位相関チャンネルの表（ヒートマップ形式の着色あり）や、プロット画像へのリンクが含まれます。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10025
 #: b70b9ef686fd4302ba3cc98de0b081f6
 msgid ""
 "**Plot Generation**: Use `matplotlib` to generate coherence and spectrum "
 "graphs (PNG or PDF)."
-msgstr ""
+msgstr "**プロット作成**: `matplotlib` を使用して、コヒーレンスとスペクトルのグラフ（PNGまたはPDF）を生成します。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10027
 #: 120cfcb1e0204e69b3bccf926d38ac7e
@@ -149,11 +153,13 @@ msgid ""
 "**parallel processing**, and a **memory-efficient Top-N recording method** "
 "to efficiently process large amounts of channel data."
 msgstr ""
+"この実装は、大量のチャンネルデータを効率的に処理するために、**FFTの事前計算**、**並列処理**、および**メモリ効率の良いTop-"
+"N記録方式**を採用している点が特徴です。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10029
 #: 34148218b5634f09a2628f334945ba6a
 msgid "The original Bruco implementation is available at:"
-msgstr ""
+msgstr "オリジナルのBruco実装は以下で公開されています。設計詳細やCLIの挙動を確認したい場合はこちらを参照してください。"
 
 #: ../../how-to/coupling/advanced_bruco.ipynb:10030
 #: d9bb600c807b47808e1210e41a9fab2e

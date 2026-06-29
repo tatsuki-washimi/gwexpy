@@ -25,10 +25,11 @@ msgid ""
 "handling, safe log plotting, NaN and Inf failure modes, and when users "
 "should tune parameters."
 msgstr ""
+"GWexpy の数値安定性ガイドです。whiten の eps 処理、安全な対数表示、NaN / Inf の失敗モード、調整が必要な場面を整理します。"
 
 #: ../../explanation/numerical_stability.md:7 27a762670fed441cbfb0a2d47885cedc
 msgid "Numerical Stability and Precision"
-msgstr ""
+msgstr "数値的安定性と精度"
 
 #: ../../explanation/numerical_stability.md:10
 #: b64f471c2697462e97d122957019c68f
@@ -36,13 +37,15 @@ msgid ""
 "**Who should read this page?** Standard analysis in `gwexpy` works out-of-"
 "the-box with high stability. Refer to this detailed guide only if:"
 msgstr ""
+"**このページを読むべき方**: 通常の解析では `gwexpy` "
+"のデフォルト設定で十分な安定性が確保されています。以下の状況に該当する場合のみ、この詳細ガイドを参照してください："
 
 #: ../../explanation/numerical_stability.md:12
 #: f35fc25d44e947b3913d8037bcf24406
 msgid ""
 "You see \"holes\" or \"unusual colors\" in your plots caused by `NaN` or "
 "`Inf`."
-msgstr ""
+msgstr "プロット結果に `NaN` や `Inf` による「穴」や「異常な色」が現れた場合"
 
 #: ../../explanation/numerical_stability.md:13
 #: d866497cc0ae4dbe837ffee25e3f24e1
@@ -50,14 +53,14 @@ msgstr ""
 msgid ""
 "You are working with extremely small signals (below $10^{-23}$) or huge "
 "signals (above 1) simultaneously."
-msgstr ""
+msgstr "非常に微小な信号（$10^{-23}$以下）や、逆に 1 を超える巨大な信号を同時に扱う場合"
 
 #: ../../explanation/numerical_stability.md:14
 #: 0ac9d9dcfbf24981aa69a7847b459589
 msgid ""
 "You want to deeply understand the numerical behavior of algorithms and tune "
 "parameters like `eps` or `tol`."
-msgstr ""
+msgstr "解析アルゴリズムの数値的な挙動を深く理解し、詳細パラメータ（`eps`, `tol`）を調整したい場合"
 
 #: ../../explanation/numerical_stability.md:17
 #: 0ca0feb90f2d4484bb0bdad73ca9a843
@@ -65,42 +68,43 @@ msgid ""
 "`gwexpy` is designed to handle data with an extremely wide dynamic range "
 "without numerical breakdown."
 msgstr ""
+"`gwexpy` は、重力波データ解析で頻繁に扱われる極めて広いダイナミックレンジを持つデータを、数値的な破綻なく処理できるように設計されています。"
 
 #: ../../explanation/numerical_stability.md:20
 #: aa9ec29c3a1040ceae0cfe73a48ac32e
 msgid "TL;DR"
-msgstr ""
+msgstr "まず結論だけ知りたい方へ"
 
 #: ../../explanation/numerical_stability.md:22
 #: 3dc0418b5174423e8a12a6217d79667c
 msgid "For normal analysis, start by trusting the default `gwexpy` settings."
-msgstr ""
+msgstr "通常の解析では、まず `gwexpy` のデフォルト設定をそのまま使ってください。"
 
 #: ../../explanation/numerical_stability.md:23
 #: 5516fda47c25406fbd6fb36e18cdb3a3
 msgid ""
 "Do not add manual offsets such as `+ 1e-20` before plotting unless you have "
 "a concrete reason."
-msgstr ""
+msgstr "プロット前に `+ 1e-20` のような手動オフセットを足す必要はありません。"
 
 #: ../../explanation/numerical_stability.md:24
 #: f79a9772307849faade0c5d0f968acaa
 msgid ""
 "Tune parameters only when you actually observe `NaN` / `Inf`, work with "
 "extreme amplitudes, or need algorithm-level validation."
-msgstr ""
+msgstr "調整が必要なのは、`NaN` / `Inf` が見える、極端に小さい信号を扱う、アルゴリズム検証をしたい場合に限られます。"
 
 #: ../../explanation/numerical_stability.md:27
 #: 2e34e93d589c4cdd9886cb5d30e8b19c
 msgid "Impact of Stabilization (Before & After)"
-msgstr ""
+msgstr "可視化における安定化の効果 (Before & After)"
 
 #: ../../explanation/numerical_stability.md:29
 #: 27342a4fd1bb41dd9454c954ef2954f8
 msgid ""
 "A comparison between standard methods (simple `log10` or fixed `eps`) and "
 "`gwexpy`'s robust numerical stabilization algorithms."
-msgstr ""
+msgstr "標準的な手法（単純な `log10` や 固定 `eps`）と、`gwexpy` の数値安定化アルゴリズムを適用した結果の比較です。"
 
 #: ../../explanation/numerical_stability.md:31
 #: 81e17a01c9d64d2d8ddaed86d1fac392
@@ -169,7 +173,7 @@ msgstr "演算前後のバリデーションにより属性を保護"
 #: ../../explanation/numerical_stability.md:42
 #: 6d2abef2b732431ea81812a784bbea9a
 msgid "Core Stabilization Methods and APIs"
-msgstr ""
+msgstr "主な安定化手法と API"
 
 #: ../../explanation/numerical_stability.md:9 3f0b2ed9497848d8a5ece05bbfe01f61
 msgid "Method"
@@ -254,12 +258,12 @@ msgstr "データの分散に基づき `tol` を自動計算"
 #: ../../explanation/numerical_stability.md:54
 #: 578fd3f2f9e746478b75fe997de43589
 msgid "Detailed Explanations and Examples"
-msgstr ""
+msgstr "各機能の解説とコード例"
 
 #: ../../explanation/numerical_stability.md:56
 #: 9203be3a9f144014ad54d0a055337b3d
 msgid "1. Adaptive Whitening"
-msgstr ""
+msgstr "1. 適応的ホワイトニング"
 
 #: ../../explanation/numerical_stability.md:58
 #: e07c5e0b1efb4ce8990f97ccf018ec87
@@ -268,6 +272,8 @@ msgid ""
 "`TimeSeries` containing very small amplitudes. **Output:** A whitened series"
 " with automatic scaling."
 msgstr ""
+"**目的:** 固定 `eps` による信号消失を避ける。 **入力:** 極小信号を含む `TimeSeries`。 **出力:** "
+"自動スケーリングされたホワイトニング結果。"
 
 #: ../../explanation/numerical_stability.md:62
 #: 6e001a95b9824addbd72e1d2d2a5b1e2
@@ -276,16 +282,17 @@ msgid ""
 "prevent division by zero. If this value is too large, micro-signals are "
 "lost."
 msgstr ""
+"標準的なホワイトニングは、ゼロ除算を防ぐために固定の正規化パラメータ（`eps`）を使用しますが、これが大きすぎると微小な信号が埋もれます。"
 
 #: ../../explanation/numerical_stability.md:64
 #: f3739cdfe04644ba8da6140c81a3289c
 msgid "❌ Bad Example: Fixed eps causing signal loss"
-msgstr ""
+msgstr "❌ 悪い例: 固定 eps による信号消失"
 
 #: ../../explanation/numerical_stability.md:70
 #: 509b0426f4264759a5f42f17c8979f82
 msgid "✅ Good Example: GWexpy's `eps=\"auto\"`"
-msgstr ""
+msgstr "✅ 良い例: GWexpy の `eps=\"auto\"`"
 
 #: ../../explanation/numerical_stability.md:71
 #: 3501e0edac5f4345a96ca1ae897ed0c1
@@ -293,11 +300,12 @@ msgid ""
 "`gwexpy` dynamically scales `eps` relative to the data range and uses a "
 "`SAFE_FLOOR` (1e-50) for singularities."
 msgstr ""
+"`gwexpy` はデータのスケールに合わせて `eps` を相対的に調整し、かつ `SAFE_FLOOR` (1e-50) で特異点を防ぎます。"
 
 #: ../../explanation/numerical_stability.md:81
 #: baab5dee76e04e2d865a800e6fe059c2
 msgid "2. Safe Logarithmic Scaling (Safe Log)"
-msgstr ""
+msgstr "2. 安全な対数スケーリング (Safe Log)"
 
 #: ../../explanation/numerical_stability.md:83
 #: b18e5cf92eca4425b1be53f4fb95dd71
@@ -306,34 +314,36 @@ msgid ""
 "**Input:** ASD/PSD-like data with zeros or very quiet regions. **Output:** A"
 " stable visualization with a dynamic floor."
 msgstr ""
+"**目的:** ゼロが存在する場合の `-inf` 値と描画破綻を防ぐ。 **入力:** ゼロや静穏区間を含む ASD/PSD 系データ。 "
+"**出力:** 動的フロア付きの安定した可視化。"
 
 #: ../../explanation/numerical_stability.md:87
 #: 2ddd3e48175c48c88f669d5f80137c38
 msgid ""
 "Prevents `-inf` values when visualizing spectrograms or PSDs containing "
 "zeros or quiet regions."
-msgstr ""
+msgstr "スペクトログラムや、ゼロ・静穏区間を含む PSD を可視化する際の `-inf` の発生を防ぎます。"
 
 #: ../../explanation/numerical_stability.md:89
 #: 8f7f7cb84c4c4ab4bda0127bfb9dbc10
 msgid "❌ Bad Example: Numerical errors via manual conversion"
-msgstr ""
+msgstr "❌ 悪い例: 手動変換による数値エラー"
 
 #: ../../explanation/numerical_stability.md:94
 #: 7240c76021764fc8afab35d2e2155313
 msgid "✅ Good Example: Automatic dynamic floor"
-msgstr ""
+msgstr "✅ 良い例: 自動的な動的フロア適用"
 
 #: ../../explanation/numerical_stability.md:95
 #: a704eedf4af84ab49efb295933761f5d
 msgid ""
 "`gwexpy` calculates a safe floor based on the maximum value in the data."
-msgstr ""
+msgstr "`gwexpy` では、データの最大値から逆算した安全なフロアを自動適用します。"
 
 #: ../../explanation/numerical_stability.md:105
 #: 4a2945c342104600b4dabd42944ab720
 msgid "Recommendations for Users"
-msgstr ""
+msgstr "ユーザーへの推奨事項"
 
 #: ../../explanation/numerical_stability.md:107
 #: 698b24cc3f0543e8b1dfff51316b123d
@@ -341,6 +351,7 @@ msgid ""
 "**Avoid Manual Offsets**: Do not add arbitrary small values like `data + "
 "1e-20` before plotting. `gwexpy` handles this internally."
 msgstr ""
+"**手動オフセットの回避**: プロットの前に `data + 1e-20` のような恣意的な値を足す必要はありません。内部で適切に処理されます。"
 
 #: ../../explanation/numerical_stability.md:108
 #: d60b87ea15cf4100b7b924f26ca1b8af
@@ -348,13 +359,14 @@ msgid ""
 "**Trust the Defaults**: Default parameters for `whiten()` and `ica_fit()` "
 "are tuned for numerical safety."
 msgstr ""
+"**デフォルトを信頼する**: `whiten()` や `ica_fit()` のデフォルト値は、数値的な安全性を最優先に調整されています。"
 
 #: ../../explanation/numerical_stability.md:109
 #: 2bdde0ea00cd429386235df3ac5f2bfe
 msgid ""
 "**Check Warnings**: `gwexpy` issues informative warnings with suggested "
 "fixes for truly unstable operations."
-msgstr ""
+msgstr "**警告を確認する**: 真に不安定な操作（全区間ゼロのデータのホワイトニング等）に対しては、解決策を含む警告が出力されます。"
 
 #: ../../explanation/numerical_stability.md:111
 #: 1708ca51207f4e80a1ae4be3450cc725
@@ -364,7 +376,7 @@ msgstr "次に読む"
 #: ../../explanation/numerical_stability.md:113
 #: dd3b26ebb2d3486c88ef34c5598f2f88
 msgid "[Signal Processing API Reference](../reference/api/signal.rst)"
-msgstr ""
+msgstr "[信号処理 API リファレンス](../reference/api/signal.rst)"
 
 #: ../../explanation/numerical_stability.md:114
 #: d701ba9c3b9b411dbe0dc1f4bbd46271
@@ -376,7 +388,7 @@ msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
 msgid ""
 "[Glossary](../reference/index.md) — Definitions for `NaN/Inf propagation` "
 "and more"
-msgstr ""
+msgstr "[用語集](../reference/index.md) — `NaN/Inf propagation` 等の用語定義"
 
 #: ../../explanation/numerical_stability.md:116
 #: b2f2dc37a9e44e0aa11ac882ec32a2dc
@@ -384,3 +396,4 @@ msgid ""
 "[Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared "
 "FFT and numerical assumptions across the docs"
 msgstr ""
+"[前提条件と規約](prerequisites_and_conventions.md) — ドキュメント全体で共有する FFT・数値計算の前提"

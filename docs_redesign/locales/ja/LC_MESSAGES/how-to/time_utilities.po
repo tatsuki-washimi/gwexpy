@@ -221,88 +221,88 @@ msgstr "`LIGOTimeGPS` (秒+ナノ秒保持)"
 
 #: ../../how-to/time_utilities.md:49 b1df7968670c4505b713a5e0a92133a5
 msgid "Basic Examples"
-msgstr ""
+msgstr "基本的な使用例 (Examples)"
 
 #: ../../how-to/time_utilities.md:51 14ea82dad5754872aa4f1e0a33e517cd
 msgid "1. Simple Conversion"
-msgstr ""
+msgstr "1. 単一時刻の相互変換"
 
 #: ../../how-to/time_utilities.md:53 5d4f77e0b66a4402943710404eced9e2
 msgid ""
 "Purpose: verify round-trip conversion between a datetime string and GPS "
 "seconds"
-msgstr ""
+msgstr "目的: 1 つの日時文字列と GPS 秒の相互変換を確認する"
 
 #: ../../how-to/time_utilities.md:54 b62dd86a97af4d6d876dc5bef0d3be0b
 msgid "Input: one UTC string and one GPS scalar"
-msgstr ""
+msgstr "入力: UTC 文字列と GPS 秒スカラー"
 
 #: ../../how-to/time_utilities.md:55 c4169159e3fa4c2590fc80c101c4edea
 msgid "Output: `LIGOTimeGPS`, `datetime`, and `tconvert` return values"
-msgstr ""
+msgstr "出力: `LIGOTimeGPS` / `datetime` / `tconvert` の返り値"
 
 #: ../../how-to/time_utilities.md:73 e2f2481b8aab4548a432c5d73ac42331
 msgid "2. Vectorized Operations"
-msgstr ""
+msgstr "2. ベクトル演算 (Vectorized Operations)"
 
 #: ../../how-to/time_utilities.md:75 152e84c92e214ed286c1a7edd07195a2
 msgid "Passing lists or NumPy arrays will invoke optimized batch conversions."
-msgstr ""
+msgstr "リストや NumPy 配列を渡すと、内部的に最適化されたベクトル変換が行われます。"
 
 #: ../../how-to/time_utilities.md:77 ../../how-to/time_utilities.md:185
 #: a1c2c6d0c09741448015ed16f0924263 e506b7d7f487435eba79cac33bc5ed6f
 msgid "Purpose: convert multiple timestamps in one call"
-msgstr ""
+msgstr "目的: 複数時刻をまとめて変換する"
 
 #: ../../how-to/time_utilities.md:78 7f4a47dd21754e739550eee4b43f201e
 msgid "Input: a list of datetime strings or a NumPy array of GPS seconds"
-msgstr ""
+msgstr "入力: 日時文字列のリストや GPS 秒の NumPy 配列"
 
 #: ../../how-to/time_utilities.md:79 4c5a1db9d47e46ef987009b092d765f3
 msgid "Output: `numpy.ndarray` or `astropy.time.Time` array"
-msgstr ""
+msgstr "出力: `numpy.ndarray` または `astropy.time.Time` 配列"
 
 #: ../../how-to/time_utilities.md:93 5f300a6b7b694d07807bdcb09fb2e897
 msgid "3. Timezones & Leap Seconds"
-msgstr ""
+msgstr "3. タイムゾーンと言号（Leap Second）の注意点"
 
 #: ../../how-to/time_utilities.md:95 7af07f89658b4448839cbd5789d1b91f
 msgid ""
 "Purpose: show the difference between timezone-free input and timezone-aware "
 "input"
-msgstr ""
+msgstr "目的: タイムゾーン未指定入力と timezone-aware `datetime` の違いを確認する"
 
 #: ../../how-to/time_utilities.md:96 92a88672ee2944189ae46342ed6bef8b
 msgid "Input: strings or `datetime` objects"
-msgstr ""
+msgstr "入力: 文字列または `datetime`"
 
 #: ../../how-to/time_utilities.md:97 c4564bc703784023b0d988b4522c2183
 msgid "Output: GPS-second conversions with explicit interpretation"
-msgstr ""
+msgstr "出力: 解釈の違いが分かる GPS 秒変換"
 
 #: ../../how-to/time_utilities.md:117 b4a99c3dbde743e7bef1613a78be9327
 msgid "4. Invalid Input Examples"
-msgstr ""
+msgstr "4. 異常入力の扱い"
 
 #: ../../how-to/time_utilities.md:119 d34f88b32e3d4c30a09565fab51fa38a
 msgid ""
 "Purpose: identify representative `ValueError` and `TypeError` cases before "
 "wiring this into a workflow"
-msgstr ""
+msgstr "目的: どの入力が `ValueError` / `TypeError` になるかを先に把握する"
 
 #: ../../how-to/time_utilities.md:120 9975d6b265b145cc8dd417bf67f70731
 msgid ""
 "Input: unparsable strings, non-numeric GPS input, unsupported keyword "
 "arguments"
-msgstr ""
+msgstr "入力: 不正文字列、非数値 GPS、未対応キーワード引数"
 
 #: ../../how-to/time_utilities.md:121 f9ecd2afa42d4b9da0f5b687a7775d12
 msgid "Output: failure-mode examples"
-msgstr ""
+msgstr "出力: 代表的な例外条件"
 
 #: ../../how-to/time_utilities.md:135 d92595ec4f8844aa94d647318e65bebd
 msgid "`to_gps` — DateTime → GPS Seconds"
-msgstr ""
+msgstr "`to_gps` — 日時 → GPS 秒"
 
 #: ../../how-to/time_utilities.md:137 e57ca9ccae064198a8e3568e963fd40d
 msgid "**Signature**: `to_gps(t, *args, dtype=None, **kwargs)`"
@@ -361,7 +361,7 @@ msgstr ""
 
 #: ../../how-to/time_utilities.md:201 ade3f9cc38954e8d81b8861ec4cb38be
 msgid "`from_gps` — GPS Seconds → DateTime"
-msgstr ""
+msgstr "`from_gps` — GPS 秒 → 日時"
 
 #: ../../how-to/time_utilities.md:203 4efaef141eac4aa3be94101724d06407
 msgid "**Signature**: `from_gps(t, *args, **kwargs)`"
@@ -372,22 +372,24 @@ msgid ""
 "Converts GPS seconds into human-readable formats. Scalar inputs return "
 "`datetime` objects, while array inputs return `astropy.time.Time` objects."
 msgstr ""
+"GPS 秒を人間が読みやすい時刻に変換します。スカラー入力は `datetime`、 配列入力は `astropy.time.Time` "
+"配列を返します。"
 
 #: ../../how-to/time_utilities.md:207 f2a71950ebfb470a8819d1f60d676924
 msgid ""
 "Scalar input such as `int`, `float`, or `LIGOTimeGPS`: returns "
 "`datetime.datetime`"
-msgstr ""
+msgstr "単一の `int` / `float` / `LIGOTimeGPS` を渡した場合: `datetime.datetime`"
 
 #: ../../how-to/time_utilities.md:208 bac06ad166044770a1112c64016d1e3f
 msgid ""
 "Vector input such as a list, NumPy array, or pandas object: returns "
 "`astropy.time.Time`"
-msgstr ""
+msgstr "リスト・NumPy 配列・pandas 系のベクトル入力を渡した場合: `astropy.time.Time`"
 
 #: ../../how-to/time_utilities.md:218 a28e8235593f4d2885b7ff3cc6e864ca
 msgid "`tconvert` — Automatic Conversion"
-msgstr ""
+msgstr "`tconvert` — 自動判定変換"
 
 #: ../../how-to/time_utilities.md:220 009c9d6d83ea4965afc4d24ced6ae544
 msgid "**Signature**: `tconvert(t=None, *args, **kwargs)`"
@@ -398,67 +400,73 @@ msgid ""
 "Automatically detects the input type and dispatches to `to_gps` or "
 "`from_gps`."
 msgstr ""
+"`tconvert` は入力の型を自動判定し、`to_gps` または `from_gps` に振り分けます。 GWpy の `tconvert` "
+"と同様の動作に加え、配列入力に対応しています。"
 
 #: ../../how-to/time_utilities.md:224 f4bb1b7c42f243b79e3d567251f15975
 msgid "Purpose: use one convenience function when the input type may vary"
-msgstr ""
+msgstr "目的: 入力型が混在する場面で 1 つの関数から変換する"
 
 #: ../../how-to/time_utilities.md:225 967414e8ee804931828a66984518e2b0
 msgid "Input: a datetime-like value, a GPS value, or `\"now\"`"
-msgstr ""
+msgstr "入力: 日時表現、GPS 秒、または `\"now\"`"
 
 #: ../../how-to/time_utilities.md:226 60b3c29f98ce437aa2c11150062a9ccb
 msgid ""
 "Output: GPS seconds or a formatted UTC-side representation depending on "
 "input type"
-msgstr ""
+msgstr "出力: 入力に応じた GPS 秒または UTC 側の表現"
 
 #: ../../how-to/time_utilities.md:238 fdcd6df382564c06aee35772270cf204
 msgid "`LIGOTimeGPS` — High-Precision GPS Time"
-msgstr ""
+msgstr "`LIGOTimeGPS` — 高精度 GPS 時刻"
 
 #: ../../how-to/time_utilities.md:240 c4033afc752e42bbaea674c06bca4dad
 msgid ""
 "`LIGOTimeGPS` stores GPS time with nanosecond precision (integer seconds + "
 "integer nanoseconds)."
 msgstr ""
+"`LIGOTimeGPS` は GPS 時刻をナノ秒精度（整数秒 + 整数ナノ秒）で保持します。 LIGO "
+"データアクセスライブラリで標準的に使用される表現形式です。"
 
 #: ../../how-to/time_utilities.md:242 7bcb2c657711449cb664094e4d94e21a
 msgid "Purpose: preserve integer-second and nanosecond precision explicitly"
-msgstr ""
+msgstr "目的: 秒とナノ秒を分けて高精度に保持する"
 
 #: ../../how-to/time_utilities.md:243 521251a51a1042c7b2deb2926b00bcd6
 msgid "Input: integer seconds and optional nanoseconds"
-msgstr ""
+msgstr "入力: 整数秒と、必要に応じて整数ナノ秒"
 
 #: ../../how-to/time_utilities.md:244 cd1f5ec749cb41c4ac66888060258891
 msgid "Output: a `LIGOTimeGPS` object"
-msgstr ""
+msgstr "出力: `LIGOTimeGPS` オブジェクト"
 
 #: ../../how-to/time_utilities.md:255 3e673c413e57420eb507467d6760d92b
 msgid "TimeSeries Integration"
-msgstr ""
+msgstr "TimeSeries との連携"
 
 #: ../../how-to/time_utilities.md:257 904d942e586344fc95d9a4677621181c
 msgid ""
 "Many methods in `gwexpy` accept time specifications in any format supported "
 "by `to_gps()`."
 msgstr ""
+"GWexpy の多くのメソッドは、文字列・datetime・GPS 数値などの時刻指定を直接受け付けます。 内部で "
+"`gwexpy.time.to_gps` が自動的に呼び出されます。"
 
 #: ../../how-to/time_utilities.md:259 8dd8c3574a6e4797a824f7d6d32eb73e
 msgid ""
 "Purpose: show where the time helpers surface in everyday `TimeSeries` "
 "workflows"
-msgstr ""
+msgstr "目的: 日常的な `TimeSeries` 操作の中で時刻ユーティリティがどう使われるかを見る"
 
 #: ../../how-to/time_utilities.md:260 ac9737fdd3fd43e3919e75d636859a66
 msgid ""
 "Input: time strings, datetimes, or GPS-style values accepted by `to_gps()`"
-msgstr ""
+msgstr "入力: `to_gps()` が受け付ける時刻文字列、`datetime`、GPS 数値"
 
 #: ../../how-to/time_utilities.md:261 935a575b32c54958ac740fbb35be2e78
 msgid "Output: fetched or cropped `TimeSeries` objects"
-msgstr ""
+msgstr "出力: 取得済みまたは切り出した `TimeSeries`"
 
 #: ../../how-to/time_utilities.md:276 1844ce5910104245bdfbb95b4e124fa8
 msgid "Next to Read"
