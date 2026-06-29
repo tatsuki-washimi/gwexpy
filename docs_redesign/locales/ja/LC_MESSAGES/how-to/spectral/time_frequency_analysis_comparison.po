@@ -22,12 +22,12 @@ msgstr ""
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10002
 #: 700832242c6c442c96f755ee48287241
 msgid "Time-Frequency Analysis: Interactive Comparison"
-msgstr ""
+msgstr "時間周波数解析：インタラクティブ比較"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10004
 #: 74e276e2a7de4ccbb73bbb4f09301aa3
 msgid "1. Introduction"
-msgstr ""
+msgstr "1\\. はじめに"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10006
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
@@ -43,53 +43,55 @@ msgid ""
 "Q-transform as baselines**, then show scenarios where gwexpy's advanced "
 "methods (Wavelet, HHT, STLT, Cepstrum, DCT) clearly outperform."
 msgstr ""
+"このノートブックでは、重力波データに対して特定の時間周波数解析手法を「いつ」「なぜ」選ぶべきかを示します。**gwpy の STFT と Q "
+"変換をベースライン**とし、gwexpy の高度な手法（ウェーブレット、HHT、STLT、ケプストラム、DCT）が明確に優れる場面を示します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10010
 #: a314bf4e6b674c56857a329060ec424b
 msgid "Key Principle"
-msgstr ""
+msgstr "重要な原則"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10012
 #: b7da2bba43f3433b8916ea6934e5008b
 msgid ""
 "**There is no universal \"best\" method.** Each technique excels in specific"
 " scenarios:"
-msgstr ""
+msgstr "**万能の「最良」手法は存在しません。** 各手法はそれぞれ特定の場面で力を発揮します："
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10014
 #: 42c1ae8d464e4ea4b1523e6791eae27f
 msgid "**STFT/Spectrogram**: General-purpose, well-established"
-msgstr ""
+msgstr "**STFT／スペクトログラム**：汎用的で十分に確立"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10015
 #: 7933db76297440719d0cc3be6c485151
 msgid "**Q-transform**: Transients with scale-dependent resolution"
-msgstr ""
+msgstr "**Q 変換**：スケール依存の分解能を持つ過渡現象"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10016
 #: 6f0b405659ca4504b65e7e54734aee53
 msgid "**Wavelet (CWT)**: Scale-varying chirps and multi-scale features"
-msgstr ""
+msgstr "**ウェーブレット（CWT）**：スケールが変化するチャープと多スケール特徴"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10017
 #: 71baa13c85f747fb9ab76a580e1427a6
 msgid "**HHT**: Instantaneous frequency for non-stationary AM/FM signals"
-msgstr ""
+msgstr "**HHT**：非定常な AM/FM 信号の瞬時周波数"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10018
 #: 324a0d5a08da41b8b1b9f11a2d0d7fd6
 msgid "**STLT**: Damped oscillations with decay rate information"
-msgstr ""
+msgstr "**STLT**：減衰率の情報を伴う減衰振動"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10019
 #: 215509c196ff41c391246bf2138de9f0
 msgid "**Cepstrum**: Echo detection and periodicity in spectrum"
-msgstr ""
+msgstr "**ケプストラム**：エコー検出とスペクトルの周期性"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10020
 #: d7788cf79f594f79812b5e9a51d293ff
 msgid "**DCT**: Signal compression and smooth feature extraction"
-msgstr ""
+msgstr "**DCT**：信号圧縮と滑らかな特徴抽出"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10022
 #: 6695701ef64d4977ab9d409900ca7ef2
@@ -99,32 +101,32 @@ msgstr "学べること"
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10024
 #: e407fcfb442844259721371054099e27
 msgid "For each method, we show:"
-msgstr ""
+msgstr "各手法について、以下を示します："
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10025
 #: 8132336f840f4cf79084b90ac6f07ba5
 msgid "**Signal design**: Why this signal challenges STFT/Q"
-msgstr ""
+msgstr "**信号設計**：なぜこの信号が STFT/Q にとって難しいか"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10026
 #: fb949b0e65db4435a2ef2523dbda166b
 msgid "**Baseline limitations**: What STFT/Q cannot show clearly"
-msgstr ""
+msgstr "**ベースラインの限界**：STFT/Q が明確に示せないもの"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10027
 #: f9646ebd19974f6cb63d351d1a59a3a4
 msgid "**Target method results**: Clear visual advantage"
-msgstr ""
+msgstr "**対象手法の結果**：明確な視覚的優位性"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:10028
 #: cdfac024241047e39e661ff7ccb43d75
 msgid "**Takeaway**: When to use this method"
-msgstr ""
+msgstr "**まとめ**：この手法をいつ使うか"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: a6552eed647b49a0bdd6f8396234d38a
 msgid "Theory background"
-msgstr ""
+msgstr "理論的背景"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20005
 #: c18ab2519e8d46fda1cd81aace173bb6
@@ -133,81 +135,83 @@ msgid ""
 "behind these time-frequency methods, see the "
 "[Explanation](../../explanation/index.md) section."
 msgstr ""
+"これらの時間周波数手法の理論的背景、利用ガイドライン、決定マトリクスについては、[解説](../../explanation/index.md) "
+"セクションを参照してください。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:30002
 #: 991ecc1cad3b4b818dafa1d488711213
 msgid "2. Common Setup"
-msgstr ""
+msgstr "2\\. 共通セットアップ"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50002
 #: 4a8c9c9918be4250b394cf33bd35f45c
 msgid "3. Benchmark Signal: Multi-Component Test"
-msgstr ""
+msgstr "3\\. ベンチマーク信号：多成分テスト"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50004
 #: b347985e4a224d83a285ad4e2d890d52
 msgid "We create a composite signal containing:"
-msgstr ""
+msgstr "以下を含む合成信号を作成します："
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50005
 #: a48d6305675d4cafb54e0ea8882cf61a
 msgid "**Quasi-stationary tones** (50 Hz, 100 Hz)"
-msgstr ""
+msgstr "**準定常トーン**（50 Hz、100 Hz）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50006
 #: ac1d575a07cf4672a81818da468ee2c5
 msgid "**Linear chirp** (20→150 Hz)"
-msgstr ""
+msgstr "**線形チャープ**（20→150 Hz）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50007
 #: 4d298ee453b8489aa4ca1c9793e1c795
 msgid "**Short high-Q burst** (200 Hz, 0.1s duration)"
-msgstr ""
+msgstr "**短い高 Q バースト**（200 Hz、継続時間 0.1 秒）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50008
 #: 78716d219b5d405983bca2f3ac170094
 msgid "**Exponential ringdown** (120 Hz, τ=0.5s)"
-msgstr ""
+msgstr "**指数減衰リングダウン**（120 Hz、τ=0.5 秒）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50009
 #: ef22fd3d48c745b3b943414fcaee1c8f
 msgid "**Weak echo** (50ms delay)"
-msgstr ""
+msgstr "**弱いエコー**（50 ms 遅延）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50010
 #: 14f89ff755cc4bc5b23874acf9b4d71f
 msgid "**Smooth trend** (5 Hz modulation)"
-msgstr ""
+msgstr "**滑らかなトレンド**（5 Hz 変調）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:50012
 #: 0db995b2fe97401fb701a2508bc54db1
 msgid "This benchmark tests all methods' strengths and weaknesses."
-msgstr ""
+msgstr "このベンチマークは全手法の長所と短所を試します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:70002
 #: 82d5b18ae2e24a98bde4c853edeeab2f
 msgid "4. Baseline Analyses"
-msgstr ""
+msgstr "4\\. ベースライン解析"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:70004
 #: 18f94dc65bde4ffba9892a3f94e7c00e
 msgid "4.1 STFT (Spectrogram) - gwpy"
-msgstr ""
+msgstr "4.1 STFT（スペクトログラム） - gwpy"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:90002
 #: 5cd5fd0b348a434fbb9109c06430b75a
 msgid "4.2 Q-transform - gwpy"
-msgstr ""
+msgstr "4.2 Q 変換 - gwpy"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:110002
 #: f7ff00c913bc44b9bc7d8bad336cc813
 msgid "5. \"Winning Story\" Scenarios"
-msgstr ""
+msgstr "5\\. 「勝ちパターン」シナリオ"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:110004
 #: ea30b3265fc34781a5132e195fd0e612
 msgid "5.1 Wavelet (CWT): Scale-Varying Chirps"
-msgstr ""
+msgstr "5.1 ウェーブレット（CWT）：スケールが変化するチャープ"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:110006
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:130004
@@ -218,14 +222,14 @@ msgstr ""
 #: 64457ea7690541dd94fb5bfdd83bd939 6e2139479239461f859340ce7c4ef7f2
 #: d982b615bcaf4eb69c2910b6871eac80
 msgid "Signal Design"
-msgstr ""
+msgstr "信号設計"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:110008
 #: 2d2448f5423540bca4c32219156412dd
 msgid ""
 "Chirps naturally match wavelet scales. We use our benchmark's chirp "
 "component (20→150 Hz over 3s)."
-msgstr ""
+msgstr "チャープはウェーブレットのスケールと自然に一致します。ベンチマークのチャープ成分（3 秒で 20→150 Hz）を使用します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:110010
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:130008
@@ -236,7 +240,7 @@ msgstr ""
 #: 3b2b4133ec054046917c414a6ed6a4ca 50f5f3fc94fc4560af50f1f238bd9d9f
 #: 812c3900d98844998c371216b4890ba0
 msgid "What STFT/Q Cannot Show Clearly"
-msgstr ""
+msgstr "STFT/Q が明確に示せないもの"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:110012
 #: 802a739c019b4d42be8590b166087ba1
@@ -244,38 +248,38 @@ msgid ""
 "STFT has fixed time-frequency resolution (uncertainty principle). "
 "Q-transform improves this but still shows a \"band\" rather than a precise "
 "frequency trajectory."
-msgstr ""
+msgstr "STFT は時間周波数分解能が固定です（不確定性原理）。Q 変換はこれを改善しますが、正確な周波数軌跡ではなく依然として「帯」を示します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:130002
 #: f02752462a824da297d40241fefcc6c8
 msgid "5.2 HHT: Instantaneous Frequency for Non-Stationary Signals"
-msgstr ""
+msgstr "5.2 HHT：非定常信号の瞬時周波数"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:130006
 #: e4d6503f4a1549f0ac3220db7c124d49
 msgid ""
 "AM/FM modulated signal where true instantaneous frequency varies smoothly. "
 "We use a frequency-modulated tone with amplitude modulation."
-msgstr ""
+msgstr "真の瞬時周波数が滑らかに変化する AM/FM 変調信号です。振幅変調を伴う周波数変調トーンを使用します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:130010
 #: fae601fa86fc4dde98c1af73747eb086
 msgid ""
 "STFT/Q show time-frequency \"bands\" with width. HHT extracts instantaneous "
 "frequency as a **single-valued function of time**."
-msgstr ""
+msgstr "STFT/Q は幅を持つ時間周波数の「帯」を示します。HHT は瞬時周波数を**時間の一価関数**として抽出します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:150002
 #: 7f6d3c09a0b347aeb5c49ba0efde567a
 msgid "5.3 STLT: Damped Oscillations with Decay Rate Information"
-msgstr ""
+msgstr "5.3 STLT：減衰率情報を伴う減衰振動"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:150006
 #: 3d431e6d6e5648aab2a635336b5d100a
 msgid ""
 "Multiple exponentially damped sinusoids with different decay rates. "
 "Simulates ringdown modes with varying quality factors."
-msgstr ""
+msgstr "減衰率の異なる複数の指数減衰正弦波です。さまざまな Q 値を持つリングダウンモードを模擬します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:150010
 #: 0e2ac59aeef34ec19ed9ee00de0e5b0c
@@ -284,18 +288,20 @@ msgid ""
 "(damping coefficient) is invisible. STLT decomposes signals into both "
 "frequency ω and decay rate σ."
 msgstr ""
+"STFT と Q 変換は**周波数**成分のみを示します。**減衰率 σ**（減衰係数）は見えません。STLT は信号を周波数 ω と減衰率 σ "
+"の両方に分解します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:170002
 #: 44cdf464e5d8431fa865c29714daf773
 msgid "5.4 Cepstrum: Echo Detection and Spectral Periodicity"
-msgstr ""
+msgstr "5.4 ケプストラム：エコー検出とスペクトル周期性"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:170006
 #: f2d8827618574083b8cdea61586162f1
 msgid ""
 "Signal with a delayed copy (echo). Common in seismic noise when waves "
 "reflect off structures."
-msgstr ""
+msgstr "遅延した複製（エコー）を含む信号です。波が構造物で反射する地震ノイズでよく見られます。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:170010
 #: c413fa0e8f0e4142a2924b694990fd09
@@ -304,18 +310,20 @@ msgid ""
 "shows this as fine ripples but delay time is hard to read. Cepstrum converts"
 " spectral periodicity → time-domain peak at delay (\"quefrency\")."
 msgstr ""
+"エコーは**スペクトルに周期構造**を作ります（くし形フィルタリング）。STFT "
+"はこれを細かいリップルとして示しますが、遅延時間は読み取りにくいです。ケプストラムはスペクトルの周期性を遅延位置の時間領域ピーク（「ケフレンシ」）に変換します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:190002
 #: e33e6c27074546278075fa21f3b9d815
 msgid "5.5 DCT: Compression and Smooth Feature Extraction"
-msgstr ""
+msgstr "5.5 DCT：圧縮と滑らかな特徴抽出"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:190006
 #: f3dce13779b1426e898170e78f85f0a1
 msgid ""
 "Smooth signal with small perturbations. Simulates slowly-varying background "
 "trend with fine structure."
-msgstr ""
+msgstr "小さな摂動を伴う滑らかな信号です。微細構造を持つゆっくり変化する背景トレンドを模擬します。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:190010
 #: d4a82248934344928d2b3ddbd3220a41
@@ -324,31 +332,33 @@ msgid ""
 "(Discrete Cosine Transform) reveals that **most signal energy concentrates "
 "in a few low-frequency coefficients**."
 msgstr ""
+"STFT/Q "
+"は完全な時間周波数情報を与えますが、圧縮はしません。DCT（離散コサイン変換）は、**信号エネルギーの大半が少数の低周波係数に集中する**ことを明らかにします。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220002
 #: 913b917c204742f28eba7446047a68f4
 msgid "6. Summary: How to Choose Your Method"
-msgstr ""
+msgstr "6\\. まとめ：手法の選び方"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220004
 #: 59c8367833ef40ddb56c7537f49ee69b
 msgid "Decision Matrix"
-msgstr ""
+msgstr "決定マトリクス"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 1d82dfe844d649179e12c7192cf8aca2
 msgid "Recommended Method"
-msgstr ""
+msgstr "推奨手法"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 390334a79ab745678edd23f3cd5ef662
 msgid "Why"
-msgstr ""
+msgstr "理由"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 9e2f8531419b4135bc46609d6e7b28b0
 msgid "**General time-frequency**"
-msgstr ""
+msgstr "**汎用の時間周波数解析**"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: f4a4faaee233420fb3e49b9a43d2eed4
@@ -358,12 +368,12 @@ msgstr ""
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 44f31d8f95ef4fceaa2195487a154fb2
 msgid "Fast, well-understood, good starting point"
-msgstr ""
+msgstr "高速で十分に理解されており、出発点として良い"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 44632e199b3d4dd08cd705627c371bb6
 msgid "**Short transients / bursts**"
-msgstr ""
+msgstr "**短い過渡現象／バースト**"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 3589c794a9f64d50b0ac0d1ab97b7922
@@ -373,12 +383,12 @@ msgstr "Q変換"
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: b74a2dfbff894de19532530867d7246f
 msgid "Adaptive resolution, excellent for CBC signals"
-msgstr ""
+msgstr "適応的な分解能、CBC 信号に最適"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 725448fcd5d342b5aa965f61ab112f75
 msgid "**Chirps & multi-scale**"
-msgstr ""
+msgstr "**チャープとマルチスケール**"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 2b92ca6181454ae081484507916d439b
@@ -388,12 +398,12 @@ msgstr "ウェーブレット (CWT)"
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 4e4e9b133f244a26ab130cfd1c53e096
 msgid "Natural scale matching, sharp trajectories"
-msgstr ""
+msgstr "自然なスケール整合、鋭い軌跡"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: ca38021941244bc78e4d1a71d31510fb
 msgid "**Instantaneous frequency**"
-msgstr ""
+msgstr "**瞬時周波数**"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: ecd179bd07ca40a29d70bc92216e9eb9
@@ -403,12 +413,12 @@ msgstr ""
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 26ec40540f374635bc3af90503aba34d
 msgid "Precise frequency curve, no time-freq uncertainty"
-msgstr ""
+msgstr "正確な周波数曲線、時間周波数の不確定性なし"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 4c6e2870305b415da76a682bf1e9e55c
 msgid "**Damped oscillations**"
-msgstr ""
+msgstr "**減衰振動**"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 69247989da5647309bf12e3170f6833f
@@ -418,12 +428,12 @@ msgstr ""
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: b3c4a1ee0fe14845b9f48d76dc7ecd28
 msgid "Reveals decay rates (σ) AND frequencies (ω)"
-msgstr ""
+msgstr "減衰率（σ）と周波数（ω）の両方を明らかにする"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: bb9006e0d9974a9fbbe02de6bad55ede
 msgid "**Echo / periodic delays**"
-msgstr ""
+msgstr "**エコー／周期的遅延**"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: c24456f5e761459bb68dc537bd76a918
@@ -433,12 +443,12 @@ msgstr "ケプストラム"
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: f33a47592a9d441189121cda35fd19d7
 msgid "Quefrency peaks show delay times"
-msgstr ""
+msgstr "ケフレンシのピークが遅延時間を示す"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 10b3692c6fcf4ae284608c5162dfc5d0
 msgid "**Compression / features**"
-msgstr ""
+msgstr "**圧縮／特徴抽出**"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 3f369b975aa54e7d8ff1288325977927
@@ -448,57 +458,57 @@ msgstr ""
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:20002
 #: 7e86fd7722ff40ddbf5031d0604d1644
 msgid "Sparse representation, excellent for smooth signals"
-msgstr ""
+msgstr "スパース表現、滑らかな信号に最適"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220016
 #: 62c4d226a3464733a851e76990b0118a
 msgid "Quick Selection Guide"
-msgstr ""
+msgstr "クイック選択ガイド"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220018
 #: ea6d489c4a174bf68ed13521eff72e7b
 msgid "**Start with STFT** → if insufficient:"
-msgstr ""
+msgstr "**STFT から始める** → 不十分なら："
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220031
 #: 1845c14bc7a742b4804b55490ad86101
 msgid "Computational Cost Ranking"
-msgstr ""
+msgstr "計算コストのランキング"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220033
 #: 632cc6020a564f259992f9e75a78f946
 msgid "**STFT**: Fast (FFT-based)"
-msgstr ""
+msgstr "**STFT**：高速（FFT ベース）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220034
 #: 11f17b2f6684444b9868b2c11bd5067e
 msgid "**DCT**: Fast (FFT-like)"
-msgstr ""
+msgstr "**DCT**：高速（FFT 類似）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220035
 #: 2eb4f98cee8644b0a2905d6b5fba1030
 msgid "**Q-transform**: Medium (adaptive windowing)"
-msgstr ""
+msgstr "**Q 変換**：中程度（適応的窓掛け）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220036
 #: 88abeea7dc16483da7ee07fa3f7a919e
 msgid "**Wavelet**: Medium-High (scale convolutions)"
-msgstr ""
+msgstr "**ウェーブレット**：中〜高（スケール畳み込み）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220037
 #: 6637fc0476b7406f867d63d01921df44
 msgid "**Cepstrum**: Medium (double FFT)"
-msgstr ""
+msgstr "**ケプストラム**：中程度（二重 FFT）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220038
 #: eb8ac6373b8446cdacefe49994999e90
 msgid "**STLT**: High (2D transform)"
-msgstr ""
+msgstr "**STLT**：高（2 次元変換）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220039
 #: b4cb0664a14c4b56ab6ac79dfec4620a
 msgid "**HHT**: Very High (iterative EMD)"
-msgstr ""
+msgstr "**HHT**：非常に高い（反復的 EMD）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220041
 #: c311015830064f7a8889aae2f09e10b1
@@ -508,79 +518,79 @@ msgstr "実践的な推奨事項"
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220043
 #: 0c46025fe65b4d3aa38adb48038db690
 msgid "**For routine analysis**: Start with STFT"
-msgstr ""
+msgstr "**日常的な解析**：STFT から始める"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220044
 #: 72e0c7a9a63f4304beb007dc4391eabf
 msgid ""
 "**For transient detection**: Use Q-transform (standard in GW community)"
-msgstr ""
+msgstr "**過渡現象の検出**：Q 変換を使用（GW コミュニティの標準）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220045
 #: 8ab450e348284f49b9313819f9274755
 msgid "**For detailed characterization**: Combine multiple methods"
-msgstr ""
+msgstr "**詳細な特性評価**：複数の手法を組み合わせる"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220046
 #: 4fce2ae64c264e889df0ffa5ae7d7e3c
 msgid ""
 "**For publications**: Show STFT + specialized method to demonstrate "
 "robustness"
-msgstr ""
+msgstr "**論文用**：STFT ＋専用手法を示してロバスト性を実証"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220048
 #: dae6459dbece48a7ae1a53a2b7eda35c
 msgid "Conclusion"
-msgstr ""
+msgstr "結論"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220050
 #: f735e775aee84183810645679e010f25
 msgid ""
 "Each time-frequency method has a **\"winning scenario\"** where it provides "
 "information unavailable to STFT/Q-transform:"
-msgstr ""
+msgstr "各時間周波数手法には、STFT/Q 変換では得られない情報を提供する**「勝ちパターン」**があります："
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220052
 #: e5c96afeb210445288b1e8bc733c5e4f
 msgid "**Wavelet**: Sharp frequency trajectories for chirps"
-msgstr ""
+msgstr "**ウェーブレット**：チャープの鋭い周波数軌跡"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220053
 #: c684655dea824c269343f97e8c69228e
 msgid "**HHT**: Instantaneous frequency as single-valued curve"
-msgstr ""
+msgstr "**HHT**：一価曲線としての瞬時周波数"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220054
 #: 6ea0153d1b5d4733a82475103229db0e
 msgid "**STLT**: Decay rates (damping) in addition to frequencies"
-msgstr ""
+msgstr "**STLT**：周波数に加えて減衰率（ダンピング）"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220055
 #: 3f39813f57e04844ab38da809cfe5dc5
 msgid "**Cepstrum**: Echo delays via quefrency peaks"
-msgstr ""
+msgstr "**ケプストラム**：ケフレンシのピークによるエコー遅延"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220056
 #: 8ec7c3ffa0ee4796b913c1fa88286753
 msgid "**DCT**: Extreme compression for smooth signals"
-msgstr ""
+msgstr "**DCT**：滑らかな信号の極端な圧縮"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220058
 #: dad5c36c792e4cbba862c8d45936e641
 msgid ""
 "**Choose your method based on what information you need**, not just \"better"
 " resolution.\""
-msgstr ""
+msgstr "**必要な情報に基づいて手法を選びましょう**。単に「より良い分解能」のためではなく。"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220060
 #: 0168a28ae3664fbb84cdd4f898666203
 msgid "For more details on individual methods:"
-msgstr ""
+msgstr "個々の手法の詳細については："
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220061
 #: 6f2e95d337854cfc85124481b6932a27
 msgid "[STFT/Spectrogram Tutorial](../../tutorials/intro_spectrogram.ipynb)"
-msgstr ""
+msgstr "[STFT／スペクトログラム チュートリアル](../../tutorials/intro_spectrogram.ipynb)"
 
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220062
 #: c1cf633609874712b67e6cebd12f4f01
@@ -590,4 +600,4 @@ msgstr "[HHT チュートリアル](advanced_hht.ipynb)"
 #: ../../how-to/spectral/time_frequency_analysis_comparison.ipynb:220063
 #: 33c245bcd59044d498bb204aeace9948
 msgid "Field × Advanced Analysis"
-msgstr ""
+msgstr "フィールド × 高度解析"
