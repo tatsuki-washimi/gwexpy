@@ -73,7 +73,7 @@ msgstr ""
 #: f43226de4b474e869635e465d5234f16
 msgid ""
 "**Prerequisites:** [Advanced Fitting](../fitting/advanced_fitting.ipynb)"
-msgstr ""
+msgstr "**前提:** [フィッティングの応用](../fitting/advanced_fitting.ipynb)"
 
 #: ../../how-to/case-studies/case_violin_mode.ipynb:30002
 #: 0a9d5bc070ae4011a9752406bdf2a595
@@ -123,6 +123,8 @@ msgid ""
 " it were one violin mode. A physically meaningful violin-mode fit should be "
 "narrow, isolated, and stable under modest changes of the fit window."
 msgstr ""
+"**よくある誤り**: 広い制御特徴や混ざった二重線を、1 "
+"本のバイオリンモードであるかのようにフィットすること。物理的に意味のあるバイオリンモードのフィットは、狭く、孤立しており、フィット窓を多少変えても安定しているはずです。"
 
 #: ../../how-to/case-studies/case_violin_mode.ipynb:40002
 #: 6555d7cd23fe45458a2768674adfa903
@@ -164,6 +166,9 @@ msgid ""
 "happens, the fitted `Q` often becomes a statement about the window, not "
 "about the mode."
 msgstr ""
+"**失敗しやすいパターン**: "
+"切り出し窓を広く取りすぎて、隣接する倍音や局所的なベースラインの湾曲が最適化を支配してしまうこと。そうなると、フィットされた `Q` "
+"はモードではなく窓についての値になりがちです。"
 
 #: ../../how-to/case-studies/case_violin_mode.ipynb:80002
 #: 1d8b9e6514eb49c3895a9b24fbf0aa87
@@ -219,6 +224,9 @@ msgid ""
 "plus a quadratic sub-bin interpolation step, then checks that the recovered "
 "drift stays within about 20% of the injected drift."
 msgstr ""
+"**分解能のガードレール**: スペクトログラムのビン幅は、主張するドリフトに対して十分小さくなければなりません。4 秒 FFT ではビンが 0.25 "
+"Hz しかなく、20 mHz のドリフトは生の `argmax` では見えません。この例では 16 秒 FFT（`df = 62.5 "
+"mHz`）に加え、二次関数によるサブビン補間を行い、回復したドリフトが注入したドリフトの約 20% 以内に収まることを確認します。"
 
 #: ../../how-to/case-studies/case_violin_mode.ipynb:120010
 #: 29705138b0da4543a8ecd666ea63b5f8
@@ -227,6 +235,8 @@ msgid ""
 "the expected line motion. In that case the tracker can jump between bins and"
 " turn FFT quantization into a fake temperature trend."
 msgstr ""
+"**よくある誤り**: 期待されるラインの動きに対してビン幅を確認せずに `argmax` を使うこと。その場合、トラッカーがビン間を飛び移り、FFT "
+"の量子化を偽の温度トレンドに変えてしまうことがあります。"
 
 #: ../../how-to/case-studies/case_violin_mode.ipynb:140002
 #: d84b68783f42401aa3aea3ba399c550a

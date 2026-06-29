@@ -32,6 +32,8 @@ msgid ""
 " the standard time-frequency representation used to characterise and "
 "classify glitches at all major detector sites."
 msgstr ""
+"**グリッチ** は、重力波データを汚染する短時間・非ガウス的なノイズトランジェントです。**Q 変換**（または Omega "
+"スキャン）は、主要な検出器サイトでグリッチを特徴づけ分類するために用いられる標準的な時間周波数表現です。"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10009
 #: f85449b779f6416e8e092446fed264b5
@@ -41,6 +43,8 @@ msgid ""
 "each tile.  A glitch appears as a cluster of tiles with anomalously high "
 "SNR."
 msgstr ""
+"Q 変換は、時間周波数平面を定 Q（帯域幅と周波数の比が一定）の窓で敷き詰め、各タイルの正規化エネルギーを測定します。グリッチは、異常に高い SNR "
+"を持つタイルの集まりとして現れます。"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10013
 #: f096c1cba6c643998cf945578edc9e20
@@ -50,47 +54,47 @@ msgstr "**このチュートリアルで学ぶこと：**"
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10014
 #: c7a4882d90ff465d83cb6237ceac9680
 msgid "Injecting synthetic glitches into a noise background"
-msgstr ""
+msgstr "ノイズ背景に合成グリッチを注入する"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10015
 #: 977394e60953496aa7a8a24bcb34836c
 msgid "Computing the Q-transform with `q_scan()` and `QTiling`"
-msgstr ""
+msgstr "`q_scan()` と `QTiling` による Q 変換の計算"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10016
 #: 8dab17c42a86437b917a7092aef27c17
 msgid "Visualising the time-frequency map (Omega scan)"
-msgstr ""
+msgstr "時間周波数マップ（Omega スキャン）の可視化"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10017
 #: 8af99f4e76d74d82b178a867d3e145ce
 msgid "Extracting peak SNR, time, and frequency from `QGram`"
-msgstr ""
+msgstr "`QGram` からピーク SNR・時刻・周波数を抽出する"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10018
 #: 39920603a5eb4be6940187f3743d7986
 msgid "Characterising glitch morphology (duration, bandwidth, Q)"
-msgstr ""
+msgstr "グリッチ形態（継続時間、帯域幅、Q）の特徴づけ"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10020
 #: a311aa4e09b94320a35248f2e242fb3c
 msgid "**Related tutorials:**"
-msgstr ""
+msgstr "**関連チュートリアル:**"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10021
 #: 8229b5cd998d49778751ff3024242c0d
 msgid "`advanced_peak_detection.ipynb` — spectral line detection"
-msgstr ""
+msgstr "`advanced_peak_detection.ipynb` — スペクトルラインの検出"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10022
 #: 8eed7d8464b04d92808c51a596bec941
 msgid "`advanced_peak_tracking.ipynb` — tracking lines over time"
-msgstr ""
+msgstr "`advanced_peak_tracking.ipynb` — ラインの時間追跡"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:10023
 #: c5e3264a2f2f49b7a790907c50c3162b
 msgid "`case_bruco_advanced.ipynb` — coherence-based noise coupling"
-msgstr ""
+msgstr "`case_bruco_advanced.ipynb` — コヒーレンスに基づくノイズカップリング"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:20002
 #: dbd7d735e28c4c9ebe0b7c97efa4f893
@@ -214,6 +218,7 @@ msgid ""
 "`QGram.interpolate()` resamples the irregular Q tiles onto a regular time-"
 "frequency grid suitable for imshow."
 msgstr ""
+"`QGram.interpolate()` は、不規則な Q タイルを imshow に適した規則的な時間周波数グリッドへ再サンプリングします。"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:100002
 #: 77a4c5f13dcb474abae9022c39fd1532
@@ -226,6 +231,7 @@ msgid ""
 "`QTiling` lets us search a specific Q plane and extract glitch parameters "
 "(peak time, frequency, duration, bandwidth) for each candidate event."
 msgstr ""
+"`QTiling` を使うと、特定の Q 平面を探索し、各候補イベントについてグリッチパラメータ（ピーク時刻、周波数、継続時間、帯域幅）を抽出できます。"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:120002
 #: d985637e8a5f4bc2b9493cda05db0813
@@ -239,6 +245,8 @@ msgid ""
 "distribution is.  A p-value below 0.01 in a quiet background suggests the "
 "data segment contains a significant non-Gaussian transient."
 msgstr ""
+"`rayleigh_test` は、時間周波数エネルギー分布がどれだけ非ガウス的かを測定します。静穏な背景で p 値が 0.01 "
+"を下回る場合、そのデータセグメントに有意な非ガウス的トランジェントが含まれていることを示唆します。"
 
 #: ../../how-to/case-studies/case_glitch_analysis.ipynb:140002
 #: 452768d63b7a44d68584bde9eb66915b
@@ -431,3 +439,5 @@ msgid ""
 "**Tip**: For production glitch cataloguing, use `q_scan` with the default "
 "`qrange=(4,64)` and then manually inspect tiles with SNR > 8."
 msgstr ""
+"**ヒント**: 実運用のグリッチカタログ作成では、デフォルトの `qrange=(4,64)` で `q_scan` を実行し、SNR > 8 "
+"のタイルを手動で確認してください。"

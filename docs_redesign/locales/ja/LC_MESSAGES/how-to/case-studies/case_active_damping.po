@@ -27,7 +27,7 @@ msgstr "**ケーススタディのフロー:**"
 #: ../../how-to/case-studies/case_active_damping.ipynb:10003
 #: 7b6c0171c0714a079decbb07c1dea1d9
 msgid "Back to the canonical gallery: [Case Studies](index.md)"
-msgstr ""
+msgstr "正典ギャラリーに戻る: [ケーススタディ](index.md)"
 
 #: ../../how-to/case-studies/case_active_damping.ipynb:10004
 #: bf9fcb8db5a341bf8c480dedcedb8e6b
@@ -36,6 +36,9 @@ msgid ""
 "[API: Matrix Containers](../../reference/api/matrix.rst), [API: Frequency "
 "Series](../../reference/api/frequencyseries.rst)"
 msgstr ""
+"関連リファレンス: [リファレンス索引](../../reference/index.md)、[API: "
+"行列コンテナ](../../reference/api/matrix.rst)、[API: "
+"周波数系列](../../reference/api/frequencyseries.rst)"
 
 #: ../../how-to/case-studies/case_active_damping.ipynb:10005
 #: 8484676c9fd549b890bbcbd2dda43edb
@@ -231,6 +234,7 @@ msgid ""
 "**Sensing**: Estimate modal displacement $q$ from sensor output $y$ $$ "
 "q_{est} = T_{sen}^{-1} y $$"
 msgstr ""
+"**センシング**: センサ出力 $y$ からモード変位 $q$ を推定します $$ q_{est} = T_{sen}^{-1} y $$"
 
 #: ../../how-to/case-studies/case_active_damping.ipynb:80010
 #: 35a4ff1ecef24f63980dbf973ec5c193
@@ -239,6 +243,8 @@ msgid ""
 "**Modal Damping**: Apply pseudo-derivative filter $K(s)$ to each mode to "
 "calculate modal force $F_{modal}$ $$ F_{modal} = -K_{modal}(s) q_{est} $$"
 msgstr ""
+"**モード制振**: 各モードに擬似微分フィルタ $K(s)$ を適用し、モード力 $F_{modal}$ を計算します $$ F_{modal} = "
+"-K_{modal}(s) q_{est} $$"
 
 #: ../../how-to/case-studies/case_active_damping.ipynb:80012
 #: 597ff831872c489e9ef382a3ae4700cb
@@ -247,6 +253,8 @@ msgid ""
 "**Actuation**: Distribute modal force $F_{modal}$ to actuator forces $u$ $$ "
 "u = (T_{act}^T)^{-1} F_{modal} $$"
 msgstr ""
+"**アクチュエーション**: モード力 $F_{modal}$ をアクチュエータ力 $u$ に分配します $$ u = (T_{act}^T)^{-1}"
+" F_{modal} $$"
 
 #: ../../how-to/case-studies/case_active_damping.ipynb:80015
 #: 1cb3539d0ed94514ab2eb0dac120fb16
@@ -256,6 +264,9 @@ msgid ""
 "(T_{act}^T)^{-1} \\cdot \\mathrm{diag}(K_{z}(s), K_{\\theta x}(s), "
 "K_{\\theta y}(s)) \\cdot T_{sen}^{-1} $$"
 msgstr ""
+"全体として、MIMO コントローラ $K_{MIMO}$ は次のようになります： $$ K_{MIMO}(s) = (T_{act}^T)^{-1} "
+"\\cdot \\mathrm{diag}(K_{z}(s), K_{\\theta x}(s), K_{\\theta y}(s)) \\cdot "
+"T_{sen}^{-1} $$"
 
 #: ../../how-to/case-studies/case_active_damping.ipynb:100002
 #: ae513145e222443fb980747de194a5e4

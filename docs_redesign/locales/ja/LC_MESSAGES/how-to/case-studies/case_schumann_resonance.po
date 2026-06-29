@@ -33,20 +33,22 @@ msgid ""
 "the sensitive band of second-generation gravitational-wave detectors such as"
 " KAGRA."
 msgstr ""
+"**シューマン共振** は、地球と電離層のキャビティ内で落雷放電によって励起されるグローバルな電磁共振です。約 7.83、14.3、20.8、26.4 "
+"Hz に鋭いスペクトルピークとして現れ、これは KAGRA のような第 2 世代重力波検出器の感度帯域のまさに内側に位置します。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10009
 #: cd5a51b3bb144302a4023965c9ac14d7
 msgid ""
 "This notebook demonstrates an end-to-end characterisation workflow using "
 "gwexpy:"
-msgstr ""
+msgstr "このノートブックでは、gwexpy を用いたエンドツーエンドの特徴づけワークフローを示します："
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10011
 #: 059059356f4a4e36b68fd912b1ea2875
 msgid ""
 "**Bootstrap PSD** (`bootstrap_spectrogram`) — robust spectral estimation "
 "with asymmetric confidence intervals"
-msgstr ""
+msgstr "**ブートストラップ PSD**（`bootstrap_spectrogram`）— 非対称な信頼区間を持つ頑健なスペクトル推定"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10013
 #: f3ecaaec5882409fb8be8e7822100677
@@ -54,6 +56,7 @@ msgid ""
 "**Lorentzian Q-factor fit** (`fit_series` + `lorentzian_q`) — measure "
 "resonance frequency, quality factor, and amplitude of each mode"
 msgstr ""
+"**ローレンツ Q 値フィット**（`fit_series` + `lorentzian_q`）— 各モードの共振周波数・Q 値・振幅を測定"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10015
 #: c1746d413ed34cf88bc36902ae5d6248
@@ -61,12 +64,13 @@ msgid ""
 "**Covariance structure** (`BifrequencyMap`) — visualise inter-bin "
 "correlations returned by the bootstrap; used automatically for GLS fitting"
 msgstr ""
+"**共分散構造**（`BifrequencyMap`）— ブートストラップが返すビン間相関を可視化。GLS フィッティングで自動的に使用されます"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10017
 #: 8554f01283cb457c9bf63169b2649725
 msgid ""
 "**Temporal tracking** — monitor mode amplitude over the observation window"
-msgstr ""
+msgstr "**時間追跡** — 観測区間にわたってモード振幅を監視"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10019
 #: 90c037b6baf9498d92e4c7421e22bfae
@@ -76,6 +80,8 @@ msgid ""
 "amplitude changes, rather than local magnetic contamination or fitting "
 "artefacts."
 msgstr ""
+"物理的な問いは、観測された ELF "
+"ピークが、局所的な磁気汚染やフィッティングのアーティファクトではなく、共有された狭帯域構造と相関した振幅変化を伴うグローバルな磁気共振として振る舞うかどうかです。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10021
 #: 13f6e0260b944dfc8a43bad2c6ce6787
@@ -85,17 +91,17 @@ msgstr "**前提条件**:"
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10022
 #: 8ab384a73ff044e79fb150a37d4727a4
 msgid "[Spectrogram basics](../../tutorials/intro_spectrogram.ipynb)"
-msgstr ""
+msgstr "[スペクトログラムの基本](../../tutorials/intro_spectrogram.ipynb)"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10023
 #: 148289e3684142f2977c73e6f044f7bf
 msgid "[Advanced Fitting](../fitting/advanced_fitting.ipynb)"
-msgstr ""
+msgstr "[フィッティングの応用](../fitting/advanced_fitting.ipynb)"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:10024
 #: 104a5ecdd9b543a1a4dbb0204fc75714
 msgid "[Bootstrap PSD & GLS Fitting](case_bootstrap_gls_fitting.ipynb)"
-msgstr ""
+msgstr "[ブートストラップ PSD と GLS フィッティング](case_bootstrap_gls_fitting.ipynb)"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:20002
 #: c0d4acd823aa46c386ce3cb5b49c10a2
@@ -227,6 +233,8 @@ msgid ""
 "later sections focus on width, covariance, and temporal coherence rather "
 "than frequency alone."
 msgstr ""
+"**よくある誤り**: "
+"低周波のピークをすべてシューマン構造として扱うこと。局所的な磁気ラインや人為的なコム状ノイズも同じ帯域に存在しうるため、後続の節では周波数だけでなく、線幅・共分散・時間的コヒーレンスに着目します。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:70002
 #: 5ce113582df046348bca2803c261dd58
@@ -253,6 +261,8 @@ msgid ""
 "fitting with diagonal-only uncertainties. In narrowband magnetic data, "
 "inter-bin covariance is part of the signal model, not optional decoration."
 msgstr ""
+"**失敗しやすいパターン**: "
+"ブートストラップを誤差棒のためだけに使い、対角成分のみの不確かさでフィットすること。狭帯域の磁場データでは、ビン間共分散は信号モデルの一部であり、省略可能な飾りではありません。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:100002
 #: 8117130444144bc79969839db609bd5d
@@ -293,6 +303,8 @@ msgid ""
 " Q estimate requires one dominant mode plus an uncertainty model that "
 "matches the PSD estimator."
 msgstr ""
+"**よくある誤り**: フィット窓に複数の重なり合うピークや強い局所ベースライン勾配が含まれるときに、フィットされた Q を過大解釈すること。良い Q "
+"推定には、支配的なモードが 1 つであることと、PSD 推定量に整合する不確かさモデルが必要です。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:130002
 #: 341ec86abecb4c2699e3563ad0d05d5c
@@ -307,6 +319,8 @@ msgid ""
 "different frequencies are correlated**. For magnetometer data with narrow "
 "resonances, we expect:"
 msgstr ""
+"`bootstrap_spectrogram` が返すブートストラップ共分散マップ `cov_map(f1, f2)` "
+"は、**異なる周波数のスペクトル推定値がどれだけ強く相関しているか** を表します。狭帯域共振を持つ磁力計データでは、次が期待されます："
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:130008
 #: 5c1dd04c982a4d4d92ab54e774af4189
@@ -315,31 +329,32 @@ msgid ""
 "frequency → adjacent bins share correlated noise from overlapping FFT "
 "windows."
 msgstr ""
+"各共振周波数での **対角に沿った高い共分散**（`f1 ≈ f2`）→ 隣接ビンは重なり合う FFT 窓に由来する相関ノイズを共有します。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:130010
 #: 1ef55868cb23459db8b0025e8d4d5e2d
 msgid ""
 "**Off-diagonal structure** near resonances → the peak broadens beyond one "
 "bin."
-msgstr ""
+msgstr "共振付近の **非対角構造** → ピークが 1 ビンを超えて広がります。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:130012
 #: c38b2e14fbe544529f1f4388eecfc560
 msgid "`BifrequencyMap` methods used here:"
-msgstr ""
+msgstr "ここで使用する `BifrequencyMap` のメソッド："
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:130013
 #: 8cf5a0ba762b42f0aee13a5ab84c2243
 msgid ""
 "`.diagonal(method='mean')` — returns the variance profile (diagonal of the "
 "matrix)"
-msgstr ""
+msgstr "`.diagonal(method='mean')` — 分散プロファイル（行列の対角）を返します"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:130014
 #: 297fc1201b9748f1bf3487884975ae37
 msgid ""
 "`.get_slice(at=f0, axis='f1')` — returns a 1-D covariance slice at fixed f1"
-msgstr ""
+msgstr "`.get_slice(at=f0, axis='f1')` — f1 を固定した 1 次元の共分散スライスを返します"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:130016
 #: 96c1d29d3cb94ac894c85b09f1aa4c0f
@@ -348,6 +363,8 @@ msgid ""
 "hint that the chosen FFT or averaging setup is too coarse to resolve the "
 "resonance physics you are trying to measure."
 msgstr ""
+"対角から離れた領域でマップがほとんど構造を持たない場合、それはしばしば、選んだ FFT "
+"や平均化の設定が、測定しようとしている共振の物理を分解するには粗すぎることのヒントになります。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:160002
 #: 381edd7b7778495b94af9fbb889d083a
@@ -373,6 +390,8 @@ msgid ""
 "sensitive to bin-to-bin jitter. Choose a window that tracks one resonance "
 "family across the full observation span."
 msgstr ""
+"**注意すべき失敗モード**: 帯域平均が広すぎると隣接モードや局所擾乱が混ざり、狭すぎるとビン間のジッタに敏感になります。観測区間全体で 1 "
+"つの共振系列を追える窓を選んでください。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:180002
 #: 401875a95191432ba9299761e70adb3d
@@ -465,6 +484,7 @@ msgid ""
 "**Bootstrap resampling** gives reliable uncertainty estimates for narrow "
 "spectral peaks where single-segment estimates are noisy."
 msgstr ""
+"**ブートストラップ再サンプリング** は、単一セグメント推定がノイジーになる狭帯域スペクトルピークに対して、信頼できる不確かさ推定を与えます。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:180015
 #: 1995e0e66a674af2a4a9c547a6102cc2
@@ -473,13 +493,15 @@ msgid ""
 "`cov=cov_map` to `fit_series` automatically accounts for inter-bin "
 "correlations."
 msgstr ""
+"**BifrequencyMap の共分散** は適切な GLS フィッティングに不可欠です。`fit_series` に `cov=cov_map` "
+"を渡すと、ビン間相関が自動的に考慮されます。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:180017
 #: bf71dbb77f6543d396c70d486c6861ac
 msgid ""
 "The `lorentzian_q` parameterisation directly gives the physically meaningful"
 " **Q-factor** of each Schumann mode."
-msgstr ""
+msgstr "`lorentzian_q` のパラメータ化は、各シューマンモードの物理的に意味のある **Q 値** を直接与えます。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:180019
 #: da5284b02c5a4a7daf775d752df505c7
@@ -504,7 +526,7 @@ msgstr "次のステップ"
 #: 2d87c763b3a54ad7ba00aa56792b2a3b
 msgid ""
 "Load real data: `TimeSeries.read('K1:PEM-MAG_EXV_EAST_X_DQ', start, end)`."
-msgstr ""
+msgstr "実データの読み込み: `TimeSeries.read('K1:PEM-MAG_EXV_EAST_X_DQ', start, end)`。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:180025
 #: 5f4faf681d874e09a16bae5e52b1e57f
@@ -512,8 +534,10 @@ msgid ""
 "Compute multi-channel Schumann coherence with `BifrequencyMap.propagate()` "
 "to estimate the magnetic coupling contribution to DARM noise."
 msgstr ""
+"`BifrequencyMap.propagate()` で多チャンネルのシューマンコヒーレンスを計算し、DARM "
+"ノイズへの磁気カップリング寄与を推定します。"
 
 #: ../../how-to/case-studies/case_schumann_resonance.ipynb:180027
 #: 8051b76069b34290b5adc8000ba14a70
 msgid "Track daily/seasonal variations by looping over GPS time segments."
-msgstr ""
+msgstr "GPS 時刻セグメントをループして、日次・季節変動を追跡します。"
