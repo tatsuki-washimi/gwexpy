@@ -25,6 +25,8 @@ msgid ""
 "storage containers, analysis libraries, ML backends, and domain-specific "
 "tools."
 msgstr ""
+"オブジェクトをストレージコンテナ、解析ライブラリ、ML バックエンド、ドメイン特化ツールとの間で変換するための、適切な GWexpy interop "
+"経路を見つけましょう。"
 
 #: ../../how-to/interop.md:7 ff82c88307c34c4eb9b3e237f96322ec
 msgid "Interop / Conversion Guide"
@@ -35,6 +37,8 @@ msgid ""
 "This page is the dedicated **interop guide** for `gwexpy`.   Here, interop "
 "means **conversion and bridging** centered on `to_*()` / `from_*()` APIs."
 msgstr ""
+"このページは `gwexpy` の専用 **interop ガイド**です。   ここでの interop とは、`to_*()` / "
+"`from_*()` API を中心とした**変換とブリッジ**を意味します。"
 
 #: ../../how-to/interop.md:12 2cff525918a546228499f7d75bdc853c
 msgid "This page covers:"
@@ -165,7 +169,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 94ccc2a4ab5a4c529de9538cafafe477
 msgid "ndscope HDF5 schema"
-msgstr ""
+msgstr "ndscope HDF5 スキーマ"
 
 #: ../../how-to/interop.md aa0d409608934990b3a1fa5a06386976
 msgid "`xml.diaggui`"
@@ -185,43 +189,44 @@ msgstr ""
 
 #: ../../how-to/interop.md:40 ee1e692a809e4195823389deaee39dfb
 msgid "Jump Links"
-msgstr ""
+msgstr "ジャンプリンク"
 
 #: ../../how-to/interop.md:42 58a9a4b32bb543f4af0940b34fb50002
 msgid "[How to Read This Page](#how-to-read-this-page)"
-msgstr ""
+msgstr "[このページの読み方](#how-to-read-this-page)"
 
 #: ../../how-to/interop.md:43 aa4024abfed54b0583c457f5c4b58580
 msgid "[Status Labels](#status-labels)"
-msgstr ""
+msgstr "[状態ラベル](#status-labels)"
 
 #: ../../how-to/interop.md:44 a39d1c57dd484e2188a983dca4f2efcc
 msgid ""
 "[A. Storage Formats and Container Conversion](#a-storage-formats-and-"
 "container-conversion)"
-msgstr ""
+msgstr "[A. 保存形式・コンテナ変換](#a-storage-formats-and-container-conversion)"
 
 #: ../../how-to/interop.md:45 405cf72142ef41a88e47f4d797e80aa3
 msgid ""
 "[B. Analysis Library and Object Conversion](#b-analysis-library-and-object-"
 "conversion)"
-msgstr ""
+msgstr "[B. 解析ライブラリ・オブジェクト変換](#b-analysis-library-and-object-conversion)"
 
 #: ../../how-to/interop.md:46 41bc748476fb45cca3a8f9f234c42449
 msgid ""
 "[C. Machine Learning, Acceleration, and Array Backends](#c-machine-learning-"
 "acceleration-and-array-backends)"
 msgstr ""
+"[C. 機械学習・高速化・配列基盤](#c-machine-learning-acceleration-and-array-backends)"
 
 #: ../../how-to/interop.md:47 811532ccc92d4ba29b1140d2413a5a71
 msgid ""
 "[D. Physics and Domain-Specific Libraries](#d-physics-and-domain-specific-"
 "libraries)"
-msgstr ""
+msgstr "[D. 物理・ドメイン特化ライブラリ](#d-physics-and-domain-specific-libraries)"
 
 #: ../../how-to/interop.md:48 786f64a3b9e14912ab69ec7e482ea360
 msgid "[What to Prioritize First](#what-to-prioritize-first)"
-msgstr ""
+msgstr "[優先的に見るべき対象](#what-to-prioritize-first)"
 
 #: ../../how-to/interop.md:51 3b8468e5cf0c435eaaeef5a2c376b318
 msgid "How to Read This Page"
@@ -352,6 +357,9 @@ msgid ""
 "[Installation Guide](../tutorials/installation.md), such as `pip install "
 "\"gwexpy[control] @ git+https://github.com/tatsuki-washimi/gwexpy.git\"`."
 msgstr ""
+"PyPI 公開までは、[インストールガイド](../tutorials/installation.md) のソースインストール用 extra "
+"構文（例：`pip install \"gwexpy[control] @ git+https://github.com/tatsuki-"
+"washimi/gwexpy.git\"`）を使用してください。"
 
 #: ../../how-to/interop.md 4c3a8d362cd14f2292328faf16e1f923
 msgid "Bare package installs"
@@ -406,6 +414,8 @@ msgid ""
 "container, or storage representation**.   Use it when the question is “what "
 "storage representation do I bridge to?”"
 msgstr ""
+"このセクションは、変換先が**ファイル形式・コンテナ・ストレージ表現**である変換を扱います。   "
+"「どのストレージ表現にブリッジするか？」という問いのときに使います。"
 
 #: ../../how-to/interop.md:105 e86f6152bec6473ca90f7ec842bd3bc4
 msgid ""
@@ -562,7 +572,7 @@ msgstr ""
 #: ../../how-to/interop.md 8a7a06786a2d45cfb498695eb8135332
 #: cc04de568b5945629dd5edb85b770d1f
 msgid "object-level bridge"
-msgstr ""
+msgstr "オブジェクト単位のブリッジ"
 
 #: ../../how-to/interop.md 6fccd1f1d2b44d929ae42230505a77bd
 msgid "[API](../reference/api/gwexpy.interop.sqlite_.md)"
@@ -578,7 +588,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 3442a9d9ffc94bbbaec9bfa6b59e048f
 msgid "array/store bridge"
-msgstr ""
+msgstr "配列／ストアのブリッジ"
 
 #: ../../how-to/interop.md d6d04865932d4f5eb10524c461b6606c
 msgid "[API](../reference/api/gwexpy.interop.zarr_.md)"
@@ -606,6 +616,8 @@ msgid ""
 "model** rather than a storage format.   Use it when the question is “which "
 "analysis-library object do I bridge to?”"
 msgstr ""
+"このセクションは、変換先がストレージ形式ではなく **Python オブジェクトモデル**である変換を扱います。   "
+"「どの解析ライブラリのオブジェクトにブリッジするか？」という問いのときに使います。"
 
 #: ../../how-to/interop.md:125 d97a465fc1d94fbdb64f3a446c1bf7a5
 msgid "Purpose: pick the correct bridge into analysis-oriented Python objects"
@@ -753,7 +765,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 497333a7715643c8b2eec54247593f1a
 msgid "dask array bridge"
-msgstr ""
+msgstr "dask 配列のブリッジ"
 
 #: ../../how-to/interop.md ef13d2daee974f99a9160751fa0d12bb
 msgid "[API](../reference/api/gwexpy.interop.dask_.md)"
@@ -769,6 +781,8 @@ msgid ""
 "whether only the array payload moves, or whether metadata can also be "
 "reconstructed."
 msgstr ""
+"このセクションは、高速計算および ML 指向のブリッジを扱います。   "
+"配列のペイロードのみが移動するのか、メタデータも再構築できるのかを確認してください。"
 
 #: ../../how-to/interop.md:147 9d7602ee949444c0bf330bb45631450d
 msgid ""
@@ -874,6 +888,8 @@ msgid ""
 "Read the status carefully: some targets are full round-trips, some are "
 "mainly import paths, and some are still being organized publicly."
 msgstr ""
+"このセクションは、ドメイン特化ライブラリと特殊なオブジェクトを扱います。   "
+"ステータスをよく読んでください：完全な往復変換が可能なもの、主にインポート経路であるもの、まだ公開整備中のものがあります。"
 
 #: ../../how-to/interop.md:165 9627b3d510454f9fb38b3d9c98637884
 msgid ""
@@ -925,7 +941,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 6d72ac0b3e94400b8756ca0275b9a3a5
 msgid "seismic bridge"
-msgstr ""
+msgstr "地震データのブリッジ"
 
 #: ../../how-to/interop.md cb46019ce1314870aaafeeb40887879a
 msgid "[API](../reference/api/gwexpy.interop.obspy_.md)"
@@ -974,7 +990,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 657633e5e5964788903f1b586e0bd86c
 msgid "budget import"
-msgstr ""
+msgstr "バジェットのインポート"
 
 #: ../../how-to/interop.md ffe423d8dfc44f238176a41f82a06587
 msgid "[API](../reference/api/gwexpy.interop.gwinc_.md)"
@@ -990,7 +1006,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 074116a065ad4c8f945e142b9b32d094
 msgid "optics / response"
-msgstr ""
+msgstr "光学／応答"
 
 #: ../../how-to/interop.md 09cc0dc0437749818105297f5c8e3d48
 msgid "[API](../reference/api/gwexpy.interop.finesse_.md)"
@@ -1032,7 +1048,7 @@ msgstr ""
 
 #: ../../how-to/interop.md fd35648130fc48de96efecc63d2e1fe7
 msgid "geophysics"
-msgstr ""
+msgstr "地球物理"
 
 #: ../../how-to/interop.md bc5491500b9f4d688409efd51b2efecc
 msgid "[API](../reference/api/gwexpy.interop.simpeg_.md)"
@@ -1048,7 +1064,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 657de482bb304ebfbbf407829d8dcdcd
 msgid "magnetotellurics"
-msgstr ""
+msgstr "地磁気地電流（MT）"
 
 #: ../../how-to/interop.md 2909a9343a7f4cbeb1b4d7b9c83d211b
 msgid "[API](../reference/api/gwexpy.interop.mt_.md)"
@@ -1082,7 +1098,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 20ab1cfaee34485ba43fc6e4153d4798
 msgid "EEG / biosignal"
-msgstr ""
+msgstr "EEG／生体信号"
 
 #: ../../how-to/interop.md 45a1b5455db74b608f83627e530a9334
 msgid "[API](../reference/api/gwexpy.interop.mne_.md)"
@@ -1098,7 +1114,7 @@ msgstr ""
 
 #: ../../how-to/interop.md e9487e73d83548f19af1a1aac754294a
 msgid "electrophysiology"
-msgstr ""
+msgstr "電気生理"
 
 #: ../../how-to/interop.md 26da90aa3a3f49cd9d05ab5a32ef937d
 msgid "[API](../reference/api/gwexpy.interop.neo_.md)"
@@ -1122,7 +1138,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 154bdc5f9ddb48c2917243b6ecf2b837
 msgid "quantity bridge"
-msgstr ""
+msgstr "物理量のブリッジ"
 
 #: ../../how-to/interop.md 47fec4ec357341cc8e1e41f87a744daa
 msgid "[API](../reference/api/gwexpy.interop.quantities_.md)"
@@ -1142,7 +1158,7 @@ msgstr ""
 
 #: ../../how-to/interop.md e2d5dd8715af40ccb05e1cc5a8d240a7
 msgid "room acoustics"
-msgstr ""
+msgstr "室内音響"
 
 #: ../../how-to/interop.md 7bccbf14137d4ac283c6bf8326bb86bb
 msgid "[API](../reference/api/gwexpy.interop.pyroomacoustics_.md)"
@@ -1158,7 +1174,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 34df740faea54031a112a3ac00274c15
 msgid "audio object bridge"
-msgstr ""
+msgstr "音声オブジェクトのブリッジ"
 
 #: ../../how-to/interop.md 0ded7b107d5c479ea11e29e769fcc977
 #: e341acdf24034058a628bfd4a4c84d4e
@@ -1187,7 +1203,7 @@ msgstr ""
 
 #: ../../how-to/interop.md d31843fb21404022a77cc7c3c1ef12bd
 msgid "astronomy spectra"
-msgstr ""
+msgstr "天文スペクトル"
 
 #: ../../how-to/interop.md 98592562859c458b8fd446a5f52b03e0
 msgid "[API](../reference/api/gwexpy.interop.specutils_.md)"
@@ -1203,7 +1219,7 @@ msgstr ""
 
 #: ../../how-to/interop.md ca12978442cf4f3393433eca63a20fce
 msgid "spectral analysis"
-msgstr ""
+msgstr "スペクトル解析"
 
 #: ../../how-to/interop.md 3888f5a71cf045aab18bfe47297958fb
 msgid "[API](../reference/api/gwexpy.interop.pyspeckit_.md)"
@@ -1246,7 +1262,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 22baccf465b74de7b1e4e3765f6e949e
 msgid "RF network analysis"
-msgstr ""
+msgstr "RF ネットワーク解析"
 
 #: ../../how-to/interop.md e0703aa7476a4b02b7ed50c2c0104dd9
 msgid "[API](../reference/api/gwexpy.interop.skrf_.md)"
@@ -1344,7 +1360,7 @@ msgstr ""
 
 #: ../../how-to/interop.md 99697752794e4c4f839faa3508b42b4c
 msgid "EM field import/export"
-msgstr ""
+msgstr "EM 場の入出力"
 
 #: ../../how-to/interop.md 2a8fb27f54524757a707c22e508b113f
 msgid "[API](../reference/api/gwexpy.interop.emg3d_.md)"
@@ -1502,3 +1518,4 @@ msgid ""
 "[Interop tutorial](../tutorials/index.md) for worked examples before "
 "dropping into the API reference"
 msgstr ""
+"API リファレンスに進む前に、実例については [Interop チュートリアル](../tutorials/index.md) を参照してください"
