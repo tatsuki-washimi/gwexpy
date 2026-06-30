@@ -36,12 +36,13 @@ For users who want to keep dependencies minimal and only use core containers lik
 - Input: Python 3.11+ and `pip`
 - Output: a minimal GWexpy environment
 
-If you need NDS2, FrameLIB, `pygmt`, or other binary-heavy tools, skip this section and start with [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended--gw-analysis).
+If you need NDS2, FrameLIB, `pygmt`, or other binary-heavy tools, skip this section and start with [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended-gw-analysis).
 
 ```bash
 pip install gwexpy
 ```
 
+(conda-environment-recommended-gw-analysis)=
 ### Conda Environment (Recommended / GW Analysis)
 
 For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.
@@ -93,7 +94,7 @@ above.
 - If you see `No module named nds2`: install `python-nds2-client` in the active dedicated Conda environment.
 - If you see FrameLIB / `framecpp`-related errors: reinstall `python-framel` and `ldas-tools-framecpp` in the same environment.
 - If the environment has already been mixed with unrelated packages: recreating it with `conda create -n gwexpy python=3.11` is usually safer than trying to repair it in place.
-- If you installed from [Quickstart](quickstart.md) and later discover you need GW binary dependencies: return to [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended--gw-analysis) before adding more packages.
+- If you installed from [Quickstart](quickstart.md) and later discover you need GW binary dependencies: return to [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended-gw-analysis) before adding more packages.
 
 ---
 

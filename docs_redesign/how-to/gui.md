@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Graphical User Interface (GUI, Experimental)
 
 ## Overview

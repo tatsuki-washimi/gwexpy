@@ -83,15 +83,24 @@ Understand the design →
 :gutter: 3
 
 :::{grid-item-card} Multidimensional fields
+:link: how-to/containers/index
+:link-type: doc
+
 Work natively with `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and
 `Scalar`/`Vector`/`TensorField` containers.
 :::
 
 :::{grid-item-card} Integrated analysis
+:link: how-to/case-studies/index
+:link-type: doc
+
 BrUCo noise budgets, ARIMA modelling, and fitting / MCMC pipelines in one place.
 :::
 
 :::{grid-item-card} Broad interop
+:link: how-to/interop
+:link-type: doc
+
 ~40 interoperability modules and multi-format I/O across GW data ecosystems.
 :::
 ::::

@@ -43,20 +43,6 @@ Convert between GPS, UTC, and human-readable times.
 ::::{grid} 1 2 2 2
 :gutter: 3
 
-:::{grid-item-card} {octicon}`terminal;1.5em;sd-mr-1` Command-line interface
-:link: cli
-:link-type: doc
-
-Run GWexpy workflows from the shell.
-:::
-
-:::{grid-item-card} {octicon}`device-desktop;1.5em;sd-mr-1` Graphical interface
-:link: gui
-:link-type: doc
-
-Explore data interactively with the GUI.
-:::
-
 :::{grid-item-card} {octicon}`tools;1.5em;sd-mr-1` Troubleshooting
 :link: troubleshooting
 :link-type: doc
@@ -150,8 +136,6 @@ time_utilities
 :hidden:
 :caption: Tools and operations
 
-cli
-gui
 troubleshooting
 migration
 ```

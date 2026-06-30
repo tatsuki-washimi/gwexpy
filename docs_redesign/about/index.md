@@ -27,8 +27,10 @@ Release notes and version history.
 :::
 
 :::{grid-item-card} {octicon}`git-pull-request;1.5em;sd-mr-1` Contributing
-Issues and pull requests are welcome on
-[GitHub](https://github.com/gwexpy/gwexpy).
+:link: https://github.com/tatsuki-washimi/gwexpy
+:link-type: url
+
+Issues and pull requests are welcome on GitHub.
 :::
 ::::
 

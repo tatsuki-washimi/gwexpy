@@ -98,8 +98,6 @@ api/io
 
 api/plot
 api/time
-api/cli
-api/gui
 ```
 
 ```{toctree}

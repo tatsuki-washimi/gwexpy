@@ -117,17 +117,13 @@ html_title = "GWexpy"
 html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/"
 
 html_theme_options = {
-    # Top navbar layout (Diataxis sections live in the center).
-    "navbar_start": ["navbar-logo", "version-switcher"],
+    # Top navbar layout (Diataxis sections live in the center). The logo alone
+    # keeps the header compact; the version switcher/warning banner are omitted
+    # while the project is pre-release to avoid an oversized top band.
+    "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["theme-switcher", "navbar-icon-links", "language-switcher.html"],
     "navbar_persistent": ["search-button"],
-    # Stub version switcher (proves the control renders).
-    "switcher": {
-        "json_url": "_static/switcher.json",
-        "version_match": release,
-    },
-    "show_version_warning_banner": True,
     # Secondary (right) sidebar with in-page table of contents.
     "secondary_sidebar_items": ["page-toc", "sourcelink"],
     "show_toc_level": 2,
@@ -135,7 +131,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/gwexpy/gwexpy",
+            "url": "https://github.com/tatsuki-washimi/gwexpy",
             "icon": "fa-brands fa-github",
             "type": "fontawesome",
         },
@@ -149,7 +145,7 @@ html_theme_options = {
 }
 
 html_context = {
-    "github_user": "gwexpy",
+    "github_user": "tatsuki-washimi",
     "github_repo": "gwexpy",
     "github_version": "main",
     "doc_path": "docs_redesign",

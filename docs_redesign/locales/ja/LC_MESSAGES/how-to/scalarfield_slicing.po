@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-06-30 18:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -63,23 +63,32 @@ msgstr ""
 msgid "Why Always Maintain \"4D\"?"
 msgstr "なぜ「4次元」を維持し続けるのか？"
 
-#: ../../how-to/scalarfield_slicing.md:22 27e4f57ed8554cf6ae77420312a4ddc1
+#: ../../how-to/scalarfield_slicing.md:22 b1f9eb98445f46e58fa0accd63fc0006
 msgid ""
-"A `ScalarField` represents a physical \"field\" with four axes: (time, "
-"frequency, x, y). The reasons for not reducing dimensions (Rank Loss) like "
-"NumPy does are based on the **Four Pillars of Persistence**:"
+"A `ScalarField` represents a physical \"field\" over four axes: `(axis 0, x,"
+" y, z)`. Axis 0 is the **time axis** — or the **frequency axis** after a "
+"time-domain FFT (`fft_time()`) — while axes 1–3 are the **spatial axes** `x,"
+" y, z`, each of which can be transformed to its k-space counterpart `kx, ky,"
+" kz` (`fft_space()`). So a concrete field is laid out as `(t, x, y, z)`, "
+"`(f, x, y, z)`, `(f, kx, ky, kz)`, and so on. The reasons for not reducing "
+"dimensions (Rank Loss) like NumPy does are based on the **Four Pillars of "
+"Persistence**:"
 msgstr ""
-"`ScalarField` は (時間, 周波数, x, y) の 4 つの軸を持つ物理的な「場」を表現します。NumPy "
-"のようにスライス時に次元を削減（Rank Loss）しない理由は、主に以下の **4つの柱** によります。"
+"`ScalarField` は `(axis 0, x, y, z)` の 4 つの軸を持つ物理的な「場」を表します。axis 0 "
+"は**時間軸**（時間領域 FFT である `fft_time()` を適用した後は**周波数軸**）で、軸 1〜3 は**空間軸** `x, y, "
+"z` です。各空間軸は `fft_space()` によって対応する k 空間 `kx, ky, kz` へ変換できます。したがって具体的な場は "
+"`(t, x, y, z)`、`(f, x, y, z)`、`(f, kx, ky, kz)` のように並びます。NumPy "
+"のようにスライス時に次元を削減（Rank Loss）しない理由は、主に以下の **4 つの柱** によります。"
 
 #: ../../how-to/scalarfield_slicing.md:24 83dda5f04f7a4b83a33232742ca9f021
 msgid ""
 "**Domain Protection**: Reducing dimensions causes the loss of metadata "
-"associated with those axes (e.g., `t0`, `f0`, `dx`), making it impossible to"
-" map back to the original physical space."
+"associated with those axes (e.g., `t0`/`f0` for axis 0, `dx`/`dy`/`dz` for "
+"the spatial axes), making it impossible to map back to the original physical"
+" space."
 msgstr ""
-"**ドメイン情報の保護**: 次元を削ると、その軸に紐付いた `t0`, `f0`, `dx` "
-"などのメタデータが消失し、元の物理空間へ戻れなくなります。"
+"**ドメイン情報の保護**：次元を削ると、その軸に紐付いたメタデータ（axis 0 の `t0`/`f0`、各空間軸の `dx`/`dy`/`dz` "
+"など）が失われ、元の物理空間へ戻せなくなります。"
 
 #: ../../how-to/scalarfield_slicing.md:25 e541dce4793d45aba392ed4babf9dae3
 msgid ""
@@ -143,28 +152,28 @@ msgid "3D (Rank Loss)"
 msgstr "3次元 (Rank Loss)"
 
 #: ../../how-to/scalarfield_slicing.md:9 288ee4dde64140729fc9a9cb8ccf25ac
-msgid "**4D (1, F, X, Y)**"
-msgstr "**4次元 (1, F, X, Y)**"
+msgid "**4D (1, X, Y, Z)**"
+msgstr "**4次元 (1, X, Y, Z)**"
 
 #: ../../how-to/scalarfield_slicing.md:9 d120ae8999484993841d1204d904b2c0
-msgid "Snapshot at a specific time (metadata preserved)"
-msgstr "特定の時刻の断面（メタデータ維持）"
+msgid "Snapshot at a single axis-0 (time) index (metadata preserved)"
+msgstr "axis 0（時間）の特定インデックスでの断面（メタデータ維持）"
 
 #: ../../how-to/scalarfield_slicing.md:9 248143e5bb0b4c24a5853ecf1dc22d87
-msgid "`field[:, :, 3, 3]`"
+msgid "`field[:, 3, 3, 3]`"
 msgstr ""
 
 #: ../../how-to/scalarfield_slicing.md:9 74d771f7ddd84f0d89f5c5c4c97b1d75
-msgid "2D (Rank Loss)"
-msgstr "2次元 (Rank Loss)"
+msgid "1D (Rank Loss)"
+msgstr "1次元 (Rank Loss)"
 
 #: ../../how-to/scalarfield_slicing.md:9 01d08edca493463fbe026df34570126b
-msgid "**4D (T, F, 1, 1)**"
-msgstr "**4次元 (T, F, 1, 1)**"
+msgid "**4D (T, 1, 1, 1)**"
+msgstr "**4次元 (T, 1, 1, 1)**"
 
 #: ../../how-to/scalarfield_slicing.md:9 64d8e28cad9d414eb0b296e2edc9349e
-msgid "Time-series at a specific spatial point (metadata preserved)"
-msgstr "特定の空間点の時系列（メタデータ維持）"
+msgid "Time-series at a fixed spatial point `(x, y, z)` (metadata preserved)"
+msgstr "空間点 `(x, y, z)` を固定した時系列（メタデータ維持）"
 
 #: ../../how-to/scalarfield_slicing.md:9 64700e57ac854b6aae740c25e94a7096
 msgid "`field[10:20]`"
@@ -175,12 +184,12 @@ msgid "4D (Maintained)"
 msgstr "4次元 (維持)"
 
 #: ../../how-to/scalarfield_slicing.md:9 c7801f2b7c20499d8d4aace0fde66a9f
-msgid "**4D (10, F, X, Y)**"
-msgstr "**4次元 (10, F, X, Y)**"
+msgid "**4D (10, X, Y, Z)**"
+msgstr "**4次元 (10, X, Y, Z)**"
 
 #: ../../how-to/scalarfield_slicing.md:9 6939fba0cf914ac298374e41d2423d2d
-msgid "Time interval extraction"
-msgstr "時間区間の切り出し"
+msgid "Axis-0 (time) interval extraction"
+msgstr "axis 0（時間）方向の区間切り出し"
 
 #: ../../how-to/scalarfield_slicing.md:43 c160235a93644d338d7353477d5ce330
 msgid ""
@@ -269,11 +278,12 @@ msgstr "出力: 意図が明示された `reshape(...)` 付き演算"
 
 #: ../../how-to/scalarfield_slicing.md:108 d02e42f3c0434c1fbf72cf0af6a5cfc0
 msgid ""
-"The `reshape(3, 1, 1, 1)` form means \"these 3 values belong to the "
-"frequency axis, and the same value is broadcast across time, x, and y.\""
+"The `reshape(3, 1, 1, 1)` form means \"these 3 values lie along axis 0 (the "
+"time/frequency axis), and the same values are broadcast across the x, y, and"
+" z axes.\""
 msgstr ""
-"ここで `reshape(3, 1, 1, 1)` としているのは、「3 要素の補正係数が周波数軸に対応し、時間・x・y "
-"方向には同じ値を使う」ことを明示するためです。"
+"ここで `reshape(3, 1, 1, 1)` としているのは、「3 つの値が axis 0（時間／周波数軸）に沿って並び、x・y・z "
+"の各軸には同じ値をブロードキャストする」ことを明示するためです。"
 
 #: ../../how-to/scalarfield_slicing.md:113 4ea021de3b07476ebc668a69c2082feb
 msgid "FAQ"

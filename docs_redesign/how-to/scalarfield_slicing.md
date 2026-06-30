@@ -19,9 +19,9 @@ This guide explains why `ScalarField` **always maintains its 4-dimensional struc
 (scalarfield-slicing-4d-persistence)=
 ## Why Always Maintain "4D"?
 
-A `ScalarField` represents a physical "field" with four axes: (time, frequency, x, y). The reasons for not reducing dimensions (Rank Loss) like NumPy does are based on the **Four Pillars of Persistence**:
+A `ScalarField` represents a physical "field" over four axes: `(axis 0, x, y, z)`. Axis 0 is the **time axis** — or the **frequency axis** after a time-domain FFT (`fft_time()`) — while axes 1–3 are the **spatial axes** `x, y, z`, each of which can be transformed to its k-space counterpart `kx, ky, kz` (`fft_space()`). So a concrete field is laid out as `(t, x, y, z)`, `(f, x, y, z)`, `(f, kx, ky, kz)`, and so on. The reasons for not reducing dimensions (Rank Loss) like NumPy does are based on the **Four Pillars of Persistence**:
 
-1.  **Domain Protection**: Reducing dimensions causes the loss of metadata associated with those axes (e.g., `t0`, `f0`, `dx`), making it impossible to map back to the original physical space.
+1.  **Domain Protection**: Reducing dimensions causes the loss of metadata associated with those axes (e.g., `t0`/`f0` for axis 0, `dx`/`dy`/`dz` for the spatial axes), making it impossible to map back to the original physical space.
 2.  **FFT/Transformation Consistency**: Always being 4D allows immediate multidimensional operations like `fft()`, `ifft()`, and `spatial_filter()` on any slice.
 3.  **Stream Processing Safety**: The number of dimensions remains constant when passing objects between functions, improving program robustness.
 4.  **Broadcast Consistency**: Dimensional alignment (`reshape`) intent becomes explicit in the code because the object is always 4D.
@@ -33,9 +33,9 @@ A `ScalarField` represents a physical "field" with four axes: (time, frequency, 
 
 | Operation Example | Result Shape (NumPy) | Result Shape (Field) | Physical Meaning |
 | :--- | :---: | :---: | :--- |
-| `field[5]` | 3D (Rank Loss) | **4D (1, F, X, Y)** | Snapshot at a specific time (metadata preserved) |
-| `field[:, :, 3, 3]` | 2D (Rank Loss) | **4D (T, F, 1, 1)** | Time-series at a specific spatial point (metadata preserved) |
-| `field[10:20]` | 4D (Maintained) | **4D (10, F, X, Y)** | Time interval extraction |
+| `field[5]` | 3D (Rank Loss) | **4D (1, X, Y, Z)** | Snapshot at a single axis-0 (time) index (metadata preserved) |
+| `field[:, 3, 3, 3]` | 1D (Rank Loss) | **4D (T, 1, 1, 1)** | Time-series at a fixed spatial point `(x, y, z)` (metadata preserved) |
+| `field[10:20]` | 4D (Maintained) | **4D (10, X, Y, Z)** | Axis-0 (time) interval extraction |
 
 ---
 
@@ -60,16 +60,16 @@ Since you can no longer reconstruct the correct physical axes for operations lik
 from gwexpy.fields import ScalarField
 import numpy as np
 
-# (time, freq, x, y) = (100, 50, 10, 10)
+# (t, x, y, z) = (100, 50, 10, 10)
 field = ScalarField(np.zeros((100, 50, 10, 10)), ...)
 
 # Extract a snapshot at a specific time
 snapshot = field[50]
-# Shape becomes (1, 50, 10, 10), preserving time axis information.
+# Shape becomes (1, 50, 10, 10), preserving the time-axis metadata.
 
-# Extract a spatial cross-section (x-y plane)
+# Extract a spatial cross-section (x-y plane at a fixed z)
 plane = field[:, :, :, 2]
-# Shape becomes (100, 50, 10, 1), preserving y-axis information.
+# Shape becomes (100, 50, 10, 1), preserving the z-axis metadata.
 ```
 
 ### 2. When to Reduce Dimensions (`squeeze`)
@@ -101,11 +101,11 @@ Since `ScalarField` is always 4D, you must match the shape when adding or subtra
 field + np.array([1, 2, 3])  # Shape mismatch
 
 # ✅ Good Example: Reshaping to the correct dimensions
-calibration = np.array([1, 2, 3]).reshape(3, 1, 1, 1) # three coefficients only along the frequency axis
+calibration = np.array([1, 2, 3]).reshape(3, 1, 1, 1) # three coefficients along axis 0 (time/frequency)
 field + calibration
 ```
 
-The `reshape(3, 1, 1, 1)` form means "these 3 values belong to the frequency axis, and the same value is broadcast across time, x, and y."
+The `reshape(3, 1, 1, 1)` form means "these 3 values lie along axis 0 (the time/frequency axis), and the same values are broadcast across the x, y, and z axes."
 
 ---
 

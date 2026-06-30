@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Command-Line Interface (CLI, Experimental)
 
 ## Overview

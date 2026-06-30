@@ -82,6 +82,25 @@ article.bd-article h3 {
   letter-spacing: 0.02em;
 }
 
+/* --- Header / top band --------------------------------------------------- */
+
+/* Keep the top navbar compact so it does not crowd the content. The theme
+ * default reserves a tall band; trim its vertical padding and cap the logo
+ * height for a slimmer header. */
+.bd-header.navbar {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.bd-header .navbar-brand.logo {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.bd-header .navbar-brand img,
+.bd-header .navbar-brand .logo__image {
+  max-height: 2rem;
+}
+
 /* --- Misc polish --------------------------------------------------------- */
 
 /* Soften code blocks to sit comfortably within the calmer page. */
