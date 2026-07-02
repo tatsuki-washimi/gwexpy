@@ -1,40 +1,17 @@
 ---
 name: phase1_scale_invariance
-description: Use when implementing or reviewing numerical algorithms that may break on tiny gravitational-wave scale inputs or rely on hardcoded eps/tol defaults.
+description: "(deprecated) 数値スケール妥当性の検証・修正。numeric-scale-checker agent に統合されました。"
 ---
 
-# Phase 1 Scale Invariance
+# Phase 1 Scale Invariance — Deprecated
 
-This skill helps you detect "Death Floats" and ensure numerical robustness against GW strain scales (~1e-21).
+この skill は **numeric-scale-checker agent** に統合されました。
 
-## Overview
-Standard numerical thresholds (e.g., `1e-12`) often fail for GW strain data. This skill helps you implement scale-aware defaults and verification.
+GW strain スケール（~1e-21）に対する数値定数（`eps/tol/atol/rtol`）の妥当性検証・スケール不変性テストは以下を使用してください:
 
-## When to Use
-- Implementing whitening, fitting, Matrix SVD, or PCA.
-- Adding new `eps`, `tol`, `atol`, or `rtol` parameters.
-- Reviewing spectral analysis or filters.
-- Encountering "ill-conditioned matrix" or "loss of precision" errors.
+- **canonical**: `.harness/agents/numeric-scale-checker.md`
 
-## Core Workflow
-1. **Inventory**: Find all hardcoded `1e-X` constants in the numerical path.
-2. **Normalize**: If an algorithm requires it, normalize input data before processing and rescale outputs.
-3. **Relative Jitter**: Add epsilon relative to the data RMS, e.g., `1e-9 * data.rms()`.
-4. **Scale-Invariance Test**: Test that `f(X) ≡ f(1e-20 * X)` produce consistent results.
-5. **Numerical Hardening**:
-   - Check `np.isfinite` before and after operations.
-   - Use `slogdet` instead of `det`.
+## 移行手順
 
-## Preferred Fix Patterns
-- **Instead of**: `eps = 1e-12`
-- **Use**: `eps = 1e-9 * np.max(np.abs(data))` or `eps = getattr(data, "machine_precision", 1e-12)`
-- **Or**: Use a scale-aware helper from `gwexpy.numerics`.
-
-## Verification
-- Run a unit test injecting a signal of magnitude `1e-21`.
-- Verify the output SNR or fit results are scale-invariant.
-
-## Common Mistakes
-- Thinking `1e-12` is "small enough" for GW strain (it's 1,000,000x larger than the signal).
-- Only testing with amplitude `1.0` signals.
-- Ignoring rounding errors in long signal processing chains.
+以前このスキルを呼び出していた箇所を `numeric-scale-checker` agent に置き換えてください。
+agent はこの skill の全チェックリスト・修正パターン・出力フォーマットを引き継いでいます。

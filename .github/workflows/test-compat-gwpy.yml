@@ -3,12 +3,26 @@ name: Test (gwpy-compat)
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "docs/**"
-      - "**/*.md"
-      - ".github/ISSUE_TEMPLATE/**"
-      - ".github/PULL_REQUEST_TEMPLATE.md"
-      - ".github/pull_request_template.md"
+    # Limit PR runs to the TimeSeries dependency cone (verified via import grep):
+    # interop/io/types are core deps; plot is reached via gwexpy/types' plot mixin.
+    # Unrelated PRs (astro/table/segments/gui/nds/docs) skip this gate; main push
+    # and manual dispatch keep full coverage.
+    paths:
+      - "gwexpy/timeseries/**"
+      - "gwexpy/frequencyseries/**"
+      - "gwexpy/spectrogram/**"
+      - "gwexpy/signal/**"
+      - "gwexpy/types/**"
+      - "gwexpy/interop/**"
+      - "gwexpy/io/**"
+      - "gwexpy/fitting/**"
+      - "gwexpy/plot/**"
+      - "gwexpy/utils/**"
+      - "tests/timeseries/**"
+      - "pyproject.toml"
+      - "requirements*.txt"
+      - "environment.yml"
+      - ".github/workflows/test-compat-gwpy.yml"
   push:
     branches: [main]
   workflow_dispatch:
@@ -27,6 +41,7 @@ jobs:
   gwpy-compat:
     name: GWpy compatibility
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     defaults:
       run:
         shell: bash -leo pipefail {0}
@@ -46,6 +61,8 @@ jobs:
             python=3.11
             pip
           init-shell: bash
+          cache-environment: true
+          cache-downloads: true
 
       - name: Provision compatibility environment
         run: |

@@ -27,6 +27,8 @@ runs:
         create-args: >-
           python=${{ inputs.python-version }}
         init-shell: bash
+        cache-environment: true
+        cache-downloads: true
 
     - name: Provision gwexpy environment
       shell: bash -leo pipefail {0}

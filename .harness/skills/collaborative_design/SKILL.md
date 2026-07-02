@@ -32,3 +32,13 @@ Non-destructive tasks to enhance the accuracy of discussion and analysis can be 
 2.  **Propose**: Present plan or design proposals in Markdown format.
 3.  **Refine**: Receive user feedback and revise/improve the proposal until satisfied.
 4.  **Hand Off**: Once the direction is accepted, move to `setup_plan` for the written implementation plan.
+
+## ロードマップ批評テンプレート
+
+3段階フロー（実績: v0.2.0 ロードマップレビュー）:
+
+1. **批評フェーズ**: 既存計画の弱点・監査 issue との突合を `## Appendix: Critique` として記録
+2. **選択肢比較**: Option A/B/C を「スコープ・工数・リスク」軸で並べた表として提示
+3. **確定記録**: ユーザー決定受領後、変更内容を `## Final Execution Plan` セクションに記録
+
+ステータス表現は `.harness/rules/common/planning-docs.md` に従う（`planned` / `in-progress` / `completed`）。

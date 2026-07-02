@@ -135,6 +135,9 @@ Consultant, [テーマ] について以下を教えてください：
 4. **linkcheck の外部リンク失敗は NW 制限由来が多い**  
    - release blocker にしない（CI 環境で再確認する旨をメモ）
 
+詳細なルール（write-scope 宣言、not-alone 原則、conflict escalation 手順）は
+`.harness/rules/common/parallel-worktrees.md` を参照。
+
 ---
 
 ## よくあるエラーと対処
@@ -181,3 +184,12 @@ Ctrl-b d
 - Phase が複数並行する大規模ドキュメント整備
 - 独立したタスクを並列処理して納期を短縮したい時
 - 戦略的な技術的判断と実作業員の分離が必要な時
+
+---
+
+## 軽量サブエージェント並列調査パターン
+
+読み取り専用の調査タスク（セッション履歴分析、コード検索、ドキュメント監査など）は軽量モデル（Haiku 相当）のサブエージェントに並列分配可能。3～5 エージェントで独立した検索空間を分業。
+
+**モデル選定**: `.harness/rules/common/model-assignment.md` 参照
+**並列時の write-scope 規約**: `.harness/rules/common/parallel-worktrees.md` 参照

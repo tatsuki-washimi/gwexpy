@@ -1,8 +1,8 @@
 name: Extended Nightly
 
 on:
-  schedule:
-    - cron: "30 2 * * *"
+  # Daily schedule disabled to stay within GitHub Actions free-minute quota
+  # (macOS runners cost ~10x Linux). Run manually when platform coverage needed.
   workflow_dispatch:
 
 permissions:
