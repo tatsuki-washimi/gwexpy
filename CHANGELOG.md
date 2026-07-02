@@ -1,5 +1,57 @@
 # Changelog
 
+## [0.1.7] - 2026-06-27
+
+This is a numerical-robustness hardening release. A Phase 1 audit across the
+statistics, fitting, and spectral modules surfaced a set of silent-failure and
+degenerate-input bugs; this release adds explicit input-contract guards and a
+matching suite of regression tests so that invalid inputs raise clear errors
+instead of producing Inf/NaN or silently wrong results.
+
+### Bug fixes
+
+- **fitting/core**: LSQ cost classes now validate `dy` — zero, negative,
+  non-finite, or complex elements raise `ValueError` instead of causing silent
+  fit failures or Inf/NaN results (#469).
+- **fitting/gls**: GLS classes gained covariance / inverse-covariance
+  conditioning guards and PSD checks (#457 via #472).
+- **fitting/models**: Added degenerate-parameter guards to model shape
+  functions (#455 via #471).
+- **statistics**: Guarded degenerate and non-finite inputs across
+  `rayleigh_test`, `gauch`, `dq_flag`, and `student_t_indicator` — all-NaN
+  inputs, `p=0` false vetoes, Inf-corrupted distributions, an `IndexError`,
+  and mis-sized segments are now handled explicitly (#459 via #470).
+- **statistics/roc**: `calculate_roc` and `evaluate_detection_performance`
+  enforce their input contract — empty classes, shape mismatch, non-finite
+  scores, and tied-FPR bias now raise `ValueError`, and sklearn-style
+  `{-1, +1}` labels are handled correctly (#468).
+- **spectral**: Guarded `bootstrap_spectrogram` edge cases — float truncation,
+  NaN/Inf energy, `rebin_width` validation, covariance mean-imputation, and
+  zero-width confidence-interval warnings (#460 via #473).
+
+### Tests
+
+- Added input-contract regression suites covering the fixes above:
+  `tests/fitting/test_lsq_cost_dy_contract.py`,
+  `tests/fitting/test_gls_contracts.py`,
+  `tests/fitting/test_models_domain_contract.py`,
+  `tests/statistics/test_degenerate_input_contract.py`,
+  `tests/statistics/test_roc_input_contract.py`,
+  `tests/spectral/test_bootstrap_spectrogram_contract.py`.
+
+### Maintenance
+
+- Centralized gwexpy provisioning across CI workflows and fixed nightly drift
+  via a shared `setup-gwexpy` composite action (#454).
+- Added release-note tooling (`tools/gen_release_notes.py`,
+  `tools/publish_releases.sh`) that generates standardized GitHub Release notes
+  from `CHANGELOG.md`.
+
+### Documentation
+
+- Added the Phase 1 numerical-robustness sweep and supplement reports under
+  `tech_notes/` (#462).
+
 ## [0.1.6] - 2026-06-11
 
 This is a bugfix and maintenance release: plotting/I/O follow-up fixes
