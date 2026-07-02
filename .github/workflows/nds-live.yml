@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up micromamba (conda-forge)
         uses: mamba-org/setup-micromamba@v3
