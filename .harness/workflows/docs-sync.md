@@ -29,6 +29,16 @@ trigger: manual
    - バージョン番号、著者、引用情報が最新か
    - `codemeta.json` が存在しない場合はチェック対象から外す
 
+4. **Contract Verification (I/O & Interop API)**
+   - 公開 I/O・interop API 変更時は `docs/developers/contracts/public_io_contract.md`、`public_interop_contract.md` との同期を確認
+   - 同期テスト実行:
+     ```bash
+     conda run -n gwexpy pytest tests/io/test_io_docs_contract_sync.py
+     python scripts/ci/run_gate.py io-contract
+     python scripts/check_docs_sync.py
+     ```
+   - 背景: contract と実装のずれは過去セッション分析で手戻り原因の約25%を占めた
+
 ## Integration with Feature Development
 実装完了前に以下のコマンドでドキュメントの差分を確認してください。
 

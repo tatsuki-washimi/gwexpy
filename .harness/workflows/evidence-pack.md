@@ -8,6 +8,28 @@ trigger: manual
 
 作業が完了したら、以下の手順で監査証跡（Audit Manifest）を作成し、PR の説明欄に添付してください。
 
+## 雛形の自動生成
+
+スクリプトを使って Audit Manifest の雛形を自動生成できます。
+
+```bash
+python scripts/generate_evidence_pack.py \
+    --base main \
+    --task "タスク名 / Issue 番号" \
+    --tests "pytest tests/io PASS" \
+    --tests "ruff check PASS" \
+    --skills "setup_plan,verify_physics" \
+    | tee /tmp/evidence.md
+```
+
+生成後は `/tmp/evidence.md` を開き、以下の手動項目を追記してください。
+
+- `<!-- TODO: ... -->` プレースホルダーを実際の内容で置き換える
+- **Physics Review**: `verify_physics` / `check_physics` スキルの判定結果
+- **Known Gaps**: 将来の課題・制限事項
+
+> **フォールバック**: スクリプトが実行できない場合は、下記の「Manifest Generation」手順に従って手動で作成してください。
+
 ## When to Use
 - 機能実装が完了し、PR を作成する直前
 - 技術的負債の解消作業が完了した時

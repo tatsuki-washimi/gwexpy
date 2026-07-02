@@ -1,6 +1,6 @@
 # gwexpy Agent Skills
 
-**総スキル数**: 39
+**総スキル数**: active 43（+ deprecated stub 2）
 
 Agent Skills は AI エージェントに専門知識と実行能力を提供するオープンスタンダード形式のパッケージです。
 
@@ -42,7 +42,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `multi_agent_orchestration` | GM・Consultant・Workerをtmuxセッションへ分散させ、大量タスクを並列処理するコーディネーターガイド |
 | `prep_release`     | バージョン更新、CHANGELOG整備、パッケージビルド・公開など、リリース準備を行う     |
 
-### 開発・コーディング (6)
+### 開発・コーディング (6 active + 1 deprecated)
 
 | スキル                  | 説明                                                                        |
 | ----------------------- | --------------------------------------------------------------------------- |
@@ -51,24 +51,29 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `fix_errors`            | MyPy、Python 3.9 互換性、ノートブックなど各種エラーを修正するパターン集    |
 | `manage_field_metadata` | 多次元フィールドの4D構造維持、ドメイン変換、物理単位の整合性を管理する      |
 | `manage_gui`            | PyQt等のモノリシックなGUIクラスを分離・リファクタリングする                 |
-| `phase0_exception_sweep` | サイレント失敗や広域例外の監査と修正手順を自動化する                     |
+| `gh_pr_comment`          | GitHub PR へのコメント投稿・管理を行う                                   |
+| ~~`phase0_exception_sweep`~~ | *(deprecated → [exception-auditor agent](../agents/exception-auditor.md))* |
 
-### 品質保証・テスト (3)
+### 品質保証・テスト (7)
 
-| スキル       | 説明                                                                  |
-| ------------ | --------------------------------------------------------------------- |
-| `run_tests`  | pytest、GUIテスト、ノートブック実行を含む統合テストスイートを実行する |
-| `lint_check` | Ruff、MyPyによるコード品質チェックと依存関係の整合性検証             |
-| `profile`    | 指定したコードの実行速度をプロファイリングし、ボトルネックを特定する  |
+| スキル                | 説明                                                                  |
+| --------------------- | --------------------------------------------------------------------- |
+| `run_tests`           | pytest、GUIテスト、ノートブック実行を含む統合テストスイートを実行する |
+| `lint_check`          | Ruff、MyPyによるコード品質チェックと依存関係の整合性検証             |
+| `profile`             | 指定したコードの実行速度をプロファイリングし、ボトルネックを特定する  |
+| `audit_api_elements`  | gwexpy の公開 API 要素（関数・クラス・型）の整合性を監査する          |
+| `verify_hardening`    | セキュリティ・堅牢性観点でのコードハードニング検証を行う              |
+| `audit_io_backends`   | I/O バックエンド（GWF, HDF5, Zarr 等）の読み書き整合性を検証する      |
+| `triage_ci`           | CI 失敗時の失敗ジョブ特定からローカル再現・修正・再確認までの triage を行う |
 
-### 科学・物理検証 (4)
+### 科学・物理検証 (3 active + 1 deprecated)
 
 | スキル             | 説明                                                                               |
 | ------------------ | ---------------------------------------------------------------------------------- |
 | `verify_physics`   | 実装内容が数学的・物理学的に妥当か検証する                                        |
 | `calc_bode`        | python-controlを使用して、Bode Plotを計算・表示する                                |
 | `visualize_fields` | 多次元フィールドデータの描画API実装、プロット軸の診断・修正を行う                  |
-| `phase1_scale_invariance` | 数値スケール妥当性とスケール不変性の検証手順を自動化する                   |
+| ~~`phase1_scale_invariance`~~ | *(deprecated → [numeric-scale-checker agent](../agents/numeric-scale-checker.md))* |
 
 ### ドキュメント (6)
 
@@ -81,7 +86,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `web_docs_page_rewrite` | `docs/web` の個別ページを要約、早見表、FAQ込みで再設計する |
 | `web_docs_release_gates` | `docs/web` の build、linkcheck、Notebook、ja/en 同期を公開前に確認する |
 
-### プロジェクト管理 (10)
+### プロジェクト管理 (11)
 
 | スキル                 | 説明                                                                         |
 | ---------------------- | ---------------------------------------------------------------------------- |
@@ -95,6 +100,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `learn_skill`          | 会話履歴や作業内容から、再利用可能なエージェントスキルを生成する            |
 | `list_skills`          | 登録されているスキル一覧をカテゴリー別に分類して表示する                    |
 | `recover_quota`        | LLMのクオータを管理・節約し、効率的に回復・継続するための戦略を実行する     |
+| `session_retrospective` | 過去のAIセッション履歴を横断分析し、harness（skills/rules/hooks）の更新候補を抽出する |
 
 ### ユーティリティ (4)
 
@@ -104,6 +110,15 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `analyze_external`        | 外部コード、ドキュメント、メディア、Web情報を分析する                     |
 | `refactor_code`           | Notebook内コードやプロジェクトコードの一括リファクタリングを行う          |
 | `presentation_management` | PowerPointの自動生成・編集、Google Slidesとの連携を行う                    |
+
+### Deprecated（agent へ統合）
+
+以下の skill は stub のみ残存しています。実作業には canonical の agent を使用してください。
+
+| スキル（stub）              | 移行先 agent                                                              |
+| --------------------------- | ------------------------------------------------------------------------- |
+| `phase0_exception_sweep`    | [exception-auditor](../agents/exception-auditor.md)                       |
+| `phase1_scale_invariance`   | [numeric-scale-checker](../agents/numeric-scale-checker.md)               |
 
 ---
 

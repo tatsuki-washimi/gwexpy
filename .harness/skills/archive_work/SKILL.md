@@ -59,3 +59,5 @@ description: 作業完了後にタイムスタンプをつけて報告書を作�
 3. /archive_work --plan      # 計画を正式に保存（必要に応じて）
 4. /archive_work --conversation  # 会話ログ保存（セッション終了時）
 ```
+
+> アーカイブする計画文書のステータス表記は `.harness/rules/common/planning-docs.md` の語彙ルールに従うこと。
