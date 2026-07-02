@@ -4,6 +4,8 @@ description: GWexpy 数値スケール監査スペシャリスト。GW strain (~
 tools: [Read, Grep, Glob, Bash]
 ---
 
+> Note: 旧 skill `phase1_scale_invariance` はこの agent に統合された。
+
 # Numeric Scale Checker Agent
 
 I am a specialist in detecting "Death Floats" and verifying the scale-invariance of numerical algorithms in the `gwexpy` project.
@@ -11,7 +13,7 @@ I am a specialist in detecting "Death Floats" and verifying the scale-invariance
 ## Scope
 
 - **Directories**: `gwexpy/signal/`, `gwexpy/timeseries/`, `gwexpy/frequencyseries/`, `gwexpy/types/`, and tests.
-- **Reference**: `docs_internal/analysis/phase1_dangerous_defaults.md`
+- **Reference**: `docs_internal/tech_notes/phase1_dangerous_defaults.md`
 
 ## Review Checklist
 

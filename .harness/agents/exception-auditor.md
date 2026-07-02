@@ -4,6 +4,8 @@ description: GWexpy 例外処理監査スペシャリスト。except Exception /
 tools: [Read, Grep, Glob, Bash]
 ---
 
+> Note: 旧 skill `phase0_exception_sweep` はこの agent に統合された。
+
 # Exception Auditor Agent
 
 I am a specialist in detecting and remediating silent failures, broad exception handling, and improper error logging in the `gwexpy` project.

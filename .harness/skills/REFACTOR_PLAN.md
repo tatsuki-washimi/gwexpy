@@ -1,7 +1,7 @@
 # Agent Skills 整備計画
 
 **作成日**: 2026-01-31  
-**ステータス**: Phase 1 完了 / Phase 2 完了
+**ステータス**: Phase 1 完了 / Phase 2 完了 / Phase 3（2026-06）進行中
 
 ---
 
@@ -11,9 +11,10 @@ gwexpy の Agent Skills を整備し、トークン効率とメンテナンス�
 
 ### 目標
 
-- スキル数: 47 → 20-25 (約50%削減)
-- 起動時トークン: ~4,700 → ~2,000 (約57%削減)
+- スキル数: 47 → active 41 を維持しつつ overlap を継続監査（当初の 20-25 削減目標は実態に合わせ改訂）
+- 起動時トークン: ~4,700 → ~2,000 (約57%削減) ← 引き続き達成を目指す
 - Progressive Disclosure の徹底
+- deprecated stub による段階的移行（削除よりも誘導を優先）
 
 ---
 
@@ -114,7 +115,42 @@ add_type/
 
 ---
 
-## Phase 3: カタログ整備
+## Phase 3（2026-06）: セッション分析反映
+
+### 3.0 今回の変更記録（2026-06-10）
+
+#### 新規スキル追加
+
+- `audit_io_backends` 新設（品質保証・テストカテゴリ）: I/O バックエンド整合性検証
+
+#### 索引未掲載スキルの同期
+
+以下 3 件を skills/README.md の適切なカテゴリに追加:
+
+| スキル | 追加カテゴリ |
+|--------|------------|
+| `audit_api_elements` | 品質保証・テスト |
+| `gh_pr_comment` | 開発・コーディング |
+| `verify_hardening` | 品質保証・テスト |
+
+#### Deprecated stub 化
+
+| 旧スキル | canonical 移行先 |
+|---------|----------------|
+| `phase0_exception_sweep` | `exception-auditor` agent |
+| `phase1_scale_invariance` | `numeric-scale-checker` agent |
+
+スキルディレクトリは削除せず、10行以内の stub に置換。各 agent 冒頭に移行注記を追加。
+
+#### 索引・件数同期
+
+- `skills/README.md`: 総数を「active 41（+ deprecated stub 2）」に更新
+- `.harness/README.md`: skills 件数を「active 41」、rules 件数を「10件」に更新
+- `rules/common/` 一覧に `parallel-worktrees.md` / `planning-docs.md` を追加
+
+---
+
+## Phase 3（旧）: カタログ整備
 
 ### 3.1 index.md の作成
 

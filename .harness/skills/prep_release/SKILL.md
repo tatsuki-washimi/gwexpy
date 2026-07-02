@@ -51,3 +51,4 @@ description: バージョン更新、CHANGELOG整備、パッケージビルド�
 1. [reference/versioning.md](reference/versioning.md) - バージョン更新
 2. [reference/changelog.md](reference/changelog.md) - CHANGELOG 整備
 3. [reference/build.md](reference/build.md) - パッケージビルド
+4. [reference/post_release.md](reference/post_release.md) - PyPI 公開後の段階検証（smoke / GitHub Release / Zenodo / conda-forge）
