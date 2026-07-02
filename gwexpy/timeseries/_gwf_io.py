@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from typing import Any
 
+from astropy.io.registry import IORegistryError
 from gwpy.io.registry import default_registry as io_registry
 from gwpy.time import to_gps
 
@@ -41,14 +43,30 @@ _GWF_REGISTRY_SYNCED = False
 def _safe_get_reader(format_name: str, cls: type[Any]) -> Any | None:
     try:
         return io_registry.get_reader(format_name, cls)
-    except Exception:
+    except IORegistryError:
+        # No reader registered for this format/class (e.g. optional backend missing).
+        return None
+    except Exception as exc:
+        # This runs at import time; warn rather than crash on unexpected failures.
+        warnings.warn(
+            f"GWF alias registration skipped for {format_name!r}: {exc}",
+            stacklevel=2,
+        )
         return None
 
 
 def _safe_get_writer(format_name: str, cls: type[Any]) -> Any | None:
     try:
         return io_registry.get_writer(format_name, cls)
-    except Exception:
+    except IORegistryError:
+        # No writer registered for this format/class (e.g. optional backend missing).
+        return None
+    except Exception as exc:
+        # This runs at import time; warn rather than crash on unexpected failures.
+        warnings.warn(
+            f"GWF alias registration skipped for {format_name!r}: {exc}",
+            stacklevel=2,
+        )
         return None
 
 
@@ -66,7 +84,12 @@ def _sync_gwf_registry_aliases() -> None:
 
     try:
         from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-    except Exception:
+    except ImportError as exc:
+        # Circular import during package bootstrap; warn so the skip is visible.
+        warnings.warn(
+            f"GWF alias registration skipped: {exc}",
+            stacklevel=2,
+        )
         return
 
     canonical_formats = ("gwf", "gwf.framecpp", "gwf.framel", "gwf.lalframe")

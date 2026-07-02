@@ -22,6 +22,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._multi import reject_multi_source
 from ._registration import register_timeseries_format
 
 
@@ -82,6 +83,11 @@ def read_timeseriesdict_audio(
         Additional keyword arguments accepted for reader compatibility.
 
     """
+    # An audio file is a self-contained (possibly multi-channel) recording
+    # without absolute timestamps, so merging multiple files is not
+    # meaningful; fail early with a clear error.
+    reject_multi_source(source, format_hint or "audio")
+
     AudioSegment = _import_pydub()
 
     seg_kwargs = {}

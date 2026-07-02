@@ -251,12 +251,20 @@ def generate_zarr(filename):
 
 def generate_netcdf4(filename):
     if netCDF4 is None: return
+    t0 = 1704067200.0
+    dt = 0.1
+    n = 100
     with netCDF4.Dataset(filename, 'w', format='NETCDF4') as ds:
-        ds.createDimension('time', 100)
+        ds.createDimension('time', n)
+        tc = ds.createVariable('time', 'f8', ('time',))
+        tc[:] = t0 + np.arange(n) * dt
+        tc.long_name = 'GPS time'
+        tc.units = 's'
         v = ds.createVariable('ch1', 'f4', ('time',))
-        v[:] = np.random.randn(100)
-        v.setncattr('t0', 1704067200.0)
-        v.setncattr('dt', 0.1)
+        rng = np.random.default_rng(0)
+        v[:] = rng.normal(size=n)
+        v.setncattr('t0', t0)
+        v.setncattr('dt', dt)
 
 def generate_tdms(filename):
     if nptdms is None: return

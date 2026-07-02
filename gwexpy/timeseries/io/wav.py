@@ -17,6 +17,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict
+from ._multi import reject_multi_source
 from ._registration import register_timeseries_format
 
 
@@ -61,6 +62,11 @@ def read_timeseriesdict_wav(
     Channels are named 'channel_0', 'channel_1', etc.
 
     """
+    # A WAV file is a self-contained (possibly multi-channel) recording
+    # without absolute timestamps, so merging multiple files is not
+    # meaningful; fail early with a clear error.
+    reject_multi_source(source, "wav")
+
     # Filter kwargs for wavfile.read
     scipy_kwargs = {
         k: v for k, v in kwargs.items() if k not in ("start", "end", "format")

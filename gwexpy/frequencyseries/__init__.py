@@ -30,3 +30,6 @@ _CR.register_constructor("FrequencySeriesList", FrequencySeriesList)
 _CR.register_constructor("FrequencySeriesMatrix", FrequencySeriesMatrix)
 _CR.register_constructor("BifrequencyMap", BifrequencyMap)
 del _CR
+
+# Register I/O readers on import
+from . import io as _io  # noqa: F401

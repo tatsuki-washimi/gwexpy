@@ -432,3 +432,38 @@ class TestZarrRoundtrip:
         assert list(loaded.row_keys()) == [0, 1]
         assert list(loaded.col_keys()) == [10, 20]
         np.testing.assert_allclose(loaded.value, data)
+
+    def test_matrix_multi_store_preserves_row_col_keys(self, tmp_path):
+        """Reading a list of Zarr matrix stores must preserve gwexpy_row/col_key (#443)."""
+        from collections import OrderedDict
+
+        from gwexpy.types.metadata import MetaData, MetaDataDict
+
+        seg1 = TimeSeriesMatrix(
+            np.arange(12, dtype=np.float64).reshape(2, 1, 6),
+            t0=1000000000.0,
+            sample_rate=16.0,
+        )
+        seg2 = TimeSeriesMatrix(
+            np.arange(12, 24, dtype=np.float64).reshape(2, 1, 6),
+            t0=1000000000.0 + 6 / 16.0,
+            sample_rate=16.0,
+        )
+        for seg in (seg1, seg2):
+            seg.rows = MetaDataDict(
+                OrderedDict({"H1": MetaData(), "L1": MetaData()}),
+                expected_size=2,
+                key_prefix="row",
+            )
+
+        path1 = tmp_path / "seg1.zarr"
+        path2 = tmp_path / "seg2.zarr"
+        seg1.write(str(path1), format="zarr")
+        seg2.write(str(path2), format="zarr")
+
+        merged = TimeSeriesMatrix.read([str(path1), str(path2)], format="zarr")
+
+        assert list(merged.row_keys()) == ["H1", "L1"], (
+            f"row keys lost after multi-store read: {list(merged.row_keys())}"
+        )
+        assert merged.shape[-1] == 12

@@ -21,6 +21,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict
+from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
 
 _ATS_HEADER_MIN_SIZE = 1024
@@ -154,7 +155,15 @@ def _read_ats_header(fh) -> dict[str, Any]:
 
 
 def read_timeseriesdict_ats(source, **kwargs):
-    """Read a Metronix ATS file into a ``TimeSeriesDict``."""
+    """Read one or more Metronix ATS files into a ``TimeSeriesDict``.
+
+    Each ATS file holds a single channel; a list of paths therefore
+    yields one entry per distinct channel, with files for the same
+    channel concatenated along the time axis.
+    """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(read_timeseriesdict_ats, multi, "ats", **kwargs)
     ts = read_timeseries_ats(source, **kwargs)
     return TimeSeriesDict({ts.name: ts})
 
@@ -170,8 +179,9 @@ def read_timeseries_ats(
 
     Parameters
     ----------
-    source : str or Path
-        Path to the ATS file, or an open file object.
+    source : str, Path, or list of str/Path
+        Path to the ATS file, an open file object, or a list of paths
+        (segments of the same channel are concatenated along time).
     unit : str or Unit, optional
         Physical unit override (default: V).
     epoch : float or datetime, optional
@@ -181,6 +191,13 @@ def read_timeseries_ats(
         Additional keyword arguments.
 
     """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        tsd = read_timeseriesdict_ats(multi, unit=unit, epoch=epoch, **kwargs)
+        if not tsd:
+            raise ValueError("No data found in ATS files")
+        return tsd[next(iter(tsd.keys()))]
+
     if hasattr(source, "read"):
         return _read_timeseries_ats_file(source, unit=unit, epoch=epoch, **kwargs)
 

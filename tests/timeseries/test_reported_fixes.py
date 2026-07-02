@@ -52,6 +52,25 @@ def test_crop_with_array_to_gps():
     assert len(tsc) == 10
 
 
+def test_to_gps_preserves_timeseries_times_units():
+    ts = TimeSeries(np.arange(3.0), times=np.array([0, 1, 2]) * u.ms)
+
+    np.testing.assert_allclose(to_gps(ts.times), [0.0, 0.001, 0.002])
+
+
+def test_to_gps_quantity_dtype_interoperates_with_timeseries_times():
+    ts = TimeSeries(np.arange(3.0), t0=1000.0, dt=1.0)
+    gps = to_gps(1001.0, dtype="quantity")
+
+    mask = ts.times > gps
+    delta = ts.times - gps
+
+    assert mask.dtype == bool
+    np.testing.assert_array_equal(mask, [False, False, True])
+    assert delta.unit == u.s
+    np.testing.assert_allclose(delta.value, [-1.0, 0.0, 1.0])
+
+
 def test_as_series_with_datetime():
     times = [datetime(2020, 1, 1, 0, 0, 0), datetime(2020, 1, 1, 0, 0, 1)]
 

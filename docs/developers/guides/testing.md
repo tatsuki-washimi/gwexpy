@@ -50,10 +50,12 @@ python -m pytest
 ## Reproducing CI Gates Locally
 
 Gate-equivalent commands are centralized in `scripts/ci/run_gate.py` and are kept in sync with CI jobs.
+The `ci_jobs=base` contract mapping currently points to `python scripts/ci/run_gate.py io-conformance`; optional logical jobs stay as separate future mappings unless they are already documented elsewhere.
 
 ```bash
 python scripts/ci/run_gate.py pr-fast
 python scripts/ci/run_gate.py io-contract
+python scripts/ci/run_gate.py io-conformance
 python scripts/ci/run_gate.py io-optional
 python scripts/ci/run_gate.py io-network-backend
 python scripts/ci/run_gate.py docs-notebook
@@ -62,6 +64,8 @@ python scripts/ci/run_gate.py interop-contract
 ```
 
 Each gate runs the same command set as the corresponding workflow job, so use these for local reproduction before opening a PR.
+
+The `NDS Live Tests` workflow is **manual-only** (`workflow_dispatch`): it connects to a live NDS server and needs network access plus Kerberos credentials that scheduled CI does not have, so it is never run automatically and an empty run history is expected. Trigger it on demand from the Actions tab to validate NDS connectivity.
 
 GUI tests are split into two buckets:
 

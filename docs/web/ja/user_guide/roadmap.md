@@ -33,7 +33,9 @@
 
 ## 公開トラッキング先
 
+- [不具合報告・機能追加リクエスト用の簡易フォーム](https://forms.gle/c8jJaf9UCs5tb5cC8)
 - [GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues)
+- [セキュリティポリシー](https://github.com/tatsuki-washimi/gwexpy/blob/main/SECURITY.md)。脆弱性情報はフォームや public issue には含めないでください。
 - [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)
 - [更新履歴](changelog.md)
 

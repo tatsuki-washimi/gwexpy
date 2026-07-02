@@ -10,6 +10,7 @@ import pandas as pd
 from astropy.time import Time
 
 from .. import TimeSeries, TimeSeriesDict
+from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
 
 # Unit extraction factors (Imperial to Metric)
@@ -44,8 +45,11 @@ def read_timeseriesdict_sdb(
 
     Parameters
     ----------
-    source : str or Path
-        Path to SQLite database file.
+    source : str, Path, or list of str/Path
+        Path to SQLite database file, or a list of paths.  When a list
+        is given, columns found in several databases are concatenated
+        along the time axis and columns unique to one database are
+        merged in.
     table : str, optional
         Table name to read from, default 'archive'.
     columns : list, optional
@@ -54,6 +58,17 @@ def read_timeseriesdict_sdb(
         Additional compatibility arguments accepted and ignored.
 
     """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_sdb,
+            multi,
+            "sdb",
+            table=table,
+            columns=columns,
+            **kwargs,
+        )
+
     # gwpy's registry may pass an already-open file object for explicit
     # ``.read(..., format="sdb")`` calls; sqlite3 needs the underlying path.
     if hasattr(source, "name"):

@@ -15,6 +15,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
 
 
@@ -41,8 +42,10 @@ def read_timeseriesdict_tdms(
 
     Parameters
     ----------
-    source : str or Path
-        Path to the TDMS file.
+    source : str, Path, or list of str/Path
+        Path to the TDMS file, or a list of paths.  When a list is
+        given, channels found in several files are concatenated along
+        the time axis and channels unique to one file are merged in.
     channels : iterable of str, optional
         Channel names to keep.
     unit : str or Unit, optional
@@ -54,6 +57,18 @@ def read_timeseriesdict_tdms(
         Additional keyword arguments forwarded to the TDMS reader.
 
     """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_tdms,
+            multi,
+            "tdms",
+            channels=channels,
+            unit=unit,
+            epoch=epoch,
+            **kwargs,
+        )
+
     TdmsFile = _import_nptdms()
     tdms_file = TdmsFile.read(source)
 

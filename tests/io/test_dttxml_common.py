@@ -8,12 +8,14 @@ import warnings
 import numpy as np
 import pytest
 
+import gwexpy.io.dttxml_common as dttxml_common
 from gwexpy.io.dttxml_common import (
     ChannelInfo,
     _decode_dtt_stream,
     extract_xml_channels,
     load_dttxml_products,
 )
+from gwexpy.timeseries import TimeSeriesDict
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -58,6 +60,43 @@ def _base64_complex128(values: list[complex]) -> str:
         flat.extend([c.real, c.imag])
     raw = struct.pack(f"<{len(flat)}d", *flat)
     return base64.b64encode(raw).decode()
+
+
+class _FakeTSInfo:
+    def __init__(self, timeseries, dt, gps_second):
+        self.timeseries = np.asarray(timeseries)
+        self.dt = dt
+        self.gps_second = gps_second
+
+
+class _FakeDTTXMLResults:
+    def __init__(self, channel: str, info: _FakeTSInfo):
+        self.TS = {channel: info}
+
+
+class _FakeDiagAccess:
+    def __init__(self, channel: str, timeseries, dt, gps_second):
+        self.results = _FakeDTTXMLResults(
+            channel,
+            _FakeTSInfo(timeseries, dt=dt, gps_second=gps_second),
+        )
+
+
+class _FakeDTTXML:
+    def __init__(self, channel: str, timeseries, dt, gps_second):
+        self._channel = channel
+        self._timeseries = timeseries
+        self._dt = dt
+        self._gps_second = gps_second
+
+    def DiagAccess(self, source):
+        del source
+        return _FakeDiagAccess(
+            self._channel,
+            self._timeseries,
+            dt=self._dt,
+            gps_second=self._gps_second,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -264,3 +303,37 @@ class TestLoadDttxmlProducts:
         ]
         assert tf["frequencies"].dtype.kind == "f"
         assert tf["data"].dtype.kind == "c"
+
+    def test_ts_entries_stay_dict_shaped_and_reader_consumes_them(self, monkeypatch):
+        channel = "H1:CAL-TEST"
+        data = np.array([1.0, -2.5, 4.25], dtype=float)
+        dt = 0.25
+        gps_second = 1234567890.0
+
+        monkeypatch.setattr(
+            dttxml_common,
+            "dttxml",
+            _FakeDTTXML(channel, data, dt=dt, gps_second=gps_second),
+        )
+
+        products = load_dttxml_products("synthetic.xml")
+        payload = products["TS"][channel]
+
+        assert isinstance(payload, dict)
+        assert {"data", "dt", "epoch", "unit"} <= set(payload)
+        assert payload.get("epoch") == gps_second
+        assert payload["dt"] == dt
+        np.testing.assert_allclose(payload["data"], data)
+
+        from gwexpy.timeseries.io.dttxml import read_timeseriesdict_dttxml
+
+        tsd = read_timeseriesdict_dttxml("synthetic.xml", products="TS")
+
+        assert isinstance(tsd, TimeSeriesDict)
+        assert list(tsd.keys()) == [channel]
+
+        series = tsd[channel]
+        np.testing.assert_allclose(series.value, data)
+        assert np.isclose(float(series.t0.value), gps_second)
+        assert np.isclose(float(series.dt.value), dt)
+        assert np.isclose(float(series.sample_rate.value), 1.0 / dt)

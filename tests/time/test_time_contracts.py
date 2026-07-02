@@ -6,6 +6,7 @@ from datetime import UTC, datetime, timedelta, timezone
 
 import numpy as np
 import pytest
+from astropy import units as u
 from astropy.time import Time
 from gwpy import time as gwpy_time
 
@@ -45,6 +46,23 @@ def test_to_gps_numeric_scalar_and_vectors_return_gps_equivalent_values():
     assert isinstance(array_result, np.ndarray)
     assert array_result.dtype == np.float64
     np.testing.assert_allclose(array_result, [1000000000.0, 1000000001.0])
+
+    quantity_result = gwexpy_time.to_gps(np.array([0, 1, 2]) * u.ms)
+    assert isinstance(quantity_result, np.ndarray)
+    np.testing.assert_allclose(quantity_result, [0.0, 0.001, 0.002])
+
+
+def test_to_gps_dtype_output_modes_are_opt_in():
+    default_scalar = gwexpy_time.to_gps(1000000000.0)
+    assert isinstance(default_scalar, gwpy_time.LIGOTimeGPS)
+
+    float_scalar = gwexpy_time.to_gps(1000000000.0, dtype=float)
+    assert isinstance(float_scalar, float)
+    assert float_scalar == pytest.approx(1000000000.0)
+
+    quantity_scalar = gwexpy_time.to_gps(1000000000.0, dtype="quantity")
+    assert quantity_scalar.unit == u.s
+    assert quantity_scalar.value == pytest.approx(1000000000.0)
 
 
 def test_to_gps_string_and_datetime_vectors_match_astropy_gps_values():

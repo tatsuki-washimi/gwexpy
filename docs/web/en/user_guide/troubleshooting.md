@@ -73,7 +73,12 @@ If you started from the smallest example in [Quickstart](quickstart.md), note th
 
 ## Still Not Working?
 
-Please report the issue with the error logs on the GitHub [Issues](https://github.com/tatsuki-washimi/gwexpy/issues) page.
+For lightweight bug reports and feature requests, use the
+[feedback form](https://forms.gle/c8jJaf9UCs5tb5cC8). For reproducible
+technical issues that need public tracking, please report the issue with the
+error logs on the GitHub [Issues](https://github.com/tatsuki-washimi/gwexpy/issues)
+page. Do not include private data, credentials, or security vulnerability
+details in the form or public issues; follow the repository security policy.
 Including the following information will help us assist you faster:
 * OS Version
 * Python Version

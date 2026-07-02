@@ -8,6 +8,8 @@ pytest.importorskip("netCDF4")
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
+FIXTURE_NETCDF = "tests/fixtures/data/test.nc"
+
 
 class TestNetCDF4Roundtrip:
     @pytest.mark.parametrize("fmt", ("nc", "netcdf4"))
@@ -97,6 +99,27 @@ class TestNetCDF4Roundtrip:
         ts_in = read_timeseries_netcdf4(str(path))
         assert len(ts_in) == 20
 
+    def test_bundled_fixture_has_time_coordinate(self):
+        with xr.open_dataset(FIXTURE_NETCDF) as ds:
+            assert "time" in ds.coords
+            np.testing.assert_allclose(np.diff(ds["time"].values), 0.1, atol=1e-6)
+
+    @pytest.mark.parametrize("cls", (TimeSeries, TimeSeriesDict, TimeSeriesMatrix))
+    def test_bundled_fixture_satisfies_time_coordinate_contract(self, cls):
+        loaded = cls.read(FIXTURE_NETCDF, format="nc")
+        assert isinstance(loaded, cls)
+
+        if cls is TimeSeries:
+            assert len(loaded) == 100
+            assert np.isclose(float(loaded.dt.value), 0.1)
+        elif cls is TimeSeriesDict:
+            assert "ch1" in loaded
+            assert len(loaded["ch1"]) == 100
+            assert np.isclose(float(loaded["ch1"].dt.value), 0.1)
+        else:
+            assert loaded.shape[-1] == 100
+            assert np.isclose(float(loaded.dt.value), 0.1)
+
     def test_empty_dataset_raises(self, tmp_path):
         path = tmp_path / "empty.nc"
         ds = xr.Dataset()
@@ -165,3 +188,38 @@ class TestNetCDF4Roundtrip:
         assert all(isinstance(k, int) for k in row_keys), "Row keys should be int"
         assert all(isinstance(k, int) for k in col_keys), "Col keys should be int"
         np.testing.assert_allclose(loaded.value, data)
+
+    def test_matrix_multi_file_preserves_row_col_keys(self, tmp_path):
+        """Reading a list of NetCDF4 matrix files must preserve gwexpy_row/col_key (#443)."""
+        from collections import OrderedDict
+
+        from gwexpy.types.metadata import MetaData, MetaDataDict
+
+        seg1 = TimeSeriesMatrix(
+            np.arange(12, dtype=np.float64).reshape(2, 1, 6),
+            t0=1000000000.0,
+            dt=0.25,
+        )
+        seg2 = TimeSeriesMatrix(
+            np.arange(12, 24, dtype=np.float64).reshape(2, 1, 6),
+            t0=1000000000.0 + 6 * 0.25,
+            dt=0.25,
+        )
+        for seg in (seg1, seg2):
+            seg.rows = MetaDataDict(
+                OrderedDict({"H1": MetaData(), "L1": MetaData()}),
+                expected_size=2,
+                key_prefix="row",
+            )
+
+        path1 = tmp_path / "seg1.nc"
+        path2 = tmp_path / "seg2.nc"
+        seg1.write(str(path1), format="nc")
+        seg2.write(str(path2), format="nc")
+
+        merged = TimeSeriesMatrix.read([str(path1), str(path2)], format="nc")
+
+        assert list(merged.row_keys()) == ["H1", "L1"], (
+            f"row keys lost after multi-file read: {list(merged.row_keys())}"
+        )
+        assert merged.shape[-1] == 12

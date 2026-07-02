@@ -20,6 +20,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
 
 logger = logging.getLogger(__name__)
@@ -106,8 +107,10 @@ def read_timeseriesdict_netcdf4(
 
     Parameters
     ----------
-    source : str or path-like
-        Path to a ``.nc`` file.
+    source : str, path-like, or list of str/path-like
+        Path to a ``.nc`` file, or a list of paths.  When a list is
+        given, variables found in several files are concatenated along
+        the time axis and variables unique to one file are merged in.
     channels : iterable of str, optional
         Variable names to read.  If *None*, all variables with a time
         dimension are loaded.
@@ -119,6 +122,18 @@ def read_timeseriesdict_netcdf4(
         Additional keyword arguments forwarded to ``xarray.open_dataset``.
 
     """
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(
+            read_timeseriesdict_netcdf4,
+            multi,
+            "nc",
+            channels=channels,
+            unit=unit,
+            time_coord=time_coord,
+            **kwargs,
+        )
+
     xr = _import_xarray()
 
     # gwpy's registry may pass a file-like object; extract the path.
@@ -245,6 +260,16 @@ def read_timeseries_netcdf4(source, **kwargs) -> TimeSeries:
 
 def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
     """Read a NetCDF4 file and convert its channels to a matrix."""
+    if isinstance(source, (list, tuple)):
+        sources = list(source)
+        if not sources:
+            raise ValueError("no NetCDF4 files provided")
+        matrices = [read_timeseriesmatrix_netcdf4(s, **kwargs) for s in sources]
+        merged = matrices[0]
+        for mat in matrices[1:]:
+            merged = merged.append(mat, inplace=False, gap="pad", pad=np.nan)
+        return merged
+
     xr = _import_xarray()
 
     if hasattr(source, "name"):
@@ -395,6 +420,34 @@ def write_timeseries_netcdf4(ts, target, **kwargs):
     )
 
 
+def write_timeseriesmatrix_netcdf4(tsm, target, **kwargs):
+    """Write a TimeSeriesMatrix to a NetCDF4 file preserving row/col keys.
+
+    Each matrix cell is written as a variable keyed by a ``(row_key, col_key)``
+    tuple so that ``gwexpy_row_key``/``gwexpy_col_key`` attributes are encoded
+    and the full matrix structure survives a write→read roundtrip.
+    """
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+    row_keys = list(tsm.row_keys())
+    col_keys = list(tsm.col_keys())
+    n_rows, n_cols, n_samples = tsm.shape
+
+    tsd: TimeSeriesDict = TimeSeriesDict()
+    for i, rk in enumerate(row_keys):
+        for j, ck in enumerate(col_keys):
+            cell_data = np.asarray(tsm[i, j], dtype=np.float64)
+            ts = TimeSeries(
+                cell_data,
+                t0=tsm.t0,
+                dt=tsm.dt,
+                unit=tsm.unit if hasattr(tsm, "unit") else None,
+            )
+            tsd[(rk, ck)] = ts
+
+    write_timeseriesdict_netcdf4(tsd, target, **kwargs)
+
+
 # -- Registration --------------------------------------------------------------
 
 register_timeseries_format(
@@ -405,5 +458,6 @@ register_timeseries_format(
     reader_matrix=read_timeseriesmatrix_netcdf4,
     writer_dict=write_timeseriesdict_netcdf4,
     writer_single=write_timeseries_netcdf4,
+    writer_matrix=write_timeseriesmatrix_netcdf4,
     extension="nc",
 )

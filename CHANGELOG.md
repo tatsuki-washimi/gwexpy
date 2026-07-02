@@ -1,6 +1,181 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.7] - 2026-06-27
+
+This is a numerical-robustness hardening release. A Phase 1 audit across the
+statistics, fitting, and spectral modules surfaced a set of silent-failure and
+degenerate-input bugs; this release adds explicit input-contract guards and a
+matching suite of regression tests so that invalid inputs raise clear errors
+instead of producing Inf/NaN or silently wrong results.
+
+### Bug fixes
+
+- **fitting/core**: LSQ cost classes now validate `dy` — zero, negative,
+  non-finite, or complex elements raise `ValueError` instead of causing silent
+  fit failures or Inf/NaN results (#469).
+- **fitting/gls**: GLS classes gained covariance / inverse-covariance
+  conditioning guards and PSD checks (#457 via #472).
+- **fitting/models**: Added degenerate-parameter guards to model shape
+  functions (#455 via #471).
+- **statistics**: Guarded degenerate and non-finite inputs across
+  `rayleigh_test`, `gauch`, `dq_flag`, and `student_t_indicator` — all-NaN
+  inputs, `p=0` false vetoes, Inf-corrupted distributions, an `IndexError`,
+  and mis-sized segments are now handled explicitly (#459 via #470).
+- **statistics/roc**: `calculate_roc` and `evaluate_detection_performance`
+  enforce their input contract — empty classes, shape mismatch, non-finite
+  scores, and tied-FPR bias now raise `ValueError`, and sklearn-style
+  `{-1, +1}` labels are handled correctly (#468).
+- **spectral**: Guarded `bootstrap_spectrogram` edge cases — float truncation,
+  NaN/Inf energy, `rebin_width` validation, covariance mean-imputation, and
+  zero-width confidence-interval warnings (#460 via #473).
+
+### Tests
+
+- Added input-contract regression suites covering the fixes above:
+  `tests/fitting/test_lsq_cost_dy_contract.py`,
+  `tests/fitting/test_gls_contracts.py`,
+  `tests/fitting/test_models_domain_contract.py`,
+  `tests/statistics/test_degenerate_input_contract.py`,
+  `tests/statistics/test_roc_input_contract.py`,
+  `tests/spectral/test_bootstrap_spectrogram_contract.py`.
+
+### Maintenance
+
+- Centralized gwexpy provisioning across CI workflows and fixed nightly drift
+  via a shared `setup-gwexpy` composite action (#454).
+- Added release-note tooling (`tools/gen_release_notes.py`,
+  `tools/publish_releases.sh`) that generates standardized GitHub Release notes
+  from `CHANGELOG.md`.
+
+### Documentation
+
+- Added the Phase 1 numerical-robustness sweep and supplement reports under
+  `tech_notes/` (#462).
+
+## [0.1.6] - 2026-06-11
+
+This is a bugfix and maintenance release: plotting/I/O follow-up fixes
+(#440, #441, #442 via #443), a development dependency sweep (#431), and
+FrequencySeries collection registry audit tests (#438).
+
+### Bug fixes
+
+- Fixed subplot geometry calculation in `Plot` so the expansion count always
+  matches `_expand_args`: all arguments are now counted regardless of order
+  (a leading Spectrogram or matrix no longer hides later containers), the
+  duplicated counting loops were unified into a single helper, and a leading
+  matrix keeps its grid geometry only when it is the sole argument (#440).
+- All TimeSeries readers now handle a list or tuple of paths: formats with
+  well-defined merge semantics (tdms, ats, csv, netcdf4, gbd, ndscope HDF5,
+  zarr, sdb, win, dttxml) concatenate channels along time with NaN gap
+  padding via a shared multi-source helper, while self-contained formats
+  (wav, audio) raise a clear `ValueError` instead of an opaque backend
+  `TypeError` (#441).
+- GWF alias registration no longer swallows unexpected errors silently:
+  expected missing-backend lookups return `None` as before, anything else
+  emits a warning (#442).
+- Pickling a `SeriesMatrix` now emits a warning listing any attrs entries
+  that had to be dropped because they cannot be pickled, instead of
+  dropping them silently (#442).
+- `SeriesMatrix.astype()`, `.real`, `.imag`, `.conj()`, `.transpose()`/`.T`
+  and `.reshape()` now deep-copy `attrs` like `.copy()` does, so mutating
+  the result's attrs no longer leaks into the source matrix (#442).
+- Multi-file NetCDF4/Zarr reads into `TimeSeriesMatrix` now preserve the
+  matrix row/column keys instead of collapsing them through the dict-reader
+  shortcut, and NetCDF4 gained a dedicated matrix writer.
+- Multi-file matrix segment merging now passes `pad=np.nan`, so gaps between
+  files are NaN-padded instead of raising.
+
+### Maintenance
+
+- Updated the development dependency group (24 packages) in
+  `requirements-dev.txt` (#431).
+
+### Tests
+
+- Added plot geometry tests for mixed-container argument orders, single
+  2D/3D/4D matrices, and parity with `_expand_args` expansion counts.
+- Added multi-source reader tests covering merge, gap padding, overlap
+  errors, empty-list rejection, and clear single-file-only errors.
+- Added regression tests for pickle attrs warnings and attrs independence
+  of derived matrices.
+- **frequencyseries/io**: Added registry-backend audit tests and a developer
+  note for FrequencySeries collection read/write fallback (#438). No
+  behaviour change.
+
+## [0.1.5] - 2026-06-10
+
+This is a patch release focused on plotting and I/O hotfixes.
+
+### Bug fixes
+
+- Fixed `TimeSeriesDict.plot()` so multi-channel dictionaries are expanded into
+  separate subplots instead of producing a blank or invalid figure (#432).
+- Fixed ObsPy-backed seismic readers so `TimeSeriesDict` keys are stable string
+  trace names (e.g. `"IU.ANMO.00.BHZ"`), enabling reliable string-based lookup
+  (#435).
+- Added support for passing a list or tuple of miniSEED paths to
+  `TimeSeriesDict.read(..., format="mseed")` (#433).
+- Fixed `gwexpy.frequencyseries` import-time I/O registration so FrequencySeries
+  read formats are visible through the GWpy default I/O registry (#437).
+
+### Tests
+
+- Added regression tests for `TimeSeriesDict.plot()`.
+- Added seismic I/O tests for string keys, list-of-path miniSEED input, and
+  empty-list rejection.
+- Added subprocess-isolated FrequencySeries I/O registration tests.
+
+### Documentation
+
+- Clarified that GWexpy is an independent package built on top of GWpy and is
+  not an official component of the GWpy project.
+- Updated the README installation notes to reflect that the conda-forge
+  feedstock is available, while conda-forge packages may lag the latest PyPI
+  release.
+
+### Deferred
+
+- Broad FrequencySeries collection read/write registry-backend migration is
+  deferred to #438.
+- Dependency sweep (#431) is deferred to the v0.2.0-prep lane.
+
+## [0.1.4] - 2026-05-20
+
+### Added
+
+- **io/conformance**: Added the first contract-driven I/O conformance baseline for `gwf`, `hdf.ndscope`, `hdf5`, `csv`, `txt`, and `wav`.
+- **io/contracts**: Added v3 public I/O contract policy fields for fixture generation, coverage status, CI jobs, and missing optional dependency behavior.
+- **ci/io**: Added the `io-conformance` gate and expanded I/O gate documentation.
+- **time**: Added opt-in `dtype=` output modes for `to_gps()`. The default
+  remains GWpy-compatible, while `dtype=float` / `dtype="float"` return plain
+  float values and `dtype="quantity"` returns seconds quantities for direct
+  `.times` comparisons.
+
+### Fixed
+
+- **io/dttxml**: Fixed `load_dttxml_products()` so DTTXML `TS` entries remain raw dict payloads and do not collide with `TimeSeries.get()`.
+- **io/gwf**: Provisioned the GWF backend for the PR fast gate and tolerated backend-specific GWF channel metadata variance.
+
+### Documentation
+
+- **feedback**: Updated the README, docs hub pages, footer links, roadmap, and
+  troubleshooting pages to point lightweight bug reports and feature requests
+  to the public feedback form. Security reports remain directed to the
+  repository security policy.
+
+### Tests
+
+- **io/conformance**: Added deterministic fixture generators and read/write round-trip coverage for the v0.1.4 blocking format baseline.
+- **io/dttxml**: Added regression coverage for DTTXML `TS` dict parsing through `read_timeseriesdict_dttxml()`.
+- **netcdf**: Added a fixture-generation contract that requires generated
+  NetCDF fixtures to expose an explicit time coordinate (#393).
+- **timeseries/gwf**: Added regression coverage for multi-channel GWF
+  list-source reads and padded gap reads with `parallel > 1`.
+
+### Known Issues
+
+- **io/zarr**: The optional `io-zarr` gate can hang in environments where Zarr 3.1.5 stalls during basic `create_array()` fixture generation. Zarr remains outside the v0.1.4 base blocking gate and is tracked for optional-backend hardening.
 
 ## [0.1.3] - 2026-05-12
 
@@ -239,7 +414,8 @@ First stable release of GWexpy for SoftwareX publication. This release focuses o
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0...v0.1.1

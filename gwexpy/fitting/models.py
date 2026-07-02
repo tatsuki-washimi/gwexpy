@@ -54,6 +54,8 @@ def gaussian(x, A, mu, sigma):
 
     f(x) = A * exp(-0.5 * ((x - mu) / sigma)^2)
     """
+    if sigma == 0:
+        raise ValueError("sigma must be non-zero for gaussian")
     return A * np.exp(-0.5 * ((x - mu) / sigma) ** 2)
 
 
@@ -62,6 +64,8 @@ def exponential(x, A, tau):
 
     f(x) = A * exp(-x / tau)
     """
+    if tau == 0:
+        raise ValueError("tau must be non-zero for exponential")
     return A * np.exp(-x / tau)
 
 
@@ -70,6 +74,9 @@ def power_law(x, A, alpha):
 
     f(x) = A * x^alpha
     """
+    x_arr = np.asarray(x)
+    if np.any(x_arr <= 0):
+        raise ValueError("power_law requires x > 0 (undefined for x <= 0)")
     return A * x**alpha
 
 
@@ -78,6 +85,8 @@ def damped_oscillation(x, A, tau, f, phi=0):
 
     f(x) = A * exp(-x / tau) * sin(2 * pi * f * x + phi)
     """
+    if tau == 0:
+        raise ValueError("tau must be non-zero for damped_oscillation")
     return A * np.exp(-x / tau) * np.sin(2 * np.pi * f * x + phi)
 
 
@@ -91,6 +100,8 @@ def landau(x, A, mu, sigma):
         The peak height occurs at lambda=0 and is equal to A * exp(-0.5) ≈ 0.607 * A.
 
     """
+    if sigma == 0:
+        raise ValueError("sigma must be non-zero for landau")
     lam = (x - mu) / sigma
     return A * np.exp(-0.5 * (lam + np.exp(-lam)))
 
@@ -114,6 +125,8 @@ def lorentzian(x, A, x0, gamma):
         Half-width at half-maximum (HWHM).
 
     """
+    if gamma == 0:
+        raise ValueError("gamma must be non-zero for lorentzian")
     return A * gamma**2 / ((x - x0) ** 2 + gamma**2)
 
 
@@ -135,6 +148,8 @@ def lorentzian_q(x, A, x0, Q):
         Quality factor (Q = x0 / (2 * gamma)).
 
     """
+    if Q == 0:
+        raise ValueError("Q must be non-zero for lorentzian_q")
     gamma = x0 / (2 * Q)
     return A * gamma**2 / ((x - x0) ** 2 + gamma**2)
 
@@ -169,6 +184,8 @@ def voigt(x, A, x0, sigma, gamma):
             "scipy is required to use the voigt model. "
             "Install it with: pip install scipy"
         )
+    if sigma == 0:
+        raise ValueError("sigma must be non-zero for voigt profile")
     z = ((x - x0) + 1j * gamma) / (sigma * np.sqrt(2))
     profile = np.real(_wofz(z))
     # Normalize so that peak = A
@@ -241,7 +258,9 @@ def get_model(name: str | Any) -> Any:
     if not isinstance(name, str):
         if callable(name):
             return name
-        return None
+        raise TypeError(
+            f"name must be a string or callable, got {type(name).__name__!r}"
+        )
 
     key = name.lower()
     if key in MODELS:

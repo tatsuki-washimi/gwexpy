@@ -28,6 +28,7 @@ from typing import Any, cast
 import numpy as np
 
 from gwexpy.io.utils import ensure_dependency
+from gwexpy.timeseries.io._multi import expand_multi_source, read_multi_dict
 from gwexpy.timeseries.io._registration import register_timeseries_format
 
 try:
@@ -199,9 +200,17 @@ def _read_win_fixed(filename: str | Path, century="20"):
 
 
 def read_win_file(source, **kwargs) -> TimeSeriesDict:
-    """Read a WIN or WIN32 file with the patched ObsPy-based reader."""
+    """Read one or more WIN or WIN32 files with the patched ObsPy-based reader.
+
+    When a list of paths is given, channels found in several files are
+    concatenated along the time axis (gaps padded with NaN).
+    """
     if not HAS_OBSPY:
         raise ImportError("obspy is required to read WIN format files")
+
+    multi = expand_multi_source(source)
+    if multi is not None:
+        return read_multi_dict(read_win_file, multi, "win", **kwargs)
 
     stream = _read_win_fixed(source, **kwargs)
 
