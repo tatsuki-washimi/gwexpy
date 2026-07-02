@@ -14,6 +14,7 @@ description: MyPy、Python 3.9 互換性、ノートブックなど各種エラ�
 | MyPy       | 静的型解析エラー       | [reference/mypy.md](reference/mypy.md)           |
 | Python 3.9 | レガシー Python 互換性 | [reference/python39.md](reference/python39.md)   |
 | Notebooks  | ノートブック実行エラー | [reference/notebooks.md](reference/notebooks.md) |
+| CI 失敗    | CI gate 再現・修正     | [reference/ci.md](reference/ci.md)               |
 
 ## Quick Fixes
 
