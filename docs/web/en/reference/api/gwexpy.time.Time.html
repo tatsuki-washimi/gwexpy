@@ -506,9 +506,9 @@ finite-distance effects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>skycoord</strong> (<cite>~astropy.coordinates.SkyCoord</cite>) – The sky location to calculate the correction for.</p></li>
+<li><p><strong>skycoord</strong> (<cite>~astropy.coordinates.SkyCoord</cite>) – The sky location(s) to calculate the correction for.</p></li>
 <li><p><strong>kind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">'barycentric'</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">'heliocentric'</span></code></p></li>
-<li><p><strong>location</strong> (<cite>~astropy.coordinates.EarthLocation</cite>, optional) – The location of the observatory to calculate the correction for.
+<li><p><strong>location</strong> (<cite>~astropy.coordinates.EarthLocation</cite>, optional) – The location(s) of the observatory to calculate the correction for.
 If no location is given, the <code class="docutils literal notranslate"><span class="pre">location</span></code> attribute of the Time
 object is used</p></li>
 <li><p><strong>ephemeris</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Solar system ephemeris to use (e.g., ‘builtin’, ‘jpl’). By default,
@@ -520,7 +520,8 @@ For more information, see <cite>~astropy.coordinates.solar_system_ephemeris</cit
 <dd class="field-even"><p><strong>time_offset</strong> – The time offset between the barycentre or Heliocentre and Earth,
 in TDB seconds.  Should be added to the original time to get the
 time in the Solar system barycentre or the Heliocentre.
-Also, the time conversion to BJD will then include the relativistic correction as well.</p>
+Also, the time conversion to BJD will then include the relativistic correction as well.
+The shape will be the broadcast shape of <code class="docutils literal notranslate"><span class="pre">skycoord</span></code> and <code class="docutils literal notranslate"><span class="pre">location</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>~astropy.time.TimeDelta</cite></p>
@@ -735,7 +736,7 @@ handle the leap second.</p></li>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-02 12:50:19.
+      <span class="lastupdated">Last updated on 2026-07-02 21:21:39.
       </span></p>
   </div>
 
