@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/spectral/estimation.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=6e0256f3"></script>
+      <script src="../../../_static/documentation_options.js?v=ca7ad2ea"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -371,7 +371,7 @@
         <span class="k">return</span> <span class="mf">1.0</span>
 
     <span class="n">energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">win_array</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">energy</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">energy</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">energy</span><span class="p">):</span>
         <span class="k">return</span> <span class="mf">1.0</span>
 
     <span class="n">rho_sq_weighted_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -388,6 +388,14 @@
         <span class="n">rho_sq_weighted_sum</span> <span class="o">+=</span> <span class="n">weight</span> <span class="o">*</span> <span class="p">(</span><span class="n">rho</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="n">vif</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">rho_sq_weighted_sum</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">vif</span><span class="p">)</span> <span class="ow">or</span> <span class="n">vif</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;calculate_correlation_factor: non-finite or sub-unity VIF; &quot;</span>
+            <span class="s2">&quot;falling back to factor=1.0&quot;</span><span class="p">,</span>
+            <span class="ne">RuntimeWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">vif</span><span class="p">)</span></div>
 
 
@@ -600,6 +608,13 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Spectrogram must have at least 2 time bins.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n_boot</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_boot must be &gt;= 1.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_boot</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;n_boot=1 produces a zero-width CI (err_low == err_high == 0). &quot;</span>
+            <span class="s2">&quot;Use n_boot &gt;= 10 for meaningful confidence intervals.&quot;</span><span class="p">,</span>
+            <span class="ne">RuntimeWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">ci</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;ci must be between 0 and 1.&quot;</span><span class="p">)</span>
 
@@ -624,13 +639,25 @@
             <span class="p">)</span>
 
     <span class="c1"># 1. Frequency Rebinning</span>
+    <span class="c1"># Validate finiteness first: rebin_width=np.nan would make `nan &gt; 0` False</span>
+    <span class="c1"># and slip past the rebin block entirely (silent no-op).</span>
+    <span class="k">if</span> <span class="n">rebin_width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">rebin_width</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rebin_width must be finite, got </span><span class="si">{</span><span class="n">rebin_width</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">rebin_width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">rebin_width</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">df</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">spectrogram</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">df</span>
         <span class="p">)</span>
         <span class="n">bin_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rebin_width</span> <span class="o">/</span> <span class="n">df</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">bin_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bin_size</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;rebin_width=</span><span class="si">{</span><span class="n">rebin_width</span><span class="si">}</span><span class="s2"> yields bin_size=</span><span class="si">{</span><span class="n">bin_size</span><span class="si">}</span><span class="s2"> (&lt;= 1 at df=</span><span class="si">{</span><span class="n">df</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">); &quot;</span>
+                <span class="s2">&quot;rebinning has no effect and will be skipped.&quot;</span><span class="p">,</span>
+                <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bin_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">n_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="c1"># Truncate to multiple of bin_size</span>
             <span class="n">n_freq_new</span> <span class="o">=</span> <span class="n">n_freq</span> <span class="o">//</span> <span class="n">bin_size</span>
@@ -653,9 +680,30 @@
     <span class="c1"># Update n_freq after potentially rebinning/truncating</span>
     <span class="n">n_freq</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
+    <span class="c1"># Diagnose frequency bins that are entirely NaN across all time segments.</span>
+    <span class="c1"># With ignore_nan=True these would silently yield NaN center/CI via</span>
+    <span class="c1"># np.nanmedian/np.nanmean (only a low-level NumPy &quot;All-NaN slice&quot; warning).</span>
+    <span class="c1"># Surface a function-level diagnostic; the NaN output is preserved (not</span>
+    <span class="c1"># imputed) so the caller knows the bin is undefined (issue #460 / G5).</span>
+    <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
+        <span class="n">all_nan_freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">all_nan_freq</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> frequency bin(s) are entirely NaN across all time &quot;</span>
+                <span class="s2">&quot;segments; bootstrap statistics for those bins will be NaN &quot;</span>
+                <span class="s2">&quot;(ignore_nan=True).&quot;</span><span class="p">,</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">all_nan_freq</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+            <span class="p">)</span>
+
     <span class="n">use_median</span> <span class="o">=</span> <span class="n">avg</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span>
 
     <span class="c1"># 2. Block Bootstrap</span>
+    <span class="c1"># Remember whether block_size was auto-derived (internal estimate) versus</span>
+    <span class="c1"># explicitly supplied by the caller, before block_size is overwritten with</span>
+    <span class="c1"># the converted sample count. This distinguishes a caller error (explicit</span>
+    <span class="c1"># oversized block_size -&gt; ValueError) from an internal over-estimate</span>
+    <span class="c1"># (auto-derived oversized block_size -&gt; warn + iid fallback).</span>
+    <span class="n">block_size_from_auto</span> <span class="o">=</span> <span class="n">block_size</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span>
     <span class="k">if</span> <span class="n">block_size</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
         <span class="n">ratio</span> <span class="o">=</span> <span class="n">_infer_overlap_ratio</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ratio</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
@@ -679,13 +727,27 @@
         <span class="n">block_size</span> <span class="o">=</span> <span class="n">block_size_samples</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted block_size to </span><span class="si">{</span><span class="n">block_size</span><span class="si">}</span><span class="s2"> samples (dt=</span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">block_size</span> <span class="o">&gt;=</span> <span class="n">n_time</span><span class="p">:</span>
-            <span class="c1"># Just one block? or simple bootstrap of blocks?</span>
-            <span class="c1"># If block size is entire duration, only 1 possible block.</span>
-            <span class="c1"># Assume user knows what they are doing, but warn?</span>
-            <span class="k">pass</span>
+    <span class="c1"># Guard against block_size &gt;= n_time. With num_possible_blocks =</span>
+    <span class="c1"># n_time - block_size + 1 &lt;= 0 the downstream np.random.randint(0, high&lt;=0)</span>
+    <span class="c1"># raises an opaque &quot;low &gt;= high&quot; error. Fail closed for explicit values</span>
+    <span class="c1"># (caller error) and fall back to iid bootstrap for auto-derived ones</span>
+    <span class="c1"># (internal over-estimate, not the caller&#39;s fault) — issue #460 / G5.</span>
+    <span class="k">if</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block_size</span> <span class="o">&gt;=</span> <span class="n">n_time</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">block_size_from_auto</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Auto-derived block_size=</span><span class="si">{</span><span class="n">block_size</span><span class="si">}</span><span class="s2"> &gt;= n_time=</span><span class="si">{</span><span class="n">n_time</span><span class="si">}</span><span class="s2">; &quot;</span>
+                <span class="s2">&quot;falling back to iid bootstrap (block_size=None).&quot;</span><span class="p">,</span>
+                <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">block_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;block_size (</span><span class="si">{</span><span class="n">block_size</span><span class="si">}</span><span class="s2"> samples) must be smaller than the &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;number of time bins (n_time=</span><span class="si">{</span><span class="n">n_time</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># Create list of all possible start indices for blocks</span>
         <span class="c1"># Overlapping blocks? Moving block bootstrap usually allows overlapping.</span>
         <span class="c1"># &quot;Circular block bootstrap&quot; vs &quot;Moving block bootstrap&quot;.</span>
@@ -729,6 +791,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Generate all bootstrap indices at once using NumPy (ensures reproducibility with seed)</span>
         <span class="n">all_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_time</span><span class="p">,</span> <span class="p">(</span><span class="n">n_boot</span><span class="p">,</span> <span class="n">n_time</span><span class="p">))</span>
+
+    <span class="c1"># SP1: integer-dtype data truncates per-resample mean/median to int.</span>
+    <span class="c1"># Cast to at least float64 before calling the resample functions.</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
 
     <span class="n">use_numba</span> <span class="o">=</span> <span class="n">HAS_NUMBA</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NUMBA_DISABLE_JIT&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
         <span class="s2">&quot;1&quot;</span><span class="p">,</span>
@@ -868,14 +934,16 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
-            <span class="c1"># masked covariance? np.cov doesn&#39;t support nan directly well in all versions</span>
-            <span class="c1"># Use pandas or manual? Or just mask?</span>
-            <span class="c1"># Simple approach: nan -&gt; mean (impute) or just let np.cov handle if recent enough?</span>
-            <span class="c1"># np.cov does NOT handle NaNs.</span>
-            <span class="c1"># If robust is needed, maybe skip map or warning?</span>
-            <span class="c1"># Hack: zero-fill or mean-fill for covariance calculation if NaNs exist</span>
-            <span class="c1"># But if ignore_nan=True, we likely have NaNs.</span>
-            <span class="c1"># Let&#39;s fill NaNs with column means for covariance purpose</span>
+            <span class="c1"># SP4: detect all-NaN columns before mean-imputation; col_mean is NaN</span>
+            <span class="c1"># for all-NaN columns, so the imputed covariance is also NaN there.</span>
+            <span class="n">all_nan_cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">all_nan_cols</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> frequency bin(s) have all-NaN bootstrap stats; &quot;</span>
+                    <span class="s2">&quot;covariance at those frequencies will be NaN &quot;</span>
+                    <span class="s2">&quot;(mean imputation collapses to NaN when the entire column is NaN).&quot;</span><span class="p">,</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="n">all_nan_cols</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+                <span class="p">)</span>
             <span class="n">stats_filled</span> <span class="o">=</span> <span class="n">resampled_stats</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">col_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">stats_filled</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">stats_filled</span><span class="p">))</span>
@@ -905,7 +973,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-06-21 17:34:46.
+      <span class="lastupdated">Last updated on 2026-07-02 12:50:19.
       </span></p>
   </div>
 
