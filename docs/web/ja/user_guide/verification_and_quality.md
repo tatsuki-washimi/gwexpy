@@ -26,7 +26,7 @@ myst:
 :::{important}
 **このページは「透明性の地図」であって、一括保証ではありません**
 
-検証の方法は対象ごとに異なります。module / docstring 例が Nightly CI で検証される部分もあれば、Notebook の中には CI で全実行されるものもあり、重い notebook のように構造確認中心のものもあります。optional dependency を持つテストは、環境によって skip される場合もあります。
+検証の方法は対象ごとに異なります。module / docstring 例が Extended Verification workflow で検証される部分もあれば、Notebook の中には CI で全実行されるものもあり、重い notebook のように構造確認中心のものもあります。optional dependency を持つテストは、環境によって skip される場合もあります。
 :::
 
 ## 公開されている根拠の入口
@@ -34,7 +34,7 @@ myst:
 | 対象 | 公開ソース | 何がわかるか |
 | --- | --- | --- |
 | Notebook チュートリアル | [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) | `Light` / `Heavy` / `Display-only` の分類と、CI がそれぞれをどう扱うか |
-| module / docstring 例 | [Extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) | `tests/` と `gwexpy/` に対して `pytest --doctest-modules` を回している Nightly CI の公開根拠。docstring 例の実行範囲を読む入口です |
+| module / docstring 例 | [Extended Verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) | `tests/` と `gwexpy/` に対して `pytest --doctest-modules` を回している、手動トリガー CI の公開根拠。docstring 例の実行範囲を読む入口です |
 | direct I/O 形式 | [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) | どの公開 format 群に、どのテストファイルが対応づけられているかと、どこに optional backend があるか |
 | アルゴリズム監査 | [検証済みアルゴリズム](validated_algorithms.md) | 数値許容誤差、前提条件、監査証跡へのリンク |
 | リポジトリ全体の coverage | [README の codecov バッジ](https://github.com/tatsuki-washimi/gwexpy) と、そのリンク先である [Codecov ダッシュボード](https://codecov.io/gh/tatsuki-washimi/gwexpy) | リポジトリ全体の line coverage がどこで公開されているかを示す入口。feature 単位の証明ではなく、全体傾向のシグナルとして使います |
@@ -45,7 +45,7 @@ myst:
 
 現時点の公開方針は次のとおりです。
 
-- `tests/` と `gwexpy/` にある module / docstring 例は、公開されている [extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) で `pytest --doctest-modules` により検証されます。
+- `tests/` と `gwexpy/` にある module / docstring 例は、公開されている [extended verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) で `pytest --doctest-modules` により検証されます。
 - **Light** notebook は、Notebook Policy 上では CI で `papermill` により全実行される想定です。
 - **Heavy** notebook は CI 対象ではありますが、全セル実行を常に保証するものではなく、構造確認や収集確認に寄せて扱われます。
 - **Display-only** notebook は整えた出力の保持を重視しており、「CI で毎回全実行される notebook」と同義ではありません。
@@ -58,8 +58,8 @@ myst:
 
 現在の公開根拠から言えるのは、「すべてのサンプルコードが一律に保証される」よりも狭い範囲です。
 
-- extended nightly workflow により、module / docstring 例には自動 Doctest 系のカバレッジがあります。
-- 同じ Nightly CI でも notebook の扱いは分類依存で、`Light` は `papermill`、`Heavy` は `nbval --nbval-lax` です。
+- extended verification workflow により、module / docstring 例には自動 Doctest 系のカバレッジがあります。
+- 同じワークフローでも notebook の扱いは分類依存で、`Light` は `papermill`、`Heavy` は `nbval --nbval-lax` です。
 - docs PR workflow では、docs PR で変更された notebook に対して `papermill` が実行されます。
 
 このシグナルは次のように読んでください。

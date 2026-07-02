@@ -9,7 +9,7 @@ CI パイプラインの失敗を特定し、ローカル環境で再現・修�
 
 ## When to Use
 
-- GitHub Actions の CI パイプライン（PR Fast、Extended Nightly など）が失敗したとき
+- GitHub Actions の CI パイプライン（PR Fast、Extended Verification など）が失敗したとき
 - 失敗ジョブから原因を特定し、ローカルで修正を検証する必要があるとき
 - 修正後に CI を再実行して確認するとき
 
