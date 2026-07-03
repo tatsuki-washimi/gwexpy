@@ -1,4 +1,4 @@
-name: Extended Nightly
+name: Extended Verification
 
 on:
   # Daily schedule disabled to stay within GitHub Actions free-minute quota
@@ -16,7 +16,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
-  # Nightly is intentionally scoped to lightweight cross-platform import smoke.
+  # Extended verification is intentionally scoped to lightweight cross-platform import smoke.
   # Deeper validation now lives in PR Fast, Docs PR/Pages, and Test (gwpy-compat).
   multiplatform-smoke-unix:
     name: Smoke test (${{ matrix.os }})
