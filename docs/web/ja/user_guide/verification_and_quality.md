@@ -52,7 +52,7 @@ myst:
 - 公開されている [docs PR workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) では、docs Pull Request で変更された notebook に対して `papermill` が実行されます。
 - 公開 notebook のメインのは `docs/web/{en,ja}/user_guide/tutorials/` に置かれます。
 
-したがって、「公開 docs に notebook や例がある」こと自体は有益なシグナルですが、それだけで「あらゆる PR / Nightly / release 経路で毎回一律に実行・保証される」とまでは読まない方が安全です。
+したがって、「公開 docs に notebook や例がある」こと自体は有益なシグナルですが、それだけで「あらゆる PR / 手動実行の検証 / release 経路で毎回一律に実行・保証される」とまでは読まない方が安全です。
 
 ## 現在の CI カバレッジとその限界
 
@@ -98,7 +98,7 @@ public direct I/O の検証可視化では、[SUPPORTED_IO_MATRIX](https://githu
 ## このページが主張しないこと
 
 - すべての公開 notebook が、すべての CI 実行で全セル再実行されるとは主張しません。
-- すべての docstring 例やサンプルコード片が、すべての PR / Nightly / release workflow で毎回実行されるとは主張しません。
+- すべての docstring 例やサンプルコード片が、すべての PR / 手動実行の検証 / release workflow で毎回実行されるとは主張しません。
 - すべての optional dependency が、すべての test 環境に入っているとは主張しません。
 - [検証済みアルゴリズム](validated_algorithms.md) に書かれた個別の前提条件や許容誤差を、このページが置き換えるものではありません。
 - repository-wide の line coverage を、そのまま feature 単位の科学的妥当性の証明に読み替えるべきだとは主張しません。

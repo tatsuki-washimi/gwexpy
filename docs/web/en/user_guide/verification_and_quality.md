@@ -26,7 +26,7 @@ It is not a single "all features are verified" claim. Instead, it points you to 
 :::{important}
 **Read this page as a transparency map, not as a blanket guarantee**
 
-Different parts of the project are verified in different ways. Some module/docstring examples are exercised in nightly CI, some notebooks are fully executed, some heavy notebooks are only structure-checked, and some optional-dependency tests can be skipped when the backend is unavailable.
+Different parts of the project are verified in different ways. Some module/docstring examples are exercised in the Extended Verification workflow, some notebooks are fully executed, some heavy notebooks are only structure-checked, and some optional-dependency tests can be skipped when the backend is unavailable.
 :::
 
 ## Public Evidence Sources
@@ -34,7 +34,7 @@ Different parts of the project are verified in different ways. Some module/docst
 | Area | Public source | What it tells you |
 | --- | --- | --- |
 | Notebook tutorials | [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) | Which notebook classes are treated as `Light`, `Heavy`, or `Display-only`, and how CI handles each class |
-| Module/docstring examples | [Extended Verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) | Which manually-triggered CI path runs `pytest --Doctest-modules` against `tests/` and `gwexpy/`, useful as public evidence for docstring-level example execution scope |
+| Module/docstring examples | [Extended Verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) | Which manually-triggered CI path runs `pytest --doctest-modules` against `tests/` and `gwexpy/`, useful as public evidence for docstring-level example execution scope |
 | Direct I/O formats | [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) | Which public format families are tied to which tests and which backends are optional |
 | Algorithm audit trail | [Validated Algorithms](validated_algorithms.md) | Numerical tolerances, assumptions, and links to audit evidence for selected high-value algorithms |
 | Repository coverage signal | [README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the linked [Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy) | Where repository-level line coverage is surfaced publicly, useful as a broad signal rather than a per-feature proof |
@@ -45,14 +45,14 @@ The public notebook policy is defined in the repository's [Notebook Policy](http
 
 The current public model is:
 
-- Module and docstring examples in `tests/` and `gwexpy/` are exercised in the public [extended verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) via `pytest --Doctest-modules`.
+- Module and docstring examples in `tests/` and `gwexpy/` are exercised in the public [extended verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) via `pytest --doctest-modules`.
 - **Light** notebooks are classified for full execution and validation in CI through `papermill`.
 - **Heavy** notebooks are kept in CI, but the policy describes them as `nbval --nbval-lax` checks rather than guaranteed full execution.
 - **Display-only** notebooks prioritize curated outputs and are outside normal execution validation, or limited to load-style checks.
 - The public [docs PR workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) also executes changed notebooks with `papermill` before building Sphinx HTML.
 - Public tutorial notebooks under `docs/web/{en,ja}/user_guide/tutorials/` are treated as the authoritative published copies.
 
-This is why a notebook or docstring example being present in the docs is a useful signal, but not enough on its own to infer that every published sample is executed in every PR, nightly, and release path.
+This is why a notebook or docstring example being present in the docs is a useful signal, but not enough on its own to infer that every published sample is executed in every PR, manually-triggered verification run, and release path.
 
 ## Current CI Coverage and Its Limits
 
@@ -98,7 +98,7 @@ Read that signal conservatively:
 ## What This Page Does Not Claim
 
 - It does **not** claim that every public notebook is fully executed in every CI run.
-- It does **not** claim that every docstring example or sample code block is executed in every PR, nightly, and release workflow.
+- It does **not** claim that every docstring example or sample code block is executed in every PR, manually-triggered verification run, and release workflow.
 - It does **not** claim that every optional dependency is present in every test environment.
 - It does **not** replace the algorithm-specific assumptions and tolerances documented on [Validated Algorithms](validated_algorithms.md).
 - It does **not** turn repository-wide line coverage into a substitute for per-feature scientific validation.
