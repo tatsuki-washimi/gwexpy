@@ -427,10 +427,14 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
     ) -> Any:
         """Create TimeSeries from obspy.Trace.
 
+        Accepts a single-trace ``obspy.Stream`` as well. A multi-trace
+        ``Stream`` raises a ``TypeError`` directing to
+        ``TimeSeriesDict.from_obspy``.
+
         Parameters
         ----------
-        tr : obspy.Trace
-            Input trace.
+        tr : obspy.Trace or obspy.Stream
+            Input trace (or a Stream containing exactly one trace).
         unit : Unit, optional
             Physical unit.
         name_policy : str
@@ -441,9 +445,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         TimeSeries
 
         """
-        from gwexpy.interop import from_obspy_trace
+        from gwexpy.interop import from_obspy
 
-        return from_obspy_trace(cls, tr, unit=unit, name_policy=name_policy)
+        return from_obspy(cls, tr, unit=unit, name_policy=name_policy)
 
     @classmethod
     def from_obspy_trace(

@@ -21,6 +21,31 @@ if TYPE_CHECKING:
 __all__ = ["fit_bootstrap_spectrum"]
 
 
+def _count_free_params(
+    model_fn: Callable,
+    initial_params: Optional[dict[str, float]],
+    fixed: Optional[list],
+) -> int:
+    """Count the number of free (non-fixed) model parameters.
+
+    Parameter names come from ``initial_params`` when provided; otherwise
+    they are inferred from the model signature, dropping the leading
+    frequency argument.
+    """
+    fixed_set = set(fixed or [])
+    if initial_params is not None:
+        param_names = list(initial_params)
+    else:
+        import inspect
+
+        param_names = [
+            p.name
+            for p in list(inspect.signature(model_fn).parameters.values())[1:]
+            if p.kind in (p.POSITIONAL_OR_KEYWORD, p.KEYWORD_ONLY)
+        ]
+    return sum(name not in fixed_set for name in param_names)
+
+
 def fit_bootstrap_spectrum(
     data_or_spectrogram: Union[TimeSeries, Spectrogram],
     model_fn: Callable,
@@ -230,6 +255,25 @@ def fit_bootstrap_spectrum(
         freqs = psd.frequencies.value
         mask = (freqs >= fmin) & (freqs <= fmax)
 
+        if not np.any(mask):
+            raise ValueError(
+                f"freq_range=({fmin}, {fmax}) selects no frequency bins from "
+                f"the PSD (range {freqs[0]:.3g}–{freqs[-1]:.3g} Hz). "
+                "Check your freq_range."
+            )
+
+        # Reject degenerate crops that leave too few bins for a meaningful GLS
+        # fit (ndof <= 0 would otherwise yield a silent NaN reduced_chi2).
+        n_free_params = _count_free_params(model_fn, initial_params, fixed)
+        min_bins = n_free_params + 1
+        n_selected = int(mask.sum())
+        if n_selected < min_bins:
+            raise ValueError(
+                "freq_range selects too few bins for a meaningful GLS fit: "
+                f"{n_selected} bins, {n_free_params} free parameters "
+                f"(need at least {min_bins})."
+            )
+
         psd = psd[mask]
         cov_cropped = cov_map.value[np.ix_(mask, mask)]
         frequencies = psd.frequencies.value
@@ -291,21 +335,19 @@ def _plot_bootstrap_fit(result: FitResult, psd: FrequencySeries, show_mcmc: bool
     import matplotlib
     import matplotlib.pyplot as plt
 
-    n_plots = 2 if show_mcmc and result.samples is not None else 1
-
-    if n_plots == 1:
-        fig, ax = plt.subplots(figsize=(10, 6))
-        axes = [ax]
-    else:
-        fig = plt.figure(figsize=(14, 5))
-        ax1 = fig.add_subplot(1, 2, 1)
-        axes = [ax1]
-
-    ax = axes[0]
+    # Always a single PSD panel. The posterior (corner) plot, when requested,
+    # is drawn in its own separate figure via result.plot_corner() below, so a
+    # second subplot here would only ever render as a blank panel.
+    fig, ax = plt.subplots(figsize=(10, 6))
 
     # Plot PSD with error bars
     frequencies = psd.frequencies.value
     y = psd.value
+
+    if len(frequencies) == 0:
+        raise ValueError(
+            "Cannot plot: PSD has no frequency bins (empty after masking)."
+        )
 
     # Get asymmetric errors if available
     if hasattr(psd, "error_low") and hasattr(psd, "error_high"):
@@ -351,9 +393,8 @@ def _plot_bootstrap_fit(result: FitResult, psd: FrequencySeries, show_mcmc: bool
         bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5),
     )
 
-    # Corner plot if MCMC was run
-    if show_mcmc and result.samples is not None and n_plots > 1:
-        # Create corner plot in separate figure
+    # Corner plot if MCMC was run (drawn in its own separate figure)
+    if show_mcmc and result.samples is not None:
         result.plot_corner()
         plt.figure(fig.number)  # Switch back to main figure
 

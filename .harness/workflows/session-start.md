@@ -15,33 +15,31 @@ trigger: manual
 
 ## Preflight Checks
 
-以下のコマンドを実行して、環境が正しくセットアップされているか確認します。
+以下のコマンドを1つ実行するだけで、環境チェックをまとめて行えます。
 
-1. **Conda 環境の確認**
-   ```bash
-   conda info --envs | grep "*"
-   ```
-   *推奨環境名: `gwexpy` または `gwex-env`*
+```bash
+python scripts/preflight_doctor.py
+```
 
-2. **依存ツールの存在確認**
-   ```bash
-   conda run -n gwexpy ruff --version
-   conda run -n gwexpy mypy --version
-   conda run -n gwexpy pytest --version
-   ```
+`[PASS]` / `[WARN]` / `[FAIL]` の一覧と件数サマリが表示されます。FAIL が1つでもあれば exit code 1 を返します。
 
-3. **Git ステータスの確認**
-   ```bash
-   git status --short
-   ```
-   *未コミットの変更がある場合は、既存タスクとの混同を避けるためコミットまたはスタッシュを検討してください。*
+### オプション
 
-4. **レジストリ初期化の前提**
-   `gwexpy` の機能を使う前に、`.py` ファイルの冒頭やテスト環境で以下が実行されることを確認してください。
-   ```python
-   import gwexpy
-   gwexpy.register_all()
-   ```
+| オプション | 説明 |
+|---|---|
+| `--env gwexpy` | 使用する conda 環境名（デフォルト: `gwexpy`） |
+| `--skip-smoke` | `gwexpy.register_all()` の smoke チェックをスキップ（importに時間がかかる環境向け） |
+| `--json` | machine-readable な JSON 形式で出力する |
+
+### conda が利用できない場合（degraded モード）
+
+`conda` コマンドが見つからない環境では、ツールチェックを現行インタープリタで実行します（WARN が表示されます）。
+この状態でも ruff / mypy / pytest の存在確認は機能します。
+
+```bash
+# conda なし環境での例
+python scripts/preflight_doctor.py --skip-smoke
+```
 
 ## Common Failures
 - **Python インタープリタの不一致**: `which python` が Conda 環境内を指していない。

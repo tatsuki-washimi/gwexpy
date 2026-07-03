@@ -301,13 +301,15 @@ class TestGetModel:
         fn = lambda x, a: a * x  # noqa: E731
         assert get_model(fn) is fn
 
-    def test_none_returns_none(self):
-        """get_model(None) returns None (L146) because None is not callable."""
-        assert get_model(None) is None
+    def test_none_raises_type_error(self):
+        """get_model(None) raises TypeError because None is not callable/string."""
+        with pytest.raises(TypeError, match="name must be a string or callable"):
+            get_model(None)  # type: ignore[arg-type]
 
-    def test_non_callable_non_string_returns_none(self):
-        """get_model with an integer (non-string, non-callable) returns None."""
-        assert get_model(42) is None  # type: ignore[arg-type]
+    def test_non_callable_non_string_raises_type_error(self):
+        """get_model with an integer (non-string, non-callable) raises TypeError."""
+        with pytest.raises(TypeError, match="name must be a string or callable"):
+            get_model(42)  # type: ignore[arg-type]
 
     # --- MODELS dict lookups ---
 

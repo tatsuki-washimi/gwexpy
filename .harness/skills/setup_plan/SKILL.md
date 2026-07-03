@@ -32,3 +32,5 @@ This is the default entry point for turning a request into a written implementat
 
 5. **Confirmation for Continuation**:
     * Upon obtaining approval, proceed to execute the first phase or ask for further instructions.
+
+> When writing or updating plan documents, follow `.harness/rules/common/planning-docs.md` for status vocabulary and the verification requirement.

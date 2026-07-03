@@ -271,6 +271,19 @@ def from_root(
     """Create a GWexpy series object from a ROOT ``TGraph`` or ``TH1``."""
     ROOT = require_optional("ROOT")
 
+    # Reject collection/container types with a clear, actionable message before
+    # the generic type check below.
+    if isinstance(obj, ROOT.TMultiGraph):
+        raise TypeError(
+            "from_root does not accept a TMultiGraph; convert each TGraph "
+            "individually, e.g. [from_root(cls, g) for g in obj.GetListOfGraphs()]."
+        )
+    if isinstance(obj, ROOT.TFile):
+        raise TypeError(
+            "from_root does not accept a TFile; read an individual object from "
+            "the file first, e.g. from_root(cls, tfile.Get('name'))."
+        )
+
     # Check type
     is_hist = isinstance(obj, ROOT.TH1)
     is_hist2d = isinstance(obj, ROOT.TH2)

@@ -48,7 +48,21 @@ def to_segments(
 
     # 3. Form segments
     times = p_value_map.times.value
-    dt = times[1] - times[0] if len(times) > 1 else 1.0
+
+    name = f"{p_value_map.name}_veto" if p_value_map.name else "non_gaussian_veto"
+
+    # Guard the empty-spectrogram case: with zero time steps, times[0]/times[-1]
+    # below would raise IndexError (issue #459). Return an empty flag instead.
+    if len(times) == 0:
+        return DataQualityFlag(name=name, active=SegmentList(), known=SegmentList())
+
+    # Prefer the spectrogram's own time resolution; recomputing from array
+    # differences is impossible for a single time step and the old hardcoded
+    # dt=1.0 fallback silently mis-sized the segment (issue #459).
+    try:
+        dt = float(p_value_map.dt.value)
+    except (AttributeError, TypeError, ValueError):
+        dt = float(times[1] - times[0]) if len(times) > 1 else float(np.nan)
 
     segments = SegmentList()
     active_seg_start = None
@@ -69,9 +83,6 @@ def to_segments(
         seg_end = times[-1] + dt/2.0
         if seg_end - active_seg_start >= min_duration:
             segments.append(Segment(active_seg_start, seg_end))
-
-    # Use the name of the map as flag name
-    name = f"{p_value_map.name}_veto" if p_value_map.name else "non_gaussian_veto"
 
     flag = DataQualityFlag(
         name=name,

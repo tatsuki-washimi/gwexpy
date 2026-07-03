@@ -5,7 +5,7 @@ on:
     workflows:
       - "PR Fast"
       - "Docs PR"
-      - "Extended Nightly"
+      - "Extended Verification"
     types:
       - completed
 
@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6

@@ -240,7 +240,7 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
         return 1.0
 
     energy = np.sum(win_array**2)
-    if energy == 0:
+    if energy == 0 or not np.isfinite(energy):
         return 1.0
 
     rho_sq_weighted_sum = 0.0
@@ -257,6 +257,14 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
         rho_sq_weighted_sum += weight * (rho**2)
 
     vif = 1.0 + 2.0 * rho_sq_weighted_sum
+    if not np.isfinite(vif) or vif < 1.0:
+        warnings.warn(
+            "calculate_correlation_factor: non-finite or sub-unity VIF; "
+            "falling back to factor=1.0",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return 1.0
     return np.sqrt(vif)
 
 
@@ -466,6 +474,13 @@ def bootstrap_spectrogram(
         raise ValueError("Spectrogram must have at least 2 time bins.")
     if n_boot < 1:
         raise ValueError("n_boot must be >= 1.")
+    if n_boot == 1:
+        warnings.warn(
+            "n_boot=1 produces a zero-width CI (err_low == err_high == 0). "
+            "Use n_boot >= 10 for meaningful confidence intervals.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
     if not (0 < ci < 1):
         raise ValueError("ci must be between 0 and 1.")
 
@@ -490,13 +505,25 @@ def bootstrap_spectrogram(
             )
 
     # 1. Frequency Rebinning
+    # Validate finiteness first: rebin_width=np.nan would make `nan > 0` False
+    # and slip past the rebin block entirely (silent no-op).
+    if rebin_width is not None and not np.isfinite(rebin_width):
+        raise ValueError(f"rebin_width must be finite, got {rebin_width!r}")
+
     if rebin_width is not None and rebin_width > 0:
         df = (
             spectrogram.df.value if hasattr(spectrogram.df, "value") else spectrogram.df
         )
         bin_size = int(rebin_width / df)
 
-        if bin_size > 1:
+        if bin_size <= 1:
+            warnings.warn(
+                f"rebin_width={rebin_width} yields bin_size={bin_size} (<= 1 at df={df:.3g}); "
+                "rebinning has no effect and will be skipped.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        elif bin_size > 1:
             n_freq = data.shape[1]
             # Truncate to multiple of bin_size
             n_freq_new = n_freq // bin_size
@@ -519,9 +546,30 @@ def bootstrap_spectrogram(
     # Update n_freq after potentially rebinning/truncating
     n_freq = data.shape[1]
 
+    # Diagnose frequency bins that are entirely NaN across all time segments.
+    # With ignore_nan=True these would silently yield NaN center/CI via
+    # np.nanmedian/np.nanmean (only a low-level NumPy "All-NaN slice" warning).
+    # Surface a function-level diagnostic; the NaN output is preserved (not
+    # imputed) so the caller knows the bin is undefined (issue #460 / G5).
+    if ignore_nan:
+        all_nan_freq = np.all(np.isnan(data), axis=0)
+        if np.any(all_nan_freq):
+            logger.warning(
+                "%d frequency bin(s) are entirely NaN across all time "
+                "segments; bootstrap statistics for those bins will be NaN "
+                "(ignore_nan=True).",
+                int(all_nan_freq.sum()),
+            )
+
     use_median = avg == "median"
 
     # 2. Block Bootstrap
+    # Remember whether block_size was auto-derived (internal estimate) versus
+    # explicitly supplied by the caller, before block_size is overwritten with
+    # the converted sample count. This distinguishes a caller error (explicit
+    # oversized block_size -> ValueError) from an internal over-estimate
+    # (auto-derived oversized block_size -> warn + iid fallback).
+    block_size_from_auto = block_size == "auto"
     if block_size == "auto":
         ratio = _infer_overlap_ratio(spectrogram)
         if ratio is not None and ratio > 1.0:
@@ -545,13 +593,27 @@ def bootstrap_spectrogram(
         block_size = block_size_samples
         logger.debug(f"Converted block_size to {block_size} samples (dt={dt:.3g}s)")
 
-    if block_size is not None and block_size > 1:
-        if block_size >= n_time:
-            # Just one block? or simple bootstrap of blocks?
-            # If block size is entire duration, only 1 possible block.
-            # Assume user knows what they are doing, but warn?
-            pass
+    # Guard against block_size >= n_time. With num_possible_blocks =
+    # n_time - block_size + 1 <= 0 the downstream np.random.randint(0, high<=0)
+    # raises an opaque "low >= high" error. Fail closed for explicit values
+    # (caller error) and fall back to iid bootstrap for auto-derived ones
+    # (internal over-estimate, not the caller's fault) — issue #460 / G5.
+    if block_size is not None and block_size >= n_time:
+        if block_size_from_auto:
+            warnings.warn(
+                f"Auto-derived block_size={block_size} >= n_time={n_time}; "
+                "falling back to iid bootstrap (block_size=None).",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            block_size = None
+        else:
+            raise ValueError(
+                f"block_size ({block_size} samples) must be smaller than the "
+                f"number of time bins (n_time={n_time})."
+            )
 
+    if block_size is not None and block_size > 1:
         # Create list of all possible start indices for blocks
         # Overlapping blocks? Moving block bootstrap usually allows overlapping.
         # "Circular block bootstrap" vs "Moving block bootstrap".
@@ -595,6 +657,10 @@ def bootstrap_spectrogram(
     else:
         # Generate all bootstrap indices at once using NumPy (ensures reproducibility with seed)
         all_indices = np.random.randint(0, n_time, (n_boot, n_time))
+
+    # SP1: integer-dtype data truncates per-resample mean/median to int.
+    # Cast to at least float64 before calling the resample functions.
+    data = np.asarray(data, dtype=np.result_type(data.dtype, np.float64))
 
     use_numba = HAS_NUMBA and os.environ.get("NUMBA_DISABLE_JIT", "0") not in (
         "1",
@@ -734,14 +800,16 @@ def bootstrap_spectrogram(
         )
 
         if ignore_nan:
-            # masked covariance? np.cov doesn't support nan directly well in all versions
-            # Use pandas or manual? Or just mask?
-            # Simple approach: nan -> mean (impute) or just let np.cov handle if recent enough?
-            # np.cov does NOT handle NaNs.
-            # If robust is needed, maybe skip map or warning?
-            # Hack: zero-fill or mean-fill for covariance calculation if NaNs exist
-            # But if ignore_nan=True, we likely have NaNs.
-            # Let's fill NaNs with column means for covariance purpose
+            # SP4: detect all-NaN columns before mean-imputation; col_mean is NaN
+            # for all-NaN columns, so the imputed covariance is also NaN there.
+            all_nan_cols = np.all(np.isnan(resampled_stats), axis=0)
+            if np.any(all_nan_cols):
+                logger.warning(
+                    "%d frequency bin(s) have all-NaN bootstrap stats; "
+                    "covariance at those frequencies will be NaN "
+                    "(mean imputation collapses to NaN when the entire column is NaN).",
+                    int(all_nan_cols.sum()),
+                )
             stats_filled = resampled_stats.copy()
             col_mean = np.nanmean(stats_filled, axis=0)
             inds = np.where(np.isnan(stats_filled))
