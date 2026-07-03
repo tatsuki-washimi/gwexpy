@@ -201,18 +201,18 @@
 <td><p>None beyond basic familiarity with the user guide</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>Use Cases</strong></p></td>
-<td><p>Check how notebooks and Doctest-backed examples are exercised, see where I/O support is tied to tests, find algorithm audit evidence, and understand what repository coverage signals do and do not mean</p></td>
+<td><p>Check how notebooks and network/optional-backend-dependent tests are exercised, see where I/O support is tied to tests, find algorithm audit evidence, and understand what repository coverage signals do and do not mean</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>Search Hints</strong></p></td>
-<td><p>verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail</p></td>
+<td><p>verification, quality, coverage, notebook policy, Extended Verification, SUPPORTED_IO_MATRIX, codecov, audit trail</p></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Search hints:</strong> verification, quality, coverage, notebook policy, Doctest, SUPPORTED_IO_MATRIX, codecov, audit trail</p>
+<p><strong>Search hints:</strong> verification, quality, coverage, notebook policy, Extended Verification, SUPPORTED_IO_MATRIX, codecov, audit trail</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p><strong>Read this page as a transparency map, not as a blanket guarantee</strong></p>
-<p>Different parts of the project are verified in different ways. Some module/docstring examples are exercised in nightly CI, some notebooks are fully executed, some heavy notebooks are only structure-checked, and some optional-dependency tests can be skipped when the backend is unavailable.</p>
+<p>Different parts of the project are verified in different ways. Some network- and optional-backend-dependent tests (I/O, Zarr, notebooks) are gated in the manually-triggered Extended Verification workflow, some notebooks are fully executed, some heavy notebooks are only structure-checked, and some optional-dependency tests can be skipped when the backend is unavailable.</p>
 </div>
 </section>
 <section id="public-evidence-sources">
@@ -229,9 +229,9 @@
 <td><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md">Notebook Policy</a></p></td>
 <td><p>Which notebook classes are treated as <code class="docutils literal notranslate"><span class="pre">Light</span></code>, <code class="docutils literal notranslate"><span class="pre">Heavy</span></code>, or <code class="docutils literal notranslate"><span class="pre">Display-only</span></code>, and how CI handles each class</p></td>
 </tr>
-<tr class="row-odd"><td><p>Module/docstring examples</p></td>
-<td><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml">Extended nightly workflow</a></p></td>
-<td><p>Which nightly CI path runs <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--Doctest-modules</span></code> against <code class="docutils literal notranslate"><span class="pre">tests/</span></code> and <code class="docutils literal notranslate"><span class="pre">gwexpy/</span></code>, useful as public evidence for docstring-level example execution scope</p></td>
+<tr class="row-odd"><td><p>Cross-platform &amp; optional-backend gates</p></td>
+<td><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml">Extended Verification workflow</a></p></td>
+<td><p>The manually-triggered CI path that smoke-tests imports on macOS/Windows, and gates network-backed I/O, docs notebook execution, and Zarr I/O</p></td>
 </tr>
 <tr class="row-even"><td><p>Direct I/O formats</p></td>
 <td><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md">SUPPORTED_IO_MATRIX</a></p></td>
@@ -253,28 +253,28 @@
 <p>The public notebook policy is defined in the repository’s <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md">Notebook Policy</a>.</p>
 <p>The current public model is:</p>
 <ul class="simple">
-<li><p>Module and docstring examples in <code class="docutils literal notranslate"><span class="pre">tests/</span></code> and <code class="docutils literal notranslate"><span class="pre">gwexpy/</span></code> are exercised in the public <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml">extended nightly workflow</a> via <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--Doctest-modules</span></code>.</p></li>
-<li><p><strong>Light</strong> notebooks are classified for full execution and validation in CI through <code class="docutils literal notranslate"><span class="pre">papermill</span></code>.</p></li>
+<li><p>Network- and optional-backend-dependent I/O tests (e.g. GWOSC datafind, Zarr) are gated in the public <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml">extended verification workflow</a>, which must be triggered manually.</p></li>
+<li><p><strong>Light</strong> notebooks are classified for full execution and validation in CI through <code class="docutils literal notranslate"><span class="pre">papermill</span></code>, as part of the same workflow’s docs-notebook gate.</p></li>
 <li><p><strong>Heavy</strong> notebooks are kept in CI, but the policy describes them as <code class="docutils literal notranslate"><span class="pre">nbval</span> <span class="pre">--nbval-lax</span></code> checks rather than guaranteed full execution.</p></li>
 <li><p><strong>Display-only</strong> notebooks prioritize curated outputs and are outside normal execution validation, or limited to load-style checks.</p></li>
 <li><p>The public <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml">docs PR workflow</a> also executes changed notebooks with <code class="docutils literal notranslate"><span class="pre">papermill</span></code> before building Sphinx HTML.</p></li>
 <li><p>Public tutorial notebooks under <code class="docutils literal notranslate"><span class="pre">docs/web/{en,ja}/user_guide/tutorials/</span></code> are treated as the authoritative published copies.</p></li>
 </ul>
-<p>This is why a notebook or docstring example being present in the docs is a useful signal, but not enough on its own to infer that every published sample is executed in every PR, nightly, and release path.</p>
+<p>This is why a notebook or docstring example being present in the docs is a useful signal, but not enough on its own to infer that every published sample is executed in every PR, manually-triggered verification run, and release path.</p>
 </section>
 <section id="current-ci-coverage-and-its-limits">
 <h2>Current CI Coverage and Its Limits<a class="headerlink" href="#current-ci-coverage-and-its-limits" title="Link to this heading"></a></h2>
 <p>The current public evidence supports a narrower statement than “all sample code is universally guaranteed.”</p>
 <ul class="simple">
-<li><p>The extended nightly workflow shows that <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> already runs automated Doctest coverage for module/docstring examples.</p></li>
-<li><p>The same nightly workflow shows that notebook handling is class-dependent: <code class="docutils literal notranslate"><span class="pre">Light</span></code> notebooks are executed with <code class="docutils literal notranslate"><span class="pre">papermill</span></code>, while <code class="docutils literal notranslate"><span class="pre">Heavy</span></code> notebooks are checked with <code class="docutils literal notranslate"><span class="pre">nbval</span> <span class="pre">--nbval-lax</span></code>.</p></li>
+<li><p>The extended verification workflow shows that <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> already runs automated network-backed I/O and Zarr I/O gates, though only when manually triggered.</p></li>
+<li><p>The same workflow shows that notebook handling is class-dependent: <code class="docutils literal notranslate"><span class="pre">Light</span></code> notebooks are executed with <code class="docutils literal notranslate"><span class="pre">papermill</span></code>, while <code class="docutils literal notranslate"><span class="pre">Heavy</span></code> notebooks are checked with <code class="docutils literal notranslate"><span class="pre">nbval</span> <span class="pre">--nbval-lax</span></code>.</p></li>
 <li><p>The docs PR workflow shows that notebooks changed in docs pull requests are executed with <code class="docutils literal notranslate"><span class="pre">papermill</span></code> before the docs build.</p></li>
 </ul>
 <p>Read those signals carefully:</p>
 <ul class="simple">
 <li><p>They show that public examples are not unmanaged; some are exercised automatically in CI today.</p></li>
 <li><p>They do <strong>not</strong> mean every published code block is executed in every workflow.</p></li>
-<li><p>They do <strong>not</strong> mean Doctest or notebook coverage is a single release-blocking gate for the whole documentation set.</p></li>
+<li><p>They do <strong>not</strong> mean network-backed I/O or notebook coverage is a single release-blocking gate for the whole documentation set, since Extended Verification is manually triggered rather than run on every PR.</p></li>
 <li><p>They do <strong>not</strong> remove the need to check notebook class, optional dependencies, and workflow scope before treating an example as strongly guaranteed.</p></li>
 </ul>
 </section>
@@ -308,7 +308,7 @@
 <h2>What This Page Does Not Claim<a class="headerlink" href="#what-this-page-does-not-claim" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>It does <strong>not</strong> claim that every public notebook is fully executed in every CI run.</p></li>
-<li><p>It does <strong>not</strong> claim that every docstring example or sample code block is executed in every PR, nightly, and release workflow.</p></li>
+<li><p>It does <strong>not</strong> claim that every docstring example or sample code block is executed in every PR, manually-triggered verification run, and release workflow.</p></li>
 <li><p>It does <strong>not</strong> claim that every optional dependency is present in every test environment.</p></li>
 <li><p>It does <strong>not</strong> replace the algorithm-specific assumptions and tolerances documented on <a class="reference internal" href="validated_algorithms.html"><span class="std std-doc">Validated Algorithms</span></a>.</p></li>
 <li><p>It does <strong>not</strong> turn repository-wide line coverage into a substitute for per-feature scientific validation.</p></li>
@@ -344,7 +344,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-02 21:21:39.
+      <span class="lastupdated">Last updated on 2026-07-03 13:27:46.
       </span></p>
   </div>
 
