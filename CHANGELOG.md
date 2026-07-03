@@ -1,11 +1,12 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.8] - 2026-07-04
 
-This wave hardens the SeriesMatrix / I/O layer: gap handling, metadata
-aliasing, key round-trips, and reader failure modes surfaced by the #443
-follow-up audit are fixed with explicit contracts and regression tests
-(#450).
+This is a bugfix and I/O-hardening release. It fixes the `from_obspy`
+crash on `obspy.Stream` input (#452) and hardens the SeriesMatrix / I/O
+layer: gap handling, metadata aliasing, key round-trips, and reader
+failure modes surfaced by the #443 follow-up audit are fixed with explicit
+contracts and regression tests (#450).
 
 ### Behaviour-visible bug fixes
 
@@ -31,6 +32,13 @@ follow-up audit are fixed with explicit contracts and regression tests
 
 ### Bug fixes
 
+- **interop/obspy**: `TimeSeries.from_obspy` no longer crashes with an opaque
+  `AttributeError` when given an `obspy.Stream`: a single-trace Stream is
+  converted directly, and a multi-trace Stream raises a clear `TypeError`
+  pointing to the new `TimeSeriesDict.from_obspy` / `to_obspy` methods.
+  The `from_neo` (Block/Segment), `from_torch` (non-1D tensors) and
+  `from_root` (container inputs) converters gained equivalent clear-error
+  guards (#452).
 - `SeriesMatrix` metadata aliasing is now fully closed out: `rows`/`cols`/
   `meta`/`attrs` are deep-copied in `_get_meta_for_constructor` (used by
   `crop`/`append`/`diff`/`pad`/`interpolate`), in the matrix math ops
