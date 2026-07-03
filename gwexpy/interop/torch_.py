@@ -97,4 +97,10 @@ def from_torch(
     if hasattr(t, "resolve_neg"):
         t = t.resolve_neg()
     data = t.numpy()
+    if data.ndim != 1:
+        raise ValueError(
+            f"from_torch expects a 1-D tensor for a single TimeSeries, got shape "
+            f"{tuple(data.shape)}; for multi-channel tensors use TimeSeriesMatrix/"
+            "TimeSeriesDict or index a single row."
+        )
     return cls(data, t0=t0, dt=dt, unit=unit)

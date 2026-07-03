@@ -113,3 +113,23 @@ def test_spectrogram_dict_root(ROOT, tmp_path):
     f = ROOT.TFile.Open(filename)
     assert isinstance(f.Get("S1"), ROOT.TH2D)
     f.Close()
+
+
+def test_from_root_tmultigraph_raises(ROOT):
+    ts = TimeSeries(np.arange(10, dtype=float), t0=0, dt=1, unit=u.V, name="a")
+    mg = TimeSeriesList([ts]).to_tmultigraph()
+    with pytest.raises(TypeError, match="TMultiGraph"):
+        TimeSeries.from_root(mg)
+
+
+def test_from_root_tfile_raises(ROOT, tmp_path):
+    ts = TimeSeries(np.arange(10, dtype=float), t0=0, dt=1, unit=u.V, name="a")
+    tsd = TimeSeriesDict({"a": ts})
+    filename = str(tmp_path / "test_tfile.root")
+    tsd.write(filename)
+    f = ROOT.TFile.Open(filename)
+    try:
+        with pytest.raises(TypeError, match="TFile"):
+            TimeSeries.from_root(f)
+    finally:
+        f.Close()

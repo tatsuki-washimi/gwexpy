@@ -324,6 +324,23 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
         return from_mne_raw(cls, raw, unit_map=unit_map)
 
+    def to_obspy(self, *, stats_extra=None, dtype=None):
+        """Convert to an obspy.Stream (one Trace per TimeSeries)."""
+        from gwexpy.interop import to_obspy
+
+        return to_obspy(self, stats_extra=stats_extra, dtype=dtype)
+
+    @classmethod
+    def from_obspy(cls, stream, *, unit=None, name_policy="id"):
+        """Create a TimeSeriesDict from an obspy.Stream (or Trace).
+
+        Each Trace in the Stream becomes a TimeSeries, keyed by its name
+        (per ``name_policy``).
+        """
+        from gwexpy.interop import from_obspy
+
+        return from_obspy(cls, stream, unit=unit, name_policy=name_policy)
+
     @classmethod
     def from_control(cls, response: Any, **kwargs) -> TimeSeriesDict:
         """Create TimeSeriesDict from python-control TimeResponseData.
