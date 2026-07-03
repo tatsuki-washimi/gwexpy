@@ -179,10 +179,10 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code>(cls, data_dict)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code>(cls, data_dict, *[, unit, ...])</p></td>
 <td><p>Create a <cite>TimeSeries</cite> from a dictionary.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code>(cls, json_str)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code>(cls, json_str, **kwargs)</p></td>
 <td><p>Create a <cite>TimeSeries</cite> from a JSON string.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code>(ts)</p></td>
@@ -208,14 +208,21 @@
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.json_.</span></span><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/interop/json_.html#from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.json_.</span></span><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/interop/json_.html#from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Create a <cite>TimeSeries</cite> from a JSON string.</p>
+<p>Extra keyword arguments are forwarded to <code class="xref py py-func docutils literal notranslate"><span class="pre">from_dict()</span></code> so callers can
+override metadata (<code class="docutils literal notranslate"><span class="pre">unit</span></code>/<code class="docutils literal notranslate"><span class="pre">channel</span></code>/<code class="docutils literal notranslate"><span class="pre">name</span></code>/<code class="docutils literal notranslate"><span class="pre">t0</span></code>/<code class="docutils literal notranslate"><span class="pre">dt</span></code>) absent from
+the JSON payload.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.json_.</span></span><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/interop/json_.html#from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.json_.</span></span><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dict</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/interop/json_.html#from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Create a <cite>TimeSeries</cite> from a dictionary.</p>
+<p>Metadata not present in <code class="docutils literal notranslate"><span class="pre">data_dict</span></code> can be supplied explicitly via the
+keyword arguments; an explicit argument always takes priority over a value
+stored in the dictionary (<code class="docutils literal notranslate"><span class="pre">user</span> <span class="pre">&gt;</span> <span class="pre">source</span></code>). Missing <code class="docutils literal notranslate"><span class="pre">t0</span></code>/<code class="docutils literal notranslate"><span class="pre">dt</span></code> fall
+back to <code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code> with a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#UserWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></a> rather than silently.</p>
 </dd></dl>
 
 </section>
@@ -232,7 +239,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-03 13:27:46.
+      <span class="lastupdated">Last updated on 2026-07-03 17:11:45.
       </span></p>
   </div>
 

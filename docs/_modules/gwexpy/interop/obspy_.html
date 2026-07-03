@@ -197,6 +197,42 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_stream_to_tsdict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name_policy</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an Obspy Stream to a TimeSeriesDict-like collection.</span>
+
+<span class="sd">    Each Trace becomes a TimeSeries, keyed by its name (per ``name_policy``).</span>
+<span class="sd">    Duplicate keys are made unique to avoid silently overwriting traces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;obspy&quot;</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+    <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+    <span class="n">used</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">st</span><span class="p">:</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">_from_obspy_trace_to_ts</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name_policy</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tr</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">used</span><span class="p">:</span>
+            <span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">used</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_stream_to_tslist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name_policy</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an Obspy Stream to a TimeSeriesList-like collection.&quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;obspy&quot;</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+    <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">tr</span> <span class="ow">in</span> <span class="n">st</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_from_obspy_trace_to_ts</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">name_policy</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
 <span class="c1"># -----------------------------------------------------------------------------</span>
 <span class="c1"># FrequencySeries</span>
 <span class="c1"># -----------------------------------------------------------------------------</span>
@@ -431,8 +467,18 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">obspy</span><span class="o">.</span><span class="n">Stream</span><span class="p">):</span>
         <span class="k">if</span> <span class="s2">&quot;Spectrogram&quot;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_stream_to_spec</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># If Stream and target is TimeSeriesDict or similar?</span>
-        <span class="c1"># Implementing basic Spectrogram support first.</span>
+        <span class="k">if</span> <span class="s2">&quot;Dict&quot;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_stream_to_tsdict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;List&quot;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_stream_to_tslist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Single-series target (TimeSeries / FrequencySeries).</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">from_obspy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot convert a Stream with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2"> traces to &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">; use TimeSeriesDict.from_obspy() instead.&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported conversion: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -446,7 +492,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-03 13:27:46.
+      <span class="lastupdated">Last updated on 2026-07-03 17:11:45.
       </span></p>
   </div>
 

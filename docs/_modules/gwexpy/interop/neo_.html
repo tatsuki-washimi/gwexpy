@@ -218,10 +218,8 @@
 
 
 
-<div class="viewcode-block" id="from_neo">
-<a class="viewcode-back" href="../../../web/ja/reference/api/interop.html#gwexpy.interop.from_neo">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">from_neo</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a `TimeSeriesMatrix` from `neo.AnalogSignal`.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_analogsignal_to_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a single `neo.AnalogSignal` to a `TimeSeriesMatrix`.&quot;&quot;&quot;</span>
     <span class="c1"># sig shape: (time, ch)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">magnitude</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># (ch, time)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># (ch, 1, time)</span>
@@ -235,7 +233,50 @@
     <span class="c1"># channels?</span>
     <span class="n">ch_names</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">array_annotations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel_names&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">channel_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">channel_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="from_neo">
+<a class="viewcode-back" href="../../../web/ja/reference/api/interop.html#gwexpy.interop.from_neo">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_neo</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a `TimeSeriesMatrix` from a neo object.</span>
+
+<span class="sd">    Accepts a single `neo.AnalogSignal`, or a `neo.Block`/`neo.Segment`</span>
+<span class="sd">    containing exactly one `AnalogSignal` (the form returned by most</span>
+<span class="sd">    ``neo.io`` readers).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">neo</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;neo&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">neo</span><span class="o">.</span><span class="n">AnalogSignal</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_analogsignal_to_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="p">(</span><span class="n">neo</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span> <span class="n">neo</span><span class="o">.</span><span class="n">Segment</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">neo</span><span class="o">.</span><span class="n">Block</span><span class="p">):</span>
+            <span class="n">signals</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">asig</span>
+                <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">segments</span>
+                <span class="k">for</span> <span class="n">asig</span> <span class="ow">in</span> <span class="n">segment</span><span class="o">.</span><span class="n">analogsignals</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># neo.Segment</span>
+            <span class="n">signals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">analogsignals</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_analogsignal_to_matrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">signals</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;no AnalogSignal found in the neo &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;neo </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> contains </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span><span class="si">}</span><span class="s2"> AnalogSignals; &quot;</span>
+            <span class="s2">&quot;pass a single neo.AnalogSignal &quot;</span>
+            <span class="s2">&quot;(e.g. block.segments[0].analogsignals[0]).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Unsupported type for from_neo: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span><span class="si">}</span><span class="s2">; &quot;</span>
+        <span class="s2">&quot;expected a neo.AnalogSignal, neo.Block or neo.Segment.&quot;</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
@@ -247,7 +288,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-03 13:27:46.
+      <span class="lastupdated">Last updated on 2026-07-03 17:11:45.
       </span></p>
   </div>
 

@@ -156,6 +156,10 @@
         <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">),</span>
         <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="p">),</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="c1"># Persist ``channel`` so it survives a to_dict/from_dict round-trip</span>
+        <span class="c1"># (guard against the falsy/None channel to avoid writing the literal</span>
+        <span class="c1"># string &quot;None&quot;, which would round-trip back as Channel(&quot;None&quot;)).</span>
+        <span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span> <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">channel</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">meta</span></div>
@@ -164,24 +168,51 @@
 
 <div class="viewcode-block" id="from_json">
 <a class="viewcode-back" href="../../../web/ja/reference/api/interop.html#gwexpy.interop.from_json">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a `TimeSeries` from a JSON string.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a `TimeSeries` from a JSON string.</span>
+
+<span class="sd">    Extra keyword arguments are forwarded to :func:`from_dict` so callers can</span>
+<span class="sd">    override metadata (``unit``/``channel``/``name``/``t0``/``dt``) absent from</span>
+<span class="sd">    the JSON payload.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="from_dict">
 <a class="viewcode-back" href="../../../web/ja/reference/api/interop.html#gwexpy.interop.from_dict">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a `TimeSeries` from a dictionary.&quot;&quot;&quot;</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_dict</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
-    <span class="n">t0</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;t0&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">unit</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a `TimeSeries` from a dictionary.</span>
 
-    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+<span class="sd">    Metadata not present in ``data_dict`` can be supplied explicitly via the</span>
+<span class="sd">    keyword arguments; an explicit argument always takes priority over a value</span>
+<span class="sd">    stored in the dictionary (``user &gt; source``). Missing ``t0``/``dt`` fall</span>
+<span class="sd">    back to ``0``/``1`` with a :class:`UserWarning` rather than silently.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_meta</span><span class="p">,</span> <span class="n">resolve_timing</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_dict</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+
+    <span class="n">final_t0</span><span class="p">,</span> <span class="n">final_dt</span> <span class="o">=</span> <span class="n">resolve_timing</span><span class="p">(</span>
+        <span class="n">t0</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">,</span>
+        <span class="n">source</span><span class="o">=</span><span class="s2">&quot;dict&quot;</span><span class="p">,</span>
+        <span class="n">inferred_t0</span><span class="o">=</span><span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;t0&quot;</span><span class="p">),</span>
+        <span class="n">inferred_dt</span><span class="o">=</span><span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dt&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">final_unit</span> <span class="o">=</span> <span class="n">resolve_meta</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">))</span>
+    <span class="n">final_name</span> <span class="o">=</span> <span class="n">resolve_meta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">))</span>
+    <span class="n">final_channel</span> <span class="o">=</span> <span class="n">resolve_meta</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel&quot;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">t0</span><span class="o">=</span><span class="n">final_t0</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">final_dt</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">final_unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">final_name</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="n">final_channel</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
@@ -193,7 +224,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-03 13:27:46.
+      <span class="lastupdated">Last updated on 2026-07-03 17:11:45.
       </span></p>
   </div>
 

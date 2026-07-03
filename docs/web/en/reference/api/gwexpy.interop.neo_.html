@@ -181,7 +181,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_neo</span></code>(cls, sig)</p></td>
-<td><p>Create a <cite>TimeSeriesMatrix</cite> from <cite>neo.AnalogSignal</cite>.</p></td>
+<td><p>Create a <cite>TimeSeriesMatrix</cite> from a neo object.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_neo</span></code>(obj[, units])</p></td>
 <td><p>Convert a <cite>TimeSeries</cite> or <cite>TimeSeriesMatrix</cite> to <cite>neo.AnalogSignal</cite>.</p></td>
@@ -197,7 +197,10 @@
 <dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">gwexpy.interop.neo_.</span></span><span class="sig-name descname"><span class="pre">from_neo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/interop/neo_.html#from_neo"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Create a <cite>TimeSeriesMatrix</cite> from <cite>neo.AnalogSignal</cite>.</p>
+<dd><p>Create a <cite>TimeSeriesMatrix</cite> from a neo object.</p>
+<p>Accepts a single <cite>neo.AnalogSignal</cite>, or a <cite>neo.Block</cite>/<cite>neo.Segment</cite>
+containing exactly one <cite>AnalogSignal</cite> (the form returned by most
+<code class="docutils literal notranslate"><span class="pre">neo.io</span></code> readers).</p>
 </dd></dl>
 
 </section>
@@ -214,7 +217,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-03 13:27:46.
+      <span class="lastupdated">Last updated on 2026-07-03 17:11:45.
       </span></p>
   </div>
 

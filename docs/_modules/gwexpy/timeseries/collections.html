@@ -464,6 +464,29 @@
         <span class="k">return</span> <span class="n">from_mne_raw</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">unit_map</span><span class="o">=</span><span class="n">unit_map</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="TimeSeriesDict.to_obspy">
+<a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.to_obspy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_obspy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stats_extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to an obspy.Stream (one Trace per TimeSeries).&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_obspy</span>
+
+        <span class="k">return</span> <span class="n">to_obspy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stats_extra</span><span class="o">=</span><span class="n">stats_extra</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeriesDict.from_obspy">
+<a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.from_obspy">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_obspy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name_policy</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a TimeSeriesDict from an obspy.Stream (or Trace).</span>
+
+<span class="sd">        Each Trace in the Stream becomes a TimeSeries, keyed by its name</span>
+<span class="sd">        (per ``name_policy``).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_obspy</span>
+
+        <span class="k">return</span> <span class="n">from_obspy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name_policy</span><span class="o">=</span><span class="n">name_policy</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="TimeSeriesDict.from_control">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.from_control">[docs]</a>
     <span class="nd">@classmethod</span>
@@ -2344,7 +2367,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-03 13:27:46.
+      <span class="lastupdated">Last updated on 2026-07-03 17:11:45.
       </span></p>
   </div>
 
