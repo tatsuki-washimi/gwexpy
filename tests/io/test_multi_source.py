@@ -117,6 +117,45 @@ class TestReadMultiDict:
         assert len(out["ch"]) == 25
         assert np.all(np.isnan(out["ch"].value[10:15]))
 
+    def test_explicit_pad_is_honored_by_the_merge(self):
+        """A user-supplied pad= fills gaps with that value, not the NaN default."""
+        files = {
+            "f1": TimeSeriesDict(
+                {"ch": TimeSeries(np.ones(10), t0=0, dt=1, name="ch")}
+            ),
+            "f2": TimeSeriesDict(
+                {"ch": TimeSeries(np.ones(10), t0=15, dt=1, name="ch")}
+            ),
+        }
+        out = read_multi_dict(
+            self._fake_reader(files), ["f1", "f2"], "test", pad=-7.0
+        )
+        assert len(out["ch"]) == 25
+        np.testing.assert_allclose(out["ch"].value[10:15], np.full(5, -7.0))
+
+    def test_pad_does_not_leak_to_the_single_file_reader(self):
+        """pad/gap bind to read_multi_dict, never to the per-file reader.
+
+        Readers like tdms/sdb/ats/win/csv/ndscope forward a user ``pad=`` via
+        ``**kwargs``; it must steer the merge, not be passed down to the
+        single-file reader (which does not understand it).
+        """
+        seen_kwargs = {}
+
+        def recording_reader(source, **kwargs):
+            seen_kwargs.update(kwargs)
+            return TimeSeriesDict(
+                {"ch": TimeSeries(np.ones(5), t0=0, dt=1, name="ch")}
+            )
+
+        read_multi_dict(
+            recording_reader, ["f1"], "test", pad=-7.0, gap="pad", unit="m"
+        )
+        assert "pad" not in seen_kwargs
+        assert "gap" not in seen_kwargs
+        # unrelated reader kwargs are still forwarded
+        assert seen_kwargs.get("unit") == "m"
+
     def test_empty_list_raises(self):
         with pytest.raises(ValueError, match="no test files provided"):
             read_multi_dict(self._fake_reader({}), [], "test")

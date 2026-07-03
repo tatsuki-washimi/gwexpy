@@ -66,6 +66,32 @@ class TestFromXarray:
         ts2 = from_xarray(TimeSeries, da)
         assert str(ts2.unit) == "m"
 
+    def test_channel_roundtrip(self):
+        ts = TimeSeries(
+            np.arange(10.0), t0=1e9, dt=0.1, unit="m", channel="X1:TEST-CHAN"
+        )
+        da = to_xarray(ts, time_coord="gps")
+        assert da.attrs["channel"] == "X1:TEST-CHAN"
+        ts2 = from_xarray(TimeSeries, da)
+        assert str(ts2.channel) == "X1:TEST-CHAN"
+
+    def test_no_channel_not_persisted_as_none_string(self):
+        # An unset channel must not be written as the literal string "None"
+        # (which would round-trip back into Channel("None")).
+        ts = TimeSeries(np.arange(5.0), t0=1e9, dt=0.1)
+        da = to_xarray(ts, time_coord="gps")
+        assert "channel" not in da.attrs
+        ts2 = from_xarray(TimeSeries, da)
+        assert ts2.channel is None
+
+    def test_user_channel_overrides(self):
+        ts = TimeSeries(
+            np.arange(5.0), t0=1e9, dt=0.1, channel="X1:ORIG"
+        )
+        da = to_xarray(ts, time_coord="gps")
+        ts2 = from_xarray(TimeSeries, da, channel="X1:OVERRIDE")
+        assert str(ts2.channel) == "X1:OVERRIDE"
+
 
 # ---------------------------------------------------------------------------
 # Helper function tests

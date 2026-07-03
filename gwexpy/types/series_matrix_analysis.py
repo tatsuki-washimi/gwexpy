@@ -105,7 +105,12 @@ class SeriesMatrixAnalysisMixin:
         if gap is None:
             gap = "raise" if pad is None else "pad"
         if pad is None and gap == "pad":
-            pad = 0.0
+            # Missing samples must read back as "no data" (NaN), not a
+            # valid-looking 0.0.  This mirrors ``read_multi_dict``'s
+            # ``pad=np.nan`` default (gwexpy/timeseries/io/_multi.py) and is
+            # the root fix for the #443 multi-file corruption class: only the
+            # NetCDF4/Zarr call sites were patched before, not this default.
+            pad = np.nan
 
         base_unit = getattr(target.xindex, "unit", getattr(other.xindex, "unit", None))
 
@@ -254,6 +259,17 @@ class SeriesMatrixAnalysisMixin:
             # Create padding data
             pad_shape = list(self.shape)
             pad_shape[axis] = n_pad
+            if (
+                isinstance(pad, float)
+                and np.isnan(pad)
+                and not np.issubdtype(self.dtype, np.floating)
+                and not np.issubdtype(self.dtype, np.complexfloating)
+            ):
+                raise ValueError(
+                    f"Cannot pad a gap with NaN for non-floating dtype "
+                    f"{self.dtype!r}; pass an explicit ``pad=`` value that the "
+                    f"matrix dtype can represent."
+                )
             pad_data = np.full(pad_shape, pad, dtype=self.dtype)
             pad_x = x1 + np.arange(n_pad) * dx
             if base_unit:

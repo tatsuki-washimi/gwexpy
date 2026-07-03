@@ -141,6 +141,36 @@ class TestZarrRoundtrip:
         assert np.isclose(tsd["bare"].dt.value, 0.125)
         assert np.isclose(tsd["bare"].sample_rate.value, 8.0)
 
+    def test_missing_t0_warns_and_defaults(self, tmp_path):
+        """A store lacking t0 must not silently fabricate GPS epoch 1980."""
+        path = tmp_path / "no_t0.zarr"
+        store = zarr.open_group(str(path), mode="w")
+        creator = getattr(store, "create_array", None) or store.create_dataset
+        arr = creator("sig", data=np.ones(5))
+        arr.attrs["sample_rate"] = 8.0
+        # deliberately omit t0
+
+        with pytest.warns(UserWarning, match="t0"):
+            tsd = TimeSeriesDict.read(str(path), format="zarr")
+        assert np.isclose(tsd["sig"].t0.value, 0.0)
+
+    def test_missing_t0_recovers_with_t0_override(self, tmp_path):
+        """t0_override sets the epoch explicitly (mirrors sample_rate_override)."""
+        path = tmp_path / "no_t0_override.zarr"
+        store = zarr.open_group(str(path), mode="w")
+        creator = getattr(store, "create_array", None) or store.create_dataset
+        arr = creator("sig", data=np.ones(5))
+        arr.attrs["sample_rate"] = 8.0
+
+        import warnings
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")  # no silent default warning expected
+            tsd = TimeSeriesDict.read(
+                str(path), format="zarr", t0_override=1234567890.0
+            )
+        assert np.isclose(tsd["sig"].t0.value, 1234567890.0)
+
     def test_unit_override(self, tmp_path):
         path = tmp_path / "unit.zarr"
         ts = TimeSeries(np.ones(10), t0=0, sample_rate=1, name="x", unit="m")

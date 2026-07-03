@@ -16,6 +16,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
@@ -152,9 +153,27 @@ def _series_from_zarr_array(
     unit=None,
     sample_rate_override=None,
     dt_override=None,
+    t0_override=None,
 ) -> TimeSeries:
     attrs = dict(arr.attrs)
-    t0 = float(attrs.get("t0", 0.0))
+    if "t0" in attrs:
+        t0 = float(attrs["t0"])
+    elif t0_override is not None:
+        t0 = float(t0_override)
+    else:
+        # ``t0`` (the GPS epoch) is optional -- unlike ``sample_rate`` it is
+        # not required to reconstruct the sample spacing -- but silently
+        # fabricating GPS epoch 0 (1980) is a data-integrity trap (the T1
+        # silent-default class).  Warn so legacy/foreign stores that lack a
+        # stored epoch are visible; pass ``t0_override=`` to set it explicitly.
+        warnings.warn(
+            f"Zarr channel '{key}' has no 't0' attribute; assuming t0=0.0 "
+            f"(GPS epoch 1980). Pass t0_override=... to set the epoch "
+            f"explicitly.",
+            UserWarning,
+            stacklevel=2,
+        )
+        t0 = 0.0
 
     sample_rate = _coerce_sample_rate_from_attrs_or_override(
         attrs,
@@ -182,6 +201,7 @@ def read_timeseriesdict_zarr(
     unit=None,
     sample_rate_override=None,
     dt_override=None,
+    t0_override=None,
     **kwargs,
 ) -> TimeSeriesDict:
     """Read a Zarr store into a TimeSeriesDict.
@@ -206,6 +226,10 @@ def read_timeseriesdict_zarr(
         Explicit sample-spacing recovery value in seconds for legacy stores
         that lack per-array timing metadata. Mutually exclusive with
         ``sample_rate_override``.
+    t0_override : float, optional
+        Explicit GPS epoch (seconds) for legacy stores that lack a per-array
+        ``t0`` attribute. When omitted and ``t0`` is absent, a ``UserWarning``
+        is emitted and ``t0=0.0`` is assumed.
     **kwargs
         Additional keyword arguments forwarded to ``zarr.open_group``.
 
@@ -220,6 +244,7 @@ def read_timeseriesdict_zarr(
             unit=unit,
             sample_rate_override=sample_rate_override,
             dt_override=dt_override,
+            t0_override=t0_override,
             **kwargs,
         )
 
@@ -249,6 +274,7 @@ def read_timeseriesdict_zarr(
             unit=unit,
             sample_rate_override=sample_rate_override,
             dt_override=dt_override,
+            t0_override=t0_override,
         )
         tsd[key] = ts
 
@@ -281,6 +307,7 @@ def read_timeseriesmatrix_zarr(
     unit=None,
     sample_rate_override=None,
     dt_override=None,
+    t0_override=None,
     **kwargs,
 ) -> TimeSeriesMatrix:
     """Read a Zarr store and convert its channels to a matrix."""
@@ -295,6 +322,7 @@ def read_timeseriesmatrix_zarr(
                 unit=unit,
                 sample_rate_override=sample_rate_override,
                 dt_override=dt_override,
+                t0_override=t0_override,
                 **kwargs,
             )
             for s in sources
@@ -355,6 +383,7 @@ def read_timeseriesmatrix_zarr(
             unit=unit,
             sample_rate_override=sample_rate_override,
             dt_override=dt_override,
+            t0_override=t0_override,
         )
         row_index = attrs.get("gwexpy_row_index")
         col_index = attrs.get("gwexpy_col_index")
@@ -377,6 +406,7 @@ def read_timeseriesmatrix_zarr(
             unit=unit,
             sample_rate_override=sample_rate_override,
             dt_override=dt_override,
+            t0_override=t0_override,
             **kwargs,
         )
         return tsd.to_matrix()

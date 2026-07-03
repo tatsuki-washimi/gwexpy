@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Union, cast
 
 import numpy as np
@@ -314,15 +315,21 @@ class SeriesMatrixCoreMixin:
     def _get_meta_for_constructor(
         self, data: np.ndarray, xindex: IndexLike | None
     ) -> dict[str, Any]:
-        """Prepare constructor arguments for a new instance of the same class."""
+        """Prepare constructor arguments for a new instance of the same class.
+
+        Mutable metadata (``rows``/``cols``/``meta``/``attrs``) is deep-copied
+        so the new object does not alias the source's metadata.  Without this,
+        mutating a derived object (from ``crop``/``append``/``diff``/``pad``/
+        ``interpolate``) would corrupt the source -- the #442 defect.
+        """
         return {
             "data": data,
             "xindex": xindex,
-            "rows": getattr(self, "rows", None),
-            "cols": getattr(self, "cols", None),
-            "meta": getattr(self, "meta", None),
+            "rows": deepcopy(getattr(self, "rows", None)),
+            "cols": deepcopy(getattr(self, "cols", None)),
+            "meta": deepcopy(getattr(self, "meta", None)),
             "name": getattr(self, "name", None),
             "epoch": getattr(self, "epoch", None),
-            "attrs": getattr(self, "attrs", None),
+            "attrs": deepcopy(getattr(self, "attrs", None)),
             "unit": getattr(self, "unit", None),
         }

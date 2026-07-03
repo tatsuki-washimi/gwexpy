@@ -7,11 +7,33 @@ import os
 import subprocess
 import sys
 import textwrap
+import warnings
 from pathlib import Path
 
 import pytest
 
 from .generators import GeneratorSpec, iter_generator_specs
+
+# Markers in a generator smoke-check failure that indicate the generator's
+# optional *backend* is simply not installed in this environment (as opposed to
+# a genuine bug in the generator).  In that case we skip the check with a
+# warning instead of aborting the whole session, so backend-less dev
+# environments -- and optional-backend generators added for new formats -- do
+# not break unrelated conformance tests.  CI installs the backends, so real
+# generator regressions there still fail loudly.
+# Notably, _BlockGwexpy hook errors ("blocked import: gwexpy") should NOT be
+# treated as missing backends; they indicate a real generator violation.
+_MISSING_BACKEND_MARKERS = (
+    "Missing optional dependency",
+    "no GWF API available",
+    "please install",
+    "is required for",
+    "No module named",
+)
+
+
+def _looks_like_missing_backend(stderr: str) -> bool:
+    return any(marker in stderr for marker in _MISSING_BACKEND_MARKERS)
 
 ROOT = Path(__file__).resolve().parents[2]
 GENERATORS_DIR = Path(__file__).resolve().parent / "generators"
@@ -19,7 +41,11 @@ BLOCKED_PREFIX = "gwexpy"
 
 
 def _generator_path(spec: GeneratorSpec) -> Path:
-    return GENERATORS_DIR / f"{spec.name}.py"
+    # Derive the file from the module name's last component (not spec.name):
+    # the Zarr generator module is ``zarr_store`` to avoid shadowing the
+    # third-party ``zarr`` package, while its spec name stays ``zarr``.
+    module_leaf = spec.module_name.rsplit(".", 1)[-1]
+    return GENERATORS_DIR / f"{module_leaf}.py"
 
 
 def _parse_generator_source(path: Path) -> ast.AST:
@@ -127,6 +153,15 @@ def _run_generator_smoke(spec: GeneratorSpec) -> None:
         check=False,
     )
     if completed.returncode != 0:
+        if _looks_like_missing_backend(completed.stderr):
+            warnings.warn(
+                f"Skipping IO conformance generator smoke check for "
+                f"{spec.module_name}: optional backend unavailable "
+                f"({completed.stderr.strip().splitlines()[-1] if completed.stderr.strip() else 'unknown'}).",
+                UserWarning,
+                stacklevel=2,
+            )
+            return
         raise pytest.UsageError(
             "IO conformance generator smoke check failed for "
             f"{spec.module_name}:\nSTDOUT:\n{completed.stdout}\n"

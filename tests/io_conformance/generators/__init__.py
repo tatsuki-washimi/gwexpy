@@ -37,6 +37,14 @@ GENERATOR_SPECS: tuple[GeneratorSpec, ...] = (
         name="gwf",
         module_name="tests.io_conformance.generators.gwf",
     ),
+    GeneratorSpec(
+        name="sdb",
+        module_name="tests.io_conformance.generators.sdb",
+    ),
+    GeneratorSpec(
+        name="zarr",
+        module_name="tests.io_conformance.generators.zarr_store",
+    ),
 )
 
 

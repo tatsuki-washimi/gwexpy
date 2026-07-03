@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
@@ -215,7 +216,7 @@ class SeriesMatrixMathMixin:
             meta=MetaDataMatrix(res_meta),
             name=f"({getattr(self, 'name', '')} @ {getattr(other, 'name', '')})",
             epoch=getattr(self, "epoch", 0.0),
-            attrs=getattr(self, "attrs", {}),
+            attrs=deepcopy(getattr(self, "attrs", {})),
         )
 
     def trace(self, offset=0, axis1=0, axis2=1, dtype=None, out=None):
@@ -309,7 +310,7 @@ class SeriesMatrixMathMixin:
                 meta=MetaDataMatrix(meta_arr),
                 name=getattr(self, "name", ""),
                 epoch=getattr(self, "epoch", 0.0),
-                attrs=getattr(self, "attrs", {}),
+                attrs=deepcopy(getattr(self, "attrs", {})),
             )
 
         if output == "matrix":
@@ -325,7 +326,7 @@ class SeriesMatrixMathMixin:
                 meta=self.meta,
                 name=getattr(self, "name", ""),
                 epoch=getattr(self, "epoch", 0.0),
-                attrs=getattr(self, "attrs", {}),
+                attrs=deepcopy(getattr(self, "attrs", {})),
             )
 
         raise ValueError("output must be one of {'list', 'vector', 'matrix'}")
@@ -414,7 +415,7 @@ class SeriesMatrixMathMixin:
             meta=meta_matrix,
             name=f"inv({self.name})" if getattr(self, "name", "") else "inv",
             epoch=getattr(self, "epoch", 0.0),
-            attrs=getattr(self, "attrs", {}),
+            attrs=deepcopy(getattr(self, "attrs", {})),
         )
 
     def schur(
@@ -515,7 +516,7 @@ class SeriesMatrixMathMixin:
             meta=MetaDataMatrix(meta_arr),
             name=f"schur({self.name})" if getattr(self, "name", "") else "schur",
             epoch=getattr(self, "epoch", 0.0),
-            attrs=getattr(self, "attrs", {}),
+            attrs=deepcopy(getattr(self, "attrs", {})),
         )
 
     def abs(self):
@@ -562,5 +563,5 @@ class SeriesMatrixMathMixin:
             meta=MetaDataMatrix(meta_arr),
             name=f"{self.name}.angle" if getattr(self, "name", "") else "",
             epoch=getattr(self, "epoch", 0.0),
-            attrs=getattr(self, "attrs", {}),
+            attrs=deepcopy(getattr(self, "attrs", {})),
         )

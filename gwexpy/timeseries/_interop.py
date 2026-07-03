@@ -66,6 +66,8 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         unit: Any | None = None,
         t0: Any = None,
         dt: Any = None,
+        channel: Any | None = None,
+        name: Any | None = None,
     ) -> Any:
         """Create TimeSeries from pandas.Series.
 
@@ -79,6 +81,10 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
             Start time.
         dt : Quantity or float, optional
             Sample interval.
+        channel : str or Channel, optional
+            Channel to assign (a plain Series cannot carry one).
+        name : str, optional
+            Name to assign (overrides ``series.name``).
 
         Returns
         -------
@@ -87,7 +93,15 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_pandas_series
 
-        return from_pandas_series(cast(Any, cls), series, unit=unit, t0=t0, dt=dt)
+        return from_pandas_series(
+            cast(Any, cls),
+            series,
+            unit=unit,
+            t0=t0,
+            dt=dt,
+            channel=channel,
+            name=name,
+        )
 
     # ===============================
     # polars
@@ -130,7 +144,15 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
 
     @classmethod
     def from_polars(
-        cls, data: Any, times: str | None = "time", unit: Any | None = None
+        cls,
+        data: Any,
+        times: str | None = "time",
+        unit: Any | None = None,
+        *,
+        channel: Any | None = None,
+        name: Any | None = None,
+        t0: Any | None = None,
+        dt: Any | None = None,
     ) -> Any:
         """Create TimeSeries from polars.DataFrame or polars.Series.
 
@@ -142,6 +164,11 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
             If data is a DataFrame, name of the column to use as time.
         unit : Unit, optional
             Physical unit.
+        channel, name : optional
+            Metadata to assign (a polars object cannot carry channel/name).
+        t0, dt : optional
+            Timing to assign for a plain Series; ignored for a DataFrame, where
+            they are inferred from the time column.
 
         Returns
         -------
@@ -153,11 +180,15 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         if isinstance(data, pl.DataFrame):
             from gwexpy.interop import from_polars_dataframe
 
-            return from_polars_dataframe(cls, data, index_column=times, unit=unit)
+            return from_polars_dataframe(
+                cls, data, index_column=times, unit=unit, channel=channel, name=name
+            )
         else:
             from gwexpy.interop import from_polars_series
 
-            return from_polars_series(cls, data, unit=unit)
+            return from_polars_series(
+                cls, data, unit=unit, t0=t0, dt=dt, channel=channel, name=name
+            )
 
     # ===============================
     # ROOT
@@ -241,7 +272,14 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         return to_xarray(cast(Any, self), time_coord=time_coord)
 
     @classmethod
-    def from_xarray(cls, da: Any, *, unit: Any | None = None) -> Any:
+    def from_xarray(
+        cls,
+        da: Any,
+        *,
+        unit: Any | None = None,
+        channel: Any | None = None,
+        name: Any | None = None,
+    ) -> Any:
         """Create TimeSeries from xarray.DataArray.
 
         Parameters
@@ -249,7 +287,11 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         da : xarray.DataArray
             Input DataArray.
         unit : Unit, optional
-            Physical unit.
+            Physical unit (overrides any stored attribute).
+        channel : str or Channel, optional
+            Channel to assign when absent from the DataArray attributes.
+        name : str, optional
+            Name to assign when absent from the DataArray.
 
         Returns
         -------
@@ -258,7 +300,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_xarray
 
-        return from_xarray(cast(Any, cls), da, unit=unit)
+        return from_xarray(
+            cast(Any, cls), da, unit=unit, channel=channel, name=name
+        )
 
     # ===============================
     # HDF5
@@ -301,7 +345,17 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         )
 
     @classmethod
-    def from_hdf5_dataset(cls, group: Any, path: str) -> Any:
+    def from_hdf5_dataset(
+        cls,
+        group: Any,
+        path: str,
+        *,
+        unit: Any | None = None,
+        channel: Any | None = None,
+        name: Any | None = None,
+        t0: Any | None = None,
+        dt: Any | None = None,
+    ) -> Any:
         """Read from HDF5 group/dataset.
 
         Parameters
@@ -310,6 +364,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
             Source group.
         path : str
             Dataset path.
+        unit, channel, name, t0, dt : optional
+            Metadata to assign when absent from the dataset attributes; an
+            explicit value takes priority over a stored attribute.
 
         Returns
         -------
@@ -318,7 +375,16 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_hdf5
 
-        return from_hdf5(cast(Any, cls), group, path)
+        return from_hdf5(
+            cast(Any, cls),
+            group,
+            path,
+            unit=unit,
+            channel=channel,
+            name=name,
+            t0=t0,
+            dt=dt,
+        )
 
     # ===============================
     # obspy
@@ -606,7 +672,17 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         to_netcdf4(cast(Any, self), ds, var_name, **kwargs)
 
     @classmethod
-    def from_netcdf4(cls, ds: Any, var_name: str) -> Any:
+    def from_netcdf4(
+        cls,
+        ds: Any,
+        var_name: str,
+        *,
+        unit: Any | None = None,
+        channel: Any | None = None,
+        name: Any | None = None,
+        t0: Any | None = None,
+        dt: Any | None = None,
+    ) -> Any:
         """Read from a live netCDF4 Dataset object.
 
         Parameters
@@ -615,6 +691,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
             Source dataset.
         var_name : str
             Variable name.
+        unit, channel, name, t0, dt : optional
+            Metadata to assign when absent from the variable attributes; an
+            explicit value takes priority over a stored attribute.
 
         Returns
         -------
@@ -623,7 +702,16 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_netcdf4
 
-        return from_netcdf4(cast(Any, cls), ds, var_name)
+        return from_netcdf4(
+            cast(Any, cls),
+            ds,
+            var_name,
+            unit=unit,
+            channel=channel,
+            name=name,
+            t0=t0,
+            dt=dt,
+        )
 
     # ===============================
     # JAX
@@ -899,13 +987,25 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         return to_json(self)
 
     @classmethod
-    def from_json(cls, json_str: str) -> Any:
+    def from_json(
+        cls,
+        json_str: str,
+        *,
+        unit: Any | None = None,
+        channel: Any | None = None,
+        name: Any | None = None,
+        t0: Any | None = None,
+        dt: Any | None = None,
+    ) -> Any:
         """Create TimeSeries from a JSON string.
 
         Parameters
         ----------
         json_str : str
             JSON representation.
+        unit, channel, name, t0, dt : optional
+            Metadata to assign when absent from the payload; an explicit value
+            takes priority over a value stored in the JSON.
 
         Returns
         -------
@@ -914,7 +1014,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_json
 
-        return from_json(cls, json_str)
+        return from_json(
+            cls, json_str, unit=unit, channel=channel, name=name, t0=t0, dt=dt
+        )
 
     def to_dict(self) -> dict:
         """Convert TimeSeries to a dictionary.
@@ -931,13 +1033,25 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         return to_dict(self)
 
     @classmethod
-    def from_dict(cls, data_dict: dict) -> Any:
+    def from_dict(
+        cls,
+        data_dict: dict,
+        *,
+        unit: Any | None = None,
+        channel: Any | None = None,
+        name: Any | None = None,
+        t0: Any | None = None,
+        dt: Any | None = None,
+    ) -> Any:
         """Create TimeSeries from a dictionary.
 
         Parameters
         ----------
         data_dict : dict
             Dictionary representation.
+        unit, channel, name, t0, dt : optional
+            Metadata to assign when absent from the dictionary; an explicit
+            value takes priority over a value stored in ``data_dict``.
 
         Returns
         -------
@@ -946,7 +1060,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_dict
 
-        return from_dict(cls, data_dict)
+        return from_dict(
+            cls, data_dict, unit=unit, channel=channel, name=name, t0=t0, dt=dt
+        )
 
     # ===============================
     # Neo

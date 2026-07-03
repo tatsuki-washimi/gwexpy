@@ -71,18 +71,24 @@ def to_xarray_frequencyseries(
     xr = require_optional("xarray")
     freqs = fs.frequencies
     coord = freqs.value if freq_coord == "Hz" else np.arange(len(freqs))
+    attrs: dict[str, Any] = {
+        "unit": str(fs.unit),
+        "epoch": float(fs.epoch.to("s").value)
+        if getattr(fs, "epoch", None) is not None and hasattr(fs.epoch, "to")
+        else getattr(fs, "epoch", None),
+    }
+    # Only persist ``channel`` when actually set. ``str(getattr(fs, "channel",
+    # ""))`` resolves to ``str(None) == "None"`` for an unset channel (the
+    # default "" never fires because the attribute always exists on a Series),
+    # which would round-trip back into a bogus Channel("None").
+    if getattr(fs, "channel", None):
+        attrs["channel"] = str(fs.channel)
     da = xr.DataArray(
         fs.value,
         dims=("frequency",),
         coords={"frequency": coord},
         name=fs.name,
-        attrs={
-            "unit": str(fs.unit),
-            "channel": str(getattr(fs, "channel", "")),
-            "epoch": float(fs.epoch.to("s").value)
-            if getattr(fs, "epoch", None) is not None and hasattr(fs.epoch, "to")
-            else getattr(fs, "epoch", None),
-        },
+        attrs=attrs,
     )
     return da
 
@@ -100,6 +106,10 @@ def from_xarray_frequencyseries(
     freqs = da.coords[freq_coord].values
     u = unit or da.attrs.get("unit")
     ch = da.attrs.get("channel", None)
+    # Defend against legacy stores that persisted the literal string "None"
+    # for an unset channel (see the guard in to_xarray_frequencyseries).
+    if ch == "None":
+        ch = None
     name = str(da.name) if da.name is not None else None
     return cls(
         vals,
