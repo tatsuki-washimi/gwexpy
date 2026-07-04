@@ -39,13 +39,13 @@ Legacy aliases remain supported during the transition, but new examples should p
 
 ## Jump Links
 
-- [How to Read This Page](#how-to-read-this-page)
-- [Status Labels](#status-labels)
-- [A. Storage Formats and Container Conversion](#a-storage-formats-and-container-conversion)
-- [B. Analysis Library and Object Conversion](#b-analysis-library-and-object-conversion)
-- [C. Machine Learning, Acceleration, and Array Backends](#c-machine-learning-acceleration-and-array-backends)
-- [D. Physics and Domain-Specific Libraries](#d-physics-and-domain-specific-libraries)
-- [What to Prioritize First](#what-to-prioritize-first)
+- [How to Read This Page](#interop-en-how-to-read)
+- [Status Labels](#interop-en-status-labels)
+- [A. Storage Formats and Container Conversion](#interop-en-storage-conversion)
+- [B. Analysis Library and Object Conversion](#interop-en-analysis-conversion)
+- [C. Machine Learning, Acceleration, and Array Backends](#interop-en-ml-conversion)
+- [D. Physics and Domain-Specific Libraries](#interop-en-domain-conversion)
+- [What to Prioritize First](#interop-en-priorities)
 
 (interop-en-how-to-read)=
 ## How to Read This Page
@@ -83,7 +83,7 @@ directly.
 
 | Policy | Dependencies | Install guidance |
 | --- | --- | --- |
-| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | Until PyPI publication, use the source-install extra syntax from the [Installation Guide](../tutorials/installation.md), such as `pip install "gwexpy[control] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`. |
+| Declared GWexpy extras | `zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, `control`, `pydub` | Install the matching extra from PyPI as described in the [Installation Guide](../tutorials/installation.md), for example `pip install "gwexpy[control]"`. |
 | Bare package installs | `ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, `finesse`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, `specutils`, `pyspeckit`, `PySpice`, `skrf`, `pyOMA`, `multitaper`, `mtspec`, `pyuff`, `sdynpy`, `metpy`, `wrf-python`, `harmonica`, `emg3d`, `meshio` | Install the named backend directly when the bridge imports it or when you need it to create accepted source objects. |
 
 `gwexpy[all]` installs the declared GWexpy extras as a convenience bundle. It
@@ -174,7 +174,7 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 | [PyCBC](https://pycbc.org/) | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | Public | GW time / frequency series | [API](../reference/api/gwexpy.interop.pycbc_.md) |
 | [GWINC](https://git.ligo.org/gwinc/pygwinc) | `from_gwinc_budget()` | Public | budget import | [API](../reference/api/gwexpy.interop.gwinc_.md) |
 | [Finesse](https://finesse.ifosim.org/) | `from_finesse_frequency_response()`, `from_finesse_noise()` | Public | optics / response | [API](../reference/api/gwexpy.interop.finesse_.md) |
-| [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | Public | FRD / response. Requires the `control` extra, for example `pip install "gwexpy[control] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` until PyPI publication. FRD conversion is available from `FrequencySeries` / `FrequencySeriesDict`; time-response import is available via `TimeSeries.from_control()` / `TimeSeriesDict.from_control()`. | [API](../reference/api/gwexpy.interop.control_.md) |
+| [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | Public | FRD / response. Requires the `control` extra, for example `pip install "gwexpy[control]"`. FRD conversion is available from `FrequencySeries` / `FrequencySeriesDict`; time-response import is available via `TimeSeries.from_control()` / `TimeSeriesDict.from_control()`. | [API](../reference/api/gwexpy.interop.control_.md) |
 | [SimPEG](https://simpeg.xyz/) | `to_simpeg()`, `from_simpeg()` | Public | geophysics | [API](../reference/api/gwexpy.interop.simpeg_.md) |
 | [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | Public | magnetotellurics | [API](../reference/api/gwexpy.interop.mt_.md) |
 | MTpy | dedicated `to_*()` / `from_*()` API still in progress | In progress | MTH5-adjacent organization is incomplete | — |

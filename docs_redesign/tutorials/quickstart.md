@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    description: "Start GWexpy quickly with a GitHub install command, a 3-line first plot, and pointers to the next tutorials and migration guides."
+    description: "Start GWexpy quickly with a pip install command, a 3-line first plot, and pointers to the next tutorials and migration guides."
 ---
 
 # Quickstart
@@ -11,15 +11,18 @@ Get your first analysis plot with GWexpy as quickly as possible.
 (en-quickstart-install-command)=
 ## Quick Install
 
-GWexpy is currently in development and is **not yet published on PyPI or Conda**, so install it directly from the GitHub source repository for now:
+GWexpy is published on PyPI, so a plain `pip install` is all you need to get started:
 
-- Purpose: install the current development build as quickly as possible
+- Purpose: install the current release as quickly as possible
 - Input: Python 3.11+ with `pip`
 - Output: a local GWexpy installation ready for the first example
 
 ```bash
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+pip install gwexpy
 ```
+
+If you want the latest unreleased development version instead, install from the
+GitHub source repository: `pip install git+https://github.com/tatsuki-washimi/gwexpy.git`
 
 If you need a Conda-managed environment, GW binary dependencies such as NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the [Installation Guide](installation.md) instead of adding those packages ad hoc after this quick install.
 
@@ -48,7 +51,7 @@ For a more practical workflow, we recommend the following lesson.
 
 [TimeSeries basics lesson](intro_timeseries.ipynb)
 
-Experience everything from loading data to frequency analysis (ASD/CSD) and matrix manipulation using the latest Field API.
+Experience everything from loading data to frequency analysis (ASD/CSD) and multi-channel manipulation with the Matrix API.
 
 ## Core Concepts
 

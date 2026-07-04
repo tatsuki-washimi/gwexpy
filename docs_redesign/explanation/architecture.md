@@ -25,16 +25,16 @@ This section details the design philosophy of `gwexpy` and the internal data han
 **Output:** A 2D feature representation for computation, with metadata restored on the way back.
 
 Classes like `TimeSeriesMatrix` and `FrequencySeriesMatrix` handle automatic conversion to formats compatible with machine learning libraries like scikit-learn.
-Typically, 3D data (Channels $\times$ Samples $\times$ Columns) is temporarily flattened into a 2D feature matrix for computation, while metadata (GPS timestamps, units) is preserved and restored after processing.
+Typically, 3D data (Channels/Rows $\times$ Columns $\times$ Samples) is temporarily flattened into a 2D feature matrix for computation, while metadata (GPS timestamps, units) is preserved and restored after processing.
 
 API entry: [matrix API](../reference/api/matrix.rst), [timeseries API](../reference/api/timeseries.rst)
 
 ### 2. 4D Field API Model
 **Goal:** Explain why field containers keep all axes aligned during slicing and indexing.
-**Input:** A `ScalarField` with time, frequency, and spatial axes.
+**Input:** A `ScalarField` with one time (or frequency) axis and three spatial axes.
 **Output:** A field object whose grid and axis metadata remain synchronized after selection operations.
 
-`ScalarField` adopts a (Time, Frequency, x, y) 4D structure as its base unit.
+`ScalarField` adopts a 4D structure as its base unit: axis 0 is the **time axis** (or the **frequency axis** after `fft_time()`), and axes 1–3 are the **spatial axes** `x, y, z` (mapped to wavenumbers `kx, ky, kz` by `fft_space()`) — for example `(t, x, y, z)`, `(f, x, y, z)`, or `(f, kx, ky, kz)`.
 By **maintaining all 4 dimensions** during indexing operations, the package ensures that grid information and axis metadata remain perfectly synchronized with the data.
 
 API entry: [fields API](../reference/api/fields.rst), [Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md)
@@ -54,7 +54,7 @@ GWexpy data flow from raw arrays and GWpy objects through matrix and field analy
 Reading notes:
 
 - `TimeSeriesDict -> TimeSeriesMatrix -> Flatten to 2D features` is the matrix-analysis path used when scikit-learn-style algorithms expect 2D inputs.
-- `ScalarField -> Field slicing / indexing -> Field-aware transforms` is the field-analysis path used when time, frequency, and spatial axes must stay aligned.
+- `ScalarField -> Field slicing / indexing -> Field-aware transforms` is the field-analysis path used when the time/frequency axis and the spatial axes must stay aligned.
 - Metadata is preserved across both paths so derived outputs can still be interpreted in physical coordinates rather than raw array indices alone.
 
 ---

@@ -56,8 +56,9 @@ from gwexpy.timeseries import TimeSeriesDict
 
 tsd = TimeSeriesDict.read(cache, channels)
 matrix = tsd.to_matrix()
+reference = tsd["H1:STRAIN"]
 
-csm = matrix.csd(fftlength=4)
+csm = matrix.csd(reference, fftlength=4)
 csm.plot().show()
 ```
 

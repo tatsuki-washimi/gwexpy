@@ -23,7 +23,7 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
 | --- | --- | --- |
 | Minimal | `pip install gwexpy` | Numerical containers and basic arithmetic. Minimal dependencies. |
 | **Recommended** | `pip install "gwexpy[analysis,fitting,plotting]"` | Advanced statistics, curve fitting, and mapping features. |
-| GW Analysis | `pip install "gwexpy[gw,io]"` | Frame file support, NDS2 access, and official GW tools. |
+| GW Analysis | `pip install "gwexpy[gw,io]"` | Frame file support and official GW tools (NDS2 requires the Conda step below). |
 | Dev / Full | `pip install "gwexpy[all]"` | Enables declared non-GUI optional features. |
 
 ## 1. Installation Steps
@@ -89,7 +89,7 @@ Use the developer mode only when you need to edit GWexpy itself or test
 unreleased changes from the repository. For normal use, prefer the PyPI commands
 above.
 
-## 2.1. Dependency Troubleshooting
+## 2. Dependency Troubleshooting
 
 - If you see `No module named nds2`: install `python-nds2-client` in the active dedicated Conda environment.
 - If you see FrameLIB / `framecpp`-related errors: reinstall `python-framel` and `ldas-tools-framecpp` in the same environment.
@@ -98,6 +98,7 @@ above.
 
 ---
 
+(optional-dependencies-extras)=
 ## 3. Optional Dependencies (Extras) Details
 
 | Extra Name | Key Packages | Primary Use Cases |

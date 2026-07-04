@@ -215,7 +215,7 @@ For complex-valued residuals, the MCMC likelihood path assumes a Hermitian quadr
 
 (validated-en-adaptive-whitening)=
 ### 6. Adaptive Whitening
-**Target**: `whiten()`, `WhiteningModel`, `.whiten(eps="auto")`
+**Target**: `TimeSeriesMatrix.whiten_channels(eps="auto")`, `whiten_matrix()`, `gwexpy.signal.preprocessing.whiten()`, `WhiteningModel`
 
 Adaptive whitening uses an automatically chosen stabilization parameter so that PSD-based normalization remains well behaved in the presence of very small bins or local numerical underflow.
 

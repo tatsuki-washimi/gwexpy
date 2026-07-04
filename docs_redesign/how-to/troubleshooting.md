@@ -6,9 +6,9 @@ Common issues encountered when using GWexpy and their solutions.
 
 Use this page as a reverse lookup by symptom:
 
-- Install worked for the minimal example, but you now need NDS2 / FrameLIB / other binary dependencies: go back to the [Installation Guide](../tutorials/installation.md#conda-environment-recommended--gw-analysis).
+- Install worked for the minimal example, but you now need NDS2 / FrameLIB / other binary dependencies: go back to the {ref}`Installation Guide <conda-environment-recommended-gw-analysis>`.
 - The first example from [Quickstart](../tutorials/quickstart.md) does not import or plot cleanly: check the matching issue below, then retry the quick example.
-- The environment feels mixed or broken after repeated `pip` and Conda changes: rebuild the dedicated Conda environment from the [Installation Guide](../tutorials/installation.md#conda-environment-recommended--gw-analysis).
+- The environment feels mixed or broken after repeated `pip` and Conda changes: rebuild the dedicated Conda environment from the {ref}`Installation Guide <conda-environment-recommended-gw-analysis>`.
 
 ## Installation Issues
 
@@ -16,15 +16,15 @@ Use this page as a reverse lookup by symptom:
 Binary libraries used in the `[gw]` extra cannot be installed via `pip`.
 
 **Solution:**
-Use Conda (Miniforge, etc.) in a dedicated environment, then install GWexpy from source there.
+Use Conda (Miniforge, etc.) in a dedicated environment, then install GWexpy from PyPI there.
 ```bash
 conda create -n gwexpy python=3.11
 conda activate gwexpy
 conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
-pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+pip install "gwexpy[gw,analysis,fitting]"
 ```
 
-See also: [Installation Guide](../tutorials/installation.md#conda-environment-recommended--gw-analysis)
+See also: {ref}`Installation Guide <conda-environment-recommended-gw-analysis>`
 
 ### 2. Errors on Apple Silicon (M1/M2/M3) Mac
 Some GW analysis packages may be built for Intel (x86_64) and might not work out of the box.
@@ -44,7 +44,7 @@ Run the automated build script included in the repository.
 python scripts/install_minepy.py
 ```
 
-If this happened while expanding a minimal install, review the extras guidance in the [Installation Guide](../tutorials/installation.md#3-optional-dependencies-extras-details).
+If this happened while expanding a minimal install, review the extras guidance in the {ref}`Installation Guide <optional-dependencies-extras>`.
 
 ## Plotting & Visualization Issues
 
@@ -67,7 +67,7 @@ We recommend reinstalling `pygmt` via Conda.
 conda install -c conda-forge pygmt
 ```
 
-If you started from the smallest example in [Quickstart](../tutorials/quickstart.md), note that `pygmt` is optional and is not part of the minimal source install.
+If you started from the smallest example in [Quickstart](../tutorials/quickstart.md), note that `pygmt` is optional and is not part of the minimal install.
 
 ---
 

@@ -11,7 +11,9 @@ sd_hide_title: true
 :class: sd-mb-4 sd-shadow-lg sd-rounded-3
 :::
 
-# GWexpy
+:::{div} sd-fs-1 sd-font-weight-bolder
+GWexpy
+:::
 
 ```{rubric} Multi-dimensional time- and frequency-series analysis for gravitational-wave science.
 ```
@@ -101,7 +103,7 @@ BrUCo noise budgets, ARIMA modelling, and fitting / MCMC pipelines in one place.
 :link: how-to/interop
 :link-type: doc
 
-~40 interoperability modules and multi-format I/O across GW data ecosystems.
+~50 interoperability modules and multi-format I/O across GW data ecosystems.
 :::
 ::::
 
@@ -120,8 +122,9 @@ from gwexpy.timeseries import TimeSeriesMatrix
 tsm = TimeSeriesMatrix.read("data.gwf", channels=["X1:CH1", "X1:CH2"])
 fsm = tsm.fft()
 
-# Estimate coherence between two channels
-coh = fsm.coherence(fsm)
+# Coherence of each channel against a reference channel
+ref = tsm[0, 0]  # X1:CH1 as a TimeSeries
+coh = tsm.coherence(ref, fftlength=4)
 ```
 
 ```{toctree}

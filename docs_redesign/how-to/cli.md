@@ -24,9 +24,9 @@ Display the installed GWexpy version:
 gwexpy --version
 ```
 
-Output:
+Output (the number matches the installed version):
 ```
-gwexpy 0.1.0
+gwexpy 0.1.5
 ```
 
 ### `gwexpy --help`
@@ -39,7 +39,7 @@ gwexpy --help
 
 ## Using GWpy CLI
 
-If you need GWpy's command-line tools, refer to the [GWpy Documentation](https://gwpy.readthedocs.io/en/latest/cli/) directly. GWexpy does not currently provide a documented compatibility layer that forwards the full GWpy CLI surface.
+If you need GWpy's command-line tools, refer to the [GWpy Documentation](https://gwpy.github.io/docs/stable/cli/) directly. GWexpy does not currently provide a documented compatibility layer that forwards the full GWpy CLI surface.
 
 **Note:** For complex analysis pipelines, gravitational wave parameter estimation, and custom data processing, the **Python API** is recommended. See the [Getting Started](../tutorials/getting_started.md) guide for API examples.
 

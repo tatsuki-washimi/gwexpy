@@ -30,3 +30,12 @@ Analysis
    :members:
    :undoc-members:
    :show-inheritance:
+
+Fast coherence scanning (Bruco)
+-------------------------------
+
+.. automodule:: gwexpy.analysis.bruco
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:

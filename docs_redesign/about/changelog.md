@@ -2,6 +2,26 @@
 
 Notable changes to the GWexpy project.
 
+## [0.1.5] - 2026-06-10
+
+This is a patch release focused on plotting and I/O hotfixes.
+
+### Fixed
+- Fixed `TimeSeriesDict.plot()` so multi-channel dictionaries are expanded into
+  separate subplots instead of producing a blank or invalid figure (#432).
+- Fixed ObsPy-backed seismic readers so `TimeSeriesDict` keys are stable string
+  trace names (e.g. `"IU.ANMO.00.BHZ"`), enabling reliable string-based lookup (#435).
+- Added support for passing a list or tuple of miniSEED paths to
+  `TimeSeriesDict.read(..., format="mseed")` (#433).
+- Fixed `gwexpy.frequencyseries` import-time I/O registration so FrequencySeries
+  read formats are visible through the GWpy default I/O registry (#437).
+
+### Documentation
+- Clarified that GWexpy is an independent package built on top of GWpy and is
+  not an official component of the GWpy project.
+- Updated the README installation notes to reflect that the conda-forge
+  feedstock is available, while conda-forge packages may lag the latest PyPI release.
+
 ## [0.1.4] - 2026-05-14
 ### Added
 - `to_gps()` now has opt-in `dtype=` output modes. The default remains

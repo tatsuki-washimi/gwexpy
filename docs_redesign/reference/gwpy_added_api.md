@@ -10,9 +10,9 @@ If you want the migration entry point first, go back to the [Migration Guide for
 | Category | Check this when you want to... | Representative items | Entry point |
 | --- | --- | --- | --- |
 | Multi-channel | process many channels together | `to_matrix()`, `TimeSeriesMatrix`, `FrequencySeriesMatrix` | [Matrix Tutorial](../tutorials/index.md) |
-| Added methods | pull external function calls back onto the data object | `.find_peaks()`, `.fit()`, `.hht()`, `.arima()` | [Added Methods](#added-methods) |
-| Field API | work with spacetime-like or 4D data structures | `ScalarField`, `FieldList`, `FieldDict`, `fft_space()` | [Field API](#field-api) |
-| Sharing / compatibility | understand result-sharing behavior | Transparent Pickle | [Sharing--Compatibility](#sharing--compatibility) |
+| Added methods | pull external function calls back onto the data object | `.find_peaks()`, `.fit()`, `.hht()`, `.arima()` | [Added Methods](#gwpy-added-methods) |
+| Field API | work with spacetime-like or 4D data structures | `ScalarField`, `FieldList`, `FieldDict`, `fft_space()` | [Field API](#gwpy-added-field-api) |
+| Sharing / compatibility | understand result-sharing behavior | Transparent Pickle | [Sharing / Compatibility](#gwpy-added-sharing-compat) |
 
 ## Detailed Index
 
@@ -36,6 +36,7 @@ public contract for what conversion checks and metadata guarantees are applied.
 | `Spectrogram` | `SpectrogramDict.to_matrix()` and `SpectrogramList.to_matrix()` | Requires equal shape plus equal time/frequency axes after conversion to the first axis unit. | No resampling and no tolerance parameter; comparisons are exact after unit conversion. | Per-element `unit` / `name` / `channel` are preserved; global matrix unit is set only when all elements share the same unit. | Dict keys are preserved as row keys; list rows are generated (`batch0`, `batch1`, ...). |
 | Fields | No SeriesMatrix `to_matrix()` collection API | Uses `FieldList` / `FieldDict` validation rules instead of SeriesMatrix conversion. | Field validation has its own axis tolerance checks. | Units stay on field objects; `to_array()` returns raw arrays. | Not a SeriesMatrix round-trip path. |
 
+(gwpy-added-methods)=
 ### Added Methods
 
 | API Kind | Representative API | Stability | What it adds relative to GWpy | Details |
@@ -45,6 +46,7 @@ public contract for what conversion checks and metadata guarantees are applied.
 | Instance method | `.hht()` | Experimental | exposes Hilbert-Huang Transform analysis as an object method | [HHT](../tutorials/index.md), [TimeSeries](api/timeseries.rst) |
 | Instance method | `.arima()` | Experimental | exposes time-series modelling and forecasting as an object method | [ARIMA](../tutorials/index.md), [TimeSeries](api/timeseries.rst) |
 
+(gwpy-added-field-api)=
 ### Field API
 
 | API Kind | Representative API | Stability | What it adds relative to GWpy | Details |
@@ -53,6 +55,7 @@ public contract for what conversion checks and metadata guarantees are applied.
 | Instance method | `ScalarField.fft_space()` | Experimental | performs spatial-domain transforms while staying inside the Field-object model | [Field API Intro](../tutorials/index.md), [ScalarField](api/fields.rst) |
 | Collection | `FieldList` / `FieldDict` | Experimental | groups multiple `ScalarField` objects for batch-style processing and shared validation | [Field API Intro](../tutorials/index.md), [FieldList](api/fields.rst), [FieldDict](api/fields.rst) |
 
+(gwpy-added-sharing-compat)=
 ### Sharing / Compatibility
 
 | API Kind | Representative API / behavior | Stability | What it adds relative to GWpy | Details |

@@ -68,14 +68,14 @@ whitened = data / (asd + 1e-12)
 ```
 
 #### ✅ Good Example: GWexpy's `eps="auto"`
-`gwexpy` dynamically scales `eps` relative to the data range and uses a `SAFE_FLOOR` (1e-50) for singularities.
+`gwexpy` dynamically scales `eps` relative to the data range and uses a `SAFE_FLOOR` (1e-50) for singularities. The adaptive `eps` is available on the channel-whitening entry points: `TimeSeriesMatrix.whiten_channels()`, the functional `whiten_matrix()`, and `gwexpy.signal.preprocessing.whiten()`.
 
 ```python
-from gwexpy.timeseries import TimeSeries
+from gwexpy.timeseries import TimeSeriesMatrix
 import numpy as np
 
-data = TimeSeries(np.random.randn(1000) * 1e-21, sample_rate=1024)
-whitened = data.whiten(eps="auto")  # Automatically applies appropriate scaling
+tsm = TimeSeriesMatrix(np.random.randn(3, 1, 1000) * 1e-21, sample_rate=1024)
+whitened, model = tsm.whiten_channels(eps="auto")  # adaptive eps (returns matrix + model)
 ```
 
 ### 2. Safe Logarithmic Scaling (Safe Log)

@@ -43,8 +43,7 @@ Multi-format readers and writers across the GW data ecosystem.
 :link: api/plot
 :link-type: doc
 
-Plotting helpers, time/GPS utilities, the CLI, the GUI, and compatibility
-shims.
+Plotting helpers, time/GPS utilities, and compatibility shims.
 :::
 
 :::{grid-item-card} {octicon}`git-compare;1.5em;sd-mr-1` GWpy differences

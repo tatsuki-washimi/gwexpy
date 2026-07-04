@@ -29,3 +29,19 @@ to set the start time.
    :members:
    :undoc-members:
    :show-inheritance:
+
+Magnetic noise models
+---------------------
+
+.. automodule:: gwexpy.noise.magnetic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Spectral peak models
+--------------------
+
+.. automodule:: gwexpy.noise.peaks
+   :members:
+   :undoc-members:
+   :show-inheritance:
