@@ -21,14 +21,7 @@ GWexpy
 GWexpy extends [GWpy](https://gwpy.github.io/) with matrix and field containers,
 integrated noise-budget and modelling tools, and broad detector interoperability.
 
-```{button-ref} tutorials/index
-:ref-type: doc
-:color: primary
-:class: sd-px-4 sd-fs-5
-:shadow:
-
-Get started →
-```
+[Get started →](tutorials/index){.sd-btn .sd-btn-primary .sd-shadow-sm .sd-px-4 .sd-fs-5}
 ::::
 
 ---

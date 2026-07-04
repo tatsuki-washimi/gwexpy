@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-04 07:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,25 +19,30 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../explanation/physics_models.md:1 612308253a33459a9a552e97ba3ddb3d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:1
+#: c81065d7feac4b3a9eb9908db47b3885
 msgid "Physics Models and Analysis Theory"
 msgstr "物理モデルと解析理論"
 
-#: ../../explanation/physics_models.md:3 4c0164d0c4e344159a646090b5a3e5c6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:3
+#: e429c867d4db42acac7c005115efa26c
 msgid ""
 "This page explains the advanced models and analytical theories implemented "
 "in `gwexpy` for handling specific physical phenomena and hardware responses."
 msgstr "`gwexpy` に実装されている、特定の物理現象やハードウェア応答を扱うための高度なモデルについて解説します。"
 
-#: ../../explanation/physics_models.md:5 22c14132ca934afc971d26080a92cbf5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:5
+#: d7109a70247747a59c4977ace820a296
 msgid "Response and Coupling Functions"
 msgstr "応答関数と結合関数 (Response & Coupling)"
 
-#: ../../explanation/physics_models.md:7 f89fc6c2f29b4ccd95107e87dc4fa29c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:7
+#: 3b377ab439d5426a83fe5da81229bd6a
 msgid "Automatic Excitation Detection"
 msgstr "励起セグメントの自動検出"
 
-#: ../../explanation/physics_models.md:9 9990901174f14d6a9c6b5c546944331b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:9
+#: cca574368f014c9d977b45366cf65011
 msgid ""
 "Extracts stable intervals for analysis from data containing injections (such"
 " as swept sine or stepped sine). By tracking power in specific frequency "
@@ -46,11 +51,13 @@ msgid ""
 msgstr ""
 "インジェクション（スウェプトサインやステップサインなど）を含むデータから、解析に有効な安定区間を自動的に抽出します。スペクトログラム上で特定の周波数バンドのパワーを追跡し、閾値を超えたセグメントを抽出することで、手動での時刻指定を不要にします。"
 
-#: ../../explanation/physics_models.md:11 aa404bf17d764380a118f52681153d60
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:11
+#: 7f1ce430b1174a209b87d5911e03f5f7
 msgid "Coupling Function (:term:`Coupling Function`; CF)"
 msgstr "結合関数 (:term:`Coupling Function`; CF)"
 
-#: ../../explanation/physics_models.md:13 5204e8aa057d4abab16ed6b4131250c8
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:13
+#: 939a6c468b5243fab052045e94fb7378
 msgid ""
 "Estimates coupling functions while accounting for background noise. By "
 "comparing power during injection and background periods for both the target "
@@ -59,108 +66,132 @@ msgstr ""
 "バックグラウンドノイズを考慮した結合関数の推定を行います。 "
 "ターゲット信号と参照信号（ウィットネス信号）の両方について、インジェクション時とバックグラウンド時のパワーを比較することで、真の結合度を推定します。"
 
-#: ../../explanation/physics_models.md:15 9419954c09624bea8d943cfb514dc57b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:15
+#: 63d625b9348c4c61b04ec755d5a92308
 msgid ""
 "\n"
 "\\text{CF}(f) = \\sqrt{\\frac{P_{\\text{tgt,inj}}(f) - P_{\\text{tgt,bkg}}(f)}{P_{\\text{wit,inj}}(f) - P_{\\text{wit,bkg}}(f)}}\n"
 msgstr ""
 
-#: ../../explanation/physics_models.md 36d5376d155046afad459aef77f36006
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 64e46f13d73744af803c4fca81ea929e
 msgid "Variable"
 msgstr "変数"
 
-#: ../../explanation/physics_models.md 1b74ec5adfbd4b62ac7812d3c3bc599e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 626372d1783641b7bc010212b2b5f346
 msgid "Definition"
 msgstr "定義"
 
-#: ../../explanation/physics_models.md e0dd3bbbb4b340b896e6699c9035b604
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 98bc93a271e943c0bd241db1090b8752
 msgid "Physical Meaning"
 msgstr "物理的意味"
 
-#: ../../explanation/physics_models.md 28af81e2ed6c4745a69886e42e8411fa
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 44aaef4a1c5e46f6a1a49c06a65edf7f
 msgid "$f$"
 msgstr ""
 
-#: ../../explanation/physics_models.md 0b13dbc3fe144b3bb76fa456a276ee47
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 1f363d91f00f486294f96f2d4ce1f5e9
 msgid "Frequency"
 msgstr "周波数"
 
-#: ../../explanation/physics_models.md 0815ced4000e49b0a4b889c282231dc9
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 1ef5eaf3cb07435b998759109725cb3c
 msgid "Frequency point for analysis"
 msgstr "解析対象の周波数点"
 
-#: ../../explanation/physics_models.md 7a4216c3b66748c6ae77c847ee07348c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: cbb5ef8273b54d5fa65f8f9eab9d5cf5
 msgid "$P_{\\text{tgt,inj}}(f)$"
 msgstr ""
 
-#: ../../explanation/physics_models.md 296f9e1e0125479ba41d9dcbe7d4c0f1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: e8fd3ca75c8848948f04c1107fa785b7
 msgid "Target signal power (during injection)"
 msgstr "ターゲット信号パワー（インジェクション時）"
 
-#: ../../explanation/physics_models.md fa349aae2f174dbab75e29706053f0b7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 2bbe000e46134669a77264b8e182c612
 msgid "Power distribution of the main signal during excitation"
 msgstr "加振中のメイン信号のパワー分布"
 
-#: ../../explanation/physics_models.md 3f1999e27db646ff84852597c5b77417
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 11e937d6dc08475d90c56e8303bb4600
 msgid "$P_{\\text{tgt,bkg}}(f)$"
 msgstr ""
 
-#: ../../explanation/physics_models.md 5d8877451aae4ee0b6a7d4ba59d4610e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: e2e7eab886104ecb9cfab79bc1475317
 msgid "Target signal power (during background)"
 msgstr "ターゲット信号パワー（バックグラウンド時）"
 
-#: ../../explanation/physics_models.md 32a4f298b69e4887a3c61f10724cba2e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 90145a04212240bdaca224320d6c96ef
 msgid "Noise floor of the main signal without excitation"
 msgstr "無加振時のメイン信号のノイズフロア"
 
-#: ../../explanation/physics_models.md 43c6c9ac900a4285a27f8ca708678b14
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 59cab821cb23469589a211e1dc421b0a
 msgid "$P_{\\text{wit,inj}}(f)$"
 msgstr ""
 
-#: ../../explanation/physics_models.md 30c24078d981428a83ecde6f49574d5c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 7c8d390a65cb412dbcac5547a8c306d4
 msgid "Witness signal power (during injection)"
 msgstr "ウィットネス信号パワー（インジェクション時）"
 
-#: ../../explanation/physics_models.md 389b7f66b62241078969da619439893d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 6c399c5a23bb4b67a8d4fb5618ff28f2
 msgid "Power of the reference signal (e.g., environmental noise)"
 msgstr "加振中の参照信号（環境ノイズ源等）のパワー"
 
-#: ../../explanation/physics_models.md 860e2a74dd48469fb8380c4bab07e960
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 2647a39830814218a41409f70bda7146
 msgid "$P_{\\text{wit,bkg}}(f)$"
 msgstr ""
 
-#: ../../explanation/physics_models.md 3b6d5adcbfa94feda0489843b2bb8cde
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 9a15dedcd7fc44a98e4c52ee1093c1d4
 msgid "Witness signal power (during background)"
 msgstr "ウィットネス信号パワー（バックグラウンド時）"
 
-#: ../../explanation/physics_models.md adb11ac04a1a458397510a9cec4f1418
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md
+#: 648c238c50da4243984758d490f21bed
 msgid "Noise floor of the reference signal without excitation"
 msgstr "無加振時の参照信号のノイズフロア"
 
-#: ../../explanation/physics_models.md:27 bf80ed8c61b24ec4b8926b7cded55e15
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:27
+#: 23c7ee5b192a42e993f7660396d077a1
 #, python-brace-format
 msgid ""
-"**Related API**: {doc}`../reference/api/timeseries` "
-"(`TimeSeriesDict.calculate_coupling`)"
+"**Related API**: {doc}`../reference/api/analysis` "
+"(`gwexpy.analysis.coupling.estimate_coupling`)"
 msgstr ""
-"**関連 API**: {doc}`../reference/api/timeseries` "
-"(`TimeSeriesDict.calculate_coupling`)"
+"**関連 API**: {doc}`../reference/api/analysis` "
+"(`gwexpy.analysis.coupling.estimate_coupling`)"
 
-#: ../../explanation/physics_models.md:31 c1a529d742c848c28299db2167b91e5d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:31
+#: 8c83b3049d414dd087e2ba2f21639197
 msgid "Built-in Noise Models"
 msgstr "組み込みノイズモデル"
 
-#: ../../explanation/physics_models.md:33 a8524d2744014d1cbd72397d76f9b753
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:33
+#: e590c74f77bf48209ef32ad5d2fa5f61
 msgid ""
 "Provides physically motivated noise generators for use as initial models in "
 "simulations or fitting."
 msgstr "シミュレーションやフィッティングの初期モデルとして利用可能な、物理的に裏付けられたノイズジェネレーターを提供しています。"
 
-#: ../../explanation/physics_models.md:35 368f2934122c4cab9457e98f74e38338
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:35
+#: e97e43ceaf2c43edba018082896bb082
 msgid "1. Schumann Resonance (:term:`Schumann Resonance`)"
 msgstr "1. シューマン共鳴 (:term:`Schumann Resonance`)"
 
-#: ../../explanation/physics_models.md:37 868b8687b9f8487d9398fbfd4fe391e9
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:37
+#: fa35d913ca1a47aa8d6c418e3114e65d
 msgid ""
 "Models magnetic noise corresponding to the resonance modes of the Earth-"
 "ionosphere cavity. It reproduces the low-frequency magnetic background by "
@@ -169,18 +200,23 @@ msgstr ""
 "地球-電離層空洞の共振モードに対応する地磁気ノイズをモデル化します。 "
 "複数の独立したローレンツプロファイル（Lorentzian）を重畳することで、低周波領域の磁場バックグラウンドを再現します。"
 
-#: ../../explanation/physics_models.md:39 f98dfca8c9334f64ab34a94609049934
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:39
+#: 64cd7417e04e43baa69ba8cb3f04122b
 #, python-brace-format
 msgid ""
-"**Related API**: {doc}`../reference/api/signal` (`generate_schumann_model`)"
+"**Related API**: {doc}`../reference/api/noise` "
+"(`gwexpy.noise.magnetic.schumann_resonance`)"
 msgstr ""
-"**関連 API**: {doc}`../reference/api/signal` (`generate_schumann_model`)"
+"**関連 API**: {doc}`../reference/api/noise` "
+"(`gwexpy.noise.magnetic.schumann_resonance`)"
 
-#: ../../explanation/physics_models.md:41 d786abb5c8fd4bc8b1dff090f4e0d9bf
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:41
+#: 8b591d0e681f44a196f713e2eec8599f
 msgid "2. Voigt Profile"
 msgstr "2. フォークト関数 (Voigt Profile)"
 
-#: ../../explanation/physics_models.md:43 4ea47304bb304bc6bcd7ff31d85993e4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:43
+#: 817e31c2e7ad40bca73321a67ae90e0d
 msgid ""
 "Generates peak shapes found in atomic physics or high-Q mechanical "
 "resonances, which combine Gaussian (Doppler broadening, etc.) and Lorentzian"
@@ -191,26 +227,34 @@ msgstr ""
 "値のメカニカル共振で見られる、ガウシアン（ドップラー広がり等）とローレンツィアン（衝突広がり・自然広がり等）が組み合わさったピーク形状を生成します。内部では"
 " Faddeeva 関数を用いて効率的かつ正確に計算されます。"
 
-#: ../../explanation/physics_models.md:45 f730060311d445fd99176bb6a60187e4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:45
+#: 9d9778ceb2794f29b30740d9af6f847b
 #, python-brace-format
-msgid "**Related API**: {doc}`../reference/api/signal` (`voigt_profile`)"
-msgstr "**関連 API**: {doc}`../reference/api/signal` (`voigt_profile`)"
+msgid ""
+"**Related API**: {doc}`../reference/api/noise` "
+"(`gwexpy.noise.peaks.voigt_line`)"
+msgstr ""
+"**関連 API**: {doc}`../reference/api/noise` (`gwexpy.noise.peaks.voigt_line`)"
 
-#: ../../explanation/physics_models.md:49 717e52f4658141b8b284436617233734
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:49
+#: a74a95d44c364301a426a17fa402f181
 msgid "Advanced Analysis Engines and Algorithms"
 msgstr "高度な解析エンジンとアルゴリズム"
 
-#: ../../explanation/physics_models.md:51 919370007c0b46ecac04fc8dd57c2d9f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:51
+#: 4fe98ec902614e93b7e6ba8dbacbfd6d
 msgid "1. Independent and Principal Component Analysis (ICA/PCA)"
 msgstr "1. 独立成分分析・主成分分析 (ICA/PCA)"
 
-#: ../../explanation/physics_models.md:53 b65d3c75fefb4396b48f23a8598968fc
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:53
+#: 596e78c8ede141d78481a3c4d315e3f3
 msgid ""
 "The ICA/PCA implementation in `gwexpy` is optimized for physical data "
 "characteristics:"
 msgstr "`gwexpy` の ICA/PCA 実装は、物理データの特性に合わせて以下の最適化を行っています。"
 
-#: ../../explanation/physics_models.md:55 79d74fff3d7e4451b6a840750c3a2814
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:55
+#: 57ddc01eb1fd482983df4f794a696d26
 msgid ""
 "**Unit Variance Standardization**: Standardizes data to unit variance "
 "internally to improve convergence, then restores (re-scales) the original "
@@ -218,59 +262,69 @@ msgid ""
 msgstr ""
 "**単位分散標準化**: アルゴリズムの収束性を高めるため、内部でデータを単位分散に標準化し、演算後に元の物理スケールを復元（再スケーリング）します。"
 
-#: ../../explanation/physics_models.md:56 fb28610e77b249578905b1c0ddc4ba79
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:56
+#: 19e47e3c0f6f4ee0a47e1841c4e34f4b
 msgid ""
 "**Spatio-temporal Metadata Inheritance**: Automatically inherits the GPS "
 "time conventions from the input data for each statistically extracted "
 "component."
 msgstr "**時空メタデータの継承**: 統計的に抽出された各成分に対し、入力データが保持していた GPS 時刻規約を自動的に継承させます。"
 
-#: ../../explanation/physics_models.md:58 e8dfc6419b514df6995273e63199e382
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:58
+#: ebc79f6887f443c58ca6ef5174b6e630
 #, python-brace-format
 msgid "**Related API**: {doc}`../reference/api/signal` (ICA, PCA)"
 msgstr "**関連 API**: {doc}`../reference/api/signal` (ICA, PCA)"
 
-#: ../../explanation/physics_models.md:60 7259188ee46c425db54766a8cd98ba9c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:60
+#: e203c3db1b2a45da819ab79508c0da7b
 msgid "2. Fast Correlation Engine (:term:`Bruco`)"
 msgstr "2. 高速相関計算エンジン (:term:`Bruco`)"
 
-#: ../../explanation/physics_models.md:62 6473209c3ddd4417a8b5b72dbf4e7c00
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:62
+#: debc4fd9e9cd4c7ba3622477619b26bd
 msgid ""
 "The `FastCoherenceEngine` scans thousands of auxiliary channels for "
 "contributions to a target signal with extreme speed."
 msgstr "`FastCoherenceEngine` は、数千の補助チャネルからターゲット信号への寄与を高速にスキャンするために設計されています。"
 
-#: ../../explanation/physics_models.md:64 8fb3d990b2cf4ee9bb37dc6551dd1e62
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:64
+#: d31542c360c444018a7eeff4b0a0afa5
 msgid ""
 "**FFT Caching**: Reuses FFT results for a common target signal in memory."
 msgstr "**FFT キャッシング**: 共通のターゲット信号に対する FFT 計算結果をメモリ内で再利用。"
 
-#: ../../explanation/physics_models.md:65 8f5a3f391b1e4496b4a5194837308a24
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:65
+#: c3654f188ffe4f78a225f7873c4961ea
 msgid ""
 "**Sparse-like Computation**: Skips non-correlated channels early to focus "
 "resources on significant contributors."
 msgstr "**疎行列演算**: 相関のないチャネルを早期にスキップし、計算リソースを重要チャネルに集中させます。"
 
-#: ../../explanation/physics_models.md:67 180137e02bba4f61ba427293864ca001
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:67
+#: 64531356c50f45109208aa057f55acd8
 #, python-brace-format
 msgid ""
-"**Related API**: {doc}`../reference/api/timeseries` "
-"(`TimeSeriesDict.scan_coherence`)"
+"**Related API**: {doc}`../reference/api/analysis` "
+"(`gwexpy.analysis.bruco.FastCoherenceEngine`)"
 msgstr ""
-"**関連 API**: {doc}`../reference/api/timeseries` "
-"(`TimeSeriesDict.scan_coherence`)"
+"**関連 API**: {doc}`../reference/api/analysis` "
+"(`gwexpy.analysis.bruco.FastCoherenceEngine`)"
 
-#: ../../explanation/physics_models.md:69 1d6f111297004ccd81288b55341dd2b0
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:69
+#: e092d384a29d4b0092175f02796b7cb3
 msgid "3. Bayesian Inference and GLS Fitting"
 msgstr "3. ベイズ推定と GLS フィッティング"
 
-#: ../../explanation/physics_models.md:71 f9d3efd86db44d66af23dfa156086700
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:71
+#: a10c2835f9b24f0b980b8fc6a89f5ddc
 msgid ""
 "Handles parameter estimation for multidimensional data with complex error "
 "structures."
 msgstr "複雑な誤差構造を持つ多次元データのパラメータ推定を行います。"
 
-#: ../../explanation/physics_models.md:73 80c1c9ab7ebb43cfb3683207a81ab0b4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:73
+#: 42a986aad16f4021868ea4270e8516f0
 msgid ""
 "**GLS (Generalized Least Squares)**: Applies statistically justified "
 "weighting when bins at different frequencies have correlated (non-diagonal) "
@@ -279,28 +333,33 @@ msgstr ""
 "**GLS (Generalized Least Squares)**: "
 "各周波数点のビン間に相関（非対角の共分散）がある場合に、統計的に正当な重み付けを行います。"
 
-#: ../../explanation/physics_models.md:74 49e0c59c29974bb89eefd3f73c5ef59a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:74
+#: cc018f7953544bc38e59acfc9f397ad3
 msgid ""
 "**MCMC Integration**: Uses `emcee` for posterior sampling, enabling robust "
 "fitting even for non-linear physical models."
 msgstr ""
 "**MCMC 統合**: `emcee` を用いた事後分布のサンプリングにより、非線形な物理モデルに対しても頑健なフィッティングが可能です。"
 
-#: ../../explanation/physics_models.md:76 98ae76c04a334d45a25d0b618e5ff530
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:76
+#: 660995450c1746c9b26a1218c1776e8e
 #, python-brace-format
 msgid "**Related API**: {doc}`../reference/api/analysis`"
 msgstr "**関連 API**: {doc}`../reference/api/analysis`"
 
-#: ../../explanation/physics_models.md:78 1f75d4d7674e49ae8a558f286a5ac6b1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:78
+#: f0bea189af40499596cae30776d5abab
 msgid "Related Documents"
 msgstr "関連ドキュメント"
 
-#: ../../explanation/physics_models.md:80 0566829b14db4497867d78ee70418d14
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:80
+#: 07f418e0e8794699a3921b9ca08a4d02
 #, python-brace-format
 msgid "{doc}`architecture` — Internal data structures and engine design"
 msgstr "{doc}`architecture` — 内部データ構造とエンジンの設計"
 
-#: ../../explanation/physics_models.md:81 5a400d617aab4d218d61f37b7412f872
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/physics_models.md:81
+#: 9f0458d8e0b44e59849245afd643dedd
 #, python-brace-format
 msgid ""
 "{doc}`validated_algorithms` — Validation reports for mathematical formulas"

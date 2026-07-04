@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-04 07:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,50 +19,51 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../explanation/validated_algorithms.md 0f21b9191e524413a9a5e2e090c55b32
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md
+#: e3ce6e598e834964a92fb0fef6a97c12
 msgid ""
 "Review GWexpy validated algorithms, numerical tolerances, assumptions, audit"
 " evidence, and bridges to theory, API, and tutorials."
 msgstr "GWexpy の検証済みアルゴリズム、数値許容誤差、前提条件、監査根拠と、理論・API・チュートリアルへの橋渡しをまとめます。"
 
-#: ../../explanation/validated_algorithms.md:7
-#: 69ded7740b8642a2901970af13310823
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:7
+#: 0c66abea7dde4e1ca97a0afa28e9b4d7
 msgid "Validated Algorithms"
 msgstr "検証済みアルゴリズム"
 
-#: ../../explanation/validated_algorithms.md:10
-#: be500659dc1d4521b75de991172fe72d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:10
+#: 9495ccc4dd544cfd92735a14e4293896
 msgid "**Who should read this page?**"
 msgstr "**このページを読むべき方**:"
 
-#: ../../explanation/validated_algorithms.md:11
-#: 486ffb0b5cd74cf6beb9ff2e4c47d86d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:11
+#: 468220ae41b3474382eb44e091c212bd
 msgid ""
 "Researchers who want to verify the mathematical and physical validity of the"
 " methods."
 msgstr "解析手法の数学的・物理学的な妥当性を確認したい研究者"
 
-#: ../../explanation/validated_algorithms.md:12
-#: fac689d7b09746bfb480bb3eb33638ab
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:12
+#: a72182da359c4be7b64e85b8677f3f03
 msgid ""
 "Developers who need to know the numerical tolerances between GWexpy and "
 "external libraries (SciPy, LALSuite, etc.)."
 msgstr "外部ライブラリ（SciPy, LALSuite 等）と GWexpy の数値的な計算誤差を知りたい開発者"
 
-#: ../../explanation/validated_algorithms.md:13
-#: 81333ec478d9482d8bafdbb895a6280b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:13
+#: 41def892cd254097b2a341c9b41c82c0
 msgid ""
 "Users who need to check the data characteristics (stationarity, Gaussianity,"
 " etc.) assumed by each algorithm."
 msgstr "使用するアルゴリズムが前提としているデータ特性（定常性、ガウス性など）を確認したい方"
 
-#: ../../explanation/validated_algorithms.md:17
-#: ea2cb9e955864b10b654ae716e48d1b1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:17
+#: a5c1e0f4a392492eaa0b9c70be88ddd3
 msgid "**Advanced validation/theory companion**"
 msgstr "**高度な検証・理論ページです**"
 
-#: ../../explanation/validated_algorithms.md:19
-#: c40080f8e05b4ace8ce8f53482eaae1a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:19
+#: 3b4c3654adb84256af0950bcbb08244d
 msgid ""
 "This page intentionally stays under the user guide so readers can discover "
 "it from feature docs, but it is not an onboarding page. Treat it as the "
@@ -75,27 +76,27 @@ msgstr ""
 "このページは、機能ドキュメントから辿れるようあえてユーザーガイド配下に置いていますが、オンボーディング用のページではありません。API "
 "リファレンス・理論ノート・個別チュートリアルを横断して監査目的で読むための、上級者・理論向けの入口として扱ってください。初めて使う際の案内は、[はじめに](../tutorials/getting_started.md)、[前提条件と規約](prerequisites_and_conventions.md)、または各手法のチュートリアルから始めてください。"
 
-#: ../../explanation/validated_algorithms.md:22
-#: 0209c270bfef45c2b69d2a8bbdd79c45
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:22
+#: 7053c20721bc48b4ac8021162f45be8d
 msgid ""
 "The numerical algorithms implemented in `gwexpy` have undergone a rigorous "
 "validation process to ensure scientific accuracy and reliability."
 msgstr "`gwexpy` で使用されている主要な数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。"
 
-#: ../../explanation/validated_algorithms.md:25
-#: 1ffacfa46e83451e8036ab647c4db82a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:25
+#: 56a0c53308fd4e50b83f2e25b0d8da5f
 msgid "Validation Criteria and Numerical Precision"
 msgstr "検証の基準と計算精度 (Validation & Precision)"
 
-#: ../../explanation/validated_algorithms.md:27
-#: 52cc1440ca3249679a829674157f9a9d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:27
+#: a94ac6dc0f5440e2b149c67a9a8f27db
 msgid ""
 "Algorithms labeled as \"Validated\" meet the following standards and achieve"
 " specific precision (tolerance) benchmarks:"
 msgstr "「検証済み」と表記されるアルゴリズムは、以下の基準に基づき、指定の精度（Tolerance）を達成しています。"
 
-#: ../../explanation/validated_algorithms.md:29
-#: cd545f785dea421194107e4be3350b1f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:29
+#: 4020a4dd90f248319f5b40818d9f2202
 #, python-brace-format
 msgid ""
 "**Tolerance**: We generally use $10^{-12}$ (relative error) as the passing "
@@ -105,8 +106,8 @@ msgstr ""
 "**一致率 (Tolerance)**: $10^{-12}$ (相対誤差) "
 "を原則的なパス基準としています。これは倍精度浮動小数点演算において、丸め誤差以外の有意なロジック差異がないことを示します。"
 
-#: ../../explanation/validated_algorithms.md:30
-#: 980a895a24eb4d7a9d59cb93a623948e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:30
+#: b0d34a9cd21b472dbf4b1246b2c99f3d
 msgid ""
 "**Invariance**: All algorithms are verified for \"Scale Invariance,\" "
 "ensuring results remain consistent even after scaling data (e.g., "
@@ -115,20 +116,20 @@ msgstr ""
 "**物理的不変性 (Invariance)**: スケール変換（データの 1000 倍など）をしても結果が整合する「Scale "
 "Invariance」を全アルゴリズムで検証しています。"
 
-#: ../../explanation/validated_algorithms.md:33
-#: 2d6e2712223048b5b8d0bd3e3b1a1c3c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:33
+#: cf321c1d055e4e64810483f06f0fa34b
 msgid "Objective Evidence"
 msgstr "客観的証拠 (Objective Evidence)"
 
-#: ../../explanation/validated_algorithms.md:35
-#: deaef32b13504745ab8837859f0d4c61
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:35
+#: 53550549ccd4454d9f81d47f9473dca1
 msgid ""
 "The summaries on this page are backed by the public evidence trail collected"
 " here."
 msgstr "このページの要約は、このページ内に整理した公開向けの検証証跡に基づいています。"
 
-#: ../../explanation/validated_algorithms.md:37
-#: f74db5e479624fe59093410f786ddccc
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:37
+#: 5821a819344e460395af0c47d82cffc8
 msgid ""
 "The evidence table is intentionally column-dense so the audit trail stays on"
 " one page. On mobile, horizontal scrolling is expected and should align with"
@@ -136,255 +137,255 @@ msgid ""
 msgstr ""
 "この証拠表は監査証跡を 1 ページにまとめるため、列数を多めに保っています。モバイルでは共有 CSS に合わせた横スクロール前提で読むのが自然です。"
 
-#: ../../explanation/validated_algorithms.md:16
-#: d8c40a0b8a92472187c8773c71e80012
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 7af00f3cb1794b2ca09dd1315033cba9
 msgid "Evidence type"
 msgstr "証拠の種類"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 3892842d10644f3c82c292e66e4a5003
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: b7ebed8eec6349649f61107e30e711cc
 msgid "Public source"
 msgstr "公開資料"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 0f0fac69ab044d52ae46715c13f3661a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 9d4fae5b8be34f93b16f8d50f988ad0c
 msgid "What it shows"
 msgstr "何を示すか"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 7f2ebf6692d3491d83175ecbb8e17adb
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 80980b92ca1642a2b17446e2d2cf5619
 msgid "Audit scope"
 msgstr "監査スコープ"
 
-#: ../../explanation/validated_algorithms.md:16
-#: e38af53e5fdf48ed88444710408207b8
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 5af8dc5bcd1d442f8fa2ffb6cce596a7
 #, python-brace-format
 msgid "{ref}`Validation summary <validated-algorithms-summary-table>`"
 msgstr "{ref}`検証サマリ <validated-algorithms-summary-table-ja>`"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 52dccbb1738941d4b002da5e7cc8d988
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: d3c675f0d3a24481a8241bfb0dc76c5f
 msgid ""
 "Which algorithms were reviewed and which numerical questions were checked"
 msgstr "どのアルゴリズムを、どの観点で点検したか"
 
-#: ../../explanation/validated_algorithms.md:16
-#: d09ea991123443d987c53bb31de84bc5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 24f129ed1ab14f4e81ef6dbe38cc8459
 msgid "Consolidated findings"
 msgstr "統合結果"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 0b9e5f23b9fb47c89dcabc115876ff83
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 8fb9492056d34d11870264b1de95f72a
 #, python-brace-format
 msgid "{ref}`Per-algorithm sections <validated-algorithms-detail-sections>`"
 msgstr "{ref}`アルゴリズム別セクション <validated-algorithms-detail-sections-ja>`"
 
-#: ../../explanation/validated_algorithms.md:16
-#: bf293c6a5bdb46fc9ffc7dba97f24a21
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 40afc9f2d6cf4a80bb43531250846f08
 msgid ""
 "Cross-reviewed findings, severity, and agreement across independent audits"
 msgstr "独立監査の統合所見、重大度、合意度"
 
-#: ../../explanation/validated_algorithms.md:16
-#: f02b3bf808824cb5a23dc6e67977cd59
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 9e169db7b8b24770bde514246e9bc434
 msgid "Fix history"
 msgstr "修正履歴"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 6e9528acd717455dbfc6eb15106f7f2b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 685966dcf4fc4384a8d85f1502a3bd52
 #, python-brace-format
 msgid "{ref}`Audit Trail <validated-algorithms-audit-trail>`"
 msgstr "{ref}`監査証跡 <validated-algorithms-audit-trail-ja>`"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 75bee6df674048dfb6cacaf4b1d5a702
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 267cfe6760094881b31cbe35f0ca7ca2
 msgid "What changed after the review findings were merged and addressed"
 msgstr "指摘後に何を修正したか"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 3be32f265bba4430be122a5da42233dd
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 2b4ac3a03e6d4082a2e5c0a3b64a3bf7
 msgid "Field-specific physics review"
 msgstr "Field 系の物理レビュー"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 99d72bfae1dc4dffa3c828f006be4366
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: b357f5eec1cc4111a7ff579b42b4b497
 #, python-brace-format
 msgid "{ref}`k-space calculation <validated-en-k-space>`"
 msgstr "{ref}`k-space 計算 <validated-ja-k-space>`"
 
-#: ../../explanation/validated_algorithms.md:16
-#: b0cb543a1ea94ce599d3b03dee0fc352
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 86453ca946d74fbe9ce96b000aa6baf5
 msgid "Physics and axis-consistency review for `ScalarField` FFT behavior"
 msgstr "`ScalarField` の FFT と軸整合性に関するレビュー"
 
-#: ../../explanation/validated_algorithms.md:47
-#: c4751c3fe25e4f92adf259edcc4820ea
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:47
+#: c65f708cd59740658ef4bface026b95e
 msgid "Source References"
 msgstr "参照元一覧 (Source References)"
 
-#: ../../explanation/validated_algorithms.md:49
-#: fec7790c36814ff0888695d579d69a97
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:49
+#: 71cf78cf5da64b75935860af9a9c3924
 msgid ""
 "Use the source keys below in the per-algorithm sections so the bibliography "
 "and source trail stay centralized on this page."
 msgstr "各アルゴリズム節では、文献・内部資料の参照をこの一覧のキーに寄せて、出典管理をこのページで一元化します。"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 892e522c05e24b7db8d57ec19a1d6415
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 84573754c36947f9b68786a4b289d12a
 msgid "Key"
 msgstr "キー"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 09a2153f961a44c382f94b5b8e3ee667
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 906735020707492cadcc31e65f050fd7
 msgid "Source"
 msgstr "資料"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 3c0cc637ccbc4b1fa441ba8165be3635
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: f4e37a3c54804a51a687bcb33a52b2f1
 msgid "Used for"
 msgstr "用途"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 82cf865ef7cf496b83dcf65fe58d3957
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: c49a1e5808044a30b842d0baf6b8524d
 msgid "`S1`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: 4698d73c0e614cbfb7facc389f2a49a8
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 868a721a05e3432c8d85062496ef26fc
 msgid "Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: 7a981705b86a4ac1af65d2b60432dcab
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: a671bb2bd82c4c7c8f6a4186f09ddc7d
 msgid "k-space calculation and FFT-axis interpretation"
 msgstr "k-space 計算と FFT 軸解釈"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 7349c3a8f2d346e6bdc1040a82835483
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 63502671b7294a6eb8538b101ea3384c
 msgid "`S2`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: 724c644b58514642a761e99c3730f9cb
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 99b6e02922e44bda9334129b4b965e40
 msgid ""
 "Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications*"
 " (1993), Eq.(56)"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: d4e38e5c6cca457db32246f8bf5b225d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 820efcb17720401ebd70fcbae99c7b17
 msgid "Welch overlap / VIF correction"
 msgstr "Welch オーバーラップ / VIF 補正"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 90422cad5c4448e59245d4f515f4d2d5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: f7c2ddde67664abb98cf4e7d07cdf75e
 msgid "`S3`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: ../../explanation/validated_algorithms.md:104
-#: ../../explanation/validated_algorithms.md:129
-#: ../../explanation/validated_algorithms.md:156
-#: ../../explanation/validated_algorithms.md:188
-#: ../../explanation/validated_algorithms.md:211
-#: ../../explanation/validated_algorithms.md:236
-#: 23ce76505925465abc15bb775462de73 85ac58a3971141ac8c625fc72dd1d3ca
-#: 8ba534396279497b97f8f3c6aa5816e0 b34a99b2b0c54809a71c7e11a82e7a8e
-#: b4c19f39a73c40299a2b3073f1e8071a bade44f81d17414794572e96d68ad398
-#: c9775533996e407ba0ea22e70438f9d1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:104
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:129
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:156
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:188
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:211
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:236
+#: 370f92a5131940f0ba48e0dcc4cd61bd 5de38f2d6adc4c29825e737fd31643db
+#: 7ff3591a6614425b8816f673786b8dbd 91342caa14bf4ecbb8dfdb96af131ff6
+#: e96a0da08f0448a99d803522a5155bc6 edaea081bf924eb7a7d3a6535b4a24af
+#: fe649aa7e3bb47b3835fe113b819de67
 msgid "[Prerequisites and Conventions](prerequisites_and_conventions.md)"
 msgstr "[前提条件と規約](prerequisites_and_conventions.md)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 2f34bb68ae4c4314bca9793d2f51960e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 5c6c43948a244a01b03fcfe3c0e43077
 msgid ""
 "Time-system assumptions and FFT-related conventions referenced by validation"
 " notes"
 msgstr "時刻系と FFT 規約に関する共通前提"
 
-#: ../../explanation/validated_algorithms.md:16
-#: d5af904610c240c28ea3ec303ca7aa7a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: ad7b2ba7bd674c618667c70d8cb7d60d
 msgid "`S4`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: ../../explanation/validated_algorithms.md:130
-#: ../../explanation/validated_algorithms.md:212
-#: ../../explanation/validated_algorithms.md:235
-#: 3123312247d346d09ebd61d0fe0b9ae3 69ae0a60c2b14990809cc82bf38ee171
-#: 9125387214fc44c0a18c29a20f623592 9ad23e2b5c3345c69b65c267f0efef1d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:130
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:212
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:235
+#: 09944d00de9f4a2897d74945c870d2f0 6772dabed7184942a24505f29040519c
+#: 8633374cac8d48a0b59cadd9a07116de a77400d191b84e7fae77f8566c04bdf8
 msgid "[Numerical Stability](numerical_stability.md)"
 msgstr "[数値安定性](numerical_stability.md)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 0a1800f4df154cff9c0b679fdaf0cc47
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: fa8d3ce7929f455686161732116fd883
 msgid ""
 "Adaptive stabilization guidance for whitening and related preprocessing "
 "paths"
 msgstr "ホワイトニングの安定化指針"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 454d276d946446eb81bdd6cb9e23d526
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 497bc8d7a7ae4f2cb3fe81f9f9534db9
 msgid "`S5`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: 9ed94195f88c4802b9dfacbbcbf72743
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: c3da635ff3934ff7b1e478ec155bcd25
 #, python-brace-format
 msgid ""
 "{ref}`Objective Evidence <validated-en-objective-evidence>` and the Audit "
 "Trail below"
 msgstr "{ref}`客観的証拠 <validated-ja-objective-evidence>` と後述の Audit Trail"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 92d7b9024ee9496db13721c3b78135b5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: a3510af18be74946946cf096d0157ecf
 msgid ""
 "Repository-backed implementation evidence for transient FFT behavior and "
 "complex GLS / MCMC handling"
 msgstr "transient FFT と複素 GLS / MCMC 挙動の実装根拠"
 
-#: ../../explanation/validated_algorithms.md:60
-#: 40787ed4082943a68a442a4314d77139
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:60
+#: dea730493b594950847484278ca48587
 msgid "Validated Algorithms Summary Table"
 msgstr "検証済みアルゴリズム要約表"
 
-#: ../../explanation/validated_algorithms.md:16
-#: d32c5f4450494dc6aee9f694d8389c4a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 9d3d6d761b4e4094b2c967c52029abab
 msgid "Algorithm"
 msgstr "アルゴリズム"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 088b31f8fcc54d3fb0354d6cc8b92c03
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 3664fa7e40344b1bb20dbe5147ab4005
 msgid "Primary API"
 msgstr "主対象 API"
 
-#: ../../explanation/validated_algorithms.md:16
-#: a27e8efa51814b3dbfff3ccdeb3da338
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 7dbd9f85c42d4dde94045b835c686690
 msgid "API page"
 msgstr "API ページ"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 4dae5917e3634d188e442235834210a7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 2806ef129b034b95bf2fd2401a146e5f
 msgid "Evidence"
 msgstr "証拠"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 8137528b22ab4aa48b48cefe4dd974a1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 7c025c69ec024ad99fe178f9d8bbcac2
 msgid "Related tutorial"
 msgstr "関連チュートリアル"
 
-#: ../../explanation/validated_algorithms.md:16
-#: a91e3bcdbdb74ff1b762073c94a7bd33
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 92bb8409e3b64aeba6b311040e628520
 msgid "**k-space calculation**"
 msgstr "**k-space 計算**"
 
-#: ../../explanation/validated_algorithms.md:16
-#: db6bcac93d3242538c87e8d80c349107
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 7eff2306da444a34a1fa72ee519d1a08
 msgid "`ScalarField.fft_space()`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: 6a0015b6e53f492fa3034701aa061d8d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 1400d8101c4b4aae88d399590419b696
 msgid ""
 "[Fields API](../reference/api/fields.rst) / "
 "[ScalarField](../reference/api/fields.rst)"
@@ -392,32 +393,32 @@ msgstr ""
 "[フィールド API](../reference/api/fields.rst) / "
 "[ScalarField](../reference/api/fields.rst)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 3fa343240bda4824a8ae44a407270a0c 5aa28e957cee40f4b2d4b927f2a28df9
-#: 7edc9a6e62d646d38f57c450f08d616d c6a89cb435044c65aeaa80fab6c67069
-#: f4f61998a53c4eef9d0e0d946f74ed77 ff7a30c036b24a34a12d704a3dc614cc
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 13d0590de0634e5badd5f609603c84fa 207fcfbc5636471bbc2f0e9efe80f236
+#: 6ed4ab27f87049c5a4b5066b0f1598ef 7a72f4a5ead44ce9b3699c1d5e629b4a
+#: a447d4b7522941f0bcbcd81c16844466 e4a9576f31d74dc9a99de138c2cffafa
 #, python-brace-format
 msgid "{ref}`Objective Evidence <validated-en-objective-evidence>`"
 msgstr "{ref}`客観的証拠 <validated-ja-objective-evidence>`"
 
-#: ../../explanation/validated_algorithms.md:16
-#: ../../explanation/validated_algorithms.md:97
-#: 8814c89d47fa45399613c7c13ad9d5ee a85d3a4bdae746d798b8e95920096940
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:97
+#: 61844114e05846f7ae209a0c8a4874f1 b7c12a5dc7fa4fafab664d5a67e07aa4
 msgid "[Field Intro](../tutorials/index.md)"
 msgstr "[フィールド入門](../tutorials/index.md)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 54130c7883e6447188e263204c316b1c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 9548427d7cdb4fa4af7f24a3521bd876
 msgid "**Transient FFT**"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: f1ec2e129e8a450096e5d1aa844b68ae
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: b4bf4243c12749aa93a0b249abcccd06
 msgid "`TimeSeries.fft(mode=\"transient\")` / `TimeSeries._fft_transient`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: 78fe58f4dfc74d6cb8719df6213d6b50 abf57e4e9e3d4021a4f3bfba760f4574
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 5085f2c2de804cdd888f22e2a7ba51ba f3019be14b704bb1a69af7327edc714c
 msgid ""
 "[Time Series API](../reference/api/timeseries.rst) / "
 "[TimeSeries](../reference/api/timeseries.rst)"
@@ -425,23 +426,23 @@ msgstr ""
 "[時系列 API](../reference/api/timeseries.rst) / "
 "[TimeSeries](../reference/api/timeseries.rst)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: ec00bb33643b4b19ae96fcca396695ff
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: a5fc5ffdad964630a6f9b5d6b8996916
 msgid "[Signal Extraction](../tutorials/index.md)"
 msgstr "[信号抽出](../tutorials/index.md)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 03dc8e1eff4c45a7b72fd7ed5d0240a6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 075d20ae13064eb8be09353c58fc664a
 msgid "**VIF correction**"
 msgstr "**VIF 補正**"
 
-#: ../../explanation/validated_algorithms.md:16
-#: ad743ecad89149b7ad4f6a2cd685ae52
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: b6febf10b18c453c9cc1fae205289eb5
 msgid "`calculate_correlation_factor()`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: 63eb7c92e81142da8f4db183d1d3016e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: cd07cceb74d843979ece8c0ce2b0aa2b
 msgid ""
 "[Spectral API](../reference/api/spectral.rst) / [Spectral "
 "Estimation](../reference/api/spectral.rst)"
@@ -449,38 +450,38 @@ msgstr ""
 "[スペクトル API](../reference/api/spectral.rst) / "
 "[スペクトル推定](../reference/api/spectral.rst)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 9691978e5c93435cb3aa90f2a7017fb6 df9ef49fd0244d478e7028005147fa22
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 0cf9b35872ce4b5491bd186c0b1d5681 9bc1970bf2e743dca5ab57bb84f7b319
 msgid "[Bootstrap Guide](../tutorials/index.md)"
 msgstr "[ブートストラップガイド](../tutorials/index.md)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 9e361cb10e834878a697b5c8fcd7dc16
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 45919a6ec4ad4a1392f948fe6323a06f
 msgid "**Forecast timing**"
 msgstr "**予測時刻計算**"
 
-#: ../../explanation/validated_algorithms.md:16
-#: eb5764f67eee453d9b4114098157ac8c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 9ca3d1c2a8a54f7d80cd4bfca95a54cf
 msgid "`ArimaResult.forecast()`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: 562622edaaad4305a837450a0b23d7cb
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 1b425abe9c2e42b2bbd64ac28987b00f
 msgid "[Advanced ARIMA](../tutorials/index.md)"
 msgstr "[ARIMA 応用](../tutorials/index.md)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: a5c98de722a34267b1de2d13925a2e36
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 5be55ab1970342a1b4801fed52bdda95
 msgid "**MCMC / GLS likelihood**"
 msgstr "**MCMC / GLS 尤度**"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 72fa9bbf7c774afcb98b71b0afd26db7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: c6ccf5dce8a346609bb03c159a44f0a2
 msgid "`fit_series()` / `GeneralizedLeastSquares`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: b412d18c7d8b4047892fbacfe11174ec
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 020b03fe9694465799df0751875d588f
 msgid ""
 "[Fitting API](../reference/api/fitting.rst) / "
 "[gwexpy.fitting](../reference/index.md)"
@@ -488,37 +489,37 @@ msgstr ""
 "[フィッティング API](../reference/api/fitting.rst) / "
 "[gwexpy.fitting](../reference/index.md)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 1f8d8c62d7a943e29274581256043ca4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: 230cb2d46d2a4aa78f61191bd97b9230
 msgid "**Adaptive whitening**"
 msgstr "**適応ホワイトニング**"
 
-#: ../../explanation/validated_algorithms.md:16
-#: 7a37a114279e4258a6c2da4c2cc634dd
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: ffa03e6d08a642e6b434ee2703ab823b
 msgid "`whiten()` / `WhiteningModel`"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:16
-#: ../../explanation/validated_algorithms.md:232
-#: ../../explanation/validated_algorithms.md:259
-#: 26bf8cca2ae34f2e973db3d05660604d 8db1dc9c3713424095a7d79b2215949f
-#: 98e55e6c325e452298f1b07182685791
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:232
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:259
+#: 00d6a851df294db7b6f905babba4dbe7 62e540807a87436ca39e7ac20fc47470
+#: a78fb756debc407792243a24ad97eb4a
 msgid "[Preprocessing API](../reference/api/preprocessing.rst)"
 msgstr "[前処理 API](../reference/api/preprocessing.rst)"
 
-#: ../../explanation/validated_algorithms.md:16
-#: ../../explanation/validated_algorithms.md:229
-#: 7ff7e8d3086a431e868b4dd98d00cfd5 ef57bc2c5f6645b0bf91e8ad5dc6989b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:16
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:229
+#: 3842b87b94234424a57be35952774aa7 6e6c98e83087461983908604320e83fb
 msgid "[ML Preprocessing Case Study](../tutorials/index.md)"
 msgstr "[ML 前処理ケーススタディ](../tutorials/index.md)"
 
-#: ../../explanation/validated_algorithms.md:74
-#: 31db1e0e1c9c4c5192e67a15f7e27431
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:74
+#: 2ee602448b734bb6b056ef0d00bb9de9
 msgid "How to Read This Page"
 msgstr "このページの読み方"
 
-#: ../../explanation/validated_algorithms.md:76
-#: d98cc92a1aa3485d8a842573de39719c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:76
+#: 4da1821331344caa9438f951d749c59d
 msgid ""
 "If you want the shared prerequisites, time-system assumptions, and FFT "
 "conventions first, start with [Prerequisites and "
@@ -527,15 +528,15 @@ msgstr ""
 "共通の前提条件、時刻系、FFT 規約を先に整理したい場合は [前提条件と規約](prerequisites_and_conventions.md) "
 "を入口にしてください。"
 
-#: ../../explanation/validated_algorithms.md:77
-#: 2659d21570ad4108a74727195df5a0ee
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:77
+#: 34a1f5f744b84a14ac234620c56e8b18
 msgid ""
 "If you want hands-on usage before reading the audit notes, use the exact "
 "tutorial linked in the summary table rather than the general tutorial index."
 msgstr "監査メモより先に手を動かしたい場合は、要約表にある個別チュートリアルから該当手法だけ読むのが最短です。"
 
-#: ../../explanation/validated_algorithms.md:78
-#: ce532f1a552544e4869197bee06aeeee
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:78
+#: 9248ab60bc7a4c1bbf9419df405ddbf7
 msgid ""
 "If you want the implementation-facing APIs first, start with [Fields "
 "API](../reference/api/fields.rst), [Time Series "
@@ -550,8 +551,8 @@ msgstr ""
 "API](../reference/api/fitting.rst), [前処理 "
 "API](../reference/api/preprocessing.rst) を参照してください。"
 
-#: ../../explanation/validated_algorithms.md:79
-#: f1851e1f7aa447519a1b263fdb7498dc
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:79
+#: e7018c12e2ef4585a66f44df6a56321e
 #, python-brace-format
 msgid ""
 "If you want the repository-backed evidence behind the summaries, continue to"
@@ -563,191 +564,191 @@ msgstr ""
 "evidence>`、{ref}`参照元一覧 <validated-ja-source-references>`、Audit Trail "
 "を参照してください。"
 
-#: ../../explanation/validated_algorithms.md:82
-#: 7ebb19bcdb804f20a314e8b369e3c851
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:82
+#: a8b3e6738a8b4ada9aab482ca5941c70
 msgid "Detailed Algorithm Basis and Assumptions"
 msgstr "各アルゴリズムの詳細と仮定"
 
-#: ../../explanation/validated_algorithms.md:85
-#: cda2f0e8446648c78d80af7fb6b0d784
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:85
+#: 7d48af572f824fe2bf92b485b43c87d3
 msgid "1. k-space Calculation"
 msgstr "1. k-space 計算"
 
-#: ../../explanation/validated_algorithms.md:86
-#: 294f73a9cba34f3eb6feace32bf363af
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:86
+#: 0f954d0c75a945f7976f12800e052ac4
 #, python-brace-format
 msgid "**Target**: {meth}`gwexpy.fields.ScalarField.fft_space`"
 msgstr "**対象**: {meth}`gwexpy.fields.ScalarField.fft_space`"
 
-#: ../../explanation/validated_algorithms.md:88
-#: 08908a59171040c492ace6aced27ae29
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:88
+#: 5f8f6c1275524e3e9a0a949e3bb9950a
 msgid ""
 "Angular wavenumber calculation follows the standard physics definition $k = "
 "2\\pi / \\lambda$."
 msgstr "角波数の計算は、物理学の標準定義 $k = 2\\pi / \\lambda$ に従っています。"
 
-#: ../../explanation/validated_algorithms.md:90
-#: ../../explanation/validated_algorithms.md:115
-#: ../../explanation/validated_algorithms.md:142
-#: ../../explanation/validated_algorithms.md:174
-#: ../../explanation/validated_algorithms.md:196
-#: ../../explanation/validated_algorithms.md:222
-#: 3d71b0971eee4f6da9d64cf54353a80a 44bef4662f00484daf447d35ead17ee9
-#: 4d9dd6731f4746bcb0730ea82a19d11c 80c70518f49d401882cec8ff21f38914
-#: 8a997559d29349188cc0538da8dd5306 f8106c86ce7044b6bcd2e273c9ec6987
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:90
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:115
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:142
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:174
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:196
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:222
+#: 0665d10ef9364f97bf2826f450242834 185f80d5a1b64817a77aeefe4a65f9a7
+#: 1c1805f1ef3d46bd82135eac5fcdd3b6 964efbb41e94422d81d482377af56c77
+#: 9e1609e2f05d4d63a2e3b200ba45427f dbd3ee0c36364e32b21b118224608311
 msgid "**Assumptions**:"
 msgstr "**前提条件・仮定**:"
 
-#: ../../explanation/validated_algorithms.md:91
-#: 017a8dcddb44422692e66a2b3ee7eed8
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:91
+#: 3322476acc46419db6d4a7bce6799190
 msgid "Spatial coordinates ($x, y$) must be **Uniformly Spaced**."
 msgstr "空間座標 ($x, y$) が**等間隔（Uniform Grid）**であること。"
 
-#: ../../explanation/validated_algorithms.md:92
-#: 824bb05103f04e13a845e5bbf275ae67
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:92
+#: 9ac4201c8ff540f784bc01b445172b6e
 msgid ""
 "For non-uniform grids, a correct wavenumber axis cannot be obtained without "
 "prior interpolation."
 msgstr "非等間隔グリッドの場合は、事前に補間を行わない限り正しい波数軸は得られません。"
 
-#: ../../explanation/validated_algorithms.md:94
-#: 0fae3aee0e004315bee9bcf9fe04f8c2
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:94
+#: 3151c93aaca745ceb01326b6315e9799
 #, python-brace-format
 msgid "**Source reference**: {ref}`S1 <validated-en-source-references>`"
 msgstr "**参照元**: {ref}`S1 <validated-ja-source-references>`"
 
-#: ../../explanation/validated_algorithms.md:96
-#: ../../explanation/validated_algorithms.md:121
-#: ../../explanation/validated_algorithms.md:148
-#: ../../explanation/validated_algorithms.md:180
-#: ../../explanation/validated_algorithms.md:202
-#: ../../explanation/validated_algorithms.md:228
-#: 0a0cccd8170342e28c27ad1430c4ce00 6a233363157f49ca90ee8f60b2e911e6
-#: b6552b63365a4d29964fc7a04eddae0e c7a6b453bf3548ac877d6264a7b0e0f9
-#: df96de836ba04bdaa8932d23df29a6e8 f811cc90a9ed4a49926316396a0e6d82
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:96
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:121
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:148
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:180
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:202
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:228
+#: 0cc4540e21e642cf9f4c30b3781f503c 171dd21aab7745368346cf5671fc5563
+#: 7d7664f99a764166ad8a788b54febefd 906d125f9ba94508ae97a21b128a63d1
+#: 9b5d136c0f6a4e7598fa1c24a14366f1 b6697f00ed6446cb8c405da2f6bf793d
 msgid "**Related tutorial**"
 msgstr "**関連チュートリアル**"
 
-#: ../../explanation/validated_algorithms.md:99
-#: ../../explanation/validated_algorithms.md:124
-#: ../../explanation/validated_algorithms.md:151
-#: ../../explanation/validated_algorithms.md:183
-#: ../../explanation/validated_algorithms.md:205
-#: ../../explanation/validated_algorithms.md:231
-#: 8c5f59e2c7a440e581f1a9fa68d2887a 9ca2eeb3d41b4be2bb3d6dcf39e0a17d
-#: b88cfd2d598e477692a765bdb7bc93cc c90dd4da1eea43f1abd491abf6dc1df2
-#: d12c8e6240934301a12318ce1bba0360 e1b684c9cc4543daa5f91001f04a47e6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:99
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:124
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:151
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:183
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:205
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:231
+#: 0b98559274324323a5f3294420dac8bd 32d3327da74e49c5abe81f4299f73325
+#: 4aa3d96012874fca8ef86440ea22971a 5c817261121945aa8290000de5a35ef2
+#: 9c0362868f4946e59243bb0d888b208c f8d8919da9344dabb1a8e78e4a61e623
 msgid "**Related API**"
 msgstr "**関連 API**"
 
-#: ../../explanation/validated_algorithms.md:100
-#: ../../explanation/validated_algorithms.md:255
-#: 6bc74ab3154b49ecb1cde93a492cd28f 7b96f2a986824b479e7960c1d13bf3b6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:100
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:255
+#: 65f4bf69b8634e3f8746d8e10de9b838 6a2f8a8a51004a2ba8ded607f20e3ee4
 msgid "[Fields API](../reference/api/fields.rst)"
 msgstr "[フィールド API](../reference/api/fields.rst)"
 
-#: ../../explanation/validated_algorithms.md:101
-#: 19348c1a36124cba959816b7fedf87f1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:101
+#: c3cbeb06ab234e81bdcc087abd250c20
 msgid "[ScalarField](../reference/api/fields.rst)"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:103
-#: ../../explanation/validated_algorithms.md:128
-#: ../../explanation/validated_algorithms.md:155
-#: ../../explanation/validated_algorithms.md:187
-#: ../../explanation/validated_algorithms.md:210
-#: ../../explanation/validated_algorithms.md:234
-#: 66a11fc8cc1d4babb43fa68091c38ca1 a3cc0516de5148bc9d1c4d38f7d627dc
-#: c4059367d2b6496e959c63b131603408 dadeb638784d4385a0ab38dd24bd6a60
-#: f44cf9d99d1d44f1a69ccbf0d4560cdd fd353d4cd3284ba9afaad9a3f6485d1c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:103
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:128
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:155
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:187
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:210
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:234
+#: 5b9b8768d08a40ce99c5c03b4ccef514 86a7817d24264e93a9ffd0caf0bf1806
+#: ad4e56f547f64fdfb4b173fe3cf1f532 ae1c0bd9260340bc9b82c7521244280c
+#: c285882d2cd448a298c22b7f836e1fbd c3ef3fc22536426eb1f06eadb6c00e53
 msgid "**Related theory**"
 msgstr "**関連理論**"
 
-#: ../../explanation/validated_algorithms.md:105
-#: c67f788e3aab4ccd8bb263b0bc5eae00
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:105
+#: 25b4cdd3c5b94a3384e6ce6fd9e9210c
 msgid "[Architecture and Data Flow](architecture.md)"
 msgstr "[アーキテクチャとデータフロー](architecture.md)"
 
-#: ../../explanation/validated_algorithms.md:110
-#: ed45ea9566f44a6cac651c0812b9c6d8
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:110
+#: 026eefd410804be69aefc0b79ff82a50
 msgid "2. Transient FFT (Amplitude Spectrum)"
 msgstr "2. 振幅スペクトル（トランジェントFFT）"
 
-#: ../../explanation/validated_algorithms.md:111
-#: 681b7dabd76c40239cfbb990e60d1c4b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:111
+#: 659ec537d0f343bc8092d1affdcbbeef
 msgid "**Target**: `TimeSeries._fft_transient`"
 msgstr "**対象**: `TimeSeries._fft_transient`"
 
-#: ../../explanation/validated_algorithms.md:113
-#: d04a768c767e4354a91d2492f5291625
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:113
+#: 82a6fa31c8c94790b7f46ade9952c58d
 msgid ""
 "Uses an amplitude-preserving convention rather than density, allowing direct"
 " reading of time-domain peak amplitudes."
 msgstr "密度スペクトル（PSD）ではなく、時間領域の**ピーク振幅**を直接読み取れる振幅規約を採用しています。"
 
-#: ../../explanation/validated_algorithms.md:116
-#: 5c77bcc095cd463abc45bc68e5cfa813
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:116
+#: 45e337e963e2407085654f3456ac5de8
 msgid ""
 "No window function is applied to the input signal (assumes Rectangular "
 "window)."
 msgstr "入力信号に窓関数が適用されていないこと（矩形窓を前提）。"
 
-#: ../../explanation/validated_algorithms.md:117
-#: ccead58c4d9341dfb5d0bc0688bbf8dd
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:117
+#: 1f9f4e18ea944d9488540de9fc689693
 msgid ""
 "For data with windows already applied, separate correction for coherent gain"
 " is required."
 msgstr "窓関数適用済みのデータに対しては、別途コヒーレント・ゲインによる補正が必要です。"
 
-#: ../../explanation/validated_algorithms.md:119
-#: ../../explanation/validated_algorithms.md:200
-#: 20ca2fa8b6ae4fd3b4722b761610c8e9 f4993afe8695468fa75e4cdc8a08efd5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:119
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:200
+#: 4224db9726a94b5fbe2e13d7acc74fd9 81caed091d654aa9b59267ee2ebeea2c
 #, python-brace-format
 msgid "**Source reference**: {ref}`S5 <validated-en-source-references>`"
 msgstr "**参照元**: {ref}`S5 <validated-ja-source-references>`"
 
-#: ../../explanation/validated_algorithms.md:122
-#: 8b8df17c55924b67a28e76b4e749dc82
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:122
+#: 54fdfccaa480421d987a84a1f0220eb5
 msgid "[Signal Extraction tutorial](../tutorials/index.md)"
 msgstr "[信号抽出チュートリアル](../tutorials/index.md)"
 
-#: ../../explanation/validated_algorithms.md:125
-#: ../../explanation/validated_algorithms.md:184
-#: ../../explanation/validated_algorithms.md:206
-#: ../../explanation/validated_algorithms.md:256
-#: 765c90960d634cb0819df40763a2a055 8b67f309d83e4a809d66f463781d1266
-#: a901a36fc0264215bd387f85ce1efa7c f400d2a95d684b69808b0ddd6805ff22
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:125
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:184
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:206
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:256
+#: 1ff6fb41d5194611a95b74670e22021f 2d8ccc79af304f988dcfd2b0968771bf
+#: 75127d3ddf72423ca2db601431465c41 9d9f8665045143f9a9392a45f580b54d
 msgid "[Time Series API](../reference/api/timeseries.rst)"
 msgstr "[時系列 API](../reference/api/timeseries.rst)"
 
-#: ../../explanation/validated_algorithms.md:126
-#: ../../explanation/validated_algorithms.md:185
-#: e535ee8d50fa4424b04518725f49b000 ef8dfa91146e4b3a82bee3f867684271
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:126
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:185
+#: 7f0cbbf5f5a349f1a86ea4e52e14649c b7bae1f20016440281af64f8c97fb44a
 msgid "[TimeSeries](../reference/api/timeseries.rst)"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:135
-#: 2c82b0b918b645d2bc936255a0395e8f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:135
+#: 7288cad39d364c209f52dfe70ddae1b0
 msgid "3. VIF (Variance Inflation Factor)"
 msgstr "3. VIF (分散膨張係数)"
 
-#: ../../explanation/validated_algorithms.md:136
-#: 88df0b24147549518152f114799ea210
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:136
+#: e93626cb721845c585dbad66d988d7d6
 #, python-brace-format
 msgid ""
 "**Target**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`"
 msgstr ""
 "**対象**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`"
 
-#: ../../explanation/validated_algorithms.md:138
-#: faa686a4c77f490b97f2eb8e977011ac
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:138
+#: c33b6f2441024ee8b39ff648e64056bd
 msgid ""
 "Corrects for the reduction in effective sample size caused by overlapping "
 "segments in spectral estimation methods like Welch's."
 msgstr "Welch 法等におけるセグメント間のオーバーラップによる有効サンプル数の減少を補正します。"
 
-#: ../../explanation/validated_algorithms.md:140
-#: 885b7ff51cb54558bb6115782f0a8694
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:140
+#: 0cac5facd099414a9db65bec03013c9f
 msgid ""
 "Here, VIF is not meant as the regression-style Variance Inflation Factor "
 "used in multicollinearity diagnostics. In the codebase it is exposed as "
@@ -758,121 +759,121 @@ msgstr ""
 "をそのまま指すのではなく、**オーバーラップ窓による分散膨張補正をコード上で `calculate_correlation_factor()` "
 "として実装したもの**です。理論名と関数名が異なるのは、API では「相関補正係数を計算する」役割を明示するためです。"
 
-#: ../../explanation/validated_algorithms.md:143
-#: 778b13c28ea34c79be86de762622f691
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:143
+#: adcd764f62674757a95f34d00b013f79
 msgid "The data must be **Weakly Stationary**."
 msgstr "データが**弱定常 (Weakly Stationary)** であること。"
 
-#: ../../explanation/validated_algorithms.md:144
-#: e7e555373ec24fe98101e4ddaf11caa6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:144
+#: 4d705eb5f5e1400bb5d29c0f2d072394
 msgid ""
 "VIF may under- or over-estimate variance if non-stationary glitches or step "
 "responses are present."
 msgstr "非定常なグリッチやステップ応答が含まれる場合、VIF は分散を過小または過大評価する可能性があります。"
 
-#: ../../explanation/validated_algorithms.md:146
-#: 0c846bc1a072467eb91b44c9c36bcf34
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:146
+#: d1efe7e4fc634e939b6da87da435ad8b
 #, python-brace-format
 msgid "**Source reference**: {ref}`S2 <validated-en-source-references>`"
 msgstr "**参照元**: {ref}`S2 <validated-ja-source-references>`"
 
-#: ../../explanation/validated_algorithms.md:149
-#: ../../explanation/validated_algorithms.md:203
-#: 14c4bcefa21e4aa38835263b60c1d9d0 9e69f1cb1a944d2eb7076e6b436d715e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:149
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:203
+#: 98832f8a145a4764924033ee8d58065e a4290beb55d445ffb1a9c183ba7b1adc
 msgid "[Bootstrap GLS fitting case study](../tutorials/index.md)"
 msgstr "[ブートストラップ GLS フィッティングのケーススタディ](../tutorials/index.md)"
 
-#: ../../explanation/validated_algorithms.md:152
-#: ../../explanation/validated_algorithms.md:257
-#: 06efab095a20495093079401700c7800 c1c67328750c4d77894b14fa5ed67141
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:152
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:257
+#: 97cf22d4d0834723804323a7aaa10400 e8ee9f3b118e4f24b2d1d4038c634d65
 msgid "[Spectral API](../reference/api/spectral.rst)"
 msgstr "[スペクトル API](../reference/api/spectral.rst)"
 
-#: ../../explanation/validated_algorithms.md:153
-#: 0f1d35ba1d404120847bb0847c1f6bd5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:153
+#: 6c7ffc0a05a840ba9c03e2d5143e972e
 msgid "[Spectral Estimation](../reference/api/spectral.rst)"
 msgstr "[スペクトル推定](../reference/api/spectral.rst)"
 
-#: ../../explanation/validated_algorithms.md:161
-#: ddecf2e8f72948c7b3cb8904c15f1008
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:161
+#: 853daeeb8d9e4083a4b605d7a7969938
 msgid "4. Forecast Timestamp (ARIMA)"
 msgstr "4. 予測タイムスタンプ (ARIMA)"
 
-#: ../../explanation/validated_algorithms.md:162
-#: 44e1e7ba1f3645fdb3a49fc457a71273
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:162
+#: 2a0cdc240fd94df1be8adb370a950808
 #, python-brace-format
 msgid "**Target**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`"
 msgstr "**対象**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`"
 
-#: ../../explanation/validated_algorithms.md:164
-#: cecd1205e77e4816934e4f852756e0b9
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:164
+#: 53dbb8736ba146c488173f493f470d39
 msgid ""
 "Maintains GPS continuity according to LIGO conventions for future timestamp "
 "prediction."
 msgstr "GPS 時刻系における連続性を保証するため、LIGO 規約に従った歩進計算を行います。"
 
-#: ../../explanation/validated_algorithms.md:166
-#: 7896b8a70e6241818dd2f3c8433a8ebb
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:166
+#: 0ded3f1c96824ba498d12c4276a929c8
 msgid "A representative update rule is `forecast_t0 = t0 + n_obs * dt`, where"
 msgstr "代表的な更新式は `forecast_t0 = t0 + n_obs * dt` です。ここで、"
 
-#: ../../explanation/validated_algorithms.md:168
-#: a318bd970e3948f1b5af09585a61de81
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:168
+#: e6e27d809c684a25bcb8751a467f140a
 msgid "`t0`: start GPS time of the original series"
 msgstr "`t0`: 元データ系列の開始 GPS 時刻"
 
-#: ../../explanation/validated_algorithms.md:169
-#: d57253b4f64645dc92f032ee144fd65a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:169
+#: 931f15ab1d634a7bb97c541e67e9e7ad
 msgid "`n_obs`: number of observed samples used for the fit"
 msgstr "`n_obs`: 学習に使った観測点数"
 
-#: ../../explanation/validated_algorithms.md:170
-#: 6a449ee3ccf44cd2975c24ed978c785a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:170
+#: 1093e7274bb44e63a71c6cce051b8484
 msgid "`dt`: sampling interval in seconds"
 msgstr "`dt`: サンプル間隔（秒）"
 
-#: ../../explanation/validated_algorithms.md:172
-#: c96cdc9097db43dda5f786238a6c6425
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:172
+#: 9c0e316c9e1646959637358a85e569ab
 msgid ""
 "This is the quantity mapping assumed when forecast timestamps are extended "
 "forward."
 msgstr "を表します。"
 
-#: ../../explanation/validated_algorithms.md:175
-#: de04456646d648c893b30ba1762400ed
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:175
+#: 1658ae54c7b84765b4f727e33ea091ae
 msgid "The time system must be **GPS Time (no leap seconds)**."
 msgstr "時刻系は **GPS 時刻（閏秒なし）** であること。"
 
-#: ../../explanation/validated_algorithms.md:176
-#: 2b2703d553304d97a83b6d9c959b68bb
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:176
+#: f881268a1d214b599e97108ee03b26d2
 msgid ""
 "Using this in time systems with leap seconds (like UTC) will result in a "
 "1-second offset in future predictions."
 msgstr "UTC 等の閏秒が存在する時刻系でそのまま使用すると、将来予測時に 1 秒のズレが生じます。"
 
-#: ../../explanation/validated_algorithms.md:178
-#: 499432555a9d45e2a4dc959a77130fe7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:178
+#: 6a41126bad324e7aa2e49d9bc3bc05c8
 #, python-brace-format
 msgid "**Source reference**: {ref}`S3 <validated-en-source-references>`"
 msgstr "**参照元**: {ref}`S3 <validated-ja-source-references>`"
 
-#: ../../explanation/validated_algorithms.md:181
-#: 664b46cd803a41b393587ee5a0b0bbc1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:181
+#: 7e6807e8e0264c818e8a2b361d1030e7
 msgid "[Advanced ARIMA tutorial](../tutorials/index.md)"
 msgstr "[ARIMA 応用チュートリアル](../tutorials/index.md)"
 
-#: ../../explanation/validated_algorithms.md:191
-#: 4b94bec56fe5494ab2233d2e25dbd3a2
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:191
+#: ba6bd5588c1f45868c485ad9c571f87a
 msgid "5. MCMC / GLS Likelihood"
 msgstr "5. MCMC / GLS 尤度"
 
-#: ../../explanation/validated_algorithms.md:192
-#: cf78511580e14cc5833828193223368a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:192
+#: 4f6077ccee6c4cd0b050724399699a5a
 msgid "**Target**: `run_mcmc`, `GLS`"
 msgstr "**対象**: `run_mcmc`, `GLS`"
 
-#: ../../explanation/validated_algorithms.md:194
-#: a74ac31298524a80975f93cef9a5f124
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:194
+#: 454acbbe5d9847258d2c0b9f82ec0d18
 msgid ""
 "For complex-valued residuals, the MCMC likelihood path assumes a Hermitian "
 "quadratic form `r.conj() @ cov_inv @ r` and then takes the real part. In "
@@ -882,41 +883,45 @@ msgstr ""
 "MCMC の対数尤度計算では、複素残差に対してもエルミート形式 `r.conj() @ cov_inv @ r` "
 "の実部を用いる実装を前提にしています。つまり、**複素データを API にそのまま渡した場合でも、内部では複素共役を考慮した二次形式で評価**されます。"
 
-#: ../../explanation/validated_algorithms.md:197
-#: e3d1116952594c5da47809cbd66c1f63
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:197
+#: 625c27c81bb24410a391bfe9f74d77c7
 msgid "`cov_inv` should be close to Hermitian positive-definite."
 msgstr "共分散行列 `cov_inv` がエルミート正定値に近いこと。"
 
-#: ../../explanation/validated_algorithms.md:198
-#: 6445f1a4874c40c9bd8e0543f50da4e5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:198
+#: f3889ecf0bfc417f826cd954fb5e3246
 msgid ""
 "The implementation is intended for a circular-complex-Gaussian-style "
 "treatment of residuals rather than a naive \"real-part only\" model."
 msgstr "複素残差は circular complex Gaussian に準じた扱いを想定しており、単純に実部だけへ切り捨てる挙動ではありません。"
 
-#: ../../explanation/validated_algorithms.md:207
-#: ../../explanation/validated_algorithms.md:258
-#: 12f486eece1e42f4960f36c1988405e3 c5645878a2844b54b805d89db880437e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:207
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:258
+#: 3712be292cdf45878728bc5db7e14439 65368334b46b4723a79b655a5697737e
 msgid "[Fitting API](../reference/api/fitting.rst)"
 msgstr "[フィッティング API](../reference/api/fitting.rst)"
 
-#: ../../explanation/validated_algorithms.md:208
-#: c3fba33b09584002ba78ac002a6f07bb
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:208
+#: 8ec6a2a02f45453e8ede84b034b7697d
 msgid "[gwexpy.fitting](../reference/index.md)"
 msgstr ""
 
-#: ../../explanation/validated_algorithms.md:217
-#: 77fb1da21cd24ee0b99add7dc6d546c1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:217
+#: a3f633e577d74a2da09617efee76d388
 msgid "6. Adaptive Whitening"
 msgstr "6. 適応ホワイトニング"
 
-#: ../../explanation/validated_algorithms.md:218
-#: ca246758572649f4baac0d3599ae20ef
-msgid "**Target**: `whiten()`, `WhiteningModel`, `.whiten(eps=\"auto\")`"
-msgstr "**対象**: `whiten()`, `WhiteningModel`, `.whiten(eps=\"auto\")`"
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:218
+#: 699ff807b2474cfbb98230c2a4a0e927
+msgid ""
+"**Target**: `TimeSeriesMatrix.whiten_channels(eps=\"auto\")`, "
+"`whiten_matrix()`, `gwexpy.signal.preprocessing.whiten()`, `WhiteningModel`"
+msgstr ""
+"**対象**: "
+"`TimeSeriesMatrix.whiten_channels(eps=\"auto\")`、`whiten_matrix()`、`gwexpy.signal.preprocessing.whiten()`、`WhiteningModel`"
 
-#: ../../explanation/validated_algorithms.md:220
-#: afba739db27844879467805f405884e7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:220
+#: 176fcf6ecd824aa28f2f13039556f2e3
 msgid ""
 "Adaptive whitening uses an automatically chosen stabilization parameter so "
 "that PSD-based normalization remains well behaved in the presence of very "
@@ -925,34 +930,34 @@ msgstr ""
 "適応ホワイトニングでは、自動的に決まる安定化パラメータを用いて、非常に小さい PSD "
 "ビンや局所的な数値アンダーフローがあっても正規化が破綻しにくいようにしています。"
 
-#: ../../explanation/validated_algorithms.md:223
-#: 7112254276b34fb5b414358cc7f66eab
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:223
+#: 5facdb711a6c4a08957fd55dd9f6b2f8
 msgid ""
 "The data are treated as locally quasi-stationary over the FFT segments used "
 "for whitening."
 msgstr "ホワイトニングに用いる FFT セグメントの範囲では、データが局所的に準定常とみなせること。"
 
-#: ../../explanation/validated_algorithms.md:224
-#: 71fa8c24e94d4c35bb813778741db355
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:224
+#: f315431d15ca4bf79e4d2ab0a2e0a76d
 msgid ""
 "The adaptive `eps` path is intended to stabilize small denominators, not to "
 "compensate for a badly chosen whitening window or clearly non-stationary "
 "bursts."
 msgstr "適応 `eps` は小さい分母を安定化するためのものであり、明らかに非定常なバーストや不適切な窓長設定まで補償するものではありません。"
 
-#: ../../explanation/validated_algorithms.md:226
-#: f7b84f57b54145edb0894f4c2ad33ac7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:226
+#: aad816a3137a47eaa197dd0e686ab417
 #, python-brace-format
 msgid "**Source reference**: {ref}`S4 <validated-en-source-references>`"
 msgstr "**参照元**: {ref}`S4 <validated-ja-source-references>`"
 
-#: ../../explanation/validated_algorithms.md:241
-#: 28e6f1fbf43c4e9089e5b6ada46c19e6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:241
+#: cbff8fb4bf004a2387734019772b338a
 msgid "Audit Trail"
 msgstr "監査証跡 (Audit Trail)"
 
-#: ../../explanation/validated_algorithms.md:243
-#: db8f769db1d64dc58b88ed428e441074
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:243
+#: 14e27ff455a6429d9815e3c6e303f4f6
 msgid ""
 "The public audit trail is summarized on this page so readers do not need to "
 "follow developer-only or historical review artifacts. The validation summary"
@@ -963,25 +968,25 @@ msgstr ""
 "公開向けの監査証跡は、開発者向け・履歴管理用のレビュー資料へ直接誘導せず、 このページ内に要約しています。上の検証サマリ表で対象アルゴリズム群を示し、 "
 "各アルゴリズム別セクションで公開向けの前提、実装状況、関連理論への導線を記録しています。"
 
-#: ../../explanation/validated_algorithms.md:249
-#: a19195da477b4692a31a0b5d220f1f97
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:249
+#: 8952350c3d08479eaca6dd7e0e622c0a
 msgid "Related Documents for Validation"
 msgstr "検証向け関連ドキュメント"
 
-#: ../../explanation/validated_algorithms.md:251
-#: d274f25472db4591bd40f233c9574bd3
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:251
+#: 06b573c3fc77488f83bdde5c96edd3b2
 msgid "[Numerical Stability](numerical_stability.md) - Precision management"
 msgstr "[数値安定性](numerical_stability.md) - 数値安定性（精度管理）"
 
-#: ../../explanation/validated_algorithms.md:252
-#: 17608ba69831432eb39ad2711806b7e9
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:252
+#: 6085bf9333344094b09fffa7cec50261
 msgid ""
 "[Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared "
 "assumptions for time systems and FFT conventions"
 msgstr "[前提条件と規約](prerequisites_and_conventions.md) - 時刻系と FFT 規約の共通前提"
 
-#: ../../explanation/validated_algorithms.md:253
-#: df6394c1c654453d990f93ad24cc404d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:253
+#: 8971dd7d084c4d0fbe56032c7618fa32
 msgid ""
 "[Verification and Quality Signals](verification_and_quality.md) - Public "
 "notebook, I/O, and coverage evidence map"
@@ -989,40 +994,40 @@ msgstr ""
 "[検証と品質の見方](verification_and_quality.md) - notebook、I/O、coverage "
 "の公開根拠をまとめて確認する"
 
-#: ../../explanation/validated_algorithms.md:254
-#: 75cb5fd0178a4225bb212481ae388cf8
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:254
+#: db8a6450008b4c08b5b3f1a4b0e82b46
 msgid "[Glossary](../reference/index.md) - Glossary of algorithms"
 msgstr "[用語集](../reference/index.md) - アルゴリズムの用語集"
 
-#: ../../explanation/validated_algorithms.md:262
-#: 864aa1f2786d458cbcd5834be9390a34
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:262
+#: aa44de6d234249cea76c1485495a42a9
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../explanation/validated_algorithms.md:264
-#: c05b4dca13914399b6ae93ae7c8aad5c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:264
+#: 2ddb37f2a271475abb4d001ed78c2eb9
 msgid ""
 "[Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared "
 "assumptions behind the validation notes"
 msgstr ""
 "[前提条件と規約](prerequisites_and_conventions.md) - このページの前提になる時刻系と FFT 規約を整理する"
 
-#: ../../explanation/validated_algorithms.md:265
-#: f4fedcc9459d4712a494cb852c6822c7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:265
+#: 7044b4c376d247039d727fcf46c54a7c
 msgid ""
 "[Numerical Stability](numerical_stability.md) - Stabilization behavior "
 "referenced by adaptive whitening"
 msgstr "[数値安定性](numerical_stability.md) - 適応ホワイトニングなど安定化の挙動を補う"
 
-#: ../../explanation/validated_algorithms.md:266
-#: c40ce60c6dbf4d709f26e3280c641122
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:266
+#: 9302a09f30a04452b15db601f1f1666d
 msgid ""
 "[Architecture and Data Flow](architecture.md) - Container and API design "
 "context behind the validated methods"
 msgstr "[アーキテクチャとデータフロー](architecture.md) - 検証対象 API がどの設計の上にあるかを確認する"
 
-#: ../../explanation/validated_algorithms.md:267
-#: 2d55e56b654043408c62cf0f693dbe3e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/validated_algorithms.md:267
+#: d532366b5e7d4d6ba6e200e9eb26529e
 msgid ""
 "[Tutorial Index](../tutorials/index.md) - Task-oriented notebooks that show "
 "the methods in use"

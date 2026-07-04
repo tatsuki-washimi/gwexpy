@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-04 07:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,34 +19,39 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/troubleshooting.md:1 1450c0f19c99426cbf017d741f9f195a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:1
+#: 433729cd763e4734b0ecfecb55e49b9e
 msgid "Troubleshooting"
 msgstr "トラブルシューティング"
 
-#: ../../how-to/troubleshooting.md:3 d530f0f131244be9a8cb521ddb9b83a1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:3
+#: 6ab9754149e24604bc93584316ae6fc2
 msgid "Common issues encountered when using GWexpy and their solutions."
 msgstr "GWexpy の利用時に遭遇しやすい問題とその解決策をまとめます。"
 
-#: ../../how-to/troubleshooting.md:5 37f9b61ef89846799bcbd09bd40b7bbd
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:5
+#: 1d7114267f7d4f59ac503e35bae2a71d
 msgid "Start Here"
 msgstr "まずここを見る"
 
-#: ../../how-to/troubleshooting.md:7 671a5909f4cd4e308d9358568bddbd00
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:7
+#: 87426e2f5575473a8ff297c7f0e19e46
 msgid "Use this page as a reverse lookup by symptom:"
 msgstr "症状から逆引きする場合は、次を起点にしてください。"
 
-#: ../../how-to/troubleshooting.md:9 f3cd300875e34fb4939fb765a3c28ff5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:9
+#: 7ce9cb16616e49f186d4086eaca7254c
+#, python-brace-format
 msgid ""
 "Install worked for the minimal example, but you now need NDS2 / FrameLIB / "
-"other binary dependencies: go back to the [Installation "
-"Guide](../tutorials/installation.md#conda-environment-recommended--gw-"
-"analysis)."
+"other binary dependencies: go back to the {ref}`Installation Guide <conda-"
+"environment-recommended-gw-analysis>`."
 msgstr ""
-"最小構成の例は動いたが、NDS2 / FrameLIB など他のバイナリ依存が必要になった場合: "
-"[インストールガイド](../tutorials/installation.md#conda-environment-recommended--gw-"
-"analysis) に戻ってください。"
+"最小構成の例は動いたが、NDS2 / FrameLIB など他のバイナリ依存が必要になった場合: {ref}`インストールガイド <conda-"
+"environment-recommended-gw-analysis>` に戻ってください。"
 
-#: ../../how-to/troubleshooting.md:10 625c5772ed2149338a87d492b3a1442c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:10
+#: 706c2b43afbe4adf8b4d6672592f830f
 msgid ""
 "The first example from [Quickstart](../tutorials/quickstart.md) does not "
 "import or plot cleanly: check the matching issue below, then retry the quick"
@@ -55,55 +60,63 @@ msgstr ""
 "[クイックスタート](../tutorials/quickstart.md) の最初の例で import や描画がうまくいかない場合: "
 "下の該当する項目を確認してから、もう一度試してください。"
 
-#: ../../how-to/troubleshooting.md:11 84cbc6a2941e4b1082bc800430bef03f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:11
+#: a84a1837ba8d4aaba280fdabb8b5d1b8
+#, python-brace-format
 msgid ""
 "The environment feels mixed or broken after repeated `pip` and Conda "
-"changes: rebuild the dedicated Conda environment from the [Installation "
-"Guide](../tutorials/installation.md#conda-environment-recommended--gw-"
-"analysis)."
+"changes: rebuild the dedicated Conda environment from the {ref}`Installation"
+" Guide <conda-environment-recommended-gw-analysis>`."
 msgstr ""
-"`pip` と Conda の変更を繰り返して環境が混在・破損したと感じる場合: "
-"[インストールガイド](../tutorials/installation.md#conda-environment-recommended--gw-"
-"analysis) から専用の Conda 環境を作り直してください。"
+"`pip` と Conda の変更を繰り返して環境が混在・破損したと感じる場合: {ref}`インストールガイド <conda-environment-"
+"recommended-gw-analysis>` から専用の Conda 環境を作り直してください。"
 
-#: ../../how-to/troubleshooting.md:13 8bd50c0e386d4984a103eba9795fab99
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:13
+#: adff5bda220646028532299ddf6d739f
 msgid "Installation Issues"
 msgstr "インストール関連"
 
-#: ../../how-to/troubleshooting.md:15 d097d3aa1bf34c66808d7b64045715ea
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:15
+#: 5af3d092951445eb8aee4388a63bbd4d
 msgid "1. Cannot install `nds2` / `framel`"
 msgstr "1. `nds2` / `framel` がインストールできない"
 
-#: ../../how-to/troubleshooting.md:16 5e989c38b030471794309772834a3234
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:16
+#: 9226a33ca1114ca28fbb2af13b25aa5a
 msgid ""
 "Binary libraries used in the `[gw]` extra cannot be installed via `pip`."
 msgstr "`[gw]` エクストラで使用されるバイナリライブラリは `pip` ではインストールできません。"
 
-#: ../../how-to/troubleshooting.md:18 891cc956ebea4231be820a230a360fca
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:18
+#: c98190a62df642beb7636017d90e5b9a
 msgid ""
 "**Solution:** Use Conda (Miniforge, etc.) in a dedicated environment, then "
-"install GWexpy from source there."
-msgstr "**解決策:** Conda (Miniforge 等) で専用環境を作成し、その中で依存関係と GWexpy 本体を順に入れてください。"
-
-#: ../../how-to/troubleshooting.md:27 169fb8ea46974d289023e08eb371cdc9
-msgid ""
-"See also: [Installation Guide](../tutorials/installation.md#conda-"
-"environment-recommended--gw-analysis)"
+"install GWexpy from PyPI there."
 msgstr ""
-"関連: [インストールガイド](../tutorials/installation.md#conda-environment-recommended--"
-"gw-analysis)"
+"**解決策:** Conda (Miniforge 等) で専用環境を作成し、その中で PyPI から GWexpy をインストールしてください。"
 
-#: ../../how-to/troubleshooting.md:29 78e111a0a5204b518cd461b7b72b6680
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:27
+#: a8acd2f5aace4376b586b4c3cac8d69b
+#, python-brace-format
+msgid ""
+"See also: {ref}`Installation Guide <conda-environment-recommended-gw-"
+"analysis>`"
+msgstr "関連: {ref}`インストールガイド <conda-environment-recommended-gw-analysis>`"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:29
+#: 6fd27edec9d14a5fa310dd4438bc5b10
 msgid "2. Errors on Apple Silicon (M1/M2/M3) Mac"
 msgstr "2. Apple Silicon (M1/M2/M3) Mac でのエラー"
 
-#: ../../how-to/troubleshooting.md:30 8296a27f5d69450e819020d475bfe942
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:30
+#: 0632bf6d157e43fea161b50f800320cf
 msgid ""
 "Some GW analysis packages may be built for Intel (x86_64) and might not work"
 " out of the box."
 msgstr "一部の GW 解析用パッケージが Intel (x86_64) 版としてビルドされており、そのままでは動作しない場合があります。"
 
-#: ../../how-to/troubleshooting.md:32 fd3f139fdf524de9a3e2266eeb8c9707
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:32
+#: af5a007d83774bf5a0cc027e82fb8f60
 msgid ""
 "**Solution:** Native (arm64) support for packages from the `conda-forge` "
 "channel is improving. Always ensure you are using the latest versions."
@@ -111,74 +124,88 @@ msgstr ""
 "**解決策:** `conda-forge` チャンネルからインストールしたものに関しては、ネイティブ (arm64) "
 "対応が進んでいます。常に最新版に更新してください。"
 
-#: ../../how-to/troubleshooting.md:38 c0a2553a23714ac490b807c330264281
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:38
+#: 801e0e1d6fd0437db7698c8a0986d993
 msgid "3. Compilation error for `minepy` (MIC calculation)"
 msgstr "3. `minepy` (MIC計算) のコンパイルエラー"
 
-#: ../../how-to/troubleshooting.md:39 2229f4468a9744c58be655a8d8c1f40f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:39
+#: f3eaff82fc8e4d4b8320eb5ae8e8a8da
 msgid "`pip install minepy` may fail due to C extension compilation issues."
 msgstr "`pip install minepy` が C 拡張のコンパイルで失敗することがあります。"
 
-#: ../../how-to/troubleshooting.md:41 c264a592ce9341c7aa8972356c780342
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:41
+#: d08131c781e5486289d52f299055f085
 msgid ""
 "**Solution:** Run the automated build script included in the repository."
 msgstr "**解決策:** リポジトリに含まれる自動ビルドスクリプトを実行してください。"
 
-#: ../../how-to/troubleshooting.md:47 07175d7e637a4eaeb3625ef30053fd8c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:47
+#: d66980eb00134e38b69178fd003c1569
+#, python-brace-format
 msgid ""
 "If this happened while expanding a minimal install, review the extras "
-"guidance in the [Installation "
-"Guide](../tutorials/installation.md#3-optional-dependencies-extras-details)."
+"guidance in the {ref}`Installation Guide <optional-dependencies-extras>`."
 msgstr ""
-"最小インストールを拡張している途中で発生した場合は、[インストールガイド](../tutorials/installation.md#3-optional-"
-"dependencies-extras-details) の extras 案内を確認してください。"
+"最小インストールを拡張している途中で発生した場合は、{ref}`インストールガイド <optional-dependencies-extras>` の "
+"extras 案内を確認してください。"
 
-#: ../../how-to/troubleshooting.md:49 eea38e745ec44ff78691e9e96ad6e4b4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:49
+#: 51d81304a61646269059d6ee19e6bc00
 msgid "Plotting & Visualization Issues"
 msgstr "描画・可視化関連"
 
-#: ../../how-to/troubleshooting.md:51 4eb5fda63cdb4b3ea79e400a724ed39b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:51
+#: f2f0c2bfcfa64ca4b8739142b0964c45
 msgid "4. Plots not displaying / `Tcl_AsyncDelete` error"
 msgstr "4. プロットが表示されない / `Tcl_AsyncDelete` エラー"
 
-#: ../../how-to/troubleshooting.md:52 4606a9279b3e406db2b67cd7088e84d6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:52
+#: e7681493d0fb49fb858e1d265083df76
 msgid ""
 "There may be an inconsistency with the Matplotlib backend in Jupyter "
 "Notebook or GUI applications."
 msgstr "Jupyter Notebook や GUI アプリで Matplotlib のバックエンドに関する不整合が起こっている可能性があります。"
 
-#: ../../how-to/troubleshooting.md:54 0be8d2d6e6214eeb8316d6d126e198c1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:54
+#: 50f9dbeb262f4f189407934575fab931
 msgid "**Solution:** Try explicitly specifying the backend:"
 msgstr "**解決策:** バックエンドを明示的に指定して試してください。"
 
-#: ../../how-to/troubleshooting.md:61 4f00f37a4e9d4529b172c675983dc155
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:61
+#: 8091dacf12cd49b68b7531c5cca1e2c2
 msgid "5. Map (`GeoMap`) not displaying"
 msgstr "5. 地図 (`GeoMap`) が表示されない"
 
-#: ../../how-to/troubleshooting.md:62 2a6248f9ff3b4b2cb30e22b27db1181f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:62
+#: 80d320d2a0c54734a58ffa4547987ad7
 msgid ""
 "Verify the installation status of `pygmt` and ensure the GMT (Generic "
 "Mapping Tools) binary is in your path."
 msgstr "`pygmt` のインストール状況と、GMT (Generic Mapping Tools) 本体がパスに含まれているか確認してください。"
 
-#: ../../how-to/troubleshooting.md:64 8aca1a773bcc40eb933809a28f0518d2
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:64
+#: 052afefc190444d88beba0aa736ab91d
 msgid "**Solution:** We recommend reinstalling `pygmt` via Conda."
 msgstr "**解決策:** Conda で `pygmt` を再インストールすることを推奨します。"
 
-#: ../../how-to/troubleshooting.md:70 5d99d9d4ff074094956fe7e4894fca59
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:70
+#: 0a18a9918ff74ea3baf39d79a8c94f96
 msgid ""
 "If you started from the smallest example in "
 "[Quickstart](../tutorials/quickstart.md), note that `pygmt` is optional and "
-"is not part of the minimal source install."
+"is not part of the minimal install."
 msgstr ""
 "[クイックスタート](../tutorials/quickstart.md) の最小例から始めた場合、`pygmt` "
-"はオプションであり、最小のソースインストールには含まれない点に注意してください。"
+"はオプションであり、最小インストールには含まれない点に注意してください。"
 
-#: ../../how-to/troubleshooting.md:74 7e433e04e61b46b9bbbaab2f66533043
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:74
+#: a27fe9caf9e24b9d9cb3f094fa076e69
 msgid "Still Not Working?"
 msgstr "解決しない場合"
 
-#: ../../how-to/troubleshooting.md:76 9cd881253e144eaa80290bf5b617c2f0
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:76
+#: a115f6e50ba5498a8a61fca35da979d6
 msgid ""
 "For lightweight bug reports and feature requests, use the [feedback "
 "form](https://forms.gle/c8jJaf9UCs5tb5cC8). For reproducible technical "
@@ -195,14 +222,17 @@ msgstr ""
 "にエラーログを添えて報告してください。 個人情報、認証情報、セキュリティ脆弱性の詳細はフォームや public issue に含めず、 "
 "リポジトリのセキュリティポリシーに従ってください。 報告時には以下の情報を含めていただけるとスムーズです："
 
-#: ../../how-to/troubleshooting.md:83 0308315bd70d4a20aeb87745550dd76b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:83
+#: 0d4714afe3ae4b9592184e9fdb41ee72
 msgid "OS Version"
 msgstr "OS バージョン"
 
-#: ../../how-to/troubleshooting.md:84 fdac472c754545f6a9ee1c78e9818ba0
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:84
+#: 48c6457b919d4cecb6d4663fee273407
 msgid "Python Version"
 msgstr "Python バージョン"
 
-#: ../../how-to/troubleshooting.md:85 9a4d905301084511aa3d31ec0c2e1c34
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/troubleshooting.md:85
+#: a6cece6aabf94cf8bc979599fc014f9c
 msgid "The command executed and the full Traceback"
 msgstr "実行したコマンドと詳細なトレースバック (Traceback)"

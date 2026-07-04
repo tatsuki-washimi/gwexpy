@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-04 07:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,25 +19,111 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../about/changelog.md:1 dd5e66a73d334b059f249cf9f3d65bb4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:1
+#: 0337a6ce9c664fe380a40870d0e8121b
 msgid "Changelog"
 msgstr "更新履歴 (Changelog)"
 
-#: ../../about/changelog.md:3 566309ab9def469a87fadb8634137bdb
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:3
+#: 79e8d212f3aa46a1bb3ce6477b94b1e6
 msgid "Notable changes to the GWexpy project."
 msgstr "GWexpy の主な変更履歴を記載します。"
 
-#: ../../about/changelog.md:5 6bc87e5f1c4d44f292b14fc21b913f57
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:5
+#: 41c507ede7f3494aae809ef629f47e7b
+msgid "[0.1.5] - 2026-06-10"
+msgstr "[0.1.5] - 2026-06-10"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:7
+#: a4aa94059a1e49e880b9d6d5c2b21ac3
+msgid "This is a patch release focused on plotting and I/O hotfixes."
+msgstr "プロットと I/O の修正を中心としたパッチリリースです。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:9
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:43
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:87
+#: 03bd0341c29c4f409a1608614c7fda91 7225e7d7ac9142c3ae90b913d758c8e8
+#: b785c28584604788b40669d8e75a1e77
+msgid "Fixed"
+msgstr "修正 (Fixed)"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:10
+#: 289f2a36281545cb892ca0c26542f673
+msgid ""
+"Fixed `TimeSeriesDict.plot()` so multi-channel dictionaries are expanded "
+"into separate subplots instead of producing a blank or invalid figure "
+"(#432)."
+msgstr ""
+"`TimeSeriesDict.plot()` "
+"を修正し、複数チャンネルの辞書が空白または不正な図になる問題を解消して、チャンネルごとのサブプロットに展開されるようにしました (#432)。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:12
+#: 59549d2321944d0b98534dc6724ee5ab
+msgid ""
+"Fixed ObsPy-backed seismic readers so `TimeSeriesDict` keys are stable "
+"string trace names (e.g. `\"IU.ANMO.00.BHZ\"`), enabling reliable string-"
+"based lookup (#435)."
+msgstr ""
+"ObsPy ベースの地震計データリーダーを修正し、`TimeSeriesDict` のキーが安定した文字列トレース名（例: "
+"`\"IU.ANMO.00.BHZ\"`）となり、文字列での確実な参照ができるようになりました (#435)。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:14
+#: 6a8f01a07b65417783200f18df1a123c
+msgid ""
+"Added support for passing a list or tuple of miniSEED paths to "
+"`TimeSeriesDict.read(..., format=\"mseed\")` (#433)."
+msgstr ""
+"`TimeSeriesDict.read(..., format=\"mseed\")` に miniSEED "
+"パスのリスト/タプルを渡せるようになりました (#433)。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:16
+#: 6c56ef3f9c054db9af378b919c879a5e
+msgid ""
+"Fixed `gwexpy.frequencyseries` import-time I/O registration so "
+"FrequencySeries read formats are visible through the GWpy default I/O "
+"registry (#437)."
+msgstr ""
+"`gwexpy.frequencyseries` のインポート時 I/O 登録を修正し、FrequencySeries の読み込みフォーマットが "
+"GWpy 標準の I/O レジストリから見えるようになりました (#437)。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:19
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:32
+#: bc2b8d5260df4dd7aead219ebedf6a1b ca1752fedd7f48f88d32e5543fc7fb73
+msgid "Documentation"
+msgstr "ドキュメント (Documentation)"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:20
+#: 30b0edfebe774dcfaf9da10e3799ebc3
+msgid ""
+"Clarified that GWexpy is an independent package built on top of GWpy and is "
+"not an official component of the GWpy project."
+msgstr "GWexpy は GWpy の上に構築された独立パッケージであり、GWpy プロジェクトの公式コンポーネントではないことを明確化しました。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:22
+#: 8f08fa05722b44579359a00496aa1092
+msgid ""
+"Updated the README installation notes to reflect that the conda-forge "
+"feedstock is available, while conda-forge packages may lag the latest PyPI "
+"release."
+msgstr ""
+"README のインストール注記を更新し、conda-forge feedstock が利用可能である一方、conda-forge パッケージは最新の "
+"PyPI リリースより遅れる場合があることを反映しました。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:25
+#: 2880ec32e5994aa38fec2028389fa33e
 msgid "[0.1.4] - 2026-05-14"
 msgstr ""
 
-#: ../../about/changelog.md:6 ../../about/changelog.md:47
-#: ../../about/changelog.md:62 06dca752f70244aea28fb6ea973174ce
-#: 121805fad17e4c46a40e5e9d4e362fbe f43fa228d7f94e53befeb0fcee95c2e6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:26
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:67
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:82
+#: 2c26e22bbe794d32bfe2eafaa01ec148 3904f7eb3e6d45408812147670393f12
+#: eb567b8b7b96457ea756ab491d132568
 msgid "Added"
 msgstr "追加 (Added)"
 
-#: ../../about/changelog.md:7 c42f01a0559a49f4bd061ab8b7d30122
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:27
+#: 1d1de5e309994f0db936617e35c9011f
 msgid ""
 "`to_gps()` now has opt-in `dtype=` output modes. The default remains GWpy-"
 "compatible, while `dtype=float` / `dtype=\"float\"` return plain numeric "
@@ -48,11 +134,8 @@ msgstr ""
 "`dtype=\"float\"` は素の数値秒を返し、`dtype=\"quantity\"` は `.times` と直接比較できる秒の "
 "quantity を返します。"
 
-#: ../../about/changelog.md:12 0400fac2f92d452699c7240877fafe1d
-msgid "Documentation"
-msgstr "ドキュメント (Documentation)"
-
-#: ../../about/changelog.md:13 b501be334f184691b49120aaa06edc1b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:33
+#: 286c04fd6ac94461a79f7e5e5fcd4522
 msgid ""
 "README, docs hub pages, roadmap, troubleshooting pages, and footer links now"
 " point lightweight bug reports and feature requests to the public feedback "
@@ -60,16 +143,19 @@ msgid ""
 msgstr ""
 "README、ドキュメントのハブページ、ロードマップ、トラブルシューティングページ、フッターのリンクが、軽微なバグ報告と機能要望を公開フィードバックフォームへ案内するようになりました。セキュリティ報告は引き続きリポジトリのセキュリティポリシーに向けられます。"
 
-#: ../../about/changelog.md:17 5935251afa754dabb93d8b7249590bb0
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:37
+#: b8220f3abf6941e3865ff2a75a521343
 msgid "Tests"
 msgstr "テスト (Tests)"
 
-#: ../../about/changelog.md:18 7ccc2e48b86c4823bd105af95e8d4b88
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:38
+#: 906e1e5395cf41108230ec93a3f9256d
 msgid ""
 "Added NetCDF fixture coverage requiring an explicit time coordinate (#393)."
 msgstr "明示的な時間座標を要求する NetCDF フィクスチャのカバレッジを追加しました（#393）。"
 
-#: ../../about/changelog.md:19 42801dfa28ac489e95391345c9d0dafc
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:39
+#: f172629f59f149e3a3627af735bbf138
 msgid ""
 "Added GWF regression coverage for multi-channel list-source reads and padded"
 " gap reads with `parallel > 1`."
@@ -77,43 +163,45 @@ msgstr ""
 "マルチチャンネルのリストソース読み込みと、`parallel > 1` でのパディングされたギャップ読み込みについて、GWF "
 "の回帰テストカバレッジを追加しました。"
 
-#: ../../about/changelog.md:22 307beb3b57ea496db6ed22e7b82351a0
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:42
+#: 11e85e7682f747cbbce17ad7a4bce0b5
 msgid "[0.1.3] - 2026-05-12"
 msgstr ""
 
-#: ../../about/changelog.md:23 ../../about/changelog.md:67
-#: 018fb653650a48e4a4e4d7538c9f325b 4739fb9637594982940fa6950d408efb
-msgid "Fixed"
-msgstr "修正 (Fixed)"
-
-#: ../../about/changelog.md:24 123e5450dd6c4270b6fe0acc0758dc66
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:44
+#: c8fc4a50478c41df9d07fd2fbd4194d4
 msgid ""
 "Fixed multi-file GWF reads for `TimeSeries` and `TimeSeriesDict` inputs."
 msgstr "`TimeSeries` および `TimeSeriesDict` 入力に対する複数ファイル GWF 読み込みを修正しました。"
 
-#: ../../about/changelog.md:25 38c82fefecad44bdb5503669427744ed
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:45
+#: 5304425ae16e4200a677028df66e8d01
 msgid "Fixed ndscope HDF5 auto-detection for `TimeSeriesMatrix.read()`."
 msgstr "`TimeSeriesMatrix.read()` における ndscope HDF5 の自動検出を修正しました。"
 
-#: ../../about/changelog.md:26 36cf884b6ace4cc19219a1f92e96214f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:46
+#: 9a2e95b5c56a4818bc4ed61932dd2168
 msgid ""
 "Aligned public I/O docs and contract metadata with current autodetection "
 "behavior."
 msgstr "公開 I/O ドキュメントと契約メタデータを、現在の自動検出の挙動に合わせました。"
 
-#: ../../about/changelog.md:28 857181ed60474944b92424be088f677e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:48
+#: 89dd48c8656a48cca10c9286eac3f43d
 msgid ""
 "Preserved original frequency column values in the FrequencySeries CSV fast "
 "path."
 msgstr "FrequencySeries の CSV 高速パスで、元の周波数列の値を保持するようにしました。"
 
-#: ../../about/changelog.md:30 a37bc2eaef004d58bb15b0f2029f7107
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:50
+#: c7ee86e553c04645a2d008a37b12b9ea
 msgid ""
 "Improved zarr 3 matrix round-trip coverage and removed timeout-prone fixture"
 " behavior."
 msgstr "zarr 3 の行列往復変換カバレッジを改善し、タイムアウトしやすいフィクスチャの挙動を除去しました。"
 
-#: ../../about/changelog.md:32 b550d66abcfb45a2ad2069e037c64488
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:52
+#: c81b460a9fb84bcab9faadf1fd60234d
 msgid ""
 "Treated PyGMT installations without a loadable GMT shared library as an "
 "unavailable optional backend instead of failing at import time."
@@ -121,11 +209,13 @@ msgstr ""
 "読み込み可能な GMT 共有ライブラリを持たない PyGMT "
 "インストールを、インポート時に失敗させるのではなく、利用不可のオプションバックエンドとして扱うようにしました。"
 
-#: ../../about/changelog.md:35 503a7782109343b4baebafcfe71fbe6d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:55
+#: 542292bb77ec46d9bde93ca0bda33ab9
 msgid "Known Issues"
 msgstr "既知の問題 (Known Issues)"
 
-#: ../../about/changelog.md:36 44d114d7e8704a0c8e6d23e0a406d3da
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:56
+#: a2696a619216404fa181a9431d127f6e
 msgid ""
 "Some bundled NetCDF fixture paths can fail the TimeSeries reader time-"
 "coordinate contract (#393). Generated NetCDF round-trip coverage still "
@@ -134,21 +224,25 @@ msgstr ""
 "同梱の一部 NetCDF フィクスチャパスは、TimeSeries リーダーの時間座標契約に失敗することがあります（#393）。生成された NetCDF"
 " 往復変換カバレッジは引き続き通過します。ファイルは明示的な時間座標を公開すべきです。"
 
-#: ../../about/changelog.md:40 1458e5b6e5814e23991606b48892186f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:60
+#: e14c5e8d3181405f99ae5c9437e8d42b
 msgid "[0.1.2] - 2026-05-08"
 msgstr ""
 
-#: ../../about/changelog.md:41 8e64ee9723eb4750b602b44c2aca7701
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:61
+#: e317ea0c913f4e779a4432b0b10a184b
 msgid "Targeted Narrow Hotfix Scope"
 msgstr "対象を絞った hotfix 範囲"
 
-#: ../../about/changelog.md:42 67ec5680ff4f4ed78107e9c0f2dfe4ce
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:62
+#: aea56120acf644ab821b611d8ed28f9d
 msgid ""
 "Narrow compatibility fixes for GWpy4 public I/O proxy imports and GWF "
 "list/dict read behavior."
 msgstr "GWpy4 向け公開 I/O proxy import と GWF list/dict read 挙動の互換性修正。"
 
-#: ../../about/changelog.md:43 6c4ef6799ed4477a8ca17f90c5c8fc40
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:63
+#: 6d1068cd0a49417d84acdd9f9c824d71
 msgid ""
 "Targeted auto-identify/read-path fixes for histogram HDF5, ATS/MTH5, audio, "
 "seismic, SegmentTable span CSV, and FrequencySeries DTT XML flows."
@@ -156,17 +250,20 @@ msgstr ""
 "histogram HDF5、ATS/MTH5、audio、seismic、SegmentTable span CSV、FrequencySeries "
 "DTT XML の auto-identify/read-path 修正。"
 
-#: ../../about/changelog.md:44 5d12a46edcac468a810a5657d0e20fe9
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:64
+#: 8d5b688486fd4a6e8cfa12e7e97bb286
 msgid ""
 "Includes only a minimal #369 landing/demo import hunk for this integration "
 "track."
 msgstr "この統合トラックでは #369 の最小 landing/demo import hunk のみを含みます。"
 
-#: ../../about/changelog.md:46 39e637662ad24c8e86fa74fe680ea4ca
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:66
+#: 6ee502fb39554564aaf14a1f8220a3c2
 msgid "[0.1.1] - 2026-04-28"
 msgstr ""
 
-#: ../../about/changelog.md:48 e032f9d6db754f5b98bcdee5f50608e0
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:68
+#: 8ba6c38c81134c35be14e05045877e87
 msgid ""
 "Added public contract baselines for `SegmentTable`, histogram/segments "
 "helpers, detector/time conversion surfaces, CLI behavior, and plot-helper "
@@ -175,7 +272,8 @@ msgstr ""
 "`SegmentTable`、histogram/segments 補助機能、detector/time 変換、CLI、plot helper "
 "に関する公開契約の基準化ドキュメントとテストを追加。"
 
-#: ../../about/changelog.md:49 9108e19422ff4108a1e65552b19a30b4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:69
+#: 886ff8be2b3e4474949f4216454f52f3
 msgid ""
 "Added release-gate checks for metadata consistency, artifact hygiene, and "
 "fresh-environment wheel smoke before PyPI publication."
@@ -183,21 +281,25 @@ msgstr ""
 "PyPI 公開前の release gate として、メタデータ整合性、配布物の健全性、fresh environment での wheel smoke"
 " を確認する仕組みを追加。"
 
-#: ../../about/changelog.md:51 16124deb51da49dda377e6e183711c9d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:71
+#: 99df96d1d92f4cbdbb97a2b3a89b8ce5
 msgid "Changed"
 msgstr "変更 (Changed)"
 
-#: ../../about/changelog.md:52 bf75ce502b964bf9abfaf96394493c0e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:72
+#: 74362212046343f58e2acfdd59492ddb
 msgid ""
 "Clarified installation guidance around optional extras, source installs, and"
 " future release-channel transitions."
 msgstr "optional extras、ソースインストール、将来の配布チャネル切り替えに関する案内を整理。"
 
-#: ../../about/changelog.md:54 18602cd1bed84211849a2a002ddf96f7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:74
+#: c368765040be483da9a0205d91083acc
 msgid "Known Limitations And Follow-Ups"
 msgstr "既知の制限とフォローアップ (Known Limitations And Follow-Ups)"
 
-#: ../../about/changelog.md:55 4aa48fbd35ca445786036d76162a58ed
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:75
+#: e6c855c4db0647b8be4695540f6090bc
 msgid ""
 "PyPI publication is still a human-controlled final step for issue #293. "
 "Public install docs intentionally remain GitHub/source-based until the first"
@@ -207,7 +309,8 @@ msgstr ""
 "#293 の最終段階である PyPI 公開はまだ人手実行のままです。公開インストール手順は、最初の PyPI リリースと post-publish "
 "smoke が成功するまで GitHub / ソース導入のままにします。`pip install gwexpy` への切り替えは公開後に行います。"
 
-#: ../../about/changelog.md:56 d83ca8897aab4b71af10ccce95c7f591
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:76
+#: 54458cfc3b54470a86ffd6335eb40646
 msgid ""
 "`conda-forge` packaging is not published yet. Issue #294 remains the follow-"
 "up for the staged-recipes submission and fresh conda-environment smoke "
@@ -216,7 +319,8 @@ msgstr ""
 "`conda-forge` パッケージはまだ公開されていません。#294 では staged-recipes 提出と fresh conda 環境での "
 "smoke test を継続します。"
 
-#: ../../about/changelog.md:57 d46f0b60a3d544e1920f6d9773b285f4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:77
+#: 2ebb04278a744d89bea32396c6a63a06
 msgid ""
 "Open numerical and analysis audit follow-ups remain for noise contracts "
 "(#278), astro range assumptions and unit handling (#282), "
@@ -229,7 +333,8 @@ msgstr ""
 "(#284)、preprocessing / decomposition / forecasting 契約 (#288) は、現状挙動の "
 "docs/test baseline は入ったものの、方針決定が残っています。"
 
-#: ../../about/changelog.md:58 c5a0d670d294456db407b195831ff842
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:78
+#: 6e5fa26962b44ac792f6c8d54520d5b4
 msgid ""
 "GUI and visual-surface follow-ups remain open for payload metadata, labels, "
 "colorbars, plot-helper semantics, and residual public-doc drift (#274, #275,"
@@ -238,7 +343,8 @@ msgstr ""
 "GUI と可視化まわりでは、payload metadata、ラベル、colorbar、plot helper の意味論、公開ドキュメントの残差 "
 "drift が継続課題です (#274, #275, #283)。GUI は引き続き安定性ラベル上の実験的機能です。"
 
-#: ../../about/changelog.md:59 9196e57fea334270a5addac7f5146468
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:79
+#: eeb8808f6c4546389e7550029ebf9e16
 msgid ""
 "Local validation follow-up #335 tracks an intermittent one-process `pytest "
 "tests/ -q` exit 139. Split-suite validation passed and remains the current "
@@ -247,35 +353,43 @@ msgstr ""
 "ローカル検証のフォローアップ #335 では、`pytest tests/ -q` を 1 プロセスで通したときに exit 139 "
 "が断続的に発生します。分割スイートでは通過していますが、単一プロセス異常終了の原因は未解明です。"
 
-#: ../../about/changelog.md:61 da274b4d47f54bafa797f6161d4ac844
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:81
+#: f048774c2ae848d49193a931551314cb
 msgid "[0.1.0] - 2026-04-08"
 msgstr ""
 
-#: ../../about/changelog.md:63 2a78b27c7233407c913a14a44c8ed472
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:83
+#: 69217e8db0f3426981347f1119798e2a
 msgid "Redesigned documentation site (Task 1 & 2)."
 msgstr "ドキュメントデザインの刷新 (Task 1 & 2)。"
 
-#: ../../about/changelog.md:64 f2002af0f04b4c3a948d4eae8feac175
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:84
+#: 7797d05d96aa403e821188c04fd08e0b
 msgid "Stabilized `SeriesMatrix` classes."
 msgstr "`SeriesMatrix` 系クラスの安定化。"
 
-#: ../../about/changelog.md:65 ef47c2e0e532438da66976bb72ad4e5f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:85
+#: 3f5a9d2e7a8d454ea8f77f127b0445dd
 msgid "Enhanced multi-dimensional data support via `ScalarField`."
 msgstr "`ScalarField` による多次元データサポートの強化。"
 
-#: ../../about/changelog.md:68 f612c04eae8c4c9abf684eec99165d4e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:88
+#: 5163260159194ec6b7a830c562de79bb
 msgid "Added `CITATION.cff` for easier citation."
 msgstr "`CITATION.cff` の追加による引用の容易化。"
 
-#: ../../about/changelog.md:69 5d04804cd2124551ab6f6eb20fb22d80
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:89
+#: 6e9568cf36a64edcae9d78128d72b516
 msgid "Reorganized dependencies and improved OS-specific installation guides."
 msgstr "依存関係の整理とOS別インストールガイドの充実。"
 
-#: ../../about/changelog.md:71 0d8fcbe0f51e44baababbe3c662d5a43
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:91
+#: 502f05eea17b430cadb756179d3afec6
 msgid "Past Versions"
 msgstr "過去の履歴"
 
-#: ../../about/changelog.md:73 a2a9b77988104bcfa077cdc9f3903885
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/about/changelog.md:93
+#: b26b22e36d1747fa9d9be469e342f215
 msgid ""
 "For more details, please visit [GitHub Releases](https://github.com/tatsuki-"
 "washimi/gwexpy/releases)."

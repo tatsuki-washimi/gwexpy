@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-04 07:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,47 +19,64 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../tutorials/quickstart.md 848e903a5c58474ba009345dbf98bfd4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md
+#: d68c0b39d5974fddbadd41321f814fc7
 msgid ""
-"Start GWexpy quickly with a GitHub install command, a 3-line first plot, and"
-" pointers to the next tutorials and migration guides."
+"Start GWexpy quickly with a pip install command, a 3-line first plot, and "
+"pointers to the next tutorials and migration guides."
 msgstr ""
-"GWexpy を最短で始めるための導入ガイドです。GitHub からのインストール、3 "
+"GWexpy を最短で始めるための導入ガイドです。pip インストールコマンド、3 "
 "行の最小例、次に読むチュートリアルや移行ガイドへの入口をまとめています。"
 
-#: ../../tutorials/quickstart.md:7 1d3e87e1e4324f06b5e97378dc6a1003
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:7
+#: 93907ba0f2654b4798cf100193b1aaa2
 msgid "Quickstart"
 msgstr "クイックスタート (Quickstart)"
 
-#: ../../tutorials/quickstart.md:9 b6f22ad4a0bf4d99a3394ddddc667397
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:9
+#: 64fd8062f47144fca3edfb0e97d54eb8
 msgid "Get your first analysis plot with GWexpy as quickly as possible."
 msgstr "GWexpy を使って、最初の解析図を最短で作成しましょう。"
 
-#: ../../tutorials/quickstart.md:12 35f195cd2daa4e30a9d7f46fcc2872f1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:12
+#: 14e0a13d6d5c46b999b7143d38dc1622
 msgid "Quick Install"
 msgstr "クイックインストール (Quick Install)"
 
-#: ../../tutorials/quickstart.md:14 0dd1ba18de434b8899ea2b941be05a89
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:14
+#: 5493c5eb9d8c4878927f2b55f1f83f66
 msgid ""
-"GWexpy is currently in development and is **not yet published on PyPI or "
-"Conda**, so install it directly from the GitHub source repository for now:"
-msgstr ""
-"GWexpy は現在開発版で、**PyPI / Conda にはまだ公開されていない**ため、まずは GitHub "
-"のソースリポジトリから直接インストールしてください："
+"GWexpy is published on PyPI, so a plain `pip install` is all you need to get"
+" started:"
+msgstr "GWexpy は PyPI で公開されており、`pip install` だけで始められます:"
 
-#: ../../tutorials/quickstart.md:16 eee5e9447b3f4225b0acd5b31970de0c
-msgid "Purpose: install the current development build as quickly as possible"
-msgstr "目的: 開発版を最短でインストールする"
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:16
+#: b5ce737eac42481bb9ca94f6f4c372cd
+msgid "Purpose: install the current release as quickly as possible"
+msgstr "目的: 現行リリースを最短でインストールする"
 
-#: ../../tutorials/quickstart.md:17 c048b76fd8a349569aef131b6e0be7af
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:17
+#: cebc25a637464d29a5df90ec683c5e2d
 msgid "Input: Python 3.11+ with `pip`"
 msgstr "入力: Python 3.11 以上と `pip`"
 
-#: ../../tutorials/quickstart.md:18 de9dade8dfda4da2ac2f9fe70fbcf958
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:18
+#: 7366e86805d74a13be373720520e8b27
 msgid "Output: a local GWexpy installation ready for the first example"
 msgstr "出力: 最初のサンプルを実行できる GWexpy 環境"
 
-#: ../../tutorials/quickstart.md:24 396a1d6bdd814aabb94c5e7059fa468d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:24
+#: 17ad45d998fa4f19a6176d43d196b999
+msgid ""
+"If you want the latest unreleased development version instead, install from "
+"the GitHub source repository: `pip install git+https://github.com/tatsuki-"
+"washimi/gwexpy.git`"
+msgstr ""
+"未リリースの最新開発版を使いたい場合は、GitHub のソースリポジトリからインストールしてください: `pip install "
+"git+https://github.com/tatsuki-washimi/gwexpy.git`"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:27
+#: 5d34cc229a0a4ff69902b1f4a0ce04ac
 msgid ""
 "If you need a Conda-managed environment, GW binary dependencies such as NDS2"
 " / FrameLIB, or optional tools such as `pygmt`, start with the [Installation"
@@ -70,59 +87,72 @@ msgstr ""
 "などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda "
 "前提手順から始めてください。"
 
-#: ../../tutorials/quickstart.md:27 4c9c07bf1a25480682016fd625a6159f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:30
+#: 8e980e6801e9474f8c7f67b1570b7855
 msgid "3-line Quickstart"
 msgstr "3行で最初の図を出す (3-line Quickstart)"
 
-#: ../../tutorials/quickstart.md:29 c7aa666115344553948399b4e3a0395f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:32
+#: 6ecf691a3ddd4d549a1e8d5fc35ed30c
 msgid ""
 "GWexpy's `TimeSeries` can be created directly from NumPy arrays and features"
 " built-in plotting capabilities."
 msgstr "GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。"
 
-#: ../../tutorials/quickstart.md:31 0991a6f8f45444e490d1f2cd054270b4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:34
+#: 894e1bc1d4a34459abb77fb1a7218b0c
 msgid "Purpose: display a first plot from a random time series"
 msgstr "目的: ランダムな時系列から最初のプロットを 1 枚表示する"
 
-#: ../../tutorials/quickstart.md:32 6777f9fc4dd24716b4557b5221eeff77
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:35
+#: 9fe2ce879f424875b847869422bdda44
 msgid "Input: a 4096-sample NumPy array, sample rate 4096 Hz, and `t0=0`"
 msgstr "入力: 4096 サンプルの NumPy 配列、サンプルレート 4096 Hz、開始時刻 `t0=0`"
 
-#: ../../tutorials/quickstart.md:33 166e42e99692497c9a52bf52e475fa56
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:36
+#: 2c0e5ff808df49348d1be2b6aa308aaa
 msgid "Output: a `TimeSeries` object and a rendered plot"
 msgstr "出力: `TimeSeries` オブジェクトと描画ウィンドウ"
 
-#: ../../tutorials/quickstart.md:43 d3d0347db7584fef8b95c9b1fcff8430
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:46
+#: 2f7e7834aace473683223de1dc004602
 msgid "30-min Hands-on (Interactive Tutorial)"
 msgstr "30分で学べるハンズオン (Interactive Tutorial)"
 
-#: ../../tutorials/quickstart.md:45 6426cd4ac7e645ae83f08a0e12e6db93
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:48
+#: e2f2166937c547a4ac5256d34adde255
 msgid "For a more practical workflow, we recommend the following lesson."
 msgstr "より実践的なワークフローを学びたい場合は、以下のレッスンを推奨します。"
 
-#: ../../tutorials/quickstart.md:47 850704dcabdb49c6ae5a359975622490
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:50
+#: 9a1829493519404ba125e96b8c154633
 msgid "🧪 GWexpy Basic Hands-on"
 msgstr "🧪 GWexpy 基本ハンズオン"
 
-#: ../../tutorials/quickstart.md:49 af648cf750d64b54901c34304c90bcfd
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:52
+#: 0c8247afaa244abbb42b30112552e23d
 msgid "[TimeSeries basics lesson](intro_timeseries.ipynb)"
 msgstr "[TimeSeries の基本レッスン](intro_timeseries.ipynb)"
 
-#: ../../tutorials/quickstart.md:51 b689e7c6616c4d6e9ced795eeaf386f5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:54
+#: e1fd233d58b34bb9aded3d126be224ee
 msgid ""
 "Experience everything from loading data to frequency analysis (ASD/CSD) and "
-"matrix manipulation using the latest Field API."
-msgstr "データの読み込みから、周波数解析（ASD/CSD）、最新のフィールド API による行列操作までを一通り体験します。"
+"multi-channel manipulation with the Matrix API."
+msgstr "データの読み込みから、周波数解析（ASD/CSD）、Matrix API によるマルチチャンネル操作までを一通り体験します。"
 
-#: ../../tutorials/quickstart.md:53 fc0f0c3310a54bbaa4535ef4f0fa4616
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:56
+#: e980b720d05f44ae96d445cc8583e221
 msgid "Core Concepts"
 msgstr "主要概念 (Core Concepts)"
 
-#: ../../tutorials/quickstart.md:55 f3a29564e42c467ea53db9edc0f1f85b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:58
+#: 5fb22ba0e09b4445999fc96624877fdf
 msgid "The two pillars to mastering GWexpy."
 msgstr "GWexpy を使いこなすための 2 つの重要な柱です。"
 
-#: ../../tutorials/quickstart.md:57 e9a2bc61084b48cdaf4da58612985778
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:60
+#: 0ce5050fe2b74823ae796826a4debac0
 msgid ""
 "**TimeSeries / FrequencySeries**:  Basic classes for handling single-channel"
 " data. High compatibility with GWpy allows you to run existing code as is."
@@ -130,7 +160,8 @@ msgstr ""
 "**TimeSeries / FrequencySeries**: 単一チャンネルのデータを扱う基本クラスです。GWpy "
 "との高い互換性により、既存コードをほぼそのまま実行できます。"
 
-#: ../../tutorials/quickstart.md:59 7c343f89c79a48e38e1f24108da2a9c7
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:62
+#: 91ffdb860c824ae08295fa945cd71229
 msgid ""
 "**TimeSeriesMatrix / ScalarField**: New APIs for handling multi-channel "
 "(matrix format) or multi-dimensional field-like data. Large-scale analysis "
@@ -139,40 +170,48 @@ msgstr ""
 "**TimeSeriesMatrix / ScalarField**: 多チャンネル（行列形式）や多次元のフィールド状データを扱う新しい API "
 "です。100 チャンネルを超える大規模解析も、1 行のコードで安全に扱えます。"
 
-#: ../../tutorials/quickstart.md:62 5d087eecdd2a4a5b9bbefc40a72a497e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:65
+#: 218391f500db4433961c9284b5d40b64
 msgid "Multi-channel Analysis Example"
 msgstr "複数チャンネルの解析例"
 
-#: ../../tutorials/quickstart.md:64 4c863474d6104f3e9ddc554ac9005299
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:67
+#: dc95a38b6ff54b278dcad0e7ef63fcce
 msgid ""
 "Minimal example for calculating cross-spectral density (CSD) between two "
 "channels."
 msgstr "複数チャンネル間のクロススペクトル密度（CSD）を計算する最小例です。"
 
-#: ../../tutorials/quickstart.md:66 f9bd7d97edfb4adea7508c679141ee5c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:69
+#: 0208eb3cd07040d793b71ddaa73bdebf
 msgid "Purpose: compute cross-spectral density from two `TimeSeries` channels"
 msgstr "目的: 2 チャンネルの `TimeSeries` からクロススペクトル密度を計算する"
 
-#: ../../tutorials/quickstart.md:67 6a8f7211909047d4896fb35f8523be10
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:70
+#: 35034fa590634205a664e392a3ea124e
 msgid "Input: a two-channel `TimeSeriesDict` and `fftlength=1`"
 msgstr "入力: 2 チャンネルの `TimeSeriesDict` と `fftlength=1`"
 
-#: ../../tutorials/quickstart.md:68 e62d54a125624c358b5b2d136c430d03
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:71
+#: 0880400af2384763bac647381fdb747a
 msgid "Output: a `csd` object and a plotted CSD result"
 msgstr "出力: `csd` オブジェクトと CSD プロット"
 
-#: ../../tutorials/quickstart.md:85 6a926eb907ae4312b8d28d781bc427e6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:88
+#: 5f237564a6e24a3e8583089955391696
 msgid ""
 "This example selects the two channels from the `TimeSeriesDict` and stores "
 "the resulting cross-spectral density in `csd`."
 msgstr ""
 "ここでは `TimeSeriesDict` から対象の 2 チャンネルを取り出し、チャンネル間のクロススペクトル密度を `csd` として得ています。"
 
-#: ../../tutorials/quickstart.md:87 90435aff9917472da316cd4ab2a099ed
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:90
+#: 0e505897b5c14dbdbe79f9a9196c6fd9
 msgid "Need Help?"
 msgstr "困ったときは"
 
-#: ../../tutorials/quickstart.md:89 070f4e36b6ba4aefa53cf793e049353d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:92
+#: 8c4450531f1d4cfea2d0496d0981c874
 msgid ""
 "If you encounter errors or plots do not appear, check the [Troubleshooting "
 "Guide](../how-to/troubleshooting.md). If the problem is really an "
@@ -182,29 +221,35 @@ msgstr ""
 "実行時にエラーが発生したり、プロットが表示されない場合は、[トラブルシューティングガイド](../how-to/troubleshooting.md) "
 "を確認してください。原因が環境構築にある場合は、[インストールガイド](installation.md) の Conda 前提手順に戻るのが最短です。"
 
-#: ../../tutorials/quickstart.md:91 256fcd535cfe4443bacd5a5f3a1e061a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:94
+#: 380b70d13a434d7ba1a19496e42c79bd
 msgid "<a id=\"next-to-read\"></a> <a id=\"next-steps\"></a>"
 msgstr ""
 
-#: ../../tutorials/quickstart.md:94 f58917129dd943ae8aec47ced31e7e2c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:97
+#: a52718fd16154d97a62a0fa2b7b5f775
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../tutorials/quickstart.md:96 0ee78b4594af41b8a667eb10e84615e0
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:99
+#: 74e8417a5bea4aafb5809d759bea8be4
 msgid "[Installation Guide](installation.md) - Setting up your environment."
 msgstr "[インストールガイド](installation.md) - 環境の構築"
 
-#: ../../tutorials/quickstart.md:97 19f85b69aa8a4a10893bac799c39e513
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:100
+#: dd6142e5994c4a2f9953ed9ee7b0b250
 msgid ""
 "[Troubleshooting Guide](../how-to/troubleshooting.md) - Reverse-lookup fixes"
 " by symptom."
 msgstr "[トラブルシューティングガイド](../how-to/troubleshooting.md) - 症状から解決策を逆引きする。"
 
-#: ../../tutorials/quickstart.md:98 985b5c18447a4aaf87e0f9ceda4fc845
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:101
+#: 52818e046efd452189d8ffb216c18a43
 msgid "[Getting Started](getting_started.md) - Systematic learning roadmap."
 msgstr "[はじめに](getting_started.md) - 体系的な学習ロードマップ"
 
-#: ../../tutorials/quickstart.md:99 6c93d1df8cf9408f8f7de8f3c89f536c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:102
+#: 8db3b3d9dffb4b2d8e1922bfb8d62f5b
 msgid ""
 "[Prerequisites and "
 "Conventions](../explanation/prerequisites_and_conventions.md) - Review FFT, "
@@ -213,7 +258,8 @@ msgstr ""
 "[前提条件と規約](../explanation/prerequisites_and_conventions.md) - FFT・GPS "
 "時刻・互換性の前提を先に確認する。"
 
-#: ../../tutorials/quickstart.md:100 0a59bc532d5946f38b0765545c5fc724
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/tutorials/quickstart.md:103
+#: 6cbf9ce9acdc4dea8a8702f8bb7888c0
 msgid ""
 "[Migration from GWpy](../explanation/gwexpy_for_gwpy_users.md) - Difference "
 "guide for existing users."

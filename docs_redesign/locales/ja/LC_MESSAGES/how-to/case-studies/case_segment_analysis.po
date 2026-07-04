@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-04 07:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,18 +19,13 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/case-studies/case_segment_analysis.ipynb:10002
-#: 43744eced51b4200a8a65e9ca20d3e14
-msgid "import warnings warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")"
-msgstr ""
-
-#: ../../how-to/case-studies/case_segment_analysis.ipynb:10004
-#: a227b8d1ae7841a9b28e663a6e82f6d8
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10002
+#: 5768e2bc65314c7e920e49eea55d74a8
 msgid "Case Study: Event-Synchronized Analysis"
 msgstr "ケーススタディ: イベント同期解析"
 
-#: ../../how-to/case-studies/case_segment_analysis.ipynb:10006
-#: 84ad8d943c0e4af99365871a2310991b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10004
+#: 13ea03d74a064b6bbcabbbb325b19a3e
 msgid ""
 "This tutorial shows a real-world workflow: matching events from two "
 "different logs, applying clock corrections, and generating event-by-event "
@@ -39,8 +34,8 @@ msgstr ""
 "このチュートリアルでは、実務でのワークフローに即した例を紹介します。ログからのイベント抽出、時刻補正（模した例）、そしてイベントごとの解析・プロット生成までの一連の流れを"
 " `SegmentTable` で管理します。"
 
-#: ../../how-to/case-studies/case_segment_analysis.ipynb:10008
-#: f743b8d92ea446369fcc090e230d1c99
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10006
+#: bfc8a1e8ac9148638051915e508f96dc
 msgid ""
 "The event windows are still represented by `gwpy.segments.Segment`, while "
 "gwexpy provides the table-management and `apply()`-driven batch workflow "
@@ -52,24 +47,24 @@ msgstr ""
 "`apply()` 駆動のバッチワークフローを提供します。GWpy の基本クラスと gwexpy 拡張の役割分担は、[SegmentTable: "
 "基本](../segments/intro_segment_table.ipynb) と同じです。"
 
-#: ../../how-to/case-studies/case_segment_analysis.ipynb:30002
-#: 73d6979a09804235aa158568ac893f04
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:30002
+#: 9207bc2946fa465197572a5425cedef8
 msgid "Batch Plot Generation"
 msgstr "バッチプロット生成"
 
-#: ../../how-to/case-studies/case_segment_analysis.ipynb:30004
-#: 24ed4eb55c33422b9afa977e34e330e9
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:30004
+#: d86450c697f54cd7a07695cc8db45f8b
 msgid ""
 "We can use `apply()` to generate plots for each event and save them, storing"
 " the paths back in the table."
 msgstr "`apply()` を使って、各イベントのズームプロットなどを一括生成し、そのファイルパスをテーブル自体に保存できます。"
 
-#: ../../how-to/case-studies/case_segment_analysis.ipynb:50002
-#: 57f5fa266f8e453daebbac1accf59f0d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:50002
+#: 60569482b9ca42a5858fbc64a85f4c0b
 msgid "Result Summary"
 msgstr "結果の絞り込みと出力"
 
-#: ../../how-to/case-studies/case_segment_analysis.ipynb:50004
-#: 5df8c30a82064c5784016d1c5e1944a3
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:50004
+#: 470b75de35dd455ab26ddd7a16e984b1
 msgid "Finally, we can filter the table and export results."
 msgstr "最後に、特定の条件（SNR > 10 など）でテーブルをフィルタリングし、結果をエクスポートします。"

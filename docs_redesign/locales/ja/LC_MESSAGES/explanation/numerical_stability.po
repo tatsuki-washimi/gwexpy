@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-04 07:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,7 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../explanation/numerical_stability.md a07030b94eeb45389114455f5574ed00
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md
+#: 40b45d8dbbb84af49da85df85c8ea0d3
 msgid ""
 "Understand GWexpy numerical stability behavior, including whitening eps "
 "handling, safe log plotting, NaN and Inf failure modes, and when users "
@@ -27,12 +28,13 @@ msgid ""
 msgstr ""
 "GWexpy の数値安定性ガイドです。whiten の eps 処理、安全な対数表示、NaN / Inf の失敗モード、調整が必要な場面を整理します。"
 
-#: ../../explanation/numerical_stability.md:7 27a762670fed441cbfb0a2d47885cedc
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:7
+#: 2f84cdf0f5744d64894679afcace80df
 msgid "Numerical Stability and Precision"
 msgstr "数値的安定性と精度"
 
-#: ../../explanation/numerical_stability.md:10
-#: b64f471c2697462e97d122957019c68f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:10
+#: 53974ec9ca9c434e8062b338b4783d40
 msgid ""
 "**Who should read this page?** Standard analysis in `gwexpy` works out-of-"
 "the-box with high stability. Refer to this detailed guide only if:"
@@ -40,74 +42,74 @@ msgstr ""
 "**このページを読むべき方**: 通常の解析では `gwexpy` "
 "のデフォルト設定で十分な安定性が確保されています。以下の状況に該当する場合のみ、この詳細ガイドを参照してください："
 
-#: ../../explanation/numerical_stability.md:12
-#: f35fc25d44e947b3913d8037bcf24406
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:12
+#: fe6b96c3a8fb4dae9d6fa1095e122127
 msgid ""
 "You see \"holes\" or \"unusual colors\" in your plots caused by `NaN` or "
 "`Inf`."
 msgstr "プロット結果に `NaN` や `Inf` による「穴」や「異常な色」が現れた場合"
 
-#: ../../explanation/numerical_stability.md:13
-#: d866497cc0ae4dbe837ffee25e3f24e1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:13
+#: 83bc9549b22742458fd700938665acdf
 #, python-brace-format
 msgid ""
 "You are working with extremely small signals (below $10^{-23}$) or huge "
 "signals (above 1) simultaneously."
 msgstr "非常に微小な信号（$10^{-23}$以下）や、逆に 1 を超える巨大な信号を同時に扱う場合"
 
-#: ../../explanation/numerical_stability.md:14
-#: 0ac9d9dcfbf24981aa69a7847b459589
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:14
+#: d3b4ebdc4a42445c8f5dab249ed35142
 msgid ""
 "You want to deeply understand the numerical behavior of algorithms and tune "
 "parameters like `eps` or `tol`."
 msgstr "解析アルゴリズムの数値的な挙動を深く理解し、詳細パラメータ（`eps`, `tol`）を調整したい場合"
 
-#: ../../explanation/numerical_stability.md:17
-#: 0ca0feb90f2d4484bb0bdad73ca9a843
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:17
+#: 47fd76cbaea7488b98ff6af467dd9794
 msgid ""
 "`gwexpy` is designed to handle data with an extremely wide dynamic range "
 "without numerical breakdown."
 msgstr ""
 "`gwexpy` は、重力波データ解析で頻繁に扱われる極めて広いダイナミックレンジを持つデータを、数値的な破綻なく処理できるように設計されています。"
 
-#: ../../explanation/numerical_stability.md:20
-#: aa9ec29c3a1040ceae0cfe73a48ac32e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:20
+#: 1ff79c3cb955429498f376c7ecd8da16
 msgid "TL;DR"
 msgstr "まず結論だけ知りたい方へ"
 
-#: ../../explanation/numerical_stability.md:22
-#: 3dc0418b5174423e8a12a6217d79667c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:22
+#: acd7693bfc764340a149b8e41887f7b2
 msgid "For normal analysis, start by trusting the default `gwexpy` settings."
 msgstr "通常の解析では、まず `gwexpy` のデフォルト設定をそのまま使ってください。"
 
-#: ../../explanation/numerical_stability.md:23
-#: 5516fda47c25406fbd6fb36e18cdb3a3
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:23
+#: e633d527dcf14138919e1ee70182c22d
 msgid ""
 "Do not add manual offsets such as `+ 1e-20` before plotting unless you have "
 "a concrete reason."
 msgstr "プロット前に `+ 1e-20` のような手動オフセットを足す必要はありません。"
 
-#: ../../explanation/numerical_stability.md:24
-#: f79a9772307849faade0c5d0f968acaa
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:24
+#: b5b91f2c439842b188f3a8af7d932d0b
 msgid ""
 "Tune parameters only when you actually observe `NaN` / `Inf`, work with "
 "extreme amplitudes, or need algorithm-level validation."
 msgstr "調整が必要なのは、`NaN` / `Inf` が見える、極端に小さい信号を扱う、アルゴリズム検証をしたい場合に限られます。"
 
-#: ../../explanation/numerical_stability.md:27
-#: 2e34e93d589c4cdd9886cb5d30e8b19c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:27
+#: 0803dfc6762c41b38dd227ecb465d2e4
 msgid "Impact of Stabilization (Before & After)"
 msgstr "可視化における安定化の効果 (Before & After)"
 
-#: ../../explanation/numerical_stability.md:29
-#: 27342a4fd1bb41dd9454c954ef2954f8
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:29
+#: dd1d8c71d4db4a958a297e1a69a61818
 msgid ""
 "A comparison between standard methods (simple `log10` or fixed `eps`) and "
 "`gwexpy`'s robust numerical stabilization algorithms."
 msgstr "標準的な手法（単純な `log10` や 固定 `eps`）と、`gwexpy` の数値安定化アルゴリズムを適用した結果の比較です。"
 
-#: ../../explanation/numerical_stability.md:31
-#: 81e17a01c9d64d2d8ddaed86d1fac392
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:31
+#: 98f43988d7b547c89a43baa1dd9b2380
 msgid ""
 "![Numerical stabilization comparison: Noisy visualization with NaN/Inf "
 "artifacts (Left) vs. Clean gravitational-wave signal "
@@ -116,159 +118,191 @@ msgstr ""
 "![数値安定化の比較：NaN/Inf "
 "アーティファクトを含むノイズの多い可視化（左）と、クリーンな重力波信号（右）](../_static/images/numerical_stability_comparison.png)"
 
-#: ../../explanation/numerical_stability.md:31
-#: 669a5022f9184c88b887e5f5714012f2
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:31
+#: 3a424056eca4483b8aae53fe6ae26c95
 msgid ""
 "Numerical stabilization comparison: Noisy visualization with NaN/Inf "
 "artifacts (Left) vs. Clean gravitational-wave signal (Right)"
 msgstr "数値安定化の比較：NaN/Inf アーティファクトを含むノイズの多い可視化（左）と、クリーンな重力波信号（右）"
 
-#: ../../explanation/numerical_stability.md:9 25b45a51d8544b098dceabbaeda17a9f
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: af9fea36fe02406aa695402a1450043e
 msgid "Item"
 msgstr "項目"
 
-#: ../../explanation/numerical_stability.md:9 2e6b7b83569c45d3a971376c9186cb20
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: df416b35aa3447528d5da4658cd9d720
 msgid "Standard path"
 msgstr "一般的な経路"
 
-#: ../../explanation/numerical_stability.md:9 1de6613c493a416eb784684544d61957
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: af789d394ec44ecf9a776e68a3963a17
 msgid "GWexpy path"
 msgstr "GWexpy の経路"
 
-#: ../../explanation/numerical_stability.md:9 87ec0227dd7847e7a183607b7840c7fe
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: d1e74c9f376c488bbf0ef1c2431fe2f8
 msgid "**Zero Values**"
 msgstr "**ゼロ値の扱い**"
 
-#: ../../explanation/numerical_stability.md:9 21d8a0042b0549dcb19c7c14842809a6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 59238dd4db88468f87bcecb9123c1444
 msgid "`log10(0)` produces `-inf`, causing blank holes in plots"
 msgstr "`log10(0)` により `-inf` が発生し、図が白く抜ける"
 
-#: ../../explanation/numerical_stability.md:9 05d300d187ae45a79bd724dce5ab78e4
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: e56c15cd4625427ebd312d37b80ca385
 msgid ""
 "**Safe Log** automatically sets an optimal floor based on the max value"
 msgstr "**Safe Log** により最大値から適切なフロアを自動設定"
 
-#: ../../explanation/numerical_stability.md:9 0757db92d0764359bb928fc0501c4d1b
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 64434c2b3bdf4e488bf607a6296f4e5f
 msgid "**Micro-signals**"
 msgstr "**微小信号**"
 
-#: ../../explanation/numerical_stability.md:9 95db2f0a7faf4121943c407b81e15e62
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: f4243bb3969a4ed6b89fdb04439eebd6
 msgid "Rounded to zero by fixed `eps=1e-12`, causing signal loss"
 msgstr "固定 `eps=1e-12` 等で丸められ、信号消失"
 
-#: ../../explanation/numerical_stability.md:9 f370732a0f1b4c8abc6d692964d82243
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 63491605a2f44d0f92704f2f6b4bd670
 msgid "**Adaptive Whitening** (`eps=\"auto\"`) maintains signal sensitivity"
 msgstr "**適応ホワイトニング** (`eps=\"auto\"`) で信号感度を維持"
 
-#: ../../explanation/numerical_stability.md:9 6ae9c82d475c493082c205dceac533ab
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 89a59606375e471d84056967e939cd10
 msgid "**Failures**"
 msgstr "**計算不能点**"
 
-#: ../../explanation/numerical_stability.md:9 d3a627998ceb4c3fba37a0e31a9c7218
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 4a3253b5f6374d968088d240c21e65b0
 msgid "`NaN` propagates, making the entire dataset uncomputable"
 msgstr "`NaN` が伝播し、全領域が計算不能になる"
 
-#: ../../explanation/numerical_stability.md:9 bb5e0e9274224aa2ab06148035ba23ee
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: f68d282251f34b8e8a6bfffce414d9ec
 msgid "Pre/Post-computation validation protects data integrity"
 msgstr "演算前後のバリデーションにより属性を保護"
 
-#: ../../explanation/numerical_stability.md:42
-#: 6d2abef2b732431ea81812a784bbea9a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:42
+#: 7788b8cc0d1d4bb18057bd74d5ef4074
 msgid "Core Stabilization Methods and APIs"
 msgstr "主な安定化手法と API"
 
-#: ../../explanation/numerical_stability.md:9 3f0b2ed9497848d8a5ece05bbfe01f61
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 38feb0a640974d12af8faf88eeeb9492
 msgid "Method"
 msgstr "メソッド"
 
-#: ../../explanation/numerical_stability.md:9 7ab08015a3984ec6a4d89b6957dcf3c6
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 63c755d850a64b5fb49848e3cc189c9d
 msgid "Target API"
 msgstr "対象 API"
 
-#: ../../explanation/numerical_stability.md:9 d8b6a1791bb14aa8a5801eb13ed2ca6d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 0a440d0e3754461c92bc79e21aeaa0df
 msgid "Issues Resolved"
 msgstr "解決する問題"
 
-#: ../../explanation/numerical_stability.md:9 96a1a8e041104f9481436281a03462bd
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 3afa1b4bb8564b2e926bd1c0889f1d11
 msgid "Configuration Hint"
 msgstr "設定のヒント"
 
-#: ../../explanation/numerical_stability.md:9 b88edc6b43584f9dbf96b96019dd53c5
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: e992ac71a0dd4c5c8d0edb29b0401c1d
 msgid "**Adaptive Whitening**"
 msgstr "**適応ホワイトニング**"
 
-#: ../../explanation/numerical_stability.md:9 bf5bb24fa1ac45ad8950702b4faff8db
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 199437e852b346eb9cd93e13d5567f57
 msgid "`.whiten()`"
 msgstr ""
 
-#: ../../explanation/numerical_stability.md:9 27767873eecf418d89e808cfa98de420
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: d2bc141ab6104ace880aea8b19fe5f10
 msgid "Zero-division / Signal loss"
 msgstr "ゼロ除算・信号埋没"
 
-#: ../../explanation/numerical_stability.md:9 e5cff828a9044f9a905f76e51b590f32
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: e36bfe303a6544e397162c745b1bc9fe
 msgid "`eps=\"auto\"` is recommended"
 msgstr "デフォルトの `eps=\"auto\"` を推奨"
 
-#: ../../explanation/numerical_stability.md:9 24a5ba2acea8470fb4087f2d888b259a
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 8eb90a2785c145e39cd88d812a7458e7
 msgid "**Safe Log**"
 msgstr ""
 
-#: ../../explanation/numerical_stability.md:9 00d541eb707143598e4a77c97081e6ba
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: e89532ff4a184c6b8f85fa846657b424
 msgid "`.plot()`, `.spectrogram()`"
 msgstr ""
 
-#: ../../explanation/numerical_stability.md:9 c3c421b5eba14d4aaa90383274fc8035
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 8018c114af744e9085fba5731998b5d9
 msgid "`-inf` holes in plots"
 msgstr "`-inf` によるプロットの穴"
 
-#: ../../explanation/numerical_stability.md:9 1026260cb6194f9db2dffe6fe9e1d5c9
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 6994d0170982434aad0aba27c484616e
 msgid "Adjustable via `dynamic_range`"
 msgstr "`dynamic_range=200` 等で調整可能"
 
-#: ../../explanation/numerical_stability.md:9 55efd9799fcb45aea7dc16d993695d64
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: f89c4d888c284884ba04b8c8785a42ce
 msgid "**Internal Standardization**"
 msgstr "**内部標準化 (ICA)**"
 
-#: ../../explanation/numerical_stability.md:9 5ecf9107896e406b834efe1ba67563df
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 0dcec817458f48d1a4f9700c56594182
 msgid "`ica_fit()`"
 msgstr ""
 
-#: ../../explanation/numerical_stability.md:9 6658549fc1404720988de7bf18a0704c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 22d7530320c340c49d5873a407ef33bc
 msgid "Non-convergence"
 msgstr "振幅依存による不収束"
 
-#: ../../explanation/numerical_stability.md:9 67fa76f630884f159d88a17f66017b92
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: bd68f4d46d9249a98dbec01def97a357
 msgid "Works regardless of input amplitude"
 msgstr "入力振幅を気にせず実行可能"
 
-#: ../../explanation/numerical_stability.md:9 d0837897d1e5446cbc0bdbeb006ad73e
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: d01b316aad3b405abaf432cc352daea2
 msgid "**Relative Tolerance**"
 msgstr "**相対許容誤差**"
 
-#: ../../explanation/numerical_stability.md:9 45dae00ff5394150aed601e023cbec72
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: 1069eb07ecc6427f9bb00f29a20ef667
 msgid "Various"
 msgstr "各種数値計算"
 
-#: ../../explanation/numerical_stability.md:9 5665010950b741588f484d940ef4ab75
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: ce51c6982c46477b82a70bc902c41032
 msgid "Early termination"
 msgstr "スケール違いによる早期終了"
 
-#: ../../explanation/numerical_stability.md:9 172430b052f24613997a829a0d2d2697
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:9
+#: f2a4adbcd85743119d8155951abcd8d4
 msgid "Auto-scales `tol` based on variance"
 msgstr "データの分散に基づき `tol` を自動計算"
 
-#: ../../explanation/numerical_stability.md:54
-#: 578fd3f2f9e746478b75fe997de43589
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:54
+#: f3f601e1157c407dbdb9ede49ff42255
 msgid "Detailed Explanations and Examples"
 msgstr "各機能の解説とコード例"
 
-#: ../../explanation/numerical_stability.md:56
-#: 9203be3a9f144014ad54d0a055337b3d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:56
+#: 270098be59d043ceb229b41668e7311e
 msgid "1. Adaptive Whitening"
 msgstr "1. 適応的ホワイトニング"
 
-#: ../../explanation/numerical_stability.md:58
-#: e07c5e0b1efb4ce8990f97ccf018ec87
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:58
+#: 7df2e9cf5f934f8d9c1cadf5c41fca8d
 msgid ""
 "**Goal:** Avoid signal loss caused by a fixed `eps`. **Input:** A "
 "`TimeSeries` containing very small amplitudes. **Output:** A whitened series"
@@ -277,8 +311,8 @@ msgstr ""
 "**目的:** 固定 `eps` による信号消失を避ける。 **入力:** 極小信号を含む `TimeSeries`。 **出力:** "
 "自動スケーリングされたホワイトニング結果。"
 
-#: ../../explanation/numerical_stability.md:62
-#: 6e001a95b9824addbd72e1d2d2a5b1e2
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:62
+#: 20c089cdd0b34dc7918142093ddca9c1
 msgid ""
 "Standard whitening often uses a fixed normalization parameter (`eps`) to "
 "prevent division by zero. If this value is too large, micro-signals are "
@@ -286,31 +320,36 @@ msgid ""
 msgstr ""
 "標準的なホワイトニングは、ゼロ除算を防ぐために固定の正規化パラメータ（`eps`）を使用しますが、これが大きすぎると微小な信号が埋もれます。"
 
-#: ../../explanation/numerical_stability.md:64
-#: f3739cdfe04644ba8da6140c81a3289c
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:64
+#: 2fb5c636f0b246b4960ad7e0a4c882d9
 msgid "❌ Bad Example: Fixed eps causing signal loss"
 msgstr "❌ 悪い例: 固定 eps による信号消失"
 
-#: ../../explanation/numerical_stability.md:70
-#: 509b0426f4264759a5f42f17c8979f82
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:70
+#: f5cbb02abdeb4d40a1d13be5b97c848e
 msgid "✅ Good Example: GWexpy's `eps=\"auto\"`"
 msgstr "✅ 良い例: GWexpy の `eps=\"auto\"`"
 
-#: ../../explanation/numerical_stability.md:71
-#: 3501e0edac5f4345a96ca1ae897ed0c1
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:71
+#: adbe5f82e14f40de9f50a667ecf73e78
 msgid ""
 "`gwexpy` dynamically scales `eps` relative to the data range and uses a "
-"`SAFE_FLOOR` (1e-50) for singularities."
+"`SAFE_FLOOR` (1e-50) for singularities. The adaptive `eps` is available on "
+"the channel-whitening entry points: `TimeSeriesMatrix.whiten_channels()`, "
+"the functional `whiten_matrix()`, and "
+"`gwexpy.signal.preprocessing.whiten()`."
 msgstr ""
-"`gwexpy` はデータのスケールに合わせて `eps` を相対的に調整し、かつ `SAFE_FLOOR` (1e-50) で特異点を防ぎます。"
+"`gwexpy` は `eps` をデータのレンジに応じて動的にスケーリングし、特異点には `SAFE_FLOOR`（1e-50）を使用します。適応的な"
+" `eps` は、チャンネル白色化のエントリポイントである `TimeSeriesMatrix.whiten_channels()`、関数版の "
+"`whiten_matrix()`、および `gwexpy.signal.preprocessing.whiten()` で利用できます。"
 
-#: ../../explanation/numerical_stability.md:81
-#: baab5dee76e04e2d865a800e6fe059c2
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:81
+#: b646774c72b648b8875f459f01f13067
 msgid "2. Safe Logarithmic Scaling (Safe Log)"
 msgstr "2. 安全な対数スケーリング (Safe Log)"
 
-#: ../../explanation/numerical_stability.md:83
-#: b18e5cf92eca4425b1be53f4fb95dd71
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:83
+#: bf4eedc7e1404f89a0218dc16af5c24e
 msgid ""
 "**Goal:** Prevent `-inf` values and broken plots when zeros are present. "
 "**Input:** ASD/PSD-like data with zeros or very quiet regions. **Output:** A"
@@ -319,81 +358,81 @@ msgstr ""
 "**目的:** ゼロが存在する場合の `-inf` 値と描画破綻を防ぐ。 **入力:** ゼロや静穏区間を含む ASD/PSD 系データ。 "
 "**出力:** 動的フロア付きの安定した可視化。"
 
-#: ../../explanation/numerical_stability.md:87
-#: 2ddd3e48175c48c88f669d5f80137c38
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:87
+#: 10ebb94bf2f44f959bdb468bed6abd61
 msgid ""
 "Prevents `-inf` values when visualizing spectrograms or PSDs containing "
 "zeros or quiet regions."
 msgstr "スペクトログラムや、ゼロ・静穏区間を含む PSD を可視化する際の `-inf` の発生を防ぎます。"
 
-#: ../../explanation/numerical_stability.md:89
-#: 8f7f7cb84c4c4ab4bda0127bfb9dbc10
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:89
+#: d044a52f22124e26b5524ca6a3217316
 msgid "❌ Bad Example: Numerical errors via manual conversion"
 msgstr "❌ 悪い例: 手動変換による数値エラー"
 
-#: ../../explanation/numerical_stability.md:94
-#: 7240c76021764fc8afab35d2e2155313
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:94
+#: 68d2d8733ee043af81d1b058fe7ad0a7
 msgid "✅ Good Example: Automatic dynamic floor"
 msgstr "✅ 良い例: 自動的な動的フロア適用"
 
-#: ../../explanation/numerical_stability.md:95
-#: a704eedf4af84ab49efb295933761f5d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:95
+#: 2644117468bf4f2dbcfe2f521582a2f9
 msgid ""
 "`gwexpy` calculates a safe floor based on the maximum value in the data."
 msgstr "`gwexpy` では、データの最大値から逆算した安全なフロアを自動適用します。"
 
-#: ../../explanation/numerical_stability.md:105
-#: 4a2945c342104600b4dabd42944ab720
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:105
+#: e2f09e8bbdf14013abe881b1b7a5f420
 msgid "Recommendations for Users"
 msgstr "ユーザーへの推奨事項"
 
-#: ../../explanation/numerical_stability.md:107
-#: 698b24cc3f0543e8b1dfff51316b123d
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:107
+#: 74f9b0ffb5a84354ba0bc2f21c265bba
 msgid ""
 "**Avoid Manual Offsets**: Do not add arbitrary small values like `data + "
 "1e-20` before plotting. `gwexpy` handles this internally."
 msgstr ""
 "**手動オフセットの回避**: プロットの前に `data + 1e-20` のような恣意的な値を足す必要はありません。内部で適切に処理されます。"
 
-#: ../../explanation/numerical_stability.md:108
-#: d60b87ea15cf4100b7b924f26ca1b8af
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:108
+#: 8a53bf176ab04017a36b21c41fb412dc
 msgid ""
 "**Trust the Defaults**: Default parameters for `whiten()` and `ica_fit()` "
 "are tuned for numerical safety."
 msgstr ""
 "**デフォルトを信頼する**: `whiten()` や `ica_fit()` のデフォルト値は、数値的な安全性を最優先に調整されています。"
 
-#: ../../explanation/numerical_stability.md:109
-#: 2bdde0ea00cd429386235df3ac5f2bfe
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:109
+#: 05add436b5f84ee3a056d406ab0035fb
 msgid ""
 "**Check Warnings**: `gwexpy` issues informative warnings with suggested "
 "fixes for truly unstable operations."
 msgstr "**警告を確認する**: 真に不安定な操作（全区間ゼロのデータのホワイトニング等）に対しては、解決策を含む警告が出力されます。"
 
-#: ../../explanation/numerical_stability.md:111
-#: 1708ca51207f4e80a1ae4be3450cc725
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:111
+#: f71a13fb54c74c56800cbfd0bd5113cc
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../explanation/numerical_stability.md:113
-#: dd3b26ebb2d3486c88ef34c5598f2f88
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:113
+#: b2ae2554f5c64dc293c7f44ebd2e7c9c
 msgid "[Signal Processing API Reference](../reference/api/signal.rst)"
 msgstr "[信号処理 API リファレンス](../reference/api/signal.rst)"
 
-#: ../../explanation/numerical_stability.md:114
-#: d701ba9c3b9b411dbe0dc1f4bbd46271
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:114
+#: fb681487e5314257bc3bdd0f76cc1180
 msgid "[Validated Algorithms](validated_algorithms.md)"
 msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
 
-#: ../../explanation/numerical_stability.md:115
-#: 024a2adc279b41aabc268846399720c3
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:115
+#: 3c409fbcbc52421c874ac1fd01a53084
 msgid ""
 "[Glossary](../reference/index.md) — Definitions for `NaN/Inf propagation` "
 "and more"
 msgstr "[用語集](../reference/index.md) — `NaN/Inf propagation` 等の用語定義"
 
-#: ../../explanation/numerical_stability.md:116
-#: b2f2dc37a9e44e0aa11ac882ec32a2dc
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/numerical_stability.md:116
+#: 538e4c35bde841b0ac7db8f00f4acc5e
 msgid ""
 "[Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared "
 "FFT and numerical assumptions across the docs"
