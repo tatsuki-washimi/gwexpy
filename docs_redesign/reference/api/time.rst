@@ -2,6 +2,7 @@ Time (gwexpy.time)
 ==================
 
 .. automodule:: gwexpy.time
+   :no-index:
 
 .. currentmodule:: gwexpy.time
 

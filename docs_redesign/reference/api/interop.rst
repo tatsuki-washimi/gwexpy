@@ -2,6 +2,7 @@ Interoperability (gwexpy.interop)
 =================================
 
 .. automodule:: gwexpy.interop
+   :no-index:
 
 Standard Formats
 ----------------

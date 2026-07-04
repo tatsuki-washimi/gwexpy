@@ -81,3 +81,4 @@ Module Contents
    :undoc-members:
    :show-inheritance:
    :exclude-members: SegmentTable, RowProxy
+   :no-index:

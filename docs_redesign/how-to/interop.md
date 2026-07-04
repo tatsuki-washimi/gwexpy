@@ -108,13 +108,13 @@ Use it when the question is “what storage representation do I bridge to?”
 
 | Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
-| [HDF5](https://www.hdfgroup.org/solutions/hdf5/) | `to_hdf5()`, `from_hdf5()` | Public | object-level conversion | [API](../reference/api/gwexpy.interop.hdf5_.md) |
-| HDF5 FrequencySeries | `to_hdf5_frequencyseries()`, `from_hdf5_frequencyseries()` | Public | FrequencySeries HDF5 helpers | [API](../reference/api/gwexpy.interop.frequency.md) |
-| JSON | `to_json()`, `from_json()` | Public | JSON string conversion | [API](../reference/api/gwexpy.interop.json_.md) |
+| [HDF5](https://www.hdfgroup.org/solutions/hdf5/) | `to_hdf5()`, `from_hdf5()` | Public | object-level conversion | [API](../reference/api/gwexpy.interop.hdf5_) |
+| HDF5 FrequencySeries | `to_hdf5_frequencyseries()`, `from_hdf5_frequencyseries()` | Public | FrequencySeries HDF5 helpers | [API](../reference/api/gwexpy.interop.frequency) |
+| JSON | `to_json()`, `from_json()` | Public | JSON string conversion | [API](../reference/api/gwexpy.interop.json_) |
 | Python dict | `to_dict()`, `from_dict()` | Public | dict conversion | — |
-| [SQLite](https://www.sqlite.org/index.html) | `to_sqlite()`, `from_sqlite()` | Public | object-level bridge | [API](../reference/api/gwexpy.interop.sqlite_.md) |
-| [Zarr](https://zarr.readthedocs.io/en/stable/) | `to_zarr()`, `from_zarr()` | Public | array/store bridge | [API](../reference/api/gwexpy.interop.zarr_.md) |
-| [NetCDF4](https://unidata.github.io/netcdf4-python/) | `to_netcdf4()`, `from_netcdf4()` | Public | object-level bridge | [API](../reference/api/gwexpy.interop.netcdf4_.md) |
+| [SQLite](https://www.sqlite.org/index.html) | `to_sqlite()`, `from_sqlite()` | Public | object-level bridge | [API](../reference/api/gwexpy.interop.sqlite_) |
+| [Zarr](https://zarr.readthedocs.io/en/stable/) | `to_zarr()`, `from_zarr()` | Public | array/store bridge | [API](../reference/api/gwexpy.interop.zarr_) |
+| [NetCDF4](https://unidata.github.io/netcdf4-python/) | `to_netcdf4()`, `from_netcdf4()` | Public | object-level bridge | [API](../reference/api/gwexpy.interop.netcdf4_) |
 
 (interop-en-analysis-conversion)=
 ## B. Analysis Library and Object Conversion
@@ -129,14 +129,14 @@ Use it when the question is “which analysis-library object do I bridge to?”
 | Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
 | NumPy | no dedicated `to_*()` / `from_*()` API | Implemented as infrastructure | widely used as the internal array basis | — |
-| [pandas](https://pandas.pydata.org/) | `to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, `from_pandas_dataframe()` | Public | Series / DataFrame | [API](../reference/api/gwexpy.interop.pandas_.md) |
-| pandas FrequencySeries | `to_pandas_frequencyseries()`, `from_pandas_frequencyseries()` | Public | FrequencySeries ⇔ pandas.Series | [API](../reference/api/gwexpy.interop.frequency.md) |
-| [polars](https://pola.rs/) | `to_polars_series()`, `from_polars_series()`, `to_polars_dataframe()`, `from_polars_dataframe()`, `to_polars_frequencyseries()`, `to_polars_dict()`, `from_polars_dict()` | Public | Series / DataFrame / dict / FrequencySeries | [API](../reference/api/gwexpy.interop.polars_.md) |
-| [xarray](https://docs.xarray.dev/) | `to_xarray()`, `from_xarray()` | Public | DataArray / Dataset | [API](../reference/api/gwexpy.interop.xarray_.md) |
-| [xarray](https://docs.xarray.dev/) Field | `to_xarray_field()`, `from_xarray_field()` | Public | ScalarField / VectorField | [API](../reference/api/gwexpy.interop.xarray_.md) |
-| xarray FrequencySeries | `to_xarray_frequencyseries()`, `from_xarray_frequencyseries()` | Public | FrequencySeries ⇔ xarray.DataArray | [API](../reference/api/gwexpy.interop.frequency.md) |
-| [astropy](https://www.astropy.org/) | `to_astropy_timeseries()`, `from_astropy_timeseries()` | Public | `astropy.timeseries.TimeSeries` | [API](../reference/api/gwexpy.interop.astropy_.md) |
-| [dask](https://www.dask.org/) | `to_dask()`, `from_dask()` | Public | dask array bridge | [API](../reference/api/gwexpy.interop.dask_.md) |
+| [pandas](https://pandas.pydata.org/) | `to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, `from_pandas_dataframe()` | Public | Series / DataFrame | [API](../reference/api/gwexpy.interop.pandas_) |
+| pandas FrequencySeries | `to_pandas_frequencyseries()`, `from_pandas_frequencyseries()` | Public | FrequencySeries ⇔ pandas.Series | [API](../reference/api/gwexpy.interop.frequency) |
+| [polars](https://pola.rs/) | `to_polars_series()`, `from_polars_series()`, `to_polars_dataframe()`, `from_polars_dataframe()`, `to_polars_frequencyseries()`, `to_polars_dict()`, `from_polars_dict()` | Public | Series / DataFrame / dict / FrequencySeries | [API](../reference/api/gwexpy.interop.polars_) |
+| [xarray](https://docs.xarray.dev/) | `to_xarray()`, `from_xarray()` | Public | DataArray / Dataset | [API](../reference/api/gwexpy.interop.xarray_) |
+| [xarray](https://docs.xarray.dev/) Field | `to_xarray_field()`, `from_xarray_field()` | Public | ScalarField / VectorField | [API](../reference/api/gwexpy.interop.xarray_) |
+| xarray FrequencySeries | `to_xarray_frequencyseries()`, `from_xarray_frequencyseries()` | Public | FrequencySeries ⇔ xarray.DataArray | [API](../reference/api/gwexpy.interop.frequency) |
+| [astropy](https://www.astropy.org/) | `to_astropy_timeseries()`, `from_astropy_timeseries()` | Public | `astropy.timeseries.TimeSeries` | [API](../reference/api/gwexpy.interop.astropy_) |
+| [dask](https://www.dask.org/) | `to_dask()`, `from_dask()` | Public | dask array bridge | [API](../reference/api/gwexpy.interop.dask_) |
 
 (interop-en-ml-conversion)=
 ## C. Machine Learning, Acceleration, and Array Backends
@@ -150,11 +150,11 @@ Check whether only the array payload moves, or whether metadata can also be reco
 
 | Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
-| [PyTorch](https://pytorch.org/) | `to_torch()`, `from_torch()` | Public | tensor conversion | [API](../reference/api/gwexpy.interop.torch_.md) |
-| [PyTorch](https://pytorch.org/) Dataset | `TimeSeriesWindowDataset`, `to_torch_dataset()`, `to_torch_dataloader()` | Public | windowed dataset for training | [API](../reference/api/gwexpy.interop.torch_dataset.md) |
-| [TensorFlow](https://www.tensorflow.org/) | `to_tf()`, `from_tf()` | Public | tensor conversion | [API](../reference/api/gwexpy.interop.tensorflow_.md) |
-| [JAX](https://jax.readthedocs.io/en/latest/) | `to_jax()`, `from_jax()` | Public | JAX array conversion | [API](../reference/api/gwexpy.interop.jax_.md) |
-| [CuPy](https://cupy.dev/) | `to_cupy()`, `from_cupy()`, `is_cupy_available()` | Public | GPU array conversion | [API](../reference/api/gwexpy.interop.cupy_.md) |
+| [PyTorch](https://pytorch.org/) | `to_torch()`, `from_torch()` | Public | tensor conversion | [API](../reference/api/gwexpy.interop.torch_) |
+| [PyTorch](https://pytorch.org/) Dataset | `TimeSeriesWindowDataset`, `to_torch_dataset()`, `to_torch_dataloader()` | Public | windowed dataset for training | [API](../reference/api/gwexpy.interop.torch_dataset) |
+| [TensorFlow](https://www.tensorflow.org/) | `to_tf()`, `from_tf()` | Public | tensor conversion | [API](../reference/api/gwexpy.interop.tensorflow_) |
+| [JAX](https://jax.readthedocs.io/en/latest/) | `to_jax()`, `from_jax()` | Public | JAX array conversion | [API](../reference/api/gwexpy.interop.jax_) |
+| [CuPy](https://cupy.dev/) | `to_cupy()`, `from_cupy()`, `is_cupy_available()` | Public | GPU array conversion | [API](../reference/api/gwexpy.interop.cupy_) |
 
 (interop-en-domain-conversion)=
 ## D. Physics and Domain-Specific Libraries
@@ -168,41 +168,41 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 
 | Target | API / Entry | Status | Notes | Details |
 | --- | --- | --- | --- | --- |
-| [ROOT](https://root.cern/) | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | Implemented, some paths still in progress | `TH1 -> non-Histogram` is incomplete | [API](../reference/api/gwexpy.interop.root_.md) |
-| [ObsPy](https://docs.obspy.org/) | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | Public | seismic bridge | [API](../reference/api/gwexpy.interop.obspy_.md) |
-| [LALSuite](https://lscsoft.docs.ligo.org/lalsuite/) | `to_lal_timeseries()`, `from_lal_timeseries()`, `to_lal_frequencyseries()`, `from_lal_frequencyseries()` | Public | GW time / frequency series | [API](../reference/api/gwexpy.interop.lal_.md) |
-| [PyCBC](https://pycbc.org/) | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | Public | GW time / frequency series | [API](../reference/api/gwexpy.interop.pycbc_.md) |
-| [GWINC](https://git.ligo.org/gwinc/pygwinc) | `from_gwinc_budget()` | Public | budget import | [API](../reference/api/gwexpy.interop.gwinc_.md) |
-| [Finesse](https://finesse.ifosim.org/) | `from_finesse_frequency_response()`, `from_finesse_noise()` | Public | optics / response | [API](../reference/api/gwexpy.interop.finesse_.md) |
-| [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | Public | FRD / response. Requires the `control` extra, for example `pip install "gwexpy[control]"`. FRD conversion is available from `FrequencySeries` / `FrequencySeriesDict`; time-response import is available via `TimeSeries.from_control()` / `TimeSeriesDict.from_control()`. | [API](../reference/api/gwexpy.interop.control_.md) |
-| [SimPEG](https://simpeg.xyz/) | `to_simpeg()`, `from_simpeg()` | Public | geophysics | [API](../reference/api/gwexpy.interop.simpeg_.md) |
-| [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | Public | magnetotellurics | [API](../reference/api/gwexpy.interop.mt_.md) |
+| [ROOT](https://root.cern/) | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | Implemented, some paths still in progress | `TH1 -> non-Histogram` is incomplete | [API](../reference/api/gwexpy.interop.root_) |
+| [ObsPy](https://docs.obspy.org/) | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | Public | seismic bridge | [API](../reference/api/gwexpy.interop.obspy_) |
+| [LALSuite](https://lscsoft.docs.ligo.org/lalsuite/) | `to_lal_timeseries()`, `from_lal_timeseries()`, `to_lal_frequencyseries()`, `from_lal_frequencyseries()` | Public | GW time / frequency series | [API](../reference/api/gwexpy.interop.lal_) |
+| [PyCBC](https://pycbc.org/) | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | Public | GW time / frequency series | [API](../reference/api/gwexpy.interop.pycbc_) |
+| [GWINC](https://git.ligo.org/gwinc/pygwinc) | `from_gwinc_budget()` | Public | budget import | [API](../reference/api/gwexpy.interop.gwinc_) |
+| [Finesse](https://finesse.ifosim.org/) | `from_finesse_frequency_response()`, `from_finesse_noise()` | Public | optics / response | [API](../reference/api/gwexpy.interop.finesse_) |
+| [python-control](https://python-control.readthedocs.io/en/latest/) | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | Public | FRD / response. Requires the `control` extra, for example `pip install "gwexpy[control]"`. FRD conversion is available from `FrequencySeries` / `FrequencySeriesDict`; time-response import is available via `TimeSeries.from_control()` / `TimeSeriesDict.from_control()`. | [API](../reference/api/gwexpy.interop.control_) |
+| [SimPEG](https://simpeg.xyz/) | `to_simpeg()`, `from_simpeg()` | Public | geophysics | [API](../reference/api/gwexpy.interop.simpeg_) |
+| [MTH5](https://mth5.readthedocs.io/en/latest/) | `to_mth5()`, `from_mth5()` | Public | magnetotellurics | [API](../reference/api/gwexpy.interop.mt_) |
 | MTpy | dedicated `to_*()` / `from_*()` API still in progress | In progress | MTH5-adjacent organization is incomplete | — |
-| [MNE-Python](https://mne.tools/stable/index.html) | `to_mne()`, `from_mne()`, `to_mne_rawarray()`, `from_mne_raw()` | Public | EEG / biosignal | [API](../reference/api/gwexpy.interop.mne_.md) |
-| [Neo](https://neo.readthedocs.io/en/latest/) | `to_neo()`, `from_neo()` | Public | electrophysiology | [API](../reference/api/gwexpy.interop.neo_.md) |
+| [MNE-Python](https://mne.tools/stable/index.html) | `to_mne()`, `from_mne()`, `to_mne_rawarray()`, `from_mne_raw()` | Public | EEG / biosignal | [API](../reference/api/gwexpy.interop.mne_) |
+| [Neo](https://neo.readthedocs.io/en/latest/) | `to_neo()`, `from_neo()` | Public | electrophysiology | [API](../reference/api/gwexpy.interop.neo_) |
 | Elephant | dedicated `to_*()` / `from_*()` API still in progress | In progress | organization with `Neo` and `quantities` is incomplete | — |
-| [quantities](https://python-quantities.readthedocs.io/en/latest/) | `to_quantity()`, `from_quantity()` | Public | quantity bridge | [API](../reference/api/gwexpy.interop.quantities_.md) |
-| [pyroomacoustics](https://pyroomacoustics.readthedocs.io/en/stable/) | `to_pyroomacoustics_source()`, `to_pyroomacoustics_stft()`, `from_pyroomacoustics_rir()`, `from_pyroomacoustics_mic_signals()`, `from_pyroomacoustics_source()`, `from_pyroomacoustics_stft()`, `from_pyroomacoustics_field()` | Public | room acoustics | [API](../reference/api/gwexpy.interop.pyroomacoustics_.md) |
-| [pydub](https://www.pydub.com/) | `to_pydub()`, `from_pydub()` | Public | audio object bridge | [API](../reference/api/gwexpy.interop.pydub_.md) |
-| [librosa](https://librosa.org/doc/latest/index.html) | `to_librosa()` | Public | mainly export | [API](../reference/api/gwexpy.interop.pydub_.md) |
-| [specutils](https://specutils.readthedocs.io/en/stable/) | `to_specutils()`, `from_specutils()` | Public | astronomy spectra | [API](../reference/api/gwexpy.interop.specutils_.md) |
-| [pyspeckit](https://pyspeckit.readthedocs.io/en/latest/) | `to_pyspeckit()`, `from_pyspeckit()` | Public | spectral analysis | [API](../reference/api/gwexpy.interop.pyspeckit_.md) |
-| PySpice | `from_pyspice_transient()`, `from_pyspice_ac()`, `from_pyspice_noise()`, `from_pyspice_distortion()` | Public | mainly import | [API](../reference/api/gwexpy.interop.pyspice_.md) |
-| [scikit-rf](https://scikit-rf.readthedocs.io/en/latest/) | `to_skrf_network()`, `from_skrf_network()`, `from_skrf_impulse_response()`, `from_skrf_step_response()` | Public | RF network analysis | [API](../reference/api/gwexpy.interop.skrf_.md) |
-| [pyOMA](https://py-oma.readthedocs.io/en/latest/) | `from_pyoma_results()` | Public | mainly import | [API](../reference/api/gwexpy.interop.pyoma_.md) |
-| multitaper | `from_mtspec()` | Public | mainly import | [API](../reference/api/gwexpy.interop.multitaper_.md) |
-| mtspec | `from_mtspec_array()` | Public | mainly import | [API](../reference/api/gwexpy.interop.multitaper_.md) |
-| pySDy | `from_uff_dataset55()`, `from_uff_dataset58()` | Public | mainly import | [API](../reference/api/gwexpy.interop.sdypy_.md) |
-| SDynPy | `from_sdynpy_frf()`, `from_sdynpy_shape()`, `from_sdynpy_timehistory()` | Public | mainly import | [API](../reference/api/gwexpy.interop.sdynpy_.md) |
-| Meep | `from_meep_hdf5()` | Public | mainly import | [API](../reference/api/gwexpy.interop.meep_.md) |
-| openEMS | `from_openems_hdf5()`, `DUMP_TYPE_MAP` | Public | mainly import | [API](../reference/api/gwexpy.interop.openems_.md) |
-| emg3d | `to_emg3d_field()`, `from_emg3d_field()`, `from_emg3d_h5()` | Public | EM field import/export | [API](../reference/api/gwexpy.interop.emg3d_.md) |
-| meshio | `from_meshio()`, `from_fenics_xdmf()`, `from_fenics_vtk()` | Public | mainly import | [API](../reference/api/gwexpy.interop.meshio_.md) |
-| MetPy | `from_metpy_dataarray()` | Public | mainly import | [API](../reference/api/gwexpy.interop.metpy_.md) |
-| WRF | `from_wrf_variable()` | Public | mainly import | [API](../reference/api/gwexpy.interop.wrf_.md) |
-| Harmonica | `from_harmonica_grid()` | Public | mainly import | [API](../reference/api/gwexpy.interop.harmonica_.md) |
-| Exudyn | `from_exudyn_sensor()` | Public | mainly import | [API](../reference/api/gwexpy.interop.exudyn_.md) |
-| OpenSees | `from_opensees_recorder()` | Public | mainly import | [API](../reference/api/gwexpy.interop.opensees_.md) |
+| [quantities](https://python-quantities.readthedocs.io/en/latest/) | `to_quantity()`, `from_quantity()` | Public | quantity bridge | [API](../reference/api/gwexpy.interop.quantities_) |
+| [pyroomacoustics](https://pyroomacoustics.readthedocs.io/en/stable/) | `to_pyroomacoustics_source()`, `to_pyroomacoustics_stft()`, `from_pyroomacoustics_rir()`, `from_pyroomacoustics_mic_signals()`, `from_pyroomacoustics_source()`, `from_pyroomacoustics_stft()`, `from_pyroomacoustics_field()` | Public | room acoustics | [API](../reference/api/gwexpy.interop.pyroomacoustics_) |
+| [pydub](https://www.pydub.com/) | `to_pydub()`, `from_pydub()` | Public | audio object bridge | [API](../reference/api/gwexpy.interop.pydub_) |
+| [librosa](https://librosa.org/doc/latest/index.html) | `to_librosa()` | Public | mainly export | [API](../reference/api/gwexpy.interop.pydub_) |
+| [specutils](https://specutils.readthedocs.io/en/stable/) | `to_specutils()`, `from_specutils()` | Public | astronomy spectra | [API](../reference/api/gwexpy.interop.specutils_) |
+| [pyspeckit](https://pyspeckit.readthedocs.io/en/latest/) | `to_pyspeckit()`, `from_pyspeckit()` | Public | spectral analysis | [API](../reference/api/gwexpy.interop.pyspeckit_) |
+| PySpice | `from_pyspice_transient()`, `from_pyspice_ac()`, `from_pyspice_noise()`, `from_pyspice_distortion()` | Public | mainly import | [API](../reference/api/gwexpy.interop.pyspice_) |
+| [scikit-rf](https://scikit-rf.readthedocs.io/en/latest/) | `to_skrf_network()`, `from_skrf_network()`, `from_skrf_impulse_response()`, `from_skrf_step_response()` | Public | RF network analysis | [API](../reference/api/gwexpy.interop.skrf_) |
+| [pyOMA](https://py-oma.readthedocs.io/en/latest/) | `from_pyoma_results()` | Public | mainly import | [API](../reference/api/gwexpy.interop.pyoma_) |
+| multitaper | `from_mtspec()` | Public | mainly import | [API](../reference/api/gwexpy.interop.multitaper_) |
+| mtspec | `from_mtspec_array()` | Public | mainly import | [API](../reference/api/gwexpy.interop.multitaper_) |
+| pySDy | `from_uff_dataset55()`, `from_uff_dataset58()` | Public | mainly import | [API](../reference/api/gwexpy.interop.sdypy_) |
+| SDynPy | `from_sdynpy_frf()`, `from_sdynpy_shape()`, `from_sdynpy_timehistory()` | Public | mainly import | [API](../reference/api/gwexpy.interop.sdynpy_) |
+| Meep | `from_meep_hdf5()` | Public | mainly import | [API](../reference/api/gwexpy.interop.meep_) |
+| openEMS | `from_openems_hdf5()`, `DUMP_TYPE_MAP` | Public | mainly import | [API](../reference/api/gwexpy.interop.openems_) |
+| emg3d | `to_emg3d_field()`, `from_emg3d_field()`, `from_emg3d_h5()` | Public | EM field import/export | [API](../reference/api/gwexpy.interop.emg3d_) |
+| meshio | `from_meshio()`, `from_fenics_xdmf()`, `from_fenics_vtk()` | Public | mainly import | [API](../reference/api/gwexpy.interop.meshio_) |
+| MetPy | `from_metpy_dataarray()` | Public | mainly import | [API](../reference/api/gwexpy.interop.metpy_) |
+| WRF | `from_wrf_variable()` | Public | mainly import | [API](../reference/api/gwexpy.interop.wrf_) |
+| Harmonica | `from_harmonica_grid()` | Public | mainly import | [API](../reference/api/gwexpy.interop.harmonica_) |
+| Exudyn | `from_exudyn_sensor()` | Public | mainly import | [API](../reference/api/gwexpy.interop.exudyn_) |
+| OpenSees | `from_opensees_recorder()` | Public | mainly import | [API](../reference/api/gwexpy.interop.opensees_) |
 
 (interop-en-priorities)=
 ## What to Prioritize First

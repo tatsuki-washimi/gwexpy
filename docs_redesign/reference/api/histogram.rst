@@ -2,6 +2,7 @@ Histogram (gwexpy.histogram)
 ============================
 
 .. automodule:: gwexpy.histogram
+   :no-index:
 
 .. currentmodule:: gwexpy.histogram
 

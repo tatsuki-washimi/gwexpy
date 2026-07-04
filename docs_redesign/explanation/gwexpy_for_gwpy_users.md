@@ -286,7 +286,7 @@ This difference matters when:
 Related pages:
 
 - [Interop / Conversion Guide](../how-to/interop.md)
-- [python-control API Reference](../reference/api/gwexpy.interop.control_.md)
+- [python-control API Reference](../reference/api/gwexpy.interop.control_)
 - [Active Damping Tutorial](../tutorials/index.md)
 - [Frequency Series Tutorial](../tutorials/index.md)
 

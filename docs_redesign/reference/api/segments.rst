@@ -17,3 +17,4 @@ Classes and utilities for managing time segments (data quality flags, active/ina
    :members:
    :undoc-members:
    :show-inheritance:
+   :no-index:

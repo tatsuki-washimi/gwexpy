@@ -93,9 +93,9 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 source_suffix = {
+    ".rst": "restructuredtext",
     ".md": "myst-nb",
     ".ipynb": "myst-nb",
-    ".rst": "restructuredtext",
 }
 
 intersphinx_mapping = {
