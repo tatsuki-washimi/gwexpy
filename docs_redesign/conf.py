@@ -4,6 +4,15 @@
 # The real ``gwexpy`` package is installed in the build environment, so
 # autodoc/autosummary document the actual API directly (no demo stub).
 
+import os
+
+# Overridable at build time (e.g. preview builds under /preview-docs-redesign/,
+# or production under /docs/) since the language switcher computes counterpart-
+# language URLs from this value.
+SITE_BASEURL = os.environ.get(
+    "GWEXPY_DOCS_BASEURL", "https://tatsuki-washimi.github.io/gwexpy/"
+)
+
 # -- Project information -----------------------------------------------------
 project = "GWexpy"
 copyright = "2026, GWexpy Developers"
@@ -115,7 +124,7 @@ html_logo = "_static/branding/logo.svg"
 html_favicon = "_static/images/favicon.svg"
 html_title = "GWexpy"
 # Base URL lets the language switcher compute the counterpart-language page URL.
-html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/"
+html_baseurl = SITE_BASEURL
 
 html_theme_options = {
     # Top navbar layout (Diataxis sections live in the center). The logo alone
@@ -158,7 +167,7 @@ html_context = {
         ("ja", "日本語", "ja/"),
     ],
     # Base URL the switcher uses to build the counterpart-language page URL.
-    "lang_base": "https://tatsuki-washimi.github.io/gwexpy/",
+    "lang_base": SITE_BASEURL,
 }
 
 # Sidebar: keep the left sidebar clean (navigation only).

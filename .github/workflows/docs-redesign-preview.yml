@@ -1,0 +1,100 @@
+name: Docs Redesign Preview
+
+on:
+  push:
+    branches: [claude/docs-redesign-pydata]
+    paths:
+      - "docs_redesign/**"
+      - ".github/workflows/docs-redesign-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Shares the gh-pages-publish group with docs-pages.yml so a preview build and
+# a production deploy never push to the gh-pages branch at the same time.
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  publish-preview:
+    name: Publish docs_redesign preview to gh-pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+      MPLCONFIGDIR: /tmp/matplotlib
+      # docs_redesign/conf.py reads this to compute language-switcher URLs;
+      # points at the preview subpath, never at the production /docs/ path.
+      GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc fonts-noto-cjk
+
+      - name: Provision docs_redesign build environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . --no-deps
+          python -m pip install -r docs_redesign/requirements.txt
+
+      - name: Build EN HTML
+        working-directory: docs_redesign
+        run: |
+          sphinx-build -b html -d _build/doctrees_en . _build/html
+
+      - name: Build JA HTML
+        working-directory: docs_redesign
+        run: |
+          sphinx-build -b html -D language=ja -d _build/doctrees_ja . _build/html/ja
+
+      - name: Publish preview to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          publish_dir="${RUNNER_TEMP}/gwexpy-gh-pages"
+
+          git clone --branch gh-pages --depth 1 \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "${publish_dir}"
+
+          preview_dir="${publish_dir}/preview-docs-redesign"
+          mkdir -p "${preview_dir}"
+          rsync -a --delete "docs_redesign/_build/html/" "${preview_dir}/"
+
+          touch "${publish_dir}/.nojekyll"
+
+          cd "${publish_dir}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No gh-pages changes to publish"
+            exit 0
+          fi
+
+          git commit -m "deploy(preview): docs_redesign ${GITHUB_SHA}"
+          git push origin gh-pages

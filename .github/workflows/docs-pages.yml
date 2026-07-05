@@ -19,8 +19,10 @@ on:
 permissions:
   contents: write
 
+# Shared with docs-redesign-preview.yml so a preview build and a production
+# deploy never push to the gh-pages branch at the same time.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: gh-pages-publish
   cancel-in-progress: true
 
 env:
