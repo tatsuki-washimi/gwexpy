@@ -91,10 +91,9 @@ above.
 
 ## 2. Dependency Troubleshooting
 
-- If you see `No module named nds2`: install `python-nds2-client` in the active dedicated Conda environment.
-- If you see FrameLIB / `framecpp`-related errors: reinstall `python-framel` and `ldas-tools-framecpp` in the same environment.
-- If the environment has already been mixed with unrelated packages: recreating it with `conda create -n gwexpy python=3.11` is usually safer than trying to repair it in place.
-- If you installed from [Quickstart](quickstart.md) and later discover you need GW binary dependencies: return to [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended-gw-analysis) before adding more packages.
+For `No module named nds2`, FrameLIB / `framecpp` import errors, and mixed-environment repairs, see the [Troubleshooting guide](../how-to/troubleshooting.md#installation-issues) — it covers these cases in more depth.
+
+If you installed from [Quickstart](quickstart.md) and later discover you need GW binary dependencies, return to [Conda Environment (Recommended / GW Analysis)](#conda-environment-recommended-gw-analysis) before adding more packages.
 
 ---
 

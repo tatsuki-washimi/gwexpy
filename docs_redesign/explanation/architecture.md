@@ -37,7 +37,7 @@ API entry: [matrix API](../reference/api/matrix), [timeseries API](../reference/
 `ScalarField` adopts a 4D structure as its base unit: axis 0 is the **time axis** (or the **frequency axis** after `fft_time()`), and axes 1–3 are the **spatial axes** `x, y, z` (mapped to wavenumbers `kx, ky, kz` by `fft_space()`) — for example `(t, x, y, z)`, `(f, x, y, z)`, or `(f, kx, ky, kz)`.
 By **maintaining all 4 dimensions** during indexing operations, the package ensures that grid information and axis metadata remain perfectly synchronized with the data.
 
-API entry: [fields API](../reference/api/fields), [Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md)
+API entry: [fields API](../reference/api/fields), [Scalar Field Slicing Guide](../how-to/containers/scalarfield_slicing.md)
 
 (data-flow-diagram)=
 ## Data Flow Diagram
@@ -73,7 +73,7 @@ Reading notes:
 
 - [Physics Models and Analysis Theory](physics_models.md) — Mathematical context for the containers and transforms summarized here
 - [Validated Algorithms](validated_algorithms.md) — Audit-backed behavior for numerical paths referenced by this design guide
-- [Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md) — Why the Field API preserves 4D structure
+- [Scalar Field Slicing Guide](../how-to/containers/scalarfield_slicing.md) — Why the Field API preserves 4D structure
 - [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared time, FFT, and compatibility assumptions
 - [Matrix API](../reference/api/matrix) — Reference entry for container reshaping and matrix-style operations
 - [Fields API](../reference/api/fields) — Reference entry for field-aware transforms and slicing
@@ -82,5 +82,5 @@ Reading notes:
 ## Next to Read
 - [Physics Models and Analysis Theory](physics_models.md) — Detailed analysis theory and physics models (ICA/Bruco/MCMC)
 - [Validated Algorithms](validated_algorithms.md) — Validation reports for numerical algorithms
-- [Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md) — Details on 4D field operations
+- [Scalar Field Slicing Guide](../how-to/containers/scalarfield_slicing.md) — Details on 4D field operations
 - [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared FFT, GPS time, and compatibility assumptions

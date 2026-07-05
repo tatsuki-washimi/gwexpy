@@ -52,7 +52,7 @@ We recommend learning the primary containers in the following order:
 When you need a specific technique, see these how-to recipes:
 
 * **Multi-channel & Matrix Processing**: [TimeSeriesMatrix basics](matrix_timeseries.ipynb) / [Matrix containers](../how-to/containers/index.md)
-* **High-dimensional Data**: [Field API basics](../how-to/containers/field_scalar_intro.ipynb) / [ScalarField slicing guide](../how-to/scalarfield_slicing.md)
+* **High-dimensional Data**: [Field API basics](../how-to/containers/field_scalar_intro.ipynb) / [ScalarField slicing guide](../how-to/containers/scalarfield_slicing.md)
 * **Signal Processing**: [Fitting](intro_fitting.ipynb) / [HHT](../how-to/spectral/advanced_hht.ipynb) / [ARIMA](../how-to/fitting/advanced_arima.ipynb)
 
 ### 4. Practical Applications

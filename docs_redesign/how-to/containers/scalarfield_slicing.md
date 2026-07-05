@@ -29,7 +29,7 @@ A `ScalarField` represents a physical "field" over four axes: `(axis 0, x, y, z)
 (scalarfield-slicing-comparison-diagram)=
 ### NumPy vs GWexpy Slicing Behavior
 
-![4D Dimension Persistence comparison between NumPy and GWexpy](../_static/images/scalarfield_slicing_4d_persistence.png)
+![4D Dimension Persistence comparison between NumPy and GWexpy](../../_static/images/scalarfield_slicing_4d_persistence.png)
 
 | Operation Example | Result Shape (NumPy) | Result Shape (Field) | Physical Meaning |
 | :--- | :---: | :---: | :--- |
@@ -121,7 +121,7 @@ The `reshape(3, 1, 1, 1)` form means "these 3 values lie along axis 0 (the time/
 (scalarfield-slicing-next-to-read)=
 ## Next to Read
 
-- [ScalarField introduction tutorial](containers/field_scalar_intro)
-- [Field module API reference](../reference/api/fields)
-- [Numerical stability](../explanation/numerical_stability.md) - Precision management for 4D operations
-- [Architecture and Data Flow](../explanation/architecture.md) - Where the Field API fits in the broader design
+- [ScalarField introduction tutorial](field_scalar_intro)
+- [Field module API reference](../../reference/api/fields)
+- [Numerical stability](../../explanation/numerical_stability.md) - Precision management for 4D operations
+- [Architecture and Data Flow](../../explanation/architecture.md) - Where the Field API fits in the broader design

@@ -23,13 +23,6 @@ Supported file formats and direct `.read()` / `.write()` paths.
 Convert to and from external libraries with `to_*()` / `from_*()`.
 :::
 
-:::{grid-item-card} {octicon}`stack;1.5em;sd-mr-1` Slicing scalar fields
-:link: scalarfield_slicing
-:link-type: doc
-
-Work with 4D field containers and extract slices.
-:::
-
 :::{grid-item-card} {octicon}`clock;1.5em;sd-mr-1` Time & GPS utilities
 :link: time_utilities
 :link-type: doc
@@ -101,11 +94,18 @@ Resonance, feedback, discretization and plant modeling.
 Track contributions across auxiliary channels and fields.
 :::
 
-:::{grid-item-card} {octicon}`globe;1.5em;sd-mr-1` Visualization & interop
+:::{grid-item-card} {octicon}`table;1.5em;sd-mr-1` Segments & tables
+:link: segments/index
+:link-type: doc
+
+Build, visualize and analyze data-quality segments and tabular results.
+:::
+
+:::{grid-item-card} {octicon}`globe;1.5em;sd-mr-1` Visualization
 :link: viz/index
 :link-type: doc
 
-Map plotting and conversion to/from external libraries.
+Map plotting, plus a worked interop-conversion walkthrough.
 :::
 ::::
 
@@ -128,7 +128,6 @@ A gallery of complete, real-world analyses you can adapt.
 
 io_formats
 interop
-scalarfield_slicing
 time_utilities
 ```
 
