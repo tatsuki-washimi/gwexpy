@@ -6,11 +6,12 @@
 
 import os
 
-# Overridable at build time (e.g. preview builds under /preview-docs-redesign/,
-# or production under /docs/) since the language switcher computes counterpart-
-# language URLs from this value.
+# Overridable at build time (e.g. preview builds under /preview-docs-redesign/)
+# since the language switcher computes counterpart-language URLs from this
+# value. Default matches the confirmed production URL (Step F-2: keep the
+# existing /docs/ path rather than moving docs_redesign to the site root).
 SITE_BASEURL = os.environ.get(
-    "GWEXPY_DOCS_BASEURL", "https://tatsuki-washimi.github.io/gwexpy/"
+    "GWEXPY_DOCS_BASEURL", "https://tatsuki-washimi.github.io/gwexpy/docs/"
 )
 
 # -- Project information -----------------------------------------------------
