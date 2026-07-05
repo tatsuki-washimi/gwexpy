@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-05 11:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -20,12 +20,12 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: ../../how-to/control/advanced_control_basics.ipynb:10002
-#: 1bcbfa86447b492aaa9360f88c4dd60b
-msgid "Control Analysis: Resonance and Feedback Basics"
-msgstr "制御解析: 共振とフィードバックの基礎"
+#: 03ec3801127d4682aad37f9a5ac6ecd9
+msgid "Control Analysis: Resonance and Feedback"
+msgstr "制御解析: 共振とフィードバック"
 
 #: ../../how-to/control/advanced_control_basics.ipynb:20002
-#: d4dd455b53d4439496981b18b5a01b65
+#: e2cca86f003c495aa631edfe41219473
 msgid ""
 "This notebook turns the legacy control measurement tutorial into a public "
 "control-analysis entrypoint. The core question is how to recognize a "
@@ -35,7 +35,7 @@ msgstr ""
 "用に共振解析の入口として整理したものです。コントローラを設計する前に知りたいのは、**どこに共振があり、入力が本当に出力を説明しているか** です。"
 
 #: ../../how-to/control/advanced_control_basics.ipynb:20004
-#: d34fc6e4f3174a39b8fd68317e738a7d
+#: 56884d0422e34ad6922e27e112dc9311
 msgid ""
 "We use a broadband drive, a second-order plant, ASD, coherence, and a "
 "measured transfer function. Those are the measurements that tell you whether"
@@ -46,24 +46,24 @@ msgstr ""
 "次系のプラント、ASD、コヒーレンス、実測の伝達関数を用います。これらは、そのモードが実在するか、どの周波数にあるのか、入力が出力を本当に説明しているのかを教えてくれる測定量です。"
 
 #: ../../how-to/control/advanced_control_basics.ipynb:40002
-#: a8996fab7e534fb9872beb350374dfbd
+#: 89dd104a33624dc9bffa6e9d26b43787
 msgid "1. Inspect the time series"
 msgstr "1\\. 時間波形を見る"
 
 #: ../../how-to/control/advanced_control_basics.ipynb:40004
-#: 530d72e737724b79af1e1c6568f61ea8
+#: 09191a24b1194fa2b8a63ff18a88a2dc
 msgid ""
 "A short zoom shows that the output is not just delayed input: it rings "
 "because energy is temporarily stored in the resonant mode."
 msgstr "短時間のズームでは、出力が単なる遅れた入力ではなく、共振モードにエネルギーが一時的に蓄えられていることが見えます。"
 
 #: ../../how-to/control/advanced_control_basics.ipynb:60002
-#: 478c9898fe1a42b19f8765d6e2bee562
+#: 79121cdf2d1344fc9fe1cc6f9f61af5d
 msgid "2. ASD, coherence, and measured transfer function"
 msgstr "2\\. ASD・コヒーレンス・伝達関数"
 
 #: ../../how-to/control/advanced_control_basics.ipynb:60004
-#: 691375c76ff64ec29d5d8dc279102664
+#: 6176f640a03a4ba8a033bcf40136e8ef
 msgid ""
 "ASD shows where energy accumulates, coherence shows whether the drive really"
 " explains the response, and the transfer function combines both into the "

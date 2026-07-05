@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-05 11:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,27 +19,63 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/containers/index.md:1 e7686bd67ad7478d898504915935b522
+#: ../../how-to/containers/index.md:1 097ad8c2c8fd4c7aa451198dd5a28c61
 msgid "Containers & matrices"
 msgstr "コンテナと行列"
 
-#: ../../how-to/containers/index.md:3 fbc99e1636f2467ea97c6f1e91700bb7
+#: ../../how-to/containers/index.md:3 e43d7cee497f4a4bbe5b1331048cc0e7
 msgid ""
 "Work with the matrix and field containers that extend GWpy's series types."
 msgstr "GWpy の系列型を拡張する行列・場コンテナを扱います。"
 
-#: ../../how-to/containers/index.md:9 2bb7312622354d9dbf50834609fcf9c1
+#: ../../how-to/containers/index.md:9 0009cf7eea444b99a0795878a88d4f26
 msgid "FrequencySeriesMatrix: Matrix Basics"
 msgstr "FrequencySeriesMatrix: 行列処理の基本"
 
-#: ../../how-to/containers/index.md:15 4b817b5395e84ba68c2cd6fecaef2a27
+#: ../../how-to/containers/index.md:13 011e9c09697b4e74915185989a160c99
+msgid ""
+"A 3D container (row x col x freq) for batches of `FrequencySeries` with "
+"frequency-domain-aware indexing."
+msgstr ""
+"`FrequencySeries` をまとめて扱う3次元コンテナ（行 x 列 x 周波数）。周波数領域を意識したインデクシングに対応します。"
+
+#: ../../how-to/containers/index.md:16 cd381972b25d4988904c47d1eff4e7a9
 msgid "SpectrogramMatrix: Matrix Basics"
 msgstr "SpectrogramMatrix: 行列処理の基本"
 
-#: ../../how-to/containers/index.md:21 6bebf1b1a911479aa23f6633ff552ec3
+#: ../../how-to/containers/index.md:20 424d5e18b6694bca9d812194f1bead52
+msgid ""
+"Handle multiple `Spectrogram` objects as a single 3D (batch, time, "
+"frequency) container."
+msgstr "複数の `Spectrogram` オブジェクトを1つの3次元（バッチ、時刻、周波数）コンテナとして扱います。"
+
+#: ../../how-to/containers/index.md:23 f268c7f5f0904cd2af53543a09ca28a2
 msgid "Field API: ScalarField Basics"
 msgstr "Field API: ScalarField の基本"
 
-#: ../../how-to/containers/index.md:27 f365ae19bf7a4ac78f846adcc7b47a1b
+#: ../../how-to/containers/index.md:27 6d272fdbcca54006a03a4e9249e1ea73
+msgid ""
+"Basic usage of `ScalarField` for 4D (time + 3D space) data, including "
+"indexing and metadata handling."
+msgstr "時間＋3次元空間の4次元データを扱う `ScalarField` の基本的な使い方（インデクシングとメタデータの扱いを含む）。"
+
+#: ../../how-to/containers/index.md:30 c00b7af3de364846b880bb88880d0815
 msgid "Field API: Advanced Analysis Workflow"
 msgstr "Field API: 高度解析ワークフロー"
+
+#: ../../how-to/containers/index.md:34 c9ba82cc72fa48cd8b67dab6ad61aae8
+msgid ""
+"A full analysis workflow built on `ScalarField`, going beyond the basics "
+"into applied field processing."
+msgstr "`ScalarField` を使った一連の解析ワークフロー。基本を超えて実践的な場のデータ処理に踏み込みます。"
+
+#: ../../how-to/containers/index.md:37 000ad5f3606145818e30084138c21b68
+msgid "Scalar Field Slicing Guide (Why 4D is Preserved)"
+msgstr "スカラー場のスライス操作ガイド（なぜ 4 次元が保たれるのか）"
+
+#: ../../how-to/containers/index.md:41 e56da43363cf4844a4f9cfba1b371eb1
+msgid ""
+"Why `ScalarField` indexing always keeps 4 dimensions instead of collapsing "
+"like NumPy, and when `squeeze()` is safe."
+msgstr ""
+"`ScalarField` のインデクシングが NumPy のように次元を落とさず常に 4 次元を保つ理由と、`squeeze()` が安全な場面。"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-05 11:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -20,12 +20,12 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: ../../how-to/spectral/advanced_peak_detection.ipynb:10002
-#: f46c3a5f90a2498d9da9994064baea45
-msgid "Peak Detection: Basics"
-msgstr "ピーク検出: 基本"
+#: bb49d979d5b94c0b9b678846999eb2c0
+msgid "Peak Detection: Finding Peaks"
+msgstr "ピーク検出: ピークを見つける"
 
 #: ../../how-to/spectral/advanced_peak_detection.ipynb:10004
-#: a81ec10dae974f9db18c8879725b8281
+#: 355520d8e8be4f28813700363c981b76
 msgid ""
 "`gwexpy` provides the `find_peaks` method for easily detecting peaks in "
 "signals contained in `TimeSeries` or `FrequencySeries`. This internally "
@@ -37,33 +37,33 @@ msgstr ""
 "をラップしていますが、物理単位（Hz, 秒など）を用いた直感的なパラメータ指定が可能です。"
 
 #: ../../how-to/spectral/advanced_peak_detection.ipynb:10006
-#: 453da7ff699442b5afba75c535cbcfa1
+#: cc67ee9d4a604bbf970bda74cc566af7
 msgid "The `find_peaks` method returns the following two items:"
 msgstr "`find_peaks` メソッドは、以下の2つを返します。"
 
 #: ../../how-to/spectral/advanced_peak_detection.ipynb:10007
-#: fe84bf8b2878493b9fbd22c481645b5e
+#: a9cfb2feaff040a9a30b48e58a1d65da
 msgid "**Peak Series**: A new Series object containing only the peak points"
 msgstr "**Peak Series**: ピーク点のみを抽出した新しい Series オブジェクト"
 
 #: ../../how-to/spectral/advanced_peak_detection.ipynb:10008
-#: a301273e1f0b46089ada592627403ef6
+#: 5164dbb37d404978b24cd6890c819770
 msgid ""
 "**Properties**: A dictionary of peak properties (such as prominence and "
 "width) returned by scipy"
 msgstr "**Properties**: scipy が返すピーク特性（プロミネンスや幅など）の辞書"
 
 #: ../../how-to/spectral/advanced_peak_detection.ipynb:30002
-#: f94fcf79dd0c4f3290f5448ad04d5f1a
+#: 7fb34dc6f3e54e4b93a33b03d6f631d2
 msgid "1. Peak Detection in FrequencySeries"
 msgstr "1\\. FrequencySeries でのピーク検出"
 
 #: ../../how-to/spectral/advanced_peak_detection.ipynb:50002
-#: d6182745d16e4af98bea238da86d57a6
+#: 5f8fe54136d7413cbf332f04fd2f2a9b
 msgid "2. Constraints Using Physical Units (Distance & Width)"
 msgstr "2\\. 物理単位による制約 (Distance & Width)"
 
 #: ../../how-to/spectral/advanced_peak_detection.ipynb:70002
-#: cc92d9e452b446faa8b907de441732d3
+#: 4d32a51c6da5405097b970d264bbff99
 msgid "3. Peak Detection in TimeSeries"
 msgstr "3\\. TimeSeries でのピーク検出"

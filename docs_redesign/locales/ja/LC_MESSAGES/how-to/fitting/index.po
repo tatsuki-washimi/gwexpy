@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-05 11:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,36 +19,75 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/fitting/index.md:1 c7e4841b8f9a4fd8b904d9d74bd60063
+#: ../../how-to/fitting/index.md:1 7293e368ce534be2b9bef5a4c17a5a4a
 msgid "Fitting & statistics"
 msgstr "フィッティングと統計"
 
-#: ../../how-to/fitting/index.md:3 7f9345953f8e4b91a4afd82927105744
+#: ../../how-to/fitting/index.md:3 30573602a08944bab8c91af896639d08
 msgid ""
 "Curve fitting, ARIMA, decomposition, correlation and non-Gaussian "
 "statistics."
 msgstr "曲線フィッティング、ARIMA、分解、相関、非ガウス統計。"
 
-#: ../../how-to/fitting/index.md:9 367ced43593a4c9e9738dae8e883e472
+#: ../../how-to/fitting/index.md:9 099c48850a624f56a75f2d6ae13bf44c
 msgid "Fitting: Spectral Line Analysis"
 msgstr "フィッティング: スペクトル線解析"
 
-#: ../../how-to/fitting/index.md:15 22b630ca963c4195b8c6838bc66751e6
+#: ../../how-to/fitting/index.md:13 1f067d88f1864b4dbc260db31eb7ea26
+msgid ""
+"Fit `TimeSeries` or `FrequencySeries` data with `iminuit`-backed least-"
+"squares fitting and error estimation."
+msgstr ""
+"`iminuit` を使った最小二乗フィッティングと誤差推定で `TimeSeries` / `FrequencySeries` "
+"データをフィットします。"
+
+#: ../../how-to/fitting/index.md:16 ba275bf6e0874626bb5f50273bd0b545
 msgid "ARIMA: Time Series Forecasting"
 msgstr "ARIMA: 時系列予測"
 
-#: ../../how-to/fitting/index.md:21 3772d5dba6614343a9ff0fb4118595d0
+#: ../../how-to/fitting/index.md:20 01a2b2d2b39d445b91693d2cedf88181
+msgid ""
+"Model and forecast time series with AR, MA, ARMA, and ARIMA/SARIMAX methods "
+"added to `TimeSeries`."
+msgstr "`TimeSeries` に追加された AR、MA、ARMA、ARIMA/SARIMAX の手法で時系列をモデル化・予測します。"
+
+#: ../../how-to/fitting/index.md:23 86354d53c6ba493ab681719780409fe1
 msgid "Decomposition Analysis: PCA, ICA, and Eigenmodes"
 msgstr "分解解析: PCA・ICA と固有モード"
 
-#: ../../how-to/fitting/index.md:27 97d9c7b8416a4d1ebb39321c4704641e
+#: ../../how-to/fitting/index.md:27 09685e27437d456ea704c3f9d951b341
+msgid ""
+"Principal and Independent Component Analysis on `TimeSeriesMatrix` via "
+"`pca()` / `ica()`."
+msgstr "`pca()` / `ica()` を介した `TimeSeriesMatrix` 上の主成分分析・独立成分分析。"
+
+#: ../../how-to/fitting/index.md:30 3fba53463c03459a8c0b88c6641efb9c
 msgid "Correlation Analysis: Statistical Methods"
 msgstr "相関解析: 統計的手法"
 
-#: ../../how-to/fitting/index.md:33 cb158a50032a4e9790612703e3afc10f
+#: ../../how-to/fitting/index.md:34 129def5dfa1a428e96592fa7f020e0e6
+msgid ""
+"Pearson, Kendall, and other correlation measures between `TimeSeries` "
+"objects for noise hunting and nonlinear coupling."
+msgstr ""
+"`TimeSeries` オブジェクト間の Pearson、Kendall などの相関指標。ノイズハンティングや非線形カップリングの調査に使います。"
+
+#: ../../how-to/fitting/index.md:37 57c6cd6e752344c0903b2aae399d7c8d
 msgid "Histogram: Basics"
 msgstr "ヒストグラム: 基本"
 
-#: ../../how-to/fitting/index.md:39 c92ec0be3092418b97b29018c6ce946b
+#: ../../how-to/fitting/index.md:41 413611ec38f2412680877cab0175901c
+msgid ""
+"Create, visualize, rebin, and compute statistics on "
+"`gwexpy.histogram.Histogram` objects."
+msgstr "`gwexpy.histogram.Histogram` オブジェクトの作成・可視化・リビニングと統計量の計算。"
+
+#: ../../how-to/fitting/index.md:44 a6ede48b616d4806b3bde42464efb4da
 msgid "Non-Gaussian Noise Analysis: Rayleigh and Gaussian-Chi"
 msgstr "非ガウス雑音解析: Rayleigh と Gaussian-Chi"
+
+#: ../../how-to/fitting/index.md:48 fc2089a81c684260b5c50ee8c1e1f358
+msgid ""
+"A non-Gaussian noise analysis toolkit based on Rayleigh and Gaussian-Chi "
+"statistics."
+msgstr "Rayleigh 統計と Gaussian-Chi 統計に基づく非ガウス雑音解析ツールキット。"

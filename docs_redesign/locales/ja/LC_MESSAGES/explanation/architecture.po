@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 00:42+0000\n"
+"POT-Creation-Date: 2026-07-05 11:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../explanation/architecture.md f981afb7f4b6488dbe2a17166f464402
+#: ../../explanation/architecture.md b9506c9a42a444aa86bddb7b5c23d79c
 msgid ""
 "Understand GWexpy architecture, container design, data flow, field and "
 "matrix API roles, and where to continue into theory or reference pages."
@@ -27,11 +27,11 @@ msgstr ""
 "GWexpy のアーキテクチャ、コンテナ設計、データフロー、Field API と Matrix API "
 "の役割、次に辿る理論・リファレンスへのリンクを説明します。"
 
-#: ../../explanation/architecture.md:7 4562ba9d132b4dda964ba2dc8002fef5
+#: ../../explanation/architecture.md:7 88483775a9e648fc9ab309913be11035
 msgid "Architecture and Data Flow"
 msgstr "アーキテクチャとデータフロー"
 
-#: ../../explanation/architecture.md:9 8d3d7370ee1d4deebdcca8bafd3f9543
+#: ../../explanation/architecture.md:9 9d39a72cbbf24e98b80a9f1c080db419
 msgid ""
 "This section details the design philosophy of `gwexpy` and the internal data"
 " handling logic. `gwexpy` extends GWpy to provide intuitive multi-channel "
@@ -40,23 +40,23 @@ msgstr ""
 "`gwexpy` の設計思想と、内部的なデータ処理の流れについて解説します。 本パッケージは GWpy を拡張し、多チャネルの "
 "`TimeSeriesMatrix` 操作や 4次元の物理的な場を表すフィールドを扱いやすくすることを目指しています。"
 
-#: ../../explanation/architecture.md:13 9e8e98aebe17497d80ee6115f06a8ef9
+#: ../../explanation/architecture.md:13 29e003d630324bf5a44c81666d5b31a5
 msgid "How to Read This Page"
 msgstr "このページの読み方"
 
-#: ../../explanation/architecture.md:15 38ec940f346c47308b96b96c7f8c2db4
+#: ../../explanation/architecture.md:15 1d91da93644e46b6a515f1045868c468
 msgid ""
 "Read this page first if you want the mental model behind `gwexpy` container "
 "design and internal reshaping."
 msgstr "`gwexpy` の内部表現や変換の考え方を掴みたい場合は、このページを先に読んでください。"
 
-#: ../../explanation/architecture.md:16 14ce7e2a830144d89d1fda09f2d55738
+#: ../../explanation/architecture.md:16 df2d9254553c4016a7f8134e976a7a68
 msgid ""
 "For the mathematical foundations of each algorithm, continue to [Physics "
 "Models and Analysis Theory](physics_models.md)."
 msgstr "具体的なアルゴリズムの理論は [物理モデルと解析理論](physics_models.md) を参照してください。"
 
-#: ../../explanation/architecture.md:17 118b9da078da47bfb7e92b7bb1ea53f4
+#: ../../explanation/architecture.md:17 51053149c9314ee2803496cbba9cfcd9
 msgid ""
 "For concrete callable surfaces, follow the API entry links in each section "
 "to the [matrix API](../reference/api/matrix), [fields "
@@ -66,15 +66,15 @@ msgstr ""
 "[fields API](../reference/api/fields), [fitting "
 "API](../reference/api/fitting) へ進んでください。"
 
-#: ../../explanation/architecture.md:20 b22bc210d58e43cf941df29a2c897413
+#: ../../explanation/architecture.md:20 aedb56b2161142989f799b2f1ee8faeb
 msgid "Design Philosophy"
 msgstr "データ構造の設計思想"
 
-#: ../../explanation/architecture.md:22 00e280c890b1483789c4c5f4951539b2
+#: ../../explanation/architecture.md:22 a2716d3dbadb4b309a149a660b3321bf
 msgid "1. Matrix Object Flattening Flow"
 msgstr "1. 行列オブジェクトの平坦化フロー"
 
-#: ../../explanation/architecture.md:23 60dee03858b94bfc856abae3cbb3ee88
+#: ../../explanation/architecture.md:23 8689070019c8425db4be724491739b48
 msgid ""
 "**Goal:** Explain how matrix-like containers are reshaped for analysis while"
 " preserving metadata. **Input:** Multi-channel or matrix-like series data "
@@ -86,7 +86,7 @@ msgstr ""
 "`FrequencySeriesMatrix` のような多チャネル・行列型データ。 **出力:** 計算に使いやすい 2 "
 "次元表現と、復元後も保たれるメタデータ。"
 
-#: ../../explanation/architecture.md:27 0dd7f790b7a64e548317fcf14210a8e1
+#: ../../explanation/architecture.md:27 87d7b1df97fc4b349dd6437f4c634ee7
 msgid ""
 "Classes like `TimeSeriesMatrix` and `FrequencySeriesMatrix` handle automatic"
 " conversion to formats compatible with machine learning libraries like "
@@ -99,7 +99,7 @@ msgstr ""
 "などの機械学習ライブラリと親和性の高い形式への変換を自動で行います。通常、3 次元データ（チャンネル/行 $\\times$ 列 $\\times$ "
 "サンプル）を計算のために一時的に 2 次元の特徴量行列へ平坦化し、メタデータ（GPS タイムスタンプ、単位）は保持されて処理後に復元されます。"
 
-#: ../../explanation/architecture.md:30 b0e9281049634f1ea8fc0d720dde97fb
+#: ../../explanation/architecture.md:30 8e9235d097a34557b23097356641bd1f
 msgid ""
 "API entry: [matrix API](../reference/api/matrix), [timeseries "
 "API](../reference/api/timeseries)"
@@ -107,11 +107,11 @@ msgstr ""
 "API 入口: [matrix API](../reference/api/matrix), [timeseries "
 "API](../reference/api/timeseries)"
 
-#: ../../explanation/architecture.md:32 6cedf2b3cc39419986a23648c71d3ff2
+#: ../../explanation/architecture.md:32 690a270391f44c8fa850b04b0125913b
 msgid "2. 4D Field API Model"
 msgstr "2. 4次元フィールド（フィールド API）モデル"
 
-#: ../../explanation/architecture.md:33 9f5ed53317fa441db49901a9840bfc47
+#: ../../explanation/architecture.md:33 b20d5400b7e742b6bb26fc54de9a1931
 msgid ""
 "**Goal:** Explain why field containers keep all axes aligned during slicing "
 "and indexing. **Input:** A `ScalarField` with one time (or frequency) axis "
@@ -122,7 +122,7 @@ msgstr ""
 "本の時間軸（または周波数軸）と 3 本の空間軸を持つ `ScalarField`。 **出力:** "
 "選択操作の後もグリッド情報と軸メタデータが同期したフィールドオブジェクト。"
 
-#: ../../explanation/architecture.md:37 14755feec75944b38f559cb7bfef74cf
+#: ../../explanation/architecture.md:37 fe415f4b11d14186a81f956eba001ab4
 msgid ""
 "`ScalarField` adopts a 4D structure as its base unit: axis 0 is the **time "
 "axis** (or the **frequency axis** after `fft_time()`), and axes 1–3 are the "
@@ -137,19 +137,19 @@ msgstr ""
 "kz` へ変換されます）。例：`(t, x, y, z)`、`(f, x, y, z)`、`(f, kx, ky, "
 "kz)`。インデクシング操作において**4 次元を維持する**ことで、グリッド情報と軸メタデータがデータと常に完全に同期していることを保証します。"
 
-#: ../../explanation/architecture.md:40 9be36053c4124cd0b6e404592d1d314d
+#: ../../explanation/architecture.md:40 c03d73992dc4467f9ca2f693c23feda4
 msgid ""
 "API entry: [fields API](../reference/api/fields), [Scalar Field Slicing "
-"Guide](../how-to/scalarfield_slicing.md)"
+"Guide](../how-to/containers/scalarfield_slicing.md)"
 msgstr ""
 "API 入口: [fields API](../reference/api/fields), [スカラー場のスライス操作ガイド](../how-"
-"to/scalarfield_slicing.md)"
+"to/containers/scalarfield_slicing.md)"
 
-#: ../../explanation/architecture.md:43 475e3e5582f8466e83f1988d2ba94588
+#: ../../explanation/architecture.md:43 a4e2350c2b734cb1afa600761ebb9bff
 msgid "Data Flow Diagram"
 msgstr "データフロー図"
 
-#: ../../explanation/architecture.md:45 dba3f5c9d48d40d29df37ceb35433e12
+#: ../../explanation/architecture.md:45 5ddc7c0f1fc34711bf02b0d7f0df1f24
 msgid ""
 "The static diagram below summarizes how the main GWexpy containers move from"
 " raw inputs to analysis APIs while keeping axis metadata available in the "
@@ -158,12 +158,12 @@ msgstr ""
 "以下の静的図は、現在の docs ビルド環境でも確実に表示できる形で、GWexpy の主要コンテナが生データから解析 API "
 "に渡るまでの流れと、軸メタデータがどこで保たれるかをまとめたものです。"
 
-#: ../../explanation/architecture.md:47 e405f904730543b0b71234a2259ec777
+#: ../../explanation/architecture.md:47 e01aadfc6bfe4a40a8ff794a912cf15a
 msgid ""
 "Static data-flow diagram for GWexpy containers and metadata preservation."
 msgstr "GWexpy のコンテナとメタデータ保持を示す静的データフロー図。"
 
-#: ../../explanation/architecture.md:51 cfcb2f460f834e798d999fb0d3d92a7e
+#: ../../explanation/architecture.md:51 1c9b2382904342588e3e6eb46516dbb8
 msgid ""
 "GWexpy data flow from raw arrays and GWpy objects through matrix and field "
 "analysis paths, with axis metadata preserved across reshaping and "
@@ -172,11 +172,11 @@ msgstr ""
 "生配列や GWpy "
 "オブジェクトから、行列解析経路とフィールド解析経路を通って下流の出力へ進むまでの流れと、軸メタデータがリシェイプや変換をまたいで保持される位置をまとめた図。"
 
-#: ../../explanation/architecture.md:54 2cf70add0615498c84f5a83d3e3123c7
+#: ../../explanation/architecture.md:54 be13953b8c17457e97ec5f4bb41fc2cd
 msgid "Reading notes:"
 msgstr "読み方の要点:"
 
-#: ../../explanation/architecture.md:56 e0ac2ae17773427d82e5a0882ec2fb99
+#: ../../explanation/architecture.md:56 41a903755c284587b2c97c7e1008dc98
 msgid ""
 "`TimeSeriesDict -> TimeSeriesMatrix -> Flatten to 2D features` is the "
 "matrix-analysis path used when scikit-learn-style algorithms expect 2D "
@@ -185,7 +185,7 @@ msgstr ""
 "`TimeSeriesDict -> TimeSeriesMatrix -> 2次元特徴量へ平坦化` は、scikit-learn 系の 2 "
 "次元入力へ接続するための行列解析経路です。"
 
-#: ../../explanation/architecture.md:57 cd10d014f28741da9a4da72890a78134
+#: ../../explanation/architecture.md:57 d64f51269d914643ba2a27a1883d7085
 msgid ""
 "`ScalarField -> Field slicing / indexing -> Field-aware transforms` is the "
 "field-analysis path used when the time/frequency axis and the spatial axes "
@@ -194,17 +194,17 @@ msgstr ""
 "`ScalarField -> フィールドのスライス / インデクシング -> フィールド対応変換` "
 "は、時間/周波数軸と空間軸を揃えたまま扱う必要がある場合のフィールド解析経路です。"
 
-#: ../../explanation/architecture.md:58 e7780cbaa16e497a8982328a0b334aa5
+#: ../../explanation/architecture.md:58 0015900d693b4e4da1243a919bb1a6db
 msgid ""
 "Metadata is preserved across both paths so derived outputs can still be "
 "interpreted in physical coordinates rather than raw array indices alone."
 msgstr "どちらの経路でもメタデータを保持するため、結果を単なる配列インデックスではなく物理座標に対応づけて解釈できます。"
 
-#: ../../explanation/architecture.md:63 5c7b1e3ee2bf456295ea319f56f6d0b0
+#: ../../explanation/architecture.md:63 7a445cf301e24133b9709ca99908cb02
 msgid "Core Analysis Components"
 msgstr "主要な解析コンポーネントの概念"
 
-#: ../../explanation/architecture.md:65 2913234a2fd443ceb33af75e3e9ad183
+#: ../../explanation/architecture.md:65 02b4c5af79dc4ba98fdb7f99ade3e813
 msgid ""
 "`gwexpy` builds advanced analysis pipelines by combining the following core "
 "components. For detailed mathematical and physical foundations, refer to "
@@ -213,89 +213,91 @@ msgstr ""
 "`gwexpy` は、以下の主要コンポーネントを組み合わせて高度な解析パイプラインを構築します。個別のアルゴリズム詳細は "
 "[物理モデルと解析理論](physics_models.md) を参照してください。"
 
-#: ../../explanation/architecture.md:67 c530bfe5d07c4d99b067f56cb55815ac
+#: ../../explanation/architecture.md:67 06c77400ba0f4d8286e7140597024138
 msgid ""
 "**Multi-channel Analysis Engine**: Implementation of ICA/PCA for "
 "environmental noise isolation."
 msgstr "**多チャネル解析エンジン**: 環境ノイズ分離のための ICA/PCA 実装。"
 
-#: ../../explanation/architecture.md:68 fd42d982e1d544babce2ac7c886a9780
+#: ../../explanation/architecture.md:68 2923d2da75724ba8adb3c179ea52558b
 msgid ""
 "**Fast Correlation Framework**: Accelerated coherence calculations (Bruco) "
 "for large-scale observation data."
 msgstr "**高速相関計算基盤**: 大規模観測データに対する高速コヒーレンス計算（BruCo）。"
 
-#: ../../explanation/architecture.md:69 52058759cde3442da8ca18ca316f46f6
+#: ../../explanation/architecture.md:69 ead793b531c74a2f8dc45bb2b90d8fb4
 msgid ""
 "**Statistical Inference & Fitting**: Parameter estimation using GLS and "
 "MCMC."
 msgstr "**統計的推定・フィッティング**: GLS や MCMC を用いた物理パラメータ推定。"
 
-#: ../../explanation/architecture.md:72 d25ca8d54a504d4283d92119eb34bdde
+#: ../../explanation/architecture.md:72 f8111e55407345a191e292dd43f0838b
 msgid "Related Documents"
 msgstr "関連ドキュメント"
 
-#: ../../explanation/architecture.md:74 47b5e49236484a6ba4323fefb1718113
+#: ../../explanation/architecture.md:74 4f9e22d8fa8840e786cfb7be1451f062
 msgid ""
 "[Physics Models and Analysis Theory](physics_models.md) — Mathematical "
 "context for the containers and transforms summarized here"
 msgstr "[物理モデルと解析理論](physics_models.md) — ここで触れたコンテナ設計の数理的背景"
 
-#: ../../explanation/architecture.md:75 6da9f3536e4e4191ab757a3413d09f2e
+#: ../../explanation/architecture.md:75 0a9bc3129906421890948e8e03d88d87
 msgid ""
 "[Validated Algorithms](validated_algorithms.md) — Audit-backed behavior for "
 "numerical paths referenced by this design guide"
 msgstr "[検証済みアルゴリズム](validated_algorithms.md) — 設計上参照される数値経路の監査根拠"
 
-#: ../../explanation/architecture.md:76 c3689de49b68439d969aa4ea6be640c6
+#: ../../explanation/architecture.md:76 49e76e9b25ae4a058f9be077e439eea6
 msgid ""
-"[Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md) — Why the "
-"Field API preserves 4D structure"
+"[Scalar Field Slicing Guide](../how-to/containers/scalarfield_slicing.md) — "
+"Why the Field API preserves 4D structure"
 msgstr ""
-"[スカラー場のスライス操作ガイド](../how-to/scalarfield_slicing.md) — フィールド API が 4 "
-"次元構造を保つ理由"
+"[スカラー場のスライス操作ガイド](../how-to/containers/scalarfield_slicing.md) — フィールド API が"
+" 4 次元構造を保つ理由"
 
-#: ../../explanation/architecture.md:77 8b1a875608ab4c3fa88c57bfd3f94025
+#: ../../explanation/architecture.md:77 3334d09de6224bc5a50822bef5b585a2
 msgid ""
 "[Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared "
 "time, FFT, and compatibility assumptions"
 msgstr "[前提条件と規約](prerequisites_and_conventions.md) — 時刻系、FFT、互換性の共通前提"
 
-#: ../../explanation/architecture.md:78 54a3c46f351a494482c123c9241ea7a2
+#: ../../explanation/architecture.md:78 58c0bc28d4774568a5bdfcb415e966ac
 msgid ""
 "[Matrix API](../reference/api/matrix) — Reference entry for container "
 "reshaping and matrix-style operations"
 msgstr "[Matrix API](../reference/api/matrix) — 行列系コンテナと平坦化の参照入口"
 
-#: ../../explanation/architecture.md:79 78a8b8d31f1e4532abf62b2b8930dc69
+#: ../../explanation/architecture.md:79 7cf2459079c843ed9bb88e060bedbd72
 msgid ""
 "[Fields API](../reference/api/fields) — Reference entry for field-aware "
 "transforms and slicing"
 msgstr "[フィールド API](../reference/api/fields) — フィールド変換とスライスの参照入口"
 
-#: ../../explanation/architecture.md:82 3156c22741704a929b580c3c2a76d549
+#: ../../explanation/architecture.md:82 0aaf8dcda7814c4f9216b179f051fd47
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../explanation/architecture.md:83 a71c971c162b45b5900dc9ff1c557357
+#: ../../explanation/architecture.md:83 a7a5c3bb7879400faf4a6a91c6ccc0ad
 msgid ""
 "[Physics Models and Analysis Theory](physics_models.md) — Detailed analysis "
 "theory and physics models (ICA/Bruco/MCMC)"
 msgstr "[物理モデルと解析理論](physics_models.md) — ICA/BruCo/MCMC などの解析理論・物理モデル詳細"
 
-#: ../../explanation/architecture.md:84 54a0b2a30404458792eb2767f53e90c9
+#: ../../explanation/architecture.md:84 82bbd660b79b4f208b83d2d02d3ddbc1
 msgid ""
 "[Validated Algorithms](validated_algorithms.md) — Validation reports for "
 "numerical algorithms"
 msgstr "[検証済みアルゴリズム](validated_algorithms.md) — 各数値アルゴリズムの信頼性検証"
 
-#: ../../explanation/architecture.md:85 4656c7cab23947cb9d207373df3523d7
+#: ../../explanation/architecture.md:85 64ca98c9b15241b4a7373be2c6607ade
 msgid ""
-"[Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md) — Details on "
-"4D field operations"
-msgstr "[スカラー場のスライス操作ガイド](../how-to/scalarfield_slicing.md) — 4次元フィールド操作の詳細"
+"[Scalar Field Slicing Guide](../how-to/containers/scalarfield_slicing.md) — "
+"Details on 4D field operations"
+msgstr ""
+"[スカラー場のスライス操作ガイド](../how-to/containers/scalarfield_slicing.md) — "
+"4次元フィールド操作の詳細"
 
-#: ../../explanation/architecture.md:86 cff70630f4f54ca6966a9a51a231fecf
+#: ../../explanation/architecture.md:86 ad5f90df27cb430b9733564646d04003
 msgid ""
 "[Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared "
 "FFT, GPS time, and compatibility assumptions"

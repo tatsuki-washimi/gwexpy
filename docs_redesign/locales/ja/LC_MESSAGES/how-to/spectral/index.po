@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-05 11:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,32 +19,62 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/spectral/index.md:1 6c0f58ea44f949d2b2be71e0d1d3550a
+#: ../../how-to/spectral/index.md:1 7333b36181284e0b82facbdd997f6d79
 msgid "Spectral & time-frequency"
 msgstr "スペクトル・時間周波数"
 
-#: ../../how-to/spectral/index.md:3 fe0c1c9137d24925869a8a356c2fe73d
+#: ../../how-to/spectral/index.md:3 5bd5d4c0baef4db1b069f5c3ce2130ed
 msgid ""
 "Spectrogram conditioning, Hilbert-Huang, peak detection and method "
 "comparison."
 msgstr "スペクトログラムの整形、ヒルベルト・ファン、ピーク検出、手法比較。"
 
-#: ../../how-to/spectral/index.md:9 4e3fe3f8e4f948efa5787a0b8cd98c39
+#: ../../how-to/spectral/index.md:9 db3c4af3df7a4fb2a2097bc96dd697a9
 msgid "Spectrogram: Normalization and Cleaning"
 msgstr "スペクトログラム: 正規化とクリーニング"
 
-#: ../../how-to/spectral/index.md:15 28362b69ab2f4443b72c51a007322b29
+#: ../../how-to/spectral/index.md:13 a926d140001741859e0d98f1d4d5b230
+msgid ""
+"Convert raw spectrogram power to SNR or relative units, then remove lines "
+"and artifacts with `clean()`."
+msgstr "スペクトログラムの生のパワーを SNR や相対単位に変換し、`clean()` でラインやアーティファクトを除去します。"
+
+#: ../../how-to/spectral/index.md:16 f8147162dd844c35ae730fce4517beaf
 msgid "HHT: Analysis"
 msgstr "HHT: 解析"
 
-#: ../../how-to/spectral/index.md:21 1072b50d12da449eb7835b9be9904533
-msgid "Peak Detection: Basics"
-msgstr "ピーク検出: 基本"
+#: ../../how-to/spectral/index.md:20 e68974e3c4bd408eb8f14ff6e001983e
+msgid ""
+"Hilbert-Huang Transform for nonlinear, non-stationary signals and "
+"instantaneous frequency extraction."
+msgstr "非線形・非定常な信号のためのヒルベルト・ファン変換と瞬時周波数の抽出。"
 
-#: ../../how-to/spectral/index.md:27 ce87928fdc6245989480519f031afc4d
+#: ../../how-to/spectral/index.md:23 4b836287d73a464c98069443f3e5d9fc
+msgid "Peak Detection: Finding Peaks"
+msgstr "ピーク検出: ピークを見つける"
+
+#: ../../how-to/spectral/index.md:27 e05093def45c476d963eac0eda2bcb44
+msgid ""
+"Detect peaks in `TimeSeries` / `FrequencySeries` with physical-unit "
+"constraints on distance, height, and width."
+msgstr "`TimeSeries` / `FrequencySeries` でピークを検出し、間隔・高さ・幅を物理単位で制約します。"
+
+#: ../../how-to/spectral/index.md:30 85db85b69b3f479caef92a16543c4ce1
 msgid "Peak Tracking: Time Evolution"
 msgstr "ピーク追跡: 時間変化の解析"
 
-#: ../../how-to/spectral/index.md:33 ecb2edde54cf47d7ab83ef1f2f7074b1
+#: ../../how-to/spectral/index.md:34 1a124576af9b4e96a546725521ca95f2
+msgid ""
+"Follow a spectral line through time across a spectrogram, e.g. drifting "
+"power-line harmonics or violin modes."
+msgstr "スペクトログラム上でスペクトルラインを時間方向に追跡します（電源ラインの高調波の周波数ドリフトやバイオリンモードなど）。"
+
+#: ../../how-to/spectral/index.md:37 80b419e548354157b1c2863f66556010
 msgid "Time-Frequency Analysis: Interactive Comparison"
 msgstr "時間周波数解析: インタラクティブ比較"
+
+#: ../../how-to/spectral/index.md:41 6a563fad88a94df5875f565faeae66a9
+msgid ""
+"Compare STFT and Q-transform baselines against other time-frequency methods "
+"and see when each is the right choice."
+msgstr "STFT と Q 変換をベースラインとして他の時間周波数手法と比較し、どの手法をいつ選ぶべきかを確認します。"
