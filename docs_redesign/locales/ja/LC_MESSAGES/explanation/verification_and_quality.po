@@ -248,7 +248,8 @@ msgid ""
 "**Heavy** notebooks are kept in CI, but the policy describes them as `nbval "
 "--nbval-lax` checks rather than guaranteed full execution."
 msgstr ""
-"**Heavy** notebook は CI 対象ではありますが、全セル実行を常に保証するものではなく、構造確認や収集確認に寄せて扱われます。"
+"**Heavy** notebook は CI 対象ではありますが、全セル実行を常に保証するものではなく、`nbval "
+"--nbval-lax` による確認に寄せて扱われます。"
 
 #: ../../explanation/verification_and_quality.md:38
 #: 9ec14c4ef1ad4a36be0b3ad7dfb7d89d
@@ -276,7 +277,9 @@ msgstr ""
 msgid ""
 "Public tutorial notebooks under `docs/web/{en,ja}/user_guide/tutorials/` are"
 " treated as the authoritative published copies."
-msgstr "公開 notebook のメインのは `docs/web/{en,ja}/user_guide/tutorials/` に置かれます。"
+msgstr ""
+"`docs/web/{en,ja}/user_guide/tutorials/` 配下の公開チュートリアル notebook "
+"が、正式な公開版として扱われます。"
 
 #: ../../explanation/verification_and_quality.md:42
 #: 31dcfc9e62d44c7e9a3cd4578ffe4440
@@ -441,7 +444,8 @@ msgid ""
 "and link publicly."
 msgstr ""
 "`gwexpy` は [Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy) "
-"によって、リポジトリ全体の coverage シグナルを公開しています。`README.md` にも codecov "
+"によって、リポジトリ全体の coverage シグナルを公開しています。リポジトリの "
+"[README.md](https://github.com/tatsuki-washimi/gwexpy) にも codecov "
 "の状態バッジとリンクがあり、公開された確認入口として辿れます。"
 
 #: ../../explanation/verification_and_quality.md:79
