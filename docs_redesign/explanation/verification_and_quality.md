@@ -13,7 +13,7 @@ It is not a single "all features are verified" claim. Instead, it points you to 
 :::{important}
 **Read this page as a transparency map, not as a blanket guarantee**
 
-Different parts of the project are verified in different ways. Nightly CI runs cross-platform import smoke tests and targeted gates (network/backend I/O, docs notebooks, Zarr I/O), some notebooks are fully executed, some heavy notebooks are only structure-checked, and some optional-dependency tests can be skipped when the backend is unavailable.
+Different parts of the project are verified in different ways. The extended verification workflow runs cross-platform import smoke tests and targeted gates (network/backend I/O, docs notebooks, Zarr I/O) on demand, some notebooks are fully executed, some heavy notebooks are only structure-checked, and some optional-dependency tests can be skipped when the backend is unavailable.
 :::
 
 ## Public Evidence Sources
@@ -21,7 +21,7 @@ Different parts of the project are verified in different ways. Nightly CI runs c
 | Area | Public source | What it tells you |
 | --- | --- | --- |
 | Notebook tutorials | [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) | Which notebook classes are treated as `Light`, `Heavy`, or `Display-only`, and how CI handles each class |
-| Nightly CI gates | [Extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) | Which checks run nightly: import smoke tests on Linux/macOS/Windows plus the `io-network-backend`, `docs-notebook`, and `io-zarr` gates driven by `scripts/ci/run_gate.py` |
+| Extended verification gates | [Extended verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) | Which checks the on-demand extended verification workflow covers: import smoke tests on Linux/macOS/Windows plus the `io-network-backend`, `docs-notebook`, and `io-zarr` gates driven by `scripts/ci/run_gate.py` |
 | Direct I/O formats | [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) | Which public format families are tied to which tests and which backends are optional |
 | Algorithm audit trail | [Validated Algorithms](validated_algorithms.md) | Numerical tolerances, assumptions, and links to audit evidence for selected high-value algorithms |
 | Repository coverage signal | [README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the linked [Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy) | Where repository-level line coverage is surfaced publicly, useful as a broad signal rather than a per-feature proof |
@@ -32,7 +32,7 @@ The public notebook policy is defined in the repository's [Notebook Policy](http
 
 The current public model is:
 
-- The public [extended nightly workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) runs cross-platform import smoke tests and the `io-network-backend`, `docs-notebook`, and `io-zarr` gates; it is intentionally scoped to these checks and does not run docstring doctests.
+- The public [extended verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) runs cross-platform import smoke tests and the `io-network-backend`, `docs-notebook`, and `io-zarr` gates; it is intentionally scoped to these checks and does not run docstring doctests.
 - **Light** notebooks are classified for full execution and validation in CI through `papermill`.
 - **Heavy** notebooks are kept in CI, but the policy describes them as `nbval --nbval-lax` checks rather than guaranteed full execution.
 - **Display-only** notebooks prioritize curated outputs and are outside normal execution validation, or limited to load-style checks.
@@ -45,7 +45,7 @@ This is why a notebook or docstring example being present in the docs is a usefu
 
 The current public evidence supports a narrower statement than "all sample code is universally guaranteed."
 
-- The extended nightly workflow shows that `gwexpy` runs automated import smoke tests on three platforms plus targeted I/O and docs-notebook gates every night.
+- The extended verification workflow shows that `gwexpy` runs automated import smoke tests on three platforms plus targeted I/O and docs-notebook gates when the workflow is triggered.
 - The [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) shows that notebook handling is class-dependent: `Light` notebooks are executed with `papermill`, while `Heavy` notebooks are checked with `nbval --nbval-lax`.
 - The docs PR workflow shows that notebooks changed in docs pull requests are executed with `papermill` before the docs build.
 
