@@ -1,0 +1,1267 @@
+
+<!DOCTYPE html>
+
+
+<html lang="ja" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Detector Utilities &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="../../_static/documentation_options.js?v=e93cb3d0"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/api/detector';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/reference/api/detector.html" />
+    <link rel="icon" href="../../_static/favicon.svg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="Astrophysics Utilities" href="astro.html" />
+    <link rel="prev" title="gwexpy.segments.SegmentList" href="gwexpy.segments.SegmentList.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="ja"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">本文へスキップ</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>トップに戻る</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="バージョン警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="サイトナビゲーション">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/reference/api/detector.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="このページでは">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/reference/api/detector.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="セクションナビゲーション">
+  <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">コンテナ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="timeseries.html">Time Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html">gwexpy.timeseries.TimeSeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="frequencyseries.html">Frequency Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html">gwexpy.frequencyseries.FrequencySeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="spectrogram.html">Spectrogram</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html">gwexpy.spectrogram.Spectrogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="matrix.html">Matrix Containers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.timeseries.TimeSeriesMatrix.html">gwexpy.timeseries.TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeriesMatrix.html">gwexpy.frequencyseries.FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.spectrogram.SpectrogramMatrix.html">gwexpy.spectrogram.SpectrogramMatrix</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="fields.html">Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="table.html">Table</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.table.SegmentTable.html">gwexpy.table.SegmentTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.table.SegmentCell.html">gwexpy.table.SegmentCell</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="histogram.html">Histogram (gwexpy.histogram)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.Histogram.html">gwexpy.histogram.Histogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.HistogramDict.html">gwexpy.histogram.HistogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.HistogramList.html">gwexpy.histogram.HistogramList</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">解析と信号処理</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal.html">Signal Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Noise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="segments.html">Segments</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.DataQualityFlag.html">gwexpy.segments.DataQualityFlag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.DataQualityDict.html">gwexpy.segments.DataQualityDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.Segment.html">gwexpy.segments.Segment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.SegmentList.html">gwexpy.segments.SegmentList</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Detector Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="astro.html">Astrophysics Utilities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">相互運用と入出力</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="interop.html">Interoperability (gwexpy.interop)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.hdf5_.html">gwexpy.interop.hdf5_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.frequency.html">gwexpy.interop.frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.json_.html">gwexpy.interop.json_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sqlite_.html">gwexpy.interop.sqlite_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.zarr_.html">gwexpy.interop.zarr_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.netcdf4_.html">gwexpy.interop.netcdf4_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pandas_.html">gwexpy.interop.pandas_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.polars_.html">gwexpy.interop.polars_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.xarray_.html">gwexpy.interop.xarray_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.astropy_.html">gwexpy.interop.astropy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.dask_.html">gwexpy.interop.dask_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.torch_.html">gwexpy.interop.torch_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.torch_dataset.html">gwexpy.interop.torch_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.tensorflow_.html">gwexpy.interop.tensorflow_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.jax_.html">gwexpy.interop.jax_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.cupy_.html">gwexpy.interop.cupy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.finesse_.html">gwexpy.interop.finesse_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.control_.html">gwexpy.interop.control_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.simpeg_.html">gwexpy.interop.simpeg_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.mt_.html">gwexpy.interop.mt_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.mne_.html">gwexpy.interop.mne_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.neo_.html">gwexpy.interop.neo_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.quantities_.html">gwexpy.interop.quantities_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyroomacoustics_.html">gwexpy.interop.pyroomacoustics_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pydub_.html">gwexpy.interop.pydub_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.specutils_.html">gwexpy.interop.specutils_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyspeckit_.html">gwexpy.interop.pyspeckit_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyspice_.html">gwexpy.interop.pyspice_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.skrf_.html">gwexpy.interop.skrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyoma_.html">gwexpy.interop.pyoma_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.multitaper_.html">gwexpy.interop.multitaper_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sdypy_.html">gwexpy.interop.sdypy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sdynpy_.html">gwexpy.interop.sdynpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.meep_.html">gwexpy.interop.meep_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.openems_.html">gwexpy.interop.openems_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.emg3d_.html">gwexpy.interop.emg3d_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.meshio_.html">gwexpy.interop.meshio_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.metpy_.html">gwexpy.interop.metpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.wrf_.html">gwexpy.interop.wrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.harmonica_.html">gwexpy.interop.harmonica_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.exudyn_.html">gwexpy.interop.exudyn_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.opensees_.html">gwexpy.interop.opensees_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.obspy_.html">gwexpy.interop.obspy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.lal_.html">gwexpy.interop.lal_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.gwinc_.html">gwexpy.interop.gwinc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pycbc_.html">gwexpy.interop.pycbc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.root_.html">gwexpy.interop.root_</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">プロットとツール</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="plot.html">Plotting</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="time.html">Time (gwexpy.time)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.Time.html">gwexpy.time.Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.LIGOTimeGPS.html">gwexpy.time.LIGOTimeGPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.to_gps.html">gwexpy.time.to_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.from_gps.html">gwexpy.time.from_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.tconvert.html">gwexpy.time.tconvert</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">GWpy との差分</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../gwpy_added_api.html">GWpy 差分 API インデックス</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="パンくずリスト" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="ホーム">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">リファレンス</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Detector Utilities</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="detector-utilities">
+<h1>Detector Utilities<a class="headerlink" href="#detector-utilities" title="Link to this heading">#</a></h1>
+<p>Detector channel definitions, unit handling, and I/O helpers.</p>
+<dl class="py class" id="module-gwexpy.detector">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.detector.</span></span><span class="sig-name descname"><span class="pre">Channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.detector.Channel" title="Link to this definition">#</a></dt>
+<dd><p>ベースクラス: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Representation of a gravitational-wave detectory data channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<cite>str</cite>, <cite>Channel</cite>) -- Name of this Channel (or another  Channel itself).
+If a <cite>Channel</cite> is given, all other parameters not set explicitly
+will be copied over.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) -- Rate at which data are sampled for this channel, simple floats
+must be given in Hz.</p></li>
+<li><p><strong>unit</strong> (<cite>~astropy.units.Unit</cite>, <cite>str</cite>, optional) -- Name of the unit for the data of this channel.</p></li>
+<li><p><strong>frequency_range</strong> (<cite>tuple</cite> of <cite>float</cite>) -- <code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high)</span></code> spectral frequency range of interest for this channel.</p></li>
+<li><p><strong>safe</strong> (<cite>bool</cite>, optional) -- If <cite>True</cite> this channel is 'safe' to use as a witness of
+non-gravitational-wave noise in the detector.</p></li>
+<li><p><strong>dtype</strong> (<cite>numpy.dtype</cite>, optional) -- Numeric type of data for this channel.</p></li>
+<li><p><strong>frametype</strong> (<cite>str</cite>, optional) -- LDAS name for frames that contain this channel.</p></li>
+<li><p><strong>model</strong> (<cite>str</cite>, optional) -- Name of the SIMULINK front-end model that produces this channel.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition- admonition">
+<p class="admonition-title">メモ</p>
+<p>The <cite>Channel</cite> structure implemented here is designed to match the
+data recorded in the LIGO Channel Information System
+(<a class="reference external" href="https://cis.ligo.org">https://cis.ligo.org</a>) for which a query interface is provided.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.MATCH">
+<span class="sig-name descname"><span class="pre">MATCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('((?:(?P&lt;ifo&gt;[A-Z]\\d))?|[\\w-]+):(?:(?P&lt;system&gt;[a-zA-Z0-9]+))?(?:[-_](?P&lt;subsystem&gt;[a-zA-Z0-9]+))?(?:[-_](?P&lt;signal&gt;[a-zA-Z0-9_-]+?))?(?:[\\.-](?P&lt;trend&gt;[a-z]+))?(?:,(?P&lt;type&gt;([a-z]-)?[a-z]+))?$')</span></em><a class="headerlink" href="#gwexpy.detector.Channel.MATCH" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.Channel.copy" title="Link to this definition">#</a></dt>
+<dd><p>Return a copy of this <cite>Channel</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.dtype">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.dtype" title="Link to this definition">#</a></dt>
+<dd><p>Numeric type for data in this channel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.find_frametype">
+<span class="sig-name descname"><span class="pre">find_frametype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpstime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">frametype_match</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/re.html#re.Pattern" title="(in Python v3.14)"><span class="pre">re.Pattern</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_tape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#gwexpy.detector.Channel.find_frametype" title="Link to this definition">#</a></dt>
+<dd><p>Find the containing frametype(s) for this <cite>Channel</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gpstime</strong> (<cite>int</cite>, optional) -- A reference GPS time at which to search for frame files.
+Default is to search in the latest available data for each
+discoverable dataset.</p></li>
+<li><p><strong>frametype_match</strong> (<cite>str</cite>) -- A regular expression string to use to down-select from the
+list of all available datasets.</p></li>
+<li><p><strong>return_all</strong> (<cite>bool</cite>, optional) -- If <cite>True</cite> return all matched datasets; if <cite>False</cite> (default)
+only the first match is returned</p></li>
+<li><p><strong>allow_tape</strong> (<cite>bool</cite>, default: <cite>True</cite>) -- If <cite>True</cite> (default) include datasets whose files are stored on slow
+magnetic tape.</p></li>
+<li><p><strong>kwargs</strong> -- Other keyword arguments are passed directly to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">gwpy.io.datafind.find_frametype()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>frametype</strong> -- If <code class="docutils literal notranslate"><span class="pre">return_all=False</span></code> a single <cite>str</cite> containing the 'best' dataset name.
+If <code class="docutils literal notranslate"><span class="pre">return_all=True</span></code> a <cite>list</cite> of dataset names.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>str</cite> or <cite>list[str]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.frametype">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frametype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.frametype" title="Link to this definition">#</a></dt>
+<dd><p>LDAS type description for frame files containing this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.frequency_range">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequency_range</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.frequency_range" title="Link to this definition">#</a></dt>
+<dd><p>Frequency range of interest (Hertz) for this channel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.from_arrakis">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_arrakis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrakischannel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arrakis.Channel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.Channel.from_arrakis" title="Link to this definition">#</a></dt>
+<dd><p>Generate a new channel using an existing <cite>arrakis.Channel</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>arrakischannel</strong> (<cite>arrakis.Channel</cite>) -- The input channel from Arrakis to parse.</p>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>channel</strong> -- A new <cite>Channel</cite>.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>gwpy.detector.Channel</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.from_nds2">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_nds2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nds2channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nds2.channel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.Channel.from_nds2" title="Link to this definition">#</a></dt>
+<dd><p>Generate a new channel using an existing nds2.channel object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.ifo">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ifo</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.ifo" title="Link to this definition">#</a></dt>
+<dd><p>Interferometer prefix for this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.model">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.model" title="Link to this definition">#</a></dt>
+<dd><p>Name of the SIMULINK front-end model that defines this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.name" title="Link to this definition">#</a></dt>
+<dd><p>Name of this channel.</p>
+<p>This should follow the naming convention, with the following
+format: 'IFO:SYSTEM-SUBSYSTEM_SIGNAL'</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.ndsname">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ndsname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.ndsname" title="Link to this definition">#</a></dt>
+<dd><p>Name of this channel as stored in the NDS database.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.ndstype">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ndstype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.ndstype" title="Link to this definition">#</a></dt>
+<dd><p>NDS type integer for this channel.</p>
+<p>This property is mapped to the <cite>Channel.type</cite> string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.parse_channel_name">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_channel_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#gwexpy.detector.Channel.parse_channel_name" title="Link to this definition">#</a></dt>
+<dd><p>Decompose a channel name string into its components.</p>
+<p>This method parses channels acccording to the LIGO Channel Naming
+Convention <code class="code dcc docutils literal notranslate"><span class="pre">LIGO-T990033</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<cite>str</cite>) -- Name to parse.</p></li>
+<li><p><strong>strict</strong> (<cite>bool</cite>, optional) -- If <cite>True</cite> (default) require exact matching of format,
+with no surrounding text.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>match</strong> -- <cite>dict</cite> of channel name components with the following keys:</p>
+<ul class="simple">
+<li><p><cite>'ifo'</cite>: the letter-number interferometer prefix</p></li>
+<li><p><cite>'system'</cite>: the top-level system name</p></li>
+<li><p><cite>'subsystem'</cite>: the second-level sub-system name</p></li>
+<li><p><cite>'signal'</cite>: the remaining underscore-delimited signal name</p></li>
+<li><p><cite>'trend'</cite>: the trend type</p></li>
+<li><p><cite>'ndstype'</cite>: the NDS2 channel suffix</p></li>
+</ul>
+<p>Any optional keys that aren't found will return a value of <cite>None</cite></p>
+</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>dict</cite></p>
+</dd>
+<dt class="field-even">例外<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- if the name cannot be parsed with at least an IFO and SYSTEM</p>
+</dd>
+</dl>
+<p class="rubric">サンプル</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Channel</span><span class="o">.</span><span class="n">parse_channel_name</span><span class="p">(</span><span class="s2">&quot;L1:LSC-DARM_IN1_DQ&quot;</span><span class="p">)</span>
+<span class="go">{&#39;ifo&#39;: &#39;L1&#39;,</span>
+<span class="go"> &#39;ndstype&#39;: None,</span>
+<span class="go"> &#39;signal&#39;: &#39;IN1_DQ&#39;,</span>
+<span class="go"> &#39;subsystem&#39;: &#39;DARM&#39;,</span>
+<span class="go"> &#39;system&#39;: &#39;LSC&#39;,</span>
+<span class="go"> &#39;trend&#39;: None}</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Channel</span><span class="o">.</span><span class="n">parse_channel_name</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;H1:ISI-BS_ST1_SENSCOR_GND_STS_X_BLRMS_100M_300M.rms,m-trend&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">{&#39;ifo&#39;: &#39;H1&#39;,</span>
+<span class="go"> &#39;ndstype&#39;: &#39;m-trend&#39;,</span>
+<span class="go"> &#39;signal&#39;: &#39;ST1_SENSCOR_GND_STS_X_BLRMS_100M_300M&#39;,</span>
+<span class="go"> &#39;subsystem&#39;: &#39;BS&#39;,</span>
+<span class="go"> &#39;system&#39;: &#39;ISI&#39;,</span>
+<span class="go"> &#39;trend&#39;: &#39;rms&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.query">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">kerberos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.Channel.query" title="Link to this definition">#</a></dt>
+<dd><p>Query the LIGO Channel Information System for <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<cite>str</cite>) -- Name of channel for which to query.</p></li>
+<li><p><strong>kerberos</strong> (<cite>bool</cite>, optional) -- If <cite>True</cite> use an existing Kerberos ticket as the authentication credential.
+Default (<cite>None</cite>) is to check for credentials and request username
+and password if none are found.</p></li>
+<li><p><strong>kwargs</strong> -- Other keyword arguments are passed directly to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">ciecplib.get()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>channel</strong> -- A new <cite>Channel</cite> containing all of the attributes set from
+its entry in the CIS.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>Channel</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.query_nds2">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_nds2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nds2.connection</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.Channel.query_nds2" title="Link to this definition">#</a></dt>
+<dd><p>Query an NDS server for channel information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<cite>str</cite>) -- Name of channel for which to query.</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) -- Name of NDS2 server.</p></li>
+<li><p><strong>port</strong> (<cite>int</cite>, optional) -- Port number for NDS2 connection.</p></li>
+<li><p><strong>connection</strong> (<cite>nds2.connection</cite>) -- Open connection to use for query.</p></li>
+<li><p><strong>type</strong> (<cite>str</cite>, <cite>int</cite>) -- NDS2 channel type with which to restrict query</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>channel</strong> -- Channel with metadata retrieved from NDS2 server.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>Channel</cite></p>
+</dd>
+<dt class="field-even">例外<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- If multiple channels are found for a given name.</p>
+</dd>
+</dl>
+<div class="admonition- admonition">
+<p class="admonition-title">メモ</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>One of <code class="docutils literal notranslate"><span class="pre">host</span></code> or <code class="docutils literal notranslate"><span class="pre">connection</span></code> is required.</p>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.safe">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">safe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.safe" title="Link to this definition">#</a></dt>
+<dd><p>Whether this channel is 'safe' to use as a noise witness.</p>
+<p>Any channel that records part or all of a GW signal as it
+interacts with the interferometer is not safe to use as a noise
+witness</p>
+<p>A safe value of <cite>None</cite> simply indicates that the safety of this
+channel has not been determined</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.sample_rate">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.sample_rate" title="Link to this definition">#</a></dt>
+<dd><p>Rate of samples (Hertz) for this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.signal">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">signal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.signal" title="Link to this definition">#</a></dt>
+<dd><p>Instrumental signal for this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.subsystem">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subsystem</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.subsystem" title="Link to this definition">#</a></dt>
+<dd><p>Instrumental sub-system for this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.system">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">system</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.system" title="Link to this definition">#</a></dt>
+<dd><p>Instrumental system for this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.texname">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">texname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.texname" title="Link to this definition">#</a></dt>
+<dd><p>Name of this channel in LaTeX printable format.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.trend">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trend</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.trend" title="Link to this definition">#</a></dt>
+<dd><p>Trend type for this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.type">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.type" title="Link to this definition">#</a></dt>
+<dd><p>DAQ data type for this channel.</p>
+<p>Valid values for this field are restricted to those understood
+by the NDS2 client sofware, namely:</p>
+<p>'m-trend', 'online', 'raw', 'reduced', 's-trend', 'static', 'test-pt'</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.unit">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">UnitBase</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.unit" title="Link to this definition">#</a></dt>
+<dd><p>Data unit for this channel.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.Channel.url">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#gwexpy.detector.Channel.url" title="Link to this definition">#</a></dt>
+<dd><p>CIS browser url for this channel.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.detector.</span></span><span class="sig-name descname"><span class="pre">ChannelList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.detector.ChannelList" title="Link to this definition">#</a></dt>
+<dd><p>ベースクラス: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></p>
+<p>A <cite>list</cite> of <cite>channels &lt;Channel&gt;</cite>, with parsing utilities.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#gwexpy.detector.ChannelList.find" title="Link to this definition">#</a></dt>
+<dd><p>Find the <cite>Channel</cite> with a specific name in this <cite>ChannelList</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<cite>str</cite>) -- name of the <cite>Channel</cite> to find</p>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>index</strong> -- the position of the first <cite>Channel</cite> in this <cite>ChannelList</cite>
+whose <cite>~Channel.name</cite> matches the search key.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>int</cite></p>
+</dd>
+<dt class="field-even">例外<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- if no matching <cite>Channel</cite> is found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.from_names">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.ChannelList.from_names" title="Link to this definition">#</a></dt>
+<dd><p>Create a new <cite>ChannelList</cite> from a list of names.</p>
+<p>The list of names can include comma-separated sets of names,
+in which case the return will be a flattened list of all parsed
+channel names.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.ifos">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ifos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gwexpy.detector.ChannelList.ifos" title="Link to this definition">#</a></dt>
+<dd><p>The <cite>set</cite> of interferometer prefixes used in this <cite>ChannelList</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.query">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">kerberos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.ChannelList.query" title="Link to this definition">#</a></dt>
+<dd><p>Query the LIGO Channel Information System a <cite>ChannelList</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<cite>str</cite>) -- name of channel, or part of it.</p></li>
+<li><p><strong>kerberos</strong> (<cite>bool</cite>, optional) -- If <cite>True</cite> use an existing Kerberos ticket as the authentication credential.
+Default (<cite>None</cite>) is to check for credentials and request username
+and password if none are found.</p></li>
+<li><p><strong>kwargs</strong> -- Other keyword arguments are passed directly to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">ciecplib.get()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>channels</strong> -- A new list containing all <cite>Channels &lt;Channel&gt;</cite> found.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>ChannelList</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.query_nds2">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_nds2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nds2.connection</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">127</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.ChannelList.query_nds2" title="Link to this definition">#</a></dt>
+<dd><p>Query an NDS server for channel information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>names</strong> (<cite>str</cite>) -- Names of requested channels.</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) -- Name of NDS2 server.</p></li>
+<li><p><strong>port</strong> (<cite>int</cite>, optional) -- Port number for NDS2 connection.</p></li>
+<li><p><strong>connection</strong> (<cite>nds2.connection</cite>, optional) -- Open connection to use for query.</p></li>
+<li><p><strong>type</strong> (<cite>str</cite>, <cite>int</cite>, optional) -- NDS2 channel type with which to restrict query</p></li>
+<li><p><strong>unique</strong> (<cite>bool</cite>, optional) -- If <cite>True</cite> require a unique query result for each name given.
+Default is <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>channellist</strong> -- list of <cite>Channels &lt;Channel&gt;</cite> with metadata retrieved from
+NDS2 server</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>ChannelList</cite></p>
+</dd>
+<dt class="field-even">例外<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- If multiple channels are found for a given name and <cite>unique=True</cite>
+    is given.</p>
+</dd>
+</dl>
+<div class="admonition- admonition">
+<p class="admonition-title">メモ</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>One of <code class="docutils literal notranslate"><span class="pre">host</span></code> or <code class="docutils literal notranslate"><span class="pre">connection</span></code> is required.</p>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.query_nds2_availability">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_nds2_availability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#gwexpy.detector.Channel" title="gwexpy.detector.Channel"><span class="pre">Channel</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">127</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nds2.connection</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SegmentListDict</span></span></span><a class="headerlink" href="#gwexpy.detector.ChannelList.query_nds2_availability" title="Link to this definition">#</a></dt>
+<dd><p>Query for when data are available for these channels in NDS2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channels</strong> (<cite>list</cite> of <cite>str</cite> or <cite>Channel</cite>) -- List of <cite>Channel</cite> or <cite>str</cite> for which to search.</p></li>
+<li><p><strong>start</strong> (<cite>~gwpy.time.LIGOTimeGPS</cite>, <cite>float</cite>, <cite>str</cite>) -- GPS start time of search.
+Any input parseable by <cite>~gwpy.time.to_gps</cite> is fine.</p></li>
+<li><p><strong>end</strong> (<cite>~gwpy.time.LIGOTimeGPS</cite>, <cite>float</cite>, <cite>str</cite>, optional) -- GPS end time of search.
+Any input parseable by <cite>~gwpy.time.to_gps</cite> is fine.</p></li>
+<li><p><strong>ctype</strong> (<cite>int</cite>, <cite>str</cite>) -- The NDS2 channel type name or enum ID against which to restrict
+results. Default is <code class="docutils literal notranslate"><span class="pre">127</span></code> which means 'all'.</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) -- Name of NDS2 server to use.</p></li>
+<li><p><strong>port</strong> (<cite>int</cite>, optional) -- Port number for NDS2 connection.</p></li>
+<li><p><strong>connection</strong> (<cite>nds2.connection</cite>, optional) -- Open connection to use for query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>segdict</strong> -- dict of <code class="docutils literal notranslate"><span class="pre">(name,</span> <span class="pre">SegmentList)</span></code> pairs</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.segments.SegmentListDict</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.read">
+<span class="sig-name descname"><span class="pre">read</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.detector.connect.ChannelListRead</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#gwexpy.detector.ChannelList.read" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.sieve">
+<span class="sig-name descname"><span class="pre">sieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/re.html#re.Pattern" title="(in Python v3.14)"><span class="pre">re.Pattern</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_match</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">others</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.detector.ChannelList.sieve" title="Link to this definition">#</a></dt>
+<dd><p>Find all channels in this list matching the specified criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<cite>str</cite>, or regular expression) -- Any part of the channel name against which to match
+(or full name if <cite>exact_match=False</cite> is given).</p></li>
+<li><p><strong>sample_rate</strong> (<cite>float</cite>) -- Rate (number of samples per second) to match exactly.</p></li>
+<li><p><strong>sample_range</strong> (2-<cite>tuple</cite>) -- <cite>[low, high]</cite> closed interval or rates to match within.</p></li>
+<li><p><strong>exact_match</strong> (<cite>bool</cite>) -- If <cite>True</cite> return channels matching <code class="docutils literal notranslate"><span class="pre">name</span></code> exactly.
+If <cite>False</cite> (default) allow partial matches.</p></li>
+<li><p><strong>others</strong> -- Other <code class="docutils literal notranslate"><span class="pre">(key,</span> <span class="pre">value)</span></code> attribute pairs to match.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>new</strong> -- A new <cite>ChannelList</cite> containing the matching channels.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>ChannelList</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.detector.ChannelList.write">
+<span class="sig-name descname"><span class="pre">write</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.detector.connect.ChannelListWrite</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#gwexpy.detector.ChannelList.write" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.detector.get_timezone">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.detector.</span></span><span class="sig-name descname"><span class="pre">get_timezone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ifo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#gwexpy.detector.get_timezone" title="Link to this definition">#</a></dt>
+<dd><p>Return the timezone for the given interferometer prefix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ifo</strong> (<cite>str</cite>) -- Prefix of interferometer, e.g. <code class="docutils literal notranslate"><span class="pre">'X1'</span></code></p>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>timezone</strong> -- The name of the timezone for <code class="docutils literal notranslate"><span class="pre">ifo</span></code>.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>str</cite></p>
+</dd>
+<dt class="field-even">例外<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- If <code class="docutils literal notranslate"><span class="pre">ifo</span></code> is not recognised.</p>
+</dd>
+</dl>
+<p class="rubric">サンプル</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_timezone</span><span class="p">(</span><span class="s2">&quot;G1&quot;</span><span class="p">)</span>
+<span class="go">&#39;Europe/Berlin&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gwexpy.detector.get_timezone_offset">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.detector.</span></span><span class="sig-name descname"><span class="pre">get_timezone_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ifo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="headerlink" href="#gwexpy.detector.get_timezone_offset" title="Link to this definition">#</a></dt>
+<dd><p>Return the offset in seconds between UTC and the given interferometer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ifo</strong> (<cite>str</cite>) -- Prefix of interferometer, e.g. <code class="docutils literal notranslate"><span class="pre">'X1'</span></code></p></li>
+<li><p><strong>dt</strong> (<cite>datetime.datetime</cite>, optional) -- The time at which to calculate the offset.
+Default is <cite>datetime.datetime.now</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>offset</strong> -- The offset in seconds between the timezone of the interferometer
+and UTC.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="gwexpy.segments.SegmentList.html"
+       title="前のページ">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">前へ</p>
+        <p class="prev-next-title">gwexpy.segments.SegmentList</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="astro.html"
+       title="次ページ">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">Astrophysics Utilities</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> このページでは
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel"><code class="docutils literal notranslate"><span class="pre">Channel</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.MATCH"><code class="docutils literal notranslate"><span class="pre">Channel.MATCH</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.copy"><code class="docutils literal notranslate"><span class="pre">Channel.copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.dtype"><code class="docutils literal notranslate"><span class="pre">Channel.dtype</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.find_frametype"><code class="docutils literal notranslate"><span class="pre">Channel.find_frametype()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.frametype"><code class="docutils literal notranslate"><span class="pre">Channel.frametype</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.frequency_range"><code class="docutils literal notranslate"><span class="pre">Channel.frequency_range</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.from_arrakis"><code class="docutils literal notranslate"><span class="pre">Channel.from_arrakis()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.from_nds2"><code class="docutils literal notranslate"><span class="pre">Channel.from_nds2()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.ifo"><code class="docutils literal notranslate"><span class="pre">Channel.ifo</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.model"><code class="docutils literal notranslate"><span class="pre">Channel.model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.name"><code class="docutils literal notranslate"><span class="pre">Channel.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.ndsname"><code class="docutils literal notranslate"><span class="pre">Channel.ndsname</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.ndstype"><code class="docutils literal notranslate"><span class="pre">Channel.ndstype</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.parse_channel_name"><code class="docutils literal notranslate"><span class="pre">Channel.parse_channel_name()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.query"><code class="docutils literal notranslate"><span class="pre">Channel.query()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.query_nds2"><code class="docutils literal notranslate"><span class="pre">Channel.query_nds2()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.safe"><code class="docutils literal notranslate"><span class="pre">Channel.safe</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.sample_rate"><code class="docutils literal notranslate"><span class="pre">Channel.sample_rate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.signal"><code class="docutils literal notranslate"><span class="pre">Channel.signal</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.subsystem"><code class="docutils literal notranslate"><span class="pre">Channel.subsystem</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.system"><code class="docutils literal notranslate"><span class="pre">Channel.system</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.texname"><code class="docutils literal notranslate"><span class="pre">Channel.texname</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.trend"><code class="docutils literal notranslate"><span class="pre">Channel.trend</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.type"><code class="docutils literal notranslate"><span class="pre">Channel.type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.unit"><code class="docutils literal notranslate"><span class="pre">Channel.unit</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.Channel.url"><code class="docutils literal notranslate"><span class="pre">Channel.url</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList"><code class="docutils literal notranslate"><span class="pre">ChannelList</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.find"><code class="docutils literal notranslate"><span class="pre">ChannelList.find()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.from_names"><code class="docutils literal notranslate"><span class="pre">ChannelList.from_names()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.ifos"><code class="docutils literal notranslate"><span class="pre">ChannelList.ifos</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.query"><code class="docutils literal notranslate"><span class="pre">ChannelList.query()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.query_nds2"><code class="docutils literal notranslate"><span class="pre">ChannelList.query_nds2()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.query_nds2_availability"><code class="docutils literal notranslate"><span class="pre">ChannelList.query_nds2_availability()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.read"><code class="docutils literal notranslate"><span class="pre">ChannelList.read</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.sieve"><code class="docutils literal notranslate"><span class="pre">ChannelList.sieve()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.ChannelList.write"><code class="docutils literal notranslate"><span class="pre">ChannelList.write</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.get_timezone"><code class="docutils literal notranslate"><span class="pre">get_timezone()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.detector.get_timezone_offset"><code class="docutils literal notranslate"><span class="pre">get_timezone_offset()</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/reference/api/detector.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> ソースコードを表示
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3 を使用して作成されました。
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0 で構築されています。
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

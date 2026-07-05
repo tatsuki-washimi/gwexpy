@@ -1,0 +1,273 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "case_segment_analysis-000",
+   "metadata": {
+    "tags": [
+     "lang-en"
+    ]
+   },
+   "source": [
+    "# Case Study: Event-Synchronized Analysis\n",
+    "\n",
+    "This tutorial shows a real-world workflow: matching events from two different logs, applying clock corrections, and generating event-by-event summary plots.\n",
+    "\n",
+    "The event windows are still represented by `gwpy.segments.Segment`, while gwexpy provides the table-management and `apply()`-driven batch workflow through `SegmentTable`. The division between GWpy base classes and gwexpy extensions is the same as in [SegmentTable: Basics](../segments/intro_segment_table.ipynb).\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "case_segment_analysis-001",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-07-05T18:44:12.818289Z",
+     "iopub.status.busy": "2026-07-05T18:44:12.818114Z",
+     "iopub.status.idle": "2026-07-05T18:44:15.951188Z",
+     "shell.execute_reply": "2026-07-05T18:44:15.949938Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import warnings\n",
+    "\n",
+    "warnings.filterwarnings(\"ignore\", category=UserWarning)\n",
+    "warnings.filterwarnings(\"ignore\", category=DeprecationWarning)\n",
+    "\n",
+    "import warnings\n",
+    "\n",
+    "with warnings.catch_warnings():\n",
+    "    warnings.simplefilter('ignore')\n",
+    "\n",
+    "    import pandas as pd\n",
+    "    from gwpy.segments import Segment\n",
+    "\n",
+    "    from gwexpy.table import SegmentTable\n",
+    "\n",
+    "    # 1. Simulate finding events\n",
+    "    events_df = pd.DataFrame({\n",
+    "    \"gps\": [1234567890.1, 1234567895.5, 1234567900.2],\n",
+    "    \"snr\": [15, 8, 22]\n",
+    "    })\n",
+    "\n",
+    "    # 2. Create SegmentTable from events\n",
+    "    # Define a 4-second window around each GPS time\n",
+    "    segs = [Segment(t-2, t+2) for t in events_df[\"gps\"]]\n",
+    "    st = SegmentTable.from_segments(segs, snr=events_df[\"snr\"])\n",
+    "    st\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "case_segment_analysis-002",
+   "metadata": {
+    "tags": [
+     "lang-en"
+    ]
+   },
+   "source": [
+    "## Batch Plot Generation\n",
+    "\n",
+    "We can use `apply()` to generate plots for each event and save them, storing the paths back in the table.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "case_segment_analysis-003",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-07-05T18:44:15.954012Z",
+     "iopub.status.busy": "2026-07-05T18:44:15.953424Z",
+     "iopub.status.idle": "2026-07-05T18:44:15.968679Z",
+     "shell.execute_reply": "2026-07-05T18:44:15.967610Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>span</th>\n",
+       "      <th>snr</th>\n",
+       "      <th>plot_path</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>(1234567888.1, 1234567892.1)</td>\n",
+       "      <td>15</td>\n",
+       "      <td>outputs/event_0.png</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>(1234567893.5, 1234567897.5)</td>\n",
+       "      <td>8</td>\n",
+       "      <td>outputs/event_1.png</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>(1234567898.2, 1234567902.2)</td>\n",
+       "      <td>22</td>\n",
+       "      <td>outputs/event_2.png</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                           span  snr            plot_path\n",
+       "0  (1234567888.1, 1234567892.1)   15  outputs/event_0.png\n",
+       "1  (1234567893.5, 1234567897.5)    8  outputs/event_1.png\n",
+       "2  (1234567898.2, 1234567902.2)   22  outputs/event_2.png"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import os\n",
+    "\n",
+    "os.makedirs(\"outputs\", exist_ok=True)\n",
+    "\n",
+    "def generate_event_plot(row):\n",
+    "    # Simulate plotting\n",
+    "    path = f\"outputs/event_{row.index}.png\"\n",
+    "    # plot = row[\"raw\"].plot() -> plot.save(path)\n",
+    "    with open(path, \"w\") as f: f.write(\"Dummy PNG\")\n",
+    "    return {\"plot_path\": path}\n",
+    "\n",
+    "st_plots = st.apply(generate_event_plot)\n",
+    "st_plots.display()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "case_segment_analysis-004",
+   "metadata": {
+    "tags": [
+     "lang-en"
+    ]
+   },
+   "source": [
+    "## Result Summary\n",
+    "\n",
+    "Finally, we can filter the table and export results.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "case_segment_analysis-005",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-07-05T18:44:15.970861Z",
+     "iopub.status.busy": "2026-07-05T18:44:15.970679Z",
+     "iopub.status.idle": "2026-07-05T18:44:15.979495Z",
+     "shell.execute_reply": "2026-07-05T18:44:15.978508Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>span</th>\n",
+       "      <th>snr</th>\n",
+       "      <th>plot_path</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>(1234567888.1, 1234567892.1)</td>\n",
+       "      <td>15</td>\n",
+       "      <td>outputs/event_0.png</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>(1234567898.2, 1234567902.2)</td>\n",
+       "      <td>22</td>\n",
+       "      <td>outputs/event_2.png</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                           span  snr            plot_path\n",
+       "0  (1234567888.1, 1234567892.1)   15  outputs/event_0.png\n",
+       "1  (1234567898.2, 1234567902.2)   22  outputs/event_2.png"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "st_best = st_plots.select(mask=st_plots.to_pandas()[\"snr\"] > 10)\n",
+    "st_best.to_pandas()"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.15"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

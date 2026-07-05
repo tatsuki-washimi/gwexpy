@@ -1,0 +1,1149 @@
+
+<!DOCTYPE html>
+
+
+<html lang="ja" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>gwexpy.segments.DataQualityDict &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="../../_static/documentation_options.js?v=e93cb3d0"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/api/gwexpy.segments.DataQualityDict';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/reference/api/gwexpy.segments.DataQualityDict.html" />
+    <link rel="icon" href="../../_static/favicon.svg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="gwexpy.segments.Segment" href="gwexpy.segments.Segment.html" />
+    <link rel="prev" title="gwexpy.segments.DataQualityFlag" href="gwexpy.segments.DataQualityFlag.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="ja"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">本文へスキップ</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>トップに戻る</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="バージョン警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="サイトナビゲーション">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/reference/api/gwexpy.segments.DataQualityDict.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="このページでは">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/reference/api/gwexpy.segments.DataQualityDict.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="セクションナビゲーション">
+  <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">コンテナ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="timeseries.html">Time Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html">gwexpy.timeseries.TimeSeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="frequencyseries.html">Frequency Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html">gwexpy.frequencyseries.FrequencySeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="spectrogram.html">Spectrogram</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html">gwexpy.spectrogram.Spectrogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="matrix.html">Matrix Containers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.timeseries.TimeSeriesMatrix.html">gwexpy.timeseries.TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeriesMatrix.html">gwexpy.frequencyseries.FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.spectrogram.SpectrogramMatrix.html">gwexpy.spectrogram.SpectrogramMatrix</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="fields.html">Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="table.html">Table</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.table.SegmentTable.html">gwexpy.table.SegmentTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.table.SegmentCell.html">gwexpy.table.SegmentCell</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="histogram.html">Histogram (gwexpy.histogram)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.Histogram.html">gwexpy.histogram.Histogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.HistogramDict.html">gwexpy.histogram.HistogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.HistogramList.html">gwexpy.histogram.HistogramList</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">解析と信号処理</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal.html">Signal Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Noise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="segments.html">Segments</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.DataQualityFlag.html">gwexpy.segments.DataQualityFlag</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">gwexpy.segments.DataQualityDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.Segment.html">gwexpy.segments.Segment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.SegmentList.html">gwexpy.segments.SegmentList</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="detector.html">Detector Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="astro.html">Astrophysics Utilities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">相互運用と入出力</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="interop.html">Interoperability (gwexpy.interop)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.hdf5_.html">gwexpy.interop.hdf5_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.frequency.html">gwexpy.interop.frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.json_.html">gwexpy.interop.json_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sqlite_.html">gwexpy.interop.sqlite_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.zarr_.html">gwexpy.interop.zarr_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.netcdf4_.html">gwexpy.interop.netcdf4_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pandas_.html">gwexpy.interop.pandas_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.polars_.html">gwexpy.interop.polars_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.xarray_.html">gwexpy.interop.xarray_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.astropy_.html">gwexpy.interop.astropy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.dask_.html">gwexpy.interop.dask_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.torch_.html">gwexpy.interop.torch_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.torch_dataset.html">gwexpy.interop.torch_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.tensorflow_.html">gwexpy.interop.tensorflow_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.jax_.html">gwexpy.interop.jax_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.cupy_.html">gwexpy.interop.cupy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.finesse_.html">gwexpy.interop.finesse_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.control_.html">gwexpy.interop.control_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.simpeg_.html">gwexpy.interop.simpeg_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.mt_.html">gwexpy.interop.mt_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.mne_.html">gwexpy.interop.mne_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.neo_.html">gwexpy.interop.neo_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.quantities_.html">gwexpy.interop.quantities_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyroomacoustics_.html">gwexpy.interop.pyroomacoustics_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pydub_.html">gwexpy.interop.pydub_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.specutils_.html">gwexpy.interop.specutils_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyspeckit_.html">gwexpy.interop.pyspeckit_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyspice_.html">gwexpy.interop.pyspice_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.skrf_.html">gwexpy.interop.skrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyoma_.html">gwexpy.interop.pyoma_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.multitaper_.html">gwexpy.interop.multitaper_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sdypy_.html">gwexpy.interop.sdypy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sdynpy_.html">gwexpy.interop.sdynpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.meep_.html">gwexpy.interop.meep_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.openems_.html">gwexpy.interop.openems_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.emg3d_.html">gwexpy.interop.emg3d_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.meshio_.html">gwexpy.interop.meshio_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.metpy_.html">gwexpy.interop.metpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.wrf_.html">gwexpy.interop.wrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.harmonica_.html">gwexpy.interop.harmonica_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.exudyn_.html">gwexpy.interop.exudyn_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.opensees_.html">gwexpy.interop.opensees_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.obspy_.html">gwexpy.interop.obspy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.lal_.html">gwexpy.interop.lal_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.gwinc_.html">gwexpy.interop.gwinc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pycbc_.html">gwexpy.interop.pycbc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.root_.html">gwexpy.interop.root_</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">プロットとツール</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="plot.html">Plotting</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="time.html">Time (gwexpy.time)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.Time.html">gwexpy.time.Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.LIGOTimeGPS.html">gwexpy.time.LIGOTimeGPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.to_gps.html">gwexpy.time.to_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.from_gps.html">gwexpy.time.from_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.tconvert.html">gwexpy.time.tconvert</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">GWpy との差分</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../gwpy_added_api.html">GWpy 差分 API インデックス</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="パンくずリスト" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="ホーム">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">リファレンス</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="segments.html" class="nav-link">Segments</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">gwexpy.segments.DataQualityDict</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="gwexpy-segments-dataqualitydict">
+<h1>gwexpy.segments.DataQualityDict<a class="headerlink" href="#gwexpy-segments-dataqualitydict" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.segments.</span></span><span class="sig-name descname"><span class="pre">DataQualityDict</span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict" title="Link to this definition">#</a></dt>
+<dd><p>ベースクラス: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<p>An <cite>dict</cite> of (key, <cite>DataQualityFlag</cite>) pairs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.__init__" title="gwexpy.segments.DataQualityDict.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.coalesce" title="gwexpy.segments.DataQualityDict.coalesce"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coalesce</span></code></a>()</p></td>
+<td><p>Coalesce all segments lists in this <cite>DataQualityDict</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.copy" title="gwexpy.segments.DataQualityDict.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(*[, deep])</p></td>
+<td><p>Build a copy of this dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.from_ligolw_tables" title="gwexpy.segments.DataQualityDict.from_ligolw_tables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_ligolw_tables</span></code></a>(segmentdeftable, ...[, ...])</p></td>
+<td><p>Build a <cite>DataQualityDict</cite> from a set of LIGO_LW segment tables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.from_veto_definer_file" title="gwexpy.segments.DataQualityDict.from_veto_definer_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_veto_definer_file</span></code></a>(source[, start, end, ifo])</p></td>
+<td><p>Read a <cite>DataQualityDict</cite> from a LIGO_LW XML VetoDefinerTable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromkeys</span></code>(iterable[, value])</p></td>
+<td><p>Create a new dictionary with keys from iterable and values set to value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(key[, default])</p></td>
+<td><p>Return the value for key if key is in the dictionary, else default.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.intersection" title="gwexpy.segments.DataQualityDict.intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersection</span></code></a>()</p></td>
+<td><p>Return the intersection of all flags in this dict.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">items</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.plot" title="gwexpy.segments.DataQualityDict.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>([label])</p></td>
+<td><p>Plot this dict on a segments projection.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code>(k[,d])</p></td>
+<td><p>If the key is not found, return the default if given; otherwise, raise a KeyError.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">popitem</span></code>()</p></td>
+<td><p>Remove and return a (key, value) pair as a 2-tuple.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.populate" title="gwexpy.segments.DataQualityDict.populate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">populate</span></code></a>([source, segments, pad, on_error])</p></td>
+<td><p>Query the segment database for each flag's active segments.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.query" title="gwexpy.segments.DataQualityDict.query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query</span></code></a>(flags, *args[, host, on_error, parallel])</p></td>
+<td><p>Query the advanced LIGO DQSegDB for a list of flags.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.query_dqsegdb" title="gwexpy.segments.DataQualityDict.query_dqsegdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">query_dqsegdb</span></code></a>(flags, *args[, host, ...])</p></td>
+<td><p>Query the advanced LIGO DQSegDB for a list of flags.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdefault</span></code>(key[, default])</p></td>
+<td><p>Insert key with a value of default if key is not in the dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.to_ligolw_tables" title="gwexpy.segments.DataQualityDict.to_ligolw_tables"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_ligolw_tables</span></code></a>(**attrs)</p></td>
+<td><p>Convert this <cite>DataQualityDict</cite> into a trio of LIGO_LW segment tables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.union" title="gwexpy.segments.DataQualityDict.union"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union</span></code></a>()</p></td>
+<td><p>Return the union of all flags in this dict.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>([E, ]**F)</p></td>
+<td><p>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k] If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v In either case, this is followed by: for k in F:  D[k] = F[k]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.read" title="gwexpy.segments.DataQualityDict.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.segments.DataQualityDict.write" title="gwexpy.segments.DataQualityDict.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.read">
+<span class="sig-name descname"><span class="pre">read</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityDictRead</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#gwexpy.segments.DataQualityDict.read" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.write">
+<span class="sig-name descname"><span class="pre">write</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;gwpy.segments.connect.DataQualityDictWrite</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#gwexpy.segments.DataQualityDict.write" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.query_dqsegdb">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_dqsegdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.segments.Segment.html#gwexpy.segments.Segment" title="gwexpy.segments.Segment"><span class="pre">Segment</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.segments.SegmentList.html#gwexpy.segments.SegmentList" title="gwexpy.segments.SegmentList"><span class="pre">SegmentList</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.query_dqsegdb" title="Link to this definition">#</a></dt>
+<dd><p>Query the advanced LIGO DQSegDB for a list of flags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flags</strong> (<cite>iterable</cite>) -- A list of flag names for which to query.</p></li>
+<li><p><strong>args</strong> -- Either, two <cite>float</cite>-like numbers indicating the
+GPS [start, stop) interval, or a <cite>SegmentList</cite>
+defining a number of summary segments.</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) -- Name or URL of the DQSegDB instance to talk to.
+Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
+<li><p><strong>on_error</strong> (<cite>str</cite>, optional) -- <p>how to handle an error querying for one flag, one of</p>
+<ul>
+<li><p><cite>'raise'</cite> (default): raise the Exception</p></li>
+<li><p><cite>'warn'</cite>: print a warning</p></li>
+<li><p><cite>'ignore'</cite>: move onto the next flag as if nothing happened</p></li>
+</ul>
+</p></li>
+<li><p><strong>parallel</strong> (<cite>int</cite>, optional) -- Maximum number of threads to use for parallel connections to
+the DQSegDB host.</p></li>
+<li><p><strong>kwargs</strong> -- All other keyword arguments are passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flagdict</strong> -- An ordered <cite>DataQualityDict</cite> of (name, <cite>DataQualityFlag</cite>)
+pairs.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
+</dd>
+</dl>
+<p class="rubric">サンプル</p>
+<p>The GPS interval(s) of interest can be passed as two arguments
+specifing the start and end of a single interval:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a single <cite>Segment</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.query">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.segments.Segment.html#gwexpy.segments.Segment" title="gwexpy.segments.Segment"><span class="pre">Segment</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="gwexpy.segments.SegmentList.html#gwexpy.segments.SegmentList" title="gwexpy.segments.SegmentList"><span class="pre">SegmentList</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.query" title="Link to this definition">#</a></dt>
+<dd><p>Query the advanced LIGO DQSegDB for a list of flags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flags</strong> (<cite>iterable</cite>) -- A list of flag names for which to query.</p></li>
+<li><p><strong>args</strong> -- Either, two <cite>float</cite>-like numbers indicating the
+GPS [start, stop) interval, or a <cite>SegmentList</cite>
+defining a number of summary segments.</p></li>
+<li><p><strong>host</strong> (<cite>str</cite>, optional) -- Name or URL of the DQSegDB instance to talk to.
+Defaults to <code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.utils.get_default_host()</span></code>.</p></li>
+<li><p><strong>on_error</strong> (<cite>str</cite>, optional) -- <p>how to handle an error querying for one flag, one of</p>
+<ul>
+<li><p><cite>'raise'</cite> (default): raise the Exception</p></li>
+<li><p><cite>'warn'</cite>: print a warning</p></li>
+<li><p><cite>'ignore'</cite>: move onto the next flag as if nothing happened</p></li>
+</ul>
+</p></li>
+<li><p><strong>parallel</strong> (<cite>int</cite>, optional) -- Maximum number of threads to use for parallel connections to
+the DQSegDB host.</p></li>
+<li><p><strong>kwargs</strong> -- All other keyword arguments are passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dqsegdb2.query.query_segments()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flagdict</strong> -- An ordered <cite>DataQualityDict</cite> of (name, <cite>DataQualityFlag</cite>)
+pairs.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
+</dd>
+</dl>
+<p class="rubric">サンプル</p>
+<p>The GPS interval(s) of interest can be passed as two arguments
+specifing the start and end of a single interval:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a single <cite>Segment</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">interval</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, as a <cite>SegmentList</cite> specifying multiple intervals.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataQualityDict</span><span class="o">.</span><span class="n">query_dqsegdb</span><span class="p">([</span><span class="s2">&quot;X1:OBSERVING:1&quot;</span><span class="p">,</span> <span class="s2">&quot;Y1:OBSERVING:1&quot;</span><span class="p">],</span> <span class="n">intervals</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.from_veto_definer_file">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_veto_definer_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsToGps</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ifo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">read_kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.from_veto_definer_file" title="Link to this definition">#</a></dt>
+<dd><p>Read a <cite>DataQualityDict</cite> from a LIGO_LW XML VetoDefinerTable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<cite>str</cite>, <cite>Path</cite>, <cite>file</cite>) -- Path or URL of veto definer file to read, or open file.</p></li>
+<li><p><strong>start</strong> (<cite>~gwpy.time.LIGOTimeGPS</cite>, <cite>float</cite>, <cite>str</cite>) -- GPS start time of required data,
+any input parseable by <cite>~gwpy.time.to_gps</cite> is fine</p></li>
+<li><p><strong>end</strong> (<cite>~gwpy.time.LIGOTimeGPS</cite>, <cite>float</cite>, <cite>str</cite>) -- GPS end time of required data,
+any input parseable by <cite>~gwpy.time.to_gps</cite> is fine</p></li>
+<li><p><strong>ifo</strong> (<cite>str</cite>, optional) -- Interferometer prefix whose flags you want to read.
+Default is <cite>None</cite> (read all flags).</p></li>
+<li><p><strong>read_kw</strong> -- Other keyword arguments are passed to
+<cite>~astropy.table.Table.read</cite> when reading the veto definer file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flags</strong> -- A <cite>DataQualityDict</cite> of flags parsed from the <cite>veto_def_table</cite>
+of the input file.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
+</dd>
+</dl>
+<div class="admonition- admonition">
+<p class="admonition-title">メモ</p>
+<p>This method does not automatically <cite>~DataQualityDict.populate</cite>
+the <cite>active</cite> segment list of any flags, a separate call should
+be made for that as follows</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flags</span> <span class="o">=</span> <span class="n">DataQualityDict</span><span class="o">.</span><span class="n">from_veto_definer_file</span><span class="p">(</span><span class="s1">&#39;/path/to/file.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flags</span><span class="o">.</span><span class="n">populate</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.from_ligolw_tables">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ligolw_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segmentdeftable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentDefTable,</span> <span class="pre">segmentsumtable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentSumTable,</span> <span class="pre">segmenttable:</span> <span class="pre">igwn_ligolw.lsctables.SegmentTable,</span> <span class="pre">names:</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">gpstype:</span> <span class="pre">type[SupportsFloat]</span> <span class="pre">|</span> <span class="pre">Callable[[float],</span> <span class="pre">SupportsFloat]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'ligotimegps.ligotimegps.LIGOTimeGPS'&gt;,</span> <span class="pre">on_missing:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'error'</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.from_ligolw_tables" title="Link to this definition">#</a></dt>
+<dd><p>Build a <cite>DataQualityDict</cite> from a set of LIGO_LW segment tables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>segmentdeftable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentDefTable</span></code>) -- The <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table to read.</p></li>
+<li><p><strong>segmentsumtable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentSumTable</span></code>) -- The <code class="docutils literal notranslate"><span class="pre">segment_summary</span></code> table to read.</p></li>
+<li><p><strong>segmenttable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentTable</span></code>) -- The <code class="docutils literal notranslate"><span class="pre">segment</span></code> table to read.</p></li>
+<li><p><strong>names</strong> (<cite>list</cite> of <cite>str</cite>, optional) -- A list of flag names to read.
+Default is to read all names.</p></li>
+<li><p><strong>gpstype</strong> (<cite>type</cite>, <cite>callable</cite>, optional) -- Class to use for GPS times in returned objects, can be a function
+to convert GPS time to something else.
+Default is <cite>~gwpy.time.LIGOTimeGPS</cite>.</p></li>
+<li><p><strong>on_missing</strong> (<cite>str</cite>, optional) -- <p>Action to take when a one or more <code class="docutils literal notranslate"><span class="pre">names</span></code> are not found in
+the <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table, one of</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'ignore'</span></code> : do nothing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'warn'</span></code> : print a warning</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">error'</span></code> : raise a <cite>ValueError</cite></p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>dqdict</strong> -- A dict of <cite>DataQualityFlag</cite> objects populated from the LIGO_LW tables.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.to_ligolw_tables">
+<span class="sig-name descname"><span class="pre">to_ligolw_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">igwn_ligolw.lsctables.SegmentDefTable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">igwn_ligolw.lsctables.SegmentSumTable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">igwn_ligolw.lsctables.SegmentTable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.to_ligolw_tables" title="Link to this definition">#</a></dt>
+<dd><p>Convert this <cite>DataQualityDict</cite> into a trio of LIGO_LW segment tables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>attrs</strong> -- Other attributes to add to all rows in all tables
+(e.g. <code class="docutils literal notranslate"><span class="pre">'process_id'</span></code>).</p>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>segmentdeftable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentDefTable</span></code>) -- The <code class="docutils literal notranslate"><span class="pre">segment_definer</span></code> table.</p></li>
+<li><p><strong>segmentsumtable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentSumTable</span></code>) -- The <code class="docutils literal notranslate"><span class="pre">segment_summary</span></code> table.</p></li>
+<li><p><strong>segmenttable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentTable</span></code>) -- The <code class="docutils literal notranslate"><span class="pre">segment</span></code> table.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.coalesce">
+<span class="sig-name descname"><span class="pre">coalesce</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.coalesce" title="Link to this definition">#</a></dt>
+<dd><p>Coalesce all segments lists in this <cite>DataQualityDict</cite>.</p>
+<p><strong>This method modifies this object in-place.</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A view of this flag, not a copy.</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.populate">
+<span class="sig-name descname"><span class="pre">populate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://segments.ligo.org'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gwexpy.segments.SegmentList.html#gwexpy.segments.SegmentList" title="gwexpy.segments.SegmentList"><span class="pre">SegmentList</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.populate" title="Link to this definition">#</a></dt>
+<dd><p>Query the segment database for each flag's active segments.</p>
+<p>This method assumes all of the metadata for each flag have been
+filled. Minimally, the following attributes must be filled</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.name" title="gwexpy.segments.DataQualityFlag.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>The name associated with this flag.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.known" title="gwexpy.segments.DataQualityFlag.known"><code class="xref py py-obj docutils literal notranslate"><span class="pre">known</span></code></a></p></td>
+<td><p>The segments during which this flag was known.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Segments will be fetched from the database, with any
+<a class="reference internal" href="gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.padding" title="gwexpy.segments.DataQualityFlag.padding"><code class="xref py py-attr docutils literal notranslate"><span class="pre">padding</span></code></a> added on-the-fly.</p>
+<p>Entries in this dict will be modified in-place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<cite>str</cite>) -- Source of segments for this flag. This must be
+either a URL for a segment database or a path to a file on disk.</p></li>
+<li><p><strong>segments</strong> (<cite>SegmentList</cite>, optional) -- A list of known segments during which to query, if not given,
+existing known segments for flags will be used.</p></li>
+<li><p><strong>pad</strong> (<cite>bool</cite>, optional, default: <cite>True</cite>) -- Apply the <cite>~DataQualityFlag.padding</cite> associated with each
+flag, default: <cite>True</cite>.</p></li>
+<li><p><strong>on_error</strong> (<cite>str</cite>) -- <p>How to handle an error querying for one flag, one of</p>
+<ul>
+<li><p><cite>'raise'</cite> (default): raise the Exception</p></li>
+<li><p><cite>'warn'</cite>: print a warning</p></li>
+<li><p><cite>'ignore'</cite>: move onto the next flag as if nothing happened</p></li>
+</ul>
+</p></li>
+<li><p><strong>kwargs</strong> -- Any other keyword arguments to be passed to
+<a class="reference internal" href="gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.query" title="gwexpy.segments.DataQualityFlag.query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DataQualityFlag.query()</span></code></a> or <a class="reference internal" href="gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.read" title="gwexpy.segments.DataQualityFlag.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DataQualityFlag.read()</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> -- A reference to the modified DataQualityDict</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityDict</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.copy" title="Link to this definition">#</a></dt>
+<dd><p>Build a copy of this dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>deep</strong> (<cite>bool</cite>, optional, default: <cite>False</cite>) -- perform a deep copy of the original dictionary with a fresh
+memory address</p>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>flag2</strong> -- a copy of the original dictionary</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>DataQualityFlag</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.union">
+<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag" title="gwpy.segments.flag.DataQualityFlag"><span class="pre">DataQualityFlag</span></a></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.union" title="Link to this definition">#</a></dt>
+<dd><p>Return the union of all flags in this dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>union</strong> -- a new <cite>DataQualityFlag</cite> who's active and known segments
+are the union of those of the values of this dict</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>DataQualityFlag</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.intersection">
+<span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag" title="gwpy.segments.flag.DataQualityFlag"><span class="pre">DataQualityFlag</span></a></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.intersection" title="Link to this definition">#</a></dt>
+<dd><p>Return the intersection of all flags in this dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>intersection</strong> -- a new <cite>DataQualityFlag</cite> who's active and known segments
+are the intersection of those of the values of this dict</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>DataQualityFlag</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.segments.DataQualityDict.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'key'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><span class="pre">Plot</span></a></span></span><a class="headerlink" href="#gwexpy.segments.DataQualityDict.plot" title="Link to this definition">#</a></dt>
+<dd><p>Plot this dict on a segments projection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<cite>str</cite>, optional) -- <p>Labelling system to use, or fixed label for all flags,
+special values include</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'key'</span></code>: use the key of the <cite>DataQualityDict</cite>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'name'</span></code>: use the <a class="reference internal" href="gwexpy.segments.DataQualityFlag.html#gwexpy.segments.DataQualityFlag.name" title="gwexpy.segments.DataQualityFlag.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a> of the flag</p></li>
+</ul>
+<p>If anything else, that fixed label will be used for all lines.</p>
+</p></li>
+<li><p><strong>kwargs</strong> -- All keyword arguments are passed to the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code> constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>figure</strong> -- the newly created figure, with populated Axes.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~matplotlib.figure.Figure</cite></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">参考</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="(in Matplotlib v3.11.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.figure</span></code></a></dt><dd><p>For documentation of keyword arguments used to create the figure.</p>
+</dd>
+<dt><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.add_subplot.html#matplotlib.figure.Figure.add_subplot" title="(in Matplotlib v3.11.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.add_subplot</span></code></a></dt><dd><p>For documentation of keyword arguments used to create the axes.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwpy.plot.SegmentAxes.plot_segmentlist</span></code></dt><dd><p>For documentation of keyword arguments used in rendering the data.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="gwexpy.segments.DataQualityFlag.html"
+       title="前のページ">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">前へ</p>
+        <p class="prev-next-title">gwexpy.segments.DataQualityFlag</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="gwexpy.segments.Segment.html"
+       title="次ページ">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">gwexpy.segments.Segment</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> このページでは
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict"><code class="docutils literal notranslate"><span class="pre">DataQualityDict</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.__init__"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.read"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.read</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.write"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.write</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.query_dqsegdb"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.query_dqsegdb()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.query"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.query()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.from_veto_definer_file"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.from_veto_definer_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.from_ligolw_tables"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.from_ligolw_tables()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.to_ligolw_tables"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.to_ligolw_tables()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.coalesce"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.coalesce()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.populate"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.populate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.copy"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.union"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.union()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.intersection"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.intersection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.segments.DataQualityDict.plot"><code class="docutils literal notranslate"><span class="pre">DataQualityDict.plot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/reference/api/gwexpy.segments.DataQualityDict.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> ソースコードを表示
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3 を使用して作成されました。
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0 で構築されています。
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

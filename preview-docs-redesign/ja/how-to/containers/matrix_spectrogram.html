@@ -1,0 +1,980 @@
+
+<!DOCTYPE html>
+
+
+<html lang="ja" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SpectrogramMatrix: 行列処理の基本 &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="../../_static/documentation_options.js?v=e93cb3d0"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/containers/matrix_spectrogram';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/containers/matrix_spectrogram.html" />
+    <link rel="icon" href="../../_static/favicon.svg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="Field API: ScalarField の基本" href="field_scalar_intro.html" />
+    <link rel="prev" title="FrequencySeriesMatrix: 行列処理の基本" href="matrix_frequencyseries.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="ja"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">本文へスキップ</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>トップに戻る</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="バージョン警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="サイトナビゲーション">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/containers/matrix_spectrogram.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="このページでは">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/containers/matrix_spectrogram.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="セクションナビゲーション">
+  <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">データとフォーマット</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">ツールと操作</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">トラブルシューティング</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">GWexpy バージョン間の移行</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">技法レシピ</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">コンテナと行列</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="matrix_frequencyseries.html">FrequencySeriesMatrix: 行列処理の基本</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">SpectrogramMatrix: 行列処理の基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="field_scalar_intro.html">Field API: ScalarField の基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="field_advanced_workflow.html">Field API: 高度解析ワークフロー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../spectral/index.html">スペクトル・時間周波数</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_spectrogram_processing.html">スペクトログラム: 正規化とクリーニング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_hht.html">HHT: 解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_detection.html">ピーク検出: ピークを見つける</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_tracking.html">ピーク追跡: 時間変化の解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/time_frequency_analysis_comparison.html">時間周波数解析：インタラクティブ比較</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">フィッティングと統計</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_fitting.html">フィッティング: スペクトル線解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_arima.html">ARIMA: 時系列予測</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_decomposition.html">分解解析: PCA・ICA と固有モード</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_correlation.html">相関解析: 統計的手法</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../fitting/intro_histogram.html">ヒストグラム: 基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/rayleigh_gauch_tutorial.html">非ガウス雑音解析: Rayleigh と Gaussian-Chi</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../control/index.html">制御とモデリング</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_basics.html">制御解析: 共振とフィードバック</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">制御解析: 実測応答からのプラントモデリング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">制御解析: 離散化（ZOH と Tustin の比較）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">懸架系の高精度モーダル解析</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../coupling/index.html">カップリングと相関</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_bruco.html">Bruco: コヒーレンス解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_coupling.html">カップリング解析: マルチチャンネル結合</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_field_analysis.html">多次元フィールド解析：ビームプロファイルと空間統計</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../segments/index.html">セグメントとテーブル</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_asd_pipeline.html">ASD 解析: パイプライン</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">セグメント解析: 可視化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: 基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">セグメント解析: 基本パイプライン</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../viz/index.html">可視化</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../viz/intro_mapplotting.html">マッププロット: 基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../viz/intro_interop.html">相互運用: 基本</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">ケーススタディ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../case-studies/index.html">ケーススタディ</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_active_damping.html">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_transfer_function.html">チュートリアル: 伝達関数の測定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_calibration_pipeline.html">キャリブレーション・パイプライン：Counts → Strain 変換</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_dttxml_calibration.html">gwexpy で DTT XML ファイルを読み込む</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_finesse_optics.html">Finesse 3 連携: シミュレーションと測定の統合</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_seismic_obspy.html">ケーススタディ: ObsPy 連携による地震データ解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_gbd_format.html">ケーススタディ: GBD 形式 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_hdf5_provenance.html">HDF5 による再現可能なメタデータ管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_pycbc_search.html">PyCBC 連携：gwexpy 前処理から重力波探索まで</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bootstrap_gls_fitting.html">ケーススタディ: Bootstrap PSD と GLS フィッティング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_ml_preprocessing.html">ケーススタディ: ML 前処理パイプライン</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_segment_analysis.html">ケーススタディ: イベント同期解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_physics_validation.html">物理妥当性検証：単位・数値床・健全性テスト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_arima_burst_search.html">ARIMA を用いたバーストイベント検出</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_signal_extraction.html">信号抽出: 色付き雑音からの微弱信号回収</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_lockin_detection.html">ロックイン検出: 弱い AM/FM 構造の復元</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_wiener_filter.html">ウィーナーフィルタ: コヒーレント雑音の差し引き</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_coupling_analysis.html">カップリング解析: チャンネル間伝達経路の推定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_ica_denoising.html">ケーススタディ: Bruco と ICA によるノイズ削減</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_advanced.html">Bruco: バイリニアカップリングと AM/FM 復調</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_violin_mode.html">ケーススタディ: バイオリンモード解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_schumann_resonance.html">ケーススタディ: シューマン共鳴解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_glitch_analysis.html">グリッチ詳細解析：Q-変換と Omega スキャン</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="パンくずリスト" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="ホーム">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">ハウツーガイド</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">コンテナと行列</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">SpectrogramMatrix: 行列処理の基本</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="spectrogrammatrix-matrix-basics">
+<h1>SpectrogramMatrix: 行列処理の基本<a class="headerlink" href="#spectrogrammatrix-matrix-basics" title="Link to this heading">#</a></h1>
+<p>このノートブックでは <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> クラスの基本的な使い方を紹介します。</p>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は、複数の <code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code> オブジェクトを 3次元 (Batch, Time, Frequency) の行列として効率的に扱うためのクラスです。<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> を継承しており、高速な数値計算や PyTorch/CuPy との連携が可能です。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
+
+<span class="c1"># Fix random seed</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="data-preparation">
+<h2>1. データの準備<a class="headerlink" href="#data-preparation" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Sample configuration</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">tone50</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">tone20</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">tone50</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">tone50</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">tone50</span> <span class="o">-</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">units</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">)</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;ch00&quot;</span><span class="p">,</span> <span class="s2">&quot;ch01&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;ch10&quot;</span><span class="p">,</span> <span class="s2">&quot;ch11&quot;</span><span class="p">]]</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
+
+<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">tsm</span><span class="p">)</span>
+<span class="n">tsm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><h3>SeriesMatrix: shape=(2, 2, 512), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.0078125 s, <b>N_samples:</b> 512</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>r0</th>
+      <td>row0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td>row1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Column Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c0</th>
+      <td>col0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>c1</th>
+      <td>col1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Element Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>unit</th>
+      <th>name</th>
+      <th>channel</th>
+      <th>row</th>
+      <th>col</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V</td>
+      <td>ch00</td>
+      <td>X:A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>V</td>
+      <td>ch01</td>
+      <td>X:B</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>V</td>
+      <td>ch10</td>
+      <td>Y:A</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V</td>
+      <td>ch11</td>
+      <td>Y:B</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div><img alt="../../_images/fda4aed2d4b823dac9e98b7fdf3515d29b3e52ab09ce918cd92ce2e4b2104185.png" src="../../_images/fda4aed2d4b823dac9e98b7fdf3515d29b3e52ab09ce918cd92ce2e4b2104185.png" />
+</div>
+</div>
+</section>
+<section id="creating-a-spectrogrammatrix">
+<h2>2. SpectrogramMatrix の作成<a class="headerlink" href="#creating-a-spectrogrammatrix" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> の <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> メソッドを使用すると、全てのスペクトログラムが一つの <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> にスタックされます。 これにより、形状が <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">Time,</span> <span class="pre">Frequency)</span></code> の3次元配列が得られます。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spec_matrix</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">spec_matrix</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (Batch, Time, Freq)</span>
+<span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type: &lt;class &#39;gwexpy.spectrogram.matrix.SpectrogramMatrix&#39;&gt;
+Shape: (2, 2, 2, 33)
+</pre></div>
+</div>
+<img alt="../../_images/3205ea3adb5eb9532b695a8882ece76a988cae9b2b7f81ca741742994dc0488b.png" src="../../_images/3205ea3adb5eb9532b695a8882ece76a988cae9b2b7f81ca741742994dc0488b.png" />
+</div>
+</div>
+<section id="accessing-attributes">
+<h3>属性へのアクセス<a class="headerlink" href="#accessing-attributes" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は元のスペクトログラムの時間軸や周波数軸の情報を保持しています。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time axis (first 5):&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">times</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq axis (first 5):&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unit:&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Time axis (first 5): [0. 2.] s
+Freq axis (first 5): [0. 2. 4. 6. 8.] Hz
+Unit: V2 / Hz
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="numerical-computation-and-statistics">
+<h2>3. 数値計算と統計<a class="headerlink" href="#numerical-computation-and-statistics" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> のサブクラスであるため、Numpy の関数をそのまま適用できます。 また、<code class="docutils literal notranslate"><span class="pre">mean()</span></code> などのメソッドも利用可能です。</p>
+<p>例えば、全チャネル（バッチ方向）の平均スペクトログラムを計算してみましょう。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Take the mean along axis=0 (Batch axis)</span>
+<span class="n">mean_spectrogram_data</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean Data Shape:&quot;</span><span class="p">,</span> <span class="n">mean_spectrogram_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># The result is a 2D array of shape (Time, Freq)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mean Data Shape: (2, 2, 33)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="plotting">
+<h2>4. プロット<a class="headerlink" href="#plotting" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">plot()</span></code> メソッドを使用すると、データを可視化できます。 3次元データ（Batch, Time, Freq）に対して <code class="docutils literal notranslate"><span class="pre">plot()</span></code> を呼び出すと、デフォルトでは<strong>バッチ方向の平均</strong>がプロットされます。 これは複数のイベントの平均的な特徴を確認するのに便利です。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Mean Spectrogram (All Channels)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/aa66f5f3c8e03545d70c990a575cdce1b580ef444bc5afb4c6f367046aa8be8e.png" src="../../_images/aa66f5f3c8e03545d70c990a575cdce1b580ef444bc5afb4c6f367046aa8be8e.png" />
+</div>
+</div>
+<p>特定のチャネルだけをプロットしたい場合は、<code class="docutils literal notranslate"><span class="pre">monitor</span></code> 引数にインデックスを指定します。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the first channel (Channel_0)</span>
+<span class="n">plot0</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Channel 0 Spectrogram&quot;</span><span class="p">)</span>
+<span class="n">plot0</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Plot the fifth channel (Channel_5)</span>
+<span class="n">plot5</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Channel 5 Spectrogram&quot;</span><span class="p">)</span>
+<span class="n">plot5</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/133cca6e3d4436b688b13c3362294806e911b142223a3aeb4939f1645c64d9c3.png" src="../../_images/133cca6e3d4436b688b13c3362294806e911b142223a3aeb4939f1645c64d9c3.png" />
+<img alt="../../_images/7dfc4b811893a72e9fefbcf82ba2addb23150b18c395866dfb782b1c9bdde298.png" src="../../_images/7dfc4b811893a72e9fefbcf82ba2addb23150b18c395866dfb782b1c9bdde298.png" />
+</div>
+</div>
+</section>
+<section id="integration-with-external-libraries">
+<h2>5. 外部ライブラリとの連携<a class="headerlink" href="#integration-with-external-libraries" title="Link to this heading">#</a></h2>
+<p>機械学習やGPU計算のために、PyTorch や CuPy のテンソルへ簡単に変換できます。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Conversion to PyTorch Tensor</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
+    <span class="n">torch_tensor</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch Tensor:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">torch_tensor</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">torch_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
+
+<span class="c1"># Conversion to CuPy Array (if CUDA environment is available)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_cupy_available</span>
+
+<span class="k">if</span> <span class="n">is_cupy_available</span><span class="p">():</span>
+    <span class="n">cupy_array</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy Array:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">cupy_array</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">cupy_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PyTorch Tensor: &lt;class &#39;torch.Tensor&#39;&gt;
+Shape: torch.Size([2, 2, 2, 33])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="summary">
+<h2>まとめ<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code></strong> は <code class="docutils literal notranslate"><span class="pre">SpectrogramList.to_matrix()</span></code> で作成できます。</p></li>
+<li><p>3次元配列 <code class="docutils literal notranslate"><span class="pre">(Batch,</span> <span class="pre">Time,</span> <span class="pre">Freq)</span></code> としてデータを保持します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mean()</span></code> や <code class="docutils literal notranslate"><span class="pre">plot()</span></code> メソッドで、データの集約や可視化が簡単に行えます。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_torch()</span></code> などでディープラーニングフレームワークへデータを渡す際の中間形式としても有用です。</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="matrix_frequencyseries.html"
+       title="前のページ">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">前へ</p>
+        <p class="prev-next-title">FrequencySeriesMatrix: 行列処理の基本</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="field_scalar_intro.html"
+       title="次ページ">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">Field API: ScalarField の基本</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> このページでは
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preparation">1. データの準備</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-spectrogrammatrix">2. SpectrogramMatrix の作成</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-attributes">属性へのアクセス</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-computation-and-statistics">3. 数値計算と統計</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting">4. プロット</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-with-external-libraries">5. 外部ライブラリとの連携</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">まとめ</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/how-to/containers/matrix_spectrogram.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> ソースコードを表示
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3 を使用して作成されました。
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0 で構築されています。
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

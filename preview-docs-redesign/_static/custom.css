@@ -1,0 +1,109 @@
+/* GWexpy — Variant B1 (pydata-sphinx-theme) custom styles.
+ *
+ * Goal: keep B1's Diataxis top-nav IA, but borrow B2 (furo)'s calmer
+ * "reading feel": CJK-aware typography, generous line-height, a comfortable
+ * reading measure, and softly-styled cards. Brand colour only otherwise.
+ */
+
+:root {
+  --gwexpy-accent: #6d6acb;
+  --gwexpy-accent-dark: #8b88e0;
+
+  /* CJK-friendly font stack (Japanese authoring) layered on the
+   * scientific-Python sans default. */
+  --pst-font-family-base:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif, "Noto Sans CJK JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+
+/* Brand the primary accent in both colour modes. */
+html[data-theme="light"] {
+  --pst-color-primary: var(--gwexpy-accent);
+  --pst-color-link: var(--gwexpy-accent);
+  --pst-color-link-hover: #565299;
+}
+html[data-theme="dark"] {
+  --pst-color-primary: var(--gwexpy-accent-dark);
+  --pst-color-link: var(--gwexpy-accent-dark);
+  --pst-color-link-hover: #a9a6f0;
+}
+
+/* --- Reading feel (borrowed from B2 furo) -------------------------------- */
+
+/* Enable proportional CJK metrics for tighter Japanese punctuation. */
+body {
+  font-feature-settings: "palt";
+}
+
+/* Generous, calm line-height for long-form prose. */
+article.bd-article {
+  line-height: 1.7;
+}
+
+/* Comfortable reading measure: cap the prose width so long lines do not
+ * sprawl across wide monitors (furo reads well precisely because it does
+ * this). The right TOC sidebar is unaffected. */
+article.bd-article {
+  max-width: 56rem;
+}
+
+/* A touch more vertical rhythm between block elements. */
+article.bd-article p,
+article.bd-article ul,
+article.bd-article ol {
+  margin-bottom: 1rem;
+}
+
+article.bd-article h2 {
+  margin-top: 2.4rem;
+}
+article.bd-article h3 {
+  margin-top: 1.8rem;
+}
+
+/* --- Cards (match B2's soft, lifting cards) ------------------------------ */
+
+.sd-card {
+  border-radius: 10px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.sd-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(109, 106, 203, 0.18);
+}
+.sd-card .sd-card-img-top {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  object-fit: cover;
+}
+
+/* Slightly emphasise the primary call-to-action button. */
+.sd-btn-primary {
+  letter-spacing: 0.02em;
+}
+
+/* --- Header / top band --------------------------------------------------- */
+
+/* Keep the top navbar compact so it does not crowd the content. The theme
+ * default reserves a tall band; trim its vertical padding and cap the logo
+ * height for a slimmer header. */
+.bd-header.navbar {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.bd-header .navbar-brand.logo {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.bd-header .navbar-brand img,
+.bd-header .navbar-brand .logo__image {
+  max-height: 2rem;
+}
+
+/* --- Misc polish --------------------------------------------------------- */
+
+/* Soften code blocks to sit comfortably within the calmer page. */
+div.highlight {
+  border-radius: 8px;
+}

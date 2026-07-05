@@ -1,0 +1,1150 @@
+
+<!DOCTYPE html>
+
+
+<html lang="ja" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>スペクトログラム: 正規化とクリーニング &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="../../_static/documentation_options.js?v=e93cb3d0"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/spectral/advanced_spectrogram_processing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/spectral/advanced_spectrogram_processing.html" />
+    <link rel="icon" href="../../_static/favicon.svg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="HHT: 解析" href="advanced_hht.html" />
+    <link rel="prev" title="スペクトル・時間周波数" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="ja"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">本文へスキップ</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>トップに戻る</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="バージョン警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="サイトナビゲーション">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/spectral/advanced_spectrogram_processing.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="このページでは">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/spectral/advanced_spectrogram_processing.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="セクションナビゲーション">
+  <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">データとフォーマット</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">ツールと操作</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">トラブルシューティング</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">GWexpy バージョン間の移行</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">技法レシピ</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../containers/index.html">コンテナと行列</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_frequencyseries.html">FrequencySeriesMatrix: 行列処理の基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_spectrogram.html">SpectrogramMatrix: 行列処理の基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/field_scalar_intro.html">Field API: ScalarField の基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/field_advanced_workflow.html">Field API: 高度解析ワークフロー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">スペクトル・時間周波数</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">スペクトログラム: 正規化とクリーニング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_hht.html">HHT: 解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_peak_detection.html">ピーク検出: ピークを見つける</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_peak_tracking.html">ピーク追跡: 時間変化の解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_frequency_analysis_comparison.html">時間周波数解析：インタラクティブ比較</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">フィッティングと統計</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_fitting.html">フィッティング: スペクトル線解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_arima.html">ARIMA: 時系列予測</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_decomposition.html">分解解析: PCA・ICA と固有モード</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_correlation.html">相関解析: 統計的手法</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../fitting/intro_histogram.html">ヒストグラム: 基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/rayleigh_gauch_tutorial.html">非ガウス雑音解析: Rayleigh と Gaussian-Chi</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../control/index.html">制御とモデリング</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_basics.html">制御解析: 共振とフィードバック</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">制御解析: 実測応答からのプラントモデリング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">制御解析: 離散化（ZOH と Tustin の比較）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">懸架系の高精度モーダル解析</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../coupling/index.html">カップリングと相関</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_bruco.html">Bruco: コヒーレンス解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_coupling.html">カップリング解析: マルチチャンネル結合</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_field_analysis.html">多次元フィールド解析：ビームプロファイルと空間統計</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../segments/index.html">セグメントとテーブル</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_asd_pipeline.html">ASD 解析: パイプライン</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">セグメント解析: 可視化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: 基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">セグメント解析: 基本パイプライン</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../viz/index.html">可視化</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../viz/intro_mapplotting.html">マッププロット: 基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../viz/intro_interop.html">相互運用: 基本</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">ケーススタディ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../case-studies/index.html">ケーススタディ</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_active_damping.html">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_transfer_function.html">チュートリアル: 伝達関数の測定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_calibration_pipeline.html">キャリブレーション・パイプライン：Counts → Strain 変換</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_dttxml_calibration.html">gwexpy で DTT XML ファイルを読み込む</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_finesse_optics.html">Finesse 3 連携: シミュレーションと測定の統合</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_seismic_obspy.html">ケーススタディ: ObsPy 連携による地震データ解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_gbd_format.html">ケーススタディ: GBD 形式 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_hdf5_provenance.html">HDF5 による再現可能なメタデータ管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_pycbc_search.html">PyCBC 連携：gwexpy 前処理から重力波探索まで</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bootstrap_gls_fitting.html">ケーススタディ: Bootstrap PSD と GLS フィッティング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_ml_preprocessing.html">ケーススタディ: ML 前処理パイプライン</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_segment_analysis.html">ケーススタディ: イベント同期解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_physics_validation.html">物理妥当性検証：単位・数値床・健全性テスト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_arima_burst_search.html">ARIMA を用いたバーストイベント検出</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_signal_extraction.html">信号抽出: 色付き雑音からの微弱信号回収</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_lockin_detection.html">ロックイン検出: 弱い AM/FM 構造の復元</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_wiener_filter.html">ウィーナーフィルタ: コヒーレント雑音の差し引き</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_coupling_analysis.html">カップリング解析: チャンネル間伝達経路の推定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_ica_denoising.html">ケーススタディ: Bruco と ICA によるノイズ削減</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_advanced.html">Bruco: バイリニアカップリングと AM/FM 復調</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_violin_mode.html">ケーススタディ: バイオリンモード解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_schumann_resonance.html">ケーススタディ: シューマン共鳴解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_glitch_analysis.html">グリッチ詳細解析：Q-変換と Omega スキャン</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="パンくずリスト" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="ホーム">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">ハウツーガイド</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">スペクトル・時間周波数</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">スペクトログラム: 正規化とクリーニング</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="spectrogram-normalization-and-cleaning">
+<h1>スペクトログラム: 正規化とクリーニング<a class="headerlink" href="#spectrogram-normalization-and-cleaning" title="Link to this heading">#</a></h1>
+<p>このチュートリアルでは <strong>gwexpy</strong> が提供するスペクトログラム後処理ツール 2 種類を解説します：</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API</p></th>
+<th class="head"><p>目的</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Spectrogram.normalize()</span></code></p></td>
+<td><p>生パワーを SNR や相対単位に変換</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Spectrogram.clean()</span></code></p></td>
+<td><p>グリッチ・トレンド・持続的ラインの除去</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>前提:</strong> <a class="reference internal" href="../../tutorials/intro_spectrogram.html"><span class="std std-doc">スペクトログラムの基本</span></a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="synthetic-data">
+<h2>1. 合成データの準備<a class="headerlink" href="#synthetic-data" title="Link to this heading">#</a></h2>
+<p>以下を含む 2 分間の strain 時系列を生成します：</p>
+<ul class="simple">
+<li><p><strong>定常ガウスノイズ</strong>（ゆっくり変化する振幅 → 非定常）</p></li>
+<li><p><strong>60 Hz 持続ライン</strong>（電源ハム）</p></li>
+<li><p><strong>過渡グリッチ</strong>（15 s, 45 s, 90 s）</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ── Reproducible seed ────────────────────────────────────────────────────────</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">DURATION</span>  <span class="o">=</span> <span class="mi">120</span>    <span class="c1"># seconds</span>
+<span class="n">FS</span>        <span class="o">=</span> <span class="mi">512</span>    <span class="c1"># Hz</span>
+<span class="n">FFTLEN</span>    <span class="o">=</span> <span class="mf">4.0</span>    <span class="c1"># s</span>
+<span class="n">STRIDE</span>    <span class="o">=</span> <span class="mf">2.0</span>    <span class="c1"># s</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">DURATION</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">FS</span><span class="p">)</span>
+
+<span class="c1"># Base: flat noise (simulate whitened strain)</span>
+<span class="n">base_noise</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+<span class="c1"># Add persistent narrowband line at 60 Hz (power line)</span>
+<span class="n">line60</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Add slowly drifting broadband noise floor (non-stationary trend)</span>
+<span class="n">trend</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="n">DURATION</span><span class="p">)</span>
+
+<span class="c1"># Add a few transient glitches (excess-power bursts)</span>
+<span class="n">glitch_times</span> <span class="o">=</span> <span class="p">[</span><span class="mf">15.0</span><span class="p">,</span> <span class="mf">45.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">]</span>
+<span class="n">glitch_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">glitch_times</span><span class="p">:</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gt</span> <span class="o">*</span> <span class="n">FS</span><span class="p">)</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">FS</span><span class="p">)</span>
+    <span class="n">glitch_signal</span><span class="p">[</span><span class="n">idx</span> <span class="p">:</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">width</span><span class="p">]</span> <span class="o">+=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+<span class="n">strain</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_noise</span> <span class="o">*</span> <span class="n">trend</span><span class="p">)</span> <span class="o">+</span> <span class="n">line60</span> <span class="o">+</span> <span class="n">glitch_signal</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">strain</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">FS</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;STRAIN&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+<span class="n">spec</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram2</span><span class="p">(</span><span class="n">FFTLEN</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">FFTLEN</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spectrogram shape (time × freq):&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time bins:&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; | Freq bins:&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Spectrogram shape (time × freq): (60, 1025)
+Time bins: 60  | Freq bins: 1025
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="baseline-spectrogram">
+<h2>2. ベースライン スペクトログラム<a class="headerlink" href="#baseline-spectrogram" title="Link to this heading">#</a></h2>
+<p>生スペクトログラムには、グリッチ（明るい縦縞）、60 Hz ライン（明るい横縞）、 時間変動するノイズフロアがすでに見えています。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+    <span class="n">_plt5</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">_plt5</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Raw spectrogram&quot;</span><span class="p">)</span>
+    <span class="n">_plt5</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Power [strain²/Hz]&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/5e9c898653a1f2bce1ed025eccbebaea07497bc1cac7e083f9899ba484269d1e.png" src="../../_images/5e9c898653a1f2bce1ed025eccbebaea07497bc1cac7e083f9899ba484269d1e.png" />
+</div>
+</div>
+</section>
+<section id="normalization">
+<h2>3. 正規化<a class="headerlink" href="#normalization" title="Link to this heading">#</a></h2>
+<section id="a-snr-spectrogram-method-snr">
+<h3>3a. SNR スペクトログラム (<code class="docutils literal notranslate"><span class="pre">method='snr'</span></code>)<a class="headerlink" href="#a-snr-spectrogram-method-snr" title="Link to this heading">#</a></h3>
+<p>トランジェント探索で最も一般的な正規化です。各時間スライスを、時間軸に沿った <strong>中央値 PSD</strong> で割ります。結果は無次元の <strong>SNR²</strong> マップとなり、定常背景は ≈ 1 になります。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ── SNR normalization ─────────────────────────────────────────────────────────</span>
+    <span class="c1"># Each time slice is divided by the median PSD along the time axis.</span>
+    <span class="c1"># Result: dimensionless SNR² (≈ 1 for stationary background).</span>
+    <span class="n">spec_snr</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;snr&quot;</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">_pc0</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.colors&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;LogNorm&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">LogNorm</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">_pc0</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Power [strain²/Hz]&quot;</span><span class="p">)</span>
+
+    <span class="n">spec_snr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;SNR spectrogram  (normalize=&#39;snr&#39;)&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SNR² [dimensionless]&quot;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f2c01020b221e6010e17288b0380c7c9e1e205af00301698c48546b3d0ddc261.png" src="../../_images/f2c01020b221e6010e17288b0380c7c9e1e205af00301698c48546b3d0ddc261.png" />
+<img alt="../../_images/507ad9813da6ad0f00ee80724e2254a1c0f78f7b21a65f93101952dec894ed83.png" src="../../_images/507ad9813da6ad0f00ee80724e2254a1c0f78f7b21a65f93101952dec894ed83.png" />
+</div>
+</div>
+</section>
+<section id="b-other-normalization-methods">
+<h3>3b. その他の正規化メソッド<a class="headerlink" href="#b-other-normalization-methods" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">method=</span></code></p></th>
+<th class="head"><p>分母</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'median'</span></code></p></td>
+<td><p>周波数ビン毎の中央値 PSD（<code class="docutils literal notranslate"><span class="pre">'snr'</span></code> と同一）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">'mean'</span></code></p></td>
+<td><p>周波数ビン毎の平均 PSD</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">'percentile'</span></code></p></td>
+<td><p>第 N パーセンタイル PSD（<code class="docutils literal notranslate"><span class="pre">percentile=</span></code> で指定）</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ── Compare normalization methods ─────────────────────────────────────────────</span>
+    <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;percentile&quot;</span><span class="p">]</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">methods</span><span class="p">):</span>
+        <span class="n">kw</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;percentile&quot;</span><span class="p">:</span> <span class="mf">75.0</span><span class="p">}</span> <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="s2">&quot;percentile&quot;</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="n">spec_n</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="n">spec_n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;percentile=75&quot;</span> <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="s2">&quot;percentile&quot;</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;method=&#39;</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SNR² []&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Normalization methods comparison&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/300de0dd1a3db17108c043ea9418d8c0cd4c83444ff2bacef7a60a6db59cf177.png" src="../../_images/300de0dd1a3db17108c043ea9418d8c0cd4c83444ff2bacef7a60a6db59cf177.png" />
+<img alt="../../_images/a7289b03e752fdf0db43f793f8f0fcfe7c3d3d8287feb09bc545eeea17d25ca6.png" src="../../_images/a7289b03e752fdf0db43f793f8f0fcfe7c3d3d8287feb09bc545eeea17d25ca6.png" />
+<img alt="../../_images/9c4df758c82e76fe5713e5578ce1ab541b65fff50997be9b7468f359973517aa.png" src="../../_images/9c4df758c82e76fe5713e5578ce1ab541b65fff50997be9b7468f359973517aa.png" />
+<img alt="../../_images/dbc34ded18f014d515119cc87aa7801d943c0187878aa94763d9c3917c9f7142.png" src="../../_images/dbc34ded18f014d515119cc87aa7801d943c0187878aa94763d9c3917c9f7142.png" />
+</div>
+</div>
+</section>
+<section id="c-reference-normalization-method-reference">
+<h3>3c. 参照スペクトル正規化 (<code class="docutils literal notranslate"><span class="pre">method='reference'</span></code>)<a class="headerlink" href="#c-reference-normalization-method-reference" title="Link to this heading">#</a></h3>
+<p>独自の参照スペクトルを渡して正規化します。 特定の静粛期間や独立計測したノイズフロアとの比較に有用です。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ── Reference normalization ───────────────────────────────────────────────────</span>
+    <span class="c1"># Use the first 30 s as a quiet reference segment.</span>
+    <span class="n">quiet_ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+    <span class="n">ref_spec</span> <span class="o">=</span> <span class="n">quiet_ts</span><span class="o">.</span><span class="n">spectrogram2</span><span class="p">(</span><span class="n">FFTLEN</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">FFTLEN</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">reference_psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">ref_spec</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>   <span class="c1"># median over the 30-s window</span>
+
+    <span class="n">spec_ref</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;reference&quot;</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">reference_psd</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">spec_ref</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Reference-normalized spectrogram (30-s quiet baseline)&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SNR² []&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/08f46b944d3a77090f85557827cbd803f521737e18f4fe2fe59079c90c3c201f.png" src="../../_images/08f46b944d3a77090f85557827cbd803f521737e18f4fe2fe59079c90c3c201f.png" />
+<img alt="../../_images/60f7543b05981cf1bc1d7eb87d4464224c5c28bec2c508191a8ff2737a0d6c47.png" src="../../_images/60f7543b05981cf1bc1d7eb87d4464224c5c28bec2c508191a8ff2737a0d6c47.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="cleaning">
+<h2>4. クリーニング<a class="headerlink" href="#cleaning" title="Link to this heading">#</a></h2>
+<section id="a-threshold-cleaning-method-threshold">
+<h3>4a. 閾値クリーニング (<code class="docutils literal notranslate"><span class="pre">method='threshold'</span></code>)<a class="headerlink" href="#a-threshold-cleaning-method-threshold" title="Link to this heading">#</a></h3>
+<p>（周波数ビンごとに）<code class="docutils literal notranslate"><span class="pre">median</span> <span class="pre">+</span> <span class="pre">threshold</span> <span class="pre">×</span> <span class="pre">MAD</span></code> を超えるピクセルを外れ値として検出し、置換します。置換方法は <code class="docutils literal notranslate"><span class="pre">fill=</span></code>（<code class="docutils literal notranslate"><span class="pre">'median'</span></code>、<code class="docutils literal notranslate"><span class="pre">'nan'</span></code>、<code class="docutils literal notranslate"><span class="pre">'zero'</span></code>、<code class="docutils literal notranslate"><span class="pre">'interpolate'</span></code>）で制御します。</p>
+<p>これにより、明るい縦縞として現れる短時間の <strong>グリッチ</strong> を除去します。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ── threshold cleaning ────────────────────────────────────────────────────────</span>
+    <span class="c1"># Pixels exceeding  median + threshold × MAD  are replaced.</span>
+    <span class="n">spec_thr</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">spec_snr</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;threshold&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">return_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flagged pixels: </span><span class="si">{</span><span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">mask</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;  (</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">mask</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> %)&quot;</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">spec_snr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;SNR spectrogram (before threshold clean)&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SNR²&quot;</span><span class="p">)</span>
+
+    <span class="n">spec_thr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;After threshold clean  (threshold=5 MAD)&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SNR²&quot;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Flagged pixels: 2096 / 61500  (3.41 %)
+</pre></div>
+</div>
+<img alt="../../_images/639a647668f7114bd114e97f8e2f65f55c768b688ff4d0a3e2dac81b21e20247.png" src="../../_images/639a647668f7114bd114e97f8e2f65f55c768b688ff4d0a3e2dac81b21e20247.png" />
+<img alt="../../_images/565a41643b6d91952f13c5efd1e2d312bcfe28a161e7dc480b434a9f2e43ae87.png" src="../../_images/565a41643b6d91952f13c5efd1e2d312bcfe28a161e7dc480b434a9f2e43ae87.png" />
+<img alt="../../_images/0038deaae24f29f063eb1e91d6733e8c5e3a8a191e60f71b55ecfc2b2273326f.png" src="../../_images/0038deaae24f29f063eb1e91d6733e8c5e3a8a191e60f71b55ecfc2b2273326f.png" />
+</div>
+</div>
+</section>
+<section id="b-rolling-median-detrending-method-rolling-median">
+<h3>4b. ローリング中央値デトレンド (<code class="docutils literal notranslate"><span class="pre">method='rolling_median'</span></code>)<a class="headerlink" href="#b-rolling-median-detrending-method-rolling-median" title="Link to this heading">#</a></h3>
+<p>各列を時間軸方向の移動中央値で割ります。これにより、短時間の特徴を歪めることなく <strong>ゆっくりとした非定常トレンド</strong> を除去します。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ── rolling-median cleaning ───────────────────────────────────────────────────</span>
+    <span class="c1"># Divide by a rolling median along the time axis to remove slow trends.</span>
+    <span class="n">spec_roll</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;rolling_median&quot;</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Raw spectrogram&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Power&quot;</span><span class="p">)</span>
+
+    <span class="n">spec_roll</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;After rolling-median detrend  (window=10 bins)&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Normalised power []&quot;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/1b060cbebbe8520cac85e089ffb2f6422220f4323e65b642f27b66b03f8faabd.png" src="../../_images/1b060cbebbe8520cac85e089ffb2f6422220f4323e65b642f27b66b03f8faabd.png" />
+<img alt="../../_images/7ef492832a6086571811756331def11a6d3d9b0158d993f045d6198db7bb8cd2.png" src="../../_images/7ef492832a6086571811756331def11a6d3d9b0158d993f045d6198db7bb8cd2.png" />
+<img alt="../../_images/992ed00fd269414367ddc169c3c46f55c8b1ab3153cbe9802ec74c9782992985.png" src="../../_images/992ed00fd269414367ddc169c3c46f55c8b1ab3153cbe9802ec74c9782992985.png" />
+</div>
+</div>
+</section>
+<section id="c-persistent-line-removal-method-line-removal">
+<h3>4c. 持続ライン除去 (<code class="docutils literal notranslate"><span class="pre">method='line_removal'</span></code>)<a class="headerlink" href="#c-persistent-line-removal-method-line-removal" title="Link to this heading">#</a></h3>
+<p>ある周波数ビンが、時間ビンの <code class="docutils literal notranslate"><span class="pre">persistence_threshold</span></code> を超える割合で <code class="docutils literal notranslate"><span class="pre">amplitude_threshold</span> <span class="pre">×</span> <span class="pre">global_median</span></code> を上回る場合、定常的なラインとして検出されます。検出されたビンは時間中央値で置換されます。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="c1"># ── line-removal cleaning ─────────────────────────────────────────────────────</span>
+<span class="c1"># Detect persistent narrowband lines and replace with column median.</span>
+<span class="n">spec_noline</span><span class="p">,</span> <span class="n">line_indices</span> <span class="o">=</span> <span class="n">spec_snr</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;line_removal&quot;</span><span class="p">,</span>
+    <span class="n">persistence_threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">amplitude_threshold</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+    <span class="n">return_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># line_indices is a bool mask here; retrieve actual frequency values</span>
+<span class="n">freq_axis</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">line_indices</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">):</span>   <span class="c1"># ndarray mask</span>
+    <span class="n">flagged_freqs</span> <span class="o">=</span> <span class="n">freq_axis</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">line_indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">flagged_freqs</span> <span class="o">=</span> <span class="n">freq_axis</span><span class="p">[</span><span class="n">line_indices</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Detected line frequencies [Hz]:&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">flagged_freqs</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">spec_snr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;SNR spectrogram (with 60 Hz power line)&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span>
+    <span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SNR²&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">spec_noline</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;After line-removal clean&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span>
+    <span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SNR²&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+        <span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Detected line frequencies [Hz]: []
+</pre></div>
+</div>
+<img alt="../../_images/c794e1dddd1d9b98676baa216fe926248be7768fa14b5567aba5f67aea1c9f29.png" src="../../_images/c794e1dddd1d9b98676baa216fe926248be7768fa14b5567aba5f67aea1c9f29.png" />
+<img alt="../../_images/565a41643b6d91952f13c5efd1e2d312bcfe28a161e7dc480b434a9f2e43ae87.png" src="../../_images/565a41643b6d91952f13c5efd1e2d312bcfe28a161e7dc480b434a9f2e43ae87.png" />
+<img alt="../../_images/507ad9813da6ad0f00ee80724e2254a1c0f78f7b21a65f93101952dec894ed83.png" src="../../_images/507ad9813da6ad0f00ee80724e2254a1c0f78f7b21a65f93101952dec894ed83.png" />
+</div>
+</div>
+</section>
+<section id="d-full-cleaning-pipeline-method-combined">
+<h3>4d. 完全クリーニングパイプライン (<code class="docutils literal notranslate"><span class="pre">method='combined'</span></code>)<a class="headerlink" href="#d-full-cleaning-pipeline-method-combined" title="Link to this heading">#</a></h3>
+<p>しきい値処理 → 移動中央値 → ライン除去 を順に実行します。コミッショニング的なデータ品質チェックのワンストップ手段として推奨します。</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ── combined pipeline ─────────────────────────────────────────────────────────</span>
+    <span class="c1"># threshold → rolling_median → line_removal in one call.</span>
+    <span class="n">spec_clean</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;combined&quot;</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+    <span class="n">window_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">persistence_threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">amplitude_threshold</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Raw spectrogram&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Power&quot;</span><span class="p">)</span>
+
+    <span class="n">spec_clean</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Fully cleaned spectrogram  (method=&#39;combined&#39;)&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&quot;get_clim&quot;</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;matplotlib.cm&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ScalarMappable&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Normalised power []&quot;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9b0adcdf007f8ea07bc7dd7028cba83f601468f3f170860956b6f64c9f8884bc.png" src="../../_images/9b0adcdf007f8ea07bc7dd7028cba83f601468f3f170860956b6f64c9f8884bc.png" />
+<img alt="../../_images/7ef492832a6086571811756331def11a6d3d9b0158d993f045d6198db7bb8cd2.png" src="../../_images/7ef492832a6086571811756331def11a6d3d9b0158d993f045d6198db7bb8cd2.png" />
+<img alt="../../_images/661948caa4a03d986e480e257768d2f1812dae2247ccf4dc9ea25383f6d30667.png" src="../../_images/661948caa4a03d986e480e257768d2f1812dae2247ccf4dc9ea25383f6d30667.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="summary">
+<h2>5. まとめ<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>全メソッドと目的の一覧：</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">62</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Method&#39;</span><span class="si">:</span><span class="s2">&lt;22</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Description&#39;</span><span class="si">:</span><span class="s2">&lt;38</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">62</span><span class="p">)</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;normalize(&#39;snr&#39;)&quot;</span><span class="p">,</span>       <span class="s2">&quot;÷ median PSD  →  SNR² map&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;normalize(&#39;median&#39;)&quot;</span><span class="p">,</span>    <span class="s2">&quot;÷ median PSD  (alias for snr)&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;normalize(&#39;mean&#39;)&quot;</span><span class="p">,</span>      <span class="s2">&quot;÷ mean PSD&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;normalize(&#39;percentile&#39;)&quot;</span><span class="p">,</span><span class="s2">&quot;÷ Nth-percentile PSD&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;normalize(&#39;reference&#39;)&quot;</span><span class="p">,</span> <span class="s2">&quot;÷ user-supplied reference spectrum&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;clean(&#39;threshold&#39;)&quot;</span><span class="p">,</span>     <span class="s2">&quot;Replace MAD-outlier pixels&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;clean(&#39;rolling_median&#39;)&quot;</span><span class="p">,</span><span class="s2">&quot;Divide by rolling-median trend&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;clean(&#39;line_removal&#39;)&quot;</span><span class="p">,</span>  <span class="s2">&quot;Remove persistent narrowband lines&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;clean(&#39;combined&#39;)&quot;</span><span class="p">,</span>      <span class="s2">&quot;threshold → rolling_median → line_removal&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">m</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">62</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>==============================================================
+Method                 Description                           
+--------------------------------------------------------------
+  normalize(&#39;snr&#39;)     ÷ median PSD  →  SNR² map
+  normalize(&#39;median&#39;)  ÷ median PSD  (alias for snr)
+  normalize(&#39;mean&#39;)    ÷ mean PSD
+  normalize(&#39;percentile&#39;) ÷ Nth-percentile PSD
+  normalize(&#39;reference&#39;) ÷ user-supplied reference spectrum
+  clean(&#39;threshold&#39;)   Replace MAD-outlier pixels
+  clean(&#39;rolling_median&#39;) Divide by rolling-median trend
+  clean(&#39;line_removal&#39;) Remove persistent narrowband lines
+  clean(&#39;combined&#39;)    threshold → rolling_median → line_removal
+==============================================================
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="前のページ">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">前へ</p>
+        <p class="prev-next-title">スペクトル・時間周波数</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="advanced_hht.html"
+       title="次ページ">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">HHT: 解析</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> このページでは
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#synthetic-data">1. 合成データの準備</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#baseline-spectrogram">2. ベースライン スペクトログラム</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalization">3. 正規化</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-snr-spectrogram-method-snr">3a. SNR スペクトログラム (<code class="docutils literal notranslate"><span class="pre">method='snr'</span></code>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-other-normalization-methods">3b. その他の正規化メソッド</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-reference-normalization-method-reference">3c. 参照スペクトル正規化 (<code class="docutils literal notranslate"><span class="pre">method='reference'</span></code>)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cleaning">4. クリーニング</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-threshold-cleaning-method-threshold">4a. 閾値クリーニング (<code class="docutils literal notranslate"><span class="pre">method='threshold'</span></code>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-rolling-median-detrending-method-rolling-median">4b. ローリング中央値デトレンド (<code class="docutils literal notranslate"><span class="pre">method='rolling_median'</span></code>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-persistent-line-removal-method-line-removal">4c. 持続ライン除去 (<code class="docutils literal notranslate"><span class="pre">method='line_removal'</span></code>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#d-full-cleaning-pipeline-method-combined">4d. 完全クリーニングパイプライン (<code class="docutils literal notranslate"><span class="pre">method='combined'</span></code>)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">5. まとめ</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/how-to/spectral/advanced_spectrogram_processing.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> ソースコードを表示
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3 を使用して作成されました。
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0 で構築されています。
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
