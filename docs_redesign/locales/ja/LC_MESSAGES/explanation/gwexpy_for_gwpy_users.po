@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-04 19:46+0000\n"
+"POT-Creation-Date: 2026-07-05 00:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,13 +19,13 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:1
-#: 46c1904269de4a0b815abf06d43f5988
-msgid "Migration Guide for GWpy Users"
-msgstr "GWpy ユーザー向け移行ガイド"
+#: ../../explanation/gwexpy_for_gwpy_users.md:1
+#: 65777dd1a07c45dbbd4f36688ad3c783
+msgid "GWexpy for GWpy Users"
+msgstr "GWpy ユーザーのための GWexpy"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:3
-#: dcb07008ac644e51a68e539655ca2793
+#: ../../explanation/gwexpy_for_gwpy_users.md:3
+#: 39f861c9c5b44163af46437e17558dec
 msgid ""
 "This page is the **entry point for moving from GWpy to GWexpy**.   It is not"
 " intended to be a full API catalog. The goal is to understand, quickly, what"
@@ -34,8 +34,8 @@ msgstr ""
 "このページは **GWpy から GWexpy へ移行するための入口** です。完全な API "
 "カタログを目指すものではありません。目的は、何がそのまま使えて、価値の高い差分がどこから始まるのかを手早く把握することです。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:6
-#: 39f33901feab4b41b9ec6a0c1cab5c3b
+#: ../../explanation/gwexpy_for_gwpy_users.md:6
+#: 5b01120abab24126b29f707d30002eea
 msgid ""
 "If you want a **difference-oriented index of added APIs**, see [GWpy "
 "Difference API Index](../reference/gwpy_added_api.md).   If you want the "
@@ -46,13 +46,13 @@ msgstr ""
 "一覧](../reference/gwpy_added_api.md) を参照してください。GWpy 互換性に関係なく全 API を見たい場合は "
 "[API リファレンス](../reference/index.md) を使ってください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:9
-#: de36d75dc91b46f0b12536cbd262e962
+#: ../../explanation/gwexpy_for_gwpy_users.md:9
+#: 188358ce81b449b1bb7267b1d8e3e405
 msgid "What to lock in first"
 msgstr "まず最初に押さえること"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:11
-#: 4488661462814f3da1b1b35fc51914bb
+#: ../../explanation/gwexpy_for_gwpy_users.md:11
+#: 29d019dbfcf248fca80c81774c244363
 msgid ""
 "**Single-channel workflows are often still familiar.** For `TimeSeries` / "
 "`FrequencySeries` / `Spectrogram`, many basic read, plot, and spectral-"
@@ -62,8 +62,8 @@ msgstr ""
 "`Spectrogram` では、基本的な読み込み・プロット・スペクトル解析の多くが、import を `gwexpy` "
 "に差し替えるだけでまず試せます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:13
-#: 98876c7701bb49cab31dca51523c0f3d
+#: ../../explanation/gwexpy_for_gwpy_users.md:13
+#: c4af5b97ffee4f8da15d09b41a3d6382
 msgid ""
 "**The biggest shift is multi-channel processing.** Instead of manually "
 "looping over `TimeSeriesDict`, you can convert it with `to_matrix()` and "
@@ -72,8 +72,8 @@ msgstr ""
 "**最も大きく変わるのは多チャンネル処理です。** `TimeSeriesDict` を手動でループする代わりに、`to_matrix()` "
 "で変換し、チャンネル群をバッチ解析コンテナとして扱えます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:15
-#: 46e9c17fe4a34f3fb92ae2781bf5dbda
+#: ../../explanation/gwexpy_for_gwpy_users.md:15
+#: 235f0370c2b9436ca6cf6977b133dfe4
 msgid ""
 "**The Field API is a GWexpy-only extension.** `ScalarField` and `FieldList` "
 "/ `FieldDict` cover spatially indexed data and batch operations across "
@@ -82,8 +82,8 @@ msgstr ""
 "**Field API は GWexpy 独自の拡張です。** `ScalarField` や `FieldList` / `FieldDict` "
 "は、空間的にインデックス付けされたデータや、複数フィールドにまたがるバッチ操作を扱います。これらは GWpy が標準層として提供していないものです。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:17
-#: dd0c3e4eb8cb4876af0097bdeb41d6c1
+#: ../../explanation/gwexpy_for_gwpy_users.md:17
+#: cf363056406e481ca1d014ae0c3f9fec
 msgid ""
 "**Some external-library calls move onto the data object itself.** "
 "Representative examples are `.find_peaks()`, `.fit()`, `.hht()`, and "
@@ -92,8 +92,8 @@ msgstr ""
 "**一部の外部ライブラリ呼び出しは、データオブジェクト自身のメソッドになります。** 代表例は "
 "`.find_peaks()`、`.fit()`、`.hht()`、`.arima()` です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:19
-#: 2817077e6ca447eeb03e76165ca060a3
+#: ../../explanation/gwexpy_for_gwpy_users.md:19
+#: 6f6452b1f622462f9f2b167f9218d0d2
 msgid ""
 "**Direct I/O and interop have their own guides.** Treat [File I/O Supported "
 "Formats Guide](../how-to/io_formats.md) as the source of truth for "
@@ -106,115 +106,101 @@ msgstr ""
 "`from_*()` 変換は [Interop / 変換ガイド](../how-to/interop.md) "
 "を、それぞれ一次情報源として参照してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:22
-#: 777759ace00d4296b8c0e2ff231731aa
+#: ../../explanation/gwexpy_for_gwpy_users.md:22
+#: 693ae7686fac4019b76b4db4e8cdfa64
 msgid "Where migration usually pays off first"
 msgstr "どこから書き換えると効果が大きいか"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: 5f8fac9e1c724fc0be297de6f33b0242
+#: ../../explanation/gwexpy_for_gwpy_users.md c2495a07575446129129733d9a233f66
 msgid "Goal"
 msgstr "目的"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: a38d4042c86d42d38d73507a30e2c97f
+#: ../../explanation/gwexpy_for_gwpy_users.md 1808bd397a794b3face64f5a18a25a9a
 msgid "First difference to check"
 msgstr "まず見る差分"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: c3978f6f2bd945a3abc694837bbdf533
+#: ../../explanation/gwexpy_for_gwpy_users.md e190d3bce906488aaa9e57d8b970d57d
 msgid "Where to go next"
 msgstr "深掘り先"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: 80a658a1e395489da1b532d0f007a589
+#: ../../explanation/gwexpy_for_gwpy_users.md 923eb00a42eb488881ef28ff35e13994
 msgid "Analyse many channels together"
 msgstr "複数チャンネルをまとめて解析したい"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: c7d35a91e16d4fb0bfda156fa4917872
+#: ../../explanation/gwexpy_for_gwpy_users.md d4aa9bb1bfd2429895871b573719eefb
 msgid "`TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix`"
 msgstr "`TimeSeriesDict.to_matrix()` → `TimeSeriesMatrix`"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:72
-#: a5ec87d0f1ce4a16a2887d261c845d58 e581e4e1966a411f95008ac82bbf2afc
-msgid "[Matrix Tutorial](../tutorials/index.md)"
-msgstr "[行列チュートリアル](../tutorials/index.md)"
+#: ../../explanation/gwexpy_for_gwpy_users.md
+#: ../../explanation/gwexpy_for_gwpy_users.md:72
+#: 6fecd2c880d8433e9dfc462b16dbcc8b 7dd3b4d74f094e8d8ab57bd9cb8b0d1e
+msgid "[Matrix Tutorial](../tutorials/matrix_timeseries)"
+msgstr "[行列チュートリアル](../tutorials/matrix_timeseries)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: 385c86512f7b40f6bb9c5ec31ae38861
+#: ../../explanation/gwexpy_for_gwpy_users.md 01dabe36b1dd47258b5ba6886fbd753e
 msgid "Work with spatially indexed data or multiple fields together"
 msgstr "空間軸付きデータや複数 field をまとめて扱いたい"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: 4846afc92c13470294f3642396fa3d8c
+#: ../../explanation/gwexpy_for_gwpy_users.md 74b35c449cb040a6a3ca87261f6ee17a
 msgid "`ScalarField`, `FieldList`, `FieldDict`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: e0b14da9939641d68298cbed2ce40ec8
+#: ../../explanation/gwexpy_for_gwpy_users.md 09a82c0311cf41ba8e380840301faaaf
 msgid ""
-"[Field API Intro](../tutorials/index.md), [GWpy Difference API "
-"Index](../reference/gwpy_added_api.md)"
+"[Field API Intro](../how-to/containers/field_scalar_intro), [GWpy Difference"
+" API Index](../reference/gwpy_added_api.md)"
 msgstr ""
-"[Field API 入門](../tutorials/index.md), [GWpy 差分 API "
+"[Field API 入門](../how-to/containers/field_scalar_intro), [GWpy 差分 API "
 "一覧](../reference/gwpy_added_api.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: eb7366c08ab24a04b1623f47e476c870
+#: ../../explanation/gwexpy_for_gwpy_users.md b1ab8a46953c4554a11280f1854334fe
 msgid "Reduce direct SciPy / Statsmodels plumbing"
 msgstr "SciPy / Statsmodels 呼び出しを整理したい"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: c6f0ea78643c4094b558532afa9befee
+#: ../../explanation/gwexpy_for_gwpy_users.md 90727e6968e74e68bdfc838e41a33290
 msgid "added object-level APIs"
 msgstr "オブジェクトメソッド化された追加 API"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:73
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:110
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:195
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:239
-#: 3315eff3fac4499c85c2cd87b12dde96 a70228bf485f4bd9a7d1a0bca206542e
-#: b12c3ca9cbd54117933d00292bf7d54b b2964e81d82a4bf0ac2bdf837068e074
-#: e68efe83720347348e20debb4293d9d9 fe5b0378b05a4bb89a08f7b9bb5bb57c
+#: ../../explanation/gwexpy_for_gwpy_users.md
+#: ../../explanation/gwexpy_for_gwpy_users.md:73
+#: ../../explanation/gwexpy_for_gwpy_users.md:110
+#: ../../explanation/gwexpy_for_gwpy_users.md:195
+#: ../../explanation/gwexpy_for_gwpy_users.md:239
+#: 02d0ccd77fe74d5ca66df4c771c14d26 15fb8ce8a4cd486e8c0f879787d11183
+#: 65550efd736744119824a0e4a4f7c526 6df89270ddd9464381653f788f97ca68
+#: 925d60b8ed5c4d308faf9d3fd422c87a b0b3c0d74ab24843a4f7a07224795df5
 msgid "[GWpy Difference API Index](../reference/gwpy_added_api.md)"
 msgstr "[GWpy 差分 API 一覧](../reference/gwpy_added_api.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: 00653178b63d421db4aeb1bb34e93ac4
+#: ../../explanation/gwexpy_for_gwpy_users.md 58eacfabd10440ceb78d77e969c065a8
 msgid "Move existing single-channel code quickly"
 msgstr "既存の単一チャネルコードを早く移したい"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: b513d7350da04dd5b68162973601fe7f
+#: ../../explanation/gwexpy_for_gwpy_users.md d39b2efce32d4c68b34e33afc8c3e178
 msgid "swap imports first, then add difference APIs only where needed"
 msgstr "import だけ差し替えてから必要箇所だけ差分 API を追加"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:148
-#: 3c8bd545dd2c4b75b5fcc8e77692c979 55b080fbf08a4f4387b69a4dd22d9ba3
+#: ../../explanation/gwexpy_for_gwpy_users.md
+#: ../../explanation/gwexpy_for_gwpy_users.md:148
+#: 2c65616c0def44918cdb5603a5bc89e8 4de1c4bb1685413eb1da6a7a215913de
 msgid "[Quickstart](../tutorials/quickstart.md)"
 msgstr "[クイックスタート](../tutorials/quickstart.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: 733ddb1ddc3d431585f8ba5fe572b483
+#: ../../explanation/gwexpy_for_gwpy_users.md ed6991b92bd84d8fbdc41bff7627f2d9
 msgid "Understand result-sharing behavior"
 msgstr "結果共有の互換性を知りたい"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md
-#: a86892d406b24302ba28c78a68459bde
+#: ../../explanation/gwexpy_for_gwpy_users.md c704843ac9084f689f93e4b6494eab9f
 msgid "Transparent Pickle compatibility"
 msgstr "Transparent Pickle の挙動"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:32
-#: 3797abf35b7342c1899437ce783ec36e
+#: ../../explanation/gwexpy_for_gwpy_users.md:32
+#: 6da1abc51bc7457fab7673962cfae22e
 msgid "Recipe 1: Move manual `TimeSeriesDict` loops toward `TimeSeriesMatrix`"
 msgstr "差分レシピ 1: `TimeSeriesDict` の手ループを `TimeSeriesMatrix` に寄せる"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:34
-#: ef554c48f0a64218af42cf0f663e309c
+#: ../../explanation/gwexpy_for_gwpy_users.md:34
+#: 94571e0fd0d044e5ad80907891ede3a9
 msgid ""
 "In GWpy-style code, pairwise comparisons or per-channel spectral logic often"
 " become explicit loops.   In GWexpy, `to_matrix()` is the main entry point "
@@ -223,79 +209,79 @@ msgstr ""
 "GWpy 流のコードでは、ペアごとの比較やチャンネルごとのスペクトル処理が明示的なループになりがちです。GWexpy では、`to_matrix()` "
 "がチャンネル群全体をバッチ解析オブジェクトとして扱う主要な入口になります。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:37
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:82
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:121
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:157
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:205
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:247
-#: 145475b89c5845ffb73a7ce303720053 2b1b2f6babe64ad2ad0d52a3ec18e01c
-#: 7f3791824f7e4f8ebecf3efc3a69f90b 893682416708443ba9acbf4866939c3b
-#: ce6d61e524c8467c954dc51650ee761b d959fc5a9a6a4fba90b82e24370fa9de
+#: ../../explanation/gwexpy_for_gwpy_users.md:37
+#: ../../explanation/gwexpy_for_gwpy_users.md:82
+#: ../../explanation/gwexpy_for_gwpy_users.md:121
+#: ../../explanation/gwexpy_for_gwpy_users.md:157
+#: ../../explanation/gwexpy_for_gwpy_users.md:205
+#: ../../explanation/gwexpy_for_gwpy_users.md:247
+#: 131ac0109d604e0ead5198c53a6b5eb9 32ce920b0c0a486183b6d0b30e280128
+#: 3d201d3b73284d6b811b0b7a6666427b 40004f97a7894b1d8b5ed67d8d2a4205
+#: 961ab71625774d34bf4bbd78b9ef8133 bda58d3eaaf44bbfb703b9774f3c1bed
 msgid "GWpy style"
 msgstr "GWpy 流"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:52
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:93
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:131
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:170
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:219
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:264
-#: 3a335a51dc73498dbb3fb982704a1829 5fe90456c809476d8b1681e60f52d207
-#: 6179163c73c3413f8f6e14cba79eec9e 8ab6a5b2f8d749f689a5eb0801fe9146
-#: 90b0307055114e958ba3747411f65e11 fd4c0653ae1e4d7293fa9e90e669bee8
+#: ../../explanation/gwexpy_for_gwpy_users.md:52
+#: ../../explanation/gwexpy_for_gwpy_users.md:93
+#: ../../explanation/gwexpy_for_gwpy_users.md:131
+#: ../../explanation/gwexpy_for_gwpy_users.md:170
+#: ../../explanation/gwexpy_for_gwpy_users.md:219
+#: ../../explanation/gwexpy_for_gwpy_users.md:264
+#: 2942f112b092419f8f92fa096e86838e 5e79d0480e9244e88daa11269a666845
+#: 605edf9a015e41dc8a481059b24e75c8 632a1175527648d18e070ad442dc9fbf
+#: cc546ef97aad42e4940e92e4f797a67c fdb871e9097f45b38b2982bbff990cda
 msgid "GWexpy style"
 msgstr "GWexpy 流"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:65
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:187
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:279
-#: 0370c153b04043578e294b264623e843 2986b19f832348d5b77b43e6acb9cc77
-#: 9800939d322746d2b81f3c3c29f1398d
+#: ../../explanation/gwexpy_for_gwpy_users.md:65
+#: ../../explanation/gwexpy_for_gwpy_users.md:187
+#: ../../explanation/gwexpy_for_gwpy_users.md:279
+#: 78445be6d03f477eadafa5c82a6eb3c6 e855f351d7494b3889794d914a5983eb
+#: e9845d6fdf6d449fa2d78e9ca8cfa757
 msgid "This difference matters when:"
 msgstr "この差分が効く場面:"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:67
-#: 1f2b83967fb84494b85fd0b4355d5306
+#: ../../explanation/gwexpy_for_gwpy_users.md:67
+#: bbb296f71ad944bfad289db8f076da4e
 msgid "you want fewer manual loops and more object-level batch operations"
 msgstr "ループを減らして、チャンネル集合をそのまま計算対象にしたいとき"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:68
-#: 74170a51149f406ebae79cbf7c32a753
+#: ../../explanation/gwexpy_for_gwpy_users.md:68
+#: de97c8c39146443da1d0a4b5635c85cb
 msgid ""
 "you want multi-channel analysis to stay in `TimeSeriesMatrix` / "
 "`FrequencySeriesMatrix`"
 msgstr "多チャネル解析を `TimeSeriesMatrix` / `FrequencySeriesMatrix` へ揃えたいとき"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:70
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:108
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:146
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:192
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:237
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:286
-#: 0345766991a84dfd99f97ceb03813719 1fa430571c844639af18b42bfcb581a3
-#: 32d301b9b32342e99569633c6f2705c2 411969f134974dcdb6b39f3cba79a59b
-#: 829d9fe6a5aa47e498f828b592b37bb8 c8ab62e479b34ed78c3ef3a2ad695293
+#: ../../explanation/gwexpy_for_gwpy_users.md:70
+#: ../../explanation/gwexpy_for_gwpy_users.md:108
+#: ../../explanation/gwexpy_for_gwpy_users.md:146
+#: ../../explanation/gwexpy_for_gwpy_users.md:192
+#: ../../explanation/gwexpy_for_gwpy_users.md:237
+#: ../../explanation/gwexpy_for_gwpy_users.md:286
+#: 26de29669f0c41d297d94a44bafbfd08 6b4b86cee23f407e959c33521beab519
+#: 6ff60439fc7b4872a1a6abca9552456f 7e83090b81b14d31a3cb01279829b025
+#: be6a8c45e00b4b24897d60e9bff0128f f2f8f48cc04646369a20a72d5f5b8390
 msgid "Related pages:"
 msgstr "関連ページ:"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:74
-#: b9a4e44b3c2f44ca8ceaffe6821a5e98
-msgid "[TimeSeriesDict Reference](../reference/api/timeseries.rst)"
-msgstr "[TimeSeriesDict リファレンス](../reference/api/timeseries.rst)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:74
+#: 03b9f7bd81b3429fa49d26972959d188
+msgid "[TimeSeriesDict Reference](../reference/api/timeseries)"
+msgstr "[TimeSeriesDict リファレンス](../reference/api/timeseries)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:75
-#: f547d89b3a2b4d8fa0c5ed9669ca7422
-msgid "[TimeSeriesMatrix Reference](../reference/api/timeseries.rst)"
-msgstr "[TimeSeriesMatrix リファレンス](../reference/api/timeseries.rst)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:75
+#: 15d49f5501344b49a1703abe84b103ae
+msgid "[TimeSeriesMatrix Reference](../reference/api/timeseries)"
+msgstr "[TimeSeriesMatrix リファレンス](../reference/api/timeseries)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:77
-#: 7adc57ed3d814c879c0f633cb20474e4
+#: ../../explanation/gwexpy_for_gwpy_users.md:77
+#: f785efd131b74075903229f68e60d8a8
 msgid "Recipe 2: Pull external function calls back onto the data object"
 msgstr "差分レシピ 2: 外部関数呼び出しをオブジェクトメソッドへ寄せる"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:79
-#: 5112971745c54828bc137df83fad9227
+#: ../../explanation/gwexpy_for_gwpy_users.md:79
+#: b5480572eaed4dc2a10690556cce444b
 msgid ""
 "In GWpy-based code, the natural pattern is often “extract arrays, then call "
 "SciPy or Statsmodels directly.”   In GWexpy, part of that workflow is "
@@ -304,54 +290,54 @@ msgstr ""
 "GWpy ベースのコードでは、「配列を取り出してから SciPy や Statsmodels "
 "を直接呼ぶ」という流れが自然なパターンになりがちです。GWexpy では、そのワークフローの一部がデータオブジェクト自身のメソッドとして提供されます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:102
-#: 9b081a72758a46d1a73fabd781e900ad
+#: ../../explanation/gwexpy_for_gwpy_users.md:102
+#: 16f399f5eb5b44f79d5a04e36fa6a7e4
 msgid "The same direction applies to other added APIs in `gwexpy`, including:"
 msgstr "同じ方向の差分として、`gwexpy` では次のような API も追加されています。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:104
-#: 14fbd768308d4fbab852ea701e9c2342
+#: ../../explanation/gwexpy_for_gwpy_users.md:104
+#: edbb13656e4e4196a2d29c387c31f9ed
 msgid "`.fit()` for object-level fitting workflows"
 msgstr "`.fit()` : データオブジェクトに対するフィッティング"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:105
-#: 16fc7c9d15854218948c50783e70c05f
+#: ../../explanation/gwexpy_for_gwpy_users.md:105
+#: d78d0a4dffb64d6db18b4121784bf4bf
 msgid "`.hht()` for Hilbert-Huang Transform analysis"
 msgstr "`.hht()` : Hilbert-Huang Transform"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:106
-#: aff1cb06b73e4c6192044cf51ff14fb4
+#: ../../explanation/gwexpy_for_gwpy_users.md:106
+#: 47066409a7c949aeb19a1fcff360b8e8
 msgid "`.arima()` for time-series modelling and forecasting"
 msgstr "`.arima()` : 時系列予測・モデル化"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:111
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:291
-#: 406d114e370c46649ecaa06bb02b5fcf 5d7318aa412a4de3b1b17a2473542269
-msgid "[Frequency Series Tutorial](../tutorials/index.md)"
-msgstr "[周波数系列チュートリアル](../tutorials/index.md)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:111
+#: ../../explanation/gwexpy_for_gwpy_users.md:291
+#: 5d9c6ae1a31b4794a610c32e795ac560 ac39789b12a34554873e82fa1682a100
+msgid "[Frequency Series Tutorial](../tutorials/intro_frequencyseries)"
+msgstr "[周波数系列チュートリアル](../tutorials/intro_frequencyseries)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:112
-#: 4d95a73e3a6a4f75ba03bd7d37aea755
-msgid "[Fitting](../tutorials/index.md)"
-msgstr "[フィッティング](../tutorials/index.md)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:112
+#: 573d62cdf3b24683bfe8e931de7e4c6d
+msgid "[Fitting](../tutorials/intro_fitting)"
+msgstr "[フィッティング](../tutorials/intro_fitting)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:113
-#: eba975b6f47f4e5bba07fb3ac3aefe30
-msgid "[HHT](../tutorials/index.md)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:113
+#: 1a54a3eff2b94fb6b7b4005506d6a9dc
+msgid "[HHT](../how-to/spectral/advanced_hht)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:114
-#: e630866ee0be4e7f9c5d59bc70ae0a91
-msgid "[ARIMA](../tutorials/index.md)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:114
+#: eeb0682ad56e4f58994ffa894412d822
+msgid "[ARIMA](../how-to/fitting/advanced_arima)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:116
-#: aaa0d1b7a0b44c738fca12e45de14d08
+#: ../../explanation/gwexpy_for_gwpy_users.md:116
+#: 1c5405be007c409a801e0ec2bd47da9a
 msgid "Recipe 3: Single-channel code often does not need a full rewrite"
 msgstr "差分レシピ 3: 単一チャネルコードは大きく変えなくてよい"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:118
-#: 47f188de381a4589aee52911a6cc74d2
+#: ../../explanation/gwexpy_for_gwpy_users.md:118
+#: 5701737eb92743829636426adcde4759
 msgid ""
 "If you already know GWpy’s base classes, you do not need to redesign "
 "everything up front.   In many cases, the practical migration path is: "
@@ -360,40 +346,40 @@ msgstr ""
 "GWpy の基本クラスをすでに知っているなら、最初からすべてを設計し直す必要はありません。多くの場合、現実的な移行手順は「まず import "
 "を変え、その後 GWexpy 固有の API を役立つ箇所だけ採用する」というものです。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:141
-#: fd5a958dafed40899fb666cf4a0b6bc7
+#: ../../explanation/gwexpy_for_gwpy_users.md:141
+#: dc7aac5e5cd647218f524392cbab57f3
 msgid "Practical reading of this difference:"
 msgstr "実務上の見方:"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:143
-#: 6d325997945d46bbb106fc353a9ceab6
+#: ../../explanation/gwexpy_for_gwpy_users.md:143
+#: 2caa4f8d0843472d988205ffb7df8fb0
 msgid "start by carrying over existing single-channel workflows"
 msgstr "まずは既存の単一チャネル処理をそのまま持ってくる"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:144
-#: b80317b0593c4f95876401668f1e83ba
+#: ../../explanation/gwexpy_for_gwpy_users.md:144
+#: 8713f3fbfef64a2484875d14f59c05b9
 msgid ""
 "add GWexpy-only APIs later, where multi-channel or higher-level analysis "
 "benefits matter"
 msgstr "多チャネル化や追加メソッドが必要になった地点で `gwexpy` 固有 API を使う"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:149
-#: 0823bbbcdf2a4de8893bea853e51679f
+#: ../../explanation/gwexpy_for_gwpy_users.md:149
+#: 17143799a97d4fec9d7f36012ee8ebeb
 msgid "[Tutorial Index](../tutorials/index.md)"
 msgstr "[チュートリアル一覧](../tutorials/index.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:150
-#: 4d64347c0b5846fa95fa81979c0e7acf
+#: ../../explanation/gwexpy_for_gwpy_users.md:150
+#: 9fc46d8391a94ee9933cdca965bc5dd0
 msgid "[API Reference](../reference/index.md)"
 msgstr "[API リファレンス](../reference/index.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:152
-#: 27068f54615a4d798529e3f27739c43e
+#: ../../explanation/gwexpy_for_gwpy_users.md:152
+#: 9b9ce20c9762462fb71b4b4670503701
 msgid "Recipe 4: Group `ScalarField` objects with `FieldList` / `FieldDict`"
 msgstr "差分レシピ 4: `ScalarField` を `FieldList` / `FieldDict` でまとめる"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:154
-#: c4efda632aa64a7fb1e24762cff527f3
+#: ../../explanation/gwexpy_for_gwpy_users.md:154
+#: 06f2dcd38792434eba8a2c038fe69252
 msgid ""
 "Typical GWpy migration paths focus on series-like objects, and GWpy does not"
 " provide a standard container layer for field-like data with shared spatial "
@@ -404,47 +390,47 @@ msgstr ""
 "コンテナや、そのコレクションに対応する標準クラスはありません。 GWexpy では、単一 field を `ScalarField` で保持し、複数の "
 "field を `FieldList` / `FieldDict` で一括管理できます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:189
-#: 6a4e63b8ea15443c93eea8679e77fb23
+#: ../../explanation/gwexpy_for_gwpy_users.md:189
+#: 1eea175755fa4d4d80faa12e74186b3e
 msgid ""
 "you want multiple fields to share unit/axis/domain checks instead of "
 "managing metadata by hand"
 msgstr "同じ軸・単位・ドメインを共有する複数の field をまとめて扱いたいとき"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:190
-#: 1126c68c66c847028da3c361edded249
+#: ../../explanation/gwexpy_for_gwpy_users.md:190
+#: cf274e24c5804c9a8116421faf3c5343
 msgid ""
 "you want spatial transforms or selections to stay at the collection level "
 "rather than writing field-by-field loops"
 msgstr "空間方向の変換や切り出しを、field 単位のループではなくコレクション単位で揃えたいとき"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:194
-#: b95aaa351e5547c59a29f3870b3abb1d
-msgid "[Field API Intro](../tutorials/index.md)"
-msgstr "[Field API 入門](../tutorials/index.md)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:194
+#: 1f92b51633cb45fab9e8d1f5d4ba7161
+msgid "[Field API Intro](../how-to/containers/field_scalar_intro)"
+msgstr "[Field API 入門](../how-to/containers/field_scalar_intro)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:196
-#: fa13a825b1fc42c5a4ae0cc4106c1675
-msgid "[ScalarField Reference](../reference/api/fields.rst)"
-msgstr "[ScalarField リファレンス](../reference/api/fields.rst)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:196
+#: 346229158025420bb565ef92f6944338
+msgid "[ScalarField Reference](../reference/api/fields)"
+msgstr "[ScalarField リファレンス](../reference/api/fields)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:197
-#: 01b121a21b11491d9e4d2e9c2404a231
-msgid "[FieldList Reference](../reference/api/fields.rst)"
-msgstr "[FieldList リファレンス](../reference/api/fields.rst)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:197
+#: ba1e9f4a3ad54329b9608a56deab2f64
+msgid "[FieldList Reference](../reference/api/fields)"
+msgstr "[FieldList リファレンス](../reference/api/fields)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:198
-#: 3007549677f744dc95e80ebeb13c5f61
-msgid "[FieldDict Reference](../reference/api/fields.rst)"
-msgstr "[FieldDict リファレンス](../reference/api/fields.rst)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:198
+#: f46bc13314d945149ae7493225f51ff2
+msgid "[FieldDict Reference](../reference/api/fields)"
+msgstr "[FieldDict リファレンス](../reference/api/fields)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:200
-#: c3f8e0e047c844f084bed23397c3becd
+#: ../../explanation/gwexpy_for_gwpy_users.md:200
+#: fe81f2a6b5d34685a213e595260b00ba
 msgid "Recipe 5: Read Pickle sharing in terms of compatibility"
 msgstr "差分レシピ 5: Pickle 共有時の互換性を見る"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:202
-#: 566e8345779e44d4aad57fd6cb748978
+#: ../../explanation/gwexpy_for_gwpy_users.md:202
+#: 6290b9d495704010802ed27511752ae0
 msgid ""
 "GWexpy is designed with result sharing in mind, including cases where the "
 "receiver does not have GWexpy installed.   The point here is not generic "
@@ -453,23 +439,23 @@ msgstr ""
 "GWexpy は、受け取り手が GWexpy をインストールしていない場合も含め、結果の共有を念頭に設計されています。ここで重要なのは一般的な "
 "Pickle の安全性の話ではなく、GWpy ユーザーが運用上何を期待できるかという点です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:234
-#: ae39dbeb346e44528b5029d561e3c76a
+#: ../../explanation/gwexpy_for_gwpy_users.md:234
+#: 6444f9ab8ef04496b8573e2667db95fe
 msgid "Only load Pickle data from trusted sources."
 msgstr "Pickle は信頼できるデータだけをロードしてください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:240
-#: e1db75a6816148b0947878eaa95ba79a
+#: ../../explanation/gwexpy_for_gwpy_users.md:240
+#: 1d967330c4ad4c809ce33995edcd203a
 msgid "[Installation Guide](../tutorials/installation.md)"
 msgstr "[インストールガイド](../tutorials/installation.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:242
-#: 35be53efabaf4670b204c909b5f6b547
+#: ../../explanation/gwexpy_for_gwpy_users.md:242
+#: 793f4324ae97435a80380af2966f78fe
 msgid "Recipe 6: Bridge to python-control"
 msgstr "差分レシピ 6: python-control との橋渡し"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:244
-#: 796c0447ae61455bb354d2674bbaf35c
+#: ../../explanation/gwexpy_for_gwpy_users.md:244
+#: 0bdac5054b8d4572840c51d52a374777
 msgid ""
 "In GWpy-based code, using `control.bode()` or similar functions requires "
 "manually extracting a `FrequencySeries` value as a numpy array and passing "
@@ -480,15 +466,15 @@ msgstr ""
 "配列として手動で取り出し、`control.frd()` に渡す必要があります。GWexpy では `to_control_frd()` が 1 "
 "回の呼び出しで変換を処理し、その定型コードを不要にします。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:281
-#: 5a7e52846f70414498c8c1235a7c087c
+#: ../../explanation/gwexpy_for_gwpy_users.md:281
+#: b4c087ca4723406ebf3256a22aefd17c
 msgid ""
 "you want to treat an ASD / PSD spectrum directly as a control-system FRD "
 "model"
 msgstr "ASD / PSD スペクトルをそのまま制御系の FRD モデルとして扱いたいとき"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:282
-#: efd46eb9a10047149c2aebfcaae17256
+#: ../../explanation/gwexpy_for_gwpy_users.md:282
+#: df3fa428aea746c998dfd9aae1af576b
 msgid ""
 "you want to skip manual numpy extraction before passing data to "
 "`control.bode()` / `control.nichols()` / `control.nyquist()`"
@@ -496,44 +482,44 @@ msgstr ""
 "`control.bode()` / `control.nichols()` / `control.nyquist()` に渡す前の numpy "
 "配列取り出し処理を省きたいとき"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:283
-#: 68fdfb8d0fda4aa3aae33159166a74f0
+#: ../../explanation/gwexpy_for_gwpy_users.md:283
+#: 2cc950d5e37b4023a17a3fdb5a1cb890
 msgid ""
 "you want to restore a processed FRD back to a `FrequencySeries` and feed it "
 "into an existing plot or statistics pipeline"
 msgstr "解析結果の FRD を GWexpy の `FrequencySeries` に戻して既存のプロット・統計処理パイプラインに繋げたいとき"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:284
-#: ac93a814af0b4198bdc629dd45daa510
+#: ../../explanation/gwexpy_for_gwpy_users.md:284
+#: 8c4b8ea3f7b44b30a25247c00fbcd1bd
 msgid ""
 "you want to convert each channel in a multi-channel spectrum with "
 "`FrequencySeriesDict.to_control_frd()`"
 msgstr ""
 "多チャネルのスペクトルを `FrequencySeriesDict.to_control_frd()` でチャネルごとに FRD 化したいとき"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:288
-#: 977376862a4849e0b65b2bbd4bbc07de
+#: ../../explanation/gwexpy_for_gwpy_users.md:288
+#: e3202d9c3b014421a99bd82c69c8d2f3
 msgid "[Interop / Conversion Guide](../how-to/interop.md)"
 msgstr "[Interop / 変換ガイド](../how-to/interop.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:289
-#: a66e6d209b474a829bfac7b79f518d8d
+#: ../../explanation/gwexpy_for_gwpy_users.md:289
+#: 759605c027e747bbb8ad2930735d1434
 msgid ""
 "[python-control API Reference](../reference/api/gwexpy.interop.control_)"
 msgstr "[python-control API リファレンス](../reference/api/gwexpy.interop.control_)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:290
-#: 0697c7a1241f4d909ba163c76fb48643
-msgid "[Active Damping Tutorial](../tutorials/index.md)"
-msgstr "[アクティブ制振チュートリアル](../tutorials/index.md)"
+#: ../../explanation/gwexpy_for_gwpy_users.md:290
+#: 283b9bc04d674754bf0caa8d71ab55ae
+msgid "[Active Damping Tutorial](../how-to/case-studies/case_active_damping)"
+msgstr "[アクティブ制振チュートリアル](../how-to/case-studies/case_active_damping)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:293
-#: c8d4610b51cd488698542f669d87fbc0
+#: ../../explanation/gwexpy_for_gwpy_users.md:293
+#: 33221c636f4e4552a03ba819ffcb591e
 msgid "Treat direct I/O and external-library conversion as separate guides"
 msgstr "I/O と外部ライブラリ連携は別ページを見る"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:295
-#: 3f82560d9bed4a89bfdae3422bed7b8f
+#: ../../explanation/gwexpy_for_gwpy_users.md:295
+#: 4fbaf4de410b40c4b226999f0edf52ab
 msgid ""
 "This page intentionally does not duplicate the I/O-format list or the "
 "external-library conversion list.   Use the dedicated guides below as the "
@@ -541,62 +527,68 @@ msgid ""
 msgstr ""
 "このページは、I/O フォーマット一覧や外部ライブラリ変換一覧をあえて重複して掲載しません。一次情報源としては以下の専用ガイドを使ってください："
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:298
-#: 46f78ac011634e23981764bb0e1cddae
+#: ../../explanation/gwexpy_for_gwpy_users.md:298
+#: 6de825aaa70b4b59a8733c01b7609e1d
 msgid ""
 "Direct I/O: [File I/O Supported Formats Guide](../how-to/io_formats.md)"
 msgstr "直接 I/O: [ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:299
-#: 0471c77e19a34e68a6115dc43e703203
+#: ../../explanation/gwexpy_for_gwpy_users.md:299
+#: 8208f5f71de949b287d142d295dae42a
 msgid ""
 "External-library conversion: [Interop / Conversion Guide](../how-"
 "to/interop.md)"
 msgstr "外部ライブラリ変換: [Interop / 変換ガイド](../how-to/interop.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:301
-#: 153803ed9c21424284a37954c3ede9d1
+#: ../../explanation/gwexpy_for_gwpy_users.md:301
+#: 65c83193adea49588f50e6cd90dca47b
 msgid "Next Steps"
 msgstr "次のステップ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:303
-#: fa8d289ba0c34bd3a86e34047a85bd68
+#: ../../explanation/gwexpy_for_gwpy_users.md:303
+#: 2a895cd10b254f9ea2e9b94c56d13fca
 msgid ""
 "[GWpy Difference API Index](../reference/gwpy_added_api.md) - look up added "
 "APIs from a difference-oriented view"
 msgstr "[GWpy 差分 API 一覧](../reference/gwpy_added_api.md) - 追加 API を差分観点で引く"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:304
-#: 4f9cfbae62dd40cfabedda2ddcc523e4
+#: ../../explanation/gwexpy_for_gwpy_users.md:304
+#: ae66b056a1344b93a2b42a9404a2e579
 msgid ""
-"[Field API Intro](../tutorials/index.md) - see how `ScalarField`, "
-"`FieldList`, and `FieldDict` fit together"
+"[Field API Intro](../how-to/containers/field_scalar_intro) - see how "
+"`ScalarField`, `FieldList`, and `FieldDict` fit together"
 msgstr ""
-"[Field API 入門](../tutorials/index.md) - "
+"[Field API 入門](../how-to/containers/field_scalar_intro) - "
 "`ScalarField`・`FieldList`・`FieldDict` の関係を理解する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:305
-#: f8af7db66f3246a692a320e0e5ae9472
+#: ../../explanation/gwexpy_for_gwpy_users.md:305
+#: a8ec446f25ef442aad0295371ec76f30
 msgid ""
 "[Tutorial Index](../tutorials/index.md) - move from migration recipes into "
 "worked examples"
 msgstr "[チュートリアル一覧](../tutorials/index.md) - 移行レシピから実例へ進む"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:306
-#: b5d93c92026e4130a4860fc8eda5ff0d
+#: ../../explanation/gwexpy_for_gwpy_users.md:306
+#: 4e05f67c564c4783825231eb661e3ac0
 msgid ""
 "[File I/O Supported Formats Guide](../how-to/io_formats.md) - check "
 "supported read/write formats"
 msgstr "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md) - 対応する読み書きフォーマットを確認する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:307
-#: 9624fa1dfcf649c9b38d6c9e64f66543
+#: ../../explanation/gwexpy_for_gwpy_users.md:307
+#: bf1cca48b0414f4c904f96ce1f75d2da
 msgid ""
 "[Interop / Conversion Guide](../how-to/interop.md) - check bridges to "
 "external libraries"
 msgstr "[Interop / 変換ガイド](../how-to/interop.md) - 外部ライブラリへの橋渡しを確認する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/gwexpy_for_gwpy_users.md:308
-#: 2324b1392ac94d7092edc46c87a968c7
+#: ../../explanation/gwexpy_for_gwpy_users.md:308
+#: 1acd37f9ea3c407ebb3e038729f42eee
 msgid "[API Reference](../reference/index.md) - inspect the full API surface"
 msgstr "[API リファレンス](../reference/index.md) - 全 API を確認する"
+
+#~ msgid "[HHT](../tutorials/index.md)"
+#~ msgstr ""
+
+#~ msgid "[ARIMA](../tutorials/index.md)"
+#~ msgstr ""

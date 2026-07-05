@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-05 00:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -20,12 +20,12 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:10002
-#: 70f0ed76e75f4f4fb3fd634d390be211
+#: ba44aa12de9d47d2a162e310c65f083e
 msgid "Coupling Analysis: Multi-Channel Coupling"
 msgstr "カップリング解析: マルチチャンネル結合"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:10004
-#: c0f95c6782dd4abb98c48c4e4d829b92
+#: 4403054318ba497d97676597ff3e9d7a
 msgid ""
 "This tutorial demonstrates the **Coupling Function (CF)** analysis workflow "
 "using `gwexpy.analysis.CouplingFunctionAnalysis`."
@@ -34,26 +34,26 @@ msgstr ""
 "を使った**カップリング関数（CF）解析**のワークフローを解説します。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:10006
-#: 480b41820ff7419dae7d44362fd268b5
+#: 3738f34d87674992bb0624c692622c6c
 msgid "What is a Coupling Function?"
 msgstr "カップリング関数とは"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:10008
-#: 84ad308936db4bf7a74d8b4b54ffe6a9
+#: e0e8df45b6474ac2889e57af5f380c6e
 msgid ""
 "A coupling function quantifies how much a *witness* (environmental) sensor's"
 " noise couples into a *target* (sensitive) channel. It is defined as:"
 msgstr "カップリング関数は、*ウィットネス*（環境センサー）のノイズが*ターゲット*（感度チャンネル）にどれだけ結合するかを定量化します:"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:10010
-#: 9791acadcbd043a8b04c9ef1ed3cb602
+#: 713b49b35ec044399c87e575a0ece54d
 msgid ""
 "\n"
 "\\mathrm{CF}(f) = \\sqrt{\\frac{P_{\\rm target,inj}(f) - P_{\\rm target,bkg}(f)}{P_{\\rm witness,inj}(f) - P_{\\rm witness,bkg}(f)}}\n"
 msgstr ""
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:10014
-#: 3454ce5f0c044b4781aba5c972e2f5e7
+#: 18f070f2b9ac4ebfb3af7449397ac70f
 #, python-brace-format
 msgid ""
 "where $P_{\\rm inj}$ and $P_{\\rm bkg}$ are the power spectral densities "
@@ -61,7 +61,7 @@ msgid ""
 msgstr "ここで $P_{\\rm inj}$ と $P_{\\rm bkg}$ はそれぞれ注入時・バックグラウンド時のパワースペクトル密度です。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:10016
-#: e961ad41b6064ded80a0b9701fe21775
+#: 33cf02c8058d4cfd86d7d36b67be3181
 msgid ""
 "**Typical application:** PEM (Physical Environment Monitor) injection "
 "analysis in gravitational-wave detectors."
@@ -69,21 +69,22 @@ msgstr ""
 "**典型的な用途:** KAGRA/LIGO/Virgo の PEM（Physical Environment Monitor）インジェクション解析"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:10018
-#: dfaee1f3e1ea4d16afd31d5daf01a28f
+#: 95c5fdcb991d468cb0bf14424dbf1d27
 msgid ""
 "**Legacy migration note:**   If your legacy code manually computed PSDs, "
 "divided them, and applied custom thresholds via scipy, this workflow "
-"replaces all of that.   See the [Migration Guide for GWpy "
-"Users](../../explanation/gwexpy_for_gwpy_users.md) and [GWpy Difference API "
-"Index](../../reference/gwpy_added_api.md) for migration guidance."
+"replaces all of that.   See the [GWexpy for GWpy "
+"Users](../../explanation/gwexpy_for_gwpy_users.md) guide and [GWpy "
+"Difference API Index](../../reference/gwpy_added_api.md) for migration "
+"guidance."
 msgstr ""
 "**レガシー移行メモ:** PSD を手動で計算し、それらを割り、scipy "
-"で独自のしきい値を適用していたレガシーコードは、このワークフローがすべて置き換えます。移行の案内は [GWpy "
-"ユーザー向け移行ガイド](../../explanation/gwexpy_for_gwpy_users.md) と [GWpy 差分 API "
+"で独自のしきい値を適用していたレガシーコードは、このワークフローがすべて置き換えます。移行の案内は [GWpy ユーザーのための "
+"GWexpy](../../explanation/gwexpy_for_gwpy_users.md) と [GWpy 差分 API "
 "一覧](../../reference/gwpy_added_api.md) を参照してください。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:20002
-#: 2b8e190842c142a49afb441bcc029201
+#: 2d1768b4345e47e2bab2493175d34a3a
 msgid ""
 "**Note — SigmaThreshold statistical validity**: When the number of averaged "
 "segments `n_avg` is below 10, the Gaussian approximation of the χ²(2K) "
@@ -95,41 +96,41 @@ msgstr ""
 "`PercentileThreshold` の使用を検討してください。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:40002
-#: 1124d249c1a24df993383bad1f5f1bbd
+#: fcd7d898ff144d63a760e500dfe72f45
 msgid "1. Prepare Synthetic Injection / Background Data"
 msgstr "1\\. 合成インジェクション／バックグラウンドデータの準備"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:40004
-#: ab2be9a884f44743bdd37b3055a3b86b
+#: fe01eb89ae64401d8d928500432b2ab3
 msgid "We simulate:"
 msgstr "シミュレーション設定:"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:40005
-#: 99bfcbb6883b4358a1ae4455517f5ef0
+#: 2898a78de80e4ea381c080b9b37655e3
 msgid "A **witness** channel (environmental sensor): seismic or acoustic"
 msgstr "**ウィットネスチャンネル**（環境センサー）: 地震計・音響センサー"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:40006
-#: 82cdf387aa41425399d80cebf56d0789
+#: 28e6bd10ef8344f1aed000fb08282c33
 msgid ""
 "Two **target** channels (sensitive instruments): one strongly coupled, one "
 "weakly coupled"
 msgstr "**ターゲットチャンネル** 2 本: 結合強度の異なる感度計"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:40008
-#: 8acba9b0f6324bf29902ffb0b10969be
+#: ea8cf3f8d44743ae9ca4a9c70c62612f
 msgid ""
 "The injection adds a coherent tone to the witness. The targets respond "
 "proportionally to the coupling strength."
 msgstr "インジェクションではウィットネスにトーン信号を加えます。ターゲットへの応答は結合強度に比例します。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:60002
-#: db03b4fac4334961ba9915c6b099503d
+#: be430638fbd2434e9a6ca6ccb1a0a445
 msgid "2. Run Coupling Function Analysis"
 msgstr "2\\. カップリング関数解析の実行"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:60004
-#: 06a23876f4c2421eb798e8d5e9a36ab7
+#: 49e0a2a88ec94326b3520e3d3daa9eda
 msgid ""
 "`CouplingFunctionAnalysis.compute()` takes the injection and background "
 "`TimeSeriesDict`, and the name of the witness channel."
@@ -138,112 +139,112 @@ msgstr ""
 "とウィットネスチャンネル名を渡します。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:80002
-#: 5199162b466b4f949ccead1fe5b19904
+#: 3bb7b549991b4da4a67cf258cfaecfd9
 msgid "3. Inspect Results"
 msgstr "3\\. 結果の確認"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:80004
-#: 669bb0dbd3b74bf8b14d8357a4c70e86
+#: 663997f202404e1aa8b2d8de640110df
 msgid ""
 "Each result is a `CouplingResult` containing the coupling function, upper "
 "limit, and diagnostic PSDs."
 msgstr "`CouplingResult` オブジェクトにカップリング関数・上限・診断 PSD が格納されています。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:120002
-#: 380c7268845a4184bcd6fd4b4fd69171
+#: e23667ae65c14ea79b2b539316e58436
 msgid "import warnings"
 msgstr ""
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:120004
-#: e4a13826e216492599d46966c458061d
+#: 7c158479732c4502a501622a4554054b
 msgid "4. Threshold Strategies"
 msgstr "4\\. 閾値戦略の比較"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:120006
-#: 91d4a52797f048d2a32ea9a00cddfb29
+#: 587a050e327943878a09210265546373
 msgid "gwexpy provides three built-in threshold strategies:"
 msgstr "gwexpy には 3 種類の組み込み閾値戦略があります:"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: c7adc486cd4645e0814eb35a9d9efa5b
+#: 0109775c5cf547cf9c8e5d1406ec7363
 msgid "Strategy"
 msgstr "戦略"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: 587c735a1d0a4291a91a68ef52a79381
+#: e5daeb3737fa46fe8a29c51e2e4e8186
 msgid "Description"
 msgstr "説明"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: 34f22a136fb84791b230c94a6e2720ee
+#: f23bdc4a7aa94c099bb70803794d7dc5
 msgid "Best for"
 msgstr "適したデータ"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: f24a906ef80e425ab91a2b1a090c4d6f
+#: ca831a84f710460b9f4f85b455665796
 msgid "`RatioThreshold(ratio)`"
 msgstr ""
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: c69b9bc351cb4a75a65421c724ec4d76
+#: 2ff9128f1a8548d4848408e12c533822
 #, python-brace-format
 msgid "$P_{\\rm inj} > r \\cdot P_{\\rm bkg}$"
 msgstr ""
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: 77589ea07a9f4818827042eb1e0a48c8
+#: ad64b5f9ad6f4bc3b5b18d5aa998d6ae
 msgid "Fast screening, physical reasoning"
 msgstr "高速スクリーニング・物理的な根拠がある場合"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: 6bb6d3aa3f5747238ca3f8cd16155052
+#: 1d42a03086f64105a932a4922a3907d2
 msgid "`SigmaThreshold(sigma, n_avg)`"
 msgstr "`SigmaThreshold(sigma)`"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: c1027997ccbe46a99bd0d66d32f567f0
+#: e1fdf23c175a4637848336dbaa898fed
 msgid "Gaussian significance test"
 msgstr "ガウス統計的有意性検定"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: 3352caf9294141ae90f9b5a119806e46
+#: b2bebc6c2ee646ac9fb579262d9ed038
 msgid "Stationary, Gaussian backgrounds"
 msgstr "定常・ガウス背景"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: 85cdd7fe53d74abd905445d91368414d
+#: 43c57aead7fd4f7ead2b53f81ce73f73
 msgid "`PercentileThreshold(pct, factor)`"
 msgstr ""
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: 98c5b3714f85424f93b0bff0b4ed1dcb
+#: 32192fa9d36f42c695cf99ffb271d896
 msgid "Empirical distribution"
 msgstr "経験的分布"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb
-#: 32b4667e6b0042248c80595cc58d8f09
+#: 68885294ff624bfc85f9ed85ccb79b3c
 msgid "Non-Gaussian, glitchy backgrounds"
 msgstr "非ガウス・グリッチが多い背景"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:140002
-#: 1eaabe3733d740f6a8154babf35c1273
+#: 33a6696267154d1cb86bf54edf49e07c
 msgid "5. Frequency Range Restriction"
 msgstr "5\\. 周波数帯域制限"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:140004
-#: cbbb7579e6464d87af7302f132c9502d
+#: e931dc284016416383acd4f5c52e7565
 msgid ""
 "Use `frange` to restrict the coupling function evaluation to a specific "
 "frequency band."
 msgstr "`frange` を使うと、カップリング関数の評価を特定の周波数帯に限定できます。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:160002
-#: 74c3020b0fd24da38b275aab87b85726
+#: 4f7bd28d20084775899aaa72c642c479
 msgid "6. Upper Limits"
 msgstr "6\\. 上限値（Upper Limit）"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:160004
-#: b49788b33af348d68e54929a4b7813ba
+#: 94248a6fe9844adf92f0b973a674b606
 msgid ""
 "At frequencies where the witness is excited but the target shows no "
 "measurable excess, gwexpy computes an **upper limit** on the coupling "
@@ -252,28 +253,28 @@ msgstr ""
 "ウィットネスは励起されているがターゲットに測定可能な過剰が見られない周波数では、gwexpy はカップリング関数の **上限値** を計算します。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:160006
-#: fc71ce675b14410a8c95c2e84c6fc41b
+#: d99d8f5113fb47c98561beff1d9a97ab
 msgid ""
 "This is useful for setting constraints even when the coupling is below the "
 "noise floor."
 msgstr "これは、カップリングがノイズフロア以下の場合でも制約を与えるのに有用です。"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:180002
-#: 680888a6e7f1458abaf5d38948e19852
+#: 5c164e4c16c440b5a2255d92011d6deb
 msgid "Summary"
 msgstr "まとめ"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:180024
-#: 64dd4c451f1d4a9699afd582da1a666b
+#: 7dc25140c7274e9d842a1e758909fde5
 msgid "**See also:**"
 msgstr "**関連チュートリアル:**"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:180025
-#: ef1c0130280a42728983a1abd9c4bc0b
+#: 35b3fc18fb4643d39884e06b7e347952
 msgid "[Advanced Bruco (Broadband Noise Analysis)](advanced_bruco.ipynb)"
 msgstr "[Bruco ノイズハンティング](advanced_bruco.ipynb)"
 
 #: ../../how-to/coupling/advanced_coupling.ipynb:180026
-#: 2f6185706afe4ba68b44e82b290d9b0b
+#: bea1f0d756dc40628ba56bf2ca9047db
 msgid "[Advanced Correlation Analysis](../fitting/advanced_correlation.ipynb)"
 msgstr "[相関解析の応用](../fitting/advanced_correlation.ipynb)"

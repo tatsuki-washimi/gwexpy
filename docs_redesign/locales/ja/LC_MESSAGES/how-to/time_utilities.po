@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"POT-Creation-Date: 2026-07-05 00:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/time_utilities.md 77d77e7b0ed348d785a753b757d4b0af
+#: ../../how-to/time_utilities.md 4bbf5fb63ce24fd382fdfc968e749461
 msgid ""
 "Use GWexpy time helpers safely for GPS and UTC conversion, including to_gps,"
 " from_gps, tconvert, LIGOTimeGPS, vectorized inputs, and timezone edge "
@@ -28,11 +28,11 @@ msgstr ""
 "GWexpy の GPS 時刻ユーティリティガイドです。to_gps、from_gps、tconvert、LIGOTimeGPS "
 "の使い分け、ベクトル入力、タイムゾーンや閏秒の注意点を整理します。"
 
-#: ../../how-to/time_utilities.md:7 49f6e0984ad046aea8e0a0abae23497a
+#: ../../how-to/time_utilities.md:7 e568f7323cf94bf993f8c439dcacb104
 msgid "GPS Time Utility Functions (`gwexpy.time`)"
 msgstr "GPS 時刻ユーティリティ (`gwexpy.time`)"
 
-#: ../../how-to/time_utilities.md:9 5e8070d775984c21806c9611bcf2dacc
+#: ../../how-to/time_utilities.md:9 2bafdcc77a844f5c99bd32bf5ab07c4a
 msgid ""
 "`gwexpy` extends GWpy's time utilities to support vector operations on "
 "pandas Series, NumPy ndarrays, and Astropy Time objects, in addition to "
@@ -41,33 +41,33 @@ msgstr ""
 "GWexpy は GWpy の時刻ユーティリティを拡張し、標準的な文字列・datetime のスカラーに加えて、pandas Series・NumPy "
 "ndarray・Astropy Time オブジェクトに対するベクトル演算をサポートします。"
 
-#: ../../how-to/time_utilities.md:16 517bdc53e2d14279ae92b233c5f35b34
+#: ../../how-to/time_utilities.md:16 bd2555cb1f8746b6aee6545e31a6b414
 msgid "Quick Guide: Important Considerations (FAQ)"
 msgstr "クイックガイド: 重要な注意事項 (FAQ)"
 
-#: ../../how-to/time_utilities.md:18 1a492ad28c3246c79543977fc6c9b1e2
+#: ../../how-to/time_utilities.md:18 d10644adc339467fa6f694a380d64599
 msgid ""
 "It is important to understand these fundamental behaviors before performing "
 "conversions."
 msgstr "変換を行う前に、以下の基本特性を理解しておくことが重要です。"
 
-#: ../../how-to/time_utilities.md:20 19ba4466bb404ec6b5aa3fcc6afcc6bf
+#: ../../how-to/time_utilities.md:20 1211a12d8433432d9aec0543c4861935
 msgid "Handling Leap Seconds"
 msgstr "閏秒 (Leap Seconds) の扱い"
 
-#: ../../how-to/time_utilities.md:21 9221632f0060478f808eb43566cb6b12
+#: ../../how-to/time_utilities.md:21 2fd77f3341d24d64b4889740143a8561
 msgid ""
 "**GPS Time**: Continuous seconds starting from 1980-01-06 00:00:00 UTC. It "
 "does not include leap seconds."
 msgstr "**GPS 時刻**: 1980年1月6日 00:00:00 UTC を起点とし、閏秒を含まない連続した秒数としてカウントされます。"
 
-#: ../../how-to/time_utilities.md:22 23e53dff79284b68ae8c9ba070516926
+#: ../../how-to/time_utilities.md:22 f44065f382b74f998ed4f63c878a47bc
 msgid ""
 "**Conversion**: When converting to/from UTC, `astropy.time`'s IERS leap "
 "second tables are automatically applied."
 msgstr "**変換**: UTC との変換時には、`astropy.time` が保持する IERS 閏秒テーブルが自動的に適用されます。"
 
-#: ../../how-to/time_utilities.md:23 3cc4f69061ed4e0db5ae8e928e86690d
+#: ../../how-to/time_utilities.md:23 47d0594f9b4b4a39b95f24f0d977522c
 msgid ""
 "**Note**: For future dates or very recent leap seconds, you may need to "
 "update `astropy` data or use the latest IERS table."
@@ -75,11 +75,11 @@ msgstr ""
 "**注意**: 未来の時刻や、直近で追加された閏秒を含む変換を行う場合は、`astropy` のデータ更新や最新の IERS "
 "テーブルが必要になる場合があります。"
 
-#: ../../how-to/time_utilities.md:25 12253fa5c8af4393a6f971eabf992190
+#: ../../how-to/time_utilities.md:25 ce31b58537dd47f3b15c8854df8c3dc1
 msgid "Strings Without Timezones"
 msgstr "タイムゾーンのない文字列の扱い"
 
-#: ../../how-to/time_utilities.md:26 6a1ef1743b0142d597dc604d34789ab9
+#: ../../how-to/time_utilities.md:26 d628956bf1b743f094773bf89ae795ee
 msgid ""
 "Strings like `\"2015-09-14 09:50:45\"` without a timezone are treated as "
 "**UTC by default** in `to_gps` and `tconvert`."
@@ -87,7 +87,7 @@ msgstr ""
 "`\"2015-09-14 09:50:45\"` のようにタイムゾーンが指定されていない文字列を `to_gps` や `tconvert` "
 "に渡すと、**デフォルトで UTC** として解釈されます。"
 
-#: ../../how-to/time_utilities.md:27 3c02d0d465b643a8a643f2169c0cc691
+#: ../../how-to/time_utilities.md:27 b3a5634ce20f41aa9ffe9fa62b09052e
 msgid ""
 "For reliable local time conversion, always include the timezone name (e.g., "
 "`\"Asia/Tokyo\"`) or provide a timezone-aware `datetime` object."
@@ -95,11 +95,11 @@ msgstr ""
 "ローカル時刻として確実に変換したい場合は、必ずタイムゾーン名（例: `\"Asia/Tokyo\"`）を文字列に含めるか、タイムゾーン付きの "
 "`datetime` オブジェクトを渡してください。"
 
-#: ../../how-to/time_utilities.md:29 46dfe6eb08e749d588446d7a904182f8
+#: ../../how-to/time_utilities.md:29 3619f763508f416288ede0552fdea448
 msgid "Common Failure Modes"
 msgstr "よくある失敗とエラー条件"
 
-#: ../../how-to/time_utilities.md:30 d8c11722a13b4f2ea42cbd7b4f0af91c
+#: ../../how-to/time_utilities.md:30 3227a6dc04c440eda58e30d7f17f57ea
 msgid ""
 "Strings that cannot be parsed as datetimes, such as `to_gps(\"not-a-time\")`"
 " or `tconvert(\"not-a-time\")`, fail with `ValueError`."
@@ -107,13 +107,13 @@ msgstr ""
 "`to_gps(\"not-a-time\")` や `tconvert(\"not-a-time\")` "
 "のように日時として解釈できない文字列は、`ValueError` で失敗します。"
 
-#: ../../how-to/time_utilities.md:31 e39088e8705847e189660dbb3d96bb12
+#: ../../how-to/time_utilities.md:31 2dcfae45f83e4642933c49b35cacccc5
 msgid ""
 "Inputs that cannot be converted to numeric GPS seconds, such as "
 "`from_gps(\"abc\")`, fail with `ValueError`."
 msgstr "`from_gps(\"abc\")` のように GPS 秒として数値化できない入力は、`ValueError` で失敗します。"
 
-#: ../../how-to/time_utilities.md:32 5e07f37547cf4d3ab6cfc9e70f01c62d
+#: ../../how-to/time_utilities.md:32 b982e0a209534a819796e66597b2b33d
 msgid ""
 "Unsupported keyword arguments such as `to_gps(..., timezone=\"Asia/Tokyo\")`"
 " raise `TypeError` in the current implementation. Pass the timezone in the "
@@ -122,7 +122,7 @@ msgstr ""
 "`to_gps(..., timezone=\"Asia/Tokyo\")` のような未対応キーワード引数は、現在の実装では受け付けず "
 "`TypeError` になります。タイムゾーンは文字列本体または timezone-aware `datetime` で指定してください。"
 
-#: ../../how-to/time_utilities.md:33 4dc86f5672cc46e79ccff57117d8a9cd
+#: ../../how-to/time_utilities.md:33 5147bf99c40745979757c02a6c5d0847
 msgid ""
 "Naive `datetime` inputs are treated as UTC. If you mean a local civil time, "
 "use a timezone-aware `datetime`."
@@ -130,7 +130,7 @@ msgstr ""
 "naive な `datetime` 入力は UTC として扱われます。ローカルの時刻を表したい場合は、timezone-aware "
 "`datetime` を使ってください。"
 
-#: ../../how-to/time_utilities.md:34 3852c3de5848442aadaf526d197b0caf
+#: ../../how-to/time_utilities.md:34 5688d62bf0bd407288d3035825362953
 msgid ""
 "For DST boundaries or other ambiguous local civil times, this page does not "
 "guarantee automatic resolution. Prefer explicit UTC offsets or timezone-"
@@ -139,194 +139,194 @@ msgstr ""
 "夏時間の切替などで曖昧になるローカル時刻について、このページは自動解決を保証しません。境界となる時刻では、明示的な UTC オフセットまたは "
 "timezone-aware `datetime` を推奨します。"
 
-#: ../../how-to/time_utilities.md:36 81167eb403b64806ad91a503a25fd826
+#: ../../how-to/time_utilities.md:36 a11a368169124e86887d5beb6799794d
 msgid "Function Selection Quick Reference"
 msgstr "関数選択早見表"
 
-#: ../../how-to/time_utilities.md:38 c99907c4c2c04382ba18fe46813c4b27
+#: ../../how-to/time_utilities.md:38 d4f61d4049d54a38a7210201968f6a30
 msgid "Choose the most appropriate function for your goal."
 msgstr "目的に応じて最適な関数を選択してください。"
 
-#: ../../how-to/time_utilities.md c0021368e6434a089361708cd792e556
+#: ../../how-to/time_utilities.md 4316c45d7b794fae92c79d11e3f5dc5e
 msgid "Goal"
 msgstr "目的"
 
-#: ../../how-to/time_utilities.md 9c4e3f5fe46541379777d6ae5e166828
+#: ../../how-to/time_utilities.md f4488fb198314c71bb06f37495dfdd61
 msgid "Use"
 msgstr "使う関数"
 
-#: ../../how-to/time_utilities.md 444523e7f35342369bced91b38e01cae
+#: ../../how-to/time_utilities.md e2fd2c08fe7b4c199f81cafdf7dcac6d
 msgid "Input types"
 msgstr "主な入力型"
 
-#: ../../how-to/time_utilities.md e92b64b1ddbe484da789064863c90201
+#: ../../how-to/time_utilities.md cd551e6692b242f68cee04d165dbfd6e
 msgid "Output"
 msgstr "返り値"
 
-#: ../../how-to/time_utilities.md af020d70cab9486894e4c9867dfeeffa
+#: ../../how-to/time_utilities.md b675958c6b90426c8725c68e6a60f7b4
 msgid "Key args"
 msgstr "主要引数"
 
-#: ../../how-to/time_utilities.md 628aa082bf78412faac74aff7ca2047f
+#: ../../how-to/time_utilities.md 0cbc4a547efd4622a9879469db47ecbc
 msgid "**DateTime → GPS**"
 msgstr "**日時 → GPS秒**"
 
-#: ../../how-to/time_utilities.md f6a9fa85d36d4c2baf6a3043b5bf502c
+#: ../../how-to/time_utilities.md 34e69b4efe0c4cb2a8cfed37e78ac019
 msgid "`to_gps`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md 88423e6f43de449b9abd52ac8b373142
+#: ../../how-to/time_utilities.md c849adf95cec4a3ea0052979da9ed140
 msgid "`str`, `datetime`, `Time`, `Series`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md 80fa265f556645a790797fa7201f9bac
+#: ../../how-to/time_utilities.md d45ed442680f48d79a7c7ee6448b7083
 msgid "`LIGOTimeGPS` / `f8 ndarray`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md 32ab194161984a80bd1df1b7e318ac4e
-#: 8c6ac75f0cc740c788d1413347476fec ad7b41eca5c64436a3ac3cf7f1a04a14
-#: e6e6918ac6f94ee3ace0b78888210ad3
+#: ../../how-to/time_utilities.md 1627c9c00f8649a8a66e21348a4abecd
+#: a565583e58874fb7841dd04640c72c2d cea1679bfbab4ae581ed4c20e1e85475
+#: d26a48e61c19420ea945356f16279a75
 msgid "—"
 msgstr ""
 
-#: ../../how-to/time_utilities.md 641c2066d30b4307b2264ed4d4efd6d8
+#: ../../how-to/time_utilities.md 3239e7be3e664b65822799fd35626b36
 msgid "**GPS → DateTime**"
 msgstr "**GPS秒 → 日時**"
 
-#: ../../how-to/time_utilities.md b4eb2a8b3d3b4693bf1a3fff2768d7b1
+#: ../../how-to/time_utilities.md ab5f6cf164224440a296a40119577b77
 msgid "`from_gps`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md 7881363565da48c089586ba199defaa0
+#: ../../how-to/time_utilities.md 361853f73ccc41838687aa33b9174e72
 msgid "`int`, `float`, `LIGOTimeGPS`, `ndarray`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md 9508714e5b7e4e64b49ee4feaea432d5
+#: ../../how-to/time_utilities.md cbff5b9e701e40e9a826314854b4a3dc
 msgid "`datetime` / `astropy.time.Time`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md b751fc2bc0b041178695ab3efd8a0289
+#: ../../how-to/time_utilities.md 9be82850034d42ac8b3d6e89d3a0086e
 msgid "**Convenience (Auto)**"
 msgstr "**相互変換 (自動判定)**"
 
-#: ../../how-to/time_utilities.md 8b5c59f8236648889e53261aa536cb6f
+#: ../../how-to/time_utilities.md 0f8e4831d1844b65a551108c5fc7516c
 msgid "`tconvert`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md 79f4eeeadb0e4a1083cea45ee7ddc20b
+#: ../../how-to/time_utilities.md 0f3a6738a4624fd69ccf33e1f37fe386
 msgid "All above + `\"now\"`"
 msgstr "上記すべて + `\"now\"`"
 
-#: ../../how-to/time_utilities.md c5490634dcae4f09ad68a527f6700e14
+#: ../../how-to/time_utilities.md 00a6b607ca914496b50b58008377e148
 msgid "Context-dependent (Scalar pref.)"
 msgstr "文脈に応じた型 (Scalar 優先)"
 
-#: ../../how-to/time_utilities.md 1fd4da0b683f46d391b4ba08674b05ad
+#: ../../how-to/time_utilities.md 33b29f8baa034f15b4ccff1dd703e568
 msgid "**High-Precision Object**"
 msgstr "**高精度オブジェクト**"
 
-#: ../../how-to/time_utilities.md 06221ff1f4fd4c0ebfac864c001b2463
+#: ../../how-to/time_utilities.md 26342b437f5d49b59851c6eec08c2cdb
 msgid "`LIGOTimeGPS`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md 216304ef2bf94f0c951110d59b215bbf
+#: ../../how-to/time_utilities.md 5f964f2ae3064b489e21c9ad3019c5c0
 msgid "`seconds`, `nanoseconds`"
 msgstr ""
 
-#: ../../how-to/time_utilities.md e139479301174f8dae614ea5545b9b50
+#: ../../how-to/time_utilities.md 9a58832a17804543872649efc6c23cab
 msgid "`LIGOTimeGPS` (integer s+ns)"
 msgstr "`LIGOTimeGPS` (秒+ナノ秒保持)"
 
-#: ../../how-to/time_utilities.md:49 b1df7968670c4505b713a5e0a92133a5
+#: ../../how-to/time_utilities.md:49 6b7307572aa84d6e9f44fb296e3c2e25
 msgid "Basic Examples"
 msgstr "基本的な使用例 (Examples)"
 
-#: ../../how-to/time_utilities.md:51 14ea82dad5754872aa4f1e0a33e517cd
+#: ../../how-to/time_utilities.md:51 cd62173aa34a4b24862a925a85c97ad4
 msgid "1. Simple Conversion"
 msgstr "1. 単一時刻の相互変換"
 
-#: ../../how-to/time_utilities.md:53 5d4f77e0b66a4402943710404eced9e2
+#: ../../how-to/time_utilities.md:53 5a29fedba4f84469a0619998f18119d2
 msgid ""
 "Purpose: verify round-trip conversion between a datetime string and GPS "
 "seconds"
 msgstr "目的: 1 つの日時文字列と GPS 秒の相互変換を確認する"
 
-#: ../../how-to/time_utilities.md:54 b62dd86a97af4d6d876dc5bef0d3be0b
+#: ../../how-to/time_utilities.md:54 57473bdd4f3942d8877f9bd22a9fbb02
 msgid "Input: one UTC string and one GPS scalar"
 msgstr "入力: UTC 文字列と GPS 秒スカラー"
 
-#: ../../how-to/time_utilities.md:55 c4169159e3fa4c2590fc80c101c4edea
+#: ../../how-to/time_utilities.md:55 8768746a5346424996679ae44afc11fb
 msgid "Output: `LIGOTimeGPS`, `datetime`, and `tconvert` return values"
 msgstr "出力: `LIGOTimeGPS` / `datetime` / `tconvert` の返り値"
 
-#: ../../how-to/time_utilities.md:73 e2f2481b8aab4548a432c5d73ac42331
+#: ../../how-to/time_utilities.md:73 98030be64ad34d60805d97c80622a0dd
 msgid "2. Vectorized Operations"
 msgstr "2. ベクトル演算 (Vectorized Operations)"
 
-#: ../../how-to/time_utilities.md:75 152e84c92e214ed286c1a7edd07195a2
+#: ../../how-to/time_utilities.md:75 111b32e477c04ee8bcec99d489845187
 msgid "Passing lists or NumPy arrays will invoke optimized batch conversions."
 msgstr "リストや NumPy 配列を渡すと、内部的に最適化されたベクトル変換が行われます。"
 
 #: ../../how-to/time_utilities.md:77 ../../how-to/time_utilities.md:185
-#: a1c2c6d0c09741448015ed16f0924263 e506b7d7f487435eba79cac33bc5ed6f
+#: 03ebbf28868d4a07a21c39f0a650dd71 480b210cdad0438db7a2c0b2b67d83c4
 msgid "Purpose: convert multiple timestamps in one call"
 msgstr "目的: 複数時刻をまとめて変換する"
 
-#: ../../how-to/time_utilities.md:78 7f4a47dd21754e739550eee4b43f201e
+#: ../../how-to/time_utilities.md:78 dce013166a76467ca94e3240693d62e3
 msgid "Input: a list of datetime strings or a NumPy array of GPS seconds"
 msgstr "入力: 日時文字列のリストや GPS 秒の NumPy 配列"
 
-#: ../../how-to/time_utilities.md:79 4c5a1db9d47e46ef987009b092d765f3
+#: ../../how-to/time_utilities.md:79 8ade7c9542ac4d94bc164fe7634dbcb1
 msgid "Output: `numpy.ndarray` or `astropy.time.Time` array"
 msgstr "出力: `numpy.ndarray` または `astropy.time.Time` 配列"
 
-#: ../../how-to/time_utilities.md:93 5f300a6b7b694d07807bdcb09fb2e897
+#: ../../how-to/time_utilities.md:93 cd99b62c456e4e85acaaea853cde5748
 msgid "3. Timezones & Leap Seconds"
 msgstr "3. タイムゾーンと言号（Leap Second）の注意点"
 
-#: ../../how-to/time_utilities.md:95 7af07f89658b4448839cbd5789d1b91f
+#: ../../how-to/time_utilities.md:95 8919c329bec64dcfbedc3f83b39a356f
 msgid ""
 "Purpose: show the difference between timezone-free input and timezone-aware "
 "input"
 msgstr "目的: タイムゾーン未指定入力と timezone-aware `datetime` の違いを確認する"
 
-#: ../../how-to/time_utilities.md:96 92a88672ee2944189ae46342ed6bef8b
+#: ../../how-to/time_utilities.md:96 a71b8411587f4ec3bab41c0cc8c308a4
 msgid "Input: strings or `datetime` objects"
 msgstr "入力: 文字列または `datetime`"
 
-#: ../../how-to/time_utilities.md:97 c4564bc703784023b0d988b4522c2183
+#: ../../how-to/time_utilities.md:97 087af84beb58411f8b688eab5c7e2d4f
 msgid "Output: GPS-second conversions with explicit interpretation"
 msgstr "出力: 解釈の違いが分かる GPS 秒変換"
 
-#: ../../how-to/time_utilities.md:117 b4a99c3dbde743e7bef1613a78be9327
+#: ../../how-to/time_utilities.md:117 249f9bd35d74457cbe9b4e9b4fb0fe32
 msgid "4. Invalid Input Examples"
 msgstr "4. 異常入力の扱い"
 
-#: ../../how-to/time_utilities.md:119 d34f88b32e3d4c30a09565fab51fa38a
+#: ../../how-to/time_utilities.md:119 d8526bb2252b493ca2251d7623c3e177
 msgid ""
 "Purpose: identify representative `ValueError` and `TypeError` cases before "
 "wiring this into a workflow"
 msgstr "目的: どの入力が `ValueError` / `TypeError` になるかを先に把握する"
 
-#: ../../how-to/time_utilities.md:120 9975d6b265b145cc8dd417bf67f70731
+#: ../../how-to/time_utilities.md:120 4dbd6615adf54f0d85825750f8f675cd
 msgid ""
 "Input: unparsable strings, non-numeric GPS input, unsupported keyword "
 "arguments"
 msgstr "入力: 不正文字列、非数値 GPS、未対応キーワード引数"
 
-#: ../../how-to/time_utilities.md:121 f9ecd2afa42d4b9da0f5b687a7775d12
+#: ../../how-to/time_utilities.md:121 32b74a321b1645dd845609e79927cbfe
 msgid "Output: failure-mode examples"
 msgstr "出力: 代表的な例外条件"
 
-#: ../../how-to/time_utilities.md:135 d92595ec4f8844aa94d647318e65bebd
+#: ../../how-to/time_utilities.md:135 af49b7aa4cd040149df7d80964334140
 msgid "`to_gps` — DateTime → GPS Seconds"
 msgstr "`to_gps` — 日時 → GPS 秒"
 
-#: ../../how-to/time_utilities.md:137 e57ca9ccae064198a8e3568e963fd40d
+#: ../../how-to/time_utilities.md:137 c0e4940ba62548a18a97ec709d4a5492
 msgid "**Signature**: `to_gps(t, *args, dtype=None, **kwargs)`"
 msgstr "**シグネチャ**: `to_gps(t, *args, dtype=None, **kwargs)`"
 
-#: ../../how-to/time_utilities.md:139 8d50cf3d75164b72a8ac2e3a14255e09
+#: ../../how-to/time_utilities.md:139 2cc0ebbc5c8d4b6fbef15cf32a4c3aec
 msgid ""
 "Converts various time representations into GPS seconds. It performs "
 "efficient vectorized operations on lists, arrays, and Series in addition to "
@@ -334,60 +334,60 @@ msgid ""
 msgstr ""
 "さまざまな時刻表現を GPS 秒に変換します。単一の値（スカラー）だけでなく、リスト・配列・Series に対しても効率的なベクトル演算を行います。"
 
-#: ../../how-to/time_utilities.md:141 5c6b9a25b8a64c48900b526a48d59ed7
+#: ../../how-to/time_utilities.md:141 f232075cf20d405497643d0bd5f8d929
 msgid "Working with Strings and DateTime Objects"
 msgstr "文字列・datetime オブジェクトの利用"
 
-#: ../../how-to/time_utilities.md:143 1741c805f35d4eaa815f457cc4c8da1e
+#: ../../how-to/time_utilities.md:143 32d8202264154cf0abb0d2c1835db355
 msgid "Purpose: convert a scalar datetime-like value into GPS seconds"
 msgstr "目的：スカラーの datetime 様の値を GPS 秒に変換する"
 
-#: ../../how-to/time_utilities.md:144 d4666354e4e24bec889009f166bddf9f
+#: ../../how-to/time_utilities.md:144 f9ac46e513454d94b1ab5b1628296ef9
 msgid "Input: a string or `datetime`"
 msgstr "入力：文字列または `datetime`"
 
-#: ../../how-to/time_utilities.md:145 d5f2697fdd5b4062b0f76fd8e35eed32
+#: ../../how-to/time_utilities.md:145 6491978bad2d44e4bbc90663759d7b6b
 msgid "Output: `LIGOTimeGPS` or equivalent scalar GPS representation"
 msgstr "出力：`LIGOTimeGPS` または等価なスカラー GPS 表現"
 
-#: ../../how-to/time_utilities.md:159 b4ec28822b124f1ba2016ee6f859ec18
+#: ../../how-to/time_utilities.md:159 fc505297f3214bebb854b0701307cc26
 msgid "Choosing the Output Type"
 msgstr "出力型の選択"
 
-#: ../../how-to/time_utilities.md:161 a616697c8bae489bb5aac5da8bc7a3d3
+#: ../../how-to/time_utilities.md:161 04e475800d8a4b6aae358bfcbbe2ac89
 msgid ""
 "By default, scalar calls mirror GWpy and return `LIGOTimeGPS`. Use `dtype` "
 "when you need a specific representation:"
 msgstr ""
 "デフォルトでは GWpy に合わせ、スカラー入力は `LIGOTimeGPS` を返します。特定の表現が必要な場合は `dtype` を指定します："
 
-#: ../../how-to/time_utilities.md:174 b3e0691866254b40b613c7b83e685310
+#: ../../how-to/time_utilities.md:174 1c7b09f5c72048c7a1172ee71277afe3
 msgid ""
 "`dtype=\"quantity\"` is useful for direct comparison or arithmetic with "
 "GWpy/GWexpy time axes:"
 msgstr "`dtype=\"quantity\"` は、GWpy/GWexpy の時刻軸と直接比較・差分計算したい場合に使えます："
 
-#: ../../how-to/time_utilities.md:183 00f1c247c0e24adaaa10096734cf7b9c
+#: ../../how-to/time_utilities.md:183 761d515609554d1a8ce66596a322bb73
 msgid "Working with pandas (Vectorized)"
 msgstr "pandas での利用（ベクトル対応）"
 
-#: ../../how-to/time_utilities.md:186 b7d94ca5f05841d7941bd86b332bb35b
+#: ../../how-to/time_utilities.md:186 8191d6370a6d4deab06bb49b2b432c52
 msgid "Input: a pandas `Series`"
 msgstr "入力：pandas の `Series`"
 
-#: ../../how-to/time_utilities.md:187 292d7c7a854d44bb8fd6360a16fa449d
+#: ../../how-to/time_utilities.md:187 f8b5575e31ce4bc588a5621157f26ac3
 msgid "Output: a NumPy array of GPS seconds"
 msgstr "出力：GPS 秒の NumPy 配列"
 
-#: ../../how-to/time_utilities.md:201 ade3f9cc38954e8d81b8861ec4cb38be
+#: ../../how-to/time_utilities.md:201 35113c1f548d4093bf7010f7909f47f2
 msgid "`from_gps` — GPS Seconds → DateTime"
 msgstr "`from_gps` — GPS 秒 → 日時"
 
-#: ../../how-to/time_utilities.md:203 4efaef141eac4aa3be94101724d06407
+#: ../../how-to/time_utilities.md:203 3bde4ba19f95413b84dfe19e9fcf44c8
 msgid "**Signature**: `from_gps(t, *args, **kwargs)`"
 msgstr "**シグネチャ**: `from_gps(t, *args, **kwargs)`"
 
-#: ../../how-to/time_utilities.md:205 5115bf4dda5e4ab6b2938c5cd99605b8
+#: ../../how-to/time_utilities.md:205 2f17407894e04d73997a337e2c8efaa5
 msgid ""
 "Converts GPS seconds into human-readable formats. Scalar inputs return "
 "`datetime` objects, while array inputs return `astropy.time.Time` objects."
@@ -395,27 +395,27 @@ msgstr ""
 "GPS 秒を人間が読みやすい時刻に変換します。スカラー入力は `datetime`、 配列入力は `astropy.time.Time` "
 "配列を返します。"
 
-#: ../../how-to/time_utilities.md:207 f2a71950ebfb470a8819d1f60d676924
+#: ../../how-to/time_utilities.md:207 07831e5c251f40efa62cbbf1c2344de5
 msgid ""
 "Scalar input such as `int`, `float`, or `LIGOTimeGPS`: returns "
 "`datetime.datetime`"
 msgstr "単一の `int` / `float` / `LIGOTimeGPS` を渡した場合: `datetime.datetime`"
 
-#: ../../how-to/time_utilities.md:208 bac06ad166044770a1112c64016d1e3f
+#: ../../how-to/time_utilities.md:208 33d2037052904e3e857ea803b9c8ea4a
 msgid ""
 "Vector input such as a list, NumPy array, or pandas object: returns "
 "`astropy.time.Time`"
 msgstr "リスト・NumPy 配列・pandas 系のベクトル入力を渡した場合: `astropy.time.Time`"
 
-#: ../../how-to/time_utilities.md:218 a28e8235593f4d2885b7ff3cc6e864ca
+#: ../../how-to/time_utilities.md:218 3bb6f5b0618b435b94cc2761aa96cd16
 msgid "`tconvert` — Automatic Conversion"
 msgstr "`tconvert` — 自動判定変換"
 
-#: ../../how-to/time_utilities.md:220 009c9d6d83ea4965afc4d24ced6ae544
+#: ../../how-to/time_utilities.md:220 7ec22a52a3464f20b45fec138eb22369
 msgid "**Signature**: `tconvert(t=None, *args, **kwargs)`"
 msgstr "**シグネチャ**: `tconvert(t=None, *args, **kwargs)`"
 
-#: ../../how-to/time_utilities.md:222 e6e8523b9b4847ebbd3b31872b9685d9
+#: ../../how-to/time_utilities.md:222 c78378a2756448989d705df2a6613eda
 msgid ""
 "Automatically detects the input type and dispatches to `to_gps` or "
 "`from_gps`."
@@ -423,25 +423,25 @@ msgstr ""
 "`tconvert` は入力の型を自動判定し、`to_gps` または `from_gps` に振り分けます。 GWpy の `tconvert` "
 "と同様の動作に加え、配列入力に対応しています。"
 
-#: ../../how-to/time_utilities.md:224 f4bb1b7c42f243b79e3d567251f15975
+#: ../../how-to/time_utilities.md:224 07ce68a440a74231b6cba1163c36ec25
 msgid "Purpose: use one convenience function when the input type may vary"
 msgstr "目的: 入力型が混在する場面で 1 つの関数から変換する"
 
-#: ../../how-to/time_utilities.md:225 967414e8ee804931828a66984518e2b0
+#: ../../how-to/time_utilities.md:225 f430d4183c9044c3b8ea0b6580512134
 msgid "Input: a datetime-like value, a GPS value, or `\"now\"`"
 msgstr "入力: 日時表現、GPS 秒、または `\"now\"`"
 
-#: ../../how-to/time_utilities.md:226 60b3c29f98ce437aa2c11150062a9ccb
+#: ../../how-to/time_utilities.md:226 10a67e1ef2d0490bb5da87d2208747e0
 msgid ""
 "Output: GPS seconds or a formatted UTC-side representation depending on "
 "input type"
 msgstr "出力: 入力に応じた GPS 秒または UTC 側の表現"
 
-#: ../../how-to/time_utilities.md:238 fdcd6df382564c06aee35772270cf204
+#: ../../how-to/time_utilities.md:238 bb89e9f23c59492fb5fb2cab55ee2e3f
 msgid "`LIGOTimeGPS` — High-Precision GPS Time"
 msgstr "`LIGOTimeGPS` — 高精度 GPS 時刻"
 
-#: ../../how-to/time_utilities.md:240 c4033afc752e42bbaea674c06bca4dad
+#: ../../how-to/time_utilities.md:240 5ff9e99cde674cf5a3303dab40e5cc15
 msgid ""
 "`LIGOTimeGPS` stores GPS time with nanosecond precision (integer seconds + "
 "integer nanoseconds)."
@@ -449,23 +449,23 @@ msgstr ""
 "`LIGOTimeGPS` は GPS 時刻をナノ秒精度（整数秒 + 整数ナノ秒）で保持します。 LIGO "
 "データアクセスライブラリで標準的に使用される表現形式です。"
 
-#: ../../how-to/time_utilities.md:242 7bcb2c657711449cb664094e4d94e21a
+#: ../../how-to/time_utilities.md:242 5b68f321d4e644c4b754399298a670ba
 msgid "Purpose: preserve integer-second and nanosecond precision explicitly"
 msgstr "目的: 秒とナノ秒を分けて高精度に保持する"
 
-#: ../../how-to/time_utilities.md:243 521251a51a1042c7b2deb2926b00bcd6
+#: ../../how-to/time_utilities.md:243 f619bed93e9b43a6b363c77992b8d4f5
 msgid "Input: integer seconds and optional nanoseconds"
 msgstr "入力: 整数秒と、必要に応じて整数ナノ秒"
 
-#: ../../how-to/time_utilities.md:244 cd1f5ec749cb41c4ac66888060258891
+#: ../../how-to/time_utilities.md:244 47fbc5147c4a488596493983baa16012
 msgid "Output: a `LIGOTimeGPS` object"
 msgstr "出力: `LIGOTimeGPS` オブジェクト"
 
-#: ../../how-to/time_utilities.md:255 3e673c413e57420eb507467d6760d92b
+#: ../../how-to/time_utilities.md:255 1a753ace93ed4fae86255e78e53cccc5
 msgid "TimeSeries Integration"
 msgstr "TimeSeries との連携"
 
-#: ../../how-to/time_utilities.md:257 904d942e586344fc95d9a4677621181c
+#: ../../how-to/time_utilities.md:257 0f9c9f06bb874bb58ab097fa1f7bbc4e
 msgid ""
 "Many methods in `gwexpy` accept time specifications in any format supported "
 "by `to_gps()`."
@@ -473,40 +473,40 @@ msgstr ""
 "GWexpy の多くのメソッドは、文字列・datetime・GPS 数値などの時刻指定を直接受け付けます。 内部で "
 "`gwexpy.time.to_gps` が自動的に呼び出されます。"
 
-#: ../../how-to/time_utilities.md:259 8dd8c3574a6e4797a824f7d6d32eb73e
+#: ../../how-to/time_utilities.md:259 247081c6323d422e83ab885d87a21a4f
 msgid ""
 "Purpose: show where the time helpers surface in everyday `TimeSeries` "
 "workflows"
 msgstr "目的: 日常的な `TimeSeries` 操作の中で時刻ユーティリティがどう使われるかを見る"
 
-#: ../../how-to/time_utilities.md:260 ac9737fdd3fd43e3919e75d636859a66
+#: ../../how-to/time_utilities.md:260 6949bc71e26c49a499b701a479a9a16a
 msgid ""
 "Input: time strings, datetimes, or GPS-style values accepted by `to_gps()`"
 msgstr "入力: `to_gps()` が受け付ける時刻文字列、`datetime`、GPS 数値"
 
-#: ../../how-to/time_utilities.md:261 935a575b32c54958ac740fbb35be2e78
+#: ../../how-to/time_utilities.md:261 4236151d7da14195ba5c3d37f4bc2d95
 msgid "Output: fetched or cropped `TimeSeries` objects"
 msgstr "出力: 取得済みまたは切り出した `TimeSeries`"
 
-#: ../../how-to/time_utilities.md:276 1844ce5910104245bdfbb95b4e124fa8
+#: ../../how-to/time_utilities.md:276 58852344976a40ac9d5e05eedacae2a8
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../how-to/time_utilities.md:278 70ff60b3b649420db3c39db1ee9fcbb3
+#: ../../how-to/time_utilities.md:278 aa44b6224d5f40d0a06820500c0e3699
 msgid ""
-"[API Reference](../reference/api/time.rst) — Complete API reference for "
+"[API Reference](../reference/api/time) — Complete API reference for "
 "`gwexpy.time`"
-msgstr ""
-"[API リファレンス](../reference/api/time.rst) — `gwexpy.time` の完全な API リファレンス"
+msgstr "[API リファレンス](../reference/api/time) — `gwexpy.time` の完全な API リファレンス"
 
-#: ../../how-to/time_utilities.md:279 fe62db5df309426baf7bf35c09a8a824
+#: ../../how-to/time_utilities.md:279 cfb86a6a863c4201b2f56e169abd54e7
 msgid ""
-"[Migration from GWpy](../explanation/gwexpy_for_gwpy_users.md) — Overview of"
-" all GWexpy extensions"
+"[GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md) — Overview "
+"of all GWexpy extensions"
 msgstr ""
-"[GWpy からの移行](../explanation/gwexpy_for_gwpy_users.md) — GWexpy の全拡張機能の概要"
+"[GWpy ユーザーのための GWexpy](../explanation/gwexpy_for_gwpy_users.md) — GWexpy "
+"の全拡張機能の概要"
 
-#: ../../how-to/time_utilities.md:280 09a8280e553a46d594920fe5afa3530f
+#: ../../how-to/time_utilities.md:280 3b7eab1ea2324c499d905cc8deeed2c9
 msgid ""
 "[Prerequisites and "
 "Conventions](../explanation/prerequisites_and_conventions.md) — Shared "

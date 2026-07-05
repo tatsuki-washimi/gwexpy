@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-04 19:46+0000\n"
+"POT-Creation-Date: 2026-07-05 00:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,8 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 917ebfaf955e4f6c88f1fa06868aaa78
+#: ../../how-to/interop.md 2374e50611284b8daf88b6bb41e47abe
 msgid ""
 "Find the right GWexpy interop path for converting objects to and from "
 "storage containers, analysis libraries, ML backends, and domain-specific "
@@ -29,13 +28,11 @@ msgstr ""
 "オブジェクトをストレージコンテナ、解析ライブラリ、ML バックエンド、ドメイン特化ツールとの間で変換するための、適切な GWexpy interop "
 "経路を見つけましょう。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:7
-#: 4fd7fdad2c46416eb828b32fc766ec82
+#: ../../how-to/interop.md:7 9dc7ddc31315434bada93d5dad170007
 msgid "Interop / Conversion Guide"
 msgstr "Interop / 変換ガイド"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:9
-#: e50c9de056ba4801bc7df2f4a083cef8
+#: ../../how-to/interop.md:9 dabba8daea2e4e59b41041054f453e72
 msgid ""
 "This page is the dedicated **interop guide** for `gwexpy`.   Here, interop "
 "means **conversion and bridging** centered on `to_*()` / `from_*()` APIs."
@@ -43,58 +40,47 @@ msgstr ""
 "このページは `gwexpy` の専用 **interop ガイド**です。   ここでの interop とは、`to_*()` / "
 "`from_*()` API を中心とした**変換とブリッジ**を意味します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:12
-#: 8d7751f4d3aa461b8edeabf973c7fbe7
+#: ../../how-to/interop.md:12 8e1dae89fdf7489296063c6784541c53
 msgid "This page covers:"
 msgstr "このページで扱うもの:"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:14
-#: 90b6fb1d8ff449dbbea7efdfb1849791
+#: ../../how-to/interop.md:14 040d4a22dce24fe9a1c38b95cba5b335
 msgid "object conversion via `to_*()` / `from_*()`"
 msgstr "`to_*()` / `from_*()` によるオブジェクト変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:15
-#: c9e8c1f91c8f456db7a340e93c1422dc
+#: ../../how-to/interop.md:15 a2c62c4901f84b4ab03f733344f5ec11
 msgid "bridges to external libraries and external data models"
 msgstr "外部ライブラリや外部データモデルへの橋渡し"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:16
-#: af2ce3e557e44fc79561fcf710d5e9fd
+#: ../../how-to/interop.md:16 e09742fd1d4a436a8b1214c97574617e
 msgid "object-level file-bridge helpers"
 msgstr "object 単位の file-bridge helper"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:17
-#: 82be47455c52451ca34be49ff431ba63
+#: ../../how-to/interop.md:17 e06d9e239ce8483c94964d8ac9312bd9
 msgid "asymmetric conversion APIs"
 msgstr "対称でない変換 API"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:18
-#: 31521d7c676a4028ae4effc9eda78012
+#: ../../how-to/interop.md:18 ace02ab9650f4008a19a1aa006fcdc8c
 msgid "conversions that apply only to some classes"
 msgstr "一部クラスにしか適用されない変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:20
-#: 8f2f53c394b744cc81fd356b7f0a29eb
+#: ../../how-to/interop.md:20 28ed9ef4df1b486db71f792737d9a7cd
 msgid "This page does not cover:"
 msgstr "このページで扱わないもの:"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:22
-#: 20af04fbe432457bbcb835200e8802f6
+#: ../../how-to/interop.md:22 bde75af619b7448cb6adbf9c71f595aa
 msgid "`Class.read(..., format=...)`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:23
-#: 971363d02164441db4392675b6393001
+#: ../../how-to/interop.md:23 cd8a0c7c9ee04dbd95d48bd24bf2eb8d
 msgid "`obj.write(..., format=...)`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:24
-#: 88dc48304f64414c92a45a0f0ed5f55c
+#: ../../how-to/interop.md:24 4483bb6572c94b45803d1c8e6d0f1e10
 msgid "the choice of local file formats themselves"
 msgstr "ローカルファイル形式の採用判断そのもの"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:26
-#: dc1a3680bdb7455faa1682fbbb6430b3
+#: ../../how-to/interop.md:26 cac517f1016b48c899c25792f43a61d7
 msgid ""
 "For local file formats and direct `.read()` / `.write()` / `fetch()` paths, "
 "see the [File I/O Supported Formats Guide](io_formats)."
@@ -102,13 +88,11 @@ msgstr ""
 "ローカルファイルの `.read()` / `.write()` / `fetch()` 系の入口は [ファイル I/O "
 "対応フォーマットガイド](io_formats) を参照してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:28
-#: 9284a14644de49f7aa65c467099d87ef
+#: ../../how-to/interop.md:28 62e1ca797ff7404292332b895956b993
 msgid "Direct I/O Names"
 msgstr "直接 I/O 名"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:30
-#: 74156951752847a8883e08e3cd0140d1
+#: ../../how-to/interop.md:30 58bb8330ef95495b8c2d6a2162b310d0
 msgid ""
 "These are the canonical direct-I/O format names used by `gwexpy`. Legacy "
 "aliases remain supported during the transition, but new examples should "
@@ -117,193 +101,159 @@ msgstr ""
 "以下は `gwexpy` で使う direct I/O の正規名です。 移行期間中は旧 alias "
 "も使えますが、新しい例では下の正規名を優先してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 65556db87940413aa4cf30794a2c572e
+#: ../../how-to/interop.md 8323764464de4a248b1fd9936a87a39d
 msgid "Canonical name"
 msgstr "正規名"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 18f3de1fc5a944b5b6ebbaa46864ce1d
+#: ../../how-to/interop.md 13be03cab74b4e11bf80a2bda429930a
 msgid "Legacy aliases"
 msgstr "旧 alias"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 10146c11a55b43a0a16afd5b8c160ab1
+#: ../../how-to/interop.md bd7e1be7ffd14578b390e3401c3288fa
 msgid "Typical direct-I/O entry points"
 msgstr "代表的な direct I/O 入口"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 2e7881ad61a14d83bf307cb917be659d
+#: ../../how-to/interop.md 8dffeb729641412883a0d5de2c7459d7
 msgid "External package / schema"
 msgstr "外部パッケージ / スキーマ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: e10c969289fb482a89f66cafca9879b5
+#: ../../how-to/interop.md 5bc5c43af2cf4b7e94f0a5b47a792082
 msgid "`mseed`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: eff35b2d0f0143ce8d96c399dd734f0f
+#: ../../how-to/interop.md 345bfdca410e46a8bacf2cea39561492
 msgid "`miniseed`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 8fd9f298ab084aa39d5c1b9372cc27f3
+#: ../../how-to/interop.md 3b46618234ee46e7a8e513e4aced6d1b
 msgid "`TimeSeriesDict.read(..., format=\"mseed\")`, `.write(..., format=\"mseed\")`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: ba475e201dee496c9a78d3d70269e866
+#: ../../how-to/interop.md 8bfa6237636c42e68356d04616d246bf
 msgid "ObsPy"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 56a4136dfd954b91bcf20cc06fc7b55d
+#: ../../how-to/interop.md 0242f0510d174b3492e1776dc881535d
 msgid "`nc`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 42ec626ca16c49c0aacdceb1b88edc4e
+#: ../../how-to/interop.md 69e2c25bc00b42088baa296d9142f713
 msgid "`netcdf4`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 4858c3662172422cb5245c54543e0290
+#: ../../how-to/interop.md be60c4855fd0406ca8205952e32bc658
 msgid ""
 "`TimeSeries.read(..., format=\"nc\")`, `TimeSeriesDict.read(..., "
 "format=\"nc\")`, `TimeSeriesMatrix.read(..., format=\"nc\")`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6c3561d91713495aa08b168d7bea4469
+#: ../../how-to/interop.md d52dd0263aea457ca5c5b6caa17a4d82
 msgid ""
 "[netCDF4](https://unidata.github.io/netcdf4-python/), "
 "[xarray](https://docs.xarray.dev/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 8f1d95b678044580b0644255fdddcb40
+#: ../../how-to/interop.md aed5ebfaf5e74ce397f3e30b2da1c3cc
 msgid "`hdf.ndscope`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: a07aae857171431db7c27a5c652b2022
+#: ../../how-to/interop.md 536b0c0b5220454c951a72b680845274
 msgid "`ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0eca567c0cff456e9c791376e49011f7
+#: ../../how-to/interop.md a792e1bb53e54ff3b57f738a13fc729a
 msgid ""
 "`TimeSeriesDict.read(..., format=\"hdf.ndscope\")`, `.write(..., "
 "format=\"hdf.ndscope\")`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b4a99c79522546f2a09a386ef69a585a
+#: ../../how-to/interop.md 7faca0709b874ef08fea48c5e9d3207e
 msgid "ndscope HDF5 schema"
 msgstr "ndscope HDF5 スキーマ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: a97e5c13a9764326a8fd5237da5b6314
+#: ../../how-to/interop.md 956b5acc15a1441aa8a8560a44864103
 msgid "`xml.diaggui`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 64aa5cc61f6341f190338385b4ae81b7
+#: ../../how-to/interop.md 322dcef9df994e8abbe207cc17cc4c96
 msgid "`dttxml`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 398436c82a0c4c739af05aa4627e20cf
+#: ../../how-to/interop.md b059284783344595a43ea7f6ddb537a8
 msgid "`TimeSeriesDict.read(..., format=\"xml.diaggui\", products=\"...\")`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 8a1668630bb54e6dbe0c78cb002d6903
+#: ../../how-to/interop.md 9faae803e01f43bc8171035c4c125a13
 msgid "DiagGUI / DTT XML"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:40
-#: 49caa03efee3401ab94300e224357038
+#: ../../how-to/interop.md:40 f2572fc773d6444281313e644060e9b5
 msgid "Jump Links"
 msgstr "ジャンプリンク"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:42
-#: 2320f37aa47843e491ccffe85ab422b6
+#: ../../how-to/interop.md:42 d9ea02419993464fa5e2fc068c5faf05
 msgid "[How to Read This Page](#interop-en-how-to-read)"
 msgstr "[このページの読み方](#interop-en-how-to-read)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:43
-#: f059f2f929734eecab4c8d9e0e979704
+#: ../../how-to/interop.md:43 7945df15f49644689a9b67e0af7d27c4
 msgid "[Status Labels](#interop-en-status-labels)"
 msgstr "[状態ラベル](#interop-en-status-labels)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:44
-#: 8b1950e35ff843b4b42be1379cbae8ee
+#: ../../how-to/interop.md:44 a31107e488654195b419dbe97ac60133
 msgid ""
 "[A. Storage Formats and Container Conversion](#interop-en-storage-"
 "conversion)"
 msgstr "[A. 保存形式・コンテナ変換](#interop-en-storage-conversion)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:45
-#: 9f22728221c54d5e857eeb340748a0d1
+#: ../../how-to/interop.md:45 bf25ac1e25224106a8288c48a39bd18f
 msgid ""
 "[B. Analysis Library and Object Conversion](#interop-en-analysis-conversion)"
 msgstr "[B. 解析ライブラリ・オブジェクト変換](#interop-en-analysis-conversion)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:46
-#: 340ea1e80fc241a09307f374f39580b3
+#: ../../how-to/interop.md:46 be00fe09c7214abba17efac85b8ba9f4
 msgid ""
 "[C. Machine Learning, Acceleration, and Array Backends](#interop-en-ml-"
 "conversion)"
 msgstr "[C. 機械学習・高速化・配列基盤](#interop-en-ml-conversion)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:47
-#: 56495c5d1c604596a280f21e4705c78b
+#: ../../how-to/interop.md:47 eba0d2cc7dc24866abc37a81bd2b94cf
 msgid ""
 "[D. Physics and Domain-Specific Libraries](#interop-en-domain-conversion)"
 msgstr "[D. 物理・ドメイン特化ライブラリ](#interop-en-domain-conversion)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:48
-#: d87b66bdfddd4e0daab803cfa518b745
+#: ../../how-to/interop.md:48 b4d80176a0c34d7ba23f83f4b47a4208
 msgid "[What to Prioritize First](#interop-en-priorities)"
 msgstr "[優先的に見るべき対象](#interop-en-priorities)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:51
-#: 91a5f2192bd6453c85ee0149638c66c1
+#: ../../how-to/interop.md:51 2fae8da331c74ed19d63de2505589b34
 msgid "How to Read This Page"
 msgstr "このページの読み方"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:53
-#: b022295ba69d4b31baf0cc0218a07c33
+#: ../../how-to/interop.md:53 baed58a2890f439e8df408236cebab13
 msgid ""
 "If you want to convert a live object to a **storage format or container**, "
 "start with A."
 msgstr "**手元のオブジェクトを保存形式やコンテナに写したい**なら A を見てください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:54
-#: 6c7590f5eb8d4c38833da9ff9471e093
+#: ../../how-to/interop.md:54 564b6230cfc140588111450d9270d64f
 msgid ""
 "If you want to convert to **analysis objects** such as pandas, xarray, "
 "astropy, or dask, start with B."
 msgstr "**pandas / xarray / astropy / dask のような解析オブジェクトに写したい**なら B を見てください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:55
-#: 45df15e3550346889d0eb5969eb75c23
+#: ../../how-to/interop.md:55 8e2aa3eb4ba24bd9b39ce7f146e5ea9b
 msgid ""
 "If you want to hand data to **PyTorch, TensorFlow, JAX, or CuPy**, start "
 "with C."
 msgstr "**PyTorch / TensorFlow / JAX / CuPy に渡したい**なら C を見てください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:56
-#: ef7f7b0d0bf446738b4c0f8d5fd597be
+#: ../../how-to/interop.md:56 0efa98dc0eb74939b8feb8718f7f73ed
 msgid ""
 "If you want to connect to **ROOT, ObsPy, LAL, PyCBC**, or other domain-"
 "specific libraries, start with D."
 msgstr "**ROOT / ObsPy / LAL / PyCBC などの分野別ライブラリに接続したい**なら D を見てください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:57
-#: 7a114605ac9b43a28dabe3f0a67a1c85
+#: ../../how-to/interop.md:57 bbc1ee4a7812429bace485e5dbfc3e81
 msgid ""
 "If you want to move **Field** objects into xarray, NetCDF4, or Zarr "
 "workflows via `to_*()` / `from_*()`, treat that as interop, not as direct "
@@ -312,49 +262,41 @@ msgstr ""
 "**Field を xarray / NetCDF4 / Zarr に `to_*()` / `from_*()` で渡したい**場合は、I/O "
 "ではなく interop として扱います。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:60
-#: c409bfd0704844efb6a8a7ec6aa1f822
+#: ../../how-to/interop.md:60 603be2e247304f17819d0f452f33f7b5
 msgid "Status Labels"
 msgstr "状態ラベル"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:62
-#: 0b2e6bc1ad444d17a2c27d6685b53d58
+#: ../../how-to/interop.md:62 384cec16a9a5414e90c14a08bc46ee75
 msgid "`Public`: implemented and reachable from `reference/api/interop`"
 msgstr "`公開済み`: 実装があり、`reference/api/interop` から到達できる"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:63
-#: 787035ef4bdb48e08de4a8fe0348e1ea
+#: ../../how-to/interop.md:63 5eabcac6c4de4e65859a52694fcdafd4
 msgid ""
 "`Implemented`: implemented, but the page still needs concrete navigation or "
 "reference polish"
 msgstr "`実装済み`: 実装はあるが、このページ上の導線や参照整理がまだ残っている"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:64
-#: 3bfeb6528c704e4eb4880ddb26347440
+#: ../../how-to/interop.md:64 f3de473060ac42c4a8060d11f58f79f2
 msgid ""
 "`Implemented, some paths still in progress`: the main route works, but some "
 "conversion paths are still incomplete"
 msgstr "`実装済み（一部経路は対応中）`: 主経路は使えるが、一部変換経路の完成度が不足している"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:65
-#: 11043549cb7140b1b31c589a2e1ff072
+#: ../../how-to/interop.md:65 84f11ae3173c4c44ba468b6fe1ca5518
 msgid ""
 "`In progress`: the implementation or the public presentation is not finished"
 " yet"
 msgstr "`対応中`: 専用の実装面または公開面の整理が未完"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:66
-#: 8b168b1c49144f129ce56b830c0e7dc0
+#: ../../how-to/interop.md:66 b40cde30d86b4d0283f50f57ed68ebfe
 msgid "`Planned`: explicitly in scope, but not implemented yet"
 msgstr "`対応予定`: 設計対象として明示するが、まだ実装がない"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:68
-#: c7b7a5f5a860441cafbb6db65872e9ed
+#: ../../how-to/interop.md:68 a2a0d7eb1cd54290a83580f4dd1fb908
 msgid "Optional Dependency Policy"
 msgstr "オプション依存関係の方針"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:70
-#: 1dc7fb55f01b428da25afdf44335a849
+#: ../../how-to/interop.md:70 cbedfb1fa9644f85bee1600f236a13fc
 msgid ""
 "Interop bridges import optional runtime backends lazily. If a runtime "
 "backend is missing, the bridge raises `ImportError` with installation "
@@ -364,8 +306,7 @@ msgstr ""
 "が未導入の場合、`import gwexpy` の時点ではなく、該当 bridge を呼び出した時点でインストール案内付きの `ImportError`"
 " を送出します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:74
-#: 036e8571c8d44606ab938b0a49bf377c
+#: ../../how-to/interop.md:74 fa000b7405704b7d912ebb4df52bc8c8
 msgid ""
 "Some import-only adapters consume objects or dictionaries that were produced"
 " by external packages, but do not import those producer packages themselves."
@@ -385,35 +326,29 @@ msgstr ""
 " MetPy, wrf-python, Harmonica 形式の object を消費します。これらの package は source object"
 " を作る必要がある場合に導入してください。adapter が直接 import するためではありません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: e4c2fd4af217474190ee778f91032229
+#: ../../how-to/interop.md 6fb4da68663b4f79a89a80aef6fa0c36
 msgid "Policy"
 msgstr "方針"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 84149001a56f4129b6a7c121650418eb
+#: ../../how-to/interop.md c83fb28811ad4897b575592dac4f1ec7
 msgid "Dependencies"
 msgstr "依存関係"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: c755b6420a66481296bab05cfeb3cb26
+#: ../../how-to/interop.md 310ad9e2510c4b34923e85ce68f746e2
 msgid "Install guidance"
 msgstr "インストール案内"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 8af7bb530d374792a0ed85cfaf47cfce
+#: ../../how-to/interop.md a6c82e3c3c2b43fe8b01a5b8c9ff8a68
 msgid "Declared GWexpy extras"
 msgstr "GWexpy extras で宣言済み"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f2518d4e9a4f4ebf80b67ad9ea661a88
+#: ../../how-to/interop.md 0219b281deea449da8822ddaedc706ff
 msgid ""
 "`zarr`, `netCDF4`, `xarray`, `obspy`, `mth5`, `lalsuite`, `gwinc`, "
 "`control`, `pydub`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6146ef31e0eb455d9dc37a70b659834b
+#: ../../how-to/interop.md d11012a242664cb6b99d59cd61c771b8
 msgid ""
 "Install the matching extra from PyPI as described in the [Installation "
 "Guide](../tutorials/installation.md), for example `pip install "
@@ -422,13 +357,11 @@ msgstr ""
 "[インストールガイド](../tutorials/installation.md) の説明に従い、対応する extra を PyPI "
 "からインストールしてください（例：`pip install \"gwexpy[control]\"`）。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: a2ead82cf460467fa2e74568c76d41e0
+#: ../../how-to/interop.md 3213ad166cbf45e8a060eb7bcb7d3f91
 msgid "Bare package installs"
 msgstr "個別 package install"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b395288cb14a44388f5456ca3427604a
+#: ../../how-to/interop.md 9f39f455bd32472d81f88d24451b049b
 msgid ""
 "`ROOT`, `polars`, `dask`, `torch`, `tensorflow`, `jax`, `cupy`, `pycbc`, "
 "`finesse`, `simpeg`, `mne`, `neo`, `quantities`, `pyroomacoustics`, "
@@ -437,8 +370,7 @@ msgid ""
 "`meshio`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0df64eca90dc469ebb1262ca8ea06c8e
+#: ../../how-to/interop.md 593154212575410fb8e2d5b636be964c
 msgid ""
 "Install the named backend directly when the bridge imports it or when you "
 "need it to create accepted source objects."
@@ -446,8 +378,7 @@ msgstr ""
 "bridge が直接 import する場合、または受け渡す source object を作る必要がある場合に、該当 backend "
 "を個別に導入してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:89
-#: 649712ca2be9441d8a85ae5c9f204253
+#: ../../how-to/interop.md:89 44373b8578f04106a4092def6310d54d
 msgid ""
 "`gwexpy[all]` installs the declared GWexpy extras as a convenience bundle. "
 "It does not install every public interop backend; entries in the bare "
@@ -458,8 +389,7 @@ msgstr ""
 " public interop backend を導入するもの ではありません。個別 package install の行にある backend "
 "は、bridge が直接 import する場合や受け渡す source object を作る場合に、個別に導入してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:94
-#: f35cda5b034b44508278f7a5739d1900
+#: ../../how-to/interop.md:94 b017f08f37cf47419bdd2cf23d6da84d
 msgid ""
 "The xarray-backed interop bridges list the `netcdf4` extra because GWexpy "
 "does not currently publish a standalone `xarray` extra. If you only need in-"
@@ -470,13 +400,11 @@ msgstr ""
 "extra を案内します。メモリ上の xarray 変換だけが必要で `netCDF4` を入れたくない場合は、`xarray` "
 "を個別に導入してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:100
-#: 1de5598271ab46a88da0a55eb825a19d
+#: ../../how-to/interop.md:100 0553315990544a36954f6d1a713fd1db
 msgid "A. Storage Formats and Container Conversion"
 msgstr "A. 保存形式・コンテナ変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:102
-#: 5ae0251d992840d3b14d77d1f3e9ff03
+#: ../../how-to/interop.md:102 0dbccbe7b19c40d4a3aed35234b98dbd
 msgid ""
 "This section is for conversions where the target is a **file format, "
 "container, or storage representation**.   Use it when the question is “what "
@@ -485,230 +413,200 @@ msgstr ""
 "このセクションは、変換先が**ファイル形式・コンテナ・ストレージ表現**である変換を扱います。   "
 "「どのストレージ表現にブリッジするか？」という問いのときに使います。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:105
-#: 7873b1d9fd6846139c2ca22f00bc6011
+#: ../../how-to/interop.md:105 31c2ced011434aadb8361e53910d15b4
 msgid ""
 "Purpose: identify object-level bridges whose target is a storage "
 "representation"
 msgstr "目的: 保存表現を相手にする object-level bridge の入口を見分ける"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:106
-#: d2740aaea26e42d7807be0b0819d57a5
+#: ../../how-to/interop.md:106 5d7d95e993d942649befd2de9c2a52ea
 msgid ""
 "Input: a `gwexpy` object plus a destination container or storage backend"
 msgstr "入力: `gwexpy` オブジェクトと、保存先のコンテナやストレージ表現"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:107
-#: 549ba65bec9d46dd887ce51f58b74b0a
+#: ../../how-to/interop.md:107 fa06258a6aa54cc4bb09d1abf2cf3fa5
 msgid ""
 "Output: a converted object, container, or storage-facing representation via "
 "`to_*()` / `from_*()`"
 msgstr "出力: `to_*()` / `from_*()` による変換結果や保存向けオブジェクト"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 33ae05d3b5004b3bbf86c45a38e921ff 536f8f2f4b8248919e8a56187b09d12d
-#: 74d763c05b254e1cb6718bf460074387 a6c1fd6eeb9d412d9753b8b84d7b7184
+#: ../../how-to/interop.md 094aa567b967462baf2d531a0f30571e
+#: 1b6bf6815f9a4b1ea755eee11f52eeb2 56b9a87db0fd40b9a175c4596bf702ef
+#: f7072153fa494bd69b6fdbad45979fcf
 msgid "Target"
 msgstr "連携先"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3b55a0947ca5418183205a4dccba9ead afa3107088ed4e29937e5963d22e686d
-#: c24f7624c7204a0c8a9498d87ea67f94 fad84fdc2a0943e8a0d203a16cf5dc0d
+#: ../../how-to/interop.md 0c724d735f224a8c935515664d4f039f
+#: 61512c76900e460fa7ad025f5f1062d8 c459205eb9f4488eb20b8f93846eddd4
+#: c77d6f6fa5a344e0a3c2b8000400807c
 msgid "API / Entry"
 msgstr "API / 入口"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 2225771b1e3442a194aa55798b8b3a26 971b39825203445b874d5404123773d4
-#: adb89ddf281e4e5681d6ef564b968525 e8ed08ec88cd41cca7747ccca37afd3a
+#: ../../how-to/interop.md 14f5348208ce40de89b90e818db9556e
+#: 3c60d1790ac34f67a84fa060b2a7e2c8 60975203d5204de2b6910ba96167a226
+#: b1e450ca64504fe09e5d366f51289788
 msgid "Status"
 msgstr "状態"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1380329e32ce41238bf25b01989101c7 15cfdfe046d64cc18a0dd8a606f4b0bf
-#: 8aa76014030f486485f2ba573491fe56 9de0552a12054bf5b66b89a3072da402
+#: ../../how-to/interop.md 1eebcbc214bd4286b466c9961df589a3
+#: 31ae1cd5b4ba469da8f74f81c220074b 45625e72476d4d49b39146ac231de4cb
+#: 84e32fb2c4bd44488fb6ae109fd47636
 msgid "Notes"
 msgstr "注意事項"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 4bec281ca18e431a9b0a0c7c76711f93 88fa48a994814ed4878ff142e355ded0
-#: 89bd5141e9b742c1b552a192baec4e7a 92b6bef190c441859ccb47dc6db5f95d
+#: ../../how-to/interop.md 072036eb97194485a0f446b2e9f996bc
+#: 44d125b790d148abb82e3a3212540700 95e6fcdac58c4e4289274450dcc35676
+#: b6d107381dd74f169735818a9fd318d6
 msgid "Details"
 msgstr "詳細"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 89a79fb0670f4ab9a9ba2ca60c54736d
+#: ../../how-to/interop.md 43affaa1cbc647df9ec2239206aa4247
 msgid "[HDF5](https://www.hdfgroup.org/solutions/hdf5/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 66a1888bf506418da5e1fc38121037a7
+#: ../../how-to/interop.md 348b078c0df445b6a8f450eb75036b34
 msgid "`to_hdf5()`, `from_hdf5()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0305c7ced17c4d288e13bde16eb088a2 03b5723aec134f2bb61a6ce1b6fb7f8a
-#: 06c617d61cdb41c8a996b5f0b0c783ca 1010d20c3c7e444bbd60ab11f144d469
-#: 10bdc3aa74bb4916a051e2341cb0d177 11e4b3f98efc44f48575a1c5f1819822
-#: 1373279b515b47e6a00cd368cb3ad117 1cb14c9dcd584a4db3acbef0aa4b4647
-#: 1e8e1e982e72426aa8c52e6d5471b75f 20439706db4d4b96bc2f7fd3c86b9847
-#: 2568fe7d65f24098b1eb04b382064929 272357c26dec4447bb039c9b6d50c83c
-#: 277e7251d4cb4092817608c042fb9bf6 2b451469fae944cfb098208c3c22179b
-#: 2e3041d65ce947a3b3d8f81830226046 30c5a5706d824e75a25e1e95c804b6ef
-#: 3813e6186e7b498aa47098617781edf9 3a518c805fea45d6af944ec80fcb37cb
-#: 3c37bd644b5f4d26aea50fa3729539fd 3d66360023a3468c81a6bca398972bcf
-#: 41355217c7bd4c9ab446708bb57e5db0 46f9046b2cac4de9817bab93a9f33caa
-#: 4ae20a5b39d9407ab478e7fae935482e 4ba0e88fbe6c429eb1938773f05ccbfa
-#: 56382e31bebc4b0289463d9eae0febcc 5ad7ac414b554f00a3c80cb1b1d94f0f
-#: 627f4b696ffc49c7a198d51eebcefc45 71763b28445a43b7897469de313eca19
-#: 77ab16e5271643238f44e5ba6a90e62c 7fe3c9112026471aa626e04f17618f92
-#: 8064ee8dbe314ea6853f3893e2f4a810 84c82717bf9247269cb87883023c1d41
-#: 890a49c50a2f4c22921b95b6ecd445d8 89d182af55ea48b09aef684f089939e7
-#: 91bf9f980bea469bac9556a14dd046d9 95ee65730ccc49168aa65875939b68d9
-#: a11dd82a2a3a462ab0dd2046fad573df a6ae464b59df4b8796c5ac2d9e7d646e
-#: a92aa4b7c80c4951a0023ac7da6a8a74 b6bb6c3d8d1740fb8567393529dc128b
-#: b9c6279a34be400fa291b78efa48de7d c0719d73ac3e4d6698ffe99b27995e85
-#: c975c38b4e834d069b3bd8bad6ebcf51 cf056c465a87473f8da014008bb558a3
-#: d5e8a2f34f27444bad829885ec91159d dca68e635f92475d9ad6586bdf0f0d16
-#: e93a6290911047d5a15b37e329cb96e0 f286877e46574d54b85e82a78d98f96f
-#: f32dc36bf2494a20a7a523dbe5295915 f487ba437c364a519b5e899f7c86342f
-#: f79e5bef847341bc9f10692602aa8f02 fdb8745b72f942abad48d7dc26a2c047
+#: ../../how-to/interop.md 04f5807713d7407ea68fd069c51b8af6
+#: 08bc7402167a40d28b5fc2bbc28415d3 0d4aebbaa0a74b17a8cc936d2705a9e6
+#: 0ea74a52b20749999bf823f9f7a2048b 11c2bcaad119451987e04883be5af743
+#: 13085f76ba25418c82929028cbb16b63 17913719c66040e39a400169361e2682
+#: 1a3d7cbbc20b457ca6dcbf5133d8cf96 1c308da28dba4db2bf9b56b6b760e6da
+#: 23ebf058974a4c3cbb2fd33d03f4ba78 25908e221aa94aaba04b406127b46291
+#: 47fd375de365487a87c80ad175cd2eb1 4a022127692e4b63af2752e1fbbfcd78
+#: 5a0221056ab6404483acdce38105bc0e 5a739973948d473789ea87f5614435bf
+#: 5f090413e91a4e80bcc506e4927e1258 61e27433f1394906ae90bb1bbea9168a
+#: 688d3af8289343cab96230298a098675 6bb423735cb34ae689a0b091da790f90
+#: 6f0437b494154b9f83b13c2d37eb4aaa 709fa96929e64b11b91593af25994fb4
+#: 72733048530f47bc843b707d4bbeefbc 770b6d027ecc421499a631e00728ae50
+#: 7b548afdb2934c66afda026a15b10974 7e45d1a8d987481586ee5c23aebce40f
+#: 7ecc6e593a95481d8a839de358679c91 7f430252a4b0482e84c64f7c946fa779
+#: 81faca946d614305bba691e8f8d17c2b 83e0ad1e74f44b5cb7f8fcba93ed1c47
+#: 89cdd8e2d5ea4d569ccf34afba9ae312 8a4759783fb443db85ff668bd068fa44
+#: 91746c0c24c4419da1d8423edd7e4a0f 93eda17e26c54ceba652b0fffc0a1ea2
+#: 9f84b0c02e22424ea6062f5dd98d60ea a9507bc726e34241ac908f6048d631fe
+#: a953eb957a3d429ab1c5ec3242e1b53a afe9cf170b6f4415ad0fa004e9a48246
+#: b6c94839a02c44cf9c02e309feb03cb7 bdf65a3b8c244f08bfe299f52d20c80e
+#: c4905ae76e5442c78ec2f353cd027b72 c993ab3872304d67b6ecae6b7bdf7a46
+#: cb12210a9e644b67987275cc6b561d6f cc57906f471b4f338772cee3c15cc7f6
+#: d1cb960d281e45afa2484a6c4ebfccc1 d46bdd09c6994b53bcdb50c348528c85
+#: dd2180bf3c8d4fa6b02cab2b597f83f9 e0106f8a0cc64be78429e2fc803640af
+#: e2e21f3c0beb4ae2ac2bed66fd1354c5 e3c7d2acd15549ecb4dff35f4ea809ef
+#: e592d636a53f400b97d1b0919fcd06fc f7d02caf41c246c48ba2e71d97c02f54
+#: f899912e9f01422983cd528f68a5ad9d
 msgid "Public"
 msgstr "公開済み"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7e39815881eb4f8abdbc8b174359d8b5
+#: ../../how-to/interop.md 6ee0bc829b1644d7995ccf687c74d1fb
 msgid "object-level conversion"
 msgstr "object-level 変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 5fba7756ed7d44d8821f51b37fda1c50
+#: ../../how-to/interop.md c20c2caff2954c888f2b23bb6ac83021
 msgid "[API](../reference/api/gwexpy.interop.hdf5_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: bd0ee50fa72e4446af84f2a697f9f5cd
+#: ../../how-to/interop.md 6952714c2b8748ac8732329dcd7f76b7
 msgid "HDF5 FrequencySeries"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 12ff709faa3e41499fd27eee1055a718
+#: ../../how-to/interop.md 41dc55197b344bb7b835f0bf91e038ab
 msgid "`to_hdf5_frequencyseries()`, `from_hdf5_frequencyseries()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 4e2524c375034c2c917e024255915679
+#: ../../how-to/interop.md 0bb241008505432abfd9a9569001e265
 msgid "FrequencySeries HDF5 helpers"
 msgstr "FrequencySeries HDF5 ヘルパー"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3a5b99973ea94c7da0210aa5873c3027 a786ce7bb4674c819fbc251df45ed10b
-#: fd0904dd67f242dfbd3db531a35fad38
+#: ../../how-to/interop.md 06c014fe1980430ea11d0408d5845e9b
+#: 5cedfd825117420d84fd82eed91bb647 fcaa7882563d487c899de461ebcdcf8f
 msgid "[API](../reference/api/gwexpy.interop.frequency)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: ae7f35a3134740a6acd608153d31270b
+#: ../../how-to/interop.md 3c1295dd8cac4600a67a3b42c82bbe82
 msgid "JSON"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3aa0df0e1b7a429ca2cdffe5d57e4945
+#: ../../how-to/interop.md 74f7038df4984898a5cd716226054f71
 msgid "`to_json()`, `from_json()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7e2516b12a0149ad964b7b0b79db5942
+#: ../../how-to/interop.md 762f6f8285284399a783b62b53d92426
 msgid "JSON string conversion"
 msgstr "JSON 文字列との相互変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 906940a719e441088066824714becd58
+#: ../../how-to/interop.md f015f3400bf04fd9a8f6ac0e0f59a71a
 msgid "[API](../reference/api/gwexpy.interop.json_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 99e7e45e6c7b42bbbdcf68c37a257775
+#: ../../how-to/interop.md ab4bd867672842808b9789b297df9a72
 msgid "Python dict"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 583b5bbfd2074b4c9ba672343972edd9
+#: ../../how-to/interop.md 1077092b30af4994921af3339c67a0c7
 msgid "`to_dict()`, `from_dict()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: d059459b787d42b39dbc55c4f7a6130d
+#: ../../how-to/interop.md e65cae5eb6c14bcdb4b768e11ca7819b
 msgid "dict conversion"
 msgstr "dict との相互変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1799aca47e3642819dbbf84ec845ac97 3f4f7634bb9247529480391f023f56ca
-#: a40333331f854c7ab0fcdb2e64ca6c1f f1d9627226e3471f97692be5359e4c48
+#: ../../how-to/interop.md 34acf585780449cb8edb6fe5d0b8d187
+#: c426bab98b0842719f4239ef55f5cd00 def473320785408db71e2c8a6ae938ec
+#: f5757ee788b04d1b886d1547225d1e39
 msgid "—"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f36d06d86b7f4f9688d61a40e185edde
+#: ../../how-to/interop.md 793aee5940154d22ba72469b1a4426f0
 msgid "[SQLite](https://www.sqlite.org/index.html)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 43c1ddc8ab0c4b6693339f2fb38af297
+#: ../../how-to/interop.md b894e3c599364440a7df2cfdcfddd3cc
 msgid "`to_sqlite()`, `from_sqlite()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 822ae9f611f24dadbbe7276f786c326f b76e65f479154599a7227a01a50e7fad
+#: ../../how-to/interop.md ad605835ebc04bcf8ebb2565c0812c29
+#: ca1edaa8f86e4c518c2c91b16db4e527
 msgid "object-level bridge"
 msgstr "オブジェクト単位のブリッジ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 87e907271dc140ab94cdb4a30cb3a86f
+#: ../../how-to/interop.md 5626cb3486074cd0884b8e52c07f5065
 msgid "[API](../reference/api/gwexpy.interop.sqlite_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1a4c9dc3d84a4da7a0ea0ce93cfafb66
+#: ../../how-to/interop.md 8b4218f96bb840ad8e02d218242b59d1
 msgid "[Zarr](https://zarr.readthedocs.io/en/stable/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: a268505f6c4246c78a847eb56b0766cd
+#: ../../how-to/interop.md 4f67a357f79f484cbd2dc061690cb092
 msgid "`to_zarr()`, `from_zarr()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 2c573f13514a4680adc14e791e09d5ff
+#: ../../how-to/interop.md 27e51bf4104744b7ba87fcb15005fb9f
 msgid "array/store bridge"
 msgstr "配列／ストアのブリッジ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 5bbe41e117804e548c4ff9a3fe3d0e63
+#: ../../how-to/interop.md 65187390337b4bc488218aaffc11b419
 msgid "[API](../reference/api/gwexpy.interop.zarr_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 5d090e3bc9bf436fb5e80e6812ab249c
+#: ../../how-to/interop.md 879ddec1ee2a447fad92a1be0edbe484
 msgid "[NetCDF4](https://unidata.github.io/netcdf4-python/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3fc1b65c58ab42589bea6857882ebdae
+#: ../../how-to/interop.md b5543a75e3374742b60da64af4ba2509
 msgid "`to_netcdf4()`, `from_netcdf4()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 36487fd492c84bf0a580636953894ffe
+#: ../../how-to/interop.md cf035814bfe8469297f1c70cf5a00237
 msgid "[API](../reference/api/gwexpy.interop.netcdf4_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:120
-#: aadcef00b01a4292a0a154bfac447c8e
+#: ../../how-to/interop.md:120 4e3fd0d4a2b34a788ec61e1d92085377
 msgid "B. Analysis Library and Object Conversion"
 msgstr "B. 解析ライブラリ・オブジェクト変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:122
-#: 310a18617ed747389033315c2ce09434
+#: ../../how-to/interop.md:122 d4657b5928de4714b55b879fd4161cec
 msgid ""
 "This section is for conversions where the target is a **Python object "
 "model** rather than a storage format.   Use it when the question is “which "
@@ -717,200 +615,163 @@ msgstr ""
 "このセクションは、変換先がストレージ形式ではなく **Python オブジェクトモデル**である変換を扱います。   "
 "「どの解析ライブラリのオブジェクトにブリッジするか？」という問いのときに使います。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:125
-#: 9ec6cbfdf4284f65875c15fc4a9bbf72
+#: ../../how-to/interop.md:125 550ce144099d4c6eb1c566232bbd5ef4
 msgid "Purpose: pick the correct bridge into analysis-oriented Python objects"
 msgstr "目的: 解析ライブラリ向けの橋渡し先を選ぶ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:126
-#: 3fbdc28d220e4ea1b1d8f3db105d46da
+#: ../../how-to/interop.md:126 48d3737890db4aadb13642c4a6f9779b
 msgid ""
 "Input: a `gwexpy` object or an external analysis object such as pandas, "
 "xarray, or astropy"
 msgstr "入力: `gwexpy` オブジェクト、または pandas / xarray / astropy などの外部オブジェクト"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:127
-#: c5d793a494264fb4a288c292498d7cf2
+#: ../../how-to/interop.md:127 2676ef5a0c224703a2702e12597dedf3
 msgid "Output: an analysis-library object or a reconstructed `gwexpy` object"
 msgstr "出力: 解析ライブラリのオブジェクト、または `gwexpy` に戻したオブジェクト"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b3140ac09c8748f2ad8aea1541d2d6e3
+#: ../../how-to/interop.md a58f620118a345f0a3ef7bb4f253f02b
 msgid "NumPy"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: cc3e5772cfb64977b3233883ad251f19
+#: ../../how-to/interop.md b0d82cfbbc004fc39c8a97b04682cef1
 msgid "no dedicated `to_*()` / `from_*()` API"
 msgstr "専用 `to_*()` / `from_*()` API なし"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: e4abeeae6d584b61bfe501ecdc2c6d2b
+#: ../../how-to/interop.md 599a03ff5eae4e68b5668a6d2aa0adf7
 msgid "Implemented as infrastructure"
 msgstr "実装済み（基盤対応）"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 630138d77a2d432d949242b835c009c9
+#: ../../how-to/interop.md 5aa040dec3d040b89db44bcf96c8058f
 msgid "widely used as the internal array basis"
 msgstr "内部配列表現として広く利用"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 12014111c4154ee6bdb4c152e6455935
+#: ../../how-to/interop.md 4e50f4f56eb8430ab395839a7de301e7
 msgid "[pandas](https://pandas.pydata.org/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b3260b08237c4adba5afa2dd54caf289
+#: ../../how-to/interop.md d0f2e2c0c6cc49e7881252e73b4e9184
 msgid ""
 "`to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, "
 "`from_pandas_dataframe()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 883e0700a2654ec9847c02f52e0cd8ea
+#: ../../how-to/interop.md 91fd67edfd0e4dab810ce4e298ac602e
 msgid "Series / DataFrame"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 616005292707494ba1ef4dd1314378d5
+#: ../../how-to/interop.md ee3abbf2b2d6478ab1c327f2210b42d7
 msgid "[API](../reference/api/gwexpy.interop.pandas_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1296f9d1c3a043e69385ffa39ffa3a09
+#: ../../how-to/interop.md c3a191725930456ea5914109b65f46fc
 msgid "pandas FrequencySeries"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: fcd211f41ba045279938bcb3a18c8a2f
+#: ../../how-to/interop.md d1f0724e740c48c997ca4e9660cddd23
 msgid "`to_pandas_frequencyseries()`, `from_pandas_frequencyseries()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: ab6106a7a16d45b5ba75047a7ad71691
+#: ../../how-to/interop.md b3c2dbfdcc194274a0a4056103b57ec6
 msgid "FrequencySeries ⇔ pandas.Series"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f38274664b82400e96b4564cb0d9e85a
+#: ../../how-to/interop.md 63a315a3dcd74c878efc0a8f9df2d944
 msgid "[polars](https://pola.rs/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 9c278456d8c541c48cbaedb22a83e7ce
+#: ../../how-to/interop.md 77c5c6a88c334c77bf95e6f486af478a
 msgid ""
 "`to_polars_series()`, `from_polars_series()`, `to_polars_dataframe()`, "
 "`from_polars_dataframe()`, `to_polars_frequencyseries()`, "
 "`to_polars_dict()`, `from_polars_dict()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 12df59089d174385b89c290b478c0fe1
+#: ../../how-to/interop.md bd9d97614c5e4a86b1113d18543bba5f
 msgid "Series / DataFrame / dict / FrequencySeries"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 24e9cedc3c0f4f9ba2b4a010aab13194
+#: ../../how-to/interop.md 37d9b0f801694cf5b217ab797f79ae01
 msgid "[API](../reference/api/gwexpy.interop.polars_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 2a7a529051264e099e9ec8137eea9966
+#: ../../how-to/interop.md 342aba34f0f9429fbd97219332db1941
 msgid "[xarray](https://docs.xarray.dev/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: e625b9fd96114712a54b3b2c4e992db0
+#: ../../how-to/interop.md 7a7804e9976a4a77beb0bc8a9bff49c4
 msgid "`to_xarray()`, `from_xarray()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: a7a528d10465430ca4429394cd994722
+#: ../../how-to/interop.md 0ccd3ae9150140968c79f54cf6b43607
 msgid "DataArray / Dataset"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1989487b605f4b81ae121239f3470b62 c7af9dec52744339af9d105f241a5e42
+#: ../../how-to/interop.md b51bc97a635c409195975e36c6ca58bc
+#: c54737934c0c45e9a22ff6629fb286e9
 msgid "[API](../reference/api/gwexpy.interop.xarray_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7f3581218f4c450aba5747764bbaaacf
+#: ../../how-to/interop.md 7532f8735a2c4751924ef008c22b8353
 msgid "[xarray](https://docs.xarray.dev/) Field"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: de27ba8159644e85af26626b4b2280c4
+#: ../../how-to/interop.md 4aece5692d9245678e40faa3d7269ad2
 msgid "`to_xarray_field()`, `from_xarray_field()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 8dccea819d4d42979fa8a350d172fe49
+#: ../../how-to/interop.md b6aec956d6f5478691b189ff2e2356f6
 msgid "ScalarField / VectorField"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7b11a2d18b7b41b8bb917749cdde564a
+#: ../../how-to/interop.md ccecded899ee4bccb9250964a3a3d195
 msgid "xarray FrequencySeries"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 35595fc7da2448d495c4306ee80e2808
+#: ../../how-to/interop.md 6f6fa88ce21d46c49eaf0b80706c97cf
 msgid "`to_xarray_frequencyseries()`, `from_xarray_frequencyseries()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 71814e17b8db4ce4b6d219d150262f39
+#: ../../how-to/interop.md 8242e989cfd140c9a3899ffd2f791045
 msgid "FrequencySeries ⇔ xarray.DataArray"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: dcb00d7009ec4c82b8e9e2f67766b54c
+#: ../../how-to/interop.md 5d9bd4d2c1814b139c60884561193c95
 msgid "[astropy](https://www.astropy.org/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: df6cca0426484cfb8b37560266d65124
+#: ../../how-to/interop.md 967d7d4a510645d3b06b5a156973c4c6
 msgid "`to_astropy_timeseries()`, `from_astropy_timeseries()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: d16eca5e159f4284ae63fd3fb51db03f
+#: ../../how-to/interop.md d5a0aac29e6f48148d9c6cb81b8b293e
 msgid "`astropy.timeseries.TimeSeries`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: e2e7bd7067be47db837c71f0259a66af
+#: ../../how-to/interop.md cfa243952a574d3998c667e8166f731e
 msgid "[API](../reference/api/gwexpy.interop.astropy_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b4aebc993d26490c8c1a1ca0490cd7d7
+#: ../../how-to/interop.md d30c77bc7edc4032942014c6e7967421
 msgid "[dask](https://www.dask.org/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 05dc230cd98c49abb2ee8f3cb84f5e52
+#: ../../how-to/interop.md 56dec83af4b0427cb8ac50d2100b2c2b
 msgid "`to_dask()`, `from_dask()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 44fd9589876e4bab80d749ab30229914
+#: ../../how-to/interop.md 3c9d774d4a764c25a41f6f5c1805703c
 msgid "dask array bridge"
 msgstr "dask 配列のブリッジ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 40442238a47743819fecfb702324ddd5
+#: ../../how-to/interop.md cd5bf3076c1a412299c506bc8ffae1be
 msgid "[API](../reference/api/gwexpy.interop.dask_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:142
-#: 118ddc55a5d5416cbf5520cc22a1a525
+#: ../../how-to/interop.md:142 112d8c8c25314ab08cd575c655eba5c2
 msgid "C. Machine Learning, Acceleration, and Array Backends"
 msgstr "C. 機械学習・高速化・配列基盤"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:144
-#: 4511b69497584132a5596a72c85c8e9d
+#: ../../how-to/interop.md:144 531550f8c94f4aaba5d48775709bf258
 msgid ""
 "This section is for accelerated computing and ML-oriented bridges.   Check "
 "whether only the array payload moves, or whether metadata can also be "
@@ -919,128 +780,105 @@ msgstr ""
 "このセクションは、高速計算および ML 指向のブリッジを扱います。   "
 "配列のペイロードのみが移動するのか、メタデータも再構築できるのかを確認してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:147
-#: ddc2be1443af4de185e6e5ddb0c91fd0
+#: ../../how-to/interop.md:147 9cfdc4875bc54392b5480163c7ec80c4
 msgid ""
 "Purpose: decide whether an ML or accelerated-array bridge matches your "
 "workflow"
 msgstr "目的: ML や GPU 配列への橋渡しで、何が保持されるかを見極める"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:148
-#: 55a8fe2d7f8a4263877fb5d53367f92c
+#: ../../how-to/interop.md:148 cde055abfd1743d4be20f3aa38385939
 msgid "Input: a `gwexpy` object and an ML / GPU / array backend target"
 msgstr "入力: `gwexpy` オブジェクトと、PyTorch / TensorFlow / JAX / CuPy などの連携先"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:149
-#: 8120eb337a0a4565af8a2a1082ee5e3f
+#: ../../how-to/interop.md:149 988dfa6995e4400cb3fb13226b866de9
 msgid ""
 "Output: tensors or accelerated arrays, and in some cases a route back into "
 "`gwexpy`"
 msgstr "出力: Tensor や高速化配列、場合によっては `gwexpy` へ戻すための経路"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 608d1bb4a630449980990c9fa213bc5c
+#: ../../how-to/interop.md 9a14c3b4d5e44065acf199905392b2a0
 msgid "[PyTorch](https://pytorch.org/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: c3dee8e3b9594b918d42f5c44b78c6a4
+#: ../../how-to/interop.md fe3c92a28bd74dbcb38b0416be9b2861
 msgid "`to_torch()`, `from_torch()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1a7e1ae68248425c8e134883380b5593 6a1bf5bc53e74576b92f7f580c729dab
+#: ../../how-to/interop.md 0f799c45dd44484ca58244350d2e8e50
+#: e3ebf48aa976431bb051afd870287faf
 msgid "tensor conversion"
 msgstr "Tensor 変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 994d581dc68a48b6871a518833f44fc0
+#: ../../how-to/interop.md 33271ede426649d9af0cd43acce7bfa4
 msgid "[API](../reference/api/gwexpy.interop.torch_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6349f109b1264f46aa83482f1e0ceba4
+#: ../../how-to/interop.md 60492f44078341e99834b1d33b3fe0ed
 msgid "[PyTorch](https://pytorch.org/) Dataset"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: afc987f4052344f890203468ec938773
+#: ../../how-to/interop.md ebbd5e52307240529cc433f51cd588f6
 msgid ""
 "`TimeSeriesWindowDataset`, `to_torch_dataset()`, `to_torch_dataloader()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 11e8700ef85049ba82ff23f544a7dc36
+#: ../../how-to/interop.md 1f9d8028e56d440cbf91a409c89fe45d
 msgid "windowed dataset for training"
 msgstr "トレーニングループ用ウィンドウデータセット"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0d6cca56060442749be815943fdf3ed5
+#: ../../how-to/interop.md 821c40e375be4be4b512fab996b69729
 msgid "[API](../reference/api/gwexpy.interop.torch_dataset)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b446d41d8b734c56a0f0813a8bb22598
+#: ../../how-to/interop.md e9d38fa6d29848f18e1c9ec769c465c0
 msgid "[TensorFlow](https://www.tensorflow.org/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 36993e76b9dc46fb931d6209aa1e8ec0
+#: ../../how-to/interop.md 86127d7a30a040ffbcf85870badbb792
 msgid "`to_tf()`, `from_tf()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f3a2fed086af48ccba883ee1d67db80e
+#: ../../how-to/interop.md 6bcb6dbe8a674696ba6c939e689d4bfd
 msgid "[API](../reference/api/gwexpy.interop.tensorflow_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f226920681104e4ead24cf01d0a74f5d
+#: ../../how-to/interop.md 1cabe1e252fa4072bd441ba9ab3faffc
 msgid "[JAX](https://jax.readthedocs.io/en/latest/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b0ba95e1859240dd90adab6f8df5d574
+#: ../../how-to/interop.md 65738ddbed2c4a008ed6c2c9272f403b
 msgid "`to_jax()`, `from_jax()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 60b625b9e81f4343893cfa6642f80b53
+#: ../../how-to/interop.md a8cb1f11936241f99d0ee61f9e1d14a4
 msgid "JAX array conversion"
 msgstr "JAX array 変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b759ed978a094e4eb71fd45f2161902f
+#: ../../how-to/interop.md 19baf6660f914f9c9aa3a6a960b305ba
 msgid "[API](../reference/api/gwexpy.interop.jax_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: bb9f31db4dbd4907ba382279473952b5
+#: ../../how-to/interop.md c6f9b726f7e04caab7cfe23b6e8c5a62
 msgid "[CuPy](https://cupy.dev/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 351fbd0d800a4c788cba69aa194c753b
+#: ../../how-to/interop.md 55ef7dc5821f4c3b8091a285fa44e5f3
 msgid "`to_cupy()`, `from_cupy()`, `is_cupy_available()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 9318c83fba0949cdb08f98237df33f90
+#: ../../how-to/interop.md 8cd18466cfee46c7bbbb50e7284fe61b
 msgid "GPU array conversion"
 msgstr "GPU array 変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 25fd926f46d74bdcaca373d922076e28
+#: ../../how-to/interop.md ea18c52c4d1e42449bb1363634042bc9
 msgid "[API](../reference/api/gwexpy.interop.cupy_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:160
-#: 5ff02b7d07844c2aa75ed61d23c7bfbd
+#: ../../how-to/interop.md:160 721c8a7629834797ade91f79c7ddd22f
 msgid "D. Physics and Domain-Specific Libraries"
 msgstr "D. 物理・ドメイン特化ライブラリ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:162
-#: 49b76a02edb640cbbf3f5badf1b30951
+#: ../../how-to/interop.md:162 d1ce6f9459bf4e33b22b1fdf442d639b
 msgid ""
 "This section is for domain-specific libraries and specialized objects.   "
 "Read the status carefully: some targets are full round-trips, some are "
@@ -1049,165 +887,136 @@ msgstr ""
 "このセクションは、ドメイン特化ライブラリと特殊なオブジェクトを扱います。   "
 "ステータスをよく読んでください：完全な往復変換が可能なもの、主にインポート経路であるもの、まだ公開整備中のものがあります。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:165
-#: 66fac77d1c8142cc8f21832da175ac70
+#: ../../how-to/interop.md:165 2f016db2c4314c528ba93b84b6f75dfe
 msgid ""
 "Purpose: find bridges into domain-specific tools without confusing them with"
 " direct file I/O"
 msgstr "目的: 分野別ライブラリとの橋渡しを、直 I/O と混同せずに整理する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:166
-#: 9b00b76c423d42ecb99bcd31a59d8920
+#: ../../how-to/interop.md:166 d8f0cb7d8a1d401d8b082c0bc5d87187
 msgid ""
 "Input: a `gwexpy` object or a domain-library object such as ObsPy, ROOT, "
 "LAL, or PyCBC"
 msgstr "入力: `gwexpy` オブジェクト、または ObsPy / ROOT / LAL / PyCBC などの外部オブジェクト"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:167
-#: 94d88ebf618c469a9e283872ec0673df
+#: ../../how-to/interop.md:167 91a7b259213d4fa79b11eeda12b6a7da
 msgid ""
 "Output: a target-library object, imported data, or a partial round-trip "
 "depending on status"
 msgstr "出力: 連携先ライブラリのオブジェクト、import 結果、または限定的な往復変換"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 4b7654a4c5364531b9a8bc5638421b48
+#: ../../how-to/interop.md f7f7c8a096704ed2be5345340e76a8d4
 msgid "[ROOT](https://root.cern/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 753502174a4d40499cc308a318e0066d
+#: ../../how-to/interop.md f2851699922e4ec2b78a9a81abaa3aa7
 msgid ""
 "`to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, "
 "`write_root_file()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 77d849737ed3470784a45c64353150de
+#: ../../how-to/interop.md 6d6d98045adc4219b0134eff00b8b8d3
 msgid "Implemented, some paths still in progress"
 msgstr "実装済み（一部経路は対応中）"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: ab0dd250b0224e72a0b1e34c8df15ddc
+#: ../../how-to/interop.md be0e0c2c716245cdbbe3b0e0417894b3
 msgid "`TH1 -> non-Histogram` is incomplete"
 msgstr "`TH1 -> non-Histogram` は未完"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3c5b105357514a67b2e94a40b7fbc3a1
+#: ../../how-to/interop.md 258a20d26b734074bc4b7d5c0803b94f
 msgid "[API](../reference/api/gwexpy.interop.root_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: de5d17cd55dd406fb6b5fd4ee9bdc73f
+#: ../../how-to/interop.md 41b2e89f070e4300af3dcbc9e49af7c2
 msgid "[ObsPy](https://docs.obspy.org/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0ef8023975224b46be83d7fd751a7f40
+#: ../../how-to/interop.md 952a4594a4224622ae8c23bf67528791
 msgid "`to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 9e9009bc55094032b64f778d15a6fa04
+#: ../../how-to/interop.md 0d6fec68399d4a09b53d3ceb35493e73
 msgid "seismic bridge"
 msgstr "地震データのブリッジ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 083ba989059d42f4838bc394ba764c4f
+#: ../../how-to/interop.md d7a13f641e1b4d5eb69e63dd55be15b2
 msgid "[API](../reference/api/gwexpy.interop.obspy_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: cafa43fcb363493abcaaaa4ad9e17a6b
+#: ../../how-to/interop.md 7ced4e2f0b7645c99d453a0742862362
 msgid "[LALSuite](https://lscsoft.docs.ligo.org/lalsuite/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: dc6b80029afb45c0a4247a8ac1259d71
+#: ../../how-to/interop.md d0f5880def4c4ff783a9de7df1fc6412
 msgid ""
 "`to_lal_timeseries()`, `from_lal_timeseries()`, `to_lal_frequencyseries()`, "
 "`from_lal_frequencyseries()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 5ae3618c0a124cfba995fc183fb62249 d18225ad41944aa2ab7e727f6d0f887d
+#: ../../how-to/interop.md 3371bfd8b3f3481aa1ba47f7d5d632e5
+#: 3c34dafb5b4e48e09f071dab3cdffd3e
 msgid "GW time / frequency series"
 msgstr "GW 時系列 / 周波数系列"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6904849ec34c4b67a94746ef21d63339
+#: ../../how-to/interop.md 9ac3d50a077340efa41dd7f0f76ee3c3
 msgid "[API](../reference/api/gwexpy.interop.lal_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 074bf37b096a4518ae64d968412e70bf
+#: ../../how-to/interop.md a7b04d8e6caa431c87f937ef17bc6c28
 msgid "[PyCBC](https://pycbc.org/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 8c89bd9c541142a1b8c7c6eab408e877
+#: ../../how-to/interop.md 9829fc7dfca14834a9a5a53f722fd065
 msgid ""
 "`to_pycbc_timeseries()`, `from_pycbc_timeseries()`, "
 "`to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: feb4e1181b754f2b96a8b03a71257b73
+#: ../../how-to/interop.md 676a5f16b15141899a51c71416258ef7
 msgid "[API](../reference/api/gwexpy.interop.pycbc_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 2d47d4b85fdc4c8eb7efa4c3bcd3dc45
+#: ../../how-to/interop.md e6c4a108b4334256a9e78f90c3e2acdc
 msgid "[GWINC](https://git.ligo.org/gwinc/pygwinc)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: acf71414013b42d7a1867460417909ca
+#: ../../how-to/interop.md 01b85cf0829e42f3bb859f7fd6cdeded
 msgid "`from_gwinc_budget()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 9d448a5fbbe34fae9ff3cae22ad5121f
+#: ../../how-to/interop.md 53b7e5a7e93145caa619a8452def9c96
 msgid "budget import"
 msgstr "バジェットのインポート"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: a07d5c4d9aa74defb58278dfd3366bda
+#: ../../how-to/interop.md 3b6b2a07406b4619a76a0b3de48645f6
 msgid "[API](../reference/api/gwexpy.interop.gwinc_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6494d5aa95b24b45864c8a90c55c3391
+#: ../../how-to/interop.md 4b652ec7e59f49f99216ed4f4914e409
 msgid "[Finesse](https://finesse.ifosim.org/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3a28b1778fba406db8364c9328cf245c
+#: ../../how-to/interop.md 4e4d153dfa9448469db05eb1071fd2fa
 msgid "`from_finesse_frequency_response()`, `from_finesse_noise()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 768d183dbcd24d22a3c0108018c18f6d
+#: ../../how-to/interop.md db8b88cc1f944265831103fd35bc305a
 msgid "optics / response"
 msgstr "光学／応答"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: d2a9dcddd7a4453e91edce795d797c3e
+#: ../../how-to/interop.md 2f08ad8196f34e889b8c4980df127f99
 msgid "[API](../reference/api/gwexpy.interop.finesse_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: d7ea4b9d070c4567862e83a390f9c830
+#: ../../how-to/interop.md d7bd17cf9c81461bb2185a726ae8083b
 msgid "[python-control](https://python-control.readthedocs.io/en/latest/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6152108b5845410da5face2b0e993311
+#: ../../how-to/interop.md 691caccdd30246ccb591f315dac6f2c4
 msgid "`to_control_frd()`, `from_control_frd()`, `from_control_response()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: c727e9a338df4471bc79109648ee8a92
+#: ../../how-to/interop.md a15e745826654cfe8b3cbefb486bbd44
 msgid ""
 "FRD / response. Requires the `control` extra, for example `pip install "
 "\"gwexpy[control]\"`. FRD conversion is available from `FrequencySeries` / "
@@ -1219,148 +1028,121 @@ msgstr ""
 "から利用でき、時間応答の取り込みは `TimeSeries.from_control()` / "
 "`TimeSeriesDict.from_control()` で行えます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: c61ff109859f46c7a7dca8b44d2e3801
+#: ../../how-to/interop.md c0e29add3a5d41e8b893a9930c98150b
 msgid "[API](../reference/api/gwexpy.interop.control_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 07ce8a58f72e42af8b66f4abf12aeec5
+#: ../../how-to/interop.md 1e1b5ca5927144f99b06e0b04dbbe68f
 msgid "[SimPEG](https://simpeg.xyz/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3e5237e755c349e38855da68951e866c
+#: ../../how-to/interop.md fdb22ec175a24134a3891989e5d53cd0
 msgid "`to_simpeg()`, `from_simpeg()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 74442a6b2231419aa9ee296e6bb1902c
+#: ../../how-to/interop.md d3fb566a956b46e5b379d8c56f6b824f
 msgid "geophysics"
 msgstr "地球物理"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1c6c1d858d8e4fb5b500bfe712e8a904
+#: ../../how-to/interop.md b7c0c9eeff854e73ba7e124abf7f449f
 msgid "[API](../reference/api/gwexpy.interop.simpeg_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 40634798eeff400fa16334cef5726d12
+#: ../../how-to/interop.md 798b923c21a84183be297fbbb92f8e5b
 msgid "[MTH5](https://mth5.readthedocs.io/en/latest/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: c9dd04e1ae3042839009af75ed23dd62
+#: ../../how-to/interop.md ab437638aa4046588d8ade426f43885e
 msgid "`to_mth5()`, `from_mth5()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: fcdb119aa3824cf1bb8ceb015567be5e
+#: ../../how-to/interop.md c0aba7b39e9a4378a0a02a1029b8fc12
 msgid "magnetotellurics"
 msgstr "地磁気地電流（MT）"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b4796b2a28ab422d8f7138c8f2aa6fd8
+#: ../../how-to/interop.md 8b4d18de6f8f46ac86a3276941616b59
 msgid "[API](../reference/api/gwexpy.interop.mt_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b556e95979d54396a7b9058f02a5ba6b
+#: ../../how-to/interop.md e0da355998734399b69a48a26ba1d793
 msgid "MTpy"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 655dc5bf887c488fb9ff3a623da7a5f2 91817442a38f4fd08839db1a56124930
+#: ../../how-to/interop.md 9ea88d91adf048b6b4216b1c9e1bcc32
+#: cff6a47636d547ca857db33a74f8fe19
 msgid "dedicated `to_*()` / `from_*()` API still in progress"
 msgstr "専用 `to_*()` / `from_*()` API は対応中"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 45e3dce8ff3047e38113fdfebe4a3ba7 a599c09e67b643699dca7d026bf2ac61
+#: ../../how-to/interop.md 05dde05db8f54a19a6babee7202c17ac
+#: 355d33f676a343ac9f8473186870eeac
 msgid "In progress"
 msgstr "対応中"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 03146d9e1e284de68b96e6accd975b4e
+#: ../../how-to/interop.md 36501cbaf07b4370a4aa2e50b100d553
 msgid "MTH5-adjacent organization is incomplete"
 msgstr "MTH5 周辺との整理が未完"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: c01bd079415a403eba598e5b20d35541
+#: ../../how-to/interop.md cd105aa346554b699bff483fd88e6c82
 msgid "[MNE-Python](https://mne.tools/stable/index.html)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 9154486246ca45aa8dd78a6307572cd4
+#: ../../how-to/interop.md c9299f69efba4ed9a8c63fddd7cbc6dd
 msgid "`to_mne()`, `from_mne()`, `to_mne_rawarray()`, `from_mne_raw()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3c5908ade9a2417ababa1808eccfc64b
+#: ../../how-to/interop.md 9678cead1e8a4f48b71e0a8ff16d2f5c
 msgid "EEG / biosignal"
 msgstr "EEG／生体信号"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0b7c578e44f04ec381a9c77f95df8974
+#: ../../how-to/interop.md 53e80e4f3cd64d89b9d6ecedff686536
 msgid "[API](../reference/api/gwexpy.interop.mne_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1102a47bdd72402ab211b85c3ce5bcdd
+#: ../../how-to/interop.md 54592a99529b420ea8eb8bfdfbf3318b
 msgid "[Neo](https://neo.readthedocs.io/en/latest/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 5a943f769bae439eb93b655e7b530e83
+#: ../../how-to/interop.md 2a7c2f7306a242f8b7cb06bbd985032b
 msgid "`to_neo()`, `from_neo()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3a8e38e79b99498bafebc00f040828cb
+#: ../../how-to/interop.md f8a8d53caf81498cb47cce35a28daa4c
 msgid "electrophysiology"
 msgstr "電気生理"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7fac7e711fcb4239bb0e3c8eff377681
+#: ../../how-to/interop.md fbe23001ced44754a1d8703ebc6f6981
 msgid "[API](../reference/api/gwexpy.interop.neo_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 9703c94bb92b44ab9f51c7f4b2c34025
+#: ../../how-to/interop.md a19fee799f634ce889c0faa3ec540df0
 msgid "Elephant"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 213093e604f94414a37dcca7b4e34aea
+#: ../../how-to/interop.md 1ab0ee3fd3a84dc18b2c5826339794ed
 msgid "organization with `Neo` and `quantities` is incomplete"
 msgstr "`Neo` / `quantities` 周辺との整理が未完"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 03102151dc9f42a0925a50debd333e51
+#: ../../how-to/interop.md bbf01de4847843be91a40f38cf11be22
 msgid "[quantities](https://python-quantities.readthedocs.io/en/latest/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 04ff83b61c3248de8cda2cc9432f7493
+#: ../../how-to/interop.md d803edfe2feb4eb99bcacdfd84969038
 msgid "`to_quantity()`, `from_quantity()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f812fec4cc2649f0a52a538db5ed2bbb
+#: ../../how-to/interop.md 8cde5014c52441f8963f1dc1d422a7d8
 msgid "quantity bridge"
 msgstr "物理量のブリッジ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 4f99171431d5455c9db9a94008d80457
+#: ../../how-to/interop.md e74559f5fa9b4a418afc714789bbd927
 msgid "[API](../reference/api/gwexpy.interop.quantities_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: ec18d730b73146f586c68960e15d3756
+#: ../../how-to/interop.md 41252b0ae6024234809108e847d2ea1f
 msgid "[pyroomacoustics](https://pyroomacoustics.readthedocs.io/en/stable/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: af434074432244a8b5e925d439c4ff9d
+#: ../../how-to/interop.md 4834728b809342a8aa0099651124c8c8
 msgid ""
 "`to_pyroomacoustics_source()`, `to_pyroomacoustics_stft()`, "
 "`from_pyroomacoustics_rir()`, `from_pyroomacoustics_mic_signals()`, "
@@ -1368,366 +1150,299 @@ msgid ""
 "`from_pyroomacoustics_field()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7c3d977a5c984f31957dbdb90b5c288f
+#: ../../how-to/interop.md 4b6c966dc1574a86aec36d7a5e256701
 msgid "room acoustics"
 msgstr "室内音響"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f6cf3a5b38244a3b890700edcb55e1dc
+#: ../../how-to/interop.md 65b5e55734404bb9b9d94912792045ca
 msgid "[API](../reference/api/gwexpy.interop.pyroomacoustics_)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 147b2e7508424cd9bef7da7576af39f7
+#: ../../how-to/interop.md 0d7cf3eb66554500ba758cd52dd0e8d2
 msgid "[pydub](https://www.pydub.com/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6f23052b3baa431baef7d9df66f7e7b9
+#: ../../how-to/interop.md 5910bb21ac4d43d081939509b7315ef9
 msgid "`to_pydub()`, `from_pydub()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 23c5c09ac7fa48d09b03f2ab71363518
+#: ../../how-to/interop.md 6c8db4982d3a4072a1aee70f8331d88c
 msgid "audio object bridge"
 msgstr "音声オブジェクトのブリッジ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3490f074d38341549189777d3878d525 ba9344cc63a24b30866a57550d4ca892
+#: ../../how-to/interop.md 0224c4480f684b4fad793244cebf5d3a
+#: 56c0c78131ca45da9803a3e493c49ac8
 msgid "[API](../reference/api/gwexpy.interop.pydub_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 36b51be2b15a4ac284f342e5ffa8473e
+#: ../../how-to/interop.md 2dc6875fec954502946995d1497376f3
 msgid "[librosa](https://librosa.org/doc/latest/index.html)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0376cd74331d496c94c6d0552adfc00a
+#: ../../how-to/interop.md a1deecb0c2344fd3a641f8249cd7da31
 msgid "`to_librosa()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: c2f49483e7884ac69186cbd3054db277
+#: ../../how-to/interop.md 1836f4828cff479db471c85511adac7e
 msgid "mainly export"
 msgstr "export 中心"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7cfe254b459f474da29e3492d3cd3fe7
+#: ../../how-to/interop.md 3997017130ee45498514e69d732169f3
 msgid "[specutils](https://specutils.readthedocs.io/en/stable/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 52e0ca9d4b524da78317f87e1e24e696
+#: ../../how-to/interop.md 969e8a90d6634cc0a35f95811b933b69
 msgid "`to_specutils()`, `from_specutils()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 1312602888fd4d4799c7b720b2aec8d0
+#: ../../how-to/interop.md 2824abab8f59439f94be4a997a1a4387
 msgid "astronomy spectra"
 msgstr "天文スペクトル"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 45dadda5f23f4d81b1d302cc0f0572d2
+#: ../../how-to/interop.md 623f6c9ccf6f4b6a8600b72846cdb351
 msgid "[API](../reference/api/gwexpy.interop.specutils_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: d4ca91daf3014377b447c03fcac46b27
+#: ../../how-to/interop.md 926cfaa83f804f78a349fd2bb36be94a
 msgid "[pyspeckit](https://pyspeckit.readthedocs.io/en/latest/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f8c30dfbcc7d43c29597696beb6a59ad
+#: ../../how-to/interop.md 61db1607ed42423e94bd7853a3bbc7cc
 msgid "`to_pyspeckit()`, `from_pyspeckit()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 5ea77dc5340e4ebf9c1d0f4f697f350e
+#: ../../how-to/interop.md 7b04543ed7404d759cdf5696d9aa838e
 msgid "spectral analysis"
 msgstr "スペクトル解析"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 36246c63bf124b9282b3214df265664b
+#: ../../how-to/interop.md d4022d8ad0f044f99bf9abb6cfd3940d
 msgid "[API](../reference/api/gwexpy.interop.pyspeckit_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 4b6ba8bd34ae4bf788aeba04a741c744
+#: ../../how-to/interop.md 4654f1578cf94217bc3fc2f470a63636
 msgid "PySpice"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: f7c2c83ef17a41b587afbf8ed173457b
+#: ../../how-to/interop.md 9e3bb2e0b3a84acd90efa3fa21fcf097
 msgid ""
 "`from_pyspice_transient()`, `from_pyspice_ac()`, `from_pyspice_noise()`, "
 "`from_pyspice_distortion()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0ff0cbb1f847414c99dcadd24eaac29c 13a3caaa2f634f9b9a310678c7fd3baa
-#: 19a73b2cf6d54b7fb336b481d4284c0f 2037fc0ba7144ad8a9330bdf29000985
-#: 211413fb0eec46f9b501a4747e9ebd2d 25de464cd1fb46d1950048ac396be1b2
-#: 513d2ba4fc24484abb8b5751181be71b 613e7f55f5d44b999938eb86401f6413
-#: 81dc5cd966e14e53a0f0ef848655d56b 829e7a2bdb5c4db9bb83f46468075050
-#: a7ae797afa184379abbfe73c643fb504 aa4f44d0c09e4f09a84ec5158bc81b73
-#: d582c796edea4bbfaf73e7fcf5903880 e5c19e73c5934c60912de2ddef84e572
+#: ../../how-to/interop.md 08d7378b5f344cc6b5f0b2f4372b053f
+#: 0fa3631ff87c4fa093647584fd7d7761 1716188e51cf435f8c9cd8c5a9e13f25
+#: 1b73c695d77f4be5aab8de76b7491663 2d22a2d011164e059026d6df1aec4b01
+#: 4ee41365f8a543fc9071a825a3d6fa0f 660ed706bcdb436890b2d5b5b03910c5
+#: 695e01f3bfb24315a826781dc899cf01 6cb85e82cb754f1daa58f27534c3ba0c
+#: 830f25b5777f4efbbc899afcae461bb5 a61fc3420a614cb3a6ef9e25c96969f2
+#: b2eaa6dbf51e43fb9b6b417f92f111b4 ce889473af984d40b6742effabc37d7c
+#: d59c9ebe3d2241399784e60b054f9f3d
 msgid "mainly import"
 msgstr "import 中心"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 2d0a0246ae09400ba0adacfa5698c5ce
+#: ../../how-to/interop.md 381f375ab0b444b786af98dde915ed23
 msgid "[API](../reference/api/gwexpy.interop.pyspice_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7b10502167c34481bb49799f5fdfcdf8
+#: ../../how-to/interop.md 14ef1934dc7a4827a99a6dfca642e97d
 msgid "[scikit-rf](https://scikit-rf.readthedocs.io/en/latest/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 438fe6af7b6142c791b330750f10be72
+#: ../../how-to/interop.md 5b52d472baed4905af331bdf84e3b48a
 msgid ""
 "`to_skrf_network()`, `from_skrf_network()`, `from_skrf_impulse_response()`, "
 "`from_skrf_step_response()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: cfa1f807a4de4400986843b74cddbc39
+#: ../../how-to/interop.md d8fc6d82ee9e4e73be19a147b41182e3
 msgid "RF network analysis"
 msgstr "RF ネットワーク解析"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 9c069aff158a4eb9a0a2dfede7fba39a
+#: ../../how-to/interop.md 909f9f3f284a41cbaed240d6a4330cd0
 msgid "[API](../reference/api/gwexpy.interop.skrf_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7d569f6623bf4499b996734fde7cac96
+#: ../../how-to/interop.md 7fdf8a2033114b24aa70cacccb89a5e8
 msgid "[pyOMA](https://py-oma.readthedocs.io/en/latest/)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 98d962068fe4490c9cf315bd5e3fd267
+#: ../../how-to/interop.md 062551d109614b43910d36696852f37a
 msgid "`from_pyoma_results()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7d4824b6f4fb4d96b74b9d26cf38b262
+#: ../../how-to/interop.md a245ee8182fe45b5a2e8b19b277d46f4
 msgid "[API](../reference/api/gwexpy.interop.pyoma_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: b4e9171db48b473db9f7f606ff4c4552
+#: ../../how-to/interop.md 63cb08f83b09491e9b4482a634744c98
 msgid "multitaper"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: e3c31ec5011c4f55a7119f52943aa4b0
+#: ../../how-to/interop.md 7adfe1362ee448129dc1396cc38038eb
 msgid "`from_mtspec()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 656ab4b7879b41cf8ef24c51a180d670 9d88273d69144913965f5858a9308993
+#: ../../how-to/interop.md 844ab8d48d6a4486b361701b69a9e8ce
+#: c59aec2bd61f4966ae13b42c069238e6
 msgid "[API](../reference/api/gwexpy.interop.multitaper_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: fa27ee6dd69d466da500c12fc622af7d
+#: ../../how-to/interop.md 6ee94fecf8c9450c9da1a59026388c22
 msgid "mtspec"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 03ecfdd4521a471495154bf23eb20095
+#: ../../how-to/interop.md ef08a948f9034ac5bef9b8dbc1e78282
 msgid "`from_mtspec_array()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 03f1bf8e8b814e7f931366d5955b8bca
+#: ../../how-to/interop.md b1a274cb3e21450b8ad9555b1fad7c6d
 msgid "pySDy"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0934091294e143a5b8bf0f3391a35049
+#: ../../how-to/interop.md 48e1a15619a647b894558929f8a57e49
 msgid "`from_uff_dataset55()`, `from_uff_dataset58()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7c28338b9c33420faaf713313cc6a833
+#: ../../how-to/interop.md 5a24c94a4fb548ce869995e10c13f7ec
 msgid "[API](../reference/api/gwexpy.interop.sdypy_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: e829d06e593443e58a0f467c5aee5f46
+#: ../../how-to/interop.md 128729ac87d646578573c1fdda420493
 msgid "SDynPy"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6baee57daa24477cb7a694f8807e2c32
+#: ../../how-to/interop.md a26cc2227bf54f308b4e19037060fddd
 msgid ""
 "`from_sdynpy_frf()`, `from_sdynpy_shape()`, `from_sdynpy_timehistory()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 16dc6fcb6921417f80c5ffd7fcc5b3a9
+#: ../../how-to/interop.md a4561cc1be624f919903a6f55c68ff35
 msgid "[API](../reference/api/gwexpy.interop.sdynpy_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: da4ba391f61146b9879bfd601f51cac3
+#: ../../how-to/interop.md b71c6c7b146b4534832ff4f32f8b45b2
 msgid "Meep"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: e230dcdbab7f4684bcaadbe6ce7d9d7f
+#: ../../how-to/interop.md 90775548b24e46b1af95ecaa8d9200b9
 msgid "`from_meep_hdf5()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7158e9fe745b4561ae12f36205a2bfdf
+#: ../../how-to/interop.md d03d7cfd89d64d47a1e5fa7bac89cc0e
 msgid "[API](../reference/api/gwexpy.interop.meep_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 179520e624664122a547fcefab9a56d2
+#: ../../how-to/interop.md f28051a92deb4536924a83f7be4b5786
 msgid "openEMS"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 454725cd6004433bba231995780e449e
+#: ../../how-to/interop.md 8163431eb4734735b893b7727a09c552
 msgid "`from_openems_hdf5()`, `DUMP_TYPE_MAP`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: be6ec6fe78a14e35951b812c6c7101b9
+#: ../../how-to/interop.md c33ad701c58345c99d7dbbf41aaa7884
 msgid "[API](../reference/api/gwexpy.interop.openems_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 6f82155bf379497fb58cc60c589cfe49
+#: ../../how-to/interop.md 5bea61bf736a418c9eafcd04b1c649d5
 msgid "emg3d"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 020dacf686d24eafa9ea6d8b3b93fa47
+#: ../../how-to/interop.md f389f1ce39354c90b4665000258388ed
 msgid "`to_emg3d_field()`, `from_emg3d_field()`, `from_emg3d_h5()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3c11ffa23b96429c87c09e449cff82e7
+#: ../../how-to/interop.md a00df295bde54327a402c781140a13d8
 msgid "EM field import/export"
 msgstr "EM 場の入出力"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 3fb075b9c95e4de2a64819e4c8b26336
+#: ../../how-to/interop.md 37054e3b846e45d7abcbeb92ccda6424
 msgid "[API](../reference/api/gwexpy.interop.emg3d_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: fcfc3904057c44cc8cd1c5e87c1f00f9
+#: ../../how-to/interop.md 4053ec3a9fd64cd4aa7069ba5df57bca
 msgid "meshio"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 99d498d6bd6042e3a87e347a32f3bbb4
+#: ../../how-to/interop.md 031d679c1c6a41529dc7ad111174286d
 msgid "`from_meshio()`, `from_fenics_xdmf()`, `from_fenics_vtk()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 10f331e948c64b2f85df54baf9e2d2bf
+#: ../../how-to/interop.md 99f12eb99fbb44c0afd79e7478b13847
 msgid "[API](../reference/api/gwexpy.interop.meshio_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 212c3446957241e782c57339fd36ac2a
+#: ../../how-to/interop.md b72c153ca62847cb81281503b48da8da
 msgid "MetPy"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 0a64e5d80d5f4c5c974ba050053e2772
+#: ../../how-to/interop.md 2efba259db794fa5abd6986bdbe60903
 msgid "`from_metpy_dataarray()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: cdae7c2ad1a34afe9ce776658324315b
+#: ../../how-to/interop.md ec8d422b3064491fa1fb1e0aee537835
 msgid "[API](../reference/api/gwexpy.interop.metpy_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 405db1439c644b3f8d15d70a04d3bc04
+#: ../../how-to/interop.md 21a99cd1b689451b97551a9bfcd263db
 msgid "WRF"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 088e97d4640c45fe9468cb3e82f1d939
+#: ../../how-to/interop.md b3d8cb3a2c084473a7768d8bffc9ba78
 msgid "`from_wrf_variable()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 8b99684b1e6d4d898e016a173a825764
+#: ../../how-to/interop.md 7043cfc86fb7406ba60ebacadb097e29
 msgid "[API](../reference/api/gwexpy.interop.wrf_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 2d6748903e68457d9b4ba17a8c6f38bf
+#: ../../how-to/interop.md 3b66c0357c664a258a116485c2231cbb
 msgid "Harmonica"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 7931bf7f92fd4f3d98722fa62274b263
+#: ../../how-to/interop.md 2d2e0c837d484013b84bd8f7ad4470c9
 msgid "`from_harmonica_grid()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 5f18188592674ecfb338367994a33fd8
+#: ../../how-to/interop.md 33fb8dc6e8fc406fbc1159127ca997ca
 msgid "[API](../reference/api/gwexpy.interop.harmonica_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: c0a86be85ed547f1b59407bf69ea3ba7
+#: ../../how-to/interop.md d158a4f440b4487a8c58e84a13c519a1
 msgid "Exudyn"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 4de2da3955df4521a29ece121f0ede90
+#: ../../how-to/interop.md 5beeb8ce094c4df9ba2de3da0dc24c59
 msgid "`from_exudyn_sensor()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: d759f7d646214e5c92c37b2ada600252
+#: ../../how-to/interop.md 46b3597ab09341e59fb606a38c88940e
 msgid "[API](../reference/api/gwexpy.interop.exudyn_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: a762728e4cf541089b3984e6f0df9804
+#: ../../how-to/interop.md 8d0eebdb7b0e4dd1a6ad826707d5fad9
 msgid "OpenSees"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 460d6dc6aa3b4d6f99a0f6ea4e2e396e
+#: ../../how-to/interop.md be8fe3ca22dd4443bc78052a534f1234
 msgid "`from_opensees_recorder()`"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md
-#: 4725ae1b40394234920db816e374d8c6
+#: ../../how-to/interop.md 745d806d4a5c4b5baac4bcb5a473e263
 msgid "[API](../reference/api/gwexpy.interop.opensees_)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:208
-#: 55299619f5f14df9aa721926234ba2a0
+#: ../../how-to/interop.md:208 2b33815503d94ccc97eb2a3bce311bf9
 msgid "What to Prioritize First"
 msgstr "優先的に見るべき対象"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:210
-#: f9e62de3bf4446c7a2dafd850dcf2a9c
+#: ../../how-to/interop.md:210 27f7e096a5f74848997178f3386bbdd9
 msgid ""
 "The following targets are especially important because they sit close to the"
 " direct-I/O boundary or because they are high-value public entry points:"
 msgstr "公開面で先に理解すると効果が大きいのは次です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:212
-#: 725ddcbd35574e1991bb710d1d06caa7
+#: ../../how-to/interop.md:212 07d527a3f8e74738818b5700aa093008
 msgid ""
 "**ROOT**: `io_formats` keeps only EventTable direct I/O; ROOT object "
 "conversion belongs here"
@@ -1735,61 +1450,50 @@ msgstr ""
 "**ROOT**: `io_formats` では EventTable の直 I/O のみ扱い、ROOT object 変換は interop "
 "側で説明する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:213
-#: bb5c79c99f684a7e9a38445c6bcd1764
+#: ../../how-to/interop.md:213 e2a4715cda544751925ec750bf3ccba8
 msgid ""
 "**xarray / Field**: the main route for ScalarField / VectorField bridges"
 msgstr "**xarray / Field**: ScalarField / VectorField の主要な機能"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:214
-#: 5dee279428d34c28beaae2a328012e29
+#: ../../how-to/interop.md:214 731b18d96a174951a6c297881266e69b
 msgid "**Zarr**: easy to confuse with direct I/O, so the boundary matters"
 msgstr "**Zarr**: direct I/O と interop の境界が混同されやすい"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:215
-#: 3699aef488f24ef5994bd75e069da0db
+#: ../../how-to/interop.md:215 e045f3f981f94da58071b60d03bdba5c
 msgid ""
 "**NetCDF4**: needs a clean line between direct I/O and xarray-backed "
 "workflows"
 msgstr "**NetCDF4**: xarray 経由のワークフローとの境界整理が必要"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:216
-#: 45b0aa90962547b5b2d9d6b81d247750
+#: ../../how-to/interop.md:216 b7588e7c5f654779ae8227944991c0d7
 msgid "**ObsPy**: common and easy-to-understand round-trip examples"
 msgstr "**ObsPy**: 時系列・地震波形との往復が分かりやすい"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:217
-#: a87810b71da449b48cad4161b46cf58c
+#: ../../how-to/interop.md:217 598b68a847764f0ba3f538042c4607ab
 msgid "**pandas / polars / astropy**: frequent analysis entry points"
 msgstr "**pandas / polars / astropy**: 解析ワークフローの入口として頻出"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:219
-#: c814006259a64b41a34fb859f9755aee
+#: ../../how-to/interop.md:219 0baf4396e6274081bf15e814ed54af18
 msgid "Related Pages"
 msgstr "関連ページ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:221
-#: 6806a1a80c1e4cc7a6418f12e6b4aa4a
-msgid "[Interop tutorial](../tutorials/index.md)"
+#: ../../how-to/interop.md:221 0d7526aa5f0a4dcbbf45e1904e817fd6
+msgid "[Interop tutorial](viz/intro_interop)"
 msgstr ""
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:222
-#: d4259b8d8b5144ed93e840ab8f474be6
+#: ../../how-to/interop.md:222 75bb5ed3df2c49b4823cb7ae5af28545
 msgid "[Interop API reference](../reference/api/interop)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:223
-#: 810d8743394a40c9b5e83824ced12cbc
+#: ../../how-to/interop.md:223 7da4c6e0803a4c5d9ed8d79bcae9c782
 msgid "[File I/O Supported Formats Guide](io_formats)"
 msgstr "[ファイル I/O 対応フォーマットガイド](io_formats)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:225
-#: 175c94432ceb4d59a5ddcf235bc2511b
+#: ../../how-to/interop.md:225 e4a81c9780684cc8af0adafb132a3363
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:227
-#: 77843ce7c336435abf9524d0fd5c315b
+#: ../../how-to/interop.md:227 7eaa6d04069b4e7e895d618b7820fbd6
 msgid ""
 "[File I/O Supported Formats Guide](io_formats) if your real question is "
 "about `Class.read(..., format=...)` or `obj.write(...)`"
@@ -1797,17 +1501,18 @@ msgstr ""
 "[ファイル I/O 対応フォーマットガイド](io_formats) で `Class.read(..., format=...)` と "
 "`obj.write(...)` を確認する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:228
-#: 52f520f1a5d644d5be6b1bf9a5525f47
+#: ../../how-to/interop.md:228 f3acd4ac2009427596f78b4fdce618e7
 msgid ""
 "[GPS Time Utility Functions](time_utilities) if conversion workflows depend "
 "on GPS or timezone handling"
 msgstr "[GPS 時刻ユーティリティ](time_utilities) で GPS 時刻やタイムゾーンの補助関数を確認する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/interop.md:229
-#: 931c8f2520cc4f4188d6a8197cdb54a3
+#: ../../how-to/interop.md:229 04ce1b19832247c3b22a11ef8bd68bde
 msgid ""
-"[Interop tutorial](../tutorials/index.md) for worked examples before "
-"dropping into the API reference"
+"[Interop tutorial](viz/intro_interop) for worked examples before dropping "
+"into the API reference"
 msgstr ""
-"API リファレンスに進む前に、実例については [Interop チュートリアル](../tutorials/index.md) を参照してください"
+"API リファレンスに進む前に、実例については [Interop チュートリアル](viz/intro_interop) を参照してください"
+
+#~ msgid "[Interop tutorial](../tutorials/index.md)"
+#~ msgstr ""
