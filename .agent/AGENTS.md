@@ -8,7 +8,12 @@ This repository is optimized for collaboration with AI Coding Agents (Claude, Co
 ## IMPORTANT — Pre-execution checklist (agents must confirm)
 Before any code changes or runs, ensure ALL items below are satisfied:
 
-- Read `.agent/<skill>/SKILL.md` for the skills you intend to use.
+- Read `.agent/<skill>/SKILL.md` for the skills you intend to use, if present.
+  `.agent/agents`, `.agent/hooks`, `.agent/rules`, `.agent/skills`, and
+  `.agent/workflows` are symlinks into the maintainer's private, external AI
+  harness store and are not part of this public repository — they may be
+  absent in your checkout (e.g. CI, a fresh clone). Treat their absence as
+  normal and fall back to this document plus README.md/CONTRIBUTING.md.
 - Inspect `docs/developers/plans/` for relevant historical context and design decisions.
 - Ensure you have local environment with `.[dev,test,docs]` installed.
 - **Bootstrap the registry**: call `gwexpy.register_all()` or simply `import gwexpy` before using `ConverterRegistry` lookups.  If you see a `KeyError` mentioning “not registered”, call `gwexpy.register_all()`.

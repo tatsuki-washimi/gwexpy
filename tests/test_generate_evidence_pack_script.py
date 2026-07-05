@@ -16,9 +16,13 @@ import pytest
 SCRIPT_PATH = (
     Path(__file__).resolve().parents[1] / "scripts" / "generate_evidence_pack.py"
 )
-HOOKS_JSON_PATH = (
-    Path(__file__).resolve().parents[1] / ".harness" / "hooks" / "hooks.json"
-)
+HARNESS_DIR = Path(__file__).resolve().parents[1] / ".harness"
+HOOKS_JSON_PATH = HARNESS_DIR / "hooks" / "hooks.json"
+# .harness lives in the maintainer's private central AI-harness store and is a
+# symlink there; exists() returns False for a dangling symlink too, so check
+# is_symlink() separately to distinguish "not present in this checkout" (skip)
+# from "central storage is broken" (should still fail).
+HARNESS_ABSENT = not HARNESS_DIR.exists() and not HARNESS_DIR.is_symlink()
 
 
 def load_script_module():
@@ -328,6 +332,15 @@ def _parse_hook_patterns(hooks_json: Path) -> list[tuple[str, str]]:
 class TestHooksJsonSync:
     """Ensure LABEL_RULES in the script stays in sync with hooks.json."""
 
+    pytestmark = pytest.mark.skipif(
+        HARNESS_ABSENT,
+        reason=(
+            ".harness lives in the maintainer's private central AI-harness "
+            "store (ai-harness/projects/gwexpy) and is not present in this "
+            "checkout"
+        ),
+    )
+
     def _equivalent_match(self, pattern: str, test_paths: list[str]) -> set[str]:
         """Return subset of test_paths matched by pattern."""
         import re as _re
@@ -355,7 +368,7 @@ class TestHooksJsonSync:
     ]
 
     def test_hooks_json_exists(self):
-        assert HOOKS_JSON_PATH.exists(), f"hooks.json not found at {HOOKS_JSON_PATH}"
+        assert HOOKS_JSON_PATH.is_file(), f"hooks.json not found at {HOOKS_JSON_PATH}"
 
     def test_hook_patterns_can_be_parsed(self):
         """The risk-label hook should yield at least 4 patterns."""

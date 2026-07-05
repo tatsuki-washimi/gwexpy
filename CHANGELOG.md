@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Development
+
+- Move maintainer-only `.harness/` AI workflow files out of the public
+  repository and skip private harness sync tests when the harness is absent
+  (#483).
+
 ## [0.1.8] - 2026-07-04
 
 This is a bugfix and I/O-hardening release. It fixes the `from_obspy`

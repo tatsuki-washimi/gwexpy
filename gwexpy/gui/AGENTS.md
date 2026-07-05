@@ -5,8 +5,11 @@ This document provides module-specific guidelines for AI Coding Agents working o
 
 **Prerequisites / Links.**  
 - Read repository root `AGENTS.md` first.  
-- Read `.agent/skills/manage_gui/SKILL.md` for GUI skill conventions.  
-- See `.agent/skills/run_tests/reference/gui.md` for GUI test execution details.  
+- Read `.agent/skills/manage_gui/SKILL.md` for GUI skill conventions, if present.  
+- See `.agent/skills/run_tests/reference/gui.md` for GUI test execution details, if present.  
+- `.agent/skills` is a symlink into the maintainer's private, external AI harness store and
+  may be absent in your checkout (e.g. CI, a fresh clone) — see the root `.agent/AGENTS.md`.
+  If absent, follow the guidelines in this document and the root `AGENTS.md` directly.
 - CI note: GUI tests require an X server (or Xvfb) and proper environment variables; do not assume a desktop.
 
 ---

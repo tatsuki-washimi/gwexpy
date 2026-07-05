@@ -137,6 +137,14 @@ gwexpy/gui/reference_ndscope
 .agent/branch-*.tsv
 .agent/branch-ledger-*.md
 
+# Personal AI harness bridge symlinks (point into .harness, central storage
+# in ai-harness/projects/); .agent/AGENTS.md and other real files stay tracked
+.agent/agents
+.agent/hooks
+.agent/rules
+.agent/skills
+.agent/workflows
+
 # cover-agent artifacts
 cover_agent_unit_test_runs.db
 run.log
@@ -163,3 +171,6 @@ scratch/.venv_docs/
 
 # .harness のローカル上書き設定（個人環境依存）- issue #190
 .harness.local/
+
+# Personal AI harness (central storage in ai-harness/projects/)
+.harness
