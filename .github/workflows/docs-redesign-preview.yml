@@ -31,9 +31,12 @@ jobs:
     env:
       PYTHONFAULTHANDLER: "1"
       MPLCONFIGDIR: /tmp/matplotlib
-      # docs_redesign/conf.py reads this to compute language-switcher URLs;
-      # points at the preview subpath, never at the production /docs/ path.
-      GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
+      # docs_redesign/conf.py reads GWEXPY_DOCS_LANG_BASEURL to compute the
+      # language-switcher's counterpart-language URL (shared by EN and JA);
+      # GWEXPY_DOCS_BASEURL is the per-build canonical base and is set
+      # separately for the EN and JA build steps below, since the JA build's
+      # canonical must point at .../ja/, not at the EN root.
+      GWEXPY_DOCS_LANG_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -62,11 +65,15 @@ jobs:
 
       - name: Build EN HTML
         working-directory: docs_redesign
+        env:
+          GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
         run: |
           sphinx-build -b html -d _build/doctrees_en . _build/html
 
       - name: Build JA HTML
         working-directory: docs_redesign
+        env:
+          GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/"
         run: |
           sphinx-build -b html -D language=ja -d _build/doctrees_ja . _build/html/ja
 

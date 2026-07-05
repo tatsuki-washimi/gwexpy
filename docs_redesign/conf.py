@@ -6,13 +6,19 @@
 
 import os
 
-# Overridable at build time (e.g. preview builds under /preview-docs-redesign/)
-# since the language switcher computes counterpart-language URLs from this
-# value. Default matches the confirmed production URL (Step F-2: keep the
-# existing /docs/ path rather than moving docs_redesign to the site root).
-SITE_BASEURL = os.environ.get(
-    "GWEXPY_DOCS_BASEURL", "https://tatsuki-washimi.github.io/gwexpy/docs/"
-)
+# Default matches the confirmed production URL (Step F-2: keep the existing
+# /docs/ path rather than moving docs_redesign to the site root).
+_DEFAULT_SITE_ROOT = "https://tatsuki-washimi.github.io/gwexpy/docs/"
+
+# Shared site root the language switcher uses to compute the counterpart-
+# language page URL. Identical for the EN and JA builds of the same deploy
+# (e.g. both point at .../docs/, never at .../docs/ja/).
+LANG_BASEURL = os.environ.get("GWEXPY_DOCS_LANG_BASEURL", _DEFAULT_SITE_ROOT)
+
+# Canonical base for *this* build only. Differs per language (EN serves at
+# the site root, JA under /ja/) -- keep this separate from LANG_BASEURL or
+# the JA build's <link rel="canonical"> ends up pointing at the EN page.
+SITE_BASEURL = os.environ.get("GWEXPY_DOCS_BASEURL", LANG_BASEURL)
 
 # -- Project information -----------------------------------------------------
 project = "GWexpy"
@@ -168,7 +174,7 @@ html_context = {
         ("ja", "日本語", "ja/"),
     ],
     # Base URL the switcher uses to build the counterpart-language page URL.
-    "lang_base": SITE_BASEURL,
+    "lang_base": LANG_BASEURL,
 }
 
 # Sidebar: keep the left sidebar clean (navigation only).
@@ -221,4 +227,20 @@ def setup(app):
         )
 
     _i18n.publish_msgstr = _publish_msgstr
+
+    # Localize theme_options string defaults that pydata-sphinx-theme does not
+    # run through gettext (they're plain ``theme.conf`` option strings, e.g.
+    # ``search_bar_text``/``icon_links_label``, not template ``_()`` calls).
+    # Hooked on config-inited (not set unconditionally above) so it sees the
+    # real target language after a ``-D language=ja`` build-time override.
+    def _localize_theme_option_strings(app, config):
+        if config.language == "ja":
+            config.html_theme_options = {
+                **config.html_theme_options,
+                "search_bar_text": "ドキュメントを検索...",
+                "icon_links_label": "アイコンリンク",
+            }
+
+    app.connect("config-inited", _localize_theme_option_strings)
+
     return {"parallel_read_safe": True, "parallel_write_safe": True}
