@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-04 07:52+0000\n"
+"POT-Creation-Date: 2026-07-05 14:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:10002
-#: 3fa521e2e470400bb6220157a2f5377d
+#: ../../how-to/case-studies/case_transfer_function.ipynb:10002
+#: e1bc192ba32b4dd6a379b183ce37cc2b
 msgid "**Case navigation:**"
 msgstr "**ケーススタディのフロー:**"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:10003
-#: e40aaf6266564c6aa5fc9d5e35f03afd
+#: ../../how-to/case-studies/case_transfer_function.ipynb:10003
+#: 48539edd3ddd411fae2d211389c65755
 msgid "Back to the canonical gallery: [Case Studies](index.md)"
 msgstr "ケーススタディ一覧に戻る: [ケーススタディ](index.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:10004
-#: b0ffeff4b370411ba3ad0336861b8512
+#: ../../how-to/case-studies/case_transfer_function.ipynb:10004
+#: de30c4b825484cb59612b56d2549ff1c
 msgid ""
 "Related reference surfaces: [Reference Index](../../reference/index.md), "
-"[API: Frequency Series](../../reference/api/frequencyseries.rst)"
+"[API: Frequency Series](../../reference/api/frequencyseries)"
 msgstr ""
 "関連リファレンス: [リファレンス索引](../../reference/index.md)、[API: "
-"周波数系列](../../reference/api/frequencyseries.rst)"
+"周波数系列](../../reference/api/frequencyseries)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:10005
-#: 287b190e67e14279be305b6f45bf6ddd
+#: ../../how-to/case-studies/case_transfer_function.ipynb:10005
+#: ef967fd8c8694ee0b5ba7671567b006a
 msgid ""
 "Neighboring featured workflows: [Noise Budgeting](case_noise_budget.ipynb), "
 "[Active Damping](case_active_damping.ipynb)"
@@ -47,13 +47,13 @@ msgstr ""
 "前後の注目ワークフロー: [ノイズバジェット解析](case_noise_budget.ipynb), "
 "[アクティブダンピング](case_active_damping.ipynb)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:20002
-#: 238cc4ceb74c4cd6bd28e5a861240064
+#: ../../how-to/case-studies/case_transfer_function.ipynb:20002
+#: 9b9161f5baac402fb63407ee6bb28bf4
 msgid "Tutorial: Transfer Function Measurement"
 msgstr "チュートリアル: 伝達関数の測定"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:20004
-#: 79a0ffacbc6f484ab03e464717aeb0b0
+#: ../../how-to/case-studies/case_transfer_function.ipynb:20004
+#: 57c8632f00434e09a6b6226e728cd72e
 msgid ""
 "This tutorial demonstrates how to use `gwexpy` to estimate the transfer "
 "function of a system from measured data, fit a physical model to the "
@@ -62,8 +62,8 @@ msgstr ""
 "このチュートリアルでは、`gwexpy` を使用して測定データからシステムの伝達関数（Transfer Function）を推定し、 "
 "物理モデルへのフィッティングを行ってパラメータを同定する流れを解説します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:20007
-#: 3d591667b1cf4e0fa5b0b6b57467e043
+#: ../../how-to/case-studies/case_transfer_function.ipynb:20007
+#: 9f2c09db44c14731ac248b6e0b67c982
 msgid ""
 "**Scenario:** We inject white noise into a mechanical vibration system (or "
 "electrical circuit) and measure its response. From this input-output data, "
@@ -73,79 +73,79 @@ msgstr ""
 "**シナリオ:** ある機械振動系（または電気回路）に白色雑音を入力し、その応答を測定しました。 この入出力データから、システムの共振周波数 $f_0$"
 " と Q値 $Q$ を求めます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:20011
-#: 16b147e652ab4644b10dc4be262895bb
+#: ../../how-to/case-studies/case_transfer_function.ipynb:20011
+#: 8f70e31757ff4f4ead0b8caf00b99dbc
 msgid "**Workflow:**"
 msgstr "**ワークフロー:**"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:20012
-#: 3c2c0299910c4056b3cd9fcbf46e5cb4
+#: ../../how-to/case-studies/case_transfer_function.ipynb:20012
+#: 812d9d57e44f478b812d0380dbeac07b
 msgid ""
 "**Data generation**: Simulate an input signal (white noise) and the system "
 "output (resonant system response + measurement noise)."
 msgstr "**データ生成**: 入力信号（白色雑音）と、それに対するシステムの出力（共振系応答 + 測定ノイズ）をシミュレーションします。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:20013
-#: e25fc58548684913ba671d65854aec2a
+#: ../../how-to/case-studies/case_transfer_function.ipynb:20013
+#: 033307029cd54f6dbb645afbcd96ec60
 msgid ""
 "**Transfer function estimation**: Calculate the transfer function and "
 "coherence from the input-output time series data and plot the Bode plot."
 msgstr "**伝達関数の推定**: 入出力の時系列データから伝達関数とコヒーレンスを計算し、ボード線図（Bode Plot）を描画します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:20014
-#: 9f516c58d1fe43349d25f09cbc715f70
+#: ../../how-to/case-studies/case_transfer_function.ipynb:20014
+#: 5c28139fc6bf4b89b16c43ff2e09bb77
 msgid ""
 "**Model fitting**: Fit a theoretical model (such as a Lorentzian function) "
 "to the estimated transfer function to extract system parameters."
 msgstr "**モデルフィッティング**: 推定した伝達関数に理論モデル（ローレンツ関数など）を当てはめ、パラメータを推定します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:40002
-#: fd7798cdde2b47919547e86ec64bfb41
+#: ../../how-to/case-studies/case_transfer_function.ipynb:40002
+#: a205b219b68a4ba9a27cd79eff768a62
 msgid "1. Generating Experimental Data (Simulation)"
 msgstr "1\\. 実験データの生成（シミュレーション）"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:40004
-#: 5975c3de7652494ca579c9d1ff158a6a
+#: ../../how-to/case-studies/case_transfer_function.ipynb:40004
+#: 077a3488d9c84a83818154db07bf0b21
 msgid "We will conduct a virtual experiment."
 msgstr "仮想的な実験を行います。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:40005
-#: 0f2d7ae1539948019823d73ccd122a6c
+#: ../../how-to/case-studies/case_transfer_function.ipynb:40005
+#: d4fccb4a3e2c4504b9d43add365cd9a6
 msgid "**System**: Second-order resonant system (harmonic oscillator)"
 msgstr "**システム**: 2次共振系（単振動）"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:40006
-#: ef2157f64ea040d994fcb772c112842b
+#: ../../how-to/case-studies/case_transfer_function.ipynb:40006
+#: becf2873becd4c9e9c86de1bc92bf0b0
 msgid "Resonance frequency $f_0 = 300$ Hz"
 msgstr "共振周波数 $f_0 = 300$ Hz"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:40007
-#: 78aae41f02304740a49406781a835086
+#: ../../how-to/case-studies/case_transfer_function.ipynb:40007
+#: 383045030373424db413dcc860f572a7
 msgid "Quality factor $Q = 50$"
 msgstr "Q値 $Q = 50$"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:40008
-#: 50429d0bbe78444bb709b8b3ee0b912a
+#: ../../how-to/case-studies/case_transfer_function.ipynb:40008
+#: 2fd713361ad94e4ca5dbb767ae6c8ee9
 msgid "**Input**: White noise"
 msgstr "**入力**: 白色雑音（White Noise）"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:40009
-#: a23d21805059441793020373a24b63d6
+#: ../../how-to/case-studies/case_transfer_function.ipynb:40009
+#: 751ca6c31ca94f959e14f860aa42fd6e
 msgid "**Measurement**: Sampling frequency 2048 Hz, duration 60 seconds"
 msgstr "**測定**: サンプリング周波数 2048 Hz, 継続時間 60秒"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:40011
-#: e3da4f4429274d3793c40cabfb614ee9
+#: ../../how-to/case-studies/case_transfer_function.ipynb:40011
+#: dee283bdff2940a2a02998c3e0cdd961
 msgid "The output signal will also include measurement noise."
 msgstr "出力信号には、測定に伴うノイズも付加します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:60002
-#: 0d357ebefbb44edf9b29f6d978ec039c
+#: ../../how-to/case-studies/case_transfer_function.ipynb:60002
+#: 93ab436b51be4832bb3011003402d9eb
 msgid "2. Transfer Function Estimation"
 msgstr "2\\. 伝達関数の推定"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:60004
-#: 1429e7093f3c4318bc89b22e16775a17
+#: ../../how-to/case-studies/case_transfer_function.ipynb:60004
+#: 28f6c243722d4109aa2c2aed4533b025
 msgid ""
 "From the input-output time series data `ts_input` and `ts_output`, we "
 "estimate the frequency response function (transfer function). We use the "
@@ -154,8 +154,8 @@ msgstr ""
 "入出力の時系列データ `ts_input` と `ts_output` から、周波数応答関数（伝達関数）を推定します。 `gwexpy` の "
 "`transfer_function` メソッドを使用します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:60007
-#: f90759339b4e45e1b44b99a2700fdf75
+#: ../../how-to/case-studies/case_transfer_function.ipynb:60007
+#: ddd184fa524646fb9bda08cf87c04238
 msgid ""
 "We also calculate the **coherence** to assess the reliability of the "
 "measurement. Frequency bands where the coherence is close to 1 indicate that"
@@ -165,13 +165,13 @@ msgstr ""
 "また、測定の信頼性を確認するために**コヒーレンス（Coherence）**も計算します。 コヒーレンスが 1 "
 "に近い周波数帯域は、入出力の関係が線形であり、ノイズの影響が少ないことを示します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:80002
-#: 58bdd98d5273433386365b5c93e870b2
+#: ../../how-to/case-studies/case_transfer_function.ipynb:80002
+#: eddad32ac01a48f8aa13dbf2339bbb5e
 msgid "3. Model Fitting"
 msgstr "3\\. モデルフィッティング"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:80004
-#: 677b573714ee4a8091271bd829f17066
+#: ../../how-to/case-studies/case_transfer_function.ipynb:80004
+#: 2ebeaefab4e142a68636d9e0113abdef
 msgid ""
 "We fit a theoretical model to the obtained transfer function (especially "
 "around the resonance). Here, we define a transfer function model for a "
@@ -181,8 +181,8 @@ msgstr ""
 "得られた伝達関数（特に共振付近）に対して、理論モデルをフィッティングします。 ここでは、単振動の伝達関数モデルを定義し、最小二乗法でパラメータ（$A, "
 "f_0, Q$）を求めます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:80007
-#: 8f77e6a16d2c461e90243616a580f290
+#: ../../how-to/case-studies/case_transfer_function.ipynb:80007
+#: 332f4783763147e880b3d757c9e571af
 #, python-brace-format
 msgid ""
 "Model equation (including gain $A$): $$ H(f) = A \\cdot \\frac{f_0^2}{f_0^2 "
@@ -191,13 +191,13 @@ msgstr ""
 "モデル式（ゲイン $A$ を含む）： $$ H(f) = A \\cdot \\frac{f_0^2}{f_0^2 - f^2 + i (f f_0 /"
 " Q)} $$"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:100002
-#: fca3150bb8f945989a46100d05444b8a
+#: ../../how-to/case-studies/case_transfer_function.ipynb:100002
+#: c154fa9b2bbc4c91b8c9db957f2fc712
 msgid "4. Verification of Results"
 msgstr "4\\. 結果の確認"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_transfer_function.ipynb:100004
-#: 089f3ce9b7e04f58b4259a61c193d35f
+#: ../../how-to/case-studies/case_transfer_function.ipynb:100004
+#: bd3d5f37a4d244cab7889e7241779c70
 msgid ""
 "We verify the fitting results numerically and plot them overlaid on the "
 "measured data. The `FitResult.plot()` method automatically generates a Bode "

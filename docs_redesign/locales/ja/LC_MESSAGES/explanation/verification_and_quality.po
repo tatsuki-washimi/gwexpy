@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-04 07:52+0000\n"
+"POT-Creation-Date: 2026-07-05 14:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md
-#: 47b09e5fb30b40ab8d82d4a87b775cf0
+#: ../../explanation/verification_and_quality.md
+#: f5a4a2c5d27c4cfbb9a54f1efd5d2bef
 msgid ""
 "Understand what GWexpy validates publicly for notebooks, direct I/O formats,"
 " algorithm audit notes, and repository coverage signals, and where each "
@@ -29,13 +29,13 @@ msgstr ""
 "GWexpy が公開で検証している範囲（ノートブック、direct I/O 形式、アルゴリズム監査ノート、リポジトリの coverage "
 "シグナル）と、各根拠の所在を整理します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:7
-#: 445a671f01c04f31b75c10a19ff5587a
+#: ../../explanation/verification_and_quality.md:7
+#: f8492c21a95443d88b2150459cf6c8be
 msgid "Verification and Quality Signals"
 msgstr "検証と品質の見方"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:9
-#: 82a649d29ad84dd482d89749fee6e0ca
+#: ../../explanation/verification_and_quality.md:9
+#: 9452e3d1cb3f4c569b1b5cfa7b833bfb
 msgid ""
 "This page explains what kinds of public verification signals `gwexpy` "
 "exposes today, where those signals come from, and how to interpret their "
@@ -43,8 +43,8 @@ msgid ""
 msgstr ""
 "このページでは、`gwexpy` が現在どの種類の検証シグナルを公開しているか、その根拠がどこにあるか、そしてその限界をどう読むべきかを整理します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:11
-#: 4ea63817de9a4bbeb07b6b49bf75e8da
+#: ../../explanation/verification_and_quality.md:11
+#: 6d36e05feb734e089c7f7b98dd2fa9ee
 msgid ""
 "It is not a single \"all features are verified\" claim. Instead, it points "
 "you to the current evidence sources for notebooks, direct I/O formats, "
@@ -53,52 +53,53 @@ msgstr ""
 "ここで示すのは「すべての機能が一様に検証済み」という主張ではありません。Notebook、direct I/O、アルゴリズム監査、リポジトリ全体の "
 "coverage について、それぞれ別の根拠に辿れるようにするための案内ページです。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:14
-#: 7c71ea70c26f43cbb3b55c96260ef48a
+#: ../../explanation/verification_and_quality.md:14
+#: 1a45732b5b244dbab64256a324d2544a
 msgid "**Read this page as a transparency map, not as a blanket guarantee**"
 msgstr "**このページは「透明性の地図」であって、一括保証ではありません**"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:16
-#: 45098a6e905841f6ae5e7493157e63cf
+#: ../../explanation/verification_and_quality.md:16
+#: ccb6fbd8d3694ec8af4797e86a477d03
 msgid ""
-"Different parts of the project are verified in different ways. Nightly CI "
-"runs cross-platform import smoke tests and targeted gates (network/backend "
-"I/O, docs notebooks, Zarr I/O), some notebooks are fully executed, some "
-"heavy notebooks are only structure-checked, and some optional-dependency "
-"tests can be skipped when the backend is unavailable."
+"Different parts of the project are verified in different ways. The extended "
+"verification workflow runs cross-platform import smoke tests and targeted "
+"gates (network/backend I/O, docs notebooks, Zarr I/O) on demand, some "
+"notebooks are fully executed, some heavy notebooks are only structure-"
+"checked, and some optional-dependency tests can be skipped when the backend "
+"is unavailable."
 msgstr ""
-"検証の方法は対象ごとに異なります。Nightly CI "
-"ではクロスプラットフォームのインポートスモークテストと対象を絞ったゲート（ネットワーク/バックエンド I/O、docs ノートブック、Zarr "
-"I/O）が実行されます。Notebook の中には CI で全実行されるものもあれば、重い notebook "
+"検証の方法は対象ごとに異なります。extended verification workflow "
+"は、手動実行時にクロスプラットフォームのインポートスモークテストと対象を絞ったゲート（ネットワーク/バックエンド I/O、docs "
+"ノートブック、Zarr I/O）を実行します。Notebook の中には CI で全実行されるものもあれば、重い notebook "
 "のように構造確認中心のものもあり、optional dependency を持つテストは環境によって skip される場合もあります。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:19
-#: 3b4c6ee01cea4ccc87e4f282e166791c
+#: ../../explanation/verification_and_quality.md:19
+#: 5ca54eb956dc4c2ea5eaf4221ffd767f
 msgid "Public Evidence Sources"
 msgstr "公開されている根拠の入口"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 974d6d1db83a42d38fd3ed046b691d83
+#: ../../explanation/verification_and_quality.md:13
+#: ea2e175109fb43869e46be31a75f5f2f
 msgid "Area"
 msgstr "対象"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: a3ae96846b0243a69c5555b8ab2e2f20
+#: ../../explanation/verification_and_quality.md:13
+#: 63946be2552c408580ac79c80c12cb36
 msgid "Public source"
 msgstr "公開資料"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 308e5bd8c0e944fc8ac97a1490e0b51b
+#: ../../explanation/verification_and_quality.md:13
+#: 3d7c779d799e44438bfbb1efdc9251c2
 msgid "What it tells you"
 msgstr "何がわかるか"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 180b9fd8b19b41d2819235a4d6564c62
+#: ../../explanation/verification_and_quality.md:13
+#: b2ed3197b49b427ca57d2c114db870f2
 msgid "Notebook tutorials"
 msgstr "Notebook チュートリアル"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: da02e38042244eef9a83ac4f6e2fe08f
+#: ../../explanation/verification_and_quality.md:13
+#: 3fbdcdce2da14affac4792178a3c4308
 msgid ""
 "[Notebook Policy](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md)"
@@ -106,82 +107,84 @@ msgstr ""
 "[ノートブックポリシー](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 02aafe9e3fc54b0399bd2a3b9d4121eb
+#: ../../explanation/verification_and_quality.md:13
+#: 9130e9a251c142ab8015a3fccfdb5568
 msgid ""
 "Which notebook classes are treated as `Light`, `Heavy`, or `Display-only`, "
 "and how CI handles each class"
 msgstr "`Light` / `Heavy` / `Display-only` の分類と、CI がそれぞれをどう扱うか"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 415b550191f945fc91ff3056988953cb
-msgid "Nightly CI gates"
-msgstr "Nightly CI ゲート"
+#: ../../explanation/verification_and_quality.md:13
+#: 6feae825abd14dc1ac5caed414f29e4b
+msgid "Extended verification gates"
+msgstr "拡張検証ゲート"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 7e8d55ba82ce49d6a8833c5f0d27e685
+#: ../../explanation/verification_and_quality.md:13
+#: 4cab43c9551047e5bf8441bfcd3674e6
 msgid ""
-"[Extended nightly workflow](https://github.com/tatsuki-"
-"washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml)"
+"[Extended verification workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml)"
 msgstr ""
-"[拡張ナイトリーワークフロー](https://github.com/tatsuki-"
-"washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml)"
+"[拡張検証ワークフロー](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: aa9b711eff5e4aa8982184d9d3fd256a
+#: ../../explanation/verification_and_quality.md:13
+#: b515d1fd377443d1875fb6168c6f2f10
 msgid ""
-"Which checks run nightly: import smoke tests on Linux/macOS/Windows plus the"
-" `io-network-backend`, `docs-notebook`, and `io-zarr` gates driven by "
-"`scripts/ci/run_gate.py`"
+"Which checks the on-demand extended verification workflow covers: import "
+"smoke tests on Linux/macOS/Windows plus the `io-network-backend`, `docs-"
+"notebook`, and `io-zarr` gates driven by `scripts/ci/run_gate.py`"
 msgstr ""
-"毎晩どのチェックが実行されるか：Linux/macOS/Windows "
+"extended verification workflow（手動実行）が対象とするチェック：Linux/macOS/Windows "
 "でのインポートスモークテストに加え、`scripts/ci/run_gate.py` が駆動する `io-network-backend`・`docs-"
 "notebook`・`io-zarr` ゲート"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: cd35dc0616e344289ccfd48be48c794a
+#: ../../explanation/verification_and_quality.md:13
+#: 7fe1af3dcbcc4260a9f22685d6c5fa83
 msgid "Direct I/O formats"
 msgstr "direct I/O 形式"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 2bc183bfd1a745db87ab73a4a296241e
+#: ../../explanation/verification_and_quality.md:13
+#: bf2570ccf70f4e19a8e91dd4c58ae0bb
 msgid ""
 "[SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md)"
 msgstr ""
+"[SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 8af0b8db99b8440dab681759c0d6a45c
+#: ../../explanation/verification_and_quality.md:13
+#: b1b7f998512a4eb0abcc20f9caf6ad45
 msgid ""
 "Which public format families are tied to which tests and which backends are "
 "optional"
 msgstr "どの公開 format 群に、どのテストファイルが対応づけられているかと、どこに optional backend があるか"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 2cef1d836f12439b89f436da2406fb9c
+#: ../../explanation/verification_and_quality.md:13
+#: 74ef1855e7bf47b5aaac3befc8e1b383
 msgid "Algorithm audit trail"
 msgstr "アルゴリズム監査"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:95
-#: 541014fa74cf49efa37d922754f18626 b06c8a056e6348c7adb7b248f873ba5e
+#: ../../explanation/verification_and_quality.md:13
+#: ../../explanation/verification_and_quality.md:95
+#: 3a2574690c8446eea9a41599e7a58f70 84dd0a027bee4626b30fe8f0b1d345c6
 msgid "[Validated Algorithms](validated_algorithms.md)"
 msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: b5ae62b5c8334021b29d64f76eac9dfa
+#: ../../explanation/verification_and_quality.md:13
+#: 47c518bf29a543c29b2b514044a8a7c3
 msgid ""
 "Numerical tolerances, assumptions, and links to audit evidence for selected "
 "high-value algorithms"
 msgstr "数値許容誤差、前提条件、監査証跡へのリンク"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: 8d5aa3ee8c604b558a73236ea9f1d217
+#: ../../explanation/verification_and_quality.md:13
+#: 0450462ed5104a80be0b08377db3eb08
 msgid "Repository coverage signal"
 msgstr "リポジトリ全体の coverage"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: bc1c4a9a1cc945bf842d4ae3bdabaf39
+#: ../../explanation/verification_and_quality.md:13
+#: 7fa570e288d34376bb8871063819f8ce
 msgid ""
 "[README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the "
 "linked [Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
@@ -189,21 +192,21 @@ msgstr ""
 "[README の codecov バッジ](https://github.com/tatsuki-washimi/gwexpy) "
 "と、そのリンク先である [Codecov ダッシュボード](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:13
-#: dfa4943bc2934293b304b490fe9dd946
+#: ../../explanation/verification_and_quality.md:13
+#: 792de8cdbcf946d8b595fc394411d3dc
 msgid ""
 "Where repository-level line coverage is surfaced publicly, useful as a broad"
 " signal rather than a per-feature proof"
 msgstr ""
 "リポジトリ全体の line coverage がどこで公開されているかを示す入口。feature 単位の証明ではなく、全体傾向のシグナルとして使います"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:29
-#: 68a61be5e83c487eb4b2322e3b2b2447
+#: ../../explanation/verification_and_quality.md:29
+#: 65d69a54dd7146fa8f8802024f0e800f
 msgid "Notebook Validation Policy"
 msgstr "Notebook の検証方針"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:31
-#: 1832ead11655425bbc837030436bca37
+#: ../../explanation/verification_and_quality.md:31
+#: 3b3f36ecc50547258d6c0a657a7e2c3c
 msgid ""
 "The public notebook policy is defined in the repository's [Notebook "
 "Policy](https://github.com/tatsuki-"
@@ -212,43 +215,43 @@ msgstr ""
 "公開 notebook の扱いは、リポジトリ内の [Notebook Policy](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) に基づきます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:33
-#: c342029b706c4b35b5c43fc02ec920a0
+#: ../../explanation/verification_and_quality.md:33
+#: 7bd7540b0431484eb0044c149fc3a412
 msgid "The current public model is:"
 msgstr "現時点の公開方針は次のとおりです。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:35
-#: d62e5d9821b04555ab687e948f3e58a2
+#: ../../explanation/verification_and_quality.md:35
+#: c8d822d904ec41f8bec19b30676771b0
 msgid ""
-"The public [extended nightly workflow](https://github.com/tatsuki-"
-"washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) runs cross-"
-"platform import smoke tests and the `io-network-backend`, `docs-notebook`, "
-"and `io-zarr` gates; it is intentionally scoped to these checks and does not"
-" run docstring doctests."
+"The public [extended verification workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) runs "
+"cross-platform import smoke tests and the `io-network-backend`, `docs-"
+"notebook`, and `io-zarr` gates; it is intentionally scoped to these checks "
+"and does not run docstring doctests."
 msgstr ""
-"公開されている [extended nightly workflow](https://github.com/tatsuki-"
-"washimi/gwexpy/blob/main/.github/workflows/extended-nightly.yml) "
+"公開されている [extended verification workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) "
 "は、クロスプラットフォームのインポートスモークテストと `io-network-backend`・`docs-notebook`・`io-zarr` "
 "ゲートを実行します。意図的にこれらのチェックへ範囲を絞っており、docstring の doctest は実行しません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:36
-#: 65b3704099ea4979b82b15168e7f208b
+#: ../../explanation/verification_and_quality.md:36
+#: 12659c7b95254f9a9d5273377f27daa6
 msgid ""
 "**Light** notebooks are classified for full execution and validation in CI "
 "through `papermill`."
 msgstr ""
 "**Light** notebook は、Notebook Policy 上では CI で `papermill` により全実行される想定です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:37
-#: 71c415d6969d4756ae1b28ed30d153b2
+#: ../../explanation/verification_and_quality.md:37
+#: 0bbe54d11f064dafb97fba0e9d1aa85b
 msgid ""
 "**Heavy** notebooks are kept in CI, but the policy describes them as `nbval "
 "--nbval-lax` checks rather than guaranteed full execution."
 msgstr ""
 "**Heavy** notebook は CI 対象ではありますが、全セル実行を常に保証するものではなく、構造確認や収集確認に寄せて扱われます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:38
-#: 039ab698a4084a048d85857e54b7c24a
+#: ../../explanation/verification_and_quality.md:38
+#: 9ec14c4ef1ad4a36be0b3ad7dfb7d89d
 msgid ""
 "**Display-only** notebooks prioritize curated outputs and are outside normal"
 " execution validation, or limited to load-style checks."
@@ -256,8 +259,8 @@ msgstr ""
 "**Display-only** notebook は整えた出力の保持を重視しており、「CI で毎回全実行される "
 "notebook」と同義ではありません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:39
-#: 43cc5603af644240859e66a6e5de5e85
+#: ../../explanation/verification_and_quality.md:39
+#: 15ee8b3ad3fb4f3a9ab607a21a66efc6
 msgid ""
 "The public [docs PR workflow](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) also executes "
@@ -267,16 +270,16 @@ msgstr ""
 "washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) では、docs Pull Request"
 " で変更された notebook に対して `papermill` が実行されます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:40
-#: 61eaada2c8a540c4aa9e43c91605060d
+#: ../../explanation/verification_and_quality.md:40
+#: 62ab196bd60d43389a175002463eca89
 #, python-brace-format
 msgid ""
 "Public tutorial notebooks under `docs/web/{en,ja}/user_guide/tutorials/` are"
 " treated as the authoritative published copies."
 msgstr "公開 notebook のメインのは `docs/web/{en,ja}/user_guide/tutorials/` に置かれます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:42
-#: f94d449c3e3446969830fb1130b85e75
+#: ../../explanation/verification_and_quality.md:42
+#: 31dcfc9e62d44c7e9a3cd4578ffe4440
 msgid ""
 "This is why a notebook or docstring example being present in the docs is a "
 "useful signal, but not enough on its own to infer that every published "
@@ -285,30 +288,30 @@ msgstr ""
 "したがって、「公開 docs に notebook や例がある」こと自体は有益なシグナルですが、それだけで「あらゆる PR / Nightly / "
 "release 経路で毎回一律に実行・保証される」とまでは読まない方が安全です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:44
-#: 3a8484eff6894351a716329f99e9b3d2
+#: ../../explanation/verification_and_quality.md:44
+#: 0eca261455db4635b50e437dd802fcec
 msgid "Current CI Coverage and Its Limits"
 msgstr "現在の CI カバレッジとその限界"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:46
-#: 372cc7583c6144d0945117f5528a68cf
+#: ../../explanation/verification_and_quality.md:46
+#: 99e4318d3de84541866c454f22707dba
 msgid ""
 "The current public evidence supports a narrower statement than \"all sample "
 "code is universally guaranteed.\""
 msgstr "現在の公開根拠から言えるのは、「すべてのサンプルコードが一律に保証される」よりも狭い範囲です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:48
-#: 3bbe02096ff04004b2d3fa7e52c8310e
+#: ../../explanation/verification_and_quality.md:48
+#: aba02f4ca6524b1b9ed811d22fed23c8
 msgid ""
-"The extended nightly workflow shows that `gwexpy` runs automated import "
-"smoke tests on three platforms plus targeted I/O and docs-notebook gates "
-"every night."
+"The extended verification workflow shows that `gwexpy` runs automated import"
+" smoke tests on three platforms plus targeted I/O and docs-notebook gates "
+"when the workflow is triggered."
 msgstr ""
-"extended nightly workflow が示すように、`gwexpy` は 3 "
-"つのプラットフォームでのインポートスモークテストに加え、I/O と docs ノートブックのゲートを毎晩自動実行しています。"
+"extended verification workflow が示すように、`gwexpy` はワークフロー実行時に、3 "
+"つのプラットフォームでのインポートスモークテストに加え、I/O と docs ノートブックのゲートを自動実行します。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:49
-#: 86217e64155b4c3583a1730ec1cb58d0
+#: ../../explanation/verification_and_quality.md:49
+#: 77df394431014cb4a3e8a742a20fef75
 msgid ""
 "The [Notebook Policy](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) shows that notebook "
@@ -319,42 +322,42 @@ msgstr ""
 "washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) が示すように、notebook "
 "の扱いは分類依存で、`Light` は `papermill` で実行、`Heavy` は `nbval --nbval-lax` で確認されます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:50
-#: 9e4ba508537c491588038f7eb0a6689a
+#: ../../explanation/verification_and_quality.md:50
+#: 336bf05780594dbc9a6f2389a65722e3
 msgid ""
 "The docs PR workflow shows that notebooks changed in docs pull requests are "
 "executed with `papermill` before the docs build."
 msgstr "docs PR workflow では、docs PR で変更された notebook に対して `papermill` が実行されます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:52
-#: d01115ec40a84dfd9ad031b306d9cb99
+#: ../../explanation/verification_and_quality.md:52
+#: b771d0bb63894073a99287cd10a9be6a
 msgid "Read those signals carefully:"
 msgstr "このシグナルは次のように読んでください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:54
-#: c5e0182f0a3d47b0b10319d76a18afcd
+#: ../../explanation/verification_and_quality.md:54
+#: 27284982e94a44ddb3843609424ba960
 msgid ""
 "They show that public examples are not unmanaged; some are exercised "
 "automatically in CI today."
 msgstr "公開例が完全に放置されているわけではなく、現在も自動検証の経路があります。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:55
-#: e37ffff8fffa40ea8408d205592443a2
+#: ../../explanation/verification_and_quality.md:55
+#: 0947f015b9aa4b01ad4fe0ad5e0d55af
 msgid ""
 "They do **not** mean every published code block is executed in every "
 "workflow."
 msgstr "ただし、すべての公開コード片が、すべての workflow で毎回実行されることを意味しません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:56
-#: 0fb5bced35984a01ba04221889dfed4e
+#: ../../explanation/verification_and_quality.md:56
+#: 9b513f2021ba486295f97510e158997e
 msgid ""
 "They do **not** mean Doctest or notebook coverage is a single release-"
 "blocking gate for the whole documentation set."
 msgstr ""
 "Doctest や notebook 検証が、ドキュメント全体に対する単一の release-blocking gate だという意味でもありません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:57
-#: d6c59344f8274a3cb85d9b90d0df9b1e
+#: ../../explanation/verification_and_quality.md:57
+#: 146ab0fc068749d58985505e842ff90e
 msgid ""
 "They do **not** remove the need to check notebook class, optional "
 "dependencies, and workflow scope before treating an example as strongly "
@@ -363,13 +366,13 @@ msgstr ""
 "強い保証として読む前に、notebook の分類、optional dependency、どの workflow "
 "がその対象を見ているかを確認する必要があります。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:59
-#: 35889458e9f9420fa248513910c7b477
+#: ../../explanation/verification_and_quality.md:59
+#: 06f87b15ef4e42888aa1874f6629bd61
 msgid "Direct I/O Verification Visibility"
 msgstr "direct I/O の検証可視化"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:61
-#: c9eb97315fe64916b767c8d1986bdfa4
+#: ../../explanation/verification_and_quality.md:61
+#: e8b48dad233d4dea8eee53ef26827a79
 msgid ""
 "The public [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) is the main visibility "
@@ -378,59 +381,59 @@ msgstr ""
 "public direct I/O の検証可視化では、[SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
 "washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) が主要な入口です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:63
-#: 2e6dafabcc264972b53a1ed4b818f67b
+#: ../../explanation/verification_and_quality.md:63
+#: b1843edb73d94774af6074b7af226855
 msgid "Use it when you need to answer questions such as:"
 msgstr "この表は、たとえば次のような疑問に答えるときに使います。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:65
-#: 663edd53fee84c908681aa1eb0141d32
+#: ../../explanation/verification_and_quality.md:65
+#: 431ea457187142a4a290008098dea4ec
 msgid "\"Is this format publicly documented as supported?\""
 msgstr "「この format は公開対応としてどこまで見てよいか」"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:66
-#: 88a39e0a161d4e00b738cc79c0c124ae
+#: ../../explanation/verification_and_quality.md:66
+#: 807475a7760e48b88d9169e096a36fca
 msgid "\"Which test file is meant to back this format claim?\""
 msgstr "「この format claim はどのテストファイルに紐づいているか」"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:67
-#: b31d1d6faa0b49f4831806edc6df7dd1
+#: ../../explanation/verification_and_quality.md:67
+#: 609728e0d8e649c28daad49df2dbf0dd
 msgid "\"Does this route depend on an optional backend?\""
 msgstr "「この経路は optional backend に依存するのか」"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:69
-#: c5a719d13f1c4285a35063ff8e4d63a9
+#: ../../explanation/verification_and_quality.md:69
+#: 471502284ad247579723c1dd811c3868
 msgid ""
 "The matrix is especially useful together with the [File I/O Supported "
 "Formats Guide](../how-to/io_formats.md):"
 msgstr ""
 "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md) と合わせて読むと、特に役割分担が明確になります："
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:71
-#: 93892c62e1454b4d89cff741a22dde03
+#: ../../explanation/verification_and_quality.md:71
+#: a1622656fd30483e93442bd7c9df5a89
 msgid ""
 "the user guide explains how to choose and call a public direct-I/O path,"
 msgstr "user guide 側は「どう選ぶか」「どう呼ぶか」を説明し、"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:72
-#: 589aef4083a545fcb041399163628af5
+#: ../../explanation/verification_and_quality.md:72
+#: 773a89d1380a4316a9e45fc88d2cd7b3
 msgid "the matrix shows which tests are intended to back that path,"
 msgstr "matrix 側は「どのテストが根拠か」を示し、"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:73
-#: a1504e32837b42a1934bd4fd941c0f7d
+#: ../../explanation/verification_and_quality.md:73
+#: f1ce9922468645758c4d94d8c79105dc
 msgid ""
 "and the notes clarify when optional dependencies can cause skips instead of "
 "hard failures."
 msgstr "備考が optional dependency や skip 条件を補います。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:75
-#: 1bd573ed769c4cfd8c26510f3712a4ff
+#: ../../explanation/verification_and_quality.md:75
+#: c6e1d8a25e9e40499093bbb45911705f
 msgid "Coverage Signals and Their Limits"
 msgstr "coverage 表示の読み方と限界"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:77
-#: 24b5a47319e24de58b8f535d00e56b7f
+#: ../../explanation/verification_and_quality.md:77
+#: 1245f23f14a74e808362737d3b31eed8
 msgid ""
 "`gwexpy` publishes a repository-level coverage signal through "
 "[Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy), and the repository "
@@ -441,18 +444,18 @@ msgstr ""
 "によって、リポジトリ全体の coverage シグナルを公開しています。`README.md` にも codecov "
 "の状態バッジとリンクがあり、公開された確認入口として辿れます。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:79
-#: a283a08954d443ddb7e521f4121e43da
+#: ../../explanation/verification_and_quality.md:79
+#: 6affedf764444f38a4d94dac6b618e4d
 msgid "Read that signal conservatively:"
 msgstr "ただし、この値は慎重に読む必要があります。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:81
-#: 330a2ab74c4f4c799c2200cc6a6f9621
+#: ../../explanation/verification_and_quality.md:81
+#: a5e58b16fb98445b87ce3348940520c4
 msgid "it is useful for understanding overall automated test health,"
 msgstr "自動テスト全体の健康度をざっくり把握するには有用です。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:82
-#: 42be2e9359a74b6e98f257d34e8f500d
+#: ../../explanation/verification_and_quality.md:82
+#: 6d61aad573f646559f159c174d4414dd
 msgid ""
 "it does **not** prove that every algorithm branch, notebook, or optional-"
 "backend path is equally exercised,"
@@ -460,27 +463,27 @@ msgstr ""
 "一方で、すべてのアルゴリズム分岐、すべての notebook、すべての optional-backend "
 "経路が同じ強さで実行されていることまでは保証しません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:83
-#: 87a18a45b1e34ce5a86d19844645e418
+#: ../../explanation/verification_and_quality.md:83
+#: 1041b93d1df146a5bb2e85d2de94442d
 msgid ""
 "and it should be read alongside page-specific evidence such as the notebook "
 "policy, I/O matrix, and audit notes."
 msgstr "実際の判断では、Notebook Policy、I/O matrix、アルゴリズム監査ノートと併読してください。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:85
-#: 6b6914e887c94cd582dfb79d80b611e3
+#: ../../explanation/verification_and_quality.md:85
+#: fccf49aa60504eab81ef0ab2c5affa63
 msgid "What This Page Does Not Claim"
 msgstr "このページが主張しないこと"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:87
-#: 05a2b4ad377049299bacf362f2d0ad9c
+#: ../../explanation/verification_and_quality.md:87
+#: 0e12b49cc4fa46a2996280e5ee7839d5
 msgid ""
 "It does **not** claim that every public notebook is fully executed in every "
 "CI run."
 msgstr "すべての公開 notebook が、すべての CI 実行で全セル再実行されるとは主張しません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:88
-#: 7e7723fffa9842a1ac181d6eea2ce121
+#: ../../explanation/verification_and_quality.md:88
+#: f1398512ae8447dfbc4958bdec4df827
 msgid ""
 "It does **not** claim that every docstring example or sample code block is "
 "executed in every PR, nightly, and release workflow."
@@ -488,15 +491,15 @@ msgstr ""
 "すべての docstring 例やサンプルコード片が、すべての PR / Nightly / release workflow "
 "で毎回実行されるとは主張しません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:89
-#: 736feb214dae4035afdbe7a1265a4fec
+#: ../../explanation/verification_and_quality.md:89
+#: ceb88961157a4492a50d0c9df59f0df6
 msgid ""
 "It does **not** claim that every optional dependency is present in every "
 "test environment."
 msgstr "すべての optional dependency が、すべての test 環境に入っているとは主張しません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:90
-#: 80a6afd55f3648419ac4ca54f88f0453
+#: ../../explanation/verification_and_quality.md:90
+#: 36ed6278b632429bb7523303b7e5de47
 msgid ""
 "It does **not** replace the algorithm-specific assumptions and tolerances "
 "documented on [Validated Algorithms](validated_algorithms.md)."
@@ -504,8 +507,8 @@ msgstr ""
 "[検証済みアルゴリズム](validated_algorithms.md) "
 "に書かれた個別の前提条件や許容誤差を、このページが置き換えるものではありません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:91
-#: 20be35fce8a74dd28cd19b3782308c30
+#: ../../explanation/verification_and_quality.md:91
+#: fc40caa1e53946a8bf1ddabb90b8bbb9
 msgid ""
 "It does **not** turn repository-wide line coverage into a substitute for "
 "per-feature scientific validation."
@@ -513,35 +516,35 @@ msgstr ""
 "repository-wide の line coverage を、そのまま feature "
 "単位の科学的妥当性の証明に読み替えるべきだとは主張しません。"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:93
-#: 753380d1568146269715be0b9c606621
+#: ../../explanation/verification_and_quality.md:93
+#: 57180928050a4162852402e1ec828efd
 msgid "Related Pages"
 msgstr "関連ページ"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:96
-#: 57a8b37ea9e14d3b92f1f72f0e8dce0d
+#: ../../explanation/verification_and_quality.md:96
+#: a0a9b7be0f7a469e822c4c42a6cf6700
 msgid "[File I/O Supported Formats Guide](../how-to/io_formats.md)"
 msgstr "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:97
-#: e4136ade28fa46178293e76e0edfe3ac
+#: ../../explanation/verification_and_quality.md:97
+#: 6eef0327b2364a62b55f2aa90d4ee2e2
 msgid "[Troubleshooting](../how-to/troubleshooting.md)"
 msgstr "[トラブルシューティング](../how-to/troubleshooting.md)"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:99
-#: 2f2bb70394d849dc8ee02cc3bcdf5cec
+#: ../../explanation/verification_and_quality.md:99
+#: 51558f84802f4c6ab23b8205f69c9ab9
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:101
-#: 8b6abd5f8ebc4e74ac8b926a0f59c933
+#: ../../explanation/verification_and_quality.md:101
+#: 363c62367e9243e5b827530503ecd9f9
 msgid ""
 "[Validated Algorithms](validated_algorithms.md) for algorithm-specific "
 "assumptions, tolerances, and audit links"
 msgstr "[検証済みアルゴリズム](validated_algorithms.md) でアルゴリズム単位の前提条件、許容誤差、監査リンクを確認する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:102
-#: 1c4f5446811d46d392dc8d970a93548e
+#: ../../explanation/verification_and_quality.md:102
+#: cd7a3fc257f245c09790a59bec3cfb2a
 msgid ""
 "[File I/O Supported Formats Guide](../how-to/io_formats.md) for direct user-"
 "facing format choice and backend notes"
@@ -549,10 +552,13 @@ msgstr ""
 "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md) で利用者向けの format 選択と backend "
 "条件を確認する"
 
-#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/explanation/verification_and_quality.md:103
-#: 66270bb41bc644fe9d86469cfce96fe9
+#: ../../explanation/verification_and_quality.md:103
+#: 16de55ee8da74c44a95d5d7be7dcabd0
 msgid ""
 "[Troubleshooting](../how-to/troubleshooting.md) if you need error-first "
 "guidance after checking the public verification signals"
 msgstr ""
 "[トラブルシューティング](../how-to/troubleshooting.md) で、公開検証シグナルを確認した後に実行時エラーから逆引きする"
+
+#~ msgid "Nightly CI gates"
+#~ msgstr "Nightly CI ゲート"
