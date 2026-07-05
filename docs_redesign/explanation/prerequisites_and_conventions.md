@@ -35,7 +35,7 @@ For algorithm-specific assumptions, see [Validated Algorithms](validated_algorit
 - `fft_time` and `fft_space` follow different assumptions for target axes and normalization.
 - `spectral_density` distinguishes PSD-style density from per-bin spectrum values.
 
-For the mathematical details, see [FFT Specifications and Conventions](../reference/index.md).
+For implementation-level details of each spectral method, see the [API Reference](../reference/index.md).
 
 (prerequisites-gwpy-compatibility)=
 ## 4. GWpy Compatibility and GWexpy Extensions
@@ -44,16 +44,16 @@ For the mathematical details, see [FFT Specifications and Conventions](../refere
 - At the same time, it adds Matrix containers, the Field API, broader I/O support, and extra analysis utilities that do not exist in GWpy.
 - If you want a quick view of what is still "GWpy-like" and what is GWexpy-specific, the migration guide is the fastest entry point.
 
-For migration-oriented guidance, see [Migration from GWpy](gwexpy_for_gwpy_users.md) and the [GWpy Difference API Index](../reference/gwpy_added_api.md).
+For migration-oriented guidance, see [GWexpy for GWpy Users](gwexpy_for_gwpy_users.md) and the [GWpy Difference API Index](../reference/gwpy_added_api.md).
 
 (prerequisites-reference-bridge)=
 ## 5. Where to Go Next
 
 - First-time users: [Getting Started](../tutorials/getting_started.md)
 - Hands-on learning: [Tutorial Index](../tutorials/index.md)
-- FFT mathematics and normalization details: [FFT Specifications and Conventions](../reference/index.md)
+- Spectral method implementation details: [API Reference](../reference/index.md)
 - Algorithm assumptions and validation basis: [Validated Algorithms](validated_algorithms.md)
-- GWpy migration: [Migration from GWpy](gwexpy_for_gwpy_users.md)
+- GWpy migration: [GWexpy for GWpy Users](gwexpy_for_gwpy_users.md)
 
 (prerequisites-next-to-read)=
 ## Next to Read
@@ -62,4 +62,4 @@ For migration-oriented guidance, see [Migration from GWpy](gwexpy_for_gwpy_users
 - [Getting Started](../tutorials/getting_started.md)
 - [File I/O Supported Formats Guide](../how-to/io_formats.md)
 - [Validated Algorithms](validated_algorithms.md)
-- [FFT Specifications and Conventions](../reference/index.md)
+- [API Reference](../reference/index.md)

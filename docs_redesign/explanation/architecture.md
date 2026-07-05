@@ -14,7 +14,7 @@ This section details the design philosophy of `gwexpy` and the internal data han
 
 - Read this page first if you want the mental model behind `gwexpy` container design and internal reshaping.
 - For the mathematical foundations of each algorithm, continue to [Physics Models and Analysis Theory](physics_models.md).
-- For concrete callable surfaces, follow the API entry links in each section to the [matrix API](../reference/api/matrix.rst), [fields API](../reference/api/fields.rst), and [fitting API](../reference/api/fitting.rst).
+- For concrete callable surfaces, follow the API entry links in each section to the [matrix API](../reference/api/matrix), [fields API](../reference/api/fields), and [fitting API](../reference/api/fitting).
 
 (architecture-design-philosophy)=
 ## Design Philosophy
@@ -27,7 +27,7 @@ This section details the design philosophy of `gwexpy` and the internal data han
 Classes like `TimeSeriesMatrix` and `FrequencySeriesMatrix` handle automatic conversion to formats compatible with machine learning libraries like scikit-learn.
 Typically, 3D data (Channels/Rows $\times$ Columns $\times$ Samples) is temporarily flattened into a 2D feature matrix for computation, while metadata (GPS timestamps, units) is preserved and restored after processing.
 
-API entry: [matrix API](../reference/api/matrix.rst), [timeseries API](../reference/api/timeseries.rst)
+API entry: [matrix API](../reference/api/matrix), [timeseries API](../reference/api/timeseries)
 
 ### 2. 4D Field API Model
 **Goal:** Explain why field containers keep all axes aligned during slicing and indexing.
@@ -37,7 +37,7 @@ API entry: [matrix API](../reference/api/matrix.rst), [timeseries API](../refere
 `ScalarField` adopts a 4D structure as its base unit: axis 0 is the **time axis** (or the **frequency axis** after `fft_time()`), and axes 1–3 are the **spatial axes** `x, y, z` (mapped to wavenumbers `kx, ky, kz` by `fft_space()`) — for example `(t, x, y, z)`, `(f, x, y, z)`, or `(f, kx, ky, kz)`.
 By **maintaining all 4 dimensions** during indexing operations, the package ensures that grid information and axis metadata remain perfectly synchronized with the data.
 
-API entry: [fields API](../reference/api/fields.rst), [Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md)
+API entry: [fields API](../reference/api/fields), [Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md)
 
 (data-flow-diagram)=
 ## Data Flow Diagram
@@ -75,8 +75,8 @@ Reading notes:
 - [Validated Algorithms](validated_algorithms.md) — Audit-backed behavior for numerical paths referenced by this design guide
 - [Scalar Field Slicing Guide](../how-to/scalarfield_slicing.md) — Why the Field API preserves 4D structure
 - [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared time, FFT, and compatibility assumptions
-- [Matrix API](../reference/api/matrix.rst) — Reference entry for container reshaping and matrix-style operations
-- [Fields API](../reference/api/fields.rst) — Reference entry for field-aware transforms and slicing
+- [Matrix API](../reference/api/matrix) — Reference entry for container reshaping and matrix-style operations
+- [Fields API](../reference/api/fields) — Reference entry for field-aware transforms and slicing
 
 (next-to-read)=
 ## Next to Read

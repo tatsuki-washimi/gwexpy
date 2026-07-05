@@ -7,7 +7,7 @@ Overview
 --------
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree:
 
    SegmentTable
    SegmentCell

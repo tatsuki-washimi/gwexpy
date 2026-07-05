@@ -6,7 +6,7 @@ Segments
 Classes and utilities for managing time segments (data quality flags, active/inactive intervals).
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree:
 
    DataQualityFlag
    DataQualityDict

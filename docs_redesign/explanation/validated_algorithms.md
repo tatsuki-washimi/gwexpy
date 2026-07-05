@@ -61,12 +61,12 @@ Use the source keys below in the per-algorithm sections so the bibliography and 
 
 | Algorithm | Primary API | API page | Evidence | Related tutorial |
 | :--- | :--- | :--- | :--- | :--- |
-| **k-space calculation** | `ScalarField.fft_space()` | [Fields API](../reference/api/fields.rst) / [ScalarField](../reference/api/fields.rst) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Field Intro](../tutorials/index.md) |
-| **Transient FFT** | `TimeSeries.fft(mode="transient")` / `TimeSeries._fft_transient` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/api/timeseries.rst) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Signal Extraction](../tutorials/index.md) |
-| **VIF correction** | `calculate_correlation_factor()` | [Spectral API](../reference/api/spectral.rst) / [Spectral Estimation](../reference/api/spectral.rst) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Bootstrap Guide](../tutorials/index.md) |
-| **Forecast timing** | `ArimaResult.forecast()` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/api/timeseries.rst) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Advanced ARIMA](../tutorials/index.md) |
-| **MCMC / GLS likelihood** | `fit_series()` / `GeneralizedLeastSquares` | [Fitting API](../reference/api/fitting.rst) / [gwexpy.fitting](../reference/index.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Bootstrap Guide](../tutorials/index.md) |
-| **Adaptive whitening** | `whiten()` / `WhiteningModel` | [Preprocessing API](../reference/api/preprocessing.rst) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [ML Preprocessing Case Study](../tutorials/index.md) |
+| **k-space calculation** | `ScalarField.fft_space()` | [Fields API](../reference/api/fields) / [ScalarField](../reference/api/fields) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Field Intro](../how-to/containers/field_scalar_intro) |
+| **Transient FFT** | `TimeSeries.fft(mode="transient")` / `TimeSeries._fft_transient` | [Time Series API](../reference/api/timeseries) / [TimeSeries](../reference/api/timeseries) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Signal Extraction](../how-to/case-studies/case_signal_extraction) |
+| **VIF correction** | `calculate_correlation_factor()` | [Spectral API](../reference/api/spectral) / [Spectral Estimation](../reference/api/spectral) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Bootstrap Guide](../how-to/case-studies/case_bootstrap_gls_fitting) |
+| **Forecast timing** | `ArimaResult.forecast()` | [Time Series API](../reference/api/timeseries) / [TimeSeries](../reference/api/timeseries) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Advanced ARIMA](../how-to/fitting/advanced_arima) |
+| **MCMC / GLS likelihood** | `fit_series()` / `GeneralizedLeastSquares` | [Fitting API](../reference/api/fitting) / [gwexpy.fitting](../reference/api/fitting) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Bootstrap Guide](../how-to/case-studies/case_bootstrap_gls_fitting) |
+| **Adaptive whitening** | `whiten()` / `WhiteningModel` | [Preprocessing API](../reference/api/preprocessing) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [ML Preprocessing Case Study](../how-to/case-studies/case_ml_preprocessing) |
 
 ---
 
@@ -75,7 +75,7 @@ Use the source keys below in the per-algorithm sections so the bibliography and 
 
 - If you want the shared prerequisites, time-system assumptions, and FFT conventions first, start with [Prerequisites and Conventions](prerequisites_and_conventions.md).
 - If you want hands-on usage before reading the audit notes, use the exact tutorial linked in the summary table rather than the general tutorial index.
-- If you want the implementation-facing APIs first, start with [Fields API](../reference/api/fields.rst), [Time Series API](../reference/api/timeseries.rst), [Spectral API](../reference/api/spectral.rst), [Fitting API](../reference/api/fitting.rst), and [Preprocessing API](../reference/api/preprocessing.rst).
+- If you want the implementation-facing APIs first, start with [Fields API](../reference/api/fields), [Time Series API](../reference/api/timeseries), [Spectral API](../reference/api/spectral), [Fitting API](../reference/api/fitting), and [Preprocessing API](../reference/api/preprocessing).
 - If you want the repository-backed evidence behind the summaries, continue to the {ref}`Objective Evidence <validated-en-objective-evidence>`, {ref}`Source References <validated-en-source-references>`, and Audit Trail sections below.
 
 (validated-algorithms-detail-sections)=
@@ -94,11 +94,11 @@ Angular wavenumber calculation follows the standard physics definition $k = 2\pi
 **Source reference**: {ref}`S1 <validated-en-source-references>`
 
 **Related tutorial**
-- [Field Intro](../tutorials/index.md)
+- [Field Intro](../how-to/containers/field_scalar_intro)
 
 **Related API**
-- [Fields API](../reference/api/fields.rst)
-- [ScalarField](../reference/api/fields.rst)
+- [Fields API](../reference/api/fields)
+- [ScalarField](../reference/api/fields)
 
 **Related theory**
 - [Prerequisites and Conventions](prerequisites_and_conventions.md)
@@ -119,11 +119,11 @@ Uses an amplitude-preserving convention rather than density, allowing direct rea
 **Source reference**: {ref}`S5 <validated-en-source-references>`
 
 **Related tutorial**
-- [Signal Extraction tutorial](../tutorials/index.md)
+- [Signal Extraction tutorial](../how-to/case-studies/case_signal_extraction)
 
 **Related API**
-- [Time Series API](../reference/api/timeseries.rst)
-- [TimeSeries](../reference/api/timeseries.rst)
+- [Time Series API](../reference/api/timeseries)
+- [TimeSeries](../reference/api/timeseries)
 
 **Related theory**
 - [Prerequisites and Conventions](prerequisites_and_conventions.md)
@@ -146,11 +146,11 @@ Here, VIF is not meant as the regression-style Variance Inflation Factor used in
 **Source reference**: {ref}`S2 <validated-en-source-references>`
 
 **Related tutorial**
-- [Bootstrap GLS fitting case study](../tutorials/index.md)
+- [Bootstrap GLS fitting case study](../how-to/case-studies/case_bootstrap_gls_fitting)
 
 **Related API**
-- [Spectral API](../reference/api/spectral.rst)
-- [Spectral Estimation](../reference/api/spectral.rst)
+- [Spectral API](../reference/api/spectral)
+- [Spectral Estimation](../reference/api/spectral)
 
 **Related theory**
 - [Prerequisites and Conventions](prerequisites_and_conventions.md)
@@ -178,11 +178,11 @@ This is the quantity mapping assumed when forecast timestamps are extended forwa
 **Source reference**: {ref}`S3 <validated-en-source-references>`
 
 **Related tutorial**
-- [Advanced ARIMA tutorial](../tutorials/index.md)
+- [Advanced ARIMA tutorial](../how-to/fitting/advanced_arima)
 
 **Related API**
-- [Time Series API](../reference/api/timeseries.rst)
-- [TimeSeries](../reference/api/timeseries.rst)
+- [Time Series API](../reference/api/timeseries)
+- [TimeSeries](../reference/api/timeseries)
 
 **Related theory**
 - [Prerequisites and Conventions](prerequisites_and_conventions.md)
@@ -200,12 +200,12 @@ For complex-valued residuals, the MCMC likelihood path assumes a Hermitian quadr
 **Source reference**: {ref}`S5 <validated-en-source-references>`
 
 **Related tutorial**
-- [Bootstrap GLS fitting case study](../tutorials/index.md)
+- [Bootstrap GLS fitting case study](../how-to/case-studies/case_bootstrap_gls_fitting)
 
 **Related API**
-- [Time Series API](../reference/api/timeseries.rst)
-- [Fitting API](../reference/api/fitting.rst)
-- [gwexpy.fitting](../reference/index.md)
+- [Time Series API](../reference/api/timeseries)
+- [Fitting API](../reference/api/fitting)
+- [gwexpy.fitting](../reference/api/fitting)
 
 **Related theory**
 - [Prerequisites and Conventions](prerequisites_and_conventions.md)
@@ -226,10 +226,10 @@ Adaptive whitening uses an automatically chosen stabilization parameter so that 
 **Source reference**: {ref}`S4 <validated-en-source-references>`
 
 **Related tutorial**
-- [ML Preprocessing Case Study](../tutorials/index.md)
+- [ML Preprocessing Case Study](../how-to/case-studies/case_ml_preprocessing)
 
 **Related API**
-- [Preprocessing API](../reference/api/preprocessing.rst)
+- [Preprocessing API](../reference/api/preprocessing)
 
 **Related theory**
 - [Numerical Stability](numerical_stability.md)
@@ -251,12 +251,12 @@ the public-facing assumptions, implementation status, and related theory links.
 - [Numerical Stability](numerical_stability.md) - Precision management
 - [Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared assumptions for time systems and FFT conventions
 - [Verification and Quality Signals](verification_and_quality.md) - Public notebook, I/O, and coverage evidence map
-- [Glossary](../reference/index.md) - Glossary of algorithms
-- [Fields API](../reference/api/fields.rst)
-- [Time Series API](../reference/api/timeseries.rst)
-- [Spectral API](../reference/api/spectral.rst)
-- [Fitting API](../reference/api/fitting.rst)
-- [Preprocessing API](../reference/api/preprocessing.rst)
+- [API Reference](../reference/index.md) - Entry point to all API pages
+- [Fields API](../reference/api/fields)
+- [Time Series API](../reference/api/timeseries)
+- [Spectral API](../reference/api/spectral)
+- [Fitting API](../reference/api/fitting)
+- [Preprocessing API](../reference/api/preprocessing)
 
 (validated-algorithms-next-to-read)=
 ## Next to Read

@@ -11,7 +11,7 @@ Overview
    Use this page after the introductory spectrogram tutorial or when a time-frequency workflow needs exact API details.
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree:
 
    Spectrogram
 

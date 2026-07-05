@@ -11,7 +11,7 @@ myst:
 This is the end-user I/O guide for `gwexpy`.
 This page only covers the public `.read()` / `.write()` / `fetch()` style APIs that users call directly to read, write, or fetch data.
 
-It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. If the question is "how do I convert this object into another library or container?", that belongs to interop instead. For those topics, see the [interop tutorial](../tutorials/index.md) and the [interop API reference](../reference/api/interop.rst).
+It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. If the question is "how do I convert this object into another library or container?", that belongs to interop instead. For those topics, see the [interop tutorial](viz/intro_interop) and the [interop API reference](../reference/api/interop).
 
 :::{warning}
 **Security Warning: Pickle Files**
@@ -267,7 +267,7 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 ## Developer Notes
 
 Most users can skip this section.
-It exists mainly to collect not-yet-prominent implementations and placeholders in one place.
+It tracks implementation status for contributors: formats that work but are not yet prominent in the public tables, and format tokens reserved for future work.
 
 ### Managed in design, but not prominent in the public page
 
@@ -277,9 +277,9 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 | `ATS.MTH5` | Implemented with partial scope | Current public direct path backed by MTH5 |
 | `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet; not published as public direct I/O |
 
-### Unimplemented Formats (Stubs)
+### Planned Format Tokens
 
-These entries exist as placeholders only. Calling `.read()` on them is expected to fail because they are not ready for end users yet.
+The format tokens below are listed for contributor tracking and are not documented as public read/write formats. Calling `.read()` with one of them raises an error until an implementation lands.
 
 #### TimeSeries stubs
 
@@ -310,8 +310,8 @@ These entries exist as placeholders only. Calling `.read()` on them is expected 
 
 ## Related Pages
 
-- [Interop tutorial](../tutorials/index.md)
-- [Interop API reference](../reference/api/interop.rst)
+- [Interop tutorial](viz/intro_interop)
+- [Interop API reference](../reference/api/interop)
 - [Verification and Quality Signals](../explanation/verification_and_quality.md)
 - [Installation guide](../tutorials/installation.md)
 

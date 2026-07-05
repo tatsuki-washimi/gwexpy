@@ -1,6 +1,6 @@
-# Migrating to GWexpy v0.1.1
+# Migrating Between GWexpy Versions
 
-This guide summarizes the breaking changes introduced in `v0.1.1` and provides migration paths for existing code.
+This guide summarizes breaking changes between GWexpy releases and provides migration paths for existing code. It currently covers the changes introduced in `v0.1.1`.
 
 ## 1. Lorentzian Peak Parameters
 

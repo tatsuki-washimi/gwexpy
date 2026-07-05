@@ -275,6 +275,6 @@ segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 
 ## Next to Read
 
-- [API Reference](../reference/api/time.rst) — Complete API reference for `gwexpy.time`
-- [Migration from GWpy](../explanation/gwexpy_for_gwpy_users.md) — Overview of all GWexpy extensions
+- [API Reference](../reference/api/time) — Complete API reference for `gwexpy.time`
+- [GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md) — Overview of all GWexpy extensions
 - [Prerequisites and Conventions](../explanation/prerequisites_and_conventions.md) — Shared assumptions for GPS time, timezones, and FFT behavior

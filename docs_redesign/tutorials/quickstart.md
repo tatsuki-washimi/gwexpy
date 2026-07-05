@@ -100,4 +100,4 @@ If you encounter errors or plots do not appear, check the [Troubleshooting Guide
 * [Troubleshooting Guide](../how-to/troubleshooting.md) - Reverse-lookup fixes by symptom.
 * [Getting Started](getting_started.md) - Systematic learning roadmap.
 * [Prerequisites and Conventions](../explanation/prerequisites_and_conventions.md) - Review FFT, GPS time, and compatibility assumptions first.
-* [Migration from GWpy](../explanation/gwexpy_for_gwpy_users.md) - Difference guide for existing users.
+* [GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md) - Difference guide for existing users.

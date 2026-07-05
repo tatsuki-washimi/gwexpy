@@ -1,4 +1,4 @@
-# Migration Guide for GWpy Users
+# GWexpy for GWpy Users
 
 This page is the **entry point for moving from GWpy to GWexpy**.  
 It is not intended to be a full API catalog. The goal is to understand, quickly, what still works as-is and where the high-value differences start.
@@ -23,8 +23,8 @@ If you want the full API surface regardless of GWpy compatibility, use the [API 
 
 | Goal | First difference to check | Where to go next |
 | --- | --- | --- |
-| Analyse many channels together | `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | [Matrix Tutorial](../tutorials/index.md) |
-| Work with spatially indexed data or multiple fields together | `ScalarField`, `FieldList`, `FieldDict` | [Field API Intro](../tutorials/index.md), [GWpy Difference API Index](../reference/gwpy_added_api.md) |
+| Analyse many channels together | `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | [Matrix Tutorial](../tutorials/matrix_timeseries) |
+| Work with spatially indexed data or multiple fields together | `ScalarField`, `FieldList`, `FieldDict` | [Field API Intro](../how-to/containers/field_scalar_intro), [GWpy Difference API Index](../reference/gwpy_added_api.md) |
 | Reduce direct SciPy / Statsmodels plumbing | added object-level APIs | [GWpy Difference API Index](../reference/gwpy_added_api.md) |
 | Move existing single-channel code quickly | swap imports first, then add difference APIs only where needed | [Quickstart](../tutorials/quickstart.md) |
 | Understand result-sharing behavior | Transparent Pickle compatibility | [GWpy Difference API Index](../reference/gwpy_added_api.md) |
@@ -69,10 +69,10 @@ This difference matters when:
 
 Related pages:
 
-- [Matrix Tutorial](../tutorials/index.md)
+- [Matrix Tutorial](../tutorials/matrix_timeseries)
 - [GWpy Difference API Index](../reference/gwpy_added_api.md)
-- [TimeSeriesDict Reference](../reference/api/timeseries.rst)
-- [TimeSeriesMatrix Reference](../reference/api/timeseries.rst)
+- [TimeSeriesDict Reference](../reference/api/timeseries)
+- [TimeSeriesMatrix Reference](../reference/api/timeseries)
 
 ## Recipe 2: Pull external function calls back onto the data object
 
@@ -108,10 +108,10 @@ The same direction applies to other added APIs in `gwexpy`, including:
 Related pages:
 
 - [GWpy Difference API Index](../reference/gwpy_added_api.md)
-- [Frequency Series Tutorial](../tutorials/index.md)
-- [Fitting](../tutorials/index.md)
-- [HHT](../tutorials/index.md)
-- [ARIMA](../tutorials/index.md)
+- [Frequency Series Tutorial](../tutorials/intro_frequencyseries)
+- [Fitting](../tutorials/intro_fitting)
+- [HHT](../how-to/spectral/advanced_hht)
+- [ARIMA](../how-to/fitting/advanced_arima)
 
 ## Recipe 3: Single-channel code often does not need a full rewrite
 
@@ -191,11 +191,11 @@ This difference matters when:
 
 Related pages:
 
-- [Field API Intro](../tutorials/index.md)
+- [Field API Intro](../how-to/containers/field_scalar_intro)
 - [GWpy Difference API Index](../reference/gwpy_added_api.md)
-- [ScalarField Reference](../reference/api/fields.rst)
-- [FieldList Reference](../reference/api/fields.rst)
-- [FieldDict Reference](../reference/api/fields.rst)
+- [ScalarField Reference](../reference/api/fields)
+- [FieldList Reference](../reference/api/fields)
+- [FieldDict Reference](../reference/api/fields)
 
 ## Recipe 5: Read Pickle sharing in terms of compatibility
 
@@ -287,8 +287,8 @@ Related pages:
 
 - [Interop / Conversion Guide](../how-to/interop.md)
 - [python-control API Reference](../reference/api/gwexpy.interop.control_)
-- [Active Damping Tutorial](../tutorials/index.md)
-- [Frequency Series Tutorial](../tutorials/index.md)
+- [Active Damping Tutorial](../how-to/case-studies/case_active_damping)
+- [Frequency Series Tutorial](../tutorials/intro_frequencyseries)
 
 ## Treat direct I/O and external-library conversion as separate guides
 
@@ -301,7 +301,7 @@ Use the dedicated guides below as the source of truth:
 ## Next Steps
 
 - [GWpy Difference API Index](../reference/gwpy_added_api.md) - look up added APIs from a difference-oriented view
-- [Field API Intro](../tutorials/index.md) - see how `ScalarField`, `FieldList`, and `FieldDict` fit together
+- [Field API Intro](../how-to/containers/field_scalar_intro) - see how `ScalarField`, `FieldList`, and `FieldDict` fit together
 - [Tutorial Index](../tutorials/index.md) - move from migration recipes into worked examples
 - [File I/O Supported Formats Guide](../how-to/io_formats.md) - check supported read/write formats
 - [Interop / Conversion Guide](../how-to/interop.md) - check bridges to external libraries

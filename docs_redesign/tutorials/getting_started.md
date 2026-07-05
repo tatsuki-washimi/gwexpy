@@ -27,7 +27,7 @@ Learn the core data structures and GWexpy-specific matrix operations from scratc
 
 ### 🔄 For GWpy Users
 
-[Migration from GWpy](../explanation/gwexpy_for_gwpy_users.md)
+[GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md)
 
 For current GWpy users. Start with the migration recipes, then use the [GWpy Difference API Index](../reference/gwpy_added_api.md) when you need a difference-oriented lookup of added APIs.
 
@@ -66,7 +66,7 @@ Explore real-world analysis workflows in our [Case Studies Gallery](../how-to/ca
 
 * [Case Studies Gallery](../how-to/case-studies/index.md) - Visual examples and practical workflows.
 * [All Tutorials](index.md)
-* [Migration from GWpy](../explanation/gwexpy_for_gwpy_users.md) - start from the difference-oriented migration recipes
+* [GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md) - start from the difference-oriented migration recipes
 * [GWpy Difference API Index](../reference/gwpy_added_api.md) - look up added APIs from a GWpy-difference view
 * [Prerequisites and Conventions](../explanation/prerequisites_and_conventions.md) - entry point for environment assumptions, GPS time, and FFT conventions
 * [API Reference](../reference/index.md)

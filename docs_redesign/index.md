@@ -96,7 +96,7 @@ BrUCo noise budgets, ARIMA modelling, and fitting / MCMC pipelines in one place.
 :link: how-to/interop
 :link-type: doc
 
-~50 interoperability modules and multi-format I/O across GW data ecosystems.
+~50 interoperability modules for converting data to and from external scientific libraries.
 :::
 ::::
 

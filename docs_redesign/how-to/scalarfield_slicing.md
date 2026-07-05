@@ -121,7 +121,7 @@ The `reshape(3, 1, 1, 1)` form means "these 3 values lie along axis 0 (the time/
 (scalarfield-slicing-next-to-read)=
 ## Next to Read
 
-- [ScalarField introduction tutorial](../tutorials/index.md)
-- [Field module API reference](../reference/api/fields.rst)
+- [ScalarField introduction tutorial](containers/field_scalar_intro)
+- [Field module API reference](../reference/api/fields)
 - [Numerical stability](../explanation/numerical_stability.md) - Precision management for 4D operations
 - [Architecture and Data Flow](../explanation/architecture.md) - Where the Field API fits in the broader design

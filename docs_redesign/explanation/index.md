@@ -22,7 +22,7 @@ How the container, analysis, and interoperability layers fit together.
 The assumptions, naming, and conventions GWexpy relies on.
 :::
 
-:::{grid-item-card} {octicon}`git-compare;1.5em;sd-mr-1` GWexpy for GWpy users
+:::{grid-item-card} {octicon}`git-compare;1.5em;sd-mr-1` GWexpy for GWpy Users
 :link: gwexpy_for_gwpy_users
 :link-type: doc
 

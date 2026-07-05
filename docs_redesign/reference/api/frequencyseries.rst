@@ -11,7 +11,7 @@ Overview
    Use this page after the basic ``FrequencySeries`` tutorial or when a fitting/spectral workflow sends you back to the exact API surface.
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree:
 
    FrequencySeries
 

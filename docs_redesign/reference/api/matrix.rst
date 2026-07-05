@@ -15,7 +15,7 @@ Time Series Matrix
 .. currentmodule:: gwexpy.timeseries
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree:
 
    TimeSeriesMatrix
 
@@ -32,7 +32,7 @@ Frequency Series Matrix
 .. currentmodule:: gwexpy.frequencyseries
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree:
 
    FrequencySeriesMatrix
 
@@ -49,7 +49,7 @@ Spectrogram Matrix
 .. currentmodule:: gwexpy.spectrogram
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree:
 
    SpectrogramMatrix
 

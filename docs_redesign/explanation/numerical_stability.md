@@ -110,7 +110,7 @@ plot = asd.plot()  # Safe Log is applied internally for a clean visualization
 
 ## Next to Read
 
-- [Signal Processing API Reference](../reference/api/signal.rst)
+- [Signal Processing API Reference](../reference/api/signal)
 - [Validated Algorithms](validated_algorithms.md)
-- [Glossary](../reference/index.md) — Definitions for `NaN/Inf propagation` and more
+- [API Reference](../reference/index.md) — Entry point to all API pages
 - [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared FFT and numerical assumptions across the docs
