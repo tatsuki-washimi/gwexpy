@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## [0.1.9] - 2026-07-11
+
+This is a bugfix release. It completes the GWF read-path NaN-padding
+harmonization deferred from 0.1.8 (#481) and fixes two fitting bugs
+surfaced by the #461 follow-up audit: an off-by-one in `fit_series`'s
+`sigma` cropping at exact `x_range` boundaries, and an unvalidated
+`run_mcmc(n_walkers=...)` that let emcee's internal error leak through
+(#466).
+
 ### Behaviour-visible bug fixes
 
 - GWF-specific reads (`TimeSeries.read`/`TimeSeriesDict.read`/`TimeSeriesMatrix.read`
