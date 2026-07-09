@@ -20,6 +20,10 @@
   a spurious `Sigma length mismatch` `ValueError` when `x_range`'s upper bound
   exactly matches a data bin edge. The sigma array is now cropped using the
   same index range that `Series.crop()` actually used for the fitted data (#466).
+- **fitting**: `FitResult.run_mcmc()` now validates `n_walkers >= 2 * ndim`
+  before invoking `emcee.EnsembleSampler`, raising a clear `ValueError` with
+  the required minimum instead of letting emcee's internal `RuntimeError`
+  surface with no gwexpy-level context (#466).
 
 ### Development
 

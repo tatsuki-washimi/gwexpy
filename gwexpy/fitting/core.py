@@ -630,7 +630,9 @@ class FitResult:
         Parameters
         ----------
         n_walkers : int, optional
-            Number of MCMC walkers. Default is 32.
+            Number of MCMC walkers. Default is 32. Must be at least
+            ``2 * ndim``, where ``ndim`` is the number of free (non-fixed)
+            parameters, as required by emcee's ensemble sampler.
         n_steps : int, optional
             Number of MCMC steps per walker. Default is 3000.
         burn_in : int, optional
@@ -642,6 +644,12 @@ class FitResult:
         -------
         sampler : emcee.EnsembleSampler
             The emcee sampler object containing the full chain.
+
+        Raises
+        ------
+        ValueError
+            If there are no free parameters, or if ``n_walkers`` is below
+            ``2 * ndim``.
 
         Notes
         -----
@@ -695,6 +703,15 @@ class FitResult:
             raise ValueError(
                 "run_mcmc() requires at least one free parameter. "
                 "All parameters are currently fixed."
+            )
+
+        min_walkers = 2 * ndim
+        if n_walkers < min_walkers:
+            raise ValueError(
+                f"run_mcmc() requires n_walkers >= 2 * ndim ({min_walkers} for "
+                f"{ndim} free parameter(s)), got n_walkers={n_walkers}. "
+                "emcee's ensemble sampler needs at least twice as many walkers as "
+                "free parameters to update the ensemble."
             )
 
         # Dictionary of fixed parameters
