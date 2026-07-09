@@ -13,6 +13,7 @@ from astropy import units as u
 from gwexpy.io.utils import (
     _pad_gwf_series_to_span,
     apply_unit,
+    check_pad_dtype_compatible,
     ensure_datetime,
     ensure_dependency,
     maybe_pad_timeseries,
@@ -61,6 +62,46 @@ def test_pad_gwf_series_to_span_ceil_prevents_float_underpadding():
     assert len(padded) == len(ts) + 8
     assert float(padded.t0.value) <= 0.2000000001
     np.testing.assert_allclose(padded.value[:8], -1.0)
+
+
+# ---------------------------------------------------------------------------
+# check_pad_dtype_compatible
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "pad",
+    [
+        float("nan"),
+        np.nan,
+        np.float64(np.nan),
+        np.float32(np.nan),
+        np.float16(np.nan),
+    ],
+)
+def test_check_pad_dtype_compatible_rejects_any_float_nan_on_int(pad):
+    # The guard must catch NaN of *any* float scalar type on a non-floating
+    # dtype, not only Python ``float``/``np.float64`` (np.float32(np.nan) used
+    # to slip through ``isinstance(pad, float)``).
+    with pytest.raises(ValueError, match="non-floating dtype"):
+        check_pad_dtype_compatible(np.dtype("int32"), pad)
+
+
+@pytest.mark.parametrize(
+    ("dtype", "pad"),
+    [
+        ("int32", -1),
+        ("int32", 3.5),
+        ("int32", None),
+        ("int32", "sentinel"),
+        ("float64", np.nan),
+        ("complex128", np.nan),
+    ],
+)
+def test_check_pad_dtype_compatible_allows_safe_pads(dtype, pad):
+    # Non-NaN pads, non-numeric pads, and NaN on float/complex dtypes are all
+    # representable (or handled downstream) and must not raise here.
+    check_pad_dtype_compatible(np.dtype(dtype), pad)
 
 
 # ---------------------------------------------------------------------------

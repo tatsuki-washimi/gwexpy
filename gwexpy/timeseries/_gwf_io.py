@@ -4,11 +4,17 @@ import warnings
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 from astropy.io.registry import IORegistryError
 from gwpy.io.registry import default_registry as io_registry
 from gwpy.time import to_gps
 
-from gwexpy.io.utils import _pad_gwf_series_to_span
+from gwexpy.io.utils import _pad_gwf_series_to_span, check_pad_dtype_compatible
+
+# Match gwpy's Series.is_contiguous() tolerance (gwpy/types/series.py) so the
+# per-channel gap check below fires exactly when gwpy's own gap detection
+# would materialize `merge_pad` values for that channel — no more, no less.
+_GWF_GAP_TOL = 2**-18
 
 _GWF_FORMATS = frozenset(
     {
@@ -216,7 +222,11 @@ def _normalize_gwf_read_limit(value: Any | None) -> Any | None:
 def _normalize_gwf_gap_options(pad: Any, gap: Any) -> tuple[Any, Any]:
     """Return GWpy-compatible append gap mode and pad value."""
     merge_gap = gap if gap is not None else ("pad" if pad is not None else "raise")
-    merge_pad = 0.0 if merge_gap == "pad" and pad is None else pad
+    # Missing samples must read back as "no data" (NaN), not a valid-looking
+    # 0.0. This mirrors SeriesMatrix.append's np.nan default (gwexpy/types/
+    # series_matrix_analysis.py, #443) which the GWF read path had not yet
+    # adopted; see #481.
+    merge_pad = np.nan if merge_gap == "pad" and pad is None else pad
     return merge_gap, merge_pad
 
 
@@ -280,8 +290,23 @@ def read_gwf_timeseriesdict(
             raise ValueError("No data found in any provided GWF source")
 
         out = dict_class()
+        prev_ends: dict[str, float] = {}
         for part in sorted(non_empty_parts, key=lambda item: item.span):
+            if merge_gap == "pad":
+                for key, series in part.items():
+                    prev_end = prev_ends.get(key)
+                    if (
+                        prev_end is not None
+                        and (series.span[0] - prev_end) >= _GWF_GAP_TOL
+                    ):
+                        # A real per-channel gap exists — only then does
+                        # gwpy's Series.append actually materialize
+                        # `merge_pad` values for *this* channel, so only
+                        # then can non-float dtype corruption occur.
+                        check_pad_dtype_compatible(series.dtype, merge_pad)
             out.append(part, gap=merge_gap, pad=merge_pad)
+            for key, series in part.items():
+                prev_ends[key] = series.span[1]
         result = out
     else:
         result = read_one(source)

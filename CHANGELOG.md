@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Behaviour-visible bug fixes
+
+- GWF-specific reads (`TimeSeries.read`/`TimeSeriesDict.read`/`TimeSeriesMatrix.read`
+  with `format="gwf"`) now default `gap="pad"` to `NaN` padding instead of `0.0`,
+  completing the harmonization with `SeriesMatrix.append`'s NaN default shipped in
+  0.1.8. Code that relied on zero-filled GWF gaps should pass an explicit `pad=`
+  value. Padding a missing region (an inter-file gap or a requested interval
+  that extends beyond the available data) with `NaN` on a non-floating-point
+  GWF channel dtype now raises a clear `ValueError` instead of silently
+  corrupting the data with an out-of-range integer fill value or leaking
+  NumPy's opaque ``cannot convert float NaN to integer`` (#481).
+
 ### Development
 
 - Move maintainer-only `.harness/` AI workflow files out of the public
