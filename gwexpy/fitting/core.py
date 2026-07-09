@@ -1141,12 +1141,18 @@ def fit_series(
             sigma_arr: npt.NDArray[Any] = np.asarray(sigma)
             sigma_full_for_plot = sigma_arr if len(sigma_arr) == original_len else None
             if len(sigma_arr) == original_len and x_range is not None:
-                # Crop sigma by x range using the full x array
-                x0, x1 = x_range
-                lo, hi = (x0, x1) if x0 <= x1 else (x1, x0)
-                idx0 = int(np.searchsorted(x_full, lo, side="left"))
-                idx1 = int(np.searchsorted(x_full, hi, side="right"))
-                dy = sigma_arr[idx0:idx1]
+                # Anchor on `target`'s actual x-values (already produced by
+                # series.crop()) instead of recomputing lo/hi bounds
+                # independently, so the sigma slice always matches target's
+                # index range exactly (#466: side="right" on the upper bound
+                # could previously include one extra bin at an exact
+                # boundary match).
+                if len(x) == 0:
+                    dy = sigma_arr[:0]
+                else:
+                    idx0 = int(np.searchsorted(x_full, x[0], side="left"))
+                    idx1 = idx0 + len(x)
+                    dy = sigma_arr[idx0:idx1]
             else:
                 dy = sigma_arr
 

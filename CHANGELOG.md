@@ -14,6 +14,13 @@
   corrupting the data with an out-of-range integer fill value or leaking
   NumPy's opaque ``cannot convert float NaN to integer`` (#481).
 
+### Bug fixes
+
+- **fitting**: `fit_series(..., sigma=..., x_range=...)` no longer crashes with
+  a spurious `Sigma length mismatch` `ValueError` when `x_range`'s upper bound
+  exactly matches a data bin edge. The sigma array is now cropped using the
+  same index range that `Series.crop()` actually used for the fitted data (#466).
+
 ### Development
 
 - Move maintainer-only `.harness/` AI workflow files out of the public

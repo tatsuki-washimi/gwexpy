@@ -44,18 +44,36 @@ def test_x_range_excludes_upper_boundary_and_preserves_full_plot_data():
     assert result.x_unit == series.xunit
 
 
-def test_full_length_sigma_with_exact_x_range_boundary_currently_mismatches_crop():
+def test_full_length_sigma_with_exact_x_range_boundary_matches_crop():
     series = _linear_frequency_series()
-    sigma = np.full(len(series), 0.1)
+    sigma = 0.1 * (1.0 + np.arange(len(series), dtype=float))
 
-    with pytest.raises(ValueError, match=r"Sigma length mismatch: got 7, expected 6"):
-        fit_series(
-            series,
-            _linear,
-            p0={"a": 2.0, "b": 1.0},
-            sigma=sigma,
-            x_range=(2.0, 8.0),
-        )
+    result = fit_series(
+        series,
+        _linear,
+        p0={"a": 2.0, "b": 1.0},
+        sigma=sigma,
+        x_range=(2.0, 8.0),
+    )
+
+    np.testing.assert_array_equal(result.x, np.arange(2.0, 8.0))
+    np.testing.assert_allclose(result.dy, sigma[2:8])
+
+
+def test_full_length_sigma_with_non_aligned_x_range_boundary_matches_crop():
+    series = _linear_frequency_series()
+    sigma = 0.1 * (1.0 + np.arange(len(series), dtype=float))
+
+    result = fit_series(
+        series,
+        _linear,
+        p0={"a": 2.0, "b": 1.0},
+        sigma=sigma,
+        x_range=(2.4, 8.6),
+    )
+
+    np.testing.assert_array_equal(result.x, np.arange(3.0, 9.0))
+    np.testing.assert_allclose(result.dy, sigma[3:9])
 
 
 def test_sigma_zero_nan_and_inf_values_are_rejected():
