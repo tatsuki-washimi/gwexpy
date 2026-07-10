@@ -8,7 +8,7 @@
 #   - gh installed:        https://cli.github.com/
 #   - authenticated:       gh auth status   (needs repo write scope)
 #   - notes generated:     python tools/gen_release_notes.py
-#   - all tags pushed:     git push --tags   (tags v0.1.0..v0.1.9 must exist on origin)
+#   - all tags pushed:     git push origin v0.1.9   (push only the release tag; v0.1.0..v0.1.8 must already exist on origin)
 #
 # Behaviour:
 #   - For each version, EDIT the release if it already exists, otherwise CREATE it
