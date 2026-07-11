@@ -630,7 +630,9 @@ class FitResult:
         Parameters
         ----------
         n_walkers : int, optional
-            Number of MCMC walkers. Default is 32.
+            Number of MCMC walkers. Default is 32. Must be at least
+            ``2 * ndim``, where ``ndim`` is the number of free (non-fixed)
+            parameters, as required by emcee's ensemble sampler.
         n_steps : int, optional
             Number of MCMC steps per walker. Default is 3000.
         burn_in : int, optional
@@ -642,6 +644,12 @@ class FitResult:
         -------
         sampler : emcee.EnsembleSampler
             The emcee sampler object containing the full chain.
+
+        Raises
+        ------
+        ValueError
+            If there are no free parameters, or if ``n_walkers`` is below
+            ``2 * ndim``.
 
         Notes
         -----
@@ -695,6 +703,15 @@ class FitResult:
             raise ValueError(
                 "run_mcmc() requires at least one free parameter. "
                 "All parameters are currently fixed."
+            )
+
+        min_walkers = 2 * ndim
+        if n_walkers < min_walkers:
+            raise ValueError(
+                f"run_mcmc() requires n_walkers >= 2 * ndim ({min_walkers} for "
+                f"{ndim} free parameter(s)), got n_walkers={n_walkers}. "
+                "emcee's ensemble sampler needs at least twice as many walkers as "
+                "free parameters to update the ensemble."
             )
 
         # Dictionary of fixed parameters
@@ -1141,12 +1158,18 @@ def fit_series(
             sigma_arr: npt.NDArray[Any] = np.asarray(sigma)
             sigma_full_for_plot = sigma_arr if len(sigma_arr) == original_len else None
             if len(sigma_arr) == original_len and x_range is not None:
-                # Crop sigma by x range using the full x array
-                x0, x1 = x_range
-                lo, hi = (x0, x1) if x0 <= x1 else (x1, x0)
-                idx0 = int(np.searchsorted(x_full, lo, side="left"))
-                idx1 = int(np.searchsorted(x_full, hi, side="right"))
-                dy = sigma_arr[idx0:idx1]
+                # Anchor on `target`'s actual x-values (already produced by
+                # series.crop()) instead of recomputing lo/hi bounds
+                # independently, so the sigma slice always matches target's
+                # index range exactly (#466: side="right" on the upper bound
+                # could previously include one extra bin at an exact
+                # boundary match).
+                if len(x) == 0:
+                    dy = sigma_arr[:0]
+                else:
+                    idx0 = int(np.searchsorted(x_full, x[0], side="left"))
+                    idx1 = idx0 + len(x)
+                    dy = sigma_arr[idx0:idx1]
             else:
                 dy = sigma_arr
 

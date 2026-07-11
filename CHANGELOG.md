@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+## [0.1.9] - 2026-07-11
+
+This is a bugfix release. It completes the GWF read-path NaN-padding
+harmonization deferred from 0.1.8 (#481) and fixes two fitting bugs
+surfaced by the #461 follow-up audit: an off-by-one in `fit_series`'s
+`sigma` cropping at exact `x_range` boundaries, and an unvalidated
+`run_mcmc(n_walkers=...)` that let emcee's internal error leak through
+(#466).
+
+### Behaviour-visible bug fixes
+
+- GWF-specific reads (`TimeSeries.read`/`TimeSeriesDict.read`/`TimeSeriesMatrix.read`
+  with `format="gwf"`) now default `gap="pad"` to `NaN` padding instead of `0.0`,
+  completing the harmonization with `SeriesMatrix.append`'s NaN default shipped in
+  0.1.8. Code that relied on zero-filled GWF gaps should pass an explicit `pad=`
+  value. Padding a missing region (an inter-file gap or a requested interval
+  that extends beyond the available data) with `NaN` on a non-floating-point
+  GWF channel dtype now raises a clear `ValueError` instead of silently
+  corrupting the data with an out-of-range integer fill value or leaking
+  NumPy's opaque ``cannot convert float NaN to integer`` (#481).
+
+### Bug fixes
+
+- **fitting**: `fit_series(..., sigma=..., x_range=...)` no longer crashes with
+  a spurious `Sigma length mismatch` `ValueError` when `x_range`'s upper bound
+  exactly matches a data bin edge. The sigma array is now cropped using the
+  same index range that `Series.crop()` actually used for the fitted data (#466).
+- **fitting**: `FitResult.run_mcmc()` now validates `n_walkers >= 2 * ndim`
+  before invoking `emcee.EnsembleSampler`, raising a clear `ValueError` with
+  the required minimum instead of letting emcee's internal `RuntimeError`
+  surface with no gwexpy-level context (#466).
+
 ### Development
 
 - Move maintainer-only `.harness/` AI workflow files out of the public
