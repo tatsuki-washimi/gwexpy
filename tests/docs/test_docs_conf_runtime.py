@@ -97,12 +97,24 @@ def test_docs_pr_workflow_executes_notebooks_by_default_in_github_actions():
     assert env["NBS_ALLOW_ERRORS"] == "0"
 
 
-def test_docs_pages_workflow_executes_notebooks_by_default_in_github_actions():
+def test_docs_pages_workflow_builds_docs_redesign_without_nbsphinx():
     workflow = _load_workflow(DOCS_PAGES_WORKFLOW_PATH)
-    env = workflow["jobs"]["publish-pages"]["env"]
-    assert env["NBS_EXECUTE"] == "never"
-    assert env["NBS_ALLOW_ERRORS"] == "0"
+    job = workflow["jobs"]["publish-pages"]
 
-    build_run = workflow["jobs"]["publish-pages"]["steps"][-2]["run"]
-    assert "-D nbsphinx_execute=never" in build_run
-    assert "-D nbsphinx_allow_errors=0" in build_run
+    # docs_redesign ships pre-executed notebook outputs (myst-nb,
+    # nb_execution_mode="off"); the old nbsphinx-execution toggles the
+    # previous docs/ build used no longer apply to this deploy target.
+    assert "NBS_EXECUTE" not in job.get("env", {})
+    assert "NBS_ALLOW_ERRORS" not in job.get("env", {})
+
+    steps_by_name = {step["name"]: step for step in job["steps"] if "name" in step}
+    en_build = steps_by_name["Build EN HTML"]
+    ja_build = steps_by_name["Build JA HTML"]
+
+    assert en_build["working-directory"] == "docs_redesign"
+    assert ja_build["working-directory"] == "docs_redesign"
+    assert "nbsphinx" not in en_build["run"]
+    assert "nbsphinx" not in ja_build["run"]
+    assert "-D language=ja" in ja_build["run"]
+    assert "GWEXPY_DOCS_BASEURL" in en_build["env"]
+    assert "GWEXPY_DOCS_BASEURL" in ja_build["env"]
