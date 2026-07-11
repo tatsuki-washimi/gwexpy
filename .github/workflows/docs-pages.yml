@@ -14,10 +14,13 @@ permissions:
   contents: write
 
 # Shared with docs-redesign-preview.yml so a preview build and a production
-# deploy never push to the gh-pages branch at the same time.
+# deploy never push to the gh-pages branch at the same time. Queue rather
+# than cancel: cancel-in-progress would let a preview push abort an
+# in-flight production deploy before it reaches git push, silently
+# dropping the production update.
 concurrency:
   group: gh-pages-publish
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
