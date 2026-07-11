@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/_modules/gwexpy/fitting/core.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=22607128"></script>
+      <script src="../../../_static/documentation_options.js?v=8618f531"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -773,7 +773,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        n_walkers : int, optional</span>
-<span class="sd">            Number of MCMC walkers. Default is 32.</span>
+<span class="sd">            Number of MCMC walkers. Default is 32. Must be at least</span>
+<span class="sd">            ``2 * ndim``, where ``ndim`` is the number of free (non-fixed)</span>
+<span class="sd">            parameters, as required by emcee&#39;s ensemble sampler.</span>
 <span class="sd">        n_steps : int, optional</span>
 <span class="sd">            Number of MCMC steps per walker. Default is 3000.</span>
 <span class="sd">        burn_in : int, optional</span>
@@ -785,6 +787,12 @@
 <span class="sd">        -------</span>
 <span class="sd">        sampler : emcee.EnsembleSampler</span>
 <span class="sd">            The emcee sampler object containing the full chain.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If there are no free parameters, or if ``n_walkers`` is below</span>
+<span class="sd">            ``2 * ndim``.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -838,6 +846,15 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;run_mcmc() requires at least one free parameter. &quot;</span>
                 <span class="s2">&quot;All parameters are currently fixed.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">min_walkers</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">ndim</span>
+        <span class="k">if</span> <span class="n">n_walkers</span> <span class="o">&lt;</span> <span class="n">min_walkers</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;run_mcmc() requires n_walkers &gt;= 2 * ndim (</span><span class="si">{</span><span class="n">min_walkers</span><span class="si">}</span><span class="s2"> for &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> free parameter(s)), got n_walkers=</span><span class="si">{</span><span class="n">n_walkers</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;emcee&#39;s ensemble sampler needs at least twice as many walkers as &quot;</span>
+                <span class="s2">&quot;free parameters to update the ensemble.&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># Dictionary of fixed parameters</span>
@@ -1294,12 +1311,18 @@
             <span class="n">sigma_arr</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
             <span class="n">sigma_full_for_plot</span> <span class="o">=</span> <span class="n">sigma_arr</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigma_arr</span><span class="p">)</span> <span class="o">==</span> <span class="n">original_len</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigma_arr</span><span class="p">)</span> <span class="o">==</span> <span class="n">original_len</span> <span class="ow">and</span> <span class="n">x_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># Crop sigma by x range using the full x array</span>
-                <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x_range</span>
-                <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span> <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;=</span> <span class="n">x1</span> <span class="k">else</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
-                <span class="n">idx0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">x_full</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">))</span>
-                <span class="n">idx1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">x_full</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">))</span>
-                <span class="n">dy</span> <span class="o">=</span> <span class="n">sigma_arr</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]</span>
+                <span class="c1"># Anchor on `target`&#39;s actual x-values (already produced by</span>
+                <span class="c1"># series.crop()) instead of recomputing lo/hi bounds</span>
+                <span class="c1"># independently, so the sigma slice always matches target&#39;s</span>
+                <span class="c1"># index range exactly (#466: side=&quot;right&quot; on the upper bound</span>
+                <span class="c1"># could previously include one extra bin at an exact</span>
+                <span class="c1"># boundary match).</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">sigma_arr</span><span class="p">[:</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">idx0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">x_full</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">))</span>
+                    <span class="n">idx1</span> <span class="o">=</span> <span class="n">idx0</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">sigma_arr</span><span class="p">[</span><span class="n">idx0</span><span class="p">:</span><span class="n">idx1</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">dy</span> <span class="o">=</span> <span class="n">sigma_arr</span>
 
@@ -1455,7 +1478,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-05 15:47:18.
+      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
       </span></p>
   </div>
 

@@ -17,7 +17,7 @@
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/reference/api/extra.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=22607128"></script>
+      <script src="../../../../_static/documentation_options.js?v=8618f531"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -287,7 +287,9 @@ in the case of GLS, ensuring correct handling of real and imaginary parts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_walkers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of MCMC walkers. Default is 32.</p></li>
+<li><p><strong>n_walkers</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of MCMC walkers. Default is 32. Must be at least
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">ndim</span></code>, where <code class="docutils literal notranslate"><span class="pre">ndim</span></code> is the number of free (non-fixed)
+parameters, as required by emcee’s ensemble sampler.</p></li>
 <li><p><strong>n_steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of MCMC steps per walker. Default is 3000.</p></li>
 <li><p><strong>burn_in</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of initial steps to discard. Default is 500.</p></li>
 <li><p><strong>progress</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to show progress bar. Default is True.</p></li>
@@ -298,6 +300,10 @@ in the case of GLS, ensuring correct handling of real and imaginary parts.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>emcee.EnsembleSampler</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If there are no free parameters, or if <code class="docutils literal notranslate"><span class="pre">n_walkers</span></code> is below
+    <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">ndim</span></code>.</p>
 </dd>
 </dl>
 <div class="admonition-notes admonition">
@@ -2958,7 +2964,7 @@ the input as amplitude spectral density.</p></li>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-05 15:47:18.
+      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
       </span></p>
   </div>
 
