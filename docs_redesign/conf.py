@@ -20,6 +20,10 @@ LANG_BASEURL = os.environ.get("GWEXPY_DOCS_LANG_BASEURL", _DEFAULT_SITE_ROOT)
 # the JA build's <link rel="canonical"> ends up pointing at the EN page.
 SITE_BASEURL = os.environ.get("GWEXPY_DOCS_BASEURL", LANG_BASEURL)
 
+# Set to "1" for preview/staging deploys so search engines don't index them
+# ahead of the production cutover. Left unset (falsy) in production.
+NOINDEX = os.environ.get("GWEXPY_DOCS_NOINDEX") == "1"
+
 # -- Project information -----------------------------------------------------
 project = "GWexpy"
 copyright = "2026, GWexpy Developers"
@@ -37,6 +41,11 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
 ]
+
+# Strip interactive prompts from copy-pasted code (affects the ">>> "/"... "
+# examples that autodoc renders from gwexpy's own docstrings on API pages).
+copybutton_prompt_text = r">>> |\.\.\. "
+copybutton_prompt_is_regexp = True
 
 # MyST extensions for richer Markdown authoring.
 myst_enable_extensions = [
@@ -132,6 +141,9 @@ html_favicon = "_static/images/favicon.svg"
 html_title = "GWexpy"
 # Base URL lets the language switcher compute the counterpart-language page URL.
 html_baseurl = SITE_BASEURL
+# Expose raw .md/.ipynb sources (instead of a Sphinx-appended .txt) so the
+# "Show Source" sidebar link doubles as a real download of the source file.
+html_sourcelink_suffix = ""
 
 html_theme_options = {
     # Top navbar layout (Diataxis sections live in the center). The logo alone
@@ -175,6 +187,9 @@ html_context = {
     ],
     # Base URL the switcher uses to build the counterpart-language page URL.
     "lang_base": LANG_BASEURL,
+    # Also used by _templates/layout.html to compute hreflang alternates and
+    # to gate the preview-only noindex meta tag.
+    "noindex": NOINDEX,
 }
 
 # Sidebar: keep the left sidebar clean (navigation only).

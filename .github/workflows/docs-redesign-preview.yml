@@ -37,6 +37,9 @@ jobs:
       # separately for the EN and JA build steps below, since the JA build's
       # canonical must point at .../ja/, not at the EN root.
       GWEXPY_DOCS_LANG_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
+      # This is a staging deploy, not the production site -- keep it out of
+      # search results until the production cutover (Step F-4).
+      GWEXPY_DOCS_NOINDEX: "1"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

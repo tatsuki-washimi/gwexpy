@@ -11,7 +11,7 @@ myst:
 This is the end-user I/O guide for `gwexpy`.
 This page only covers the public `.read()` / `.write()` / `fetch()` style APIs that users call directly to read, write, or fetch data.
 
-It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. If the question is "how do I convert this object into another library or container?", that belongs to interop instead. For those topics, see the [interop tutorial](viz/intro_interop) and the [interop API reference](../reference/api/interop).
+It does **not** cover `to_*()` / `from_*()` conversions or object bridges to xarray, ROOT objects, or Zarr arrays. If the question is "how do I convert this object into another library or container?", that belongs to interop instead. For those topics, see the [interop tutorial](interop/intro_interop) and the [interop API reference](../reference/api/interop).
 
 :::{warning}
 **Security Warning: Pickle Files**
@@ -310,7 +310,7 @@ The format tokens below are listed for contributor tracking and are not document
 
 ## Related Pages
 
-- [Interop tutorial](viz/intro_interop)
+- [Interop tutorial](interop/intro_interop)
 - [Interop API reference](../reference/api/interop)
 - [Verification and Quality Signals](../explanation/verification_and_quality.md)
 - [Installation guide](../tutorials/installation.md)

@@ -1,6 +1,6 @@
 # Visualization
 
-Plot maps, plus a worked walkthrough of converting series to and from external scientific libraries.
+Plot maps of all-sky probability and geographic detector locations.
 
 ::::{grid} 1 2 2 2
 :gutter: 3
@@ -12,18 +12,10 @@ Plot maps, plus a worked walkthrough of converting series to and from external s
 `SkyMap` for all-sky HEALPix probability maps and `GeoMap` for geographic detector-location maps.
 :::
 
-:::{grid-item-card} Interoperability: Basics
-:link: intro_interop
-:link-type: doc
-
-A worked walkthrough of converting `TimeSeries` to and from pandas, xarray, PyTorch, astropy, and more. For the full reference, see the [Interop & conversion guide](../interop.md).
-:::
-
 ::::
 
 ```{toctree}
 :hidden:
 
 intro_mapplotting
-intro_interop
 ```

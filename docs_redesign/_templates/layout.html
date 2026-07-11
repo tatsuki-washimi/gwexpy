@@ -1,0 +1,16 @@
+{% extends "!layout.html" %}
+{# Adds hreflang alternates (EN/JA are the same source tree, so a counterpart
+   page always exists) and an optional noindex meta tag for preview deploys.
+   Reuses language-switcher.html's URL-building logic (lang_base + pagename). #}
+{% block extrahead %}
+  {{ super() }}
+  {%- set base = lang_base | default("/", true) -%}
+  {%- set en_url = base + pagename + ".html" -%}
+  {%- set ja_url = base + "ja/" + pagename + ".html" -%}
+  <link rel="alternate" hreflang="en" href="{{ en_url }}" />
+  <link rel="alternate" hreflang="ja" href="{{ ja_url }}" />
+  <link rel="alternate" hreflang="x-default" href="{{ en_url }}" />
+  {%- if noindex %}
+  <meta name="robots" content="noindex, nofollow" />
+  {%- endif %}
+{% endblock %}
