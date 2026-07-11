@@ -40,6 +40,13 @@ A full analysis workflow built on `ScalarField`, going beyond the basics into ap
 Why `ScalarField` indexing always keeps 4 dimensions instead of collapsing like NumPy, and when `squeeze()` is safe.
 :::
 
+:::{grid-item-card} Histogram: Basics
+:link: intro_histogram
+:link-type: doc
+
+Create, visualize, rebin, and compute statistics on `gwexpy.histogram.Histogram` objects.
+:::
+
 ::::
 
 ```{toctree}
@@ -50,4 +57,5 @@ matrix_spectrogram
 field_scalar_intro
 field_advanced_workflow
 scalarfield_slicing
+intro_histogram
 ```

@@ -33,13 +33,6 @@ Principal and Independent Component Analysis on `TimeSeriesMatrix` via `pca()` /
 Pearson, Kendall, and other correlation measures between `TimeSeries` objects for noise hunting and nonlinear coupling.
 :::
 
-:::{grid-item-card} Histogram: Basics
-:link: intro_histogram
-:link-type: doc
-
-Create, visualize, rebin, and compute statistics on `gwexpy.histogram.Histogram` objects.
-:::
-
 :::{grid-item-card} Non-Gaussian Noise Analysis: Rayleigh and Gaussian-Chi
 :link: rayleigh_gauch_tutorial
 :link-type: doc
@@ -56,6 +49,5 @@ advanced_fitting
 advanced_arima
 advanced_decomposition
 advanced_correlation
-intro_histogram
 rayleigh_gauch_tutorial
 ```

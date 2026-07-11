@@ -41,7 +41,7 @@ conda update -c conda-forge --all
 **Solution:**
 Run the automated build script included in the repository.
 ```bash
-python scripts/install_minepy.py
+python scripts/dev_tools/install_minepy.py
 ```
 
 If this happened while expanding a minimal install, review the extras guidance in the {ref}`Installation Guide <optional-dependencies-extras>`.

@@ -218,7 +218,7 @@ The following targets are especially important because they sit close to the dir
 
 ## Related Pages
 
-- [Interop tutorial](viz/intro_interop)
+- [Interop tutorial](interop/intro_interop)
 - [Interop API reference](../reference/api/interop)
 - [File I/O Supported Formats Guide](io_formats)
 
@@ -226,4 +226,10 @@ The following targets are especially important because they sit close to the dir
 
 - [File I/O Supported Formats Guide](io_formats) if your real question is about `Class.read(..., format=...)` or `obj.write(...)`
 - [GPS Time Utility Functions](time_utilities) if conversion workflows depend on GPS or timezone handling
-- [Interop tutorial](viz/intro_interop) for worked examples before dropping into the API reference
+- [Interop tutorial](interop/intro_interop) for worked examples before dropping into the API reference
+
+```{toctree}
+:hidden:
+
+interop/intro_interop
+```

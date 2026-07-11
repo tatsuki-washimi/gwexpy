@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="../../" data-theme="auto">
+<html lang="ja" data-content_root="../../" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Interoperability: Basics &#8212; GWexpy</title>
+    <title>相互運用: 基本 &#8212; GWexpy</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
@@ -37,45 +37,51 @@
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=7026087e"></script>
+    <script src="../../_static/documentation_options.js?v=dffd92de"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../../_static/translations.js?v=4755f45a"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/viz/intro_interop';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/interop/intro_interop';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/viz/intro_interop.html" />
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/how-to/interop/intro_interop.html" />
     <link rel="icon" href="../../_static/favicon.svg"/>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Case studies" href="../case-studies/index.html" />
-    <link rel="prev" title="Map Plotting: Basics" href="intro_mapplotting.html" />
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="GPS 時刻ユーティリティ (gwexpy.time)" href="../time_utilities.html" />
+    <link rel="prev" title="Interop / 変換ガイド" href="../interop.html" />
+  
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:language" content="ja"/>
   <meta name="docsearch:version" content="" />
   
     
     <script src="../../_static/searchtools.js"></script>
     <script src="../../_static/language_data.js"></script>
     <script src="../../searchindex.js"></script>
-  
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/interop/intro_interop.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/how-to/interop/intro_interop.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/interop/intro_interop.html" />
+  <meta name="robots" content="noindex, nofollow" />
+
   </head>
   <body data-default-mode="auto">
   
   
-  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">本文へスキップ</a></div>
 
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+    <i class="fa-solid fa-arrow-up"></i>トップに戻る</button>
   
   
   
@@ -89,8 +95,8 @@
   <input type="search"
          class="form-control"
          name="q"
-         placeholder="Search the docs ..."
-         aria-label="Search the docs ..."
+         placeholder="ドキュメントを検索..."
+         aria-label="ドキュメントを検索..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -100,13 +106,13 @@
   </dialog>
 
   <div class="pst-async-banner-revealer d-none">
-  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="バージョン警告"></aside>
 </div>
 
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="サイトナビゲーション">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -150,35 +156,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    チュートリアル
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
-    How-to guides
+    ハウツーガイド
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../reference/index.html">
-    Reference
+    リファレンス
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../explanation/index.html">
-    Explanation
+    解説
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../about/index.html">
-    About
+    このプロジェクトについて
   </a>
 </li>
 
@@ -193,7 +199,7 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
 </button>
         </div>
@@ -203,19 +209,19 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
     <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
   </ul>
 </div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
-    aria-label="Icon Links">
+    aria-label="アイコンリンク">
         <li class="nav-item">
           
           
@@ -230,9 +236,9 @@
 </ul></div>
       
         <div class="navbar-item"><div class="navbar-item language-switcher">
-    <span class="active">EN / </span>
-    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/how-to/viz/intro_interop.html" title="日本語">
-      <i class="fa-solid fa-language"></i> 日本語</a>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/interop/intro_interop.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
 </div></div>
       
     </div>
@@ -242,14 +248,14 @@
   
     <div class="navbar-persistent--mobile">
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
 </button>
     </div>
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="このページでは">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -281,35 +287,35 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    チュートリアル
   </a>
 </li>
 
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
-    How-to guides
+    ハウツーガイド
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../reference/index.html">
-    Reference
+    リファレンス
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../explanation/index.html">
-    Explanation
+    解説
   </a>
 </li>
 
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../about/index.html">
-    About
+    このプロジェクトについて
   </a>
 </li>
 
@@ -327,19 +333,19 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
     <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
   </ul>
 </div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
-    aria-label="Icon Links">
+    aria-label="アイコンリンク">
         <li class="nav-item">
           
           
@@ -354,9 +360,9 @@
 </ul></div>
         
           <div class="navbar-item"><div class="navbar-item language-switcher">
-    <span class="active">EN / </span>
-    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/how-to/viz/intro_interop.html" title="日本語">
-      <i class="fa-solid fa-language"></i> 日本語</a>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/how-to/interop/intro_interop.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
 </div></div>
         
       </div>
@@ -364,7 +370,8 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
     <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
   </svg>
   <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
@@ -373,101 +380,103 @@
         <div class="sidebar-primary-item">
 
 <nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Data and formats</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">File I/O Supported Formats Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../interop.html">Interop / Conversion Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tools and operations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../migration.html">Migrating Between GWexpy Versions</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Technique recipes</span></p>
+     aria-label="セクションナビゲーション">
+  <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">データとフォーマット</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../containers/index.html">Containers &amp; matrices</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_frequencyseries.html">FrequencySeriesMatrix: Matrix Basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_spectrogram.html">SpectrogramMatrix: Matrix Basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../containers/field_scalar_intro.html">Field API: ScalarField Basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../containers/field_advanced_workflow.html">Field API: Advanced Analysis Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../containers/scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../interop.html">Interop / 変換ガイド</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">相互運用: 基本</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../spectral/index.html">Spectral &amp; time-frequency</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_spectrogram_processing.html">Spectrogram: Normalization and Cleaning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_hht.html">HHT: Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_detection.html">Peak Detection: Finding Peaks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_tracking.html">Peak Tracking: Time Evolution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../spectral/time_frequency_analysis_comparison.html">Time-Frequency Analysis: Interactive Comparison</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
 </ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">Fitting &amp; statistics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_fitting.html">Fitting: Spectral Line Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_arima.html">ARIMA: Time Series Forecasting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_decomposition.html">Decomposition Analysis: PCA, ICA, and Eigenmodes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_correlation.html">Correlation Analysis: Statistical Methods</a></li>
-
-<li class="toctree-l2"><a class="reference internal" href="../fitting/intro_histogram.html">Histogram: Basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fitting/rayleigh_gauch_tutorial.html">Non-Gaussian Noise Analysis: Rayleigh and Gaussian-Chi</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../control/index.html">Control &amp; modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_basics.html">Control Analysis: Resonance and Feedback</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">Control Analysis: Plant Modeling from Measured Response</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">Control Analysis: Discretization (ZOH vs Tustin)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">High-Precision Modal Analysis of Suspension Systems</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../coupling/index.html">Coupling &amp; correlation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_bruco.html">Bruco: Coherence Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_coupling.html">Coupling Analysis: Multi-Channel Coupling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_field_analysis.html">Multi-Dimensional Field Analysis: Beam Profiles and Spatial Statistics</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../segments/index.html">Segments &amp; tables</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../segments/segment_asd_pipeline.html">ASD Analysis: Pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">Segment Analysis: Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: Basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">Segment Analysis: Basic Pipeline</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Visualization</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="intro_mapplotting.html">Map Plotting: Basics</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Interoperability: Basics</a></li>
-</ul>
-</details></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Case studies</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">ツールと操作</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../case-studies/index.html">Case studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_active_damping.html">Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_transfer_function.html">Tutorial: Transfer Function Measurement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_calibration_pipeline.html">Calibration Pipeline: Counts → Strain</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_dttxml_calibration.html">Reading and Using DTT XML Files with gwexpy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_finesse_optics.html">Finesse 3 Interoperability: Simulation vs. Measurement</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_seismic_obspy.html">Case Study: Seismic Analysis with ObsPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_gbd_format.html">Case Study: GBD Format I/O</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_hdf5_provenance.html">Reproducible Metadata Management with HDF5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_pycbc_search.html">PyCBC Interoperability: From gwexpy Preprocessing to GW Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bootstrap_gls_fitting.html">Case Study: Bootstrap PSD and GLS Fitting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_ml_preprocessing.html">Case Study: ML Preprocessing Pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_segment_analysis.html">Case Study: Event-Synchronized Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_physics_validation.html">Physical Validity Checking: Units, Floors, and Sanity Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_arima_burst_search.html">ARIMA-Based Burst Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">トラブルシューティング</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">GWexpy バージョン間の移行</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">技法レシピ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../containers/index.html">コンテナと行列</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_frequencyseries.html">FrequencySeriesMatrix: 行列処理の基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/matrix_spectrogram.html">SpectrogramMatrix: 行列処理の基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/field_scalar_intro.html">Field API: ScalarField の基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/field_advanced_workflow.html">Field API: 高度解析ワークフロー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../containers/intro_histogram.html">ヒストグラム: 基本</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../spectral/index.html">スペクトル・時間周波数</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_spectrogram_processing.html">スペクトログラム: 正規化とクリーニング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_hht.html">HHT: 解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_detection.html">ピーク検出: ピークを見つける</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_tracking.html">ピーク追跡: 時間変化の解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/time_frequency_analysis_comparison.html">時間周波数解析：インタラクティブ比較</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">フィッティングと統計</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_fitting.html">フィッティング: スペクトル線解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_arima.html">ARIMA: 時系列予測</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_decomposition.html">分解解析: PCA・ICA と固有モード</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_correlation.html">相関解析: 統計的手法</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_signal_extraction.html">Signal Extraction: Weak Signal Recovery from Colored Noise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_noise_budget.html">Noise Budgeting and Multi-Channel Correlation Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_lockin_detection.html">Lock-in Detection: Recovering Weak AM/FM Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_wiener_filter.html">Wiener Filtering: Coherent Noise Subtraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_coupling_analysis.html">Coupling Analysis: Estimating Transfer Paths Between Channels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_ica_denoising.html">Case Study: Bruco and ICA Noise Reduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_advanced.html">Bruco: Bilinear Coupling and AM/FM Demodulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_violin_mode.html">Case Study: Violin Mode Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_schumann_resonance.html">Case Study: Schumann Resonance Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_glitch_analysis.html">Glitch Analysis: Q-Transform and Omega-Scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/rayleigh_gauch_tutorial.html">非ガウス雑音解析: Rayleigh と Gaussian-Chi</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../control/index.html">制御とモデリング</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_basics.html">制御解析: 共振とフィードバック</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">制御解析: 実測応答からのプラントモデリング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">制御解析: 離散化（ZOH と Tustin の比較）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">懸架系の高精度モーダル解析</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../coupling/index.html">カップリングと相関</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_bruco.html">Bruco: コヒーレンス解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_coupling.html">カップリング解析: マルチチャンネル結合</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_field_analysis.html">多次元フィールド解析：ビームプロファイルと空間統計</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../segments/index.html">セグメントとテーブル</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_asd_pipeline.html">ASD 解析: パイプライン</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">セグメント解析: 可視化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: 基本</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">セグメント解析: 基本パイプライン</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../viz/index.html">可視化</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../viz/intro_mapplotting.html">マッププロット: 基本</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">ケーススタディ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../case-studies/index.html">ケーススタディ</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_active_damping.html">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_transfer_function.html">チュートリアル: 伝達関数の測定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_calibration_pipeline.html">キャリブレーション・パイプライン：Counts → Strain 変換</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_dttxml_calibration.html">gwexpy で DTT XML ファイルを読み込む</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_finesse_optics.html">Finesse 3 連携: シミュレーションと測定の統合</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_seismic_obspy.html">ケーススタディ: ObsPy 連携による地震データ解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_gbd_format.html">ケーススタディ: GBD 形式 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_hdf5_provenance.html">HDF5 による再現可能なメタデータ管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_pycbc_search.html">PyCBC 連携：gwexpy 前処理から重力波探索まで</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bootstrap_gls_fitting.html">ケーススタディ: Bootstrap PSD と GLS フィッティング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_ml_preprocessing.html">ケーススタディ: ML 前処理パイプライン</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_segment_analysis.html">ケーススタディ: イベント同期解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_physics_validation.html">物理妥当性検証：単位・数値床・健全性テスト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_arima_burst_search.html">ARIMA を用いたバーストイベント検出</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_signal_extraction.html">信号抽出: 色付き雑音からの微弱信号回収</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_lockin_detection.html">ロックイン検出: 弱い AM/FM 構造の復元</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_wiener_filter.html">ウィーナーフィルタ: コヒーレント雑音の差し引き</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_coupling_analysis.html">カップリング解析: チャンネル間伝達経路の推定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_ica_denoising.html">ケーススタディ: Bruco と ICA によるノイズ削減</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_advanced.html">Bruco: バイリニアカップリングと AM/FM 復調</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_violin_mode.html">ケーススタディ: バイオリンモード解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_schumann_resonance.html">ケーススタディ: シューマン共鳴解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_glitch_analysis.html">グリッチ詳細解析：Q-変換と Omega スキャン</a></li>
 </ul>
 </details></li>
 </ul>
@@ -502,21 +511,21 @@
       
         <div class="header-article-item">
 
-<nav aria-label="Breadcrumb" class="d-print-none">
+<nav aria-label="パンくずリスト" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
-      <a href="../../index.html" class="nav-link" aria-label="Home">
+      <a href="../../index.html" class="nav-link" aria-label="ホーム">
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">How-to guides</a></li>
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">ハウツーガイド</a></li>
     
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Visualization</a></li>
+    <li class="breadcrumb-item"><a href="../interop.html" class="nav-link">Interop / 変換ガイド</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Interoperability: Basics</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">相互運用: 基本</span></li>
   </ul>
 </nav>
 </div>
@@ -534,27 +543,26 @@
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="interoperability-basics">
-<h1>Interoperability: Basics<a class="headerlink" href="#interoperability-basics" title="Link to this heading">#</a></h1>
-<p>This notebook introduces the new interoperability features added to the <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class.
-<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> can seamlessly convert data to and from popular data science libraries such as Pandas, Xarray, PyTorch, and Astropy.</p>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy[all]</span></code> installs the declared GWexpy extras used by the tutorial environment, but it does not install every public interop backend. Install bare-package backends such as ROOT, torch, TensorFlow, JAX, PyCBC, or Finesse directly when you use those bridges.</p>
+<h1>相互運用: 基本<a class="headerlink" href="#interoperability-basics" title="Link to this heading">#</a></h1>
+<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された新しい相互運用機能 (Interoperability Features) を紹介します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、Pandas, Xarray, PyTorch, Astropy などの一般的なデータサイエンス・ライブラリとの間で、シームレスにデータを変換することができます。</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy[all]</span></code> はチュートリアル環境で使う宣言済み extra をまとめて導入しますが、すべての public interop backend を導入するものではありません。ROOT, torch, TensorFlow, JAX, PyCBC, Finesse などの個別 backend は、その bridge を使うときに直接導入してください。</p>
 <section id="table-of-contents">
-<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Link to this heading">#</a></h2>
+<h2>目次<a class="headerlink" href="#table-of-contents" title="Link to this heading">#</a></h2>
 <ul>
 <li><ol class="arabic simple">
-<li><p>General Data Formats &amp; Data Infrastructure</p></li>
+<li><p>汎用データ形式とデータ基盤</p></li>
 </ol>
 <ul class="simple">
 <li><p>1.1. NumPy [Original GWpy]</p></li>
-<li><p>1.2. Pandas Integration [Original GWpy]</p></li>
+<li><p>1.2. Pandas との連携 [Original GWpy]</p></li>
 <li><p>1.3. Polars [GWexpy New]</p></li>
-<li><p>1.4. Xarray Integration [Original GWpy]</p></li>
-<li><p>1.5. Dask Integration [GWexpy New]</p></li>
-<li><p>1.6. JSON / Python Dict (to_json) [GWexpy New]</p></li>
+<li><p>1.4. Xarray との連携 [Original GWpy]</p></li>
+<li><p>1.5. Dask との連携 [GWexpy New]</p></li>
+<li><p>1.6. JSON / Python Dict (to_json) (to_json) [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="2">
-<li><p>Database &amp; Storage Layer</p></li>
+<li><p>データベースとストレージ層</p></li>
 </ol>
 <ul class="simple">
 <li><p>2.1. HDF5 [Original GWpy]</p></li>
@@ -564,60 +572,60 @@
 </ul>
 </li>
 <li><ol class="arabic simple" start="3">
-<li><p>Computer Science, Machine Learning &amp; Accelerated Computing</p></li>
+<li><p>計算機科学・機械学習・高速計算</p></li>
 </ol>
 <ul class="simple">
-<li><p>3.1. PyTorch Integration [GWexpy New]</p></li>
-<li><p>3.2. CuPy (CUDA Acceleration) [GWexpy New]</p></li>
-<li><p>3.3. TensorFlow Integration [GWexpy New]</p></li>
-<li><p>3.4. JAX Integration [GWexpy New]</p></li>
+<li><p>3.1. PyTorch との連携 [GWexpy New]</p></li>
+<li><p>3.2. CuPy (CUDA 加速) [GWexpy New]</p></li>
+<li><p>3.3. TensorFlow との連携 [GWexpy New]</p></li>
+<li><p>3.4. JAX との連携 [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="4">
-<li><p>Astronomy &amp; Gravitational Wave Physics</p></li>
+<li><p>天文学と重力波物理</p></li>
 </ol>
 <ul class="simple">
 <li><p>4.1. PyCBC / LAL [Original GWpy]</p></li>
-<li><p>4.2. Astropy Integration [Original GWpy]</p></li>
-<li><p>4.3. Specutils Integration [GWexpy New]</p></li>
-<li><p>4.4. Pyspeckit Integration [GWexpy New]</p></li>
+<li><p>4.2. Astropy との連携 [Original GWpy]</p></li>
+<li><p>4.3. Specutils との連携 [GWexpy New]</p></li>
+<li><p>4.4. Pyspeckit との連携 [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="5">
-<li><p>Particle Physics &amp; High Energy Physics</p></li>
+<li><p>素粒子物理・高エネルギー物理</p></li>
 </ol>
 <ul class="simple">
-<li><p>5.1. CERN ROOT Integration [GWexpy New]</p></li>
-<li><p>5.2. Recovering from ROOT Objects (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)</p></li>
+<li><p>5.1. CERN ROOT との連携 [GWexpy New]</p></li>
+<li><p>5.2. ROOT オブジェクトからの復元 (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="6">
-<li><p>Geophysics, Seismology &amp; Electromagnetics</p></li>
+<li><p>地球物理・地震学・電磁気</p></li>
 </ol>
 <ul class="simple">
 <li><p>6.1. ObsPy [Original GWpy]</p></li>
-<li><p>6.2. SimPEG Integration [GWexpy New]</p></li>
+<li><p>6.2. SimPEG との連携 [GWexpy New]</p></li>
 <li><p>6.3. MTH5 / MTpy [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="7">
-<li><p>Acoustics &amp; Audio Analysis</p></li>
+<li><p>音響・オーディオ解析</p></li>
 </ol>
 <ul class="simple">
 <li><p>7.1. Librosa / Pydub [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="8">
-<li><p>Medical &amp; Biosignal Analysis</p></li>
+<li><p>医療・生体信号解析</p></li>
 </ol>
 <ul class="simple">
 <li><p>8.1. MNE-Python [GWexpy New]</p></li>
-<li><p>8.2. Elephant / quantities Integration [GWexpy New]</p></li>
+<li><p>8.2. Elephant / quantities との連携 [GWexpy New]</p></li>
 <li><p>8.3. Neo [GWexpy New]</p></li>
 </ul>
 </li>
 <li><ol class="arabic simple" start="9">
-<li><p>Summary</p></li>
+<li><p>まとめ</p></li>
 </ol>
 </li>
 </ul>
@@ -692,23 +700,20 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="general-data-formats-data-infrastructure">
-<h2>1. General Data Formats &amp; Data Infrastructure<a class="headerlink" href="#general-data-formats-data-infrastructure" title="Link to this heading">#</a></h2>
+<h2>1. 汎用データ形式・データ基盤<a class="headerlink" href="#general-data-formats-data-infrastructure" title="Link to this heading">#</a></h2>
 <section id="numpy-original-gwpy">
 <h3>1.1. NumPy <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#numpy-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>NumPy</strong>: NumPy is the foundational library for numerical computing in Python, providing multidimensional arrays and fast mathematical operations.
-📚 <a class="reference external" href="https://numpy.org/">NumPy Documentation</a></p>
+<div><p><strong>NumPy</strong>：NumPy は Python における数値計算の基盤ライブラリで、多次元配列と高速な数学演算を提供します。📚 <a class="reference external" href="https://numpy.org/">NumPy ドキュメント</a></p>
 </div></blockquote>
-<p>You can obtain NumPy arrays via <code class="docutils literal notranslate"><span class="pre">TimeSeries.value</span></code> or <code class="docutils literal notranslate"><span class="pre">np.asarray(ts)</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries.value</span></code> や <code class="docutils literal notranslate"><span class="pre">np.asarray(ts)</span></code> で NumPy 配列を取得できます。</p>
 </section>
 <section id="pandas-integration-original-gwpy">
-<h3>1.2. Pandas Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#pandas-integration-original-gwpy" title="Link to this heading">#</a></h3>
+<h3>1.2. Pandas との連携 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#pandas-integration-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>Pandas</strong>: Pandas is a powerful library for data analysis and manipulation, providing flexible data structures through DataFrame and Series.
-📚 <a class="reference external" href="https://pandas.pydata.org/">Pandas Documentation</a></p>
+<div><p><strong>Pandas</strong>：Pandas はデータ分析と操作のための強力なライブラリで、DataFrame と Series による柔軟なデータ構造を提供します。📚 <a class="reference external" href="https://pandas.pydata.org/">Pandas ドキュメント</a></p>
 </div></blockquote>
-<p>Using the <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> method, you can convert <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> to <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>.
-The index can be selected from <code class="docutils literal notranslate"><span class="pre">datetime</span></code> (UTC), <code class="docutils literal notranslate"><span class="pre">gps</span></code>, or <code class="docutils literal notranslate"><span class="pre">seconds</span></code> (Unix timestamp).</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> メソッドを使うと、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> に変換できます。 インデックスは <code class="docutils literal notranslate"><span class="pre">datetime</span></code> (UTC), <code class="docutils literal notranslate"><span class="pre">gps</span></code>, <code class="docutils literal notranslate"><span class="pre">seconds</span></code> (Unix timestamp) から選択可能です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -769,10 +774,9 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <section id="polars-gwexpy-new">
 <h3>1.3. Polars <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#polars-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>Polars</strong>: Polars is a high-performance DataFrame library implemented in Rust, excelling at large-scale data processing.
-📚 <a class="reference external" href="https://pola.rs/">Polars Documentation</a></p>
+<div><p><strong>Polars</strong>：Polars は Rust で実装された高性能な DataFrame ライブラリで、大規模データ処理に優れます。📚 <a class="reference external" href="https://pola.rs/">Polars ドキュメント</a></p>
 </div></blockquote>
-<p>You can convert to Polars DataFrame/Series with <code class="docutils literal notranslate"><span class="pre">to_polars()</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_polars()</span></code> で Polars DataFrame/Series に変換できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -812,12 +816,11 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="xarray-integration-original-gwpy">
-<h3>1.4. Xarray Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#xarray-integration-original-gwpy" title="Link to this heading">#</a></h3>
+<h3>1.4. Xarray との連携 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#xarray-integration-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>xarray</strong>: xarray is a library for multidimensional labeled arrays, widely used for manipulating NetCDF data and analyzing meteorological and earth science data.
-📚 <a class="reference external" href="https://docs.xarray.dev/">xarray Documentation</a></p>
+<div><p><strong>xarray</strong>：xarray は多次元ラベル付き配列のためのライブラリで、NetCDF データの操作や気象・地球科学データの解析に広く使われます。📚 <a class="reference external" href="https://docs.xarray.dev/">xarray ドキュメント</a></p>
 </div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> is a powerful library for handling multidimensional labeled arrays. You can convert with <code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code> while preserving metadata.</p>
+<p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> は多次元のラベル付き配列を扱う強力なライブラリです。<code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code> でメタデータを保持したまま変換できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -876,10 +879,9 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="dask-integration-gwexpy-new">
-<h3>1.5. Dask Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#dask-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>1.5. Dask との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#dask-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>Dask</strong>: Dask is a library for parallel computing that enables processing of large-scale data beyond NumPy/Pandas.
-📚 <a class="reference external" href="https://www.dask.org/">Dask Documentation</a></p>
+<div><p><strong>Dask</strong>：Dask は並列計算のためのライブラリで、NumPy/Pandas を超える大規模データの処理を可能にします。📚 <a class="reference external" href="https://www.dask.org/">Dask ドキュメント</a></p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -921,10 +923,9 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <section id="json-python-dict-to-json-gwexpy-new">
 <h3>1.6. JSON / Python Dict (to_json) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#json-python-dict-to-json-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>JSON</strong>: JSON (JavaScript Object Notation) is a lightweight data exchange format supported by the Python standard library.
-📚 <a class="reference external" href="https://docs.python.org/3/library/json.html">JSON Documentation</a></p>
+<div><p><strong>JSON</strong>：JSON（JavaScript Object Notation）は軽量なデータ交換形式で、Python 標準ライブラリでサポートされています。📚 <a class="reference external" href="https://docs.python.org/3/library/json.html">JSON ドキュメント</a></p>
 </div></blockquote>
-<p>You can output JSON-compatible dictionary format with <code class="docutils literal notranslate"><span class="pre">to_json()</span></code> or <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_json()</span></code> や <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> で JSON 互換の辞書形式を出力できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
@@ -994,14 +995,13 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </section>
 </section>
 <section id="database-storage-layer">
-<h2>2. Database &amp; Storage Layer<a class="headerlink" href="#database-storage-layer" title="Link to this heading">#</a></h2>
+<h2>2. データベース・ストレージ層<a class="headerlink" href="#database-storage-layer" title="Link to this heading">#</a></h2>
 <section id="hdf5-original-gwpy">
 <h3>2.1. HDF5 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#hdf5-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>HDF5</strong>: HDF5 is a hierarchical data format for efficiently storing and managing large-scale scientific data. It can be accessed from Python via the h5py library.
-📚 <a class="reference external" href="https://www.h5py.org/">HDF5 Documentation</a></p>
+<div><p><strong>HDF5</strong>：HDF5 は大規模な科学データを効率的に保存・管理するための階層的データ形式です。Python からは h5py ライブラリ経由でアクセスできます。📚 <a class="reference external" href="https://www.h5py.org/">HDF5 ドキュメント</a></p>
 </div></blockquote>
-<p>Supports saving to HDF5 with <code class="docutils literal notranslate"><span class="pre">to_hdf5_dataset()</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_hdf5_dataset()</span></code> で HDF5 への保存をサポート。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1060,10 +1060,9 @@ Attributes: {&#39;dt&#39;: np.float64(0.01), &#39;name&#39;: &#39;demo_signal&#3
 <section id="sqlite-gwexpy-new">
 <h3>2.2. SQLite <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#sqlite-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>SQLite</strong>: SQLite is a lightweight embedded SQL database engine included in the Python standard library.
-📚 <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html">SQLite Documentation</a></p>
+<div><p><strong>SQLite</strong>：SQLite は軽量な組み込み型 SQL データベースエンジンで、Python 標準ライブラリに含まれています。📚 <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html">SQLite ドキュメント</a></p>
 </div></blockquote>
-<p>Supports database persistence with <code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code> で DB 永続化をサポート。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
@@ -1112,10 +1111,9 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <section id="zarr-gwexpy-new">
 <h3>2.3. Zarr <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#zarr-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>Zarr</strong>: Zarr is a storage format for chunked, compressed multidimensional arrays with excellent cloud storage integration.
-📚 <a class="reference external" href="https://zarr.dev/">Zarr Documentation</a></p>
+<div><p><strong>Zarr</strong>：Zarr はチャンク化・圧縮された多次元配列のためのストレージ形式で、クラウドストレージとの統合に優れます。📚 <a class="reference external" href="https://zarr.dev/">Zarr ドキュメント</a></p>
 </div></blockquote>
-<p>Supports cloud storage-friendly formats with <code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code> でクラウドストレージ向き形式に対応。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1183,10 +1181,9 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <section id="netcdf4-gwexpy-new">
 <h3>2.4. netCDF4 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#netcdf4-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>netCDF4</strong>: netCDF4 is a standard format for meteorological, oceanographic, and earth science data with self-describing data structures.
-📚 <a class="reference external" href="https://unidata.github.io/netcdf4-python/">netCDF4 Documentation</a></p>
+<div><p><strong>netCDF4</strong>：netCDF4 は気象・海洋・地球科学データの標準形式で、自己記述的なデータ構造を持ちます。📚 <a class="reference external" href="https://unidata.github.io/netcdf4-python/">netCDF4 ドキュメント</a></p>
 </div></blockquote>
-<p>Supports meteorological and oceanographic data standards with <code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code> で気象・海洋データの標準に対応。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1254,14 +1251,13 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </section>
 </section>
 <section id="computer-science-machine-learning-accelerated-computing">
-<h2>3. Computer Science, Machine Learning &amp; Accelerated Computing<a class="headerlink" href="#computer-science-machine-learning-accelerated-computing" title="Link to this heading">#</a></h2>
+<h2>3. 情報科学・機械学習・加速計算<a class="headerlink" href="#computer-science-machine-learning-accelerated-computing" title="Link to this heading">#</a></h2>
 <section id="pytorch-integration-gwexpy-new">
-<h3>3.1. PyTorch Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#pytorch-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>3.1. PyTorch との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#pytorch-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>PyTorch</strong>: PyTorch is a deep learning framework supporting dynamic computation graphs and GPU acceleration.
-📚 <a class="reference external" href="https://pytorch.org/">PyTorch Documentation</a></p>
+<div><p><strong>PyTorch</strong>：PyTorch は動的計算グラフと GPU 高速化をサポートするディープラーニングフレームワークです。📚 <a class="reference external" href="https://pytorch.org/">PyTorch ドキュメント</a></p>
 </div></blockquote>
-<p>For deep learning preprocessing, you can directly convert <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> to <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code>. GPU transfer is also supported.</p>
+<p>ディープラーニングの前処理として、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を直接 <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> に変換できます。GPU転送も可能です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -1306,12 +1302,11 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="cupy-cuda-acceleration-gwexpy-new">
-<h3>3.2. CuPy (CUDA Acceleration) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#cupy-cuda-acceleration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>3.2. CuPy (CUDA 加速) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#cupy-cuda-acceleration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>CuPy</strong>: CuPy is a NumPy-compatible GPU array library that enables high-speed computation using NVIDIA CUDA.
-📚 <a class="reference external" href="https://cupy.dev/">CuPy Documentation</a></p>
+<div><p><strong>CuPy</strong>：CuPy は NumPy 互換の GPU 配列ライブラリで、NVIDIA CUDA を用いた高速計算を可能にします。📚 <a class="reference external" href="https://cupy.dev/">CuPy ドキュメント</a></p>
 </div></blockquote>
-<p>You can convert to CuPy arrays for GPU-based computation.</p>
+<p>GPU 上での計算を可能にする CuPy 配列へ変換できます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_cupy_available</span>
@@ -1354,10 +1349,9 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="tensorflow-integration-gwexpy-new">
-<h3>3.3. TensorFlow Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#tensorflow-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>3.3. TensorFlow との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#tensorflow-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>TensorFlow</strong>: TensorFlow is a machine learning platform developed by Google, excelling at large-scale production environments.
-📚 <a class="reference external" href="https://www.tensorflow.org/">TensorFlow Documentation</a></p>
+<div><p><strong>TensorFlow</strong>：TensorFlow は Google が開発した機械学習プラットフォームで、大規模な本番環境に優れます。📚 <a class="reference external" href="https://www.tensorflow.org/">TensorFlow ドキュメント</a></p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1420,10 +1414,9 @@ I0000 00:00:1783277772.507738   29252 cudart_stub.cc:31] Could not find cuda dri
 </div>
 </section>
 <section id="jax-integration-gwexpy-new">
-<h3>3.4. JAX Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#jax-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>3.4. JAX との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#jax-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>JAX</strong>: JAX is a high-performance numerical computing library developed by Google, featuring automatic differentiation and XLA compilation for acceleration.
-📚 <a class="reference external" href="https://jax.readthedocs.io/">JAX Documentation</a></p>
+<div><p><strong>JAX</strong>：JAX は Google が開発した高性能な数値計算ライブラリで、自動微分と XLA コンパイルによる高速化を特徴とします。📚 <a class="reference external" href="https://jax.readthedocs.io/">JAX ドキュメント</a></p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1461,26 +1454,23 @@ I0000 00:00:1783277772.507738   29252 cudart_stub.cc:31] Could not find cuda dri
 </section>
 </section>
 <section id="astronomy-gravitational-wave-physics">
-<h2>4. Astronomy &amp; Gravitational Wave Physics<a class="headerlink" href="#astronomy-gravitational-wave-physics" title="Link to this heading">#</a></h2>
+<h2>4. 天文学・重力波物理学<a class="headerlink" href="#astronomy-gravitational-wave-physics" title="Link to this heading">#</a></h2>
 <section id="pycbc-lal-original-gwpy">
 <h3>4.1. PyCBC / LAL <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#pycbc-lal-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>LAL</strong>: LAL (LIGO Algorithm Library) is the official analysis library for LIGO/Virgo, providing the foundation for gravitational wave analysis.
-📚 <a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/">LAL Documentation</a></p>
+<div><p><strong>LAL</strong>：LAL（LIGO Algorithm Library）は LIGO/Virgo の公式解析ライブラリで、重力波解析の基盤を提供します。📚 <a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/">LAL ドキュメント</a></p>
 </div></blockquote>
 <blockquote>
-<div><p><strong>PyCBC</strong>: PyCBC is a library for gravitational wave data analysis, used for signal searches and parameter estimation.
-📚 <a class="reference external" href="https://pycbc.org/">PyCBC Documentation</a></p>
+<div><p><strong>PyCBC</strong>：PyCBC は重力波データ解析のためのライブラリで、信号探索やパラメータ推定に使われます。📚 <a class="reference external" href="https://pycbc.org/">PyCBC ドキュメント</a></p>
 </div></blockquote>
-<p>Provides compatibility with standard gravitational wave analysis tools.</p>
+<p>重力波解析の標準ツールとの互換性を備えています。</p>
 </section>
 <section id="astropy-integration-original-gwpy">
-<h3>4.2. Astropy Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#astropy-integration-original-gwpy" title="Link to this heading">#</a></h3>
+<h3>4.2. Astropy との連携 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#astropy-integration-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>Astropy</strong>: Astropy is a Python library for astronomy, supporting coordinate transformations, time system conversions, unit systems, and more.
-📚 <a class="reference external" href="https://www.astropy.org/">Astropy Documentation</a></p>
+<div><p><strong>Astropy</strong>：Astropy は天文学のための Python ライブラリで、座標変換、時系変換、単位系などをサポートします。📚 <a class="reference external" href="https://www.astropy.org/">Astropy ドキュメント</a></p>
 </div></blockquote>
-<p>Also supports interconversion with <code class="docutils literal notranslate"><span class="pre">astropy.timeseries.TimeSeries</span></code>, which is standard in the astronomy field.</p>
+<p>天文学分野で標準的な <code class="docutils literal notranslate"><span class="pre">astropy.timeseries.TimeSeries</span></code> との相互変換もサポートしています。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1532,13 +1522,11 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </section>
 <section id="specutils-integration-gwexpy-new">
-<h3>4.3. Specutils Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#specutils-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>4.3. Specutils との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#specutils-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>specutils</strong>: specutils is an Astropy-affiliated package for manipulating and analyzing astronomical spectral data.
-📚 <a class="reference external" href="https://specutils.readthedocs.io/">specutils Documentation</a></p>
+<div><p><strong>specutils</strong>：specutils は天文スペクトルデータの操作と解析のための Astropy 関連パッケージです。📚 <a class="reference external" href="https://specutils.readthedocs.io/">specutils ドキュメント</a></p>
 </div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> can interconvert with <code class="docutils literal notranslate"><span class="pre">Spectrum1D</span></code> objects from the Astropy ecosystem spectral analysis library <code class="docutils literal notranslate"><span class="pre">specutils</span></code>.
-Units and frequency axes are properly preserved.</p>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> は、Astropy エコシステムのスペクトル解析ライブラリ <code class="docutils literal notranslate"><span class="pre">specutils</span></code> の <code class="docutils literal notranslate"><span class="pre">Spectrum1D</span></code> オブジェクトと相互変換可能です。 単位 (Units) や周波数軸が適切に保持されます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1575,12 +1563,11 @@ Units and frequency axes are properly preserved.</p>
 </div>
 </section>
 <section id="pyspeckit-integration-gwexpy-new">
-<h3>4.4. Pyspeckit Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#pyspeckit-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>4.4. Pyspeckit との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#pyspeckit-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>PySpecKit</strong>: PySpecKit is a spectral analysis toolkit for radio astronomy, supporting spectral line fitting and more.
-📚 <a class="reference external" href="https://pyspeckit.readthedocs.io/">PySpecKit Documentation</a></p>
+<div><p><strong>PySpecKit</strong>：PySpecKit は電波天文学のためのスペクトル解析ツールキットで、スペクトル線フィッティングなどをサポートします。📚 <a class="reference external" href="https://pyspeckit.readthedocs.io/">PySpecKit ドキュメント</a></p>
 </div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> can also integrate with <code class="docutils literal notranslate"><span class="pre">Spectrum</span></code> objects from the general-purpose spectral analysis toolkit <code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> は、汎用的なスペクトル解析ツールキット <code class="docutils literal notranslate"><span class="pre">pyspeckit</span></code> の <code class="docutils literal notranslate"><span class="pre">Spectrum</span></code> オブジェクトとも連携可能です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1614,17 +1601,14 @@ Units and frequency axes are properly preserved.</p>
 </section>
 </section>
 <section id="particle-physics-high-energy-physics">
-<h2>5. Particle Physics &amp; High Energy Physics<a class="headerlink" href="#particle-physics-high-energy-physics" title="Link to this heading">#</a></h2>
+<h2>5. 素粒子物理学・高エネルギー物理<a class="headerlink" href="#particle-physics-high-energy-physics" title="Link to this heading">#</a></h2>
 <section id="cern-root-integration-gwexpy-new">
-<h3>5.1. CERN ROOT Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#cern-root-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>5.1. CERN ROOT との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#cern-root-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>ROOT</strong>: ROOT is a data analysis framework for high-energy physics developed by CERN.
-📚 <a class="reference external" href="https://root.cern/">ROOT Documentation</a></p>
+<div><p><strong>ROOT</strong>：ROOT は CERN が開発した高エネルギー物理のためのデータ解析フレームワークです。📚 <a class="reference external" href="https://root.cern/">ROOT ドキュメント</a></p>
 </div></blockquote>
-<p>Enhanced interoperability with <strong>ROOT</strong>, the standard tool in high-energy physics.
-<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> Series objects can be quickly converted to ROOT’s <code class="docutils literal notranslate"><span class="pre">TGraph</span></code>, <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>, or <code class="docutils literal notranslate"><span class="pre">TH2D</span></code>, and you can create ROOT files.
-Conversely, you can also restore <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and other objects from ROOT objects.</p>
-<p><strong>Note</strong>: Using this feature requires <code class="docutils literal notranslate"><span class="pre">ROOT</span></code> (PyROOT) to be installed.</p>
+<p>高エネルギー物理学で標準的なツールである <strong>ROOT</strong> との相互運用が強化されました。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の Series オブジェクトを ROOT の <code class="docutils literal notranslate"><span class="pre">TGraph</span></code> や <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>, <code class="docutils literal notranslate"><span class="pre">TH2D</span></code> に高速に変換したり、ROOT ファイルを作成することができます。 逆に、ROOT オブジェクトから <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> などを復元することも可能です。</p>
+<p><strong>Note</strong>: この機能を使用するには <code class="docutils literal notranslate"><span class="pre">ROOT</span></code> (PyROOT) がインストールされている必要があります。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1675,12 +1659,11 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="recovering-from-root-objects-from-root">
-<h3>5.2. Recovering from ROOT Objects (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)<a class="headerlink" href="#recovering-from-root-objects-from-root" title="Link to this heading">#</a></h3>
+<h3>5.2. ROOT オブジェクトからの復元 (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)<a class="headerlink" href="#recovering-from-root-objects-from-root" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>ROOT</strong>: ROOT is a data analysis framework for high-energy physics developed by CERN.
-📚 <a class="reference external" href="https://root.cern/">ROOT Documentation</a></p>
+<div><p><strong>ROOT</strong>：ROOT は CERN が開発した高エネルギー物理のためのデータ解析フレームワークです。📚 <a class="reference external" href="https://root.cern/">ROOT ドキュメント</a></p>
 </div></blockquote>
-<p>You can load histograms and graphs from existing ROOT files and convert them back to <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> objects for easier analysis.</p>
+<p>既存の ROOT ファイルにあるヒストグラムやグラフを読み込んで、解析しやすい <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> オブジェクトに戻すことができます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_root</span>
@@ -1709,14 +1692,13 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </section>
 </section>
 <section id="geophysics-seismology-electromagnetics">
-<h2>6. Geophysics, Seismology &amp; Electromagnetics<a class="headerlink" href="#geophysics-seismology-electromagnetics" title="Link to this heading">#</a></h2>
+<h2>6. 地球物理学・地震学・電磁気学<a class="headerlink" href="#geophysics-seismology-electromagnetics" title="Link to this heading">#</a></h2>
 <section id="obspy-original-gwpy">
 <h3>6.1. ObsPy <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span><a class="headerlink" href="#obspy-original-gwpy" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>ObsPy</strong>: ObsPy is a Python library for acquiring, processing, and analyzing seismological data, supporting formats like MiniSEED.
-📚 <a class="reference external" href="https://docs.obspy.org/">ObsPy Documentation</a></p>
+<div><p><strong>ObsPy</strong>：ObsPy は地震学データの取得・処理・解析のための Python ライブラリで、MiniSEED などの形式をサポートします。📚 <a class="reference external" href="https://docs.obspy.org/">ObsPy ドキュメント</a></p>
 </div></blockquote>
-<p>Supports interoperability with ObsPy, which is standard in seismology.</p>
+<p>地震学で標準的な ObsPy との相互運用をサポート。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1785,13 +1767,11 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="simpeg-integration-gwexpy-new">
-<h3>6.2. SimPEG Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#simpeg-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<h3>6.2. SimPEG との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#simpeg-integration-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>SimPEG</strong>: SimPEG is a simulation and estimation framework for geophysical inverse problems.
-📚 <a class="reference external" href="https://simpeg.xyz/">SimPEG Documentation</a></p>
+<div><p><strong>SimPEG</strong>：SimPEG は地球物理の逆問題のためのシミュレーション・推定フレームワークです。📚 <a class="reference external" href="https://simpeg.xyz/">SimPEG ドキュメント</a></p>
 </div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> supports integration with <code class="docutils literal notranslate"><span class="pre">SimPEG</span></code>, a forward modeling and inversion library for geophysics.
-<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (TDEM) and <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> (FDEM) can be converted to <code class="docutils literal notranslate"><span class="pre">simpeg.data.Data</span></code> objects and vice versa.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、地球物理学のフォワード計算・反転モデリングライブラリである <code class="docutils literal notranslate"><span class="pre">SimPEG</span></code> との連携をサポートしています。 <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (TDEM) および <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> (FDEM) を <code class="docutils literal notranslate"><span class="pre">simpeg.data.Data</span></code> オブジェクトに変換したり、その逆を行ったりできます。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1835,10 +1815,9 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 <section id="mth5-mtpy-gwexpy-new">
 <h3>6.3. MTH5 / MTpy <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#mth5-mtpy-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>MTH5</strong>: MTH5 is an HDF5-based data format for magnetotelluric (MT) data.
-📚 <a class="reference external" href="https://mth5.readthedocs.io/">MTH5 Documentation</a></p>
+<div><p><strong>MTH5</strong>：MTH5 は地磁気地電流（MT）データのための HDF5 ベースのデータ形式です。📚 <a class="reference external" href="https://mth5.readthedocs.io/">MTH5 ドキュメント</a></p>
 </div></blockquote>
-<p>Supports MTH5 storage for magnetotelluric method data.</p>
+<p>地磁気地電流法データの MTH5 保存に対応。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1903,18 +1882,16 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </section>
 </section>
 <section id="acoustics-audio-analysis">
-<h2>7. Acoustics &amp; Audio Analysis<a class="headerlink" href="#acoustics-audio-analysis" title="Link to this heading">#</a></h2>
+<h2>7. 音響・音声解析<a class="headerlink" href="#acoustics-audio-analysis" title="Link to this heading">#</a></h2>
 <section id="librosa-pydub-gwexpy-new">
 <h3>7.1. Librosa / Pydub <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#librosa-pydub-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>pydub</strong>: pydub is a simple library for audio file manipulation (editing, conversion, effects).
-📚 <a class="reference external" href="https://github.com/jiaaro/pydub">pydub Documentation</a></p>
+<div><p><strong>pydub</strong>：pydub は音声ファイルの操作（編集・変換・エフェクト）のためのシンプルなライブラリです。📚 <a class="reference external" href="https://github.com/jiaaro/pydub">pydub ドキュメント</a></p>
 </div></blockquote>
 <blockquote>
-<div><p><strong>librosa</strong>: librosa is a library for audio and music analysis, providing features like spectral analysis and beat detection.
-📚 <a class="reference external" href="https://librosa.org/">librosa Documentation</a></p>
+<div><p><strong>librosa</strong>：librosa は音声・音楽解析のためのライブラリで、スペクトル解析やビート検出などの機能を提供します。📚 <a class="reference external" href="https://librosa.org/">librosa ドキュメント</a></p>
 </div></blockquote>
-<p>Supports integration with audio processing libraries Librosa and Pydub.</p>
+<p>音声処理ライブラリ Librosa や Pydub との連携をサポート。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -1954,14 +1931,13 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </section>
 </section>
 <section id="medical-biosignal-analysis">
-<h2>8. Medical &amp; Biosignal Analysis<a class="headerlink" href="#medical-biosignal-analysis" title="Link to this heading">#</a></h2>
+<h2>8. 医学・生体信号解析<a class="headerlink" href="#medical-biosignal-analysis" title="Link to this heading">#</a></h2>
 <section id="mne-python-gwexpy-new">
 <h3>8.1. MNE-Python <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#mne-python-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>MNE</strong>: MNE-Python is a library for analyzing EEG and MEG data, widely used in neuroscience research.
-📚 <a class="reference external" href="https://mne.tools/">MNE Documentation</a></p>
+<div><p><strong>MNE</strong>：MNE-Python は EEG・MEG データ解析のためのライブラリで、神経科学研究で広く使われます。📚 <a class="reference external" href="https://mne.tools/">MNE ドキュメント</a></p>
 </div></blockquote>
-<p>Integration with MNE for electroencephalography (EEG/MEG) analysis packages.</p>
+<p>脳電図 (EEG/MEG) 解析パッケージ MNE との連携。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -2018,10 +1994,9 @@ Conversely, you can also restore <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="elephant-quantities-integration-gwexpy-new">
-<h3>8.2. Elephant / quantities Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#elephant-quantities-integration-gwexpy-new" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>’s <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> and <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> can interconvert with <code class="docutils literal notranslate"><span class="pre">quantities.Quantity</span></code> objects.
-This is useful for integration with Elephant and Neo.</p>
-<p>Note: Requires <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">quantities</span></code> beforehand.</p>
+<h3>8.2. Elephant / quantities との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#elephant-quantities-integration-gwexpy-new" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> や <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> は、<code class="docutils literal notranslate"><span class="pre">quantities.Quantity</span></code> オブジェクトと相互変換可能です。 これは Elephant や Neo との連携に役立ちます。</p>
+<p>※ 事前に <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">quantities</span></code> が必要です。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -2061,10 +2036,9 @@ This is useful for integration with Elephant and Neo.</p>
 <section id="neo-gwexpy-new">
 <h3>8.3. Neo <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span><a class="headerlink" href="#neo-gwexpy-new" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>Neo</strong>: Neo is a data structure library for electrophysiology data (neuroscience), supporting input/output to various formats.
-📚 <a class="reference external" href="https://neo.readthedocs.io/">Neo Documentation</a></p>
+<div><p><strong>Neo</strong>：Neo は電気生理学データ（神経科学）のためのデータ構造ライブラリで、さまざまな形式への入出力をサポートします。📚 <a class="reference external" href="https://neo.readthedocs.io/">Neo ドキュメント</a></p>
 </div></blockquote>
-<p>Supports conversion to Neo, a common standard for electrophysiological data.</p>
+<p>電気生理データの共通規格 Neo への変換をサポート。</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -2118,13 +2092,12 @@ This is useful for integration with Elephant and Neo.</p>
 </section>
 </section>
 <section id="acoustics-simulation-extra-libraries">
-<h2>9. Acoustics &amp; Simulation (Extra Libraries)<a class="headerlink" href="#acoustics-simulation-extra-libraries" title="Link to this heading">#</a></h2>
-<p>The following sections cover four additional interoperability modules for room acoustics simulation, electromagnetic field simulation, unstructured mesh data, and multitaper spectral estimation.</p>
+<h2>9. 音響・電磁シミュレーション連携（追加ライブラリ）<a class="headerlink" href="#acoustics-simulation-extra-libraries" title="Link to this heading">#</a></h2>
+<p>以下のセクションでは、室内音響シミュレーション・電磁場シミュレーション・非構造格子メッシュデータ・マルチテーパースペクトル推定の4つの追加連携モジュールを扱います。</p>
 <section id="pyroomacoustics-room-impulse-response">
-<h3>9.1. Pyroomacoustics — Room Impulse Response<a class="headerlink" href="#pyroomacoustics-room-impulse-response" title="Link to this heading">#</a></h3>
+<h3>9.1. Pyroomacoustics — 室内インパルス応答（RIR）<a class="headerlink" href="#pyroomacoustics-room-impulse-response" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>pyroomacoustics</strong> simulates room acoustics and provides room impulse responses (RIR).
-<code class="docutils literal notranslate"><span class="pre">room.rir</span></code> follows the convention <code class="docutils literal notranslate"><span class="pre">rir[mic_index][source_index]</span></code> (outer index = microphone).</p>
+<div><p><strong>pyroomacoustics</strong> は室内音響をシミュレートし、室内インパルス応答（RIR）を提供します。<code class="docutils literal notranslate"><span class="pre">room.rir</span></code> は <code class="docutils literal notranslate"><span class="pre">rir[mic_index][source_index]</span></code> という規約に従います（外側のインデックス = マイク）。</p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2164,9 +2137,9 @@ Tip: room.rir convention is rir[mic_index][source_index]
 </div>
 </section>
 <section id="openems-hdf5-electromagnetic-field-dump">
-<h3>9.2. OpenEMS — HDF5 Electromagnetic Field Dump<a class="headerlink" href="#openems-hdf5-electromagnetic-field-dump" title="Link to this heading">#</a></h3>
+<h3>9.2. OpenEMS — HDF5 電磁場ダンプ<a class="headerlink" href="#openems-hdf5-electromagnetic-field-dump" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>openEMS</strong> writes field data to HDF5. If datasets carry <code class="docutils literal notranslate"><span class="pre">&quot;Time&quot;</span></code> (TD) or <code class="docutils literal notranslate"><span class="pre">&quot;frequency&quot;</span></code> (FD) attributes, physical values are used for axis0. Otherwise, integer indices are used as fallback.</p>
+<div><p><strong>openEMS</strong> は場のデータを HDF5 に書き出します。データセットが <code class="docutils literal notranslate"><span class="pre">&quot;Time&quot;</span></code>（TD）または <code class="docutils literal notranslate"><span class="pre">&quot;frequency&quot;</span></code>（FD）属性を持つ場合、axis0 には物理値が使われます。そうでない場合は、整数インデックスがフォールバックとして使われます。</p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2213,9 +2186,9 @@ axis0 contains physical time values (1e-9, 2e-9, 3e-9 s)
 </div>
 </section>
 <section id="meshio-unstructured-mesh-scalarfield">
-<h3>9.3. Meshio — Unstructured Mesh → ScalarField<a class="headerlink" href="#meshio-unstructured-mesh-scalarfield" title="Link to this heading">#</a></h3>
+<h3>9.3. Meshio — 非構造格子メッシュ → ScalarField<a class="headerlink" href="#meshio-unstructured-mesh-scalarfield" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p><strong>meshio</strong> reads 40+ mesh formats (VTK, XDMF, Gmsh, …). Only <code class="docutils literal notranslate"><span class="pre">point_data</span></code> is supported for interpolation. If only <code class="docutils literal notranslate"><span class="pre">cell_data</span></code> is present, a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised — convert to <code class="docutils literal notranslate"><span class="pre">point_data</span></code> first.</p>
+<div><p><strong>meshio</strong> は 40 以上のメッシュ形式（VTK、XDMF、Gmsh、…）を読み込みます。補間でサポートされるのは <code class="docutils literal notranslate"><span class="pre">point_data</span></code> のみです。<code class="docutils literal notranslate"><span class="pre">cell_data</span></code> しかない場合は <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が送出されます — 先に <code class="docutils literal notranslate"><span class="pre">point_data</span></code> に変換してください。</p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2257,10 +2230,9 @@ Value at centre ≈ 0.500
 </div>
 </section>
 <section id="multitaper-spectral-estimation">
-<h3>9.4. Multitaper Spectral Estimation<a class="headerlink" href="#multitaper-spectral-estimation" title="Link to this heading">#</a></h3>
+<h3>9.4. マルチテーパースペクトル推定<a class="headerlink" href="#multitaper-spectral-estimation" title="Link to this heading">#</a></h3>
 <blockquote>
-<div><p>Two multitaper packages are supported: <strong>multitaper</strong> (Prieto) via <code class="docutils literal notranslate"><span class="pre">from_mtspec</span></code> and <strong>mtspec</strong> (Krischer) via <code class="docutils literal notranslate"><span class="pre">from_mtspec_array</span></code>.
-Pass <code class="docutils literal notranslate"><span class="pre">cls=FrequencySeries</span></code> to always get a plain spectrum; pass <code class="docutils literal notranslate"><span class="pre">cls=FrequencySeriesDict</span></code> to include confidence intervals when available.</p>
+<div><p>2 つの multitaper パッケージがサポートされます：<code class="docutils literal notranslate"><span class="pre">from_mtspec</span></code> 経由の <strong>multitaper</strong>（Prieto）と、<code class="docutils literal notranslate"><span class="pre">from_mtspec_array</span></code> 経由の <strong>mtspec</strong>（Krischer）です。常にプレーンなスペクトルを得るには <code class="docutils literal notranslate"><span class="pre">cls=FrequencySeries</span></code> を、利用可能なら信頼区間を含めるには <code class="docutils literal notranslate"><span class="pre">cls=FrequencySeriesDict</span></code> を渡します。</p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2315,19 +2287,19 @@ cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#3
 </section>
 </section>
 <section id="common-mistakes-and-interpretation-pitfalls">
-<h2>Common Mistakes and Interpretation Pitfalls<a class="headerlink" href="#common-mistakes-and-interpretation-pitfalls" title="Link to this heading">#</a></h2>
+<h2>よくある落とし穴と解釈上の注意<a class="headerlink" href="#common-mistakes-and-interpretation-pitfalls" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>Assuming every conversion is lossless</strong>: many bridges preserve only the array payload unless you explicitly reattach metadata such as units, <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, channel names, or axis labels.</p></li>
-<li><p><strong>Confusing direct I/O with interop</strong>: <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> helpers describe object conversion, not necessarily the same guarantees as <code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code> and <code class="docutils literal notranslate"><span class="pre">obj.write(...)</span></code>.</p></li>
-<li><p><strong>Treating timezone-free or sample-rate-free data as fully specified</strong>: if the target container or library does not carry timing metadata clearly, a successful conversion can still produce misleading plots or alignments.</p></li>
-<li><p><strong>Comparing objects after conversion without checking conventions</strong>: frequency spacing, FFT normalization, axis order, and shape conventions can differ across libraries even when the numbers look plausible.</p></li>
-<li><p><strong>Reading partial support as full workflow support</strong>: some examples here demonstrate a working bridge for a narrow object path, not a guarantee that every class, round-trip, or auxiliary attribute is covered.</p></li>
-<li><p><strong>Interpreting visual agreement as semantic agreement</strong>: two plots can look similar while units, indexing, or coordinate meaning have changed. Always inspect metadata, not just the figure.</p></li>
+<li><p><strong>すべての変換が可逆だと思い込むこと</strong>: 多くの bridge は配列本体を渡せても、単位、<code class="docutils literal notranslate"><span class="pre">t0</span></code>、<code class="docutils literal notranslate"><span class="pre">dt</span></code>、チャネル名、軸ラベルまでは自動で完全保存されない場合があります。</p></li>
+<li><p><strong>direct I/O と interop を混同すること</strong>: <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code> はオブジェクト変換の説明であり、<code class="docutils literal notranslate"><span class="pre">Class.read(...,</span> <span class="pre">format=...)</span></code> や <code class="docutils literal notranslate"><span class="pre">obj.write(...)</span></code> と同じ保存保証を意味しません。</p></li>
+<li><p><strong>時刻情報やサンプルレートが曖昧なまま解釈すること</strong>: 変換自体が成功しても、タイムゾーンやサンプリング情報が十分に運ばれていないと、整列や比較の解釈を誤ります。</p></li>
+<li><p><strong>規約を確認せずに数値だけ比較すること</strong>: FFT 正規化、周波数刻み、軸順序、shape の約束はライブラリごとに異なることがあり、見た目が似ていても意味は一致しない場合があります。</p></li>
+<li><p><strong>一部対応を全面対応だと読むこと</strong>: ここで動く例は、特定のクラスや経路での実例であり、すべての round-trip や補助属性まで保証するものではありません。</p></li>
+<li><p><strong>図が似ているだけで意味も同じだと判断すること</strong>: プロットが近く見えても、単位、座標、インデックスの意味が変わっている可能性があります。図だけでなく metadata を確認してください。</p></li>
 </ul>
 </section>
 <section id="summary">
-<h2>10. Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides interoperability with a wide variety of domain-specific libraries, enabling seamless integration with existing ecosystems.</p>
+<h2>10. まとめ<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は多種多様な bilimti 向けライブラリとの相互運用を提供し、既存のエコシステムとのシームレスな統合を可能にします。</p>
 </section>
 </section>
 
@@ -2342,20 +2314,20 @@ cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#3
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="intro_mapplotting.html"
-       title="previous page">
+       href="../interop.html"
+       title="前のページ">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Map Plotting: Basics</p>
+        <p class="prev-next-subtitle">前へ</p>
+        <p class="prev-next-title">Interop / 変換ガイド</p>
       </div>
     </a>
     <a class="right-next"
-       href="../case-studies/index.html"
-       title="next page">
+       href="../time_utilities.html"
+       title="次ページ">
       <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Case studies</p>
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">GPS 時刻ユーティリティ (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -2374,79 +2346,79 @@ cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#3
 <div
     id="pst-page-navigation-heading-2"
     class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
+    <i class="fa-solid fa-list"></i> このページでは
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of Contents</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-data-formats-data-infrastructure">1. General Data Formats &amp; Data Infrastructure</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">目次</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-data-formats-data-infrastructure">1. 汎用データ形式・データ基盤</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-original-gwpy">1.1. NumPy <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-integration-original-gwpy">1.2. Pandas Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-integration-original-gwpy">1.2. Pandas との連携 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#polars-gwexpy-new">1.3. Polars <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xarray-integration-original-gwpy">1.4. Xarray Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dask-integration-gwexpy-new">1.5. Dask Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xarray-integration-original-gwpy">1.4. Xarray との連携 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dask-integration-gwexpy-new">1.5. Dask との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#json-python-dict-to-json-gwexpy-new">1.6. JSON / Python Dict (to_json) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-storage-layer">2. Database &amp; Storage Layer</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-storage-layer">2. データベース・ストレージ層</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hdf5-original-gwpy">2.1. HDF5 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sqlite-gwexpy-new">2.2. SQLite <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zarr-gwexpy-new">2.3. Zarr <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#netcdf4-gwexpy-new">2.4. netCDF4 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computer-science-machine-learning-accelerated-computing">3. Computer Science, Machine Learning &amp; Accelerated Computing</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-integration-gwexpy-new">3.1. PyTorch Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cupy-cuda-acceleration-gwexpy-new">3.2. CuPy (CUDA Acceleration) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorflow-integration-gwexpy-new">3.3. TensorFlow Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jax-integration-gwexpy-new">3.4. JAX Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computer-science-machine-learning-accelerated-computing">3. 情報科学・機械学習・加速計算</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-integration-gwexpy-new">3.1. PyTorch との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cupy-cuda-acceleration-gwexpy-new">3.2. CuPy (CUDA 加速) <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorflow-integration-gwexpy-new">3.3. TensorFlow との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jax-integration-gwexpy-new">3.4. JAX との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#astronomy-gravitational-wave-physics">4. Astronomy &amp; Gravitational Wave Physics</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#astronomy-gravitational-wave-physics">4. 天文学・重力波物理学</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pycbc-lal-original-gwpy">4.1. PyCBC / LAL <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#astropy-integration-original-gwpy">4.2. Astropy Integration <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specutils-integration-gwexpy-new">4.3. Specutils Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyspeckit-integration-gwexpy-new">4.4. Pyspeckit Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#astropy-integration-original-gwpy">4.2. Astropy との連携 <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specutils-integration-gwexpy-new">4.3. Specutils との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyspeckit-integration-gwexpy-new">4.4. Pyspeckit との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#particle-physics-high-energy-physics">5. Particle Physics &amp; High Energy Physics</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cern-root-integration-gwexpy-new">5.1. CERN ROOT Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recovering-from-root-objects-from-root">5.2. Recovering from ROOT Objects (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#particle-physics-high-energy-physics">5. 素粒子物理学・高エネルギー物理</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cern-root-integration-gwexpy-new">5.1. CERN ROOT との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recovering-from-root-objects-from-root">5.2. ROOT オブジェクトからの復元 (<code class="docutils literal notranslate"><span class="pre">from_root</span></code>)</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geophysics-seismology-electromagnetics">6. Geophysics, Seismology &amp; Electromagnetics</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geophysics-seismology-electromagnetics">6. 地球物理学・地震学・電磁気学</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#obspy-original-gwpy">6.1. ObsPy <span style="color: #3498db; font-weight: bold;">[Original GWpy]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simpeg-integration-gwexpy-new">6.2. SimPEG Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simpeg-integration-gwexpy-new">6.2. SimPEG との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mth5-mtpy-gwexpy-new">6.3. MTH5 / MTpy <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acoustics-audio-analysis">7. Acoustics &amp; Audio Analysis</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acoustics-audio-analysis">7. 音響・音声解析</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#librosa-pydub-gwexpy-new">7.1. Librosa / Pydub <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#medical-biosignal-analysis">8. Medical &amp; Biosignal Analysis</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#medical-biosignal-analysis">8. 医学・生体信号解析</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne-python-gwexpy-new">8.1. MNE-Python <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#elephant-quantities-integration-gwexpy-new">8.2. Elephant / quantities Integration <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#elephant-quantities-integration-gwexpy-new">8.2. Elephant / quantities との連携 <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neo-gwexpy-new">8.3. Neo <span style="color: #2ecc71; font-weight: bold;">[GWexpy New]</span></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acoustics-simulation-extra-libraries">9. Acoustics &amp; Simulation (Extra Libraries)</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyroomacoustics-room-impulse-response">9.1. Pyroomacoustics — Room Impulse Response</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openems-hdf5-electromagnetic-field-dump">9.2. OpenEMS — HDF5 Electromagnetic Field Dump</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#meshio-unstructured-mesh-scalarfield">9.3. Meshio — Unstructured Mesh → ScalarField</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multitaper-spectral-estimation">9.4. Multitaper Spectral Estimation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acoustics-simulation-extra-libraries">9. 音響・電磁シミュレーション連携（追加ライブラリ）</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyroomacoustics-room-impulse-response">9.1. Pyroomacoustics — 室内インパルス応答（RIR）</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openems-hdf5-electromagnetic-field-dump">9.2. OpenEMS — HDF5 電磁場ダンプ</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#meshio-unstructured-mesh-scalarfield">9.3. Meshio — 非構造格子メッシュ → ScalarField</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multitaper-spectral-estimation">9.4. マルチテーパースペクトル推定</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-mistakes-and-interpretation-pitfalls">Common Mistakes and Interpretation Pitfalls</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">10. Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-mistakes-and-interpretation-pitfalls">よくある落とし穴と解釈上の注意</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">10. まとめ</a></li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
 
   <div class="tocsection sourcelink">
-    <a href="../../_sources/how-to/viz/intro_interop.ipynb.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
+    <a href="../../_sources/how-to/interop/intro_interop.ipynb">
+      <i class="fa-solid fa-file-lines"></i> ソースコードを表示
     </a>
   </div>
 </div>
@@ -2464,8 +2436,8 @@ cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#3
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2485,7 +2457,7 @@ cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#3
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3 を使用して作成されました。
     <br/>
   </p>
 </div>
@@ -2499,7 +2471,7 @@ cls=FrequencySeriesDict -&gt; type: _FSD, keys: [&#39;psd&#39;, &#39;ci_lower&#3
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0 で構築されています。
 </p></div>
       
     </div>
