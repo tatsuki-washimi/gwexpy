@@ -4,6 +4,13 @@ Technical, information-oriented description of the GWexpy API. These pages are
 generated directly from the package docstrings by `autosummary` and `autodoc`,
 so they always match the installed version.
 
+:::{note}
+API reference bodies are generated from the source docstrings, which are
+written in English. This holds on the Japanese build of this site as well
+(only the surrounding navigation and page chrome are translated); translating
+the docstrings themselves is out of scope for now.
+:::
+
 ## API by domain
 
 ::::{grid} 1 2 2 3

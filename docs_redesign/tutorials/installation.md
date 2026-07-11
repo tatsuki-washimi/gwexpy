@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    description: "Install GWexpy for Python 3.11+ with minimal, recommended, GW-analysis, or developer setups, including extras guidance and dependency troubleshooting."
+    description: "Install GWexpy for Python 3.11 or 3.12 with minimal, recommended, GW-analysis, or developer setups, including extras guidance and dependency troubleshooting."
 ---
 
 # Installation Guide
@@ -14,7 +14,7 @@ release. Install from PyPI for the latest version, or use
 the conda-forge channel.
 :::
 
-GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
+GWexpy supports **Python 3.11 and 3.12** (the versions declared in `pyproject.toml`). You can choose from several installation options (extras) depending on your analysis goals.
 
 (en-install-command)=
 ## Install Commands

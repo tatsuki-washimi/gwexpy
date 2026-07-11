@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    description: "Start GWexpy quickly with a pip install command, a 3-line first plot, and pointers to the next tutorials and migration guides."
+    description: "Start GWexpy quickly with a pip install command, a 4-line first plot, and pointers to the next tutorials and migration guides."
 ---
 
 # Quickstart
@@ -27,7 +27,7 @@ GitHub source repository: `pip install git+https://github.com/tatsuki-washimi/gw
 If you need a Conda-managed environment, GW binary dependencies such as NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the [Installation Guide](installation.md) instead of adding those packages ad hoc after this quick install.
 
 (en-quick-demo)=
-## 3-line Quickstart
+## 4-line Quickstart
 
 GWexpy's `TimeSeries` can be created directly from NumPy arrays and features built-in plotting capabilities.
 
