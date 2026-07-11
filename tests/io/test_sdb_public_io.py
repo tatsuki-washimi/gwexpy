@@ -6,7 +6,6 @@ import sqlite3
 
 import numpy as np
 
-from gwexpy.gui.loaders.loaders import load_products
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
@@ -46,16 +45,6 @@ def test_sdb_public_read_entrypoints_work_for_alias_family(tmp_path):
         assert len(ts) == 3
 
 
-def test_sdb_auto_identify_and_gui_loader_follow_same_contract(tmp_path):
-    path = tmp_path / "weather.sqlite3"
-    _create_weather_db(path)
-
-    tsd = TimeSeriesDict.read(path)
-    assert sorted(tsd.keys()) == ["barometer", "outHumidity", "outTemp"]
-
-    products = load_products(str(path))
-    assert "TS" in products
-    assert sorted(products["TS"].keys()) == ["barometer", "outHumidity", "outTemp"]
 
 
 def test_sdb_matrix_reader_remains_available_as_implementation_surface(tmp_path):

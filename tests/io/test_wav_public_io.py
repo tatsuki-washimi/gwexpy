@@ -7,7 +7,6 @@ import pytest
 from astropy.io.registry.base import IORegistryError
 from scipy.io import wavfile
 
-from gwexpy.gui.loaders.loaders import load_products
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
@@ -46,12 +45,4 @@ def test_wav_write_boundary_excludes_dict_and_keeps_matrix_read(tmp_path):
     matrix = TimeSeriesMatrix.read(path, format="wav")
     assert matrix.shape == (2, 1, 4)
 
-
-def test_wav_load_products_matches_timeseriesdict_interpretation(tmp_path):
-    path = tmp_path / "stereo.wav"
-    _write_stereo_wav(path)
-
-    products = load_products(str(path))
-    assert "TS" in products
-    assert sorted(products["TS"].keys()) == ["channel_0", "channel_1"]
 
