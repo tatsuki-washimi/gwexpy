@@ -54,16 +54,19 @@ def test_filter_changed_notebooks_skips_build_and_missing(tmp_path: Path):
     keep = tmp_path / "docs" / "ok.ipynb"
     skip_build = tmp_path / "docs" / "_build" / "skip.ipynb"
     skip_checkpoint = tmp_path / ".ipynb_checkpoints" / "skip.ipynb"
+    skip_redesign = tmp_path / "docs_redesign" / "tutorials" / "skip.ipynb"
 
     write_notebook(keep)
     write_notebook(skip_build)
     write_notebook(skip_checkpoint)
+    write_notebook(skip_redesign)
 
     filtered = module.filter_changed_notebooks(
         [
             str(keep.relative_to(tmp_path)),
             str(skip_build.relative_to(tmp_path)),
             str(skip_checkpoint.relative_to(tmp_path)),
+            str(skip_redesign.relative_to(tmp_path)),
             "docs/missing.ipynb",
             "docs/not_a_notebook.txt",
         ],
