@@ -454,14 +454,10 @@
 <section id="fixed">
 <h3>修正 (Fixed)<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.plot()</span></code> so multi-channel dictionaries are expanded into
-separate subplots instead of producing a blank or invalid figure (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/432">#432</a>).</p></li>
-<li><p>Fixed ObsPy-backed seismic readers so <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> keys are stable string
-trace names (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;IU.ANMO.00.BHZ&quot;</span></code>), enabling reliable string-based lookup (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/435">#435</a>).</p></li>
-<li><p>Added support for passing a list or tuple of miniSEED paths to
-<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;mseed&quot;)</span></code> (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/433">#433</a>).</p></li>
-<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">gwexpy.frequencyseries</span></code> import-time I/O registration so FrequencySeries
-read formats are visible through the GWpy default I/O registry (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/437">#437</a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.plot()</span></code> を修正し、複数チャンネルの辞書が空白または不正な図になる問題を解消して、チャンネルごとのサブプロットに展開されるようにしました（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/432">#432</a>）。</p></li>
+<li><p>ObsPy ベースの地震計データリーダーを修正し、<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> のキーが安定した文字列トレース名（例: <code class="docutils literal notranslate"><span class="pre">&quot;IU.ANMO.00.BHZ&quot;</span></code>）となり、文字列での確実な参照ができるようになりました（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/435">#435</a>）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;mseed&quot;)</span></code> に miniSEED パスのリスト/タプルを渡せるようになりました（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/433">#433</a>）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.frequencyseries</span></code> のインポート時 I/O 登録を修正し、FrequencySeries の読み込みフォーマットが GWpy 標準の I/O レジストリから見えるようになりました（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/437">#437</a>）。</p></li>
 </ul>
 </section>
 <section id="documentation">
@@ -489,7 +485,7 @@ read formats are visible through the GWpy default I/O registry (<a class="refere
 <section id="tests">
 <h3>テスト (Tests)<a class="headerlink" href="#tests" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Added NetCDF fixture coverage requiring an explicit time coordinate (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/393">#393</a>).</p></li>
+<li><p>明示的な時間座標を要求する NetCDF フィクスチャのカバレッジを追加しました（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/393">#393</a>）。</p></li>
 <li><p>マルチチャンネルのリストソース読み込みと、<code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> でのパディングされたギャップ読み込みについて、GWF の回帰テストカバレッジを追加しました。</p></li>
 </ul>
 </section>
@@ -510,9 +506,7 @@ read formats are visible through the GWpy default I/O registry (<a class="refere
 <section id="known-issues">
 <h3>既知の問題 (Known Issues)<a class="headerlink" href="#known-issues" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Some bundled NetCDF fixture paths can fail the TimeSeries reader
-time-coordinate contract (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/393">#393</a>). Generated NetCDF round-trip coverage still
-passes; files should expose an explicit time coordinate.</p></li>
+<li><p>同梱の一部 NetCDF フィクスチャパスは、TimeSeries リーダーの時間座標契約に失敗することがあります（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/393">#393</a>）。生成された NetCDF 往復変換カバレッジは引き続き通過します。ファイルは明示的な時間座標を公開すべきです。</p></li>
 </ul>
 </section>
 </section>
@@ -523,7 +517,7 @@ passes; files should expose an explicit time coordinate.</p></li>
 <ul class="simple">
 <li><p>GWpy4 向け公開 I/O proxy import と GWF list/dict read 挙動の互換性修正。</p></li>
 <li><p>histogram HDF5、ATS/MTH5、audio、seismic、SegmentTable span CSV、FrequencySeries DTT XML の auto-identify/read-path 修正。</p></li>
-<li><p>Includes only a minimal <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/369">#369</a> landing/demo import hunk for this integration track.</p></li>
+<li><p>この統合トラックでは <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/369">#369</a> の最小 landing/demo import hunk のみを含みます。</p></li>
 </ul>
 </section>
 </section>
@@ -545,11 +539,11 @@ passes; files should expose an explicit time coordinate.</p></li>
 <section id="known-limitations-and-follow-ups">
 <h3>既知の制限とフォローアップ (Known Limitations And Follow-Ups)<a class="headerlink" href="#known-limitations-and-follow-ups" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>PyPI publication is still a human-controlled final step for issue <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/293">#293</a>. Public install docs intentionally remain GitHub/source-based until the first PyPI release is actually published; switch them to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gwexpy</span></code> only after publication and post-publish smoke succeed.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> packaging is not published yet. Issue <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/294">#294</a> remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.</p></li>
-<li><p>Open numerical and analysis audit follow-ups remain for noise contracts (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/278">#278</a>), astro range assumptions and unit handling (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/282">#282</a>), Bruco/coupling/response workflow semantics (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/284">#284</a>), and preprocessing/decomposition/forecasting contracts (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/288">#288</a>). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.</p></li>
-<li><p>GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/274">#274</a>, <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/275">#275</a>, <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/283">#283</a>). The GUI should still be treated as experimental.</p></li>
-<li><p>Local validation follow-up <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/335">#335</a> tracks an intermittent one-process <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/</span> <span class="pre">-q</span></code> exit 139. Split-suite validation passed and remains the current evidence base, but the single-process crash is not yet explained.</p></li>
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/293">#293</a> の最終段階である PyPI 公開はまだ人手実行のままです。公開インストール手順は、最初の PyPI リリースと post-publish smoke が成功するまで GitHub / ソース導入のままにします。<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gwexpy</span></code> への切り替えは公開後に行います。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> パッケージはまだ公開されていません。<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/294">#294</a> では staged-recipes 提出と fresh conda 環境での smoke test を継続します。</p></li>
+<li><p>ノイズ契約（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/278">#278</a>）、astro range の単位と前提（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/282">#282</a>）、BruCo/coupling/response ワークフロー（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/284">#284</a>）、preprocessing / decomposition / forecasting 契約（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/288">#288</a>）は、現状挙動の docs/test baseline は入ったものの、方針決定が残っています。</p></li>
+<li><p>GUI と可視化まわりでは、payload metadata、ラベル、colorbar、plot helper の意味論、公開ドキュメントの残差 drift が継続課題です（<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/274">#274</a>、<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/275">#275</a>、<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/283">#283</a>）。GUI は引き続き安定性ラベル上の実験的機能です。</p></li>
+<li><p>ローカル検証のフォローアップ <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/335">#335</a> では、<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/</span> <span class="pre">-q</span></code> を 1 プロセスで通したときに exit 139 が断続的に発生します。分割スイートでは通過していますが、単一プロセス異常終了の原因は未解明です。</p></li>
 </ul>
 </section>
 </section>
