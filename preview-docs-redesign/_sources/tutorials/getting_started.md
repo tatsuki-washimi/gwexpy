@@ -17,7 +17,7 @@ If you want the shared assumptions and FFT/time conventions first, use [Prerequi
 
 [Quickstart](quickstart.md)
 
-For those who want to see results immediately. Get a figure in just 3 lines of code.
+For those who want to see results immediately. Get a figure in just 4 lines of code.
 
 ### 📖 30-min Hands-on
 

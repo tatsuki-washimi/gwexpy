@@ -3,6 +3,8 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
+*Last updated: 2026-07-11.*
+
 ## How to Read This Page
 
 - **Near-term**: areas we expect to improve in upcoming iterations

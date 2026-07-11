@@ -16,9 +16,13 @@ For reproducibility of analysis results and continued maintenance of the softwar
 }
 ```
 
+The `version` field above is pinned to the release current at the time this page was written; check the [Changelog](changelog.md) for the version you actually used.
+
 ## CITATION.cff
 
-You can also retrieve citation information directly from GitHub using the `CITATION.cff` file located in the root directory of the repository.
+You can also retrieve citation information directly from GitHub using the
+[**CITATION.cff**](https://github.com/tatsuki-washimi/gwexpy/blob/main/CITATION.cff)
+file located in the root directory of the repository.
 
 ## Related Works
 

@@ -8,13 +8,13 @@ This is a patch release focused on plotting and I/O hotfixes.
 
 ### Fixed
 - Fixed `TimeSeriesDict.plot()` so multi-channel dictionaries are expanded into
-  separate subplots instead of producing a blank or invalid figure (#432).
+  separate subplots instead of producing a blank or invalid figure ([#432](https://github.com/tatsuki-washimi/gwexpy/issues/432)).
 - Fixed ObsPy-backed seismic readers so `TimeSeriesDict` keys are stable string
-  trace names (e.g. `"IU.ANMO.00.BHZ"`), enabling reliable string-based lookup (#435).
+  trace names (e.g. `"IU.ANMO.00.BHZ"`), enabling reliable string-based lookup ([#435](https://github.com/tatsuki-washimi/gwexpy/issues/435)).
 - Added support for passing a list or tuple of miniSEED paths to
-  `TimeSeriesDict.read(..., format="mseed")` (#433).
+  `TimeSeriesDict.read(..., format="mseed")` ([#433](https://github.com/tatsuki-washimi/gwexpy/issues/433)).
 - Fixed `gwexpy.frequencyseries` import-time I/O registration so FrequencySeries
-  read formats are visible through the GWpy default I/O registry (#437).
+  read formats are visible through the GWpy default I/O registry ([#437](https://github.com/tatsuki-washimi/gwexpy/issues/437)).
 
 ### Documentation
 - Clarified that GWexpy is an independent package built on top of GWpy and is
@@ -35,7 +35,7 @@ This is a patch release focused on plotting and I/O hotfixes.
   form. Security reports remain directed to the repository security policy.
 
 ### Tests
-- Added NetCDF fixture coverage requiring an explicit time coordinate (#393).
+- Added NetCDF fixture coverage requiring an explicit time coordinate ([#393](https://github.com/tatsuki-washimi/gwexpy/issues/393)).
 - Added GWF regression coverage for multi-channel list-source reads and padded
   gap reads with `parallel > 1`.
 
@@ -54,14 +54,14 @@ This is a patch release focused on plotting and I/O hotfixes.
 
 ### Known Issues
 - Some bundled NetCDF fixture paths can fail the TimeSeries reader
-  time-coordinate contract (#393). Generated NetCDF round-trip coverage still
+  time-coordinate contract ([#393](https://github.com/tatsuki-washimi/gwexpy/issues/393)). Generated NetCDF round-trip coverage still
   passes; files should expose an explicit time coordinate.
 
 ## [0.1.2] - 2026-05-08
 ### Targeted Narrow Hotfix Scope
 - Narrow compatibility fixes for GWpy4 public I/O proxy imports and GWF list/dict read behavior.
 - Targeted auto-identify/read-path fixes for histogram HDF5, ATS/MTH5, audio, seismic, SegmentTable span CSV, and FrequencySeries DTT XML flows.
-- Includes only a minimal #369 landing/demo import hunk for this integration track.
+- Includes only a minimal [#369](https://github.com/tatsuki-washimi/gwexpy/issues/369) landing/demo import hunk for this integration track.
 
 ## [0.1.1] - 2026-04-28
 ### Added
@@ -72,11 +72,11 @@ This is a patch release focused on plotting and I/O hotfixes.
 - Clarified installation guidance around optional extras, source installs, and future release-channel transitions.
 
 ### Known Limitations And Follow-Ups
-- PyPI publication is still a human-controlled final step for issue #293. Public install docs intentionally remain GitHub/source-based until the first PyPI release is actually published; switch them to `pip install gwexpy` only after publication and post-publish smoke succeed.
-- `conda-forge` packaging is not published yet. Issue #294 remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.
-- Open numerical and analysis audit follow-ups remain for noise contracts (#278), astro range assumptions and unit handling (#282), Bruco/coupling/response workflow semantics (#284), and preprocessing/decomposition/forecasting contracts (#288). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.
-- GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift (#274, #275, #283). The GUI should still be treated as experimental.
-- Local validation follow-up #335 tracks an intermittent one-process `pytest tests/ -q` exit 139. Split-suite validation passed and remains the current evidence base, but the single-process crash is not yet explained.
+- PyPI publication is still a human-controlled final step for issue [#293](https://github.com/tatsuki-washimi/gwexpy/issues/293). Public install docs intentionally remain GitHub/source-based until the first PyPI release is actually published; switch them to `pip install gwexpy` only after publication and post-publish smoke succeed.
+- `conda-forge` packaging is not published yet. Issue [#294](https://github.com/tatsuki-washimi/gwexpy/issues/294) remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.
+- Open numerical and analysis audit follow-ups remain for noise contracts ([#278](https://github.com/tatsuki-washimi/gwexpy/issues/278)), astro range assumptions and unit handling ([#282](https://github.com/tatsuki-washimi/gwexpy/issues/282)), Bruco/coupling/response workflow semantics ([#284](https://github.com/tatsuki-washimi/gwexpy/issues/284)), and preprocessing/decomposition/forecasting contracts ([#288](https://github.com/tatsuki-washimi/gwexpy/issues/288)). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.
+- GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift ([#274](https://github.com/tatsuki-washimi/gwexpy/issues/274), [#275](https://github.com/tatsuki-washimi/gwexpy/issues/275), [#283](https://github.com/tatsuki-washimi/gwexpy/issues/283)). The GUI should still be treated as experimental.
+- Local validation follow-up [#335](https://github.com/tatsuki-washimi/gwexpy/issues/335) tracks an intermittent one-process `pytest tests/ -q` exit 139. Split-suite validation passed and remains the current evidence base, but the single-process crash is not yet explained.
 
 ## [0.1.0] - 2026-04-08
 ### Added

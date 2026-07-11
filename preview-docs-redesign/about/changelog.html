@@ -454,13 +454,13 @@
 <h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Fixed <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.plot()</span></code> so multi-channel dictionaries are expanded into
-separate subplots instead of producing a blank or invalid figure (#432).</p></li>
+separate subplots instead of producing a blank or invalid figure (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/432">#432</a>).</p></li>
 <li><p>Fixed ObsPy-backed seismic readers so <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> keys are stable string
-trace names (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;IU.ANMO.00.BHZ&quot;</span></code>), enabling reliable string-based lookup (#435).</p></li>
+trace names (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;IU.ANMO.00.BHZ&quot;</span></code>), enabling reliable string-based lookup (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/435">#435</a>).</p></li>
 <li><p>Added support for passing a list or tuple of miniSEED paths to
-<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;mseed&quot;)</span></code> (#433).</p></li>
+<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;mseed&quot;)</span></code> (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/433">#433</a>).</p></li>
 <li><p>Fixed <code class="docutils literal notranslate"><span class="pre">gwexpy.frequencyseries</span></code> import-time I/O registration so FrequencySeries
-read formats are visible through the GWpy default I/O registry (#437).</p></li>
+read formats are visible through the GWpy default I/O registry (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/437">#437</a>).</p></li>
 </ul>
 </section>
 <section id="documentation">
@@ -495,7 +495,7 @@ form. Security reports remain directed to the repository security policy.</p></l
 <section id="tests">
 <h3>Tests<a class="headerlink" href="#tests" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Added NetCDF fixture coverage requiring an explicit time coordinate (#393).</p></li>
+<li><p>Added NetCDF fixture coverage requiring an explicit time coordinate (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/393">#393</a>).</p></li>
 <li><p>Added GWF regression coverage for multi-channel list-source reads and padded
 gap reads with <code class="docutils literal notranslate"><span class="pre">parallel</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>.</p></li>
 </ul>
@@ -522,7 +522,7 @@ unavailable optional backend instead of failing at import time.</p></li>
 <h3>Known Issues<a class="headerlink" href="#known-issues" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Some bundled NetCDF fixture paths can fail the TimeSeries reader
-time-coordinate contract (#393). Generated NetCDF round-trip coverage still
+time-coordinate contract (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/393">#393</a>). Generated NetCDF round-trip coverage still
 passes; files should expose an explicit time coordinate.</p></li>
 </ul>
 </section>
@@ -534,7 +534,7 @@ passes; files should expose an explicit time coordinate.</p></li>
 <ul class="simple">
 <li><p>Narrow compatibility fixes for GWpy4 public I/O proxy imports and GWF list/dict read behavior.</p></li>
 <li><p>Targeted auto-identify/read-path fixes for histogram HDF5, ATS/MTH5, audio, seismic, SegmentTable span CSV, and FrequencySeries DTT XML flows.</p></li>
-<li><p>Includes only a minimal #369 landing/demo import hunk for this integration track.</p></li>
+<li><p>Includes only a minimal <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/369">#369</a> landing/demo import hunk for this integration track.</p></li>
 </ul>
 </section>
 </section>
@@ -556,11 +556,11 @@ passes; files should expose an explicit time coordinate.</p></li>
 <section id="known-limitations-and-follow-ups">
 <h3>Known Limitations And Follow-Ups<a class="headerlink" href="#known-limitations-and-follow-ups" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>PyPI publication is still a human-controlled final step for issue #293. Public install docs intentionally remain GitHub/source-based until the first PyPI release is actually published; switch them to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gwexpy</span></code> only after publication and post-publish smoke succeed.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> packaging is not published yet. Issue #294 remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.</p></li>
-<li><p>Open numerical and analysis audit follow-ups remain for noise contracts (#278), astro range assumptions and unit handling (#282), Bruco/coupling/response workflow semantics (#284), and preprocessing/decomposition/forecasting contracts (#288). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.</p></li>
-<li><p>GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift (#274, #275, #283). The GUI should still be treated as experimental.</p></li>
-<li><p>Local validation follow-up #335 tracks an intermittent one-process <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/</span> <span class="pre">-q</span></code> exit 139. Split-suite validation passed and remains the current evidence base, but the single-process crash is not yet explained.</p></li>
+<li><p>PyPI publication is still a human-controlled final step for issue <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/293">#293</a>. Public install docs intentionally remain GitHub/source-based until the first PyPI release is actually published; switch them to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gwexpy</span></code> only after publication and post-publish smoke succeed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> packaging is not published yet. Issue <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/294">#294</a> remains the follow-up for the staged-recipes submission and fresh conda-environment smoke tests.</p></li>
+<li><p>Open numerical and analysis audit follow-ups remain for noise contracts (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/278">#278</a>), astro range assumptions and unit handling (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/282">#282</a>), Bruco/coupling/response workflow semantics (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/284">#284</a>), and preprocessing/decomposition/forecasting contracts (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/288">#288</a>). Current docs/test baselines record present behavior, but these surfaces still have deferred policy decisions.</p></li>
+<li><p>GUI and visual-surface follow-ups remain open for payload metadata, labels, colorbars, plot-helper semantics, and residual public-doc drift (<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/274">#274</a>, <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/275">#275</a>, <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/283">#283</a>). The GUI should still be treated as experimental.</p></li>
+<li><p>Local validation follow-up <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/issues/335">#335</a> tracks an intermittent one-process <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/</span> <span class="pre">-q</span></code> exit 139. Split-suite validation passed and remains the current evidence base, but the single-process crash is not yet explained.</p></li>
 </ul>
 </section>
 </section>
