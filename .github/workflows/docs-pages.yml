@@ -112,8 +112,7 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No gh-pages changes to publish"
-            exit 0
+          else
+            git commit -m "deploy: switch website to docs_redesign (${GITHUB_SHA})"
+            git push origin gh-pages
           fi
-
-          git commit -m "deploy: switch website to docs_redesign (${GITHUB_SHA})"
-          git push origin gh-pages
