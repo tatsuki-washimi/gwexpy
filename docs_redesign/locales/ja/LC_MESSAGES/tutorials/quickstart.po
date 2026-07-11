@@ -6,224 +6,230 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
+"Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 00:42+0000\n"
+"POT-Creation-Date: 2026-07-11 06:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ja <LL@li.org>\n"
 "Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../tutorials/quickstart.md 0aac433c8f6d48a48f0defb81d4fb007
+#: ../../tutorials/quickstart.md 95a864eee28642bdbd53cf487072e647
 msgid ""
-"Start GWexpy quickly with a pip install command, a 3-line first plot, and "
-"pointers to the next tutorials and migration guides."
+"Start GWexpy quickly with a pip install command, a 4-line first plot, and"
+" pointers to the next tutorials and migration guides."
 msgstr ""
-"GWexpy を最短で始めるための導入ガイドです。pip インストールコマンド、3 "
+"GWexpy を最短で始めるための導入ガイドです。pip インストールコマンド、4 "
 "行の最小例、次に読むチュートリアルや移行ガイドへの入口をまとめています。"
 
-#: ../../tutorials/quickstart.md:7 3552a1879d004a4eab0f04d829f8d6b5
+#: ../../tutorials/quickstart.md:7 408b8a5eb9d54e3c82049cd846d9a9ac
 msgid "Quickstart"
 msgstr "クイックスタート (Quickstart)"
 
-#: ../../tutorials/quickstart.md:9 f63547addb854ca9a69d1342018dc7e7
+#: ../../tutorials/quickstart.md:9 03620e98a9b74b97b9ea36b9c7278599
 msgid "Get your first analysis plot with GWexpy as quickly as possible."
 msgstr "GWexpy を使って、最初の解析図を最短で作成しましょう。"
 
-#: ../../tutorials/quickstart.md:12 c79f5293eac7467ba18f0725b472b523
+#: ../../tutorials/quickstart.md:12 a8a6e1540dd745198e53b4ddc534cee0
 msgid "Quick Install"
 msgstr "クイックインストール (Quick Install)"
 
-#: ../../tutorials/quickstart.md:14 fd1a68aa24614f69a6dbbf0bcabbba22
+#: ../../tutorials/quickstart.md:14 b71cbd470c14430ca170e94a0ddad4d7
 msgid ""
-"GWexpy is published on PyPI, so a plain `pip install` is all you need to get"
-" started:"
+"GWexpy is published on PyPI, so a plain `pip install` is all you need to "
+"get started:"
 msgstr "GWexpy は PyPI で公開されており、`pip install` だけで始められます:"
 
-#: ../../tutorials/quickstart.md:16 1f677682c8224334b2aef12bd3296f93
+#: ../../tutorials/quickstart.md:16 b2c42c7a6e4f4fa7b42d86bec8fa692d
 msgid "Purpose: install the current release as quickly as possible"
 msgstr "目的: 現行リリースを最短でインストールする"
 
-#: ../../tutorials/quickstart.md:17 929ffd14605c417e9312cd9c74ca8ee3
+#: ../../tutorials/quickstart.md:17 30c18b1da55a4848b247ad7e19674f82
 msgid "Input: Python 3.11+ with `pip`"
 msgstr "入力: Python 3.11 以上と `pip`"
 
-#: ../../tutorials/quickstart.md:18 125db08cc8e94d8db273901f81e23a8f
+#: ../../tutorials/quickstart.md:18 121015940443476ea349fe09a49593ec
 msgid "Output: a local GWexpy installation ready for the first example"
 msgstr "出力: 最初のサンプルを実行できる GWexpy 環境"
 
-#: ../../tutorials/quickstart.md:24 3c524f8d6213493da1cd852c6fb516da
+#: ../../tutorials/quickstart.md:24 24b43f5dfd8241a7b8acb68a9a830c67
 msgid ""
-"If you want the latest unreleased development version instead, install from "
-"the GitHub source repository: `pip install git+https://github.com/tatsuki-"
-"washimi/gwexpy.git`"
+"If you want the latest unreleased development version instead, install "
+"from the GitHub source repository: `pip install git+https://github.com"
+"/tatsuki-washimi/gwexpy.git`"
 msgstr ""
 "未リリースの最新開発版を使いたい場合は、GitHub のソースリポジトリからインストールしてください: `pip install "
 "git+https://github.com/tatsuki-washimi/gwexpy.git`"
 
-#: ../../tutorials/quickstart.md:27 e6c2f805449b4edfbc2cd4b27809b6d0
+#: ../../tutorials/quickstart.md:27 2b21a8cf36664499baca34967876eb28
 msgid ""
-"If you need a Conda-managed environment, GW binary dependencies such as NDS2"
-" / FrameLIB, or optional tools such as `pygmt`, start with the [Installation"
-" Guide](installation.md) instead of adding those packages ad hoc after this "
-"quick install."
+"If you need a Conda-managed environment, GW binary dependencies such as "
+"NDS2 / FrameLIB, or optional tools such as `pygmt`, start with the "
+"[Installation Guide](installation.md) instead of adding those packages ad"
+" hoc after this quick install."
 msgstr ""
 "Conda 管理の環境で始めたい場合、NDS2 / FrameLIB などの GW 系バイナリ依存が必要な場合、`pygmt` "
 "などの追加ツールを使いたい場合は、後から場当たり的に足さず [インストールガイド](installation.md) の Conda "
 "前提手順から始めてください。"
 
-#: ../../tutorials/quickstart.md:30 9b6ab9d7d73e49c0a4a5d942f2e673ce
-msgid "3-line Quickstart"
-msgstr "3行で最初の図を出す (3-line Quickstart)"
+#: ../../tutorials/quickstart.md:30 a04e2aa60ddd430985999fdc664609c9
+msgid "4-line Quickstart"
+msgstr "4行で最初の図を出す (4-line Quickstart)"
 
-#: ../../tutorials/quickstart.md:32 9159a3bae02a41e9930c978890ee3c52
+#: ../../tutorials/quickstart.md:32 470ceb27a9d44ecc9dc65a43c5461ba7
 msgid ""
-"GWexpy's `TimeSeries` can be created directly from NumPy arrays and features"
-" built-in plotting capabilities."
+"GWexpy's `TimeSeries` can be created directly from NumPy arrays and "
+"features built-in plotting capabilities."
 msgstr "GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。"
 
-#: ../../tutorials/quickstart.md:34 3ae2936487a14db1b1886606cd9ae8b0
+#: ../../tutorials/quickstart.md:34 0174c0564cdc42f1ad88bbafcb4a9d50
 msgid "Purpose: display a first plot from a random time series"
 msgstr "目的: ランダムな時系列から最初のプロットを 1 枚表示する"
 
-#: ../../tutorials/quickstart.md:35 16cdb574380e4b6fb17738f5a4a4351d
+#: ../../tutorials/quickstart.md:35 dfa7e1015c64450596dc1f3097366b2e
 msgid "Input: a 4096-sample NumPy array, sample rate 4096 Hz, and `t0=0`"
 msgstr "入力: 4096 サンプルの NumPy 配列、サンプルレート 4096 Hz、開始時刻 `t0=0`"
 
-#: ../../tutorials/quickstart.md:36 d9ce90c09a124035bf8b4c8ef79185ed
+#: ../../tutorials/quickstart.md:36 e8b4403ab51146b0887f1c9d54c59aab
 msgid "Output: a `TimeSeries` object and a rendered plot"
 msgstr "出力: `TimeSeries` オブジェクトと描画ウィンドウ"
 
-#: ../../tutorials/quickstart.md:46 a6f08783b19e41e5812f0ada390a92f3
+#: ../../tutorials/quickstart.md:46 2250350946ce4c67860fccc1aaacf500
 msgid "30-min Hands-on (Interactive Tutorial)"
 msgstr "30分で学べるハンズオン (Interactive Tutorial)"
 
-#: ../../tutorials/quickstart.md:48 b897fe469b3e4921874d48b94363b38f
+#: ../../tutorials/quickstart.md:48 43119feb0d7f448ca32821d2895e237f
 msgid "For a more practical workflow, we recommend the following lesson."
 msgstr "より実践的なワークフローを学びたい場合は、以下のレッスンを推奨します。"
 
-#: ../../tutorials/quickstart.md:50 dc4030f22bd24928bbe3c8e914c10351
+#: ../../tutorials/quickstart.md:50 3c7fa50e249a4bc99fa96841dde94530
 msgid "🧪 GWexpy Basic Hands-on"
 msgstr "🧪 GWexpy 基本ハンズオン"
 
-#: ../../tutorials/quickstart.md:52 fe375915ac9a45368b2223aaa9d408a7
+#: ../../tutorials/quickstart.md:52 003a46028635446d9b8134275bbf0c74
 msgid "[TimeSeries basics lesson](intro_timeseries.ipynb)"
 msgstr "[TimeSeries の基本レッスン](intro_timeseries.ipynb)"
 
-#: ../../tutorials/quickstart.md:54 34489feab01c48488b05324c77a0cbfc
+#: ../../tutorials/quickstart.md:54 d37b5cc9bca547e29c046988a13d8c9e
 msgid ""
-"Experience everything from loading data to frequency analysis (ASD/CSD) and "
-"multi-channel manipulation with the Matrix API."
+"Experience everything from loading data to frequency analysis (ASD/CSD) "
+"and multi-channel manipulation with the Matrix API."
 msgstr "データの読み込みから、周波数解析（ASD/CSD）、Matrix API によるマルチチャンネル操作までを一通り体験します。"
 
-#: ../../tutorials/quickstart.md:56 f647d58556a3476eaa905da35ada6cd6
+#: ../../tutorials/quickstart.md:56 77735fbc69c74eeeba30ea2aba1b5274
 msgid "Core Concepts"
 msgstr "主要概念 (Core Concepts)"
 
-#: ../../tutorials/quickstart.md:58 f5761ad8c0bc4f618788bd5470046cd2
+#: ../../tutorials/quickstart.md:58 38f9afa6d4c24c7d9006519c046e5e0b
 msgid "The two pillars to mastering GWexpy."
 msgstr "GWexpy を使いこなすための 2 つの重要な柱です。"
 
-#: ../../tutorials/quickstart.md:60 3e7ab40f035349e4b372e65b7958442d
+#: ../../tutorials/quickstart.md:60 bb13ade3f10f44f39ec67a12e288ce29
 msgid ""
-"**TimeSeries / FrequencySeries**:  Basic classes for handling single-channel"
-" data. High compatibility with GWpy allows you to run existing code as is."
+"**TimeSeries / FrequencySeries**:  Basic classes for handling single-"
+"channel data. High compatibility with GWpy allows you to run existing "
+"code as is."
 msgstr ""
 "**TimeSeries / FrequencySeries**: 単一チャンネルのデータを扱う基本クラスです。GWpy "
 "との高い互換性により、既存コードをほぼそのまま実行できます。"
 
-#: ../../tutorials/quickstart.md:62 33170d733082482a86d0bab5f1105e3d
+#: ../../tutorials/quickstart.md:62 122e54af1a0441a8ac478d1b054c42e6
 msgid ""
 "**TimeSeriesMatrix / ScalarField**: New APIs for handling multi-channel "
-"(matrix format) or multi-dimensional field-like data. Large-scale analysis "
-"with over 100 channels can be handled safely with a single line of code."
+"(matrix format) or multi-dimensional field-like data. Large-scale "
+"analysis with over 100 channels can be handled safely with a single line "
+"of code."
 msgstr ""
 "**TimeSeriesMatrix / ScalarField**: 多チャンネル（行列形式）や多次元のフィールド状データを扱う新しい API "
 "です。100 チャンネルを超える大規模解析も、1 行のコードで安全に扱えます。"
 
-#: ../../tutorials/quickstart.md:65 4b9d61f515bb4d77be57b1eab1f8b4e1
+#: ../../tutorials/quickstart.md:65 ccfbe05244fa4c8b84545b049f258762
 msgid "Multi-channel Analysis Example"
 msgstr "複数チャンネルの解析例"
 
-#: ../../tutorials/quickstart.md:67 b4da53c4c3c449d8ad74494e70161180
+#: ../../tutorials/quickstart.md:67 d11aec7bd7b34904a61c83035c2301ba
 msgid ""
 "Minimal example for calculating cross-spectral density (CSD) between two "
 "channels."
 msgstr "複数チャンネル間のクロススペクトル密度（CSD）を計算する最小例です。"
 
-#: ../../tutorials/quickstart.md:69 1678a6352dac47a2a3b1840c147a1911
+#: ../../tutorials/quickstart.md:69 4ccde38fe705485b9edd59af9c3151ad
 msgid "Purpose: compute cross-spectral density from two `TimeSeries` channels"
 msgstr "目的: 2 チャンネルの `TimeSeries` からクロススペクトル密度を計算する"
 
-#: ../../tutorials/quickstart.md:70 144b2f3658054aa1aa3dc1220ff226a8
+#: ../../tutorials/quickstart.md:70 5e422505f7bb45d89519a20461aa569a
 msgid "Input: a two-channel `TimeSeriesDict` and `fftlength=1`"
 msgstr "入力: 2 チャンネルの `TimeSeriesDict` と `fftlength=1`"
 
-#: ../../tutorials/quickstart.md:71 89975cd9d2ff476c92f88e70101d4ff2
+#: ../../tutorials/quickstart.md:71 17198328762d42eebf4cb2d883bed8e4
 msgid "Output: a `csd` object and a plotted CSD result"
 msgstr "出力: `csd` オブジェクトと CSD プロット"
 
-#: ../../tutorials/quickstart.md:88 4ca4e1d450184d99834d5ae671e8ffac
+#: ../../tutorials/quickstart.md:88 fb1b252fbe6148eb942f2714348b38f4
 msgid ""
-"This example selects the two channels from the `TimeSeriesDict` and stores "
-"the resulting cross-spectral density in `csd`."
+"This example selects the two channels from the `TimeSeriesDict` and "
+"stores the resulting cross-spectral density in `csd`."
 msgstr ""
-"ここでは `TimeSeriesDict` から対象の 2 チャンネルを取り出し、チャンネル間のクロススペクトル密度を `csd` として得ています。"
+"ここでは `TimeSeriesDict` から対象の 2 チャンネルを取り出し、チャンネル間のクロススペクトル密度を `csd` "
+"として得ています。"
 
-#: ../../tutorials/quickstart.md:90 f1f9db91a9394d14bcec4049db825c95
+#: ../../tutorials/quickstart.md:90 92c4094fbaed4b91b9823d4b7e2de1e5
 msgid "Need Help?"
 msgstr "困ったときは"
 
-#: ../../tutorials/quickstart.md:92 daf8a189f0834c579e38834c9904d421
+#: ../../tutorials/quickstart.md:92 c4b47f4fe95a46638dffea90732673d7
 msgid ""
-"If you encounter errors or plots do not appear, check the [Troubleshooting "
-"Guide](../how-to/troubleshooting.md). If the problem is really an "
-"environment setup issue, return to the [Installation Guide](installation.md)"
-" for the Conda-first workflow."
+"If you encounter errors or plots do not appear, check the "
+"[Troubleshooting Guide](../how-to/troubleshooting.md). If the problem is "
+"really an environment setup issue, return to the [Installation "
+"Guide](installation.md) for the Conda-first workflow."
 msgstr ""
-"実行時にエラーが発生したり、プロットが表示されない場合は、[トラブルシューティングガイド](../how-to/troubleshooting.md) "
-"を確認してください。原因が環境構築にある場合は、[インストールガイド](installation.md) の Conda 前提手順に戻るのが最短です。"
+"実行時にエラーが発生したり、プロットが表示されない場合は、[トラブルシューティングガイド](../how-"
+"to/troubleshooting.md) "
+"を確認してください。原因が環境構築にある場合は、[インストールガイド](installation.md) の Conda "
+"前提手順に戻るのが最短です。"
 
-#: ../../tutorials/quickstart.md:94 a538e80e78a54956883a8e85cb9e268e
+#: ../../tutorials/quickstart.md:94 da2d084b7937440ea20d8b35f2e738a3
 msgid "<a id=\"next-to-read\"></a> <a id=\"next-steps\"></a>"
 msgstr "<a id=\"next-to-read\"></a> <a id=\"next-steps\"></a>"
 
-#: ../../tutorials/quickstart.md:97 6188b05dfbca4d89bf724c755519774a
+#: ../../tutorials/quickstart.md:97 b1a9790bd7ba47eeb7ad143856b0869d
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../tutorials/quickstart.md:99 1f8789bdecce45fbb479335b246a78bc
+#: ../../tutorials/quickstart.md:99 260bdbba8e374166ba673abdd45b5a43
 msgid "[Installation Guide](installation.md) - Setting up your environment."
 msgstr "[インストールガイド](installation.md) - 環境の構築"
 
-#: ../../tutorials/quickstart.md:100 21ef4263ac7049bc9a49ea1dac619f66
+#: ../../tutorials/quickstart.md:100 8f8c19668c3d46e6b86ba1ee549bd1e9
 msgid ""
-"[Troubleshooting Guide](../how-to/troubleshooting.md) - Reverse-lookup fixes"
-" by symptom."
+"[Troubleshooting Guide](../how-to/troubleshooting.md) - Reverse-lookup "
+"fixes by symptom."
 msgstr "[トラブルシューティングガイド](../how-to/troubleshooting.md) - 症状から解決策を逆引きする。"
 
-#: ../../tutorials/quickstart.md:101 bfe516fb1674487fa1de0f9d53dec75d
+#: ../../tutorials/quickstart.md:101 dbfbc6fbbbe34fc48448d2591689ab25
 msgid "[Getting Started](getting_started.md) - Systematic learning roadmap."
 msgstr "[はじめに](getting_started.md) - 体系的な学習ロードマップ"
 
-#: ../../tutorials/quickstart.md:102 817550aada0345e28df3cb9be5a0aaf5
+#: ../../tutorials/quickstart.md:102 e101ce48639e46bcb237cc9d5de62d97
 msgid ""
 "[Prerequisites and "
-"Conventions](../explanation/prerequisites_and_conventions.md) - Review FFT, "
-"GPS time, and compatibility assumptions first."
+"Conventions](../explanation/prerequisites_and_conventions.md) - Review "
+"FFT, GPS time, and compatibility assumptions first."
 msgstr ""
 "[前提条件と規約](../explanation/prerequisites_and_conventions.md) - FFT・GPS "
 "時刻・互換性の前提を先に確認する。"
 
-#: ../../tutorials/quickstart.md:103 1797211b0ed7469a9e3c09b1ac8a54f3
+#: ../../tutorials/quickstart.md:103 8f39b077ded8436182930e96335353c1
 msgid ""
 "[GWexpy for GWpy Users](../explanation/gwexpy_for_gwpy_users.md) - "
 "Difference guide for existing users."
 msgstr ""
 "[GWpy ユーザーのための GWexpy](../explanation/gwexpy_for_gwpy_users.md) - "
 "既存ユーザー向けの差分ガイド。"
+

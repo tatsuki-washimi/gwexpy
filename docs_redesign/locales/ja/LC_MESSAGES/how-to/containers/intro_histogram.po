@@ -19,202 +19,202 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10002
+#: ../../how-to/containers/intro_histogram.ipynb:10002
 #: 0f26fd839ed648bea06a17aae8fd0a97
 msgid "Histogram: Basics"
 msgstr "ヒストグラム: 基本"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10004
+#: ../../how-to/containers/intro_histogram.ipynb:10004
 #: 8ad00db43d054d038d75b94cd4e5141c
 msgid ""
 "This tutorial introduces `gwexpy.histogram.Histogram` and demonstrates:"
 msgstr "このチュートリアルでは `gwexpy.histogram.Histogram` を紹介します。内容は次の通りです："
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10005
+#: ../../how-to/containers/intro_histogram.ipynb:10005
 #: ed77d4ee560840a6adcff9399d9c5e67
 msgid "Creating histograms (from totals, from events using `.fill()`)"
 msgstr "ヒストグラムの作成（合計値から、`.fill()` によるイベントから）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10006
+#: ../../how-to/containers/intro_histogram.ipynb:10006
 #: 49917f4c9a224a17926bfe6b83974c75
 msgid "Visualization (counts and density)"
 msgstr "可視化（カウント表示・密度表示）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10007
+#: ../../how-to/containers/intro_histogram.ipynb:10007
 #: 2a3e0bb5f5054131b1b2f46aa8a7e2fa
 msgid "Basic statistics (mean, median, variance, quantiles)"
 msgstr "基本統計（平均・中央値・分散・分位）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10008
+#: ../../how-to/containers/intro_histogram.ipynb:10008
 #: c72bbf9d410d44bfb93f284872edefb6
 msgid "Rebinning with covariance propagation"
 msgstr "リビン（共分散の伝播）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10009
+#: ../../how-to/containers/intro_histogram.ipynb:10009
 #: fdf6b8708b9449ddbb89906f2f37a34d
 msgid "Integration with error propagation"
 msgstr "積分（誤差伝播付き）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10010
+#: ../../how-to/containers/intro_histogram.ipynb:10010
 #: 4dc8b66d9c8e4481856b5ff86771fc98
 msgid "Serialization (HDF5 and JSON)"
 msgstr "シリアライズ（HDF5 と JSON）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10011
+#: ../../how-to/containers/intro_histogram.ipynb:10011
 #: c5510f0b3648415fb4429016bdd0ee97
 msgid "ROOT interoperability (optional; handled with `try/except`)"
 msgstr "ROOT 連携（任意依存, `try/except` で安全に扱う）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:10013
+#: ../../how-to/containers/intro_histogram.ipynb:10013
 #: 80533530c25e44a5816857a7d275997b
 msgid ""
 "Run this notebook in the **gwexpy** conda environment so that all "
 "dependencies are available."
 msgstr "gwexpy の conda 環境で実行することを推奨します。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:30002
+#: ../../how-to/containers/intro_histogram.ipynb:30002
 #: cb766336ec404624998fb9abba2d0a28
 msgid "1. Creating Histograms"
 msgstr "1\\. ヒストグラムの作成"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:30004
+#: ../../how-to/containers/intro_histogram.ipynb:30004
 #: 84e8bf77b9534b0ab4ac848d118e2bfd
 msgid "Two common ways to create a Histogram:"
 msgstr "一般的な作成方法："
 
-#: ../../how-to/fitting/intro_histogram.ipynb:30005
+#: ../../how-to/containers/intro_histogram.ipynb:30005
 #: fddb57ba84214c9daffe9971e5ea7920
 msgid "Directly from **bin totals** and **edges**"
 msgstr "ビンの合計値（totals）とビンエッジから直接作る"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:30006
+#: ../../how-to/containers/intro_histogram.ipynb:30006
 #: b5f1b04b16dc48f9a5048f12e88075ec
 msgid ""
 "From **raw events** using `.fill()` (supports `astropy.units.Quantity` "
 "weights)"
 msgstr "イベント列を `.fill()` で集計して作る（`astropy.units.Quantity` の重みをサポート）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:60002
+#: ../../how-to/containers/intro_histogram.ipynb:60002
 #: f8a671e27e4d4a699f8cf5d6e5214f33
 msgid "2. Visualization"
 msgstr "2\\. 可視化"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:60004
+#: ../../how-to/containers/intro_histogram.ipynb:60004
 #: 032e828976e24f03b4ba78640cf481d3
 msgid ""
 "Plot bin totals (with errorbars if available) and density (value / bin "
 "width)."
 msgstr "ビンごとの合計（エラーバーあり）と密度（値/ビン幅）を表示します。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:90002
+#: ../../how-to/containers/intro_histogram.ipynb:90002
 #: a159351e10bd42e1b782c5b7fdc1b834
 msgid "3. Basic statistics"
 msgstr "3\\. 基本統計"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:90004
+#: ../../how-to/containers/intro_histogram.ipynb:90004
 #: 104ea2930a3344ce84f9409ca4343e9a
 msgid ""
 "Compute mean, median, variance and quantiles. `quantile()` is robust to flat"
 " bins."
 msgstr "平均、中央値、分散、分位を計算します。`quantile()` は平坦ビンに対して安定です。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:110002
+#: ../../how-to/containers/intro_histogram.ipynb:110002
 #: a507352edbf442808ac0639041eccc7f
 msgid "4. Rebinning"
 msgstr "4\\. リビン"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:110004
+#: ../../how-to/containers/intro_histogram.ipynb:110004
 #: b49d209f03f8413daf08d5958ff0e02a
 msgid ""
 "Demonstrate rebinning to non-uniform bins and verify totals are conserved "
 "and covariance is propagated."
 msgstr "非等間隔ビンへの再ビンと合計保存・共分散伝播を示します。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:130002
+#: ../../how-to/containers/intro_histogram.ipynb:130002
 #: a23457993e8941c19599ec8ec9f45f05
 msgid "5. Integration with error propagation"
 msgstr "5\\. 積分（誤差伝播）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:130004
+#: ../../how-to/containers/intro_histogram.ipynb:130004
 #: c01576ef26264710a590150c88c00e2a
 msgid ""
 "Integrate over a partial interval (handles partial bin overlap) and show the"
 " propagated error."
 msgstr "部分区間の積分とその誤差（共分散/`sumw2` に基づく）を示します。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:150002
+#: ../../how-to/containers/intro_histogram.ipynb:150002
 #: 35a81428c4964f1bb4d59ce329a96808
 msgid "6. Serialization (HDF5 and JSON)"
 msgstr "6\\. シリアライズ（HDF5 と JSON）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:150004
+#: ../../how-to/containers/intro_histogram.ipynb:150004
 #: f46d19d279a845a2b3448f587c9f7436
 msgid ""
 "Show HDF5 write/read and a JSON-friendly dict for light-weight exchange."
 msgstr "HDF5 の読み書きと、JSON 形式の軽量な辞書に変換する例を示します。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:180002
+#: ../../how-to/containers/intro_histogram.ipynb:180002
 #: c86fdc96025d4e73834efb7441102c32
 msgid "7. ROOT interoperability (optional)"
 msgstr "7\\. ROOT との連携（任意）"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:180004
+#: ../../how-to/containers/intro_histogram.ipynb:180004
 #: bf638c0c184d4d35aa10c49e16bb217f
 msgid ""
 "PyROOT may not be present in all environments. Use `try/except` to handle "
 "absence gracefully."
 msgstr "PyROOT は利用環境によっては存在しないため `try/except` で安全に扱います。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:200002
+#: ../../how-to/containers/intro_histogram.ipynb:200002
 #: 6343adccc1084717a67ff8f522533ab4
 msgid "8. Exercises"
 msgstr "8\\. 演習"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:200004
+#: ../../how-to/containers/intro_histogram.ipynb:200004
 #: 712cca6123704d8895d1dd503d55860b
 msgid ""
 "Generate a 1D mixture of Gaussians and verify rebin totals are preserved."
 msgstr "Gaussian の混合を生成してヒストグラムを作り、リビン後の合計が保存されることを確認してください。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:200005
+#: ../../how-to/containers/intro_histogram.ipynb:200005
 #: d9d0497f2c1a44fcb440818fa62281f9
 msgid ""
 "Create weighted events where weights are `Quantity` and verify `sumw2` "
 "updates as `sum(w^2)`."
 msgstr "`Quantity` 重みのイベントをシミュレートし、`sumw2` が `sum(w**2)` と一致することを確認してください。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:200006
+#: ../../how-to/containers/intro_histogram.ipynb:200006
 #: 3030c6df507046c5aa245ef179dcd869
 msgid ""
 "Save a histogram to HDF5 and JSON, and load it back in a separate Python "
 "process to check equality."
 msgstr "HDF5 と JSON で保存・読み込みを別プロセスで行い、等価性を確認してください。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:210002
+#: ../../how-to/containers/intro_histogram.ipynb:210002
 #: c9129d4207d34cf691a113d4ad51f07e
 msgid "Summary"
 msgstr "まとめ"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:210004
+#: ../../how-to/containers/intro_histogram.ipynb:210004
 #: 83881e309a7d431eac4623deaf9a60f5
 msgid ""
 "`Histogram` stores **bin totals** and propagates covariance under linear "
 "transforms (rebin)."
 msgstr "`Histogram` はビンの **合計** を内部で保持し、線形変換（rebin）では共分散を伝播します。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:210005
+#: ../../how-to/containers/intro_histogram.ipynb:210005
 #: aec572f951e64cde930cbf4ef717ec00
 msgid ""
 "`fill()` supports `Quantity` weights and updates `sumw2`/`cov` "
 "appropriately."
 msgstr "`fill()` は `Quantity` 重みをサポートし、`sumw2` / `cov` を適切に更新します。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:210006
+#: ../../how-to/containers/intro_histogram.ipynb:210006
 #: ea04b471582045bc930148ab561d7857
 msgid "Use HDF5 for lossless IO; JSON for light-weight exchange."
 msgstr "HDF5 はロスレス IO、JSON は軽量交換向けです。"
 
-#: ../../how-to/fitting/intro_histogram.ipynb:210007
+#: ../../how-to/containers/intro_histogram.ipynb:210007
 #: 19e7234e46414261b6313667fb0aa90c
 msgid ""
 "For very large `nbins`, consider sparse/low-rank covariance representations."

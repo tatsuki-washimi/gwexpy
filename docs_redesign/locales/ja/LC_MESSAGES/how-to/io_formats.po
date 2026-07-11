@@ -6,37 +6,37 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
+"Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 00:42+0000\n"
+"POT-Creation-Date: 2026-07-11 06:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ja <LL@li.org>\n"
 "Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/io_formats.md cc569fed1b554c3a82f041c785e3f14d
+#: ../../how-to/io_formats.md 9d58c7a095a74f499df3883e60c1c54c
 msgid ""
 "Choose the right direct file or network I/O path in GWexpy, including "
-"supported formats, read/write limits, fetch routes, and when to set format= "
-"explicitly."
+"supported formats, read/write limits, fetch routes, and when to set "
+"format= explicitly."
 msgstr ""
-"サポート形式、読み書きの制限、取得経路、`format=` を明示すべき場面を含め、GWexpy における適切な直接ファイル／ネットワーク I/O "
-"経路を選びましょう。"
+"サポート形式、読み書きの制限、取得経路、`format=` を明示すべき場面を含め、GWexpy における適切な直接ファイル／ネットワーク I/O"
+" 経路を選びましょう。"
 
-#: ../../how-to/io_formats.md:7 6758217b5c3f4b4cb7a296cb2fb932f4
+#: ../../how-to/io_formats.md:7 5f31d6927a08427dbb8832b862c7c3a7
 msgid "<a id=\"io-formats-en-top\"></a>"
 msgstr "<a id=\"io-formats-ja-top\"></a>"
 
-#: ../../how-to/io_formats.md:9 c2fba070604343fa92c27a878dbf8f21
+#: ../../how-to/io_formats.md:9 b828fbd82c22496eb2becf343fcc8714
 msgid "File I/O Supported Formats Guide"
 msgstr "ファイル I/O 対応フォーマットガイド"
 
-#: ../../how-to/io_formats.md:11 b9eae389fa8a4ea2a8f8c06c8d2c880c
+#: ../../how-to/io_formats.md:11 b3a049127d0f49dfb9e1ac36ab837d1f
 msgid ""
 "This is the end-user I/O guide for `gwexpy`. This page only covers the "
 "public `.read()` / `.write()` / `fetch()` style APIs that users call "
@@ -45,24 +45,25 @@ msgstr ""
 "gwexpy の利用者向け I/O ガイドです。 このページでは、ユーザーが直接使う `.read()` / `.write()` / "
 "`fetch()` 系 API による読み書き・取得だけを扱います。"
 
-#: ../../how-to/io_formats.md:14 6d793b1d5f184951b2cea198743eeb20
+#: ../../how-to/io_formats.md:14 212225a5ba8747e19e59358f0b775e45
 msgid ""
-"It does **not** cover `to_*()` / `from_*()` conversions or object bridges to"
-" xarray, ROOT objects, or Zarr arrays. If the question is \"how do I convert"
-" this object into another library or container?\", that belongs to interop "
-"instead. For those topics, see the [interop tutorial](viz/intro_interop) and"
-" the [interop API reference](../reference/api/interop)."
+"It does **not** cover `to_*()` / `from_*()` conversions or object bridges"
+" to xarray, ROOT objects, or Zarr arrays. If the question is \"how do I "
+"convert this object into another library or container?\", that belongs to"
+" interop instead. For those topics, see the [interop "
+"tutorial](interop/intro_interop) and the [interop API "
+"reference](../reference/api/interop)."
 msgstr ""
 "このページは `to_*()` / `from_*()` の変換や、xarray・ROOT オブジェクト・Zarr "
 "配列へのオブジェクトブリッジは**扱いません**。「このオブジェクトを別のライブラリやコンテナに変換するには？」という問いであれば、それは "
-"interop に属します。それらの話題については [interop チュートリアル](viz/intro_interop) と [interop "
-"API リファレンス](../reference/api/interop) を参照してください。"
+"interop に属します。それらの話題については [interop チュートリアル](interop/intro_interop) と "
+"[interop API リファレンス](../reference/api/interop) を参照してください。"
 
-#: ../../how-to/io_formats.md:17 ff15e5addd20468ab1e656593ffccf05
+#: ../../how-to/io_formats.md:17 5a779a21dfb546a7ae274456491ebf8c
 msgid "**Security Warning: Pickle Files**"
 msgstr "**セキュリティ警告: Pickle 形式の取り扱い**"
 
-#: ../../how-to/io_formats.md:19 bff1d3c1abe643e08183680d60033283
+#: ../../how-to/io_formats.md:19 3919bfb29f264af592bae7d0ccbc79cd
 msgid ""
 "**Pickle** (:term:`Pickle`) is convenient, but reading Pickle files from "
 "untrusted sources is dangerous. A malicious Pickle file can execute "
@@ -71,37 +72,36 @@ msgstr ""
 "**Pickle** (:term:`Pickle`) は便利ですが、信頼できないソースから受け取った Pickle "
 "ファイルを読み込むことは危険です。悪意のあるファイルにより、実行環境で任意のコードが実行される可能性があります。"
 
-#: ../../how-to/io_formats.md:21 e75e6b18b8c04328a1f966d2389d543b
+#: ../../how-to/io_formats.md:21 b962b9d60def488389580ad96e4dc95c
 msgid ""
-"For data sharing and long-term storage, prefer structured formats such as "
-"**HDF5**, **GWF**, or **Zarr**."
+"For data sharing and long-term storage, prefer structured formats such as"
+" **HDF5**, **GWF**, or **Zarr**."
 msgstr "共同研究者との共有や長期保存には、**HDF5**、**GWF**、**Zarr** のような構造化された形式を優先してください。"
 
-#: ../../how-to/io_formats.md:24 a11af1f4b8274cba942db2ac0ee3278f
+#: ../../how-to/io_formats.md:24 61f2e8d9c0734808bd2060d6570e9085
 msgid "First: Decision Rules"
 msgstr "まず最初に: 判断ルール"
 
-#: ../../how-to/io_formats.md:26 7bb20a0f53614cb9ab28014de285984e
+#: ../../how-to/io_formats.md:26 a65139b1952a4840892b6a4ec2b3d7b6
 msgid ""
 "If you need a **default GW storage format**, start with **HDF5**. For "
-"existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / "
-"ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For "
-"logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / "
-"Audio**. For **MTH5**, the current public direct-I/O story is only the "
-"single **`ats.mth5`** path. A generic standalone **`format=\"mth5\"`** route"
-" is not published yet."
+"existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN"
+" / ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. "
+"For logger- or device-specific data, start with **GBD / TDMS / SDB / WAV "
+"/ Audio**. For **MTH5**, the current public direct-I/O story is only the "
+"single **`ats.mth5`** path. A generic standalone **`format=\"mth5\"`** "
+"route is not published yet."
 msgstr ""
 "**まず保存形式を選ぶ**なら、GW 系データは **HDF5**、観測網の既存資産は **MiniSEED / SAC / WIN / "
-"ATS**、汎用交換は **CSV / NetCDF4 / Zarr**、ロガー固有データは **GBD / TDMS / SDB / WAV / "
-"Audio** を起点に考えると整理しやすいです。**MTH5** については、現時点の public direct-I/O は "
+"ATS**、汎用交換は **CSV / NetCDF4 / Zarr**、ロガー固有データは **GBD / TDMS / SDB / WAV /"
+" Audio** を起点に考えると整理しやすいです。**MTH5** については、現時点の public direct-I/O は "
 "**`ats.mth5` の単一路だけ** で、汎用の standalone **`format=\"mth5\"`** はまだ公開していません。"
 
-#: ../../how-to/io_formats.md:27 4809350525ef43eca3fa22461ccad276
-msgid ""
-"**Auto-detect is fine** when the extension uniquely selects one reader."
+#: ../../how-to/io_formats.md:27 1bb0413abfb24e5abc0dc2dbe399d52b
+msgid "**Auto-detect is fine** when the extension uniquely selects one reader."
 msgstr "**自動判別でよい**のは、拡張子から reader が一意に決まる場合です。"
 
-#: ../../how-to/io_formats.md:28 eba953bdba224db8bd1b0749ef8683da
+#: ../../how-to/io_formats.md:28 05bd5ab6323b43c79644dad00d919f9f
 msgid ""
 "For generic **HDF5**, set **`format=\"hdf5\"` explicitly**. The `.h5` / "
 "`.hdf5` extensions overlap multiple HDF5-backed families, and auto-"
@@ -110,247 +110,247 @@ msgstr ""
 "汎用 **HDF5** は **`format=\"hdf5\"` を明示**してください。`.h5` / `.hdf5` は複数の HDF5 "
 "系経路で共有されており、クラスによって自動判別の挙動が揃っていません。"
 
-#: ../../how-to/io_formats.md:29 ceb1bd00f39a493e9a05aaa60107dfc6
+#: ../../how-to/io_formats.md:29 4dcc2fe7dd4a47d99dd8be9b0ec8b26d
 msgid ""
-"**Set `format=` explicitly** for ambiguous extensions such as `.xml`, for "
-"custom lab extensions, or whenever auto-detection is unclear."
+"**Set `format=` explicitly** for ambiguous extensions such as `.xml`, for"
+" custom lab extensions, or whenever auto-detection is unclear."
 msgstr ""
 "**`format=` を明示する**のは、`.xml` "
 "のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。"
 
-#: ../../how-to/io_formats.md:30 58e4b7b6571e4c7f8ec50bcf86377813
+#: ../../how-to/io_formats.md:30 4bc867547d924944b74250007f193dee
 msgid ""
-"**Pass `timezone` explicitly** when the file stores local wall-clock time "
-"without embedded UTC/GPS. In the current user-facing guide, **GBD** is the "
-"main required case."
+"**Pass `timezone` explicitly** when the file stores local wall-clock time"
+" without embedded UTC/GPS. In the current user-facing guide, **GBD** is "
+"the main required case."
 msgstr ""
-"**`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは "
-"**GBD** です。"
+"**`timezone` を必ず指定する**のは、ファイル内に UTC/GPS "
+"がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは **GBD** です。"
 
-#: ../../how-to/io_formats.md:31 8f8fe6b000464f1cab0fe248e9b704d4
+#: ../../how-to/io_formats.md:31 569a7555fbd84d7199370170c2b2c4ac
 msgid ""
-"**Read-only / write-only matters**: `○ / ×` means a format can be read but "
-"not written."
-msgstr ""
-"**Read only / Write only に注意する**: 表の `○ / ×` は「読めるが書けない」「書けるが読めない」を意味します。"
+"**Read-only / write-only matters**: `○ / ×` means a format can be read "
+"but not written."
+msgstr "**Read only / Write only に注意する**: 表の `○ / ×` は「読めるが書けない」「書けるが読めない」を意味します。"
 
-#: ../../how-to/io_formats.md:32 a4205cf081c040d1b6b8e482c50435f7
+#: ../../how-to/io_formats.md:32 f95a4dea5a9445e482f74491ad1c5300
 msgid ""
-"For richer direct-I/O objects beyond plain Series, start with **HDF5** for "
-"`Spectrogram`, `Histogram`, and `EventTable`. Field-class direct `.read()` /"
-" `.write()` is still under audit and is not published as a stable contract "
-"on this page."
+"For richer direct-I/O objects beyond plain Series, start with **HDF5** "
+"for `Spectrogram`, `Histogram`, and `EventTable`. Field-class direct "
+"`.read()` / `.write()` is still under audit and is not published as a "
+"stable contract on this page."
 msgstr ""
 "Series 以外の direct I/O では、まず **HDF5** の `Spectrogram` / `Histogram` / "
 "`EventTable` を基準に考えてください。Field 系の direct `.read()` / `.write()` "
 "はまだ監査中で、このページでは安定契約として公開していません。"
 
-#: ../../how-to/io_formats.md:34 c15a64e73a1744f9bcb691c4f9192689
+#: ../../how-to/io_formats.md:34 dabe7f68ce69418183c54e511c068919
 msgid "Jump Links"
 msgstr "ジャンプリンク"
 
-#: ../../how-to/io_formats.md:36 4f62f639ea0543cebc449dafc059098c
+#: ../../how-to/io_formats.md:36 3e135a71e1b942dda49eec217d09e542
 msgid "<a href=\"#io-formats-en-quick\">Quick Selection Table</a>"
 msgstr "<a href=\"#io-formats-ja-quick\">クイック判定表</a>"
 
-#: ../../how-to/io_formats.md:37 f6bed184826f4c27b625880c309d9d26
+#: ../../how-to/io_formats.md:37 c9340ebbee224d89b04351f06f602a81
 msgid ""
-"<a href=\"#io-formats-en-basic\">Basic `.read()` / `.write()` / `fetch()` "
-"Usage</a>"
+"<a href=\"#io-formats-en-basic\">Basic `.read()` / `.write()` / `fetch()`"
+" Usage</a>"
 msgstr ""
-"<a href=\"#io-formats-ja-basic\">`.read()` / `.write()` / `fetch()` の基本</a>"
+"<a href=\"#io-formats-ja-basic\">`.read()` / `.write()` / `fetch()` "
+"の基本</a>"
 
-#: ../../how-to/io_formats.md:38 6866522a18884ac084b71e65763503a0
+#: ../../how-to/io_formats.md:38 bccb4267d42242e7aaa0b8fc0801d728
 msgid "<a href=\"#io-formats-en-a\">A. GW Standards</a>"
 msgstr "<a href=\"#io-formats-ja-a\">A. GW標準</a>"
 
-#: ../../how-to/io_formats.md:39 8c03b41c21cc4044b8da41c81260cbde
+#: ../../how-to/io_formats.md:39 46fabfab23194eeaa6e631c66bd932cc
 msgid "<a href=\"#io-formats-en-b\">B. Seismic and Geophysical Observation</a>"
 msgstr "<a href=\"#io-formats-ja-b\">B. 地震・地球物理観測</a>"
 
-#: ../../how-to/io_formats.md:40 13409dc08f2b412e98cdd78160ffa70c
+#: ../../how-to/io_formats.md:40 9f8fdbdc874043b6a85d9a7b3e7557b2
 msgid "<a href=\"#io-formats-en-c\">C. General Analysis and Exchange</a>"
 msgstr "<a href=\"#io-formats-ja-c\">C. 汎用・解析用</a>"
 
-#: ../../how-to/io_formats.md:41 b335633454ca47b9bddb54336b699ca9
+#: ../../how-to/io_formats.md:41 0bb5a617ce834f558e0b1db791c3ad05
 msgid "<a href=\"#io-formats-en-d\">D. Loggers and Instrument Formats</a>"
 msgstr "<a href=\"#io-formats-ja-d\">D. 計測機器・ロガー</a>"
 
-#: ../../how-to/io_formats.md:42 896db9cae37843f6a0badd312227b54f
+#: ../../how-to/io_formats.md:42 e4dae9f43e624ddf9ff19ebf70debbd8
 msgid "<a href=\"#io-formats-en-dev\">Developer Notes</a>"
 msgstr "<a href=\"#io-formats-ja-dev\">開発者向け補足</a>"
 
-#: ../../how-to/io_formats.md:44 f0b9c09325e84bd5b0f4d0d8411cf5e6
+#: ../../how-to/io_formats.md:44 b31ee13921054ce283d5dc038a42d935
 msgid "<a id=\"io-formats-en-quick\"></a>"
 msgstr "<a id=\"io-formats-ja-quick\"></a>"
 
-#: ../../how-to/io_formats.md:46 a12a3fdb03914248b137dd5ddf44243e
+#: ../../how-to/io_formats.md:46 4a361c7e2c5b4174b8ed1d0b872bd5b2
 msgid "Quick Selection Table"
 msgstr "クイック判定表"
 
-#: ../../how-to/io_formats.md:16 91001092266b4b4094a09245b6baaf21
+#: ../../how-to/io_formats.md:16 ec73bc20efb64d51a4e39862008ac79f
 msgid "Group"
 msgstr "グループ"
 
-#: ../../how-to/io_formats.md:16 f3ff296688504fb996a03b5e30fd4825
+#: ../../how-to/io_formats.md:16 e66d8fc9ac824982b2568207e52b1356
 msgid "Start here when..."
 msgstr "まず見る場面"
 
-#: ../../how-to/io_formats.md:16 3cd182be1aa342bc955e6df235049548
+#: ../../how-to/io_formats.md:16 9dbd6b2594ab4afabac8a963697324b4
 msgid "First format"
 msgstr "最初の形式"
 
-#: ../../how-to/io_formats.md:16 f71643568d8f46248c4ad938253660bf
+#: ../../how-to/io_formats.md:16 3b4a45a438684aff9a08763354447942
 msgid "Formats covered here"
 msgstr "このページで扱う形式"
 
-#: ../../how-to/io_formats.md:16 b8443707c85c4b78a70a5238e006e7a5
+#: ../../how-to/io_formats.md:16 41ee94a00b564cbf8eebfd622a4af0d7
 msgid "**A. GW Standards**"
 msgstr "**A. GW標準**"
 
-#: ../../how-to/io_formats.md:16 34baf0a584714189a2143dc099223dfd
+#: ../../how-to/io_formats.md:16 3fb99f3a6a75494aa75e9c4c8bff03e0
 msgid "You want standard GW storage, exchange, or acquisition paths"
 msgstr "GW 系の標準保存、共有、取得経路を使いたい"
 
-#: ../../how-to/io_formats.md:16 05b1a3a5338443a1aea4930a79ceb45a
-#: 44fc1a932b8641db8673e392490ab6e1
+#: ../../how-to/io_formats.md:16 4d1f4894d92a4ae6af79e8c28bc7eb03
+#: d8cd5f8f51744f67812774a2bc13e162
 msgid "**HDF5**"
 msgstr "**HDF5**"
 
-#: ../../how-to/io_formats.md:16 740f04ddbe9946959bfb2ee4114b2007
+#: ../../how-to/io_formats.md:16 f94255db8c564fbaab29a7955e181740
 msgid "GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC"
 msgstr "GWF, HDF5, hdf.ndscope, xml.diaggui, NDS2, GWOSC"
 
-#: ../../how-to/io_formats.md:16 2546ae4369aa4635966c9d1efb6a5ce3
+#: ../../how-to/io_formats.md:16 ff97bd7892f0451e8cdfd27a39a1408e
 msgid "**B. Seismic and Geophysical Observation**"
 msgstr "**B. 地震・地球物理観測**"
 
-#: ../../how-to/io_formats.md:16 b1b8bb9531c3476386df6d6b2533a5db
+#: ../../how-to/io_formats.md:16 7bf31da7515c4dc8b8388b2179154353
 msgid "You need to read existing seismic or EM observation data"
 msgstr "既存の地震・電磁気観測フォーマットを読む"
 
-#: ../../how-to/io_formats.md:16 57f9cdfcde824a598f51fbeb7e4d0691
+#: ../../how-to/io_formats.md:16 4b7ba41363ba4b9e9410ea515edd88fe
 msgid "**mseed**"
 msgstr "**mseed**"
 
-#: ../../how-to/io_formats.md:16 f07d6de610a54105bdab37a091aa9716
+#: ../../how-to/io_formats.md:16 e06ed08fabfa430ba22e83979f7ab7a7
 msgid ""
 "mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is "
 "status-only here)"
 msgstr ""
-"mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5（MTH5 standalone は状況注記のみ）"
+"mseed, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5（MTH5 standalone "
+"は状況注記のみ）"
 
-#: ../../how-to/io_formats.md:16 c2b97c01a2d0461c8d58d2352697038c
+#: ../../how-to/io_formats.md:16 659b56a0500f404db84161ba9a375440
 msgid "**C. General Analysis and Exchange**"
 msgstr "**C. 汎用・解析用**"
 
-#: ../../how-to/io_formats.md:16 9a3f3975608e4b7ea1ba228f45e8f96b
+#: ../../how-to/io_formats.md:16 319ee90d7e9e40c7955c8de76f19cb97
 msgid "You need general-purpose storage or external analysis exchange"
 msgstr "汎用保存、外部解析、交換をしたい"
 
-#: ../../how-to/io_formats.md:16 e1f6a9f2cdc8433d8784723d0d9475d9
+#: ../../how-to/io_formats.md:16 2708e03119854a5aa0feb1029f3e68b9
 msgid "**CSV / TXT** or **Zarr**"
 msgstr "**CSV / TXT** または **Zarr**"
 
-#: ../../how-to/io_formats.md:16 eb8e864c54c8461fbe692e6a1eed0a71
+#: ../../how-to/io_formats.md:16 bfd43695a8fb40138491bd4efe459fe9
 msgid "CSV / TXT, NetCDF4, Zarr, ROOT"
 msgstr "CSV / TXT, NetCDF4, Zarr, ROOT"
 
-#: ../../how-to/io_formats.md:16 615d0bc967294b388d6056c589393b7f
+#: ../../how-to/io_formats.md:16 8710f901bb6e485d8283084429315306
 msgid "**D. Loggers and Instrument Formats**"
 msgstr "**D. 計測機器・ロガー**"
 
-#: ../../how-to/io_formats.md:16 59ab132d8fff4c40bdb3df49027a3086
+#: ../../how-to/io_formats.md:16 b861de8b9e254ccda722a8e0fe35f9b1
 msgid "You are working with device- or logger-specific time series"
 msgstr "ロガーや機材固有の時系列を読む"
 
-#: ../../how-to/io_formats.md:16 17711416e6ae4a84ae6c457c57bbaff3
+#: ../../how-to/io_formats.md:16 4da6e1b4c53a43f2a50a417b45db305c
 msgid "**GBD** or **TDMS**"
 msgstr "**GBD** または **TDMS**"
 
-#: ../../how-to/io_formats.md:16 3973b0995247405e95ed0f95b0f823ac
+#: ../../how-to/io_formats.md:16 9132423108ad40e695d744f3a83f8eca
 msgid "GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A"
 msgstr "GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A"
 
-#: ../../how-to/io_formats.md:55 cef6fc58a3fe4c82b91854034ab888d0
+#: ../../how-to/io_formats.md:55 a6f78dabee5c44efb13e1a168591d740
 msgid ""
-"**Note**: `NDS2` and `GWOSC` are not file formats. They are included in **A."
-" GW Standards** because they are common GW data entry points. In the tables "
-"below, they are labeled as `network path`."
+"**Note**: `NDS2` and `GWOSC` are not file formats. They are included in "
+"**A. GW Standards** because they are common GW data entry points. In the "
+"tables below, they are labeled as `network path`."
 msgstr ""
 "**注**：`NDS2` と `GWOSC` はファイル形式ではありません。一般的な GW データの入口であるため、**A. GW "
 "Standards** に含めています。以下の表では `network path` として表示されます。"
 
-#: ../../how-to/io_formats.md:57 5406f1abf2ec42abaa3db45cb474043a
+#: ../../how-to/io_formats.md:57 4b3b3794903b46d0aa2d46e7335653b2
 msgid "<a id=\"io-formats-en-basic\"></a>"
 msgstr "<a id=\"io-formats-ja-basic\"></a>"
 
-#: ../../how-to/io_formats.md:59 067674d66be24caa9e515f524f485918
+#: ../../how-to/io_formats.md:59 5f16199164f34691897559330dd85833
 msgid "Basic `.read()` / `.write()` / `fetch()` Usage"
 msgstr "`.read()` / `.write()` / `fetch()` の基本"
 
-#: ../../how-to/io_formats.md:61 d6aedb1182064df98898374d423f18c7
+#: ../../how-to/io_formats.md:61 4d247e21d3454f528946a865e78f8172
 msgid ""
-"Purpose: show the baseline direct-I/O entry points before format-specific "
-"details"
+"Purpose: show the baseline direct-I/O entry points before format-specific"
+" details"
 msgstr "目的: 形式ごとの細かい違いを見る前に、direct I/O の基本入口を確認する"
 
-#: ../../how-to/io_formats.md:62 5c49efc47bd34c0ca978aaac57c160e5
+#: ../../how-to/io_formats.md:62 098b1d255af947768b9489b5a6f09a26
 msgid ""
-"Input: file paths, an explicit `format=` when needed, or a detector/network "
-"query"
+"Input: file paths, an explicit `format=` when needed, or a "
+"detector/network query"
 msgstr "入力: ファイルパス、必要に応じた `format=`、またはネットワーク取得の問い合わせ"
 
-#: ../../how-to/io_formats.md:63 3801209eb2e34f9e9147d043d76f9626
-msgid ""
-"Output: `TimeSeries`, `TimeSeriesDict`, or other direct-I/O return objects"
+#: ../../how-to/io_formats.md:63 e541af56b1584dceb3a2ba091e515bb2
+msgid "Output: `TimeSeries`, `TimeSeriesDict`, or other direct-I/O return objects"
 msgstr "出力: `TimeSeries`、`TimeSeriesDict` などの direct I/O の返り値"
 
-#: ../../how-to/io_formats.md:82 c7fddf7996304daca2f2e3d7869700ff
+#: ../../how-to/io_formats.md:82 c0a47dbde1a94141afadbca6c9e29336
 msgid "`.read()` / `.write()` uses the gwpy-style I/O registry."
 msgstr "`.read()` / `.write()` は gwpy の I/O レジストリを利用します。"
 
-#: ../../how-to/io_formats.md:83 4beb2036fe5140f995747860ca6a470f
+#: ../../how-to/io_formats.md:83 19d737b682ff4cdf93a543cf09a393bd
 msgid ""
 "`.xml` is ambiguous, so **use `format=\"xml.diaggui\"` explicitly** for "
 "DiagGUI XML data."
 msgstr "`.xml` は用途が曖昧なので、**DiagGUI XML では `format=\"xml.diaggui\"` を明示**してください。"
 
-#: ../../how-to/io_formats.md:84 9e864a185619444280df945b71cca677
+#: ../../how-to/io_formats.md:84 57dfdb6570924bc2a56ad96555fabcfe
 msgid ""
 "`NDS2` and `GWOSC` are not file readers, so they use `fetch()` / "
 "`fetch_open_data()` instead of `.read()`."
 msgstr ""
-"`NDS2` と `GWOSC` はファイルではないため、`.read()` ではなく `fetch()` / `fetch_open_data()` "
-"を使います。"
+"`NDS2` と `GWOSC` はファイルではないため、`.read()` ではなく `fetch()` / "
+"`fetch_open_data()` を使います。"
 
-#: ../../how-to/io_formats.md:87 7d99e44696534a1cb1e774fe9cc6fb82
+#: ../../how-to/io_formats.md:87 9dc2d88b533e47e7a7113a17dd1af7e4
 msgid "Supported Classes at a Glance"
 msgstr "対応クラスの早見表"
 
-#: ../../how-to/io_formats.md:89 69b6584326cf4347ac7c5edb5c99fed5
+#: ../../how-to/io_formats.md:89 9ae2ba4006c846cb9e9896a222dbbcbd
 msgid ""
-"If the main question is whether a format is for a single channel or multiple"
-" channels, use this table first."
+"If the main question is whether a format is for a single channel or "
+"multiple channels, use this table first."
 msgstr "「単一チャネルなのか、複数チャネルなのか」で入口を迷いやすい形式を先に整理すると、次のようになります。"
 
-#: ../../how-to/io_formats.md:16 47d1bf05e1a8412b9f328bcdd44067aa
+#: ../../how-to/io_formats.md:16 2c38357b083e49a781a745eda2e824c9
 msgid "Format / Family"
 msgstr "形式 / 系統"
 
-#: ../../how-to/io_formats.md:16 65ac33fbab1d4a6899310b7b00f681ed
+#: ../../how-to/io_formats.md:16 504eeb4a26fb417ea8eec46d7ca0569d
 msgid "Single"
 msgstr "単一"
 
-#: ../../how-to/io_formats.md:16 16735a851da245bdbde08441b9c149f0
+#: ../../how-to/io_formats.md:16 466f73d6ad924facb0502e8dc70e25f3
 msgid "Multi"
 msgstr "複数"
 
-#: ../../how-to/io_formats.md:16 c6dfcdc0054b47f4bd3f8ed4e13e2087
+#: ../../how-to/io_formats.md:16 425976fb61a7444c9389937642275621
 msgid "Other classes"
 msgstr "そのほかの対応"
 
-#: ../../how-to/io_formats.md:16 9ac8169ddb69423daf1c8e3cbd1f4e5d
+#: ../../how-to/io_formats.md:16 ce2ac985f2644c3ea86631782b5887dd
 msgid ""
 "**GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / "
 "SQLite3 / WAV / Audio**"
@@ -358,139 +358,140 @@ msgstr ""
 "**GWF / mseed / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / SDB / SQLite / "
 "SQLite3 / WAV / Audio**"
 
-#: ../../how-to/io_formats.md:16 08666edce75e42ceb57c9cf33da790e9
-#: 18fa6605128e4f9ca058594be053715f 44e7801aa0cc4deb99507a369d8bd820
-#: 68ce50e9a9e447c19c71d8dd533a36da 979406d783ca45f39347a8ef46e89062
-#: bcdc2ef8e64843258cabe98304172e64
+#: ../../how-to/io_formats.md:16 49429cc8bc77433b9a82ae53b835c202
+#: 5c7c36f2d06544899d09a8968eabeac1 78d420b506594f4482b32176543d091d
+#: 864c4d021f764b51805e3622a17292e6 8f1cc88002df477184f69650a6994275
+#: b5b648b55ff2472185446430d0d9a64a
 msgid "`TimeSeries`"
 msgstr "`TimeSeries`"
 
-#: ../../how-to/io_formats.md:16 33f31feebeed4490b7052bfb8cdab0cf
-#: 571291837b16472d8c3109697ae96a06 9654187023ce468481d5b17b1f8bd64d
-#: aaccd5594afa4f1dba25805b43e5a3ea dd3c059e008d4f03adb40ddc1de8a0a8
+#: ../../how-to/io_formats.md:16 0969692df567425c82c4dc3213ad2049
+#: 3135dbd2dae64d1b9cb41bbf52be791b 52124c2349984771a2ef52acfe0dc8ad
+#: c5d7a2b4f46043f5964538937a89ff7d e9634057cdf84e1ab90cc9e1cfc86c8a
 msgid "`TimeSeriesDict`"
 msgstr "`TimeSeriesDict`"
 
-#: ../../how-to/io_formats.md:16 1f7c16aa7cf24faaa1fd885f129f4f02
+#: ../../how-to/io_formats.md:16 5febf27262874e9894ac512a0e91c6d7
 msgid "Baseline end-user direct I/O pattern"
 msgstr "end-user 向け direct I/O の基本形"
 
-#: ../../how-to/io_formats.md:16 7cbf7944c80c4944ae3ac0a68f661c9f
+#: ../../how-to/io_formats.md:16 82e3a40c4a7e43c8ba9ddb7ec8a107c4
 msgid "**CSV**"
 msgstr "**CSV**"
 
-#: ../../how-to/io_formats.md:16 0e0c503ba0fc4151ab6157a750c8e662
+#: ../../how-to/io_formats.md:16 a3ff6ed02da44fd79934efe97da1884d
 msgid "`TimeSeriesDict` also supports manifest-backed collection directories"
 msgstr "`TimeSeriesDict` は manifest 付き collection directory にも対応"
 
-#: ../../how-to/io_formats.md:16 39a3ee960ab94be9b7d7977a3c5fdc6e
+#: ../../how-to/io_formats.md:16 4891fad79c0640e1ba990b205c3f438d
 msgid "**TXT**"
 msgstr "**TXT**"
 
-#: ../../how-to/io_formats.md:16 434f2156398b4d44b48d6a0544e39bac
-#: f562d6b9eda247ed884cfa076ad57c4e
+#: ../../how-to/io_formats.md:16 08f7195646bd46359caa0de23af31412
+#: 0f3237f273f9478f98f871b29403b705
 msgid "Multi-channel direct I/O uses collection directories"
 msgstr "複数チャネルの direct I/O は collection directory を使う"
 
-#: ../../how-to/io_formats.md:16 6a57b2991656496ba7fa429b4d7f81ad
+#: ../../how-to/io_formats.md:16 3efc5fa8defb47debe682a7d51864e2b
 msgid "**nc / Zarr / GBD / TDMS**"
 msgstr "**nc / Zarr / GBD / TDMS**"
 
-#: ../../how-to/io_formats.md:16 c102741f2cb84abab7323e1deeb66557
+#: ../../how-to/io_formats.md:16 9a310c405cc7452cb0865546c6bf69fc
 msgid "`TimeSeriesDict`, `TimeSeriesMatrix`"
 msgstr "`TimeSeriesDict`, `TimeSeriesMatrix`"
 
-#: ../../how-to/io_formats.md:16 462440b2b9464ae0bce50d0f18f08791
+#: ../../how-to/io_formats.md:16 13ca4de8f2da474f9e60dc06ced80a04
 msgid "Includes matrix-style direct I/O"
 msgstr "行列系まで含む direct I/O"
 
-#: ../../how-to/io_formats.md:16 a0d1a656777e408abe8bb60fa40bfe93
+#: ../../how-to/io_formats.md:16 d11902e8ce524da68f251d5151de5254
 msgid "`TimeSeries`, `FrequencySeries`, and related classes"
 msgstr "`TimeSeries`, `FrequencySeries` など"
 
-#: ../../how-to/io_formats.md:16 e975a4395d6a4afb80e957fb9e6e992e
+#: ../../how-to/io_formats.md:16 bc9f6a52532748cb9a8b71f23988be60
 msgid "`TimeSeriesDict` and related collections"
 msgstr "`TimeSeriesDict` など"
 
-#: ../../how-to/io_formats.md:16 53997b2bb22d4d64810e8be34c956298
+#: ../../how-to/io_formats.md:16 989b484e17a74135b882448310ecdae6
 msgid "Also covers `Spectrogram`, `Histogram`, and `EventTable`"
 msgstr "`Spectrogram`, `Histogram`, `EventTable` を含む主保存先"
 
-#: ../../how-to/io_formats.md:16 a15228bad8444b3caef4bcab3d947c68
+#: ../../how-to/io_formats.md:16 70da4be22e7a4fb3b2158aaf8ca8495f
 msgid "**hdf.ndscope**"
 msgstr "**hdf.ndscope**"
 
-#: ../../how-to/io_formats.md:16 693eddfbe04c4224aa17103d57048e69
-#: 9df8437ebb4147358b2bf1d339f55830 c01827189f6d4c2184c6f5d20b72c53c
-#: df66482c8d354017beb47de75bfa2618 fc45952656e44b6bb57c4d28eab4d5c2
+#: ../../how-to/io_formats.md:16 2c287ea74eaa4862906bdfe4ee8cae2c
+#: 500fd835f6a6443a8d7c93fced6c4203 df180d1db8c94fe088d9341bf371cc9b
+#: e42fd2ebbdb5429b82e713652c8cba29 f8d934a8c931445e9143d42766818366
 msgid "-"
 msgstr "-"
 
-#: ../../how-to/io_formats.md:16 8e2ac76ea5494433abdd33cebbc8e61a
+#: ../../how-to/io_formats.md:16 a9aaf393f3c14b7385d55bdacca22555
 msgid ""
 "ndscope-compatible schema; aliases: `ndscope-hdf5`, `ndscope_hdf5`, "
 "`ndscopehdf5`"
 msgstr "ndscope 互換スキーマ。alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5`"
 
-#: ../../how-to/io_formats.md:16 7725cf3200e842abb80e38fa22c1ecfe
+#: ../../how-to/io_formats.md:16 dc5e25daae5842fd81df9ffcf2576691
 msgid "**xml.diaggui**"
 msgstr "**xml.diaggui**"
 
-#: ../../how-to/io_formats.md:16 d4ee5a1f6c2a40928dab4b9496cbc300
+#: ../../how-to/io_formats.md:16 ce883097c43744ce8e11c01eab09dfd8
 msgid "Requires `products`; legacy alias: `dttxml`"
 msgstr "`products` 必須。旧 alias: `dttxml`"
 
-#: ../../how-to/io_formats.md:16 8b88110649bd46139a03db2d61801f27
+#: ../../how-to/io_formats.md:16 681a33ca207548f6bee7bd63ddd10630
 msgid "**NDS2 / GWOSC**"
 msgstr "**NDS2 / GWOSC**"
 
-#: ../../how-to/io_formats.md:16 2f31003a75aa4d1b8f9b0f5ba8ae8394
+#: ../../how-to/io_formats.md:16 e78b3e8ec37c4cbc88626bcd6bb9c639
 msgid "Use `fetch()` / `fetch_open_data()`"
 msgstr "`fetch()` / `fetch_open_data()` を使う"
 
-#: ../../how-to/io_formats.md:16 3392161cc5b2469cbd336ce81fb370b7
-#: f501be07643e4146acf856fbdfad3014
+#: ../../how-to/io_formats.md:16 4cbd173cb2044c8cb0a79a0b850d9419
+#: 6cb09a36eb394c75ac6049cb2a0e0e56
 msgid "**ATS.MTH5**"
 msgstr "**ATS.MTH5**"
 
-#: ../../how-to/io_formats.md:16 7aacd0a91a4f4d45adcca04d6fae7401
+#: ../../how-to/io_formats.md:16 cfde88b7e9ea4f769a369448336518d5
 msgid "Partial single-path support"
 msgstr "一部対応の単一路"
 
-#: ../../how-to/io_formats.md:16 5ed2e215b1304ce9bfc4495a1c14e7b4
+#: ../../how-to/io_formats.md:16 70fff4a28b914abe9e572ef5fda39cb3
 msgid "**ROOT**"
 msgstr "**ROOT**"
 
-#: ../../how-to/io_formats.md:16 812c6bd936bf41189607f82d959fda31
+#: ../../how-to/io_formats.md:16 9166405752bd4050a3cd3bb1f7422f39
 msgid "`EventTable`"
 msgstr "`EventTable`"
 
-#: ../../how-to/io_formats.md:16 0d2a3e9dd1c7428188a913503ade0326
+#: ../../how-to/io_formats.md:16 4fb8ffe474e9454a8ac7668c6554e4e9
 msgid "Direct I/O is limited to EventTable"
 msgstr "EventTable の直 I/O のみ"
 
-#: ../../how-to/io_formats.md:104 dc9abde2e95e4e8d848611bc8cee8e40
+#: ../../how-to/io_formats.md:104 e49d7c4baceb4f2ba2cab4e69935470c
 msgid ""
 "If you are unsure, start by thinking in terms of `TimeSeries` and "
 "`TimeSeriesDict`."
 msgstr "**まず迷ったら** `TimeSeries` と `TimeSeriesDict` を基準に考えてください。"
 
-#: ../../how-to/io_formats.md:105 db05d2ee867448d8b716d97ba978c444
+#: ../../how-to/io_formats.md:105 5368d44c4094491b8ccf60eedfb21610
 msgid ""
-"`TimeSeriesMatrix` mainly matters for `NetCDF4`, `Zarr`, `GBD`, and `TDMS`."
+"`TimeSeriesMatrix` mainly matters for `NetCDF4`, `Zarr`, `GBD`, and "
+"`TDMS`."
 msgstr "**`TimeSeriesMatrix` が出てくるのは主に** `NetCDF4`, `Zarr`, `GBD`, `TDMS` です。"
 
-#: ../../how-to/io_formats.md:106 58bf8d8c91b14555a22a466ee0638c71
+#: ../../how-to/io_formats.md:106 734b4058c5954c5cbdcbdb8070a1e157
 msgid ""
 "If you need to preserve richer objects beyond Series classes, start with "
 "**HDF5**."
 msgstr "**Series 以外もまとめて保持したい** 場合は、まず **HDF5** を検討してください。"
 
-#: ../../how-to/io_formats.md:108 1412ca085051498fad2a8d460485845c
+#: ../../how-to/io_formats.md:108 14c144e3d46e4729ac0f8d7fcf5f7bc1
 msgid "Optional Dependency Matrix"
 msgstr "オプション依存関係の対応表"
 
-#: ../../how-to/io_formats.md:110 a8ef05fb53a64e7ab21989cba38f79ab
+#: ../../how-to/io_formats.md:110 130b3af7aa234008a72f10160ad38e4c
 msgid ""
 "Most direct-I/O routes work in a base GWexpy install. The formats below "
 "depend on optional packages or optional metadata helpers."
@@ -498,246 +499,246 @@ msgstr ""
 "多くの direct I/O 経路は GWexpy の基本インストールで利用できます。次の形式は optional package または "
 "optional metadata helper に依存します。"
 
-#: ../../how-to/io_formats.md:16 af197bd788a04a9db9c3011be8dd8c35
+#: ../../how-to/io_formats.md:16 4e6dc21000dc4dd892738b98c466bbdc
 msgid "Format / family"
 msgstr "形式 / 系統"
 
-#: ../../how-to/io_formats.md:16 f7b20139fe8d45fcb19ac467d5ebead3
+#: ../../how-to/io_formats.md:16 3027678d68384453ba198d9252dc3bc9
 msgid "Optional dependency"
 msgstr "オプション依存関係"
 
-#: ../../how-to/io_formats.md:16 f1c9d70c54264fa5a63dd893b46e9fc1
+#: ../../how-to/io_formats.md:16 f9934a2291694fa28b76d6b99c437df7
 msgid "GWexpy extra"
 msgstr "GWexpy extra"
 
-#: ../../how-to/io_formats.md:16 4d5b6787035f45a491bd86dedef83044
+#: ../../how-to/io_formats.md:16 1c60c91c0d8b4792854a2ef4c66cf070
 msgid "Missing-dependency behavior"
 msgstr "未導入時の挙動"
 
-#: ../../how-to/io_formats.md:16 fd771f8439754685941bbc301e183edf
+#: ../../how-to/io_formats.md:16 0c607ba8528a4744be4bbee884b64a01
 msgid "**WAV metadata**"
 msgstr "**WAV メタデータ**"
 
-#: ../../how-to/io_formats.md:16 c221b46a94d9478ab03c5b831b6162a4
+#: ../../how-to/io_formats.md:16 ece424cfca074ea88715a05b4173478b
 msgid "`tinytag`"
 msgstr "`tinytag`"
 
-#: ../../how-to/io_formats.md:16 29c6001067ae467da783520b48c304ef
-#: 8d2804d5c64244fba28806aed8145938
+#: ../../how-to/io_formats.md:16 64a5bd8c44ee4f189a521f67ae5e604b
+#: 8a807a3d27df45b0911f074bbaf372e3
 msgid "`audio`"
 msgstr "`audio`"
 
-#: ../../how-to/io_formats.md:16 a0936f8501cd40bc8932d10b0a1a5955
+#: ../../how-to/io_formats.md:16 c684a7207e3743e99a18dab43bc1b035
 msgid ""
-"`.read(..., extract_metadata=True)` warns and skips metadata when `tinytag` "
-"is missing; install with the `audio` or `all` extra from the [Installation "
-"Guide](../tutorials/installation.md). Basic WAV read/write remains "
-"available."
+"`.read(..., extract_metadata=True)` warns and skips metadata when "
+"`tinytag` is missing; install with the `audio` or `all` extra from the "
+"[Installation Guide](../tutorials/installation.md). Basic WAV read/write "
+"remains available."
 msgstr ""
 "`tinytag` が無い場合、`.read(..., extract_metadata=True)` "
-"は警告を出してメタデータをスキップします。[インストールガイド](../tutorials/installation.md) の `audio` または"
-" `all` extra でインストールしてください。基本的な WAV の読み書きは引き続き利用できます。"
+"は警告を出してメタデータをスキップします。[インストールガイド](../tutorials/installation.md) の `audio` "
+"または `all` extra でインストールしてください。基本的な WAV の読み書きは引き続き利用できます。"
 
-#: ../../how-to/io_formats.md:16 7f2dd8a5e8c14998a6186e088630e3d8
-#: c0a3987ad72544578e7a6e8e81369acd
+#: ../../how-to/io_formats.md:16 30fa9deafb5b41cda7f296f7f970ef4c
+#: 6f3982088ea34dfaa948874dd2e1741b
 msgid "**MP3 / FLAC / OGG / M4A**"
 msgstr "**MP3 / FLAC / OGG / M4A**"
 
-#: ../../how-to/io_formats.md:16 9e30b8c1949e4bf1b7ea18917858ddbf
+#: ../../how-to/io_formats.md:16 1de5c034c230495c9d924c18285b63b4
 msgid "`pydub`, `tinytag`"
 msgstr "`pydub`, `tinytag`"
 
-#: ../../how-to/io_formats.md:16 7954e5bd05124fdfbff650cc50523004
+#: ../../how-to/io_formats.md:16 ef801061e4374dad9e386f7deaab5877
 msgid ""
 "Audio read/write raises `ImportError`; some codecs also need an external "
 "`ffmpeg`/`libav` binary."
 msgstr "音声の読み書きは `ImportError` を送出します。一部 codec は外部の `ffmpeg` / `libav` も必要です。"
 
-#: ../../how-to/io_formats.md:16 bfa128a5c2ff42a3ae2832becbcef4d8
+#: ../../how-to/io_formats.md:16 63bcffd74b664b0e88108d5de9ba83b7
 msgid "**TDMS**"
 msgstr "**TDMS**"
 
-#: ../../how-to/io_formats.md:16 3c350f34f76243418ce32688e71637f5
+#: ../../how-to/io_formats.md:16 08cba43882d8459e8d106d33eb7bb1e0
 msgid "`nptdms`"
 msgstr "`nptdms`"
 
-#: ../../how-to/io_formats.md:16 24bc1a49783a4d529a98dfd93f07080c
+#: ../../how-to/io_formats.md:16 07148adfbac144de8c2431ca73128f61
 msgid "`io`"
 msgstr "`io`"
 
-#: ../../how-to/io_formats.md:16 512bb8c2b09f49d0b140615b29a68a54
+#: ../../how-to/io_formats.md:16 07869d2db85e4e5bbc5b561131900183
 msgid ""
 "Reader raises `ImportError` with the required `io` extra in its install "
 "guidance."
 msgstr "reader は必要な `io` extra の案内付きで `ImportError` を送出します。"
 
-#: ../../how-to/io_formats.md:16 47c4be5fdaed4137b541fd93bcf1e3f4
+#: ../../how-to/io_formats.md:16 bd551e8eee63462ab7ac580dd5de3eca
 msgid "**mseed / SAC / GSE2 / K-NET**"
 msgstr "**mseed / SAC / GSE2 / K-NET**"
 
-#: ../../how-to/io_formats.md:16 39b0a459373d498cb4584145d5e01e74
-#: 562e2860b79b4e8e9cbdc5b289e53f46
+#: ../../how-to/io_formats.md:16 57a37fd2ccbc403dac74fb983e5878b6
+#: f6425ad685ad4ca4b236e073e82c0982
 msgid "`obspy`"
 msgstr "`obspy`"
 
-#: ../../how-to/io_formats.md:16 2b597ddeb8d0410f998d55b1ccb1a223
-#: c308d515910c46ea98594c396dbeedc3 ee210e3d8ccb4e92a358365ea2efb518
+#: ../../how-to/io_formats.md:16 52b3729890ac421f8b1cfd012ab1ab10
+#: 5d4464289ae34abfaf6cfd7b2cd95c6c dddac76298114927ae920cb9e37369e6
 msgid "`seismic`"
 msgstr "`seismic`"
 
-#: ../../how-to/io_formats.md:16 bddb2ffdbc1147db9ec22a008bd4bd67
+#: ../../how-to/io_formats.md:16 92d9efb88e2e4dad98190e8f5c4b66c1
 msgid ""
-"Registered reader/writer raises `ImportError` with the required `seismic` "
-"extra in its install guidance."
-msgstr ""
-"登録済みの reader / writer は必要な `seismic` extra の案内付きで `ImportError` を送出します。"
+"Registered reader/writer raises `ImportError` with the required `seismic`"
+" extra in its install guidance."
+msgstr "登録済みの reader / writer は必要な `seismic` extra の案内付きで `ImportError` を送出します。"
 
-#: ../../how-to/io_formats.md:16 74afc410abda4eed89040425079b166d
+#: ../../how-to/io_formats.md:16 3fc179d4415c4d53a716065e05cef98f
 msgid "**WIN / WIN32**"
 msgstr "**WIN / WIN32**"
 
-#: ../../how-to/io_formats.md:16 6c83ffb2654949f59d888fc4d5a757bf
+#: ../../how-to/io_formats.md:16 793aa95cbcb94923913c40975df04c50
 msgid ""
 "Uses conditional registration: when ObsPy is unavailable, the `win` / "
 "`win32` registry entries may be absent."
-msgstr ""
-"条件付き登録です。ObsPy がない環境では `win` / `win32` の registry entry 自体が存在しない場合があります。"
+msgstr "条件付き登録です。ObsPy がない環境では `win` / `win32` の registry entry 自体が存在しない場合があります。"
 
-#: ../../how-to/io_formats.md:16 6a2174558c514def8448149a1f1d6e7c
+#: ../../how-to/io_formats.md:16 65d95d1630144cdea9411d7411bbc03b
 msgid "`mth5`"
 msgstr "`mth5`"
 
-#: ../../how-to/io_formats.md:16 db607134ca9d47a2b05f3603ae09b187
+#: ../../how-to/io_formats.md:16 28b70388db5a449f9e8fc958773081e9
 msgid ""
-"Reader raises `ImportError` with the required `seismic` extra in its install"
-" guidance."
+"Reader raises `ImportError` with the required `seismic` extra in its "
+"install guidance."
 msgstr "reader は必要な `seismic` extra の案内付きで `ImportError` を送出します。"
 
-#: ../../how-to/io_formats.md:16 a6ca4092e912416faf007faeb16dea3b
+#: ../../how-to/io_formats.md:16 6ceec9109a8645bab25bcd5ca7f55ad1
 msgid "**nc / NetCDF4**"
 msgstr "**nc / NetCDF4**"
 
-#: ../../how-to/io_formats.md:16 eb874e2bd8964861873287a7fd13bcf9
+#: ../../how-to/io_formats.md:16 15d9b8aabdd843018d531cc282acf2c6
 msgid "`xarray`, `netCDF4`"
 msgstr "`xarray`, `netCDF4`"
 
-#: ../../how-to/io_formats.md:16 447a39b4a12e482eaf18c79949b6ab31
+#: ../../how-to/io_formats.md:16 af28421abcf34bb89992b7334f990850
 msgid "`netcdf4`"
 msgstr "`netcdf4`"
 
-#: ../../how-to/io_formats.md:16 c38ec57fcd84433f87120866f70bef15
+#: ../../how-to/io_formats.md:16 eb8054aea9ab415eb9c3e76e17af07c6
 msgid ""
-"Reader/writer raises `ImportError` with the required `netcdf4` extra in its "
-"install guidance."
+"Reader/writer raises `ImportError` with the required `netcdf4` extra in "
+"its install guidance."
 msgstr "reader / writer は必要な `netcdf4` extra の案内付きで `ImportError` を送出します。"
 
-#: ../../how-to/io_formats.md:16 ba36471344f24494b370b553174e3889
+#: ../../how-to/io_formats.md:16 67cdb9631eac415eb79c93579184e88c
 msgid "**Zarr**"
 msgstr "**Zarr**"
 
-#: ../../how-to/io_formats.md:16 4eebefd984c94eb7bbd8797755190aa3
-#: ef6c3199a3e64e06ad6df13fac2a6ac6
+#: ../../how-to/io_formats.md:16 271e256847584e05b5247530fce7a52b
+#: a1a355e9c1344f44aaed2fd40a5b8ddb
 msgid "`zarr`"
 msgstr "`zarr`"
 
-#: ../../how-to/io_formats.md:16 0c60c360b3eb4f42b38fac1da4cd0097
+#: ../../how-to/io_formats.md:16 971aa75a2e8b42c69b527ebff95fae68
 msgid ""
 "Reader/writer raises `ImportError` with the required `zarr` extra in its "
 "install guidance."
 msgstr "reader / writer は必要な `zarr` extra の案内付きで `ImportError` を送出します。"
 
-#: ../../how-to/io_formats.md:124 cbc825180060498885c62a4d073b30a9
+#: ../../how-to/io_formats.md:124 18e6789e144b41968314e3e43a8cf168
 msgid "<a id=\"io-formats-en-a\"></a>"
 msgstr "<a id=\"io-formats-ja-a\"></a>"
 
-#: ../../how-to/io_formats.md:126 f6f05a38bbe240aca1d051e98e557e0f
+#: ../../how-to/io_formats.md:126 c893cf0b8d324324add07946ebf042e4
 msgid "A. GW Standards"
 msgstr "A. GW標準"
 
-#: ../../how-to/io_formats.md:128 3aa5615c6c1341a8878303586918a39b
+#: ../../how-to/io_formats.md:128 b934b60a658b452d95de3c7b38eb2c4f
 msgid ""
-"These are the standard GW storage, exchange, and acquisition paths. If you "
-"are unsure, start with **HDF5**. Use **GWF** when you need external standard"
-" compatibility, and **DTTXML** for diagnostic tool output."
+"These are the standard GW storage, exchange, and acquisition paths. If "
+"you are unsure, start with **HDF5**. Use **GWF** when you need external "
+"standard compatibility, and **DTTXML** for diagnostic tool output."
 msgstr ""
 "GW 系の標準保存・交換・取得経路です。 迷ったらまず **HDF5**、外部標準との互換が必要なら **GWF**、診断ツール出力なら "
 "**DTTXML** を見てください。"
 
-#: ../../how-to/io_formats.md:16 923bed2812f04bafa69c0b85e8d0a5e7
+#: ../../how-to/io_formats.md:16 0d619530d85a448aa2ee457d45f2c678
 msgid "Format / Path"
 msgstr "形式 / 経路"
 
-#: ../../how-to/io_formats.md:16 4540cb0464174381b064d0e38be9c6ae
-#: 506e61692b884a90a30ac87ed3c30abc 740f8baac4d647fe8cb0e0439ab036db
-#: 8392611d42a2488585fc547d437e443b
+#: ../../how-to/io_formats.md:16 356d0ccf2cfd4464ba53601141b2b290
+#: a58fc2d3824a4d21a115ae27dc8155ae bd7cca32d6ed48bfa603ecc78a7a8827
+#: cc8c83c055834384874a2fb854fcd942
 msgid "R / W"
 msgstr "読 / 写"
 
-#: ../../how-to/io_formats.md:16 077c53d8947a4fb98396b37ea961a923
-#: 3d7c64e433ff43a3990b80206bb78a12 cbf3e4d07931481e883b27aef334a13a
-#: f023672637c54aa0875a82f8eee93f66
+#: ../../how-to/io_formats.md:16 33d9c318ba5b40a885d474b39bf19051
+#: 48e71017390f4bc0a55b6ed7677bfe7a 77d5336b3a554a3bb23daa713ef82f8a
+#: 7e84aff6c9f5491ea9f8a0e59a487638
 msgid "Main entry"
 msgstr "主な入口"
 
-#: ../../how-to/io_formats.md:16 0ef83d46beb84b3aaf6f01ffd841583b
-#: 4b74c690e74244aa8f00fde36c4aeb0f 884908000e214663bab0f58aafe333d4
-#: da74f0fc1ec44784a4910162965df38b
+#: ../../how-to/io_formats.md:16 379c99acdd49447eb021ad15dc1f529d
+#: 6cd6b8aec8b6492e8bfc4afd7a7b27a9 dad6887c4bf342548a8316bf711458f6
+#: f94e776e5eb74c01b5f463fca15bcab9
 msgid "Best for"
 msgstr "適したデータ"
 
-#: ../../how-to/io_formats.md:16 12264d49c0e54e13b750f1fb47baebb5
-#: 87710d9304dc4447ac8c12dff27ef5af 9bd2f72a4ff247f2a9fe965935aa2193
-#: b79269136933436d84c7b3b458db77b2 bc07da5888fa48c8af9cfd4183ae6d20
+#: ../../how-to/io_formats.md:16 1c3093054351439888c6ff6b86fcbef4
+#: 47176688b31245038c9d52c8b6f2d3cb 5f674ebffe124ef0b5cd66ccde8dd06d
+#: 7863a79205104dc28fd69e9e00097fc1 7c275acdc6ef46919f0782e72014d5af
 msgid "Notes"
 msgstr "注意事項"
 
-#: ../../how-to/io_formats.md:16 80bdb4be99ba415da9c0fd13bba3ed2b
+#: ../../how-to/io_formats.md:16 6a6a9b7281ab4234a2ba1ccf21490a8e
 msgid "**GWF** (`.gwf`)"
 msgstr "**GWF** (`.gwf`)"
 
-#: ../../how-to/io_formats.md:16 078052ed41a54c5cb466d3586acb714c
-#: 25d9c566b5174b739b5b57f277580bb3 2c661085b7444046b28ac26feace4736
-#: 3522fee875014f4a9df994f3eb214f7f 3a5d32a0e8334eec8283e5c3622bf380
-#: 40d7b6709294401c87e842e8495db691 6167f6d0bcc641b0aaad837012dfc353
-#: 6b6689be8d1c492f8390dea7d17fbf54 82b78a77e2a54309937cbe1799c23a05
-#: b48d285fa6c744c3b7f3a5c1275ecfa2 b4c49c1259b945cb9ad5c068db49bc38
-#: bd58c61aa338470998f94e580bd8efaf c211b9e086fc46759c551b7830613c8e
+#: ../../how-to/io_formats.md:16 0d127cac72aa409ab963892d0258779b
+#: 4267d920f32342c9aaed3ff73a7344df 4e3d8ff413634bce841e4f4b7a8786e3
+#: 4f9d05b43b28470bac06b97f98026c10 7294cafc77a64f278665cd7a97d2d5e8
+#: 76d4e805132d407cbdb0c8202f564e6d 7f83d18c51fb47aeb9e8dccede0370aa
+#: cd9b1787271145ef875b29fe9d0921cd da36a20fc75249e69e522416166fdf5c
+#: e8f1b33aed9f49caa284fd08916ef654 ef1f997db937487c947924734902124f
+#: f1d424e641794545913f1fa82ae191e7 fdd83b9f19a0471d9d586e729b5e8073
 msgid "○ / ○"
 msgstr "○ / ○"
 
-#: ../../how-to/io_formats.md:16 ca9ced3663034444957fba2d0e56a4e2
+#: ../../how-to/io_formats.md:16 0eda5f311d354eed88a92196e98ba773
 msgid "`TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()`"
 msgstr "`TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()`"
 
-#: ../../how-to/io_formats.md:16 4c2461d16401442086552b1cb9b746ae
+#: ../../how-to/io_formats.md:16 ab381b2740c74d39b205c553ebb0b649
 msgid "Standard LIGO/KAGRA frame exchange"
 msgstr "LIGO/KAGRA の標準交換"
 
-#: ../../how-to/io_formats.md:16 cdb7f5bb6632436c9fd2b45cf0adc052
+#: ../../how-to/io_formats.md:16 1ff32919b6f74d8cb951508524192361
 msgid "Standard format, via gwpy"
 msgstr "標準形式。gwpy 経由"
 
-#: ../../how-to/io_formats.md:16 3de5cea8a8ee45278afb29bb1dad9bcc
+#: ../../how-to/io_formats.md:16 f9673bacdb364e639c5080c1d1ed0bc1
 msgid "**HDF5** (`.h5`, `.hdf5`)"
 msgstr "**HDF5** (`.h5`, `.hdf5`)"
 
-#: ../../how-to/io_formats.md:16 43f366e441b7406fba686523985d7247
-msgid "`.read(..., format=\"hdf5\")`, `.write(..., format=\"hdf5\")` on major classes"
+#: ../../how-to/io_formats.md:16 ff6e42f1e1054ea99072d496babb49f7
+msgid ""
+"`.read(..., format=\"hdf5\")`, `.write(..., format=\"hdf5\")` on major "
+"classes"
 msgstr "各クラスの `.read(..., format=\"hdf5\")`, `.write(..., format=\"hdf5\")`"
 
-#: ../../how-to/io_formats.md:16 274cb436c50e4f1b914a2d4c3d064679
+#: ../../how-to/io_formats.md:16 f9ce53d15c25490a9765035b30e4a119
 msgid "Long-term storage with metadata"
 msgstr "長期保存、メタデータ保持"
 
-#: ../../how-to/io_formats.md:16 06c166a923b6415d9de60c788146e908
+#: ../../how-to/io_formats.md:16 e942ce38cd9f4294ba35870d2b4de518
 msgid "Prefer explicit `format=\"hdf5\"`"
 msgstr "`format=\"hdf5\"` の明示を推奨"
 
-#: ../../how-to/io_formats.md:16 815a93ef86c344c892b0544608e0e3e5
+#: ../../how-to/io_formats.md:16 d1014d01a76840e6b9fbd0dd05aee80a
 msgid "**hdf.ndscope** (`.h5`, `.hdf5`)"
 msgstr "**hdf.ndscope** (`.h5`, `.hdf5`)"
 
-#: ../../how-to/io_formats.md:16 948b90ad32864627afa972bc7e162218
+#: ../../how-to/io_formats.md:16 824b3203e66b4d868808c53985a65370
 msgid ""
 "`TimeSeriesDict.read(..., format=\"hdf.ndscope\")`, `.write(..., "
 "format=\"hdf.ndscope\")`"
@@ -745,226 +746,233 @@ msgstr ""
 "`TimeSeriesDict.read(..., format=\"hdf.ndscope\")`, `.write(..., "
 "format=\"hdf.ndscope\")`"
 
-#: ../../how-to/io_formats.md:16 8806ee63f3434364960f951d486d2463
+#: ../../how-to/io_formats.md:16 8e8400244ad54a5795673bca7dc8877a
 msgid "ndscope-compatible HDF5"
 msgstr "ndscope 互換"
 
-#: ../../how-to/io_formats.md:16 a353899958d740fda9ceec21eabf9cae
+#: ../../how-to/io_formats.md:16 b0dd8659253748d898255d5bfa5a45e4
 msgid ""
 "`TimeSeriesDict` only. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, "
 "`ndscopehdf5`"
-msgstr ""
-"`TimeSeriesDict` 限定。旧 alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5`"
+msgstr "`TimeSeriesDict` 限定。旧 alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5`"
 
-#: ../../how-to/io_formats.md:16 a79d2070f1cc40f7b4f9cb3d9d22deee
+#: ../../how-to/io_formats.md:16 1007aea7ca054d99a89711ca0beb25f1
 msgid "**xml.diaggui** (`.xml`, `.xml.gz`)"
 msgstr "**xml.diaggui** (`.xml`, `.xml.gz`)"
 
-#: ../../how-to/io_formats.md:16 05073b359bf84e4192ee1dee9a6f6f3d
-#: 1b7c4aaf08e24382b869274f44ff4e4b 1e2ef43033bb4807be858fcd36e8a2a6
-#: 6275b8d1e14942f598330d96fa43f613 6cff1168b63146c6917dd29c5ad6a0d2
-#: 722d82d4bb584b82b585d11672c5e8ed b018539afb2a4680bf573ffa28b9b592
-#: caa3a0917e3d48889dfc5433cc6c231f f9ec5315d1ea4e92986a10e66391eb33
-#: ff44805f2a1a4c1fb594f7db5aae2679
+#: ../../how-to/io_formats.md:16 303322da7d574497bce22a647ce63c46
+#: 32b3f0b0f734409d9b40d262a29224dc 3ca61c31e72b4e30892c150875945fbf
+#: 3e63e5055ef84613be2642bbe2f00dbd 4f74d4623d664d0982352bb363c40478
+#: 7b96e4c89c6a4097b65ac9f7eef55c56 7d484f767e6a43129a8c84af27ef035c
+#: 8098a79abdd545728a2293b49c762613 8d67f577331b4893a555286395ff82a7
+#: c14508023c1a458dbf5713cd5f542b00
 msgid "○ / ×"
 msgstr "○ / ×"
 
-#: ../../how-to/io_formats.md:16 a795f24957844fc7a94753326aa3a392
+#: ../../how-to/io_formats.md:16 a8e9eb04a925446493dcc233445f0a1f
 msgid "`TimeSeriesDict.read(..., format=\"xml.diaggui\", products=\"...\")`"
 msgstr "`TimeSeriesDict.read(..., format=\"xml.diaggui\", products=\"...\")`"
 
-#: ../../how-to/io_formats.md:16 70e0e475909d4e51bd1a85500f1f210c
+#: ../../how-to/io_formats.md:16 7c4ec3688b704a309b01d73dfcb94058
 msgid "DiagGUI / DTT outputs"
 msgstr "DiagGUI / DTT 出力"
 
-#: ../../how-to/io_formats.md:16 65a883aa5e7a4f92ac5a32689e3da30e
+#: ../../how-to/io_formats.md:16 26b4138957b749b3a54f5edb5a1da065
 msgid "`products` is required; legacy alias: `dttxml`"
 msgstr "`products` 必須。旧 alias: `dttxml`"
 
-#: ../../how-to/io_formats.md:16 0c7181b99e62428ab6860d0a74e71c19
+#: ../../how-to/io_formats.md:16 dc274f78367e42af9ba10653de06e8bb
 msgid "**NDS2**"
 msgstr "**NDS2**"
 
-#: ../../how-to/io_formats.md:16 8ecbc7f2a52548caa7d63ebad6b7ca5e
+#: ../../how-to/io_formats.md:16 a296c3afd5064a78b371c93abb6839c5
 msgid "`TimeSeries.fetch()`"
 msgstr "`TimeSeries.fetch()`"
 
-#: ../../how-to/io_formats.md:16 ef53728dfa3a4966807a184f70262cab
+#: ../../how-to/io_formats.md:16 8f9820be3e61466eae025558dfe4c8a6
 msgid "Detector data server access"
 msgstr "検出器データサーバ取得"
 
-#: ../../how-to/io_formats.md:16 265234c03bb74c55a59b564f339fdc0b
-#: 59b1624c4aa44f96906981b564b112fe
+#: ../../how-to/io_formats.md:16 422086850943495c87912ab4b87df33c
+#: 75243de7f0224ed18af65b394cf69a21
 msgid "Network path"
 msgstr "ネットワーク経由"
 
-#: ../../how-to/io_formats.md:16 a81e842dded1484f9cdf4ed47a67680d
+#: ../../how-to/io_formats.md:16 c7b2aa2e949d47429818a5bf60ad7fba
 msgid "**GWOSC**"
 msgstr "**GWOSC**"
 
-#: ../../how-to/io_formats.md:16 0560596561d8479ab7557d43985478af
+#: ../../how-to/io_formats.md:16 6e2d70bc147a44cd81a0fcad9173d119
 msgid "`TimeSeries.fetch_open_data()`"
 msgstr "`TimeSeries.fetch_open_data()`"
 
-#: ../../how-to/io_formats.md:16 8d26d7124a834a88ac5e5d3187f29fe1
+#: ../../how-to/io_formats.md:16 25a699af43d641cd93c3b3523bc705dc
 msgid "Open data access"
 msgstr "オープンデータ取得"
 
-#: ../../how-to/io_formats.md:140 498967ef84684d50a070a01677470b95
-msgid ""
-"Purpose: compare the main GW-oriented direct-I/O and network entry points"
+#: ../../how-to/io_formats.md:140 af7ffa8f20774fdb86baebf7614600cf
+msgid "Purpose: compare the main GW-oriented direct-I/O and network entry points"
 msgstr "目的: GW 系で代表的な direct I/O とネットワーク取得の入口を比較する"
 
-#: ../../how-to/io_formats.md:141 b0fd2ae146dd4543ae78f8936ae8b2d9
+#: ../../how-to/io_formats.md:141 0fb19416285b40d58111e1098880c1ba
 msgid "Input: HDF5, GWF, DTTXML, or detector/open-data access parameters"
 msgstr "入力: HDF5, GWF, DTTXML, または検出器 / オープンデータ取得の条件"
 
-#: ../../how-to/io_formats.md:142 252618a0830d4b538b91ff5fcbbb4575
+#: ../../how-to/io_formats.md:142 272eb8ad79ba4919841f3c6ae3e326d6
 msgid "Output: `TimeSeries`, `TimeSeriesDict`, or fetched open data"
 msgstr "出力: `TimeSeries`, `TimeSeriesDict`, または取得した open data"
 
-#: ../../how-to/io_formats.md:155 b8a2b9410c9246ef809a31d1046a538b
+#: ../../how-to/io_formats.md:155 7bf237caa563404ba3cf0377f3d5cfd8
 msgid "**HDF5** is the safest general recommendation for structured GW data."
 msgstr "**HDF5** は安全で構造化しやすく、GW 系で最も無難な保存先です。"
 
-#: ../../how-to/io_formats.md:156 f6f845df74f54c14b39d11900a00b081
+#: ../../how-to/io_formats.md:156 77e0f70c5ed7416eb5054b388fd6eb4d
 msgid ""
-"**GWF** reads accept a list or tuple of `.gwf` files for `TimeSeries` and "
-"`TimeSeriesDict`. Files are merged in time-span order; contiguous spans join"
-" normally, gaps raise by default, `pad=<value>` or `gap=\"pad\"` fills gaps,"
-" and `gap=\"ignore\"` concatenates without filling. Overlapping spans are "
-"rejected by default or with `gap=\"raise\"`, while `gap=\"ignore\"` "
-"concatenates files in span order and permits overlap concatenation. If "
-"`start` or `end` extends beyond available data, the default `gap=\"raise\"` "
-"behavior rejects the request; use `pad=<value>` or `gap=\"pad\"` to fill the"
-" outer interval. `gap=\"ignore\"` never pads missing samples, including "
-"outer `start`/`end` ranges. When channel names are not supplied for multi-"
-"file reads, auto-discovery uses the first file and assumes the remaining "
-"files expose compatible channels."
+"**GWF** reads accept a list or tuple of `.gwf` files for `TimeSeries` and"
+" `TimeSeriesDict`. Files are merged in time-span order; contiguous spans "
+"join normally, gaps raise by default, `pad=<value>` or `gap=\"pad\"` "
+"fills gaps, and `gap=\"ignore\"` concatenates without filling. "
+"Overlapping spans are rejected by default or with `gap=\"raise\"`, while "
+"`gap=\"ignore\"` concatenates files in span order and permits overlap "
+"concatenation. If `start` or `end` extends beyond available data, the "
+"default `gap=\"raise\"` behavior rejects the request; use `pad=<value>` "
+"or `gap=\"pad\"` to fill the outer interval. `gap=\"ignore\"` never pads "
+"missing samples, including outer `start`/`end` ranges. When channel names"
+" are not supplied for multi-file reads, auto-discovery uses the first "
+"file and assumes the remaining files expose compatible channels."
 msgstr ""
 "**GWF** は `TimeSeries` と `TimeSeriesDict` で `.gwf` ファイルの list / tuple "
-"入力に対応します。ファイルは時刻 span 順で結合されます。連続 span はそのまま結合し、ギャップは既定で失敗します。`pad=<値>` または "
-"`gap=\"pad\"` で埋められ、`gap=\"ignore\"` では埋めずに連結します。オーバーラップする span は既定または "
-"`gap=\"raise\"` で失敗しますが、`gap=\"ignore\"` では span "
-"順に連結し、オーバーラップの連結を許可します。`start` / `end` が実データの外側に伸びる場合も、既定の `gap=\"raise\"` "
-"では失敗します。外側区間を埋めるには `pad=<値>` または `gap=\"pad\"` を使ってください。`gap=\"ignore\"` "
-"は内部ギャップも外側の `start` / `end` 区間も padding しません。複数ファイル読み込みで channel "
-"名を指定しない場合、自動検出は先頭ファイルを使い、残りのファイルにも互換 channel がある前提です。"
+"入力に対応します。ファイルは時刻 span 順で結合されます。連続 span はそのまま結合し、ギャップは既定で失敗します。`pad=<値>` "
+"または `gap=\"pad\"` で埋められ、`gap=\"ignore\"` では埋めずに連結します。オーバーラップする span "
+"は既定または `gap=\"raise\"` で失敗しますが、`gap=\"ignore\"` では span "
+"順に連結し、オーバーラップの連結を許可します。`start` / `end` が実データの外側に伸びる場合も、既定の "
+"`gap=\"raise\"` では失敗します。外側区間を埋めるには `pad=<値>` または `gap=\"pad\"` "
+"を使ってください。`gap=\"ignore\"` は内部ギャップも外側の `start` / `end` 区間も padding "
+"しません。複数ファイル読み込みで channel 名を指定しない場合、自動検出は先頭ファイルを使い、残りのファイルにも互換 channel "
+"がある前提です。"
 
-#: ../../how-to/io_formats.md:157 3a2dd85a298f48e79daf033ee5a756ee
+#: ../../how-to/io_formats.md:157 fc93e13ff50740e2a337873fbc0a826d
 msgid ""
 "**DTTXML** changes behavior depending on `products`. Keep public direct "
-"reads on `TimeSeriesDict.read(..., format=\"xml.diaggui\", products=...)`."
+"reads on `TimeSeriesDict.read(..., format=\"xml.diaggui\", "
+"products=...)`."
 msgstr ""
 "**DTTXML** は `products` によって出力型が変わります。public direct read は "
 "`TimeSeriesDict.read(..., format=\"xml.diaggui\", products=...)` に揃えます。"
 
-#: ../../how-to/io_formats.md:158 49d06b98401b4576ad97d48c000514ed
+#: ../../how-to/io_formats.md:158 ed29aba3314b4e9ea916e304fb625e4c
 msgid ""
 "Frequency-domain DTTXML direct shims and registry adapters are "
-"implementation-only, not part of the public direct-I/O contract. Advanced "
-"internal users handling complex transfer functions can prefer `native=True` "
-"there."
+"implementation-only, not part of the public direct-I/O contract. Advanced"
+" internal users handling complex transfer functions can prefer "
+"`native=True` there."
 msgstr ""
-"周波数領域の DTTXML direct shim と registry adapter は implementation-only で、public "
-"direct-I/O contract には含めません。複素 transfer function を扱う高度な内部利用では `native=True` "
-"を優先できます。"
+"周波数領域の DTTXML direct shim と registry adapter は implementation-only "
+"で、public direct-I/O contract には含めません。複素 transfer function を扱う高度な内部利用では "
+"`native=True` を優先できます。"
 
-#: ../../how-to/io_formats.md:159 973a681cff674b688e8ac7a5d4cb62ef
+#: ../../how-to/io_formats.md:159 e0d531dba14f4830982dbcfc74881383
 msgid ""
-"**NDS2 / GWOSC** are shown inside group A, but explicitly marked as `network"
-" path` rather than file formats."
+"**NDS2 / GWOSC** are shown inside group A, but explicitly marked as "
+"`network path` rather than file formats."
 msgstr "**NDS2 / GWOSC** はファイル形式ではないため、ページ中では A に置きつつ備考で `ネットワーク経由` と明示します。"
 
-#: ../../how-to/io_formats.md:161 be0cc7c9ff464e0789397be269f630f4
+#: ../../how-to/io_formats.md:161 d2ace66ad03e468c9776459d4a7d5275
 msgid "<a id=\"io-formats-en-b\"></a>"
 msgstr "<a id=\"io-formats-ja-b\"></a>"
 
-#: ../../how-to/io_formats.md:163 8f3880eddb9941acae625eb79b2d7265
+#: ../../how-to/io_formats.md:163 c3dcfc23039a49c49fc8c065c4e396d1
 msgid "B. Seismic and Geophysical Observation"
 msgstr "B. 地震・地球物理観測"
 
-#: ../../how-to/io_formats.md:165 856e97f5a460499b89af865ebacca8f2
+#: ../../how-to/io_formats.md:165 1c47445c21e54425a2a589d72f98dc2b
 msgid ""
-"This group is for existing seismic and electromagnetic observation formats. "
-"In practice, **MiniSEED** is the easiest starting point when you need to "
-"place a format in context."
-msgstr ""
-"地震観測・電磁気観測の既存フォーマットです。 既存資産をまず読めることが重要なグループで、MiniSEED を起点に考えると分かりやすいです。"
+"This group is for existing seismic and electromagnetic observation "
+"formats. In practice, **MiniSEED** is the easiest starting point when you"
+" need to place a format in context."
+msgstr "地震観測・電磁気観測の既存フォーマットです。 既存資産をまず読めることが重要なグループで、MiniSEED を起点に考えると分かりやすいです。"
 
-#: ../../how-to/io_formats.md:16 233cd363914541a9a4790d020ced38ee
-#: 25708375ebef477b8651dec3024e446a 7dc611606f5a47ac9a455df9cf16a29b
-#: a787508e3890487f8fc95c8d1e489fe8 c4e995fe31fa4114a662ce47366ff0f9
-#: ec4d511d94634704b516f4c15f4288b5
+#: ../../how-to/io_formats.md:16 2bebc86e05b645bda189bb7f768fa26d
+#: 3b14504afb6f4459983a1f481629b013 5aab12ee251d467aaee43be7378c807c
+#: 5f67b74c9fbd4439b1e3739331b6a8ba 6bcee75b09094021bf4d972bf4110a5c
+#: e4c9b0b98633441c9d02653e43fefe71
 msgid "Format"
 msgstr "形式"
 
-#: ../../how-to/io_formats.md:16 18a67f38c8694880862dbc84063793b8
+#: ../../how-to/io_formats.md:16 888f6462075142b3bdf60f9cf672a45b
 msgid "**mseed** (`.mseed`)"
 msgstr "**mseed** (`.mseed`)"
 
-#: ../../how-to/io_formats.md:16 40aacd3ebb71485cbaf11d4ed8a4ff0b
-msgid "`TimeSeriesDict.read(..., format=\"mseed\")`, `.write(..., format=\"mseed\")`"
-msgstr "`TimeSeriesDict.read(..., format=\"mseed\")`, `.write(..., format=\"mseed\")`"
+#: ../../how-to/io_formats.md:16 0dbdb9fb1ae4403789f33a5838098879
+msgid ""
+"`TimeSeriesDict.read(..., format=\"mseed\")`, `.write(..., "
+"format=\"mseed\")`"
+msgstr ""
+"`TimeSeriesDict.read(..., format=\"mseed\")`, `.write(..., "
+"format=\"mseed\")`"
 
-#: ../../how-to/io_formats.md:16 de4d6914848f4319bcf1d4ebd9aff847
+#: ../../how-to/io_formats.md:16 8d18a4b04b184f2f998465375ca54ed9
 msgid "Standard seismic waveform exchange"
 msgstr "地震波形の標準交換"
 
-#: ../../how-to/io_formats.md:16 b78442acacce4f9b92e7f02e1dc4b68d
+#: ../../how-to/io_formats.md:16 c088d61f0f4e4c1093266a5d4164f9e4
 msgid "`gap` controls gap handling; legacy alias: `miniseed`"
 msgstr "`gap` でギャップ処理を指定。旧 alias: `miniseed`"
 
-#: ../../how-to/io_formats.md:16 97e7b513f7f44f878f5ed58fc4b7040e
+#: ../../how-to/io_formats.md:16 b113c1bd78514579ab788639552a5726
 msgid "**SAC** (`.sac`)"
 msgstr "**SAC** (`.sac`)"
 
-#: ../../how-to/io_formats.md:16 0387bf0e7fe544cb9113f9949500ba04
+#: ../../how-to/io_formats.md:16 022ffc90a91947b5a553ae10a5715e24
 msgid "`TimeSeriesDict.read(..., format=\"sac\")`, `.write(..., format=\"sac\")`"
 msgstr "`TimeSeriesDict.read(..., format=\"sac\")`, `.write(..., format=\"sac\")`"
 
-#: ../../how-to/io_formats.md:16 153e07d045e94efd8d2415fc986c24fa
+#: ../../how-to/io_formats.md:16 c2cc3b3ef82748cc98e28c1952c56a0e
 msgid "Seismic waveform analysis"
 msgstr "地震波形解析"
 
-#: ../../how-to/io_formats.md:16 4c46a6104c90499ab1f2361fadb491ef
-#: 567b89e9d6364abb9e2e981ef0d00c94
+#: ../../how-to/io_formats.md:16 8d670b5f2d4c43f6abddc731344db036
+#: a7e83a9ef0c44a1b8c85b782b663dd6d
 msgid "Via ObsPy"
 msgstr "ObsPy 経由"
 
-#: ../../how-to/io_formats.md:16 a3421c015c56425f9cc1ea37f7ce7799
+#: ../../how-to/io_formats.md:16 03f956a8be2b4c8cab27db7fd52bf966
 msgid "**GSE2** (`.gse2`)"
 msgstr "**GSE2** (`.gse2`)"
 
-#: ../../how-to/io_formats.md:16 ca81119644b14061bbf9215ade75a703
-msgid "`TimeSeriesDict.read(..., format=\"gse2\")`, `.write(..., format=\"gse2\")`"
-msgstr "`TimeSeriesDict.read(..., format=\"gse2\")`, `.write(..., format=\"gse2\")`"
+#: ../../how-to/io_formats.md:16 fdf978c55eb34bf488b6d27ed4edc7a3
+msgid ""
+"`TimeSeriesDict.read(..., format=\"gse2\")`, `.write(..., "
+"format=\"gse2\")`"
+msgstr ""
+"`TimeSeriesDict.read(..., format=\"gse2\")`, `.write(..., "
+"format=\"gse2\")`"
 
-#: ../../how-to/io_formats.md:16 10d10dc912114573b5fe00ced2530e78
+#: ../../how-to/io_formats.md:16 0754a7bbbfbf4e5486722fdd5847a53d
 msgid "Seismic waveform exchange"
 msgstr "地震波形交換"
 
-#: ../../how-to/io_formats.md:16 39808509784a401bab1df1030b9597c9
+#: ../../how-to/io_formats.md:16 a4e93fe25ce54bf1b2ecb23366d10567
 msgid "**K-NET** (`.knet`)"
 msgstr "**K-NET** (`.knet`)"
 
-#: ../../how-to/io_formats.md:16 b30e681a0e624098a5ccfc669ac7e08c
+#: ../../how-to/io_formats.md:16 51e0d028861945069c31e4eea918ae6b
 msgid "`TimeSeriesDict.read(..., format=\"knet\")`"
 msgstr "`TimeSeriesDict.read(..., format=\"knet\")`"
 
-#: ../../how-to/io_formats.md:16 14f987c8d44642998045d04a8990b64b
+#: ../../how-to/io_formats.md:16 a02ac5d96f044b4b987aad3cd94b537f
 msgid "Strong-motion records"
 msgstr "K-NET 強震記録"
 
-#: ../../how-to/io_formats.md:16 44340a3d2d1a40de9854c7972076d6de
+#: ../../how-to/io_formats.md:16 03a685bc63a5426eb21da0bdef7c04c0
 msgid "Read-only"
 msgstr "読み込み専用"
 
-#: ../../how-to/io_formats.md:16 7061e41b8f144a9c878d59e5b7df1a2d
+#: ../../how-to/io_formats.md:16 3a0ed99367af4fdfa047c8b8c354ba0e
 msgid "**WIN / WIN32** (`.win`, `.cnt`)"
 msgstr "**WIN / WIN32** (`.win`, `.cnt`)"
 
-#: ../../how-to/io_formats.md:16 2a2076ff8f2a46b188e2e3ed178d0cb3
+#: ../../how-to/io_formats.md:16 ed029a9247d2474eabf28d4c05649d6f
 msgid ""
 "`TimeSeriesDict.read(..., format=\"win\")`, `TimeSeriesDict.read(..., "
 "format=\"win32\")`"
@@ -972,19 +980,19 @@ msgstr ""
 "`TimeSeriesDict.read(..., format=\"win\")`, `TimeSeriesDict.read(..., "
 "format=\"win32\")`"
 
-#: ../../how-to/io_formats.md:16 d72eb0ba98614e01a7a65312f980ac8e
+#: ../../how-to/io_formats.md:16 1b1d2928fb1c436d94a3a411c5297f98
 msgid "Japanese WIN datasets"
 msgstr "国内 WIN データ"
 
-#: ../../how-to/io_formats.md:16 f47e249cb766482888ab84b630014e6e
+#: ../../how-to/io_formats.md:16 44922d53c4c14fe086786202d4bdc9ef
 msgid "Improved parser, read-only"
 msgstr "改良版 parser、読み込み専用"
 
-#: ../../how-to/io_formats.md:16 fa76cd22d1c94ef6a455c7988f61d6f3
+#: ../../how-to/io_formats.md:16 fce298d0d0a54ba2b1c680c5dad0a358
 msgid "**ATS** (`.ats`)"
 msgstr "**ATS** (`.ats`)"
 
-#: ../../how-to/io_formats.md:16 54e6f50f76194f839336388035bc8062
+#: ../../how-to/io_formats.md:16 cb37f80a05e449f7b800187b2bb00705
 msgid ""
 "`TimeSeries.read(..., format=\"ats\")`, `TimeSeriesDict.read(..., "
 "format=\"ats\")`"
@@ -992,86 +1000,86 @@ msgstr ""
 "`TimeSeries.read(..., format=\"ats\")`, `TimeSeriesDict.read(..., "
 "format=\"ats\")`"
 
-#: ../../how-to/io_formats.md:16 35e193be370c45f9bc77ff0e19df844c
+#: ../../how-to/io_formats.md:16 f356cd9aacef420ba785f0c5e105499e
 msgid "Metronix observation data"
 msgstr "Metronix 観測データ"
 
-#: ../../how-to/io_formats.md:16 03e950870fec4d079d2ac81f85bbcc0d
+#: ../../how-to/io_formats.md:16 db5f084e808144f3ade29976e7527b8b
 msgid "Native binary reader"
 msgstr "ネイティブ binary reader"
 
-#: ../../how-to/io_formats.md:16 c151b2c10701466290f566f20c22a746
+#: ../../how-to/io_formats.md:16 17888f13c85c41ba8312b3a57c7924cf
 msgid "**ATS.MTH5** (`format=\"ats.mth5\"`)"
 msgstr "**ATS.MTH5** (`format=\"ats.mth5\"`)"
 
-#: ../../how-to/io_formats.md:16 ef8d3ecf798d43c596357d2e556d485c
+#: ../../how-to/io_formats.md:16 b16308e176d34c37ac24d3ec72685cfa
 msgid "`TimeSeries.read(..., format=\"ats.mth5\")`"
 msgstr "`TimeSeries.read(..., format=\"ats.mth5\")`"
 
-#: ../../how-to/io_formats.md:16 2a2bb11e63394577bc54984643ec83de
+#: ../../how-to/io_formats.md:16 03b3807340144c848c5b9129d7f5ab32
 msgid "Single MTH5-backed path"
 msgstr "MTH5 経由の単一路"
 
-#: ../../how-to/io_formats.md:16 8b8118d5ae934529a23125cade817fac
+#: ../../how-to/io_formats.md:16 473c0c266dc34be4b6244e69c3508b05
 msgid "Partial support"
 msgstr "一部対応"
 
-#: ../../how-to/io_formats.md:16 b1be3df8cebd4eaba269525fd472247e
+#: ../../how-to/io_formats.md:16 2de0aa9ff7b049fc8a24eac690763863
 msgid "**MTH5 standalone** (`.h5`)"
 msgstr "**MTH5 standalone** (`.h5`)"
 
-#: ../../how-to/io_formats.md:16 18c3f13326574345b8b56f83690a3ddd
-#: 315543cb9f0d4bfd8e43911d432b9720
+#: ../../how-to/io_formats.md:16 4f12e4da10d84c00b68c227a971da9d5
+#: 898db205f2d14004ad2847511cc03e33
 msgid "In progress"
 msgstr "対応中"
 
-#: ../../how-to/io_formats.md:16 52624d51581e4ceeaab3e06c7a34b96f
+#: ../../how-to/io_formats.md:16 98eacf3bbfc245cc8c921b492f45f185
 msgid "Dedicated `format=\"mth5\"` not yet exposed"
 msgstr "専用 `format=\"mth5\"` は未整備"
 
-#: ../../how-to/io_formats.md:16 22645e6516cb483793c75a5ba9089dd7
+#: ../../how-to/io_formats.md:16 84c5cbee65294be4839dfa0461642c7f
 msgid "Future general MTH5 direct I/O"
 msgstr "今後の汎用 MTH5 direct I/O"
 
-#: ../../how-to/io_formats.md:16 6f959558bbc34367988cad04f3ff3562
+#: ../../how-to/io_formats.md:16 918adbf813aa47c68a3d4a33df4927d6
 msgid ""
-"**Not currently a public direct-I/O format**. The only direct path today is "
-"`ats.mth5`"
+"**Not currently a public direct-I/O format**. The only direct path today "
+"is `ats.mth5`"
 msgstr "**現時点では public direct-I/O 対応ではありません**。使える direct path は `ats.mth5` のみ"
 
-#: ../../how-to/io_formats.md:179 09b77a3cb7334e3d94a4ed1f431d45ad
+#: ../../how-to/io_formats.md:179 dc3716c88180450aa7c440663db191bb
 msgid ""
-"Purpose: compare common seismic and geophysical readers without overstating "
-"MTH5 support"
+"Purpose: compare common seismic and geophysical readers without "
+"overstating MTH5 support"
 msgstr "目的: 地震・地球物理系 reader の違いを、MTH5 を過大評価せずに比較する"
 
-#: ../../how-to/io_formats.md:180 f9a3cac9c3e349f593408ed6c363427f
+#: ../../how-to/io_formats.md:180 3648d6a393254af5bc59e893fea611de
 msgid ""
-"Input: existing waveform files such as MiniSEED, WIN/WIN32, or the limited "
-"`ats.mth5` path"
+"Input: existing waveform files such as MiniSEED, WIN/WIN32, or the "
+"limited `ats.mth5` path"
 msgstr "入力: MiniSEED, WIN/WIN32, または限定公開中の `ats.mth5` 経路"
 
-#: ../../how-to/io_formats.md:181 deac84ad63504268b15dd35b2903d0aa
-msgid ""
-"Output: `TimeSeries` or `TimeSeriesDict` objects depending on the reader"
+#: ../../how-to/io_formats.md:181 64432037abce41f78456f901c92c9bd6
+msgid "Output: `TimeSeries` or `TimeSeriesDict` objects depending on the reader"
 msgstr "出力: reader に応じた `TimeSeries` または `TimeSeriesDict`"
 
-#: ../../how-to/io_formats.md:192 d7dd9fecc6ba4f239027a695415c3fa7
+#: ../../how-to/io_formats.md:192 343f0f488b20496a8c8db4ee6b608d02
 msgid ""
 "**MiniSEED** pads gaps with `NaN` by default. Use `gap=\"raise\"` if you "
 "want failures instead."
 msgstr ""
-"**MiniSEED** はギャップがある場合、既定では `NaN` パディングされます。`gap=\"raise\"` で失敗させることもできます。"
+"**MiniSEED** はギャップがある場合、既定では `NaN` パディングされます。`gap=\"raise\"` "
+"で失敗させることもできます。"
 
-#: ../../how-to/io_formats.md:193 bdb129e84b1343c69615343909fa6f57
+#: ../../how-to/io_formats.md:193 9a4e42af4c84412285f19bd672acbb4e
 msgid "**K-NET** and **WIN / WIN32** are intentionally read-only."
 msgstr "**K-NET**, **WIN / WIN32** は表のとおり読み込み専用です。"
 
-#: ../../how-to/io_formats.md:194 836f8383716e49dcaf600bf23639236b
+#: ../../how-to/io_formats.md:194 de28d6af4b9d45778cbabf17d9ac4bcb
 msgid "**ATS.MTH5** is the limited current direct path."
 msgstr "**ATS.MTH5** は利用経路が限定される current direct path です。"
 
-#: ../../how-to/io_formats.md:195 fb90475a4db6469a8a97ecc1a1f4ec9f
+#: ../../how-to/io_formats.md:195 0969f130dfe6456cbefa86100001b39e
 msgid ""
 "**MTH5 standalone** is still in design/publication cleanup. Read this as "
 "**\"`ats.mth5` has partial support\"**, not as **\"MTH5 direct I/O is "
@@ -1080,27 +1088,26 @@ msgstr ""
 "**MTH5 standalone** は設計・公開整理中です。**「MTH5 は対応済み」ではなく、「`ats.mth5` のみ一部対応」** "
 "と読んでください。"
 
-#: ../../how-to/io_formats.md:197 55a6c931577d47ea8e7f36b8c7ba61b5
+#: ../../how-to/io_formats.md:197 fef65c2c83e44022845fc4e82ace10ee
 msgid "<a id=\"io-formats-en-c\"></a>"
 msgstr "<a id=\"io-formats-ja-c\"></a>"
 
-#: ../../how-to/io_formats.md:199 c1eceaa7b4254a4bbe346184784418e7
+#: ../../how-to/io_formats.md:199 1a0c164ebc764ba0a01a9f656febb8f3
 msgid "C. General Analysis and Exchange"
 msgstr "C. 汎用・解析用"
 
-#: ../../how-to/io_formats.md:201 0929ddfcb06a4df9afe25f78e605f151
+#: ../../how-to/io_formats.md:201 8556d387308240c1b062243970adc654
 msgid ""
-"These formats are useful for analysis notebooks, interchange, and general "
-"storage. The key rule here is not to mix up “format choice” with “library "
-"conversion.”"
-msgstr ""
-"解析ノート、外部解析、交換に向いた形式です。 このグループでは「保存形式として選ぶ話」と「他ライブラリへ変換する話」を混ぜないのが重要です。"
+"These formats are useful for analysis notebooks, interchange, and general"
+" storage. The key rule here is not to mix up “format choice” with "
+"“library conversion.”"
+msgstr "解析ノート、外部解析、交換に向いた形式です。 このグループでは「保存形式として選ぶ話」と「他ライブラリへ変換する話」を混ぜないのが重要です。"
 
-#: ../../how-to/io_formats.md:16 1d68756d8c5c426eb7bdc6bc1bdfa29d
+#: ../../how-to/io_formats.md:16 3a7f99ed940f4493b18f151da6780c8d
 msgid "**CSV** (`.csv`)"
 msgstr "**CSV** (`.csv`)"
 
-#: ../../how-to/io_formats.md:16 67fcca17b71a49bc90d02b71f1774a15
+#: ../../how-to/io_formats.md:16 1e2a37b8f43b44a68c40cceba29b68ee
 msgid ""
 "`TimeSeries.read(\"data.csv\")`, `TimeSeriesDict.read(\"data.csv\")`, "
 "`TimeSeriesDict.write(..., format=\"csv\")`"
@@ -1108,19 +1115,19 @@ msgstr ""
 "`TimeSeries.read(\"data.csv\")`, `TimeSeriesDict.read(\"data.csv\")`, "
 "`TimeSeriesDict.write(..., format=\"csv\")`"
 
-#: ../../how-to/io_formats.md:16 8b16e34430824504929ece2e9bb59ac5
+#: ../../how-to/io_formats.md:16 063c0e3698804afaba5a82efa482a3f9
 msgid "Lightweight exchange and inspection"
 msgstr "軽量な交換、目視確認"
 
-#: ../../how-to/io_formats.md:16 d9f80eeb6f77442e937bd0fb7d994af8
+#: ../../how-to/io_formats.md:16 079073fb83a94b528b91e686e2005382
 msgid "Auto-identifies `.csv`; simple CSV exchange is metadata-light"
 msgstr "`.csv` は自動判定されます。単純な CSV 交換は metadata-light です"
 
-#: ../../how-to/io_formats.md:16 1011a2b641d54cd2a0b095dd305f358a
+#: ../../how-to/io_formats.md:16 668cfe3152ea4ccd8f1bab6dac2014c1
 msgid "**TXT** (`.txt`)"
 msgstr "**TXT** (`.txt`)"
 
-#: ../../how-to/io_formats.md:16 6b605bab203346bb9b24de5a52c9f9b2
+#: ../../how-to/io_formats.md:16 07699a355baf4112ba05c85a26eb7403
 msgid ""
 "`TimeSeries.read(..., format=\"txt\")`, `TimeSeriesDict.read(dir, "
 "format=\"txt\")`, `TimeSeriesDict.write(dir, format=\"txt\")`"
@@ -1128,39 +1135,39 @@ msgstr ""
 "`TimeSeries.read(..., format=\"txt\")`, `TimeSeriesDict.read(dir, "
 "format=\"txt\")`, `TimeSeriesDict.write(dir, format=\"txt\")`"
 
-#: ../../how-to/io_formats.md:16 92cdce39514547098e78bbc9325997e4
+#: ../../how-to/io_formats.md:16 20c1334e52364c618f1e18aebde4181c
 msgid "Plain-text exchange"
 msgstr "プレーンテキスト交換"
 
-#: ../../how-to/io_formats.md:16 2a441a6b537946acaa363ab946104d1f
+#: ../../how-to/io_formats.md:16 073f4219960f4e4e95d04bdfc3933185
 msgid "**nc** (`.nc`)"
 msgstr "**nc** (`.nc`)"
 
-#: ../../how-to/io_formats.md:16 944d2a22652d44fa8a9d5553bbd4bd15
+#: ../../how-to/io_formats.md:16 b896c13d05eb49ae98e20a9ca7bf1ff5
 msgid ""
 "`TimeSeries.read(..., format=\"nc\")`, `TimeSeriesDict.read(..., "
-"format=\"nc\")`, `TimeSeriesMatrix.read(..., format=\"nc\")`, `.write(..., "
-"format=\"nc\")`"
+"format=\"nc\")`, `TimeSeriesMatrix.read(..., format=\"nc\")`, "
+"`.write(..., format=\"nc\")`"
 msgstr ""
 "`TimeSeries.read(..., format=\"nc\")`, `TimeSeriesDict.read(..., "
-"format=\"nc\")`, `TimeSeriesMatrix.read(..., format=\"nc\")`, `.write(..., "
-"format=\"nc\")`"
+"format=\"nc\")`, `TimeSeriesMatrix.read(..., format=\"nc\")`, "
+"`.write(..., format=\"nc\")`"
 
-#: ../../how-to/io_formats.md:16 60b415befd7b41dbb0119c0be23de9eb
+#: ../../how-to/io_formats.md:16 01a77fc131f9484fb67fd3ea4e0be81e
 msgid "Scientific storage for time-series-oriented data"
 msgstr "時系列系の科学データ保存"
 
-#: ../../how-to/io_formats.md:16 074e404a07334d5db113f7e08c3e8616
+#: ../../how-to/io_formats.md:16 794d32eb10444d63b30f4ff0f5f2bb84
 msgid ""
 "Direct I/O here is centered on TimeSeries classes; legacy format alias: "
 "`netcdf4`"
 msgstr "direct I/O は TimeSeries 系中心。旧 format alias: `netcdf4`"
 
-#: ../../how-to/io_formats.md:16 2e28ce0326aa420abd74d95286e25ba5
+#: ../../how-to/io_formats.md:16 5132bf55b32e47ddb5df84af080a1bc1
 msgid "**Zarr** (`.zarr`)"
 msgstr "**Zarr** (`.zarr`)"
 
-#: ../../how-to/io_formats.md:16 21c5297b34d245bb9271f48b50ec3e5d
+#: ../../how-to/io_formats.md:16 d997deee208e47e08e3bdb4bd33a9fbb
 msgid ""
 "`TimeSeries.read(..., format=\"zarr\")`, `TimeSeriesDict.read(..., "
 "format=\"zarr\")`, `TimeSeriesMatrix.read(..., format=\"zarr\")`, "
@@ -1170,58 +1177,62 @@ msgstr ""
 "format=\"zarr\")`, `TimeSeriesMatrix.read(..., format=\"zarr\")`, "
 "`.write(..., format=\"zarr\")`"
 
-#: ../../how-to/io_formats.md:16 4457abc7dabd4924b679c745d044b467
+#: ../../how-to/io_formats.md:16 53ad925d5a854299a9f00b1429985844
 msgid "Chunked storage and parallel workflows"
 msgstr "chunked 保存、並列処理"
 
-#: ../../how-to/io_formats.md:16 7c1a83dcd5804415809e6cf420c6d0f8
+#: ../../how-to/io_formats.md:16 db4d606c81974f2c94b5547146b2b271
 msgid "Direct I/O here is centered on TimeSeries classes"
 msgstr "direct I/O は TimeSeries 系中心"
 
-#: ../../how-to/io_formats.md:16 27896f3150c24a01a622f1ef3e3a76af
+#: ../../how-to/io_formats.md:16 6215f1a0b65947248277313aeb3c7113
 msgid "**ROOT** (`.root`)"
 msgstr "**ROOT** (`.root`)"
 
-#: ../../how-to/io_formats.md:16 0eff3fcb7a074b7e8c13e7eeaf092c58
-msgid "`EventTable.read(\"events.root\")`, `EventTable.write(..., format=\"root\")`"
-msgstr "`EventTable.read(\"events.root\")`, `EventTable.write(..., format=\"root\")`"
+#: ../../how-to/io_formats.md:16 ab2f8c7ea8334706adb8e2ff0050c7fd
+msgid ""
+"`EventTable.read(\"events.root\")`, `EventTable.write(..., "
+"format=\"root\")`"
+msgstr ""
+"`EventTable.read(\"events.root\")`, `EventTable.write(..., "
+"format=\"root\")`"
 
-#: ../../how-to/io_formats.md:16 b2889a41541c4761b793419e39ca909f
+#: ../../how-to/io_formats.md:16 76f64932793640688f6d282842120653
 msgid "EventTable I/O"
 msgstr "EventTable の入出力"
 
-#: ../../how-to/io_formats.md:16 d4a40b7a416f424699c1d43e0b6e6ff4
+#: ../../how-to/io_formats.md:16 d881b63e6b4b4e1eac73cc611aa41dc0
 msgid ""
 "Auto-identifies `.root`; direct I/O here is EventTable only and requires "
 "`uproot`"
 msgstr "`.root` は自動判定されます。直 I/O は EventTable のみで、`uproot` が必要です"
 
-#: ../../how-to/io_formats.md:212 119474c4abb54aa3a6f91abf61ab969f
+#: ../../how-to/io_formats.md:212 7ba49a69dfd44c149f7098725d63a8ad
 msgid ""
-"Purpose: show the general-purpose direct-I/O routes without mixing them with"
-" interop-only bridges"
+"Purpose: show the general-purpose direct-I/O routes without mixing them "
+"with interop-only bridges"
 msgstr "目的: 汎用交換向けの direct I/O を、interop 専用の橋渡しと混同せず整理する"
 
-#: ../../how-to/io_formats.md:213 3597131ca84d4c05aa8ce6dbeca36cd0
+#: ../../how-to/io_formats.md:213 713008e80f904a2d9f52c8bf5d2babcf
 msgid "Input: CSV, Zarr, ROOT, or other general exchange formats"
 msgstr "入力: CSV, Zarr, ROOT などの汎用形式"
 
-#: ../../how-to/io_formats.md:214 d81f7eb193ac41ed8a345e2e3a5bba73
+#: ../../how-to/io_formats.md:214 d39d9e9eec3e4a8eaebcafac0882f98d
 msgid "Output: `TimeSeriesDict`, `TimeSeriesMatrix`, or `EventTable`"
 msgstr "出力: `TimeSeriesDict`, `TimeSeriesMatrix`, または `EventTable`"
 
-#: ../../how-to/io_formats.md:225 b840e4de9f344fd4a798b9224c8956ac
+#: ../../how-to/io_formats.md:225 170d96ebffd6441fba35fedeb603eca0
 msgid ""
-"**CSV** remains useful for lightweight exchange and inspection. Treat simple"
-" CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a manifest-"
-"backed collection directory when name, channel, and unit metadata must be "
-"preserved."
+"**CSV** remains useful for lightweight exchange and inspection. Treat "
+"simple CSV files as metadata-light: use HDF5, GWF, Zarr, NetCDF, or a "
+"manifest-backed collection directory when name, channel, and unit "
+"metadata must be preserved."
 msgstr ""
 "**CSV** は素朴ですが、共有や確認には依然として有用です。単純な CSV ファイルは metadata-light "
 "と考えてください。`name`、`channel`、`unit` まで保持したい場合は HDF5、GWF、Zarr、NetCDF、または "
 "manifest 付き collection directory を使います。"
 
-#: ../../how-to/io_formats.md:226 98c1d3e3840040fdaab86158c1255479
+#: ../../how-to/io_formats.md:226 e560e084fb4a4157b91c8b9c7f90ac3e
 msgid ""
 "**TXT** direct I/O is more limited: single-series paths are explicit "
 "`format=\"txt\"`, and multi-channel paths use collection directories."
@@ -1229,63 +1240,66 @@ msgstr ""
 "**TXT** の direct I/O はより限定的で、単一 series は `format=\"txt\"` 明示、複数チャネルは "
 "collection directory 前提です。"
 
-#: ../../how-to/io_formats.md:227 4418453176814777a6f69ccc35c98f74
+#: ../../how-to/io_formats.md:227 bf4792d98741476a9b64a98dca1c939c
 msgid ""
-"**Pickle** portability notes still exist in class references, but Pickle is "
-"not a published direct `.read()` / `.write()` format on this page."
+"**Pickle** portability notes still exist in class references, but Pickle "
+"is not a published direct `.read()` / `.write()` format on this page."
 msgstr ""
-"**Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct "
-"`.read()` / `.write()` 形式としては扱いません。"
+"**Pickle** の可搬性メモは各クラスの reference に残していますが、このページでは Pickle を public direct"
+" `.read()` / `.write()` 形式としては扱いません。"
 
-#: ../../how-to/io_formats.md:228 c2322dc2b46f415a8625690fcb8b7674
+#: ../../how-to/io_formats.md:228 d6fefdfaf33f4c20abd482cfc0074ecd
 msgid ""
-"**NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**."
-" Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a legacy "
-"format token alias for `nc`; `.netcdf4` is not a documented auto-identified "
-"extension alias."
+"**NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style "
+"I/O**. Field/xarray bridges belong to interop. For NetCDF, `netcdf4` is a"
+" legacy format token alias for `nc`; `.netcdf4` is not a documented auto-"
+"identified extension alias."
 msgstr ""
-"**NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と "
-"xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token "
-"alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。"
+"**NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field "
+"と xarray の橋渡しは interop 側を見てください。NetCDF の `netcdf4` は `nc` の旧 format token"
+" alias であり、`.netcdf4` は公開された自動判定 extension alias ではありません。"
 
-#: ../../how-to/io_formats.md:229 fe956dee471a4048b4c6e42034ce983d
+#: ../../how-to/io_formats.md:229 06d1f76a6b354613be5fe5398e5dc207
 msgid ""
 "**Zarr** direct I/O now expects per-array timing metadata explicitly. "
-"`sample_rate` is the primary key, `dt` is accepted as a fallback, and reads "
-"raise `ValueError` if neither is present unless you intentionally recover a "
-"legacy store with `sample_rate_override=...` or `dt_override=...`."
+"`sample_rate` is the primary key, `dt` is accepted as a fallback, and "
+"reads raise `ValueError` if neither is present unless you intentionally "
+"recover a legacy store with `sample_rate_override=...` or "
+"`dt_override=...`."
 msgstr ""
 "**Zarr** の direct I/O では、配列ごとの timing metadata を明示的に要求します。`sample_rate` "
 "を優先し、`dt` は fallback として受け付けます。どちらも無い場合は `ValueError` を送出し、legacy store "
-"を意図的に救済したい場合だけ `sample_rate_override=...` または `dt_override=...` を指定してください。"
+"を意図的に救済したい場合だけ `sample_rate_override=...` または `dt_override=...` "
+"を指定してください。"
 
-#: ../../how-to/io_formats.md:230 ceaa0b10ef8f48728300539c6706e47d
+#: ../../how-to/io_formats.md:230 2301251d933142e288bb2d5310b89c12
 msgid ""
 "**ROOT** object-level export/import belongs to interop. This page only "
 "covers EventTable direct I/O, which requires `uproot`."
 msgstr ""
-"**ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは `uproot` を必要とする EventTable の直"
-" I/O のみ扱います。"
+"**ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは `uproot` を必要とする EventTable"
+" の直 I/O のみ扱います。"
 
-#: ../../how-to/io_formats.md:232 ebb20fc923fd45209f1ef54637f4118e
+#: ../../how-to/io_formats.md:232 e79dc07b17714ab1a55f996ed0b5bb25
 msgid "<a id=\"io-formats-en-d\"></a>"
 msgstr "<a id=\"io-formats-ja-d\"></a>"
 
-#: ../../how-to/io_formats.md:234 7558c2d9cacf4f65b4de0268311b45ab
+#: ../../how-to/io_formats.md:234 571e0f7351c542869f07a51b2fa4aaa4
 msgid "D. Loggers and Instrument Formats"
 msgstr "D. 計測機器・ロガー"
 
-#: ../../how-to/io_formats.md:236 3d790e64cc6e42359b596bd5a8fe4f32
+#: ../../how-to/io_formats.md:236 513996da92b4406191f352995b0ffa67
 msgid ""
-"This group is for logger and instrument-specific time-series formats. Time "
-"handling, units, and audio `t0` semantics are the main points to watch."
+"This group is for logger and instrument-specific time-series formats. "
+"Time handling, units, and audio `t0` semantics are the main points to "
+"watch."
 msgstr "ロガーや機材固有の時系列です。 時刻の扱い、単位、音声の `t0` など、フォーマットごとの注意点が比較的重要です。"
 
-#: ../../how-to/io_formats.md:16 3591b2a38dd8412ebc8c5bd51d257422
+#: ../../how-to/io_formats.md:16 1b61eed7011d49a4aaa13dfe27ef7565
 msgid "**GBD** (`.gbd`)"
 msgstr "**GBD** (`.gbd`)"
 
-#: ../../how-to/io_formats.md:16 ab732bb8e80d42fa824c270e3e073d21
+#: ../../how-to/io_formats.md:16 6c906933b34b4fd882409a391aa3da95
 msgid ""
 "`TimeSeries.read(..., format=\"gbd\", timezone=...)`, "
 "`TimeSeriesDict.read(..., format=\"gbd\", timezone=...)`, "
@@ -1295,19 +1309,19 @@ msgstr ""
 "`TimeSeriesDict.read(..., format=\"gbd\", timezone=...)`, "
 "`TimeSeriesMatrix.read(..., format=\"gbd\", timezone=...)`"
 
-#: ../../how-to/io_formats.md:16 aa8b5ddf00124019b0f7741fccdeea09
+#: ../../how-to/io_formats.md:16 d98d1185e290452698598d875fabc64a
 msgid "GRAPHTEC loggers"
 msgstr "GRAPHTEC ロガー"
 
-#: ../../how-to/io_formats.md:16 773c19c2954b47a6a6b22f2c54f5ef94
+#: ../../how-to/io_formats.md:16 ec60115d3acb4ef7abb331762c269c9b
 msgid "`timezone` is required for published reads"
 msgstr "public read では `timezone` 必須"
 
-#: ../../how-to/io_formats.md:16 973367120bc44f638d7b731a9a044be0
+#: ../../how-to/io_formats.md:16 5d29e38ee8dc4c939bfd7372424a3c49
 msgid "**TDMS** (`.tdms`)"
 msgstr "**TDMS** (`.tdms`)"
 
-#: ../../how-to/io_formats.md:16 cb16aa95733a45cf9b03fb5f938fcd03
+#: ../../how-to/io_formats.md:16 3965b40a19dd4210903430e835abf66e
 msgid ""
 "`TimeSeries.read(..., format=\"tdms\")`, `TimeSeriesDict.read(..., "
 "format=\"tdms\")`, `TimeSeriesMatrix.read(..., format=\"tdms\")`"
@@ -1315,19 +1329,19 @@ msgstr ""
 "`TimeSeries.read(..., format=\"tdms\")`, `TimeSeriesDict.read(..., "
 "format=\"tdms\")`, `TimeSeriesMatrix.read(..., format=\"tdms\")`"
 
-#: ../../how-to/io_formats.md:16 aa93cbce74b34294999fd44e95b38672
+#: ../../how-to/io_formats.md:16 7a149452746b4e7ea6d10971aedd6013
 msgid "National Instruments data"
 msgstr "National Instruments"
 
-#: ../../how-to/io_formats.md:16 c5813f2d93d440139e40e88c7f31cad5
+#: ../../how-to/io_formats.md:16 e2902eec45ab4827b057e9a8ee99a519
 msgid "Read-only; requires `nptdms`"
 msgstr "読み込み専用。`nptdms` が必要"
 
-#: ../../how-to/io_formats.md:16 bcd65b2cd45241bb825eb23bddcb8eb0
+#: ../../how-to/io_formats.md:16 5288a226da8045489ad72dd0a15e1f69
 msgid "**SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`)"
 msgstr "**SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`)"
 
-#: ../../how-to/io_formats.md:16 5401c04d7ba1469c8c8676da0f3878a0
+#: ../../how-to/io_formats.md:16 6fd213c09a3e4bcb883cc6c54de52fce
 msgid ""
 "`TimeSeries.read(..., format=\"sdb\" / \"sqlite\" / \"sqlite3\")`, "
 "`TimeSeriesDict.read(..., format=\"sdb\" / \"sqlite\" / \"sqlite3\")`"
@@ -1335,19 +1349,19 @@ msgstr ""
 "`TimeSeries.read(..., format=\"sdb\" / \"sqlite\" / \"sqlite3\")`, "
 "`TimeSeriesDict.read(..., format=\"sdb\" / \"sqlite\" / \"sqlite3\")`"
 
-#: ../../how-to/io_formats.md:16 e698fb2d797d4083ac18286677f40b3b
+#: ../../how-to/io_formats.md:16 7c4fda4cd781404f88e0d8abc6fe064a
 msgid "WeeWX and similar archives"
 msgstr "WeeWX 等の蓄積データ"
 
-#: ../../how-to/io_formats.md:16 930f19a6197b47b7b10cf4dfdfbf5e4b
+#: ../../how-to/io_formats.md:16 f05ef99574994796b59703b4500ba9fe
 msgid "Same reader family; public direct I/O is read-only"
 msgstr "同系統 reader。public direct I/O は読み込み専用"
 
-#: ../../how-to/io_formats.md:16 5399101fee8540a8960744222de8452a
+#: ../../how-to/io_formats.md:16 aab24dd621a4474a8d6c2bdc4f47009d
 msgid "**WAV** (`.wav`)"
 msgstr "**WAV** (`.wav`)"
 
-#: ../../how-to/io_formats.md:16 0127f98c2c12411da923586cd5e5164c
+#: ../../how-to/io_formats.md:16 1ab3d514bec94ea3a64615baa79b743c
 msgid ""
 "`TimeSeries.read(..., format=\"wav\")`, `TimeSeriesDict.read(..., "
 "format=\"wav\")`, `TimeSeries.write(..., format=\"wav\")`"
@@ -1355,15 +1369,15 @@ msgstr ""
 "`TimeSeries.read(..., format=\"wav\")`, `TimeSeriesDict.read(..., "
 "format=\"wav\")`, `TimeSeries.write(..., format=\"wav\")`"
 
-#: ../../how-to/io_formats.md:16 87aa3ab9f4f2428087103ca6f9e3b8b5
+#: ../../how-to/io_formats.md:16 72363884986d4bec9f1637d70dcbc7d6
 msgid "Uncompressed audio"
 msgstr "非圧縮音声"
 
-#: ../../how-to/io_formats.md:16 c5c10c7a8c744123b373016deb13f13e
+#: ../../how-to/io_formats.md:16 d26f7e99d71c4212a8bc8034f46db3b3
 msgid "Public write is single-series only; does not preserve absolute time"
 msgstr "public write は単一路のみ。絶対時刻は保持しない"
 
-#: ../../how-to/io_formats.md:16 9db9d78109e54b48b4be5d56cc288171
+#: ../../how-to/io_formats.md:16 0556118ea1084a8f928390ce40827123
 msgid ""
 "`TimeSeries.read(..., format=\"mp3\" / \"flac\" / \"ogg\" / \"m4a\")`, "
 "`TimeSeriesDict.read(..., format=...)`, `.write(...)`"
@@ -1371,51 +1385,51 @@ msgstr ""
 "`TimeSeries.read(..., format=\"mp3\" / \"flac\" / \"ogg\" / \"m4a\")`, "
 "`TimeSeriesDict.read(..., format=...)`, `.write(...)`"
 
-#: ../../how-to/io_formats.md:16 af15da0648ef44d4bf21e93fbb08521c
+#: ../../how-to/io_formats.md:16 e3739f0184fe4a8d8440ed4fe4ae517c
 msgid "Compressed audio"
 msgstr "圧縮音声"
 
-#: ../../how-to/io_formats.md:16 586bd28df7634c1b87d4ee5d8f4b86ce
+#: ../../how-to/io_formats.md:16 55fb1ef8891141ffb1a4b97c3d1dd169
 msgid "Uses `pydub`; some formats also need `ffmpeg`"
 msgstr "`pydub`、一部形式は `ffmpeg` が必要"
 
-#: ../../how-to/io_formats.md:247 b331f969e02a4018ada1201ac67f30f6
+#: ../../how-to/io_formats.md:247 0d694cec0fe6463fa479e08c07fff632
 msgid ""
 "Purpose: highlight logger-specific and audio-specific direct-I/O "
 "requirements"
 msgstr "目的: ロガー系・音声系 format で注意すべき条件をまとめる"
 
-#: ../../how-to/io_formats.md:248 6c6f6edb3d78477ba19ce6bbec3872c4
+#: ../../how-to/io_formats.md:248 62d87aefad564e17a26622c21f5453da
 msgid "Input: logger data, SQLite-family archives, or audio files"
 msgstr "入力: ロガーデータ、SQLite 系アーカイブ、音声ファイル"
 
-#: ../../how-to/io_formats.md:249 9d04474e646f4895b5ccb3fd2f2bc772
+#: ../../how-to/io_formats.md:249 9a179ac10c184059b1a3c1860606a19e
 msgid "Output: `TimeSeries`, `TimeSeriesDict`, or `TimeSeriesMatrix`"
 msgstr "出力: `TimeSeries`, `TimeSeriesDict`, または `TimeSeriesMatrix`"
 
-#: ../../how-to/io_formats.md:259 de7ca8c8dc8049058d31443417616675
+#: ../../how-to/io_formats.md:259 7f56a05d19fd477591c3db60f3834f4b
 msgid "**GBD** requires `timezone`."
 msgstr "**GBD** は `timezone` を省略できません。"
 
-#: ../../how-to/io_formats.md:260 6263f997584f4f2b86ee94dd6aafddeb
+#: ../../how-to/io_formats.md:260 07cf97f2c4264f618dd84a205bc85315
 msgid "**TDMS** requires the optional `nptdms` dependency."
 msgstr "**TDMS** は optional dependency の `nptdms` が必要です。"
 
-#: ../../how-to/io_formats.md:261 a24186a60096495d8e2de8a2292bf317
+#: ../../how-to/io_formats.md:261 d699507dc5ce431bb57ee6f04ccdb163
 msgid ""
-"**MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. MP3/M4A "
-"commonly also need `ffmpeg`."
+"**MP3 / FLAC / OGG / M4A** require the optional `pydub` dependency. "
+"MP3/M4A commonly also need `ffmpeg`."
 msgstr ""
-"**MP3 / FLAC / OGG / M4A** は optional dependency の `pydub` が必要で、MP3/M4A は "
-"`ffmpeg` も必要になることが多いです。"
+"**MP3 / FLAC / OGG / M4A** は optional dependency の `pydub` が必要で、MP3/M4A は"
+" `ffmpeg` も必要になることが多いです。"
 
-#: ../../how-to/io_formats.md:262 685964222ce64fef9f905a8068d052c5
+#: ../../how-to/io_formats.md:262 7bba005901914b4e85714f4690bac7f9
 msgid ""
-"**SDB / SQLite / SQLite3** should all be named explicitly in the public page"
-" so users do not need to infer aliases."
+"**SDB / SQLite / SQLite3** should all be named explicitly in the public "
+"page so users do not need to infer aliases."
 msgstr "**SDB / SQLite / SQLite3** は同系統の reader です。公開ページでは 3 つとも明示して混乱を避けます。"
 
-#: ../../how-to/io_formats.md:263 6d8e3294f1b9453a904be2a58ac63918
+#: ../../how-to/io_formats.md:263 59fb970ffe44488694e5f77b0d13eaef
 msgid ""
 "**WAV / compressed-audio formats** do not preserve absolute timestamps. "
 "Reading with `t0=0.0` is a convenience convention, not a claim that the "
@@ -1424,40 +1438,39 @@ msgstr ""
 "**WAV / 圧縮音声形式** は絶対時刻を持たないため、読み込み時は便宜上 `t0=0.0` "
 "として扱います。「絶対時刻がある」という意味ではありません。"
 
-#: ../../how-to/io_formats.md:265 0cb7436c10a64e6b9b7b94b20088cc50
+#: ../../how-to/io_formats.md:265 f18db86cb485461da4054dfdba0edaf3
 msgid "<a id=\"io-formats-en-dev\"></a>"
 msgstr "<a id=\"io-formats-ja-dev\"></a>"
 
-#: ../../how-to/io_formats.md:267 93ad54ee62e94932a4f5732163f77bef
+#: ../../how-to/io_formats.md:267 245167da0e454158a3d783cfcae9e8fe
 msgid "Developer Notes"
 msgstr "開発者向け補足"
 
-#: ../../how-to/io_formats.md:269 c1da49bd153a410b893ac258268b4e05
+#: ../../how-to/io_formats.md:269 824cfd89ab744a38a23acecd75199b45
 msgid ""
 "Most users can skip this section. It tracks implementation status for "
 "contributors: formats that work but are not yet prominent in the public "
 "tables, and format tokens reserved for future work."
-msgstr ""
-"ほとんどのユーザーはこのセクションを読み飛ばして構いません。このセクションは寄稿者向けに実装状況を追跡するためのもので、動作するもののまだ公開の対応表では目立たせていないフォーマットと、将来の実装のために予約されたフォーマットトークンをまとめています。"
+msgstr "ほとんどのユーザーはこのセクションを読み飛ばして構いません。このセクションは寄稿者向けに実装状況を追跡するためのもので、動作するもののまだ公開の対応表では目立たせていないフォーマットと、将来の実装のために予約されたフォーマットトークンをまとめています。"
 
-#: ../../how-to/io_formats.md:272 dfda3e08320b48bcbc992de0070d260c
+#: ../../how-to/io_formats.md:272 667a7f175d2944b0ac24a1e8d4f9d98d
 msgid "Managed in design, but not prominent in the public page"
 msgstr "設計上は管理するが、公開ページでは主表示しないもの"
 
-#: ../../how-to/io_formats.md:16 2f8181a9bb11446387e872938a1136ce
-#: 7b07fd8abf124a99ab3f46a9b0055897 e8699c6b168442beb6dbdd1be5f70253
+#: ../../how-to/io_formats.md:16 42446887757c4912b2e77e16a18bb8b5
+#: a42849b9d81c4881bd32a9d549e40f54 dc00335823c64c09bcd0383e4c903ffd
 msgid "Status"
 msgstr "状態"
 
-#: ../../how-to/io_formats.md:16 fde150f208a64cd48c3183eb72c22048
+#: ../../how-to/io_formats.md:16 32db13b9ce5b499784263545051d9bcc
 msgid "`hdf.ndscope`"
 msgstr "`hdf.ndscope`"
 
-#: ../../how-to/io_formats.md:16 3386170dc1204138a439532f2a824760
+#: ../../how-to/io_formats.md:16 301f4ab364fb46d882b53a4fd2a9fb92
 msgid "Implemented, not yet prominent"
 msgstr "実装済み（未掲載）"
 
-#: ../../how-to/io_formats.md:16 fa2ee911b2574d8eaca00711575f8f69
+#: ../../how-to/io_formats.md:16 b0a4cc3c2e1c4193bb12c0af9b7d7c1e
 msgid ""
 "`TimeSeriesDict`-only HDF5 schema. Legacy aliases: `ndscope-hdf5`, "
 "`ndscope_hdf5`, `ndscopehdf5`"
@@ -1465,181 +1478,184 @@ msgstr ""
 "`TimeSeriesDict` 限定の HDF5 スキーマ。旧 alias は `ndscope-hdf5`, `ndscope_hdf5`, "
 "`ndscopehdf5`"
 
-#: ../../how-to/io_formats.md:16 0ba256642c9c4188a031c9238180c584
+#: ../../how-to/io_formats.md:16 a2f3006ac2464ae5bfeda37712fe10db
 msgid "`ATS.MTH5`"
 msgstr "`ATS.MTH5`"
 
-#: ../../how-to/io_formats.md:16 c6b6ab98e2af44e396c05ccf1ed345de
+#: ../../how-to/io_formats.md:16 17a72c2ae1b34327972b5bf397960cca
 msgid "Implemented with partial scope"
 msgstr "実装済み（一部対応）"
 
-#: ../../how-to/io_formats.md:16 1b6a11395df946b8a206fb105bf37ef8
+#: ../../how-to/io_formats.md:16 4666edcff9a44a8384bdb685fff005fe
 msgid "Current public direct path backed by MTH5"
 msgstr "MTH5 経由の current public direct path"
 
-#: ../../how-to/io_formats.md:16 a2df101f84134236837f6eec73c08ea4
+#: ../../how-to/io_formats.md:16 2b5377230e674b29867e355d5c0d85eb
 msgid "`MTH5 standalone`"
 msgstr "`MTH5 standalone`"
 
-#: ../../how-to/io_formats.md:16 ce975bc049164785af4f2e3d1e775d2d
+#: ../../how-to/io_formats.md:16 1d551b8470994771b7e3067ee8d1531d
 msgid ""
 "Dedicated `format=\"mth5\"` is not exposed yet; not published as public "
 "direct I/O"
 msgstr "専用 `format=\"mth5\"` は未整備。public direct-I/O としては未公開"
 
-#: ../../how-to/io_formats.md:280 c5137fac9ca94d92a15635157f416d1f
+#: ../../how-to/io_formats.md:280 165093cc62924befa09a8dac175c465a
 msgid "Planned Format Tokens"
 msgstr "実装予定のフォーマットトークン"
 
-#: ../../how-to/io_formats.md:282 77f9d055b6b2473f90b374f63bacdd30
+#: ../../how-to/io_formats.md:282 c961f02971004edbbb00206c8e77ee44
 msgid ""
 "The format tokens below are listed for contributor tracking and are not "
-"documented as public read/write formats. Calling `.read()` with one of them "
-"raises an error until an implementation lands."
+"documented as public read/write formats. Calling `.read()` with one of "
+"them raises an error until an implementation lands."
 msgstr ""
 "以下のフォーマットトークンは寄稿者向けの進捗管理のために列挙されているものであり、公開の読み書きフォーマットとしては文書化されていません。これらを指定して"
 " `.read()` を呼び出すと、実装が入るまではエラーになります。"
 
-#: ../../how-to/io_formats.md:284 b2cea99ceda24d25942e84aa74941ebf
+#: ../../how-to/io_formats.md:284 f5cf6b2010cf45a38c98971fad46fc18
 msgid "TimeSeries stubs"
 msgstr "時系列 stub"
 
-#: ../../how-to/io_formats.md:16 2edbe35b0d2c4ae09ec031fb9c12b8d9
-#: 8fe31f1101ba436dbc0abb70a0e710d6
+#: ../../how-to/io_formats.md:16 0e4093e67ccd4f828b190589974b7845
+#: 5916040c675149798dc123d7e9b63569
 msgid "`orf`"
 msgstr "`orf`"
 
-#: ../../how-to/io_formats.md:16 0e5854c7a1f7491f82d541694ec5cca8
-#: 161e28320ad746b4a90bf8f03e65fd72 228da481c4424a79afad1eeb542d22e6
-#: 26989ef5990d4088835e9479d9e7813f 30925c4368424220849d4745b61d68bb
-#: 38d50e5bf1fd4404a15c044e3f759a50 4735c19c5c7e49e58e8e921ef6e46022
-#: 4a32bb708be04d1a825b182813a671b0 5061971424f94c89b3b95fb2b0b850e0
-#: 7c85381996c64ac5bd0f0c40ba55f27a 7db66b6abd7744c08968ed37befc3189
-#: 84f790a092b7448dab5657755387e3c0 8fea60c94a4446e5956d358bc8354f1b
-#: ab905e0f8e3e4771953cf78f37de4c01 f1317f8223cf411cae54d32141bf93e0
-#: f39f7adc83414885830329f565107f48 fa6ff40595354281b25255450d2f2b5c
+#: ../../how-to/io_formats.md:16 09b11bf24ade4ae38059993c900c78b2
+#: 2a8d4db867124fbb83fe48c35a63b232 2aacfe197ee54314b38e968240eb5a98
+#: 2c7c27286f5644cc8a91b101e7713c82 5aa5fee4d6af4c228fd13fb932fb1564
+#: 5c13f59e9c094294bd4b0385d37f07f4 5e42cd7699e34d158d9e15a9fcca005e
+#: 5f8471f7502145b0912e7326af8688cd 6120f220232346078d0b77609f5b40c9
+#: 819e27e57c8843b79791eebabb34ac6f 92c5ab9fc1d94b2595b9358ae846e0f7
+#: a6504d7243dc4a61ab2e4009d75bedf6 a7cbe100bd33463f900512b932ad8b70
+#: b4829d7f6b2b4d1f811a244f36e698a3 c3a7b8fd6b50420f89f4fcb32d9950dc
+#: d6cb485e047543f2a07f5165e3a18e7c f7fbee8f0a364370a77642f58283473a
 msgid "Planned"
 msgstr "対応予定"
 
-#: ../../how-to/io_formats.md:16 cbdd620f2b0a4852a8da4ea6fef16e05
-#: d6cdbdc0cf7b4f7b9db694a87e3eba60
+#: ../../how-to/io_formats.md:16 a733e39739414e7e8e1fad2119ada3f5
+#: b3d666fb2d614b818fac16cc5237308c
 msgid "`mem`"
 msgstr "`mem`"
 
-#: ../../how-to/io_formats.md:16 040380bc69094a298bbe09119f1b4d67
-#: 40f5f32d166a47ce9a7b2d98f05040cc
+#: ../../how-to/io_formats.md:16 3b051008f87743fca4fe4261bf9efa34
+#: 7d3a90bbbecb4719842af64c16441486
 msgid "`wvf`"
 msgstr "`wvf`"
 
-#: ../../how-to/io_formats.md:16 4dc25765eb674188b4f70e8078dba2f0
-#: 716d4e9fdea94f4096b3de70b520e51c
+#: ../../how-to/io_formats.md:16 166a2da401a64a61bbad4d300cf958a7
+#: f878a68e007948d4a21d55785aacf4c4
 msgid "`wdf`"
 msgstr "`wdf`"
 
-#: ../../how-to/io_formats.md:16 2d3a2f93dd7e4d578498646b0f86dbb9
-#: 5f317f753bac4a3c96bb7b91e7a0ab72
+#: ../../how-to/io_formats.md:16 1e693db99c8b4b4d88c7497d4581cbea
+#: 1f8de3f176f04aae881ef1f7885af797
 msgid "`taffmat`"
 msgstr "`taffmat`"
 
-#: ../../how-to/io_formats.md:16 6b2c086935084b08b640f4ac43befe14
-#: ab11a5d75d784397a8f6d84a7eb3b156
+#: ../../how-to/io_formats.md:16 858aeccffb704d43805031437ccb29d5
+#: f5415978a5ba42f0a58bb43577b91cb0
 msgid "`lsf`"
 msgstr "`lsf`"
 
-#: ../../how-to/io_formats.md:16 1d71a58269484f328ff7097eca5bd588
-#: 7639bcbc1e7048989cfe560ec997d0b7
+#: ../../how-to/io_formats.md:16 1683eb53ad8748478fba146d3f611096
+#: c53b5b01ee8c415f8c388c85d0c76dd9
 msgid "`li`"
 msgstr "`li`"
 
-#: ../../how-to/io_formats.md:296 2a75702036664caeab11cca28479559d
+#: ../../how-to/io_formats.md:296 aa9f3815f1174427954f612b42230100
 msgid "FrequencySeries stubs"
 msgstr "周波数系列 stub"
 
-#: ../../how-to/io_formats.md:16 5100c51ff442436fb1cdb76973f510b1
+#: ../../how-to/io_formats.md:16 c04c263e096e48de84675c1ee11af21c
 msgid "`win`"
 msgstr "`win`"
 
-#: ../../how-to/io_formats.md:16 ae9c67a8cca4476a80f8f9a29247f3ca
+#: ../../how-to/io_formats.md:16 65be5fe8f38342e29da310df901a3b41
 msgid "`win32`"
 msgstr "`win32`"
 
-#: ../../how-to/io_formats.md:16 1f7d8ab2ee5a45b99f2a97542237e7de
+#: ../../how-to/io_formats.md:16 0663e23007cb4812b644c834d4ed2f22
 msgid "`sdb`"
 msgstr "`sdb`"
 
-#: ../../how-to/io_formats.md:311 058568752a4c4c57b2316ced7fa8baf1
+#: ../../how-to/io_formats.md:311 770c50350ad74bdfbefd93c08452752c
 msgid "Related Pages"
 msgstr "関連ページ"
 
-#: ../../how-to/io_formats.md:313 0822eb477a0a46b685d6fd6db1d8bc4f
-msgid "[Interop tutorial](viz/intro_interop)"
-msgstr "[Interop チュートリアル](viz/intro_interop)"
+#: ../../how-to/io_formats.md:313 cf88d9b0293c45e3a537414346443d82
+msgid "[Interop tutorial](interop/intro_interop)"
+msgstr "[Interop チュートリアル](interop/intro_interop)"
 
-#: ../../how-to/io_formats.md:314 f224ae0184d845c9a2082e1db7880cac
+#: ../../how-to/io_formats.md:314 fb17d8df575f4c43975859e368f68190
 msgid "[Interop API reference](../reference/api/interop)"
 msgstr "[Interop API リファレンス](../reference/api/interop)"
 
-#: ../../how-to/io_formats.md:315 f2b9a83d57d14404a0275d768cc23b8a
+#: ../../how-to/io_formats.md:315 6edbd0ddb86e41c0b055f97fdc755ea7
 msgid ""
 "[Verification and Quality "
 "Signals](../explanation/verification_and_quality.md)"
 msgstr "[検証と品質シグナル](../explanation/verification_and_quality.md)"
 
-#: ../../how-to/io_formats.md:316 277420b1339d47ac9cafaf07ace41a7a
+#: ../../how-to/io_formats.md:316 64a7f53921ae49fcb54fb96af27163f2
 msgid "[Installation guide](../tutorials/installation.md)"
 msgstr "[インストールガイド](../tutorials/installation.md)"
 
-#: ../../how-to/io_formats.md:318 e7e5a437bef54e19bee8d72ab89b7c1b
+#: ../../how-to/io_formats.md:318 9c2fc57cbc624fd88b34a2aefc563633
 msgid "Next to Read"
 msgstr "次に読む"
 
-#: ../../how-to/io_formats.md:320 acd3ba19f3e44b86ad47f225b15de41f
+#: ../../how-to/io_formats.md:320 8493f5e499a6417c866ffd5c9651da76
 msgid ""
-"[Interop / Conversion Guide](interop.md) for `to_*()` / `from_*()` bridges "
-"and object-level conversion"
-msgstr ""
-"`to_*()` / `from_*()` のブリッジとオブジェクト単位の変換については [Interop / 変換ガイド](interop.md)"
+"[Interop / Conversion Guide](interop.md) for `to_*()` / `from_*()` "
+"bridges and object-level conversion"
+msgstr "`to_*()` / `from_*()` のブリッジとオブジェクト単位の変換については [Interop / 変換ガイド](interop.md)"
 
-#: ../../how-to/io_formats.md:321 f83929d81489479088800221bf7cb509
+#: ../../how-to/io_formats.md:321 f6e82d61ff8540869c3a79299fe60d47
 msgid ""
-"[GPS Time Utility Functions](time_utilities.md) if your I/O workflow needs "
-"timezone or GPS-time handling"
-msgstr ""
-"I/O ワークフローでタイムゾーンや GPS 時刻の扱いが必要なら [GPS 時刻ユーティリティ関数](time_utilities.md)"
+"[GPS Time Utility Functions](time_utilities.md) if your I/O workflow "
+"needs timezone or GPS-time handling"
+msgstr "I/O ワークフローでタイムゾーンや GPS 時刻の扱いが必要なら [GPS 時刻ユーティリティ関数](time_utilities.md)"
 
-#: ../../how-to/io_formats.md:322 48f38e0abda44cca9dd9a18094cab091
+#: ../../how-to/io_formats.md:322 2a8821f99d6e42deb42beea5fb60426d
 msgid ""
 "[Installation guide](../tutorials/installation.md) if you need optional "
 "dependencies before using a format backend"
-msgstr ""
-"フォーマットのバックエンドを使う前にオプション依存が必要なら [インストールガイド](../tutorials/installation.md)"
+msgstr "フォーマットのバックエンドを使う前にオプション依存が必要なら [インストールガイド](../tutorials/installation.md)"
 
-#: ../../how-to/io_formats.md:324 42e3458d8de949af9b2031c0bdf9fd3b
+#: ../../how-to/io_formats.md:324 90a09253e6ef41c38e875c6ed6ef8ef2
 msgid "Page-End Navigation"
 msgstr "ページ末尾ナビゲーション"
 
-#: ../../how-to/io_formats.md:326 2c92f880c2544ea28339ae69bfcfeaed
+#: ../../how-to/io_formats.md:326 4518163c85384fa1a5e7500ab2e0d16f
 msgid "<a href=\"#io-formats-en-quick\">Back to Quick Selection Table</a>"
 msgstr "<a href=\"#io-formats-ja-quick\">クイック判定表へ戻る</a>"
 
-#: ../../how-to/io_formats.md:327 471f3fe73c9643f8b82729a1991008fb
+#: ../../how-to/io_formats.md:327 c6441a5ce3004018b77168268b046cab
 msgid "<a href=\"#io-formats-en-basic\">Back to Basic Usage</a>"
 msgstr "<a href=\"#io-formats-ja-basic\">基本的な使い方へ戻る</a>"
 
-#: ../../how-to/io_formats.md:328 ef40a215a81b43a3896e14fe80fe4ed4
+#: ../../how-to/io_formats.md:328 ba1e6d288b2940ceb3b6b1ad5030ea29
 msgid "<a href=\"#io-formats-en-top\">Back to Top</a>"
 msgstr "<a href=\"#io-formats-ja-top\">トップへ戻る</a>"
 
 #~ msgid ""
-#~ "Most users can skip this section. It exists mainly to collect not-yet-"
-#~ "prominent implementations and placeholders in one place."
+#~ "Most users can skip this section. "
+#~ "It exists mainly to collect not-"
+#~ "yet-prominent implementations and placeholders"
+#~ " in one place."
 #~ msgstr "通常の利用ではこの節は読み飛ばして構いません。 未掲載実装や placeholder をまとめて確認したい場合だけ見てください。"
 
 #~ msgid "Unimplemented Formats (Stubs)"
 #~ msgstr "未実装フォーマット (Stubs)"
 
 #~ msgid ""
-#~ "These entries exist as placeholders only. Calling `.read()` on them is "
-#~ "expected to fail because they are not ready for end users yet."
+#~ "These entries exist as placeholders "
+#~ "only. Calling `.read()` on them is "
+#~ "expected to fail because they are "
+#~ "not ready for end users yet."
 #~ msgstr ""
-#~ "以下は placeholder reader があるだけで、一般ユーザー向けの実用形式ではありません。`.read()` は未実装として失敗します。"
+#~ "以下は placeholder reader "
+#~ "があるだけで、一般ユーザー向けの実用形式ではありません。`.read()` は未実装として失敗します。"
+

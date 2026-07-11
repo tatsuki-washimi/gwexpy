@@ -6,76 +6,84 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GWexpy\n"
+"Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-05 11:26+0000\n"
+"POT-Creation-Date: 2026-07-11 06:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ja <LL@li.org>\n"
 "Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../how-to/containers/index.md:1 097ad8c2c8fd4c7aa451198dd5a28c61
+#: ../../how-to/containers/index.md:1 00dac163c259450c8de999a3a84eaeca
 msgid "Containers & matrices"
 msgstr "コンテナと行列"
 
-#: ../../how-to/containers/index.md:3 e43d7cee497f4a4bbe5b1331048cc0e7
-msgid ""
-"Work with the matrix and field containers that extend GWpy's series types."
+#: ../../how-to/containers/index.md:3 3a4d07c3c87f40068a4c019259094a0d
+msgid "Work with the matrix and field containers that extend GWpy's series types."
 msgstr "GWpy の系列型を拡張する行列・場コンテナを扱います。"
 
-#: ../../how-to/containers/index.md:9 0009cf7eea444b99a0795878a88d4f26
+#: ../../how-to/containers/index.md:9 189709754021450f9dfa8f172a0cc896
 msgid "FrequencySeriesMatrix: Matrix Basics"
 msgstr "FrequencySeriesMatrix: 行列処理の基本"
 
-#: ../../how-to/containers/index.md:13 011e9c09697b4e74915185989a160c99
+#: ../../how-to/containers/index.md:13 526772f5d6364da3893e3b4f1ec32754
 msgid ""
 "A 3D container (row x col x freq) for batches of `FrequencySeries` with "
 "frequency-domain-aware indexing."
-msgstr ""
-"`FrequencySeries` をまとめて扱う3次元コンテナ（行 x 列 x 周波数）。周波数領域を意識したインデクシングに対応します。"
+msgstr "`FrequencySeries` をまとめて扱う3次元コンテナ（行 x 列 x 周波数）。周波数領域を意識したインデクシングに対応します。"
 
-#: ../../how-to/containers/index.md:16 cd381972b25d4988904c47d1eff4e7a9
+#: ../../how-to/containers/index.md:16 1f97e1a1fbca4b32acb7c63b1e029315
 msgid "SpectrogramMatrix: Matrix Basics"
 msgstr "SpectrogramMatrix: 行列処理の基本"
 
-#: ../../how-to/containers/index.md:20 424d5e18b6694bca9d812194f1bead52
+#: ../../how-to/containers/index.md:20 01ace87613c34f1188b19ed1fb0173b6
 msgid ""
 "Handle multiple `Spectrogram` objects as a single 3D (batch, time, "
 "frequency) container."
 msgstr "複数の `Spectrogram` オブジェクトを1つの3次元（バッチ、時刻、周波数）コンテナとして扱います。"
 
-#: ../../how-to/containers/index.md:23 f268c7f5f0904cd2af53543a09ca28a2
+#: ../../how-to/containers/index.md:23 43a4781253ce4ea5ad3e323ddc1571ff
 msgid "Field API: ScalarField Basics"
 msgstr "Field API: ScalarField の基本"
 
-#: ../../how-to/containers/index.md:27 6d272fdbcca54006a03a4e9249e1ea73
+#: ../../how-to/containers/index.md:27 429ef8ae779e43adbf3d4dcab8caf27a
 msgid ""
 "Basic usage of `ScalarField` for 4D (time + 3D space) data, including "
 "indexing and metadata handling."
 msgstr "時間＋3次元空間の4次元データを扱う `ScalarField` の基本的な使い方（インデクシングとメタデータの扱いを含む）。"
 
-#: ../../how-to/containers/index.md:30 c00b7af3de364846b880bb88880d0815
+#: ../../how-to/containers/index.md:30 1dc00cf58d704c02a3fab0e4c05819f0
 msgid "Field API: Advanced Analysis Workflow"
 msgstr "Field API: 高度解析ワークフロー"
 
-#: ../../how-to/containers/index.md:34 c9ba82cc72fa48cd8b67dab6ad61aae8
+#: ../../how-to/containers/index.md:34 0786b24fe4e847719875f38b992b21df
 msgid ""
 "A full analysis workflow built on `ScalarField`, going beyond the basics "
 "into applied field processing."
 msgstr "`ScalarField` を使った一連の解析ワークフロー。基本を超えて実践的な場のデータ処理に踏み込みます。"
 
-#: ../../how-to/containers/index.md:37 000ad5f3606145818e30084138c21b68
+#: ../../how-to/containers/index.md:37 34c7a6a1037a4bda86a58eb8ac7fcdf5
 msgid "Scalar Field Slicing Guide (Why 4D is Preserved)"
 msgstr "スカラー場のスライス操作ガイド（なぜ 4 次元が保たれるのか）"
 
-#: ../../how-to/containers/index.md:41 e56da43363cf4844a4f9cfba1b371eb1
+#: ../../how-to/containers/index.md:41 a1cecdf5286a4fa59327e6249a24f214
 msgid ""
-"Why `ScalarField` indexing always keeps 4 dimensions instead of collapsing "
-"like NumPy, and when `squeeze()` is safe."
-msgstr ""
-"`ScalarField` のインデクシングが NumPy のように次元を落とさず常に 4 次元を保つ理由と、`squeeze()` が安全な場面。"
+"Why `ScalarField` indexing always keeps 4 dimensions instead of "
+"collapsing like NumPy, and when `squeeze()` is safe."
+msgstr "`ScalarField` のインデクシングが NumPy のように次元を落とさず常に 4 次元を保つ理由と、`squeeze()` が安全な場面。"
+
+#: ../../how-to/containers/index.md:44 5e8c08169af64a078d9e6d1907fad08c
+msgid "Histogram: Basics"
+msgstr "ヒストグラム: 基本"
+
+#: ../../how-to/containers/index.md:48 4a5e27f59a424c8998a0d9f02cf2d50f
+msgid ""
+"Create, visualize, rebin, and compute statistics on "
+"`gwexpy.histogram.Histogram` objects."
+msgstr "`gwexpy.histogram.Histogram` オブジェクトの作成・可視化・リビニングと統計量の計算。"
+
