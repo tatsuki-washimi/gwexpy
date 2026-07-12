@@ -102,6 +102,8 @@ validation:
       result: "RED: 1 failed with float64 ULP coercion; GREEN: 1 passed with the input floating dtype ULP."
     - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
       result: "760 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
+    - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+      result: "21 passed."
     - cmd: "rtk proxy ruff check gwexpy/ tests/"
       result: "Passed."
     - cmd: "rtk proxy mypy gwexpy/"
