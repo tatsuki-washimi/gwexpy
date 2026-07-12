@@ -7,6 +7,7 @@ skills:
   - task-planner
   - superpowers:executing-plans
   - superpowers:test-driven-development
+  - superpowers:receiving-code-review
   - superpowers:verification-before-completion
 scope:
   summary: "Make AxisDescriptor linear-regularity detection scale-aware without changing coordinate-order validity."
@@ -19,6 +20,8 @@ decisions:
   - "Use an absolute tolerance of 8 * abs(np.spacing(maximum absolute coordinate value))."
   - "The factor 8 is a small ULP-level allowance for coordinate subtraction round-off, not a domain-level spacing tolerance."
   - "Use equal_nan=False and classify non-finite coordinates as irregular without rejecting construction."
+  - "Preserve integer coordinate dtype and compare integer intervals exactly using Python integers to avoid float precision loss and unsigned-difference overflow."
+  - "Preserve complex coordinate dtype so regularity comparison includes imaginary components."
   - "Keep equal-ratio logarithmic axes irregular under the linear-spacing contract."
   - "Preserve descending, repeated, and non-finite coordinate acceptance at AxisDescriptor construction."
   - "Document that only iloc_slice start/stop bounds require an ascending axis."
@@ -49,11 +52,17 @@ commands:
     result: "Not available: docs has no Makefile/html target."
   - cmd: "rtk proxy sphinx-build -b html -W --keep-going -d /tmp/gwexpy-docs-doctrees-492 docs /tmp/gwexpy-docs-html-492"
     result: "Completed generation but failed because 127 pre-existing documentation warnings are treated as errors."
+  - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider -k 'large_integer_offset_regularity or complex_axis_uses_imaginary_coordinate_values'"
+    result: "Red: 2 failed, 1 passed; the float conversion lost large integer intervals and complex imaginary components. Green: 3 passed after preserving dtype and comparing integer intervals exactly."
+  - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+    result: "18 passed after integer and complex-coordinate regression coverage was added."
+  - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+    result: "757 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
 changed_files:
   - path: gwexpy/types/axis.py
     change: "Replace fixed absolute regularity detection with a scale-aware linear-spacing comparison, classify non-finite axes as irregular, and document the local ascending-axis precondition of iloc_slice."
   - path: tests/types/test_types_axis.py
-    change: "Add regression coverage for small scales, equivalent units, regular and irregular large offsets, coordinate-step rejection, descending regularity, and non-finite axes."
+    change: "Add regression coverage for small scales, equivalent units, integer and floating-point large offsets, complex coordinates, coordinate-step rejection, descending regularity, and non-finite axes."
   - path: docs/developers/plans/manifests/audit-manifest-492-axis-regularity.yaml
     change: "Record agent actions, tolerance decisions, changed files, and validation results."
 validation:
@@ -73,8 +82,10 @@ validation:
       result: "Passed."
     - cmd: "rtk proxy mypy gwexpy/types/axis.py"
       result: "Success: no issues found in 1 source file."
+    - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+      result: "18 passed after preserving integer and complex coordinate dtypes."
     - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
-      result: "754 passed, 13 skipped, 1 xfailed."
+      result: "757 passed, 13 skipped, 1 xfailed."
     - cmd: "rtk proxy ruff check gwexpy/ tests/"
       result: "Passed."
     - cmd: "rtk proxy mypy gwexpy/"

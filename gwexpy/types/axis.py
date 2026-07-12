@@ -62,20 +62,25 @@ class AxisDescriptor:
     def regular(self) -> bool:
         """Return whether the axis has regular linear spacing.
 
-        Adjacent coordinate intervals are compared with a relative tolerance of
-        ``1e-9`` and an absolute tolerance of eight ULPs at the largest
-        coordinate magnitude. This avoids both
-        small-scale axes being accepted by a fixed absolute tolerance and
-        large-offset axes being rejected because of subtraction round-off.
+        Integer coordinates are compared exactly. Other numeric coordinates
+        have adjacent intervals compared with a relative tolerance of ``1e-9``
+        and an absolute tolerance of eight ULPs at the largest coordinate
+        magnitude. This avoids both small-scale axes being accepted by a fixed
+        absolute tolerance and large-offset axes being rejected because of
+        subtraction round-off.
 
         Logarithmic (equal-ratio) axes are not regular under this linear-spacing
         contract.
         """
         if self.size <= 1:
             return True
-        values = np.asarray(self.index.to_value(self.unit), dtype=float)
+        values = np.asarray(self.index.to_value(self.unit))
         if not np.all(np.isfinite(values)):
             return False
+        if np.issubdtype(values.dtype, np.integer):
+            # Python integers preserve exact intervals and cannot overflow.
+            diffs = np.diff(values.astype(object))
+            return all(diff == diffs[0] for diff in diffs[1:])
         diffs = np.diff(values)
         coordinate_scale = float(np.max(np.abs(values)))
         atol = _REGULAR_ATOL_ULPS * abs(np.spacing(coordinate_scale))

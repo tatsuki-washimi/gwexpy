@@ -70,6 +70,27 @@ def test_axis_descriptor_large_offset_irregular_axis_is_not_regular():
     assert not AxisDescriptor("time", values * u.s).regular
 
 
+@pytest.mark.parametrize(
+    ("values", "expected"),
+    [
+        ([10**18, 10**18 + 1, 10**18 + 2], True),
+        ([10**18, 10**18 + 1, 10**18 + 3], False),
+    ],
+)
+def test_axis_descriptor_large_integer_offset_regularity(values, expected):
+    """Integer coordinates must retain exact interval information."""
+    axis = AxisDescriptor("time", Quantity(values, "ns", dtype=np.int64))
+
+    assert axis.regular is expected
+
+
+def test_axis_descriptor_complex_axis_uses_imaginary_coordinate_values():
+    """Regularity must not discard the imaginary components of coordinates."""
+    axis = AxisDescriptor("complex", Quantity([0j, 1 + 1j, 2 + 3j], "s"))
+
+    assert not axis.regular
+
+
 def test_axis_descriptor_allows_descending_axis_for_nearest_selection():
     """AxisDescriptor itself does not require the ascending slice contract."""
     desc = AxisDescriptor("position", Quantity([3.0, 2.0, 1.0], "m"))
