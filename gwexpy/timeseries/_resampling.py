@@ -554,8 +554,17 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
     ) -> TimeSeriesResamplingMixin:
         """Resample the TimeSeries.
 
-        If 'rate' is a time-string (e.g. '1s') or time Quantity, performs time-bin aggregation.
-        Otherwise, performs signal processing resampling (gwpy standard).
+        If ``rate`` is a time-string (e.g. ``"1s"``) or time Quantity,
+        perform time-bin aggregation.  Its keyword arguments are ``closed``
+        (``"left"`` or ``"right"``), ``label`` (``"left"``, ``"right"``,
+        or ``"center"``), ``origin`` (``"t0"`` or ``"gps0"``), ``align``
+        (``"floor"`` or ``"ceil"``), and ``nan_policy`` (``"omit"`` or
+        ``"propagate"``).  With ``closed="right"``, the first bin includes
+        both of its edges and later bins are right-closed.
+
+        Time-bin widths must be real, finite, positive scalars.  Invalid
+        time-bin enum values or widths raise :class:`ValueError`.
+        Other rates use signal-processing resampling (GWpy standard).
         """
         is_time_bin = False
         if isinstance(rate, str):
@@ -592,6 +601,18 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         ignore_nan: bool | None = None,
     ) -> TimeSeriesResamplingMixin:
         """Perform bin-based resampling."""
+        enum_values = (
+            ("closed", closed, ("left", "right")),
+            ("label", label, ("left", "right", "center")),
+            ("origin", origin, ("t0", "gps0")),
+            ("align", align, ("floor", "ceil")),
+            ("nan_policy", nan_policy, ("omit", "propagate")),
+        )
+        for parameter, value, allowed in enum_values:
+            if not isinstance(value, str) or value not in allowed:
+                allowed_values = ", ".join(repr(item) for item in allowed)
+                raise ValueError(f"{parameter} must be one of {allowed_values}")
+
         if ignore_nan is not None:
             nan_policy = "omit" if ignore_nan else "propagate"
         # Default offset
@@ -599,17 +620,10 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
             offset = 0 * u.s
 
         # 1. Parse rule to dt
-        if isinstance(rule, str):
-            import re
-
-            match = re.match(r"([0-9\.]+)([a-zA-Z]+)", rule)
-            if match:
-                val, unit_str = match.groups()
-                bin_dt = float(val) * u.Unit(unit_str)
-            else:
-                bin_dt = u.Quantity(rule)
-        else:
-            bin_dt = rule
+        bin_dt = _parse_rule_to_dt(rule)
+        _validate_time_unit(bin_dt)
+        if not bin_dt.isscalar or not np.isrealobj(bin_dt.value):
+            raise ValueError("rule must be a real scalar bin width")
 
         # 2. Setup Bins
         old_times_q = self.times
@@ -628,17 +642,26 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         start_time_val = None
         stop_time_val = None
 
-        if is_dimensionless and bin_dt.unit.physical_type == "time":
-            time_unit = u.s
-            bin_dt_val = bin_dt.to(u.s).value
+        if is_dimensionless:
             start_time_val = old_times_q[0].value
             stop_time_val = (
                 self.span[1].value if hasattr(self.span[1], "value") else self.span[1]
             )
+            if bin_dt.unit.physical_type == "time":
+                bin_dt_val = bin_dt.to(u.s).value
+            else:
+                bin_dt_val = bin_dt.value
         else:
             bin_dt_val = u.Quantity(bin_dt, time_unit).value
             start_time_val = u.Quantity(old_times_q[0], time_unit).value
             stop_time_val = u.Quantity(self.span[1], time_unit).value
+
+        if not np.isscalar(bin_dt_val):
+            raise ValueError("rule must be a real scalar bin width")
+        bin_dt_float = float(cast(Any, bin_dt_val))
+        if not np.isfinite(bin_dt_float) or bin_dt_float <= 0:
+            raise ValueError("rule must be a finite, positive bin width")
+        bin_dt_val = bin_dt_float
 
         # Origin logic
         if origin == "t0":
@@ -674,12 +697,19 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         edges = grid_start + np.arange(n_bins + 1) * bin_dt_val
 
         # 3. Aggregate
-        if is_dimensionless and bin_dt.unit.physical_type == "time":
+        if is_dimensionless:
             old_times_val = old_times_q.value
         else:
             old_times_val = old_times_q.to(time_unit).value
 
-        bin_indices = np.floor((old_times_val - grid_start) / bin_dt_val).astype(int)
+        if closed == "left":
+            bin_indices = np.floor(
+                (old_times_val - grid_start) / bin_dt_val
+            ).astype(int)
+        else:
+            # The first bin is [e0, e1]; later bins are (ei, e{i + 1}].
+            bin_indices = np.searchsorted(edges, old_times_val, side="left") - 1
+            bin_indices[old_times_val == edges[0]] = 0
 
         # Clip or filter valid bins
         valid_mask = (bin_indices >= 0) & (bin_indices < n_bins)
