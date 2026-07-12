@@ -1,0 +1,90 @@
+issue: 492
+branch: fix/issue-492-axis-regularity
+date: 2026-07-12
+agent: Codex
+skills:
+  - github:github
+  - task-planner
+  - superpowers:executing-plans
+  - superpowers:test-driven-development
+  - superpowers:verification-before-completion
+scope:
+  summary: "Make AxisDescriptor linear-regularity detection scale-aware without changing coordinate-order validity."
+  runtime_code_changed: true
+  public_api_changed: false
+  physics_behavior_changed: false
+  metadata_behavior_changed: false
+decisions:
+  - "Compare linear coordinate intervals with rtol=1e-9."
+  - "Use an absolute tolerance of 8 * abs(np.spacing(maximum absolute coordinate value))."
+  - "The factor 8 is a small ULP-level allowance for coordinate subtraction round-off, not a domain-level spacing tolerance."
+  - "Use equal_nan=False and classify non-finite coordinates as irregular without rejecting construction."
+  - "Keep equal-ratio logarithmic axes irregular under the linear-spacing contract."
+  - "Preserve descending, repeated, and non-finite coordinate acceptance at AxisDescriptor construction."
+  - "Document that only iloc_slice start/stop bounds require an ascending axis."
+commands:
+  - cmd: "rtk gh issue view 492 --repo tatsuki-washimi/gwexpy --json number,title,body,state,comments"
+    result: "Reviewed the reported scale-dependent regularity defect and acceptance criteria."
+  - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+    result: "Baseline: 5 passed; initial red phase: 7 failed and 8 passed; final focused suite: 15 passed."
+  - cmd: "rtk rg -n -i 'descending|decreasing|monotonic' gwexpy tests docs --glob '*.py' --glob '*.md'"
+    result: "Confirmed ScalarField FFT explicitly supports strictly descending spatial axes."
+  - cmd: "rtk proxy ruff check gwexpy/types/axis.py tests/types/test_types_axis.py"
+    result: "Passed."
+  - cmd: "rtk proxy ruff format --check gwexpy/types/axis.py tests/types/test_types_axis.py"
+    result: "Both files already formatted."
+  - cmd: "rtk proxy mypy gwexpy/types/axis.py"
+    result: "Success: no issues found in 1 source file."
+  - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+    result: "754 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
+  - cmd: "rtk proxy pytest tests/"
+    result: "Collected 7,213 items (8 skipped). Unrelated analysis/fields failures appeared before the suite stopped emitting output at 38%; interrupted after repeated no-progress checks (exit 130)."
+  - cmd: "rtk proxy ruff check gwexpy/ tests/"
+    result: "Passed."
+  - cmd: "rtk proxy ruff format --check gwexpy/ tests/"
+    result: "The changed files are formatted; the unmodified baseline has 358 files that Ruff would reformat."
+  - cmd: "rtk proxy mypy gwexpy/"
+    result: "Success: no issues found in 392 source files."
+  - cmd: "rtk proxy make html"
+    result: "Not available: docs has no Makefile/html target."
+  - cmd: "rtk proxy sphinx-build -b html -W --keep-going -d /tmp/gwexpy-docs-doctrees-492 docs /tmp/gwexpy-docs-html-492"
+    result: "Completed generation but failed because 127 pre-existing documentation warnings are treated as errors."
+changed_files:
+  - path: gwexpy/types/axis.py
+    change: "Replace fixed absolute regularity detection with a scale-aware linear-spacing comparison, classify non-finite axes as irregular, and document the local ascending-axis precondition of iloc_slice."
+  - path: tests/types/test_types_axis.py
+    change: "Add regression coverage for small scales, equivalent units, regular and irregular large offsets, coordinate-step rejection, descending regularity, and non-finite axes."
+  - path: docs/developers/plans/manifests/audit-manifest-492-axis-regularity.yaml
+    change: "Record agent actions, tolerance decisions, changed files, and validation results."
+validation:
+  red:
+    - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+      result: "7 failed, 8 passed: failures matched the reported regularity and missing-validation defects."
+    - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+      result: "1 failed, 11 passed after adding descending-axis nearest-selection coverage; the temporary construction-time ordering validation caused the expected failure."
+    - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+      result: "1 failed, 13 passed after making RuntimeWarning fatal for a non-finite axis; the scale calculation produced a NaN absolute tolerance."
+  completed:
+    - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+      result: "15 passed after removing the out-of-scope construction-time ordering validation, returning False before tolerance calculation for non-finite axes, and adding the large-offset irregular-axis regression."
+    - cmd: "rtk proxy ruff check gwexpy/types/axis.py tests/types/test_types_axis.py"
+      result: "Passed."
+    - cmd: "rtk proxy ruff format --check gwexpy/types/axis.py tests/types/test_types_axis.py"
+      result: "Passed."
+    - cmd: "rtk proxy mypy gwexpy/types/axis.py"
+      result: "Success: no issues found in 1 source file."
+    - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+      result: "754 passed, 13 skipped, 1 xfailed."
+    - cmd: "rtk proxy ruff check gwexpy/ tests/"
+      result: "Passed."
+    - cmd: "rtk proxy mypy gwexpy/"
+      result: "Success: no issues found in 392 source files."
+    - cmd: "rtk git diff --check"
+      result: "Passed."
+human_review:
+  required: false
+  reason: "The change hardens a public coordinate predicate without altering physical-domain transforms, field data, units, metadata semantics, or coordinate-order validity."
+deferred:
+  - "Support for logarithmic or equal-ratio coordinate grids requires a separate public API design."
+  - "Any finite-value or coordinate-order validation for AxisDescriptor requires a separate compatibility review across descending spatial and frequency-axis contracts."
+  - "Repair existing full-suite and documentation-build failures outside the scope of this focused axis fix."
