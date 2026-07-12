@@ -464,6 +464,17 @@ def test_resample_time_bin_closed_right_excludes_samples_before_ceil_grid_start(
 
 
 @pytest.mark.parametrize(
+    "offset",
+    [1.0 * u.m, np.nan * u.s, np.inf * u.s, np.array([1.0, 2.0]) * u.s],
+)
+def test_resample_time_bin_rejects_invalid_offsets(offset):
+    ts = _make_ts([1.0, 3.0, 5.0, 7.0], dt=1.0)
+
+    with pytest.raises(ValueError):
+        ts.resample("2s", offset=offset)
+
+
+@pytest.mark.parametrize(
     ("keyword", "value"),
     [
         ("closed", "invalid"),

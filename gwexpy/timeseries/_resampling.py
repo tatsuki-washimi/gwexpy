@@ -563,7 +563,9 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         both of its edges and later bins are right-closed.
 
         Time-bin widths must be real, finite, positive scalars.  Invalid
-        time-bin enum values or widths raise :class:`ValueError`.
+        time-bin enum values or widths raise :class:`ValueError`.  ``offset``
+        must be a real, finite scalar with either a time-compatible or
+        dimensionless unit.
         Other rates use signal-processing resampling (GWpy standard).
         """
         is_time_bin = False
@@ -671,10 +673,26 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         else:
             origin_val = 0.0
 
+        offset_quantity = u.Quantity(offset)
+        if not offset_quantity.isscalar or not np.isrealobj(offset_quantity.value):
+            raise ValueError("offset must be a real, finite scalar")
+        offset_is_dimensionless = (
+            offset_quantity.unit == u.dimensionless_unscaled
+            or offset_quantity.unit.physical_type == "dimensionless"
+        )
         try:
-            offset_val = u.Quantity(offset).to(time_unit).value
-        except u.UnitConversionError:
-            offset_val = float(u.Quantity(offset).value)
+            offset_value = (
+                offset_quantity.value
+                if offset_is_dimensionless
+                else offset_quantity.to(time_unit).value
+            )
+        except u.UnitConversionError as exc:
+            raise ValueError("offset must be time-compatible or dimensionless") from exc
+        if not np.isscalar(offset_value):
+            raise ValueError("offset must be a real, finite scalar")
+        offset_val = float(cast(Any, offset_value))
+        if not np.isfinite(offset_val):
+            raise ValueError("offset must be a real, finite scalar")
         base_val = origin_val + offset_val
 
         # Grid alignment
