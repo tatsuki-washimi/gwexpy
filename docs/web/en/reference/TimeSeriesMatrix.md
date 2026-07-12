@@ -191,10 +191,16 @@ Notes
 ### `partial_correlation_matrix`
 
 ```python
-partial_correlation_matrix(self, *, estimator: str = 'empirical', shrinkage: float | str | None = None, eps: float = 1e-08, return_precision: bool = False) -> Any
+partial_correlation_matrix(self, *, estimator: str = 'empirical', shrinkage: float | str | None = None, eps: float | Literal['auto'] | None = 'auto', return_precision: bool = False) -> Any
 ```
 
 Compute the partial-correlation matrix across all channels (flattened).
+
+``eps="auto"`` uses a covariance-scale-relative ridge term.
+``eps=None`` preserves the legacy behavior of adding no ridge, as does
+``eps=0``; a finite explicit ``eps > 0`` overrides it.
+Shrinkage and the pseudo-inverse fallback remain independent.
+Non-finite input raises ``ValueError``.
 
 
 ### `crop`
@@ -1194,7 +1200,7 @@ Element-wise delegate to `TimeSeries.whiten`.
 ### `whiten_channels`
 
 ```python
-whiten_channels(self, *, method: 'str' = 'pca', eps: 'float' = 1e-12, n_components: 'Optional[int]' = None, return_model: 'bool' = True) -> 'Any'
+whiten_channels(self, *, method: 'str' = 'pca', eps: 'float | Literal["auto"] | None' = 'auto', n_components: 'Optional[int]' = None, return_model: 'bool' = True) -> 'Any'
 ```
 
 
@@ -1202,6 +1208,8 @@ Whiten the matrix (channels/components).
 Returns (whitened_matrix, WhiteningModel) by default.
 Set return_model=False to return only the whitened matrix.
 See gwexpy.timeseries.preprocess.whiten_matrix.
+``eps="auto"`` (or ``None``) uses variance-relative regularization; explicit
+values must be finite and non-negative.
 
 
 ### `write`

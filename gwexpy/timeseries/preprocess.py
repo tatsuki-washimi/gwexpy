@@ -22,6 +22,9 @@ import numpy as np
 import numpy.typing as npt
 from astropy import units as u
 
+from gwexpy.numerics import SAFE_FLOOR_STRAIN
+from gwexpy.numerics.scaling import _resolve_epsilon
+
 # Import low-level algorithms from signal.preprocessing
 from gwexpy.signal.preprocessing import (
     StandardizationModel,
@@ -1281,7 +1284,7 @@ def whiten_matrix(
     matrix: TimeSeriesMatrix,
     *,
     method: Literal["pca", "zca"] = "pca",
-    eps: float | str | None = "auto",
+    eps: float | Literal["auto"] | None = "auto",
     n_components: int | None = None,
 ) -> tuple[TimeSeriesMatrix, WhiteningModel]:
     """Whiten a TimeSeriesMatrix using PCA or ZCA whitening.
@@ -1355,8 +1358,6 @@ def whiten_matrix(
     >>> print(mat_w.shape)  # (6, 1, 100)
 
     """
-    from gwexpy.numerics import SAFE_FLOOR_STRAIN
-
     if method not in ("pca", "zca"):
         raise ValueError(f"method must be 'pca' or 'zca', got '{method}'")
 
@@ -1367,19 +1368,28 @@ def whiten_matrix(
 
     # Reshape to (features, time) -> (time, features)
     X_features = matrix.value.reshape(-1, n_time)
-    X_T = X_features.T  # (time, features)
+    # Keep the covariance/SVD path in a dtype that can represent the automatic
+    # strain floor.  In particular, ``SAFE_FLOOR_STRAIN`` underflows in
+    # float32 and would otherwise make zero-variance features non-finite.
+    working_dtype = np.result_type(X_features.dtype, np.float64)
+    X_T = np.asarray(X_features.T, dtype=working_dtype)  # (time, features)
+    if not np.all(np.isfinite(X_T)):
+        raise ValueError("whitening requires finite input data")
 
     mean = np.mean(X_T, axis=0)
     X_centered = X_T - mean
 
     # Resolve eps
-    if eps is None or (isinstance(eps, str) and eps == "auto"):
+    eps_value = _resolve_epsilon(eps)
+    if eps_value is None:
         # For whitening, we want eps to be relative to the eigenvalues of the covariance matrix.
         # Eigenvalues have units of variance. std(X)**2 is a good proxy for the scale of eigenvalues.
-        var = np.nanvar(X_centered)
+        var = float(np.nanvar(X_centered))
+        if not np.isfinite(var):
+            raise ValueError("whitening variance must be finite")
         eps_val = max(SAFE_FLOOR_STRAIN, var * 1e-6)
     else:
-        eps_val = float(cast(float, eps))
+        eps_val = eps_value
 
     # Handle 1D case (single feature)
     if n_features == 1:
@@ -1388,6 +1398,8 @@ def whiten_matrix(
         cov = np.cov(X_centered, rowvar=False)
         if cov.ndim == 0:
             cov = np.array([[cov]])
+    if not np.all(np.isfinite(cov)):
+        raise ValueError("whitening covariance must be finite")
 
     U, S, Vt = np.linalg.svd(cov)
 
@@ -1426,12 +1438,11 @@ def whiten_matrix(
             new_data = X_whitened.T[:, None, :]  # (n_components, 1, time)
             new_mat = cls(new_data, t0=matrix.t0, dt=matrix.dt)
 
-    # Set unit to dimensionless
-    if hasattr(new_mat, "unit"):
-        try:
-            new_mat.unit = u.dimensionless_unscaled
-        except AttributeError:
-            pass
+    # TimeSeriesMatrix stores units per matrix element rather than through a
+    # scalar ``unit`` property.
+    new_mat.meta.units = np.full(
+        new_mat.meta.shape, u.dimensionless_unscaled, dtype=object
+    )
 
     model = WhiteningModel(mean, W)
     return new_mat, model
