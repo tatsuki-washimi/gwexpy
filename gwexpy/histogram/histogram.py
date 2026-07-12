@@ -237,7 +237,16 @@ class Histogram(
 
             # If scalar weight, broadcast to data length
             if np.ndim(weights_arr) == 0:
-                weights_arr = np.full_like(data_arr, float(weights_arr))
+                scalar_weight = float(weights_arr)
+                weights_dtype = np.result_type(
+                    np.asarray(scalar_weight).dtype,
+                    self.values.value.dtype,
+                )
+                weights_arr = np.full(
+                    data_arr.shape,
+                    scalar_weight,
+                    dtype=weights_dtype,
+                )
             elif weights_arr.shape != data_arr.shape:
                 raise ValueError(
                     f"weights shape {weights_arr.shape} does not match data shape {data_arr.shape}"

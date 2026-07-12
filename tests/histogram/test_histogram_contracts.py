@@ -114,6 +114,35 @@ def test_fill_returns_new_histogram_with_weighted_flow_bins_and_uncertainties():
     assert filled.overflow_sumw2 == 36.0 * u.ct**2
 
 
+@pytest.mark.parametrize(
+    ("weights", "expected_value", "expected_sumw2"),
+    [
+        (0.5, 0.5, 0.25),
+        (0.5 * u.ct, 0.5, 0.25),
+        (2, 2.0, 4.0),
+    ],
+)
+def test_fill_preserves_scalar_weights_for_integer_coordinates(
+    weights, expected_value, expected_sumw2
+):
+    hist = Histogram(
+        values=[0, 0],
+        edges=[0.0, 1.0, 2.0],
+        unit=u.ct,
+        xunit=u.m,
+    )
+    data = np.array([-1, 0, 1, 3], dtype=int)
+
+    filled = hist.fill(data, weights=weights)
+
+    np.testing.assert_allclose(filled.values.value, [expected_value, expected_value])
+    np.testing.assert_allclose(filled.sumw2.value, [expected_sumw2, expected_sumw2])
+    assert filled.underflow == expected_value * u.ct
+    assert filled.overflow == expected_value * u.ct
+    assert filled.underflow_sumw2 == expected_sumw2 * u.ct**2
+    assert filled.overflow_sumw2 == expected_sumw2 * u.ct**2
+
+
 def test_rebin_and_integral_use_total_bin_semantics_and_preserve_metadata():
     hist = Histogram(
         values=[10.0, 20.0, 30.0],
