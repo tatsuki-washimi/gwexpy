@@ -260,17 +260,17 @@ def _determine_output_dtype(
     except (TypeError, ValueError):
         pass
 
-    is_fill_finite = False
-    if np.isscalar(fill_value):
-        try:
-            is_fill_finite = bool(np.isfinite(fill_value))
-        except (TypeError, ValueError):
-            pass
+    fill_array = np.asarray(fill_value)
+    is_numeric_scalar_fill = (
+        not np.ma.isMaskedArray(fill_value)
+        and fill_array.ndim == 0
+        and fill_array.dtype.kind in ("b", "i", "u", "f", "c")
+    )
 
     if is_fill_nan and self_dtype.kind not in ("f", "c"):
         out_dtype = np.dtype(np.float64)
-    elif is_fill_finite and self_dtype.kind in ("b", "i", "u"):
-        out_dtype = np.result_type(self_dtype, np.asarray(fill_value).dtype)
+    elif is_numeric_scalar_fill and self_dtype.kind in ("b", "i", "u"):
+        out_dtype = np.result_type(self_dtype, fill_array.dtype)
 
     out_dtype = np.dtype(out_dtype)
     return out_dtype, fill_value

@@ -206,11 +206,17 @@ def test_determine_output_dtype_finite_boolean_and_integer_fill_uses_result_type
     "self_dtype", [np.dtype(bool), np.dtype("int16"), np.dtype("uint16")]
 )
 @pytest.mark.parametrize("fill_value", [np.inf, -np.inf])
-def test_determine_output_dtype_nonfinite_fill_preserves_boolean_and_integer_dtype(
+def test_determine_output_dtype_nonfinite_fill_uses_result_type(
     self_dtype, fill_value
 ):
     dtype, _ = _determine_output_dtype(None, fill_value, self_dtype)
-    assert dtype == self_dtype
+    assert dtype == np.result_type(self_dtype, np.asarray(fill_value).dtype)
+
+
+def test_determine_output_dtype_masked_fill_preserves_integer_dtype():
+    dtype, _ = _determine_output_dtype(None, np.ma.masked, np.dtype("int16"))
+
+    assert dtype == np.dtype("int16")
 
 
 @pytest.mark.parametrize("fill_value", [0.5, np.nan])
@@ -403,6 +409,44 @@ def test_asfreq_int16_fractional_fill_promotes_and_preserves_values():
 
     assert result.dtype == np.dtype("float64")
     np.testing.assert_array_equal(result.value, [10.0, 0.5, 20.0, 0.5, 30.0, 0.5])
+
+
+@pytest.mark.parametrize(
+    ("fill_value", "expected_dtype", "expected_values"),
+    [
+        (
+            np.array(0.5),
+            np.dtype("float64"),
+            [10.0, 0.5, 20.0, 0.5, 30.0, 0.5],
+        ),
+        (
+            np.array(1 + 2j),
+            np.dtype("complex128"),
+            [10 + 0j, 1 + 2j, 20 + 0j, 1 + 2j, 30 + 0j, 1 + 2j],
+        ),
+    ],
+)
+def test_asfreq_int16_zero_dimensional_fill_preserves_values(
+    fill_value, expected_dtype, expected_values
+):
+    ts = TimeSeries(np.array([10, 20, 30], dtype=np.int16), dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, fill_value=fill_value)
+
+    assert result.dtype == expected_dtype
+    np.testing.assert_array_equal(result.value, expected_values)
+
+
+@pytest.mark.parametrize("fill_value", [np.inf, -np.inf])
+def test_asfreq_int16_nonfinite_fill_promotes_and_preserves_values(fill_value):
+    ts = TimeSeries(np.array([10, 20, 30], dtype=np.int16), dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, fill_value=fill_value)
+
+    assert result.dtype == np.dtype("float64")
+    np.testing.assert_array_equal(result.value[::2], [10.0, 20.0, 30.0])
+    assert np.all(np.isinf(result.value[1::2]))
+    assert np.all(np.signbit(result.value[1::2]) == np.signbit(fill_value))
 
 
 def test_asfreq_int16_float32_fill_allocates_float32_output():

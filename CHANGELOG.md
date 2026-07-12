@@ -3,7 +3,7 @@
 ## Unreleased
 
 - `TimeSeries.asfreq()` now derives the output dtype for boolean and integer
-  source data from the source and a finite `fill_value` through NumPy
+  source data from the source and a numeric scalar `fill_value` through NumPy
   result-type promotion, instead of silently truncating the fill value (#490).
 
 ## [0.1.9] - 2026-07-11
