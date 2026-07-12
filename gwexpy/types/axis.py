@@ -82,7 +82,7 @@ class AxisDescriptor:
             diffs = np.diff(values.astype(object))
             return all(diff == diffs[0] for diff in diffs[1:])
         diffs = np.diff(values)
-        coordinate_scale = float(np.max(np.abs(values)))
+        coordinate_scale = np.max(np.abs(values))
         atol = _REGULAR_ATOL_ULPS * abs(np.spacing(coordinate_scale))
         return bool(
             np.allclose(

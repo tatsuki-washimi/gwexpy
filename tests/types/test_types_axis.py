@@ -70,6 +70,24 @@ def test_axis_descriptor_large_offset_irregular_axis_is_not_regular():
     assert not AxisDescriptor("time", values * u.s).regular
 
 
+def test_axis_descriptor_float32_large_offset_regular_axis_is_regular():
+    values = np.float32(1e9) + np.arange(4, dtype=np.float32) * np.float32(100)
+
+    assert AxisDescriptor("time", values * u.s).regular
+
+
+def test_axis_descriptor_float32_large_offset_irregular_axis_is_not_regular():
+    values = np.float32(1e9) + np.array([0, 128, 896], dtype=np.float32)
+
+    assert not AxisDescriptor("time", values * u.s).regular
+
+
+def test_axis_descriptor_complex64_large_offset_regular_axis_is_regular():
+    values = np.complex64(1e9) + np.arange(4, dtype=np.float32) * np.complex64(100)
+
+    assert AxisDescriptor("complex", values * u.s).regular
+
+
 @pytest.mark.parametrize(
     ("values", "expected"),
     [

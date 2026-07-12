@@ -17,7 +17,7 @@ scope:
   metadata_behavior_changed: false
 decisions:
   - "Compare linear coordinate intervals with rtol=1e-9."
-  - "Use an absolute tolerance of 8 * abs(np.spacing(maximum absolute coordinate value))."
+  - "Use an absolute tolerance of 8 * abs(np.spacing(maximum absolute coordinate value)) in the input floating dtype."
   - "The factor 8 is a small ULP-level allowance for coordinate subtraction round-off, not a domain-level spacing tolerance."
   - "Use equal_nan=False and classify non-finite coordinates as irregular without rejecting construction."
   - "Preserve integer coordinate dtype and compare integer intervals exactly using Python integers to avoid float precision loss and unsigned-difference overflow."
@@ -58,6 +58,14 @@ commands:
     result: "18 passed after integer and complex-coordinate regression coverage was added."
   - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
     result: "757 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
+  - cmd: "rtk pytest -q tests/types/test_types_axis.py -k float32 -p no:cacheprovider"
+    result: "RED: 1 passed, 1 failed; the float32 large-offset regular axis was rejected because float(...) made np.spacing use a float64 ULP. GREEN: 2 passed after retaining the NumPy scalar dtype."
+  - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+    result: "759 passed, 13 skipped, 1 xfailed; 30 existing dependency warnings only."
+  - cmd: "rtk pytest -q tests/types/test_types_axis.py -k complex64_large_offset_regular -p no:cacheprovider"
+    result: "RED: 1 failed after temporarily restoring float(...); GREEN: 1 passed after restoring the input-dtype ULP calculation."
+  - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+    result: "760 passed, 13 skipped, 1 xfailed; 30 existing dependency warnings only."
 changed_files:
   - path: gwexpy/types/axis.py
     change: "Replace fixed absolute regularity detection with a scale-aware linear-spacing comparison, classify non-finite axes as irregular, and document the local ascending-axis precondition of iloc_slice."
@@ -86,6 +94,14 @@ validation:
       result: "18 passed after preserving integer and complex coordinate dtypes."
     - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
       result: "757 passed, 13 skipped, 1 xfailed."
+    - cmd: "rtk pytest -q tests/types/test_types_axis.py -k float32 -p no:cacheprovider"
+      result: "RED: 1 passed, 1 failed; GREEN: 2 passed after deriving the ULP from the input floating dtype."
+    - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+      result: "759 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
+    - cmd: "rtk pytest -q tests/types/test_types_axis.py -k complex64_large_offset_regular -p no:cacheprovider"
+      result: "RED: 1 failed with float64 ULP coercion; GREEN: 1 passed with the input floating dtype ULP."
+    - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+      result: "760 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
     - cmd: "rtk proxy ruff check gwexpy/ tests/"
       result: "Passed."
     - cmd: "rtk proxy mypy gwexpy/"
