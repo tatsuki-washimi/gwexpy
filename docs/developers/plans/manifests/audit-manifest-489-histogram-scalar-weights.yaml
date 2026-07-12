@@ -23,7 +23,7 @@ changed_files:
   - path: gwexpy/histogram/histogram.py
     change: "Broadcast scalar weights using a result dtype derived from the scalar weight and histogram values instead of the coordinate dtype."
   - path: tests/histogram/test_histogram_contracts.py
-    change: "Added integer-coordinate scalar-weight regressions for bin and flow-bin values and sumw2."
+    change: "Added integer-coordinate scalar-weight regressions for bin and flow-bin values, sumw2, and fractional fills with an integer-input covariance matrix."
   - path: docs/developers/plans/manifests/audit-manifest-489-histogram-scalar-weights.yaml
     change: "Recorded scope, validation evidence, and review status for this fix."
 validation:
@@ -39,6 +39,8 @@ validation:
       result: "No issues found."
     - cmd: "rtk mypy gwexpy/"
       result: "No issues found."
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/histogram/test_histogram_contracts.py::test_fill_promotes_integer_covariance_for_fractional_scalar_weights -p no:cacheprovider"
+      result: "1 passed. Histogram construction normalizes the integer-input covariance matrix to float64, so the reviewed in-place cast failure does not reproduce."
     - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/ -x -p no:cacheprovider"
       result: "1 failed, 129 passed, 8 skipped: existing joblib child-process import failure (numpy._core.numeric) in tests/analysis/test_coupling_analysis.py::test_compute_parallel; reproduced on main."
 review:
@@ -46,6 +48,10 @@ review:
   physics_review_required: false
   statistics_metadata_review_required: true
   rationale: "The fix restores existing weighted-count and sumw2 semantics without changing formulas or physical-unit conversions. Human review is required because the output is statistical metadata."
+review_comments:
+  - source: "PR #495 review: blocking dtype issue in covariance update"
+    disposition: "No production-code change required."
+    evidence: "Histogram.__init__ stores cov=np.eye(2, dtype=int) as float64 Quantity data; a fractional scalar fill returns a float64 covariance diagonal of [1.25, 1.25]."
 release_notes:
   user_visible_change: "Histogram.fill now preserves fractional scalar weights for integer-valued coordinate arrays."
 deferred_follow_ups:

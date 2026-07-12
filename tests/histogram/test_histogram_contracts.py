@@ -143,6 +143,19 @@ def test_fill_preserves_scalar_weights_for_integer_coordinates(
     assert filled.overflow_sumw2 == expected_sumw2 * u.ct**2
 
 
+def test_fill_promotes_integer_covariance_for_fractional_scalar_weights():
+    hist = Histogram(
+        values=[0, 0],
+        edges=[0.0, 1.0, 2.0],
+        unit=u.ct,
+        cov=np.eye(2, dtype=int),
+    )
+
+    filled = hist.fill(np.array([0, 1], dtype=int), weights=0.5)
+
+    np.testing.assert_allclose(np.diag(filled.cov.value), [1.25, 1.25])
+
+
 def test_rebin_and_integral_use_total_bin_semantics_and_preserve_metadata():
     hist = Histogram(
         values=[10.0, 20.0, 30.0],
