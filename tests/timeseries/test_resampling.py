@@ -188,6 +188,37 @@ def test_determine_output_dtype_int_with_nan_fill():
     assert dtype == np.dtype(np.float64)
 
 
+@pytest.mark.parametrize(
+    "self_dtype", [np.dtype(bool), np.dtype("int16"), np.dtype("uint16")]
+)
+@pytest.mark.parametrize(
+    "fill_value", [np.float32(0.5), np.complex64(1 + 2j), np.int16(7)]
+)
+def test_determine_output_dtype_finite_boolean_and_integer_fill_uses_result_type(
+    self_dtype, fill_value
+):
+    dtype, fill = _determine_output_dtype(None, fill_value, self_dtype)
+    assert dtype == np.result_type(self_dtype, np.asarray(fill_value).dtype)
+    assert fill == fill_value
+
+
+@pytest.mark.parametrize(
+    "self_dtype", [np.dtype(bool), np.dtype("int16"), np.dtype("uint16")]
+)
+@pytest.mark.parametrize("fill_value", [np.inf, -np.inf])
+def test_determine_output_dtype_nonfinite_fill_preserves_boolean_and_integer_dtype(
+    self_dtype, fill_value
+):
+    dtype, _ = _determine_output_dtype(None, fill_value, self_dtype)
+    assert dtype == self_dtype
+
+
+@pytest.mark.parametrize("fill_value", [0.5, np.nan])
+def test_determine_output_dtype_float32_keeps_own_dtype(fill_value):
+    dtype, _ = _determine_output_dtype(None, fill_value, np.dtype("float32"))
+    assert dtype == np.dtype("float32")
+
+
 # ---------------------------------------------------------------------------
 # _reindex_by_method
 # ---------------------------------------------------------------------------
@@ -363,6 +394,86 @@ def test_asfreq_with_fill_value():
     assert isinstance(result, TimeSeries)
     # Non-matched points should be 0.0
     assert np.all(np.isfinite(result.value))
+
+
+def test_asfreq_int16_fractional_fill_promotes_and_preserves_values():
+    ts = TimeSeries(np.array([10, 20, 30], dtype=np.int16), dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, fill_value=0.5)
+
+    assert result.dtype == np.dtype("float64")
+    np.testing.assert_array_equal(result.value, [10.0, 0.5, 20.0, 0.5, 30.0, 0.5])
+
+
+def test_asfreq_int16_float32_fill_allocates_float32_output():
+    ts = TimeSeries(np.array([10, 20, 30], dtype=np.int16), dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, fill_value=np.float32(0.5))
+
+    assert result.dtype == np.dtype("float32")
+    np.testing.assert_array_equal(result.value, [10.0, 0.5, 20.0, 0.5, 30.0, 0.5])
+
+
+def test_asfreq_int16_complex_fill_preserves_both_components():
+    ts = TimeSeries(np.array([10, 20, 30], dtype=np.int16), dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, fill_value=1 + 2j)
+
+    assert result.dtype == np.dtype("complex128")
+    np.testing.assert_array_equal(
+        result.value, [10 + 0j, 1 + 2j, 20 + 0j, 1 + 2j, 30 + 0j, 1 + 2j]
+    )
+
+
+def test_asfreq_int16_integer_fill_keeps_integer_dtype_kind():
+    ts = TimeSeries(np.array([10, 20, 30], dtype=np.int16), dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, fill_value=0)
+
+    assert result.dtype.kind == "i"
+    np.testing.assert_array_equal(result.value, [10, 0, 20, 0, 30, 0])
+
+
+@pytest.mark.parametrize("fill_value", [None, np.nan])
+def test_asfreq_int16_none_and_nan_fill_remain_float64_nan(fill_value):
+    ts = TimeSeries(np.array([10, 20, 30], dtype=np.int16), dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, fill_value=fill_value)
+
+    assert result.dtype == np.dtype("float64")
+    np.testing.assert_array_equal(result.value[::2], [10.0, 20.0, 30.0])
+    assert np.all(np.isnan(result.value[1::2]))
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "expected"),
+    [
+        ({"fill_value": 0.5}, [10.0, 0.5, 20.0, 0.5, 30.0, 0.5]),
+        ({}, [10.0, np.nan, 20.0, np.nan, 30.0, np.nan]),
+    ],
+)
+def test_asfreq_float32_finite_and_default_nan_fill_remain_float32(
+    kwargs, expected
+):
+    ts = TimeSeries(np.array([10, 20, 30], dtype=np.float32), dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, **kwargs)
+
+    assert result.dtype == np.dtype("float32")
+    np.testing.assert_equal(result.value, expected)
+
+
+def test_asfreq_complex64_default_nan_fill_remains_complex128():
+    ts = TimeSeries(
+        np.array([1 + 2j, 3 + 4j, 5 + 6j], dtype=np.complex64), dt=1.0 * u.s
+    )
+
+    result = ts.asfreq(0.5 * u.s, method=None)
+
+    assert result.dtype == np.dtype("complex128")
+    np.testing.assert_array_equal(result.value[::2], ts.value)
+    assert np.all(np.isnan(result.value[1::2].real))
+    np.testing.assert_array_equal(result.value[1::2].imag, [0.0, 0.0, 0.0])
 
 
 def test_asfreq_preserves_unit():
