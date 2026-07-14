@@ -153,6 +153,22 @@ def test_timeseriesdict_resample_signal():
     assert isinstance(result, TimeSeriesDict)
 
 
+def test_timeseriesdict_resample_time_bin_forwards_closed_right_in_place():
+    td = TimeSeriesDict(
+        {
+            "first": _make_series([1.0, 3.0, 5.0, 7.0]),
+            "second": _make_series([10.0, 30.0, 50.0, 70.0]),
+        }
+    )
+
+    result = td.resample("2s", closed="right")
+
+    assert result is td
+    assert list(td) == ["first", "second"]
+    np.testing.assert_allclose(td["first"].value, [3.0, 7.0])
+    np.testing.assert_allclose(td["second"].value, [30.0, 70.0])
+
+
 # --- TimeSeriesList: to_matrix ---
 
 def test_timeserieslist_to_matrix_shape():

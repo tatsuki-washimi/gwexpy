@@ -205,7 +205,7 @@ class TimeSeriesMatrixCoreMixin:
             xindex=common_axis,
             xunit=common_axis.unit if isinstance(common_axis, u.Quantity) else None,
         )
-        new_mat._meta = meta_matrix
+        new_mat.meta = meta_matrix
         return new_mat
 
     def _coerce_other_timeseries_input(self, other: Any, method_name: str) -> Any:

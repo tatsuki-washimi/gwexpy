@@ -392,6 +392,151 @@ def test_resample_quantity_time_rule():
     assert isinstance(result, TimeSeries)
 
 
+def test_resample_time_bin_closed_right_assigns_boundary_to_previous_bin():
+    ts = TimeSeries(
+        np.array([1.0, 3.0, 5.0, 7.0]),
+        dt=1.0 * u.s,
+        t0=0.0 * u.s,
+        unit=u.m,
+        name="boundary-test",
+        channel="H1:TEST",
+    )
+
+    result = ts.resample("2s", closed="right")
+
+    # Right-closed bins are [0, 2], then (2, 4].
+    np.testing.assert_allclose(result.value, [3.0, 7.0])
+    assert result.t0.to_value(u.s) == pytest.approx(0.0)
+    assert result.dt.to_value(u.s) == pytest.approx(2.0)
+    assert result.unit == u.m
+    assert result.name == "boundary-test"
+    assert str(result.channel) == "H1:TEST"
+
+
+def test_resample_time_bin_closed_left_preserves_current_public_behavior():
+    ts = TimeSeries(
+        np.array([1.0, 3.0, 5.0, 7.0]),
+        dt=1.0 * u.s,
+        t0=0.0 * u.s,
+        unit=u.m,
+    )
+
+    result = ts.resample("2s", closed="left")
+
+    np.testing.assert_allclose(result.value, [2.0, 6.0])
+
+
+@pytest.mark.parametrize(
+    ("label", "expected_t0"),
+    [("left", 0.0), ("right", 2.0), ("center", 1.0)],
+)
+def test_resample_time_bin_label_changes_coordinate_not_closed_right_membership(
+    label, expected_t0
+):
+    ts = TimeSeries(
+        np.array([1.0, 3.0, 5.0, 7.0]),
+        dt=1.0 * u.s,
+        t0=0.0 * u.s,
+        unit=u.m,
+    )
+
+    result = ts.resample("2s", closed="right", label=label)
+
+    np.testing.assert_allclose(result.value, [3.0, 7.0])
+    assert result.t0.to_value(u.s) == pytest.approx(expected_t0)
+
+
+def test_resample_time_bin_closed_right_excludes_samples_before_ceil_grid_start():
+    ts = TimeSeries(
+        np.array([10.0, 20.0, 30.0]),
+        dt=1.0 * u.s,
+        t0=1.0 * u.s,
+        unit=u.m,
+    )
+
+    result = ts.resample(
+        "2s", closed="right", origin="gps0", align="ceil"
+    )
+
+    # The 1 s sample is before the generated first edge at 2 s.
+    np.testing.assert_allclose(result.value, [25.0])
+    assert result.t0.to_value(u.s) == pytest.approx(2.0)
+
+
+@pytest.mark.parametrize(
+    "offset",
+    [1.0 * u.m, np.nan * u.s, np.inf * u.s, np.array([1.0, 2.0]) * u.s],
+)
+def test_resample_time_bin_rejects_invalid_offsets(offset):
+    ts = _make_ts([1.0, 3.0, 5.0, 7.0], dt=1.0)
+
+    with pytest.raises(ValueError):
+        ts.resample("2s", offset=offset)
+
+
+@pytest.mark.parametrize(
+    ("keyword", "value"),
+    [
+        ("closed", "invalid"),
+        ("label", "invalid"),
+        ("origin", "invalid"),
+        ("align", "invalid"),
+        ("nan_policy", "invalid"),
+    ],
+)
+def test_resample_time_bin_rejects_invalid_enum_values(keyword, value):
+    ts = _make_ts([1.0, 3.0, 5.0, 7.0], dt=1.0)
+
+    with pytest.raises(ValueError):
+        ts.resample("2s", **{keyword: value})
+
+
+def test_resample_time_bin_rejects_invalid_nan_policy_before_ignore_nan_alias():
+    ts = _make_ts([1.0, 3.0, 5.0, 7.0], dt=1.0)
+
+    with pytest.raises(ValueError):
+        ts.resample("2s", nan_policy="invalid", ignore_nan=True)
+
+
+@pytest.mark.parametrize(
+    "rule",
+    ["0s", "-1s", np.nan * u.s, np.inf * u.s, -np.inf * u.s],
+)
+def test_resample_time_bin_rejects_nonpositive_or_nonfinite_width(rule):
+    ts = _make_ts([1.0, 3.0, 5.0, 7.0], dt=1.0)
+
+    with pytest.raises(ValueError):
+        ts.resample(rule)
+
+
+@pytest.mark.parametrize("rule", [np.array([1.0, 2.0]) * u.s, 1j * u.s])
+def test_resample_time_bin_rejects_nonreal_or_nonscalar_width(rule):
+    ts = _make_ts([1.0, 3.0, 5.0, 7.0], dt=1.0)
+
+    with pytest.raises(ValueError):
+        ts.resample(rule)
+
+
+def test_resample_time_bin_accepts_positive_convertible_width():
+    ts = _make_ts([1.0, 3.0, 5.0, 7.0], dt=1.0)
+
+    result = ts.resample(2000 * u.ms)
+
+    np.testing.assert_allclose(result.value, [2.0, 6.0])
+
+
+def test_resample_time_bin_accepts_dimensionless_string_rule():
+    ts = TimeSeries(
+        np.array([1.0, 3.0, 5.0, 7.0]),
+        times=np.arange(4) * u.dimensionless_unscaled,
+        unit=u.m,
+    )
+
+    result = ts.resample("2")
+
+    np.testing.assert_allclose(result.value, [2.0, 6.0])
+
+
 # ---------------------------------------------------------------------------
 # _resample_time_bin — aggregation variants
 # ---------------------------------------------------------------------------

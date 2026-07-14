@@ -7,6 +7,7 @@ import pytest
 from astropy import units as u
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 
 def _make_tsm(n_rows=2, n_cols=2, n_time=100, seed=0) -> TimeSeriesMatrix:
@@ -150,6 +151,29 @@ def test_resample_time_quantity():
     tsm = _make_tsm(n_time=200)
     result = tsm.resample(0.1 * u.s)
     assert isinstance(result, TimeSeriesMatrix)
+
+
+def test_resample_time_bin_forwards_closed_right_and_preserves_element_metadata():
+    meta = MetaDataMatrix(
+        [[MetaData(unit=u.m, name="signal", channel="H1:TEST")]]
+    )
+    tsm = TimeSeriesMatrix(
+        np.array([[[1.0, 3.0, 5.0, 7.0]]]),
+        dt=1.0 * u.s,
+        t0=0.0 * u.s,
+        meta=meta,
+    )
+
+    result = tsm.resample("2s", closed="right")
+    series = result[0, 0]
+
+    assert result is not tsm
+    np.testing.assert_allclose(series.value, [3.0, 7.0])
+    assert series.t0.to_value(u.s) == pytest.approx(0.0)
+    assert series.dt.to_value(u.s) == pytest.approx(2.0)
+    assert series.unit == u.m
+    assert series.name == "signal"
+    assert str(series.channel) == "H1:TEST"
 
 
 # ---------------------------------------------------------------------------
