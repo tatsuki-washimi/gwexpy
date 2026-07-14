@@ -21,13 +21,25 @@ def test_axis_descriptor_irregular():
 
 
 def test_axis_descriptor_regular():
-    idx = Index(np.arange(101, dtype=float) * 0.125, unit="s")
+    idx = Index(np.linspace(0, 10, 101), unit="s")
     # depending on Index implementation, it might have .regular=True or we calculate it
     desc = AxisDescriptor("time", idx)
 
     assert desc.regular
-    assert np.isclose(desc.delta.value, 0.125)
+    assert np.isclose(desc.delta.value, 0.1)
     assert desc.delta.unit == u.s
+
+
+def test_axis_descriptor_arange_float64_regular_axis_is_regular():
+    values = np.arange(101, dtype=float) * 0.1
+
+    assert AxisDescriptor("time", values * u.s).regular
+
+
+def test_axis_descriptor_multi_ulp_float64_axis_is_not_regular():
+    values = np.array([0.0, 1.0, 2.0000000000005])
+
+    assert not AxisDescriptor("time", values * u.s).regular
 
 
 def test_axis_descriptor_small_scale_irregular_axis_rejects_coordinate_step():
@@ -99,6 +111,8 @@ def test_axis_descriptor_complex64_large_offset_regular_axis_is_regular():
     [
         np.float32(1e9) + np.arange(4, dtype=np.float32) * np.float32(128),
         np.complex64(1e9) + np.arange(4, dtype=np.float32) * np.complex64(128),
+        np.linspace(0, 10, 101),
+        np.arange(101, dtype=float) * 0.1,
     ],
 )
 def test_axis_descriptor_regular_delta_matches_all_represented_intervals(index):
@@ -109,7 +123,7 @@ def test_axis_descriptor_regular_delta_matches_all_represented_intervals(index):
 
     assert axis.regular
     assert axis.delta is not None
-    assert np.allclose(diffs, axis.delta.to_value(axis.unit), rtol=0, atol=atol)
+    assert np.allclose(diffs, axis.delta.to_value(axis.unit), rtol=2e-14, atol=atol)
 
 
 @pytest.mark.parametrize(

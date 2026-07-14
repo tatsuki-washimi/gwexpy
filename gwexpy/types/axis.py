@@ -7,6 +7,7 @@ from astropy.units import Quantity
 
 __all__ = ["AxisDescriptor", "coerce_1d_quantity"]
 
+_REGULAR_RTOL = 2e-14
 _REGULAR_ATOL_ULPS = 1
 
 
@@ -62,10 +63,11 @@ class AxisDescriptor:
         """Return whether the axis has regular linear spacing.
 
         Integer coordinates are compared exactly. Other numeric coordinates
-        have adjacent intervals compared with an absolute tolerance of one ULP
-        at the largest represented interval magnitude. This keeps ``delta``
-        consistent with every represented interval while retaining a narrow
-        floating-point allowance.
+        have adjacent intervals compared with a relative tolerance of
+        ``2e-14`` and an absolute tolerance of one ULP at the largest
+        represented interval magnitude. This keeps ``delta`` consistent with
+        every represented interval while allowing bounded accumulated
+        floating-point round-off.
 
         Logarithmic (equal-ratio) axes are not regular under this linear-spacing
         contract.
@@ -86,7 +88,7 @@ class AxisDescriptor:
             np.allclose(
                 diffs,
                 diffs[0],
-                rtol=0,
+                rtol=_REGULAR_RTOL,
                 atol=atol,
                 equal_nan=False,
             )
