@@ -346,10 +346,15 @@ Returns FrequencySeriesMatrix.</p>
 </ul>
 <section id="partial-correlation-matrix">
 <h3><code class="docutils literal notranslate"><span class="pre">partial_correlation_matrix</span></code><a class="headerlink" href="#partial-correlation-matrix" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">partial_correlation_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">estimator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;empirical&#39;</span><span class="p">,</span> <span class="n">shrinkage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-08</span><span class="p">,</span> <span class="n">return_precision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">partial_correlation_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">estimator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;empirical&#39;</span><span class="p">,</span> <span class="n">shrinkage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">return_precision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
 </pre></div>
 </div>
 <p>Compute the partial-correlation matrix across all channels (flattened).</p>
+<p><code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> uses a covariance-scale-relative ridge term.
+<code class="docutils literal notranslate"><span class="pre">eps=None</span></code> preserves the legacy behavior of adding no ridge, as does
+<code class="docutils literal notranslate"><span class="pre">eps=0</span></code>; a finite explicit <code class="docutils literal notranslate"><span class="pre">eps</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> overrides it.
+Shrinkage and the pseudo-inverse fallback remain independent.
+Non-finite input raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
 </section>
 <section id="crop">
 <h3><code class="docutils literal notranslate"><span class="pre">crop</span></code><a class="headerlink" href="#crop" title="Link to this heading"></a></h3>
@@ -1206,13 +1211,15 @@ Follows the matrix structure (row, col) unless it’s a 1-column matrix.</p>
 </section>
 <section id="whiten-channels">
 <h3><code class="docutils literal notranslate"><span class="pre">whiten_channels</span></code><a class="headerlink" href="#whiten-channels" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">whiten_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="n">n_components</span><span class="p">:</span> <span class="s1">&#39;Optional[int]&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_model</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">whiten_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span> <span class="o">=</span> <span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="s1">&#39;float | Literal[&quot;auto&quot;] | None&#39;</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">n_components</span><span class="p">:</span> <span class="s1">&#39;Optional[int]&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_model</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Any&#39;</span>
 </pre></div>
 </div>
 <p>Whiten the matrix (channels/components).
 Returns (whitened_matrix, WhiteningModel) by default.
 Set return_model=False to return only the whitened matrix.
-See gwexpy.timeseries.preprocess.whiten_matrix.</p>
+See gwexpy.timeseries.preprocess.whiten_matrix.
+<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> (or <code class="docutils literal notranslate"><span class="pre">None</span></code>) uses variance-relative regularization; explicit
+values must be finite and non-negative.</p>
 </section>
 <section id="write">
 <h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
@@ -1256,7 +1263,7 @@ See gwexpy.timeseries.preprocess.whiten_matrix.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
+      <span class="lastupdated">Last updated on 2026-07-14 14:51:07.
       </span></p>
   </div>
 

@@ -133,6 +133,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.numerics.scaling</span><span class="w"> </span><span class="kn">import</span> <span class="n">_resolve_epsilon</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">TimeSeriesList</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.decomposition</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ica_fit</span><span class="p">,</span>
@@ -568,7 +570,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;pca&quot;</span><span class="p">,</span> <span class="s2">&quot;zca&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pca&quot;</span><span class="p">,</span>
-        <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="p">,</span>
+        <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">n_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">multivariate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -576,6 +578,7 @@
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="n">_resolve_epsilon</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">n_components</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multivariate</span> <span class="o">=</span> <span class="n">multivariate</span>
@@ -639,11 +642,17 @@
         <span class="n">original</span> <span class="o">=</span> <span class="n">original</span> <span class="ow">or</span> <span class="n">orig2</span>
 
         <span class="n">X</span> <span class="o">=</span> <span class="n">mat_data</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mat_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># (time, features)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">X</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;whitening requires finite input data&quot;</span><span class="p">)</span>
         <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
         <span class="n">X_centered</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">mean</span>
         <span class="n">X_w</span> <span class="o">=</span> <span class="n">X_centered</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">T</span>
         <span class="n">new_val</span> <span class="o">=</span> <span class="n">X_w</span><span class="o">.</span><span class="n">T</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
         <span class="n">new_mat</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">new_val</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">mat_data</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">mat_data</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">new_mat</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+            <span class="n">new_mat</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span>
+        <span class="p">)</span>
+        <span class="n">new_mat</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_names</span><span class="p">:</span>
             <span class="n">new_mat</span><span class="o">.</span><span class="n">channel_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_names</span>
         <span class="k">return</span> <span class="n">_restore_collection</span><span class="p">(</span><span class="n">new_mat</span><span class="p">,</span> <span class="n">original</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multivariate</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span></div>
@@ -835,7 +844,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
+      <span class="lastupdated">Last updated on 2026-07-14 14:51:07.
       </span></p>
   </div>
 

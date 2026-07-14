@@ -332,6 +332,16 @@ axis2 : str or int, optional
 </div>
 <p>基盤となる Array3D オブジェクトを返します（上級者向け）。</p>
 </section>
+</section>
+<section id="laplacegram">
+<h2>LaplaceGram の正規化<a class="headerlink" href="#laplacegram" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LaplaceGram</span><span class="o">.</span><span class="n">normalize_per_sigma</span><span class="p">(</span><span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;auto&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>各 <code class="docutils literal notranslate"><span class="pre">(time,</span> <span class="pre">sigma)</span></code> の振幅スライスを周波数方向に正規化します。
+<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code>（または <code class="docutils literal notranslate"><span class="pre">None</span></code>）では、有限かつ非ゼロの周波数和をそのまま使うため、各非ゼロスライスの和は 1 になります。
+明示的な有限の正値 <code class="docutils literal notranslate"><span class="pre">eps</span></code> は保存値の単位で指定するフロアです。
+全ゼロスライスは有限なゼロのままで、非有限入力は <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> になります。</p>
 <section id="unit">
 <h3><code class="docutils literal notranslate"><span class="pre">unit</span></code><a class="headerlink" href="#unit" title="Link to this heading"></a></h3>
 <p>データ値の物理単位。</p>
@@ -355,7 +365,7 @@ axis2 : str or int, optional
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
+      <span class="lastupdated">Last updated on 2026-07-14 14:51:07.
       </span></p>
   </div>
 

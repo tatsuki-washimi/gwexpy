@@ -133,6 +133,9 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AxisDescriptor&quot;</span><span class="p">,</span> <span class="s2">&quot;coerce_1d_quantity&quot;</span><span class="p">]</span>
 
+<span class="n">_REGULAR_RTOL</span> <span class="o">=</span> <span class="mf">2.5e-14</span>
+<span class="n">_REGULAR_ATOL_ULPS</span> <span class="o">=</span> <span class="mi">1</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">coerce_1d_quantity</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure input is a 1D Quantity.&quot;&quot;&quot;</span>
@@ -159,7 +162,6 @@
     <span class="n">index</span><span class="p">:</span> <span class="n">Quantity</span>  <span class="c1"># 1D</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># validation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">coerce_1d_quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -186,13 +188,39 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">regular</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return whether the axis spacing is regular.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;regular&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">regular</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return whether the axis has regular linear spacing.</span>
+
+<span class="sd">        Integer coordinates are compared exactly. Other numeric coordinates</span>
+<span class="sd">        have adjacent intervals compared with a relative tolerance of</span>
+<span class="sd">        ``2.5e-14`` and an absolute tolerance of one ULP at the largest</span>
+<span class="sd">        represented interval magnitude. This keeps ``delta`` consistent with</span>
+<span class="sd">        every represented interval while allowing bounded accumulated</span>
+<span class="sd">        floating-point round-off.</span>
+
+<span class="sd">        Logarithmic (equal-ratio) axes are not regular under this linear-spacing</span>
+<span class="sd">        contract.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">diffs</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">values</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+            <span class="c1"># Python integers preserve exact intervals and cannot overflow.</span>
+            <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">diff</span> <span class="o">==</span> <span class="n">diffs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">diff</span> <span class="ow">in</span> <span class="n">diffs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">interval_scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diffs</span><span class="p">))</span>
+        <span class="n">atol</span> <span class="o">=</span> <span class="n">_REGULAR_ATOL_ULPS</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">spacing</span><span class="p">(</span><span class="n">interval_scale</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+                <span class="n">diffs</span><span class="p">,</span>
+                <span class="n">diffs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">rtol</span><span class="o">=</span><span class="n">_REGULAR_RTOL</span><span class="p">,</span>
+                <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span>
+                <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">delta</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -225,7 +253,12 @@
 <div class="viewcode-block" id="AxisDescriptor.iloc_slice">
 <a class="viewcode-back" href="../../../web/ja/reference/api/types.html#gwexpy.types.AxisDescriptor.iloc_slice">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">iloc_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">slice</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a coordinate slice (start, stop, step) to an integer slice.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a coordinate slice (start, stop, step) to an integer slice.</span>
+
+<span class="sd">        Coordinate start and stop bounds require an ascending axis because they</span>
+<span class="sd">        are resolved with :func:`numpy.searchsorted`. Descending and unordered</span>
+<span class="sd">        axes remain valid for :meth:`iloc_nearest`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">start_idx</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">stop_idx</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">step_idx</span> <span class="o">=</span> <span class="kc">None</span>
@@ -271,7 +304,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
+      <span class="lastupdated">Last updated on 2026-07-14 14:51:07.
       </span></p>
   </div>
 

@@ -300,7 +300,18 @@ Standard analysis in <code class="docutils literal notranslate"><span class="pre
 </tr>
 </tbody>
 </table>
+<section id="epsilon-contract">
+<h3>Epsilon contract<a class="headerlink" href="#epsilon-contract" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">eps=None</span></code> select data-relative regularization for whitening.
+For partial correlation, <code class="docutils literal notranslate"><span class="pre">eps=None</span></code> preserves the legacy behavior of no added
+ridge, while <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> selects the covariance-relative ridge.
+Explicit values must be finite and non-negative.
+For covariance-based operations, <code class="docutils literal notranslate"><span class="pre">eps=0</span></code> disables only the added ridge term;
+shrinkage and pseudo-inverse behavior remain independent.
+For per-sigma Laplace normalization, automatic mode preserves each finite
+nonzero denominator; zero-magnitude slices remain zero.</p>
 <hr class="docutils" />
+</section>
 </section>
 <section id="detailed-explanations-and-examples">
 <span id="numerical-stability-en-examples"></span><h2>Detailed Explanations and Examples<a class="headerlink" href="#detailed-explanations-and-examples" title="Link to this heading"></a></h2>
@@ -383,7 +394,7 @@ Standard analysis in <code class="docutils literal notranslate"><span class="pre
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
+      <span class="lastupdated">Last updated on 2026-07-14 14:51:07.
       </span></p>
   </div>
 

@@ -330,10 +330,13 @@
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">correlation_vector()</span></code></p></td>
 <td><p>ターゲット時系列と全チャンネルの相関（<code class="docutils literal notranslate"><span class="pre">method=&quot;pearson&quot;</span></code> は高速なベクトル化パスあり）</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">partial_correlation_matrix()</span></code></p></td>
-<td><p>全チャンネルの偏相関行列（precision から計算、shrinkage/eps 対応）</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">partial_correlation_matrix(eps=&quot;auto&quot;)</span></code></p></td>
+<td><p>全チャンネルの偏相関行列。<code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> は共分散スケールの ridge 項を選び、<code class="docutils literal notranslate"><span class="pre">None</span></code> と <code class="docutils literal notranslate"><span class="pre">0</span></code> は従来どおり追加 ridge 項を無効にする。有限の <code class="docutils literal notranslate"><span class="pre">eps</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> は明示指定として使う。</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">coherence()</span></code> / <code class="docutils literal notranslate"><span class="pre">csd()</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">whiten_channels(eps=&quot;auto&quot;)</span></code></p></td>
+<td><p>チャンネル間ホワイトニング。<code class="docutils literal notranslate"><span class="pre">None</span></code> も自動値を選び、有限の <code class="docutils literal notranslate"><span class="pre">eps</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code> は明示指定として使う。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">coherence()</span></code> / <code class="docutils literal notranslate"><span class="pre">csd()</span></code></p></td>
 <td><p>コヒーレンス/クロススペクトル計算</p></td>
 </tr>
 </tbody>
@@ -449,7 +452,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
+      <span class="lastupdated">Last updated on 2026-07-14 14:51:07.
       </span></p>
   </div>
 

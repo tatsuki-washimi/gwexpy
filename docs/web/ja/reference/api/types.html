@@ -446,7 +446,15 @@ supporting vectorized attribute access (names, units, channels).</p>
 <dl class="py property">
 <dt class="sig sig-object py">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">regular</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></dt>
-<dd><p>Return whether the axis spacing is regular.</p>
+<dd><p>Return whether the axis has regular linear spacing.</p>
+<p>Integer coordinates are compared exactly. Other numeric coordinates
+have adjacent intervals compared with a relative tolerance of
+<code class="docutils literal notranslate"><span class="pre">2.5e-14</span></code> and an absolute tolerance of one ULP at the largest
+represented interval magnitude. This keeps <code class="docutils literal notranslate"><span class="pre">delta</span></code> consistent with
+every represented interval while allowing bounded accumulated
+floating-point round-off.</p>
+<p>Logarithmic (equal-ratio) axes are not regular under this linear-spacing
+contract.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -471,6 +479,9 @@ supporting vectorized attribute access (names, units, channels).</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">iloc_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.14)"><span class="pre">slice</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/types/axis.html#AxisDescriptor.iloc_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Convert a coordinate slice (start, stop, step) to an integer slice.</p>
+<p>Coordinate start and stop bounds require an ascending axis because they
+are resolved with <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html#numpy.searchsorted" title="(in NumPy v2.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.searchsorted()</span></code></a>. Descending and unordered
+axes remain valid for <code class="xref py py-meth docutils literal notranslate"><span class="pre">iloc_nearest()</span></code>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -801,7 +812,7 @@ objects, used for row/column metadata in SeriesMatrix.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
+      <span class="lastupdated">Last updated on 2026-07-14 14:51:07.
       </span></p>
   </div>
 

@@ -126,7 +126,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#api">主な安定化手法と API</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#numerical-stability-ja-examples">各機能の解説とコード例</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#numerical-stability-ja-recommendations">ユーザーへの推奨事項</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id10">次に読む</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11">次に読む</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド (4次元を維持する理由)</a></li>
@@ -300,7 +300,15 @@
 </tr>
 </tbody>
 </table>
+<section id="eps">
+<h3>eps の契約<a class="headerlink" href="#eps" title="Link to this heading"></a></h3>
+<p>ホワイトニングでは、<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> と <code class="docutils literal notranslate"><span class="pre">eps=None</span></code> がデータ相対の正則化を選びます。
+偏相関の <code class="docutils literal notranslate"><span class="pre">eps=None</span></code> は追加 ridge 項を使わない従来の挙動を維持し、<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> は共分散相対の ridge 項を選びます。
+明示値は有限かつ非負でなければなりません。
+共分散に基づく演算で <code class="docutils literal notranslate"><span class="pre">eps=0</span></code> は追加する ridge 項だけを無効にし、shrinkage と疑似逆行列の扱いは独立しています。
+Laplace の sigma ごとの正規化では、自動モードが有限かつ非ゼロの分母をそのまま使い、ゼロ振幅スライスはゼロのままです。</p>
 <hr class="docutils" />
+</section>
 </section>
 <section id="numerical-stability-ja-examples">
 <span id="id5"></span><h2>各機能の解説とコード例<a class="headerlink" href="#numerical-stability-ja-examples" title="Link to this heading"></a></h2>
@@ -310,8 +318,8 @@
 <strong>入力:</strong> 極小信号を含む <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>。
 <strong>出力:</strong> 自動スケーリングされたホワイトニング結果。</p>
 <p>標準的なホワイトニングは、ゼロ除算を防ぐために固定の正規化パラメータ（<code class="docutils literal notranslate"><span class="pre">eps</span></code>）を使用しますが、これが大きすぎると微小な信号が埋もれます。</p>
-<section id="eps">
-<h4>❌ 悪い例: 固定 eps による信号消失<a class="headerlink" href="#eps" title="Link to this heading"></a></h4>
+<section id="id6">
+<h4>❌ 悪い例: 固定 eps による信号消失<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1e-12 程度の固定 eps では 1e-21 の信号は 0 に丸められてしまう</span>
 <span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span> <span class="o">/</span> <span class="p">(</span><span class="n">asd</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span> 
 </pre></div>
@@ -335,14 +343,14 @@
 <strong>入力:</strong> ゼロや静穏区間を含む ASD / PSD。
 <strong>出力:</strong> 動的フロア付きの安定した可視化。</p>
 <p>スペクトログラム等の可視化において、ゼロや極小値による <code class="docutils literal notranslate"><span class="pre">-inf</span></code> の発生を防ぎます。</p>
-<section id="id6">
-<h4>❌ 悪い例: 手動変換による数値エラー<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<section id="id7">
+<h4>❌ 悪い例: 手動変換による数値エラー<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asd_db</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">asd</span><span class="p">)</span>  <span class="c1"># 0 があると -inf になりプロットが崩れる</span>
 </pre></div>
 </div>
 </section>
-<section id="id7">
-<h4>✅ 良い例: 自動的な動的フロア適用<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<section id="id8">
+<h4>✅ 良い例: 自動的な動的フロア適用<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> では、データの最大値から逆算した安全なフロアを自動適用します。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
 <span class="n">plot</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># 内部で Safe Log が適用され、-inf のない綺麗な図になる</span>
@@ -350,22 +358,22 @@
 </div>
 </section>
 </section>
-<section id="id8">
-<h3>3. 計算機イプシロンへの配慮<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>3. 計算機イプシロンへの配慮<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <p>パッケージ全体で使用される数値定数は、浮動小数点型（float32 vs float64）の機械精度（イプシロン）に基づいて導出されており、最適な精度を保証します。</p>
 <hr class="docutils" />
 </section>
 </section>
 <section id="numerical-stability-ja-recommendations">
-<span id="id9"></span><h2>ユーザーへの推奨事項<a class="headerlink" href="#numerical-stability-ja-recommendations" title="Link to this heading"></a></h2>
+<span id="id10"></span><h2>ユーザーへの推奨事項<a class="headerlink" href="#numerical-stability-ja-recommendations" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><strong>手動オフセットの回避</strong>: プロットの前に <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">+</span> <span class="pre">1e-20</span></code> のような恣意的な値を足す必要はありません。内部で適切に処理されます。</p></li>
 <li><p><strong>デフォルトを信頼する</strong>: <code class="docutils literal notranslate"><span class="pre">whiten()</span></code> や <code class="docutils literal notranslate"><span class="pre">ica_fit()</span></code> のデフォルト値は、数値的な安全性を最優先に調整されています。</p></li>
 <li><p><strong>警告を確認する</strong>: 真に不安定な操作（全区間ゼロのデータのホワイトニング等）に対しては、解決策を含む警告が出力されます。</p></li>
 </ul>
 </section>
-<section id="id10">
-<h2>次に読む<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<section id="id11">
+<h2>次に読む<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../reference/api/signal.html"><span class="std std-doc">信号処理 API リファレンス</span></a></p></li>
 <li><p><a class="reference internal" href="validated_algorithms.html"><span class="std std-doc">検証済みアルゴリズム</span></a></p></li>
@@ -387,7 +395,7 @@
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, GWexpy contributors.
-      <span class="lastupdated">Last updated on 2026-07-11 04:46:43.
+      <span class="lastupdated">Last updated on 2026-07-14 14:51:07.
       </span></p>
   </div>
 
