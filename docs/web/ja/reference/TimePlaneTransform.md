@@ -164,6 +164,17 @@ to_array3d(self)
 
 基盤となる Array3D オブジェクトを返します（上級者向け）。
 
+## LaplaceGram の正規化
+
+```python
+LaplaceGram.normalize_per_sigma(eps: float | Literal['auto'] | None = 'auto')
+```
+
+各 `(time, sigma)` の振幅スライスを周波数方向に正規化します。
+`eps="auto"`（または `None`）では、有限かつ非ゼロの周波数和をそのまま使うため、各非ゼロスライスの和は 1 になります。
+明示的な有限の正値 `eps` は保存値の単位で指定するフロアです。
+全ゼロスライスは有限なゼロのままで、非有限入力は `ValueError` になります。
+
 ### `unit`
 
 データ値の物理単位。

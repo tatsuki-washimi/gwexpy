@@ -7,6 +7,8 @@ from typing import Any, Literal
 import numpy as np
 from astropy import units as u
 
+from gwexpy.numerics.scaling import _resolve_epsilon
+
 from .collections import TimeSeriesDict, TimeSeriesList
 from .decomposition import (
     ica_fit,
@@ -392,7 +394,7 @@ class WhitenTransform(Transform):
     def __init__(
         self,
         method: Literal["pca", "zca"] = "pca",
-        eps: float = 1e-12,
+        eps: float | Literal["auto"] | None = "auto",
         n_components: int | None = None,
         *,
         multivariate: bool = True,
@@ -400,6 +402,7 @@ class WhitenTransform(Transform):
     ):
         super().__init__()
         self.method = method
+        _resolve_epsilon(eps)
         self.eps = eps
         self.n_components = n_components
         self.multivariate = multivariate
@@ -458,11 +461,17 @@ class WhitenTransform(Transform):
         original = original or orig2
 
         X = mat_data.value.reshape(-1, mat_data.shape[-1]).T  # (time, features)
+        if not np.all(np.isfinite(X)):
+            raise ValueError("whitening requires finite input data")
         model = self.model
         X_centered = X - model.mean
         X_w = X_centered @ model.W.T
         new_val = X_w.T[:, None, :]
         new_mat = TimeSeriesMatrix(new_val, t0=mat_data.t0, dt=mat_data.dt)
+        new_mat.meta.units = np.full(
+            new_mat.meta.shape, u.dimensionless_unscaled, dtype=object
+        )
+        new_mat.unit = u.dimensionless_unscaled
         if self._channel_names:
             new_mat.channel_names = self._channel_names
         return _restore_collection(new_mat, original if self.multivariate else None)

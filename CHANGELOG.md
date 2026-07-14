@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Behaviour-visible bug fixes
+
+- **numerics**: `TimeSeriesMatrix.partial_correlation_matrix()` now defaults
+  to `eps="auto"` instead of `1e-8`, and `WhitenTransform` now defaults to
+  `eps="auto"` instead of `1e-12`. `LaplaceGram.normalize_per_sigma()` now
+  defaults to `eps="auto"` instead of `1e-30`. These defaults scale their
+  regularization to the input, so strain-scale partial correlations and
+  whitening no longer collapse toward zero. Pass the former explicit value to
+  retain prior behavior. `partial_correlation_matrix(eps=None)` continues to
+  disable its added ridge for compatibility. All three APIs now reject
+  non-finite input and invalid epsilon values with `ValueError` (#482).
+
 - `TimeSeries.asfreq()` now derives the output dtype for boolean and integer
   source data from the source and a numeric scalar `fill_value` through NumPy
   result-type promotion, instead of silently truncating the fill value (#490).

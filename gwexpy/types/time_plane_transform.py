@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from typing import Literal
+
 import numpy as np
 from astropy.units import dimensionless_unscaled
+
+from gwexpy.numerics.scaling import _resolve_epsilon
 
 from .array3d import Array3D
 
@@ -30,7 +34,9 @@ class TimePlaneTransform:
 
     def __init__(
         self,
-        data3d: Array3D | tuple[object, object, object, object] | tuple[object, object, object, object, object],
+        data3d: Array3D
+        | tuple[object, object, object, object]
+        | tuple[object, object, object, object, object],
         *,
         kind: str = "custom",
         meta: dict[str, object] | None = None,
@@ -368,7 +374,7 @@ class LaplaceGram(TimePlaneTransform):
         """The frequency axis index."""
         return self.axis2.index
 
-    def normalize_per_sigma(self, eps=1e-30):
+    def normalize_per_sigma(self, eps: float | Literal["auto"] | None = "auto"):
         """Normalize the transform magnitude along the frequency axis.
 
         Each (time, sigma) slice is normalized such that the sum over frequency bins is 1.
@@ -376,8 +382,11 @@ class LaplaceGram(TimePlaneTransform):
 
         Parameters
         ----------
-        eps : float, optional
-            Small value to avoid division by zero. Default is 1e-30.
+        eps : float, ``"auto"``, or None, optional
+            A finite non-negative floor in stored-value units.  ``"auto"``
+            (or None) preserves every finite nonzero summed magnitude, so
+            each nonzero slice sums to one.  Passing a positive value applies
+            that floor; all-zero slices always return zeros.
 
         Returns
         -------
@@ -385,15 +394,32 @@ class LaplaceGram(TimePlaneTransform):
             A new LaplaceGram instance containing the normalized magnitude.
 
         """
+        values = self.value
+        if not np.all(np.isfinite(values)):
+            raise ValueError("LaplaceGram normalization requires finite input data")
+
         # Calculate magnitude
-        mag = np.abs(self.value)
+        mag = np.abs(values)
 
         # Sum over frequency axis (axis 2 / -1)
         denom = np.sum(mag, axis=-1, keepdims=True)
-        denom = np.maximum(denom, eps)
+        if not np.all(np.isfinite(denom)):
+            raise ValueError("LaplaceGram normalization denominator must be finite")
 
-        # Normalize
-        norm_data = mag / denom
+        eps_value = _resolve_epsilon(eps)
+        if eps_value is None:
+            safe_denom = denom
+        else:
+            safe_denom = np.maximum(denom, eps_value)
+
+        # Normalize.  The explicit ``where`` branch keeps zero slices finite
+        # when callers deliberately choose ``eps=0``.
+        norm_data = np.divide(
+            mag,
+            safe_denom,
+            out=np.zeros_like(mag, dtype=float),
+            where=safe_denom > 0,
+        )
 
         # Create new Array3D for the result
         # Normalized data is effectively a probability distribution or shape profile, so dimensionless

@@ -7,6 +7,9 @@ from astropy.units import Quantity
 
 __all__ = ["AxisDescriptor", "coerce_1d_quantity"]
 
+_REGULAR_RTOL = 2.5e-14
+_REGULAR_ATOL_ULPS = 1
+
 
 def coerce_1d_quantity(index, unit=None) -> Quantity:
     """Ensure input is a 1D Quantity."""
@@ -31,7 +34,6 @@ class AxisDescriptor:
     index: Quantity  # 1D
 
     def __post_init__(self):
-        # validation
         self.index = coerce_1d_quantity(self.index)
 
     @property
@@ -58,13 +60,39 @@ class AxisDescriptor:
 
     @property
     def regular(self) -> bool:
-        """Return whether the axis spacing is regular."""
-        if hasattr(self.index, "regular"):
-            return self.index.regular
+        """Return whether the axis has regular linear spacing.
+
+        Integer coordinates are compared exactly. Other numeric coordinates
+        have adjacent intervals compared with a relative tolerance of
+        ``2.5e-14`` and an absolute tolerance of one ULP at the largest
+        represented interval magnitude. This keeps ``delta`` consistent with
+        every represented interval while allowing bounded accumulated
+        floating-point round-off.
+
+        Logarithmic (equal-ratio) axes are not regular under this linear-spacing
+        contract.
+        """
         if self.size <= 1:
             return True
-        diffs = np.diff(self.index.value)
-        return bool(np.isclose(np.diff(diffs), 0).all())
+        values = np.asarray(self.index.to_value(self.unit))
+        if not np.all(np.isfinite(values)):
+            return False
+        if np.issubdtype(values.dtype, np.integer):
+            # Python integers preserve exact intervals and cannot overflow.
+            diffs = np.diff(values.astype(object))
+            return all(diff == diffs[0] for diff in diffs[1:])
+        diffs = np.diff(values)
+        interval_scale = np.max(np.abs(diffs))
+        atol = _REGULAR_ATOL_ULPS * abs(np.spacing(interval_scale))
+        return bool(
+            np.allclose(
+                diffs,
+                diffs[0],
+                rtol=_REGULAR_RTOL,
+                atol=atol,
+                equal_nan=False,
+            )
+        )
 
     @property
     def delta(self) -> Quantity | None:
@@ -89,7 +117,12 @@ class AxisDescriptor:
         return idx
 
     def iloc_slice(self, s: slice):
-        """Convert a coordinate slice (start, stop, step) to an integer slice."""
+        """Convert a coordinate slice (start, stop, step) to an integer slice.
+
+        Coordinate start and stop bounds require an ascending axis because they
+        are resolved with :func:`numpy.searchsorted`. Descending and unordered
+        axes remain valid for :meth:`iloc_nearest`.
+        """
         start_idx = None
         stop_idx = None
         step_idx = None
