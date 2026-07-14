@@ -6,6 +6,7 @@ This module provides resampling functionality as a mixin class:
 - _resample_time_bin: Internal time-bin aggregation
 - stlt: Short-Time Laplace Transform
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -269,6 +270,22 @@ def _determine_output_dtype(
 
     if is_fill_nan and self_dtype.kind not in ("f", "c"):
         out_dtype = np.dtype(np.float64)
+    elif (
+        is_numeric_scalar_fill
+        and self_dtype.kind in ("i", "u")
+        and fill_array.dtype.kind
+        in (
+            "b",
+            "i",
+            "u",
+        )
+    ):
+        fill_integer = int(fill_array.item())
+        dtype_info = np.iinfo(self_dtype)
+        if not dtype_info.min <= fill_integer <= dtype_info.max:
+            raise ValueError(
+                f"integer fill_value {fill_integer} cannot be represented by {self_dtype}"
+            )
     elif is_numeric_scalar_fill and self_dtype.kind in ("b", "i", "u"):
         out_dtype = np.result_type(self_dtype, fill_array.dtype)
 
@@ -731,9 +748,9 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
             old_times_val = old_times_q.to(time_unit).value
 
         if closed == "left":
-            bin_indices = np.floor(
-                (old_times_val - grid_start) / bin_dt_val
-            ).astype(int)
+            bin_indices = np.floor((old_times_val - grid_start) / bin_dt_val).astype(
+                int
+            )
         else:
             # The first bin is [e0, e1]; later bins are (ei, e{i + 1}].
             bin_indices = np.searchsorted(edges, old_times_val, side="left") - 1

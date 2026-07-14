@@ -1,4 +1,5 @@
 """Tests for gwexpy/timeseries/_resampling.py"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -19,6 +20,7 @@ from gwexpy.timeseries._resampling import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_ts(values=None, *, dt=0.1, unit=u.m, t0=0.0):
     """Create a simple TimeSeries for testing."""
     if values is None:
@@ -34,6 +36,7 @@ def _make_ts(values=None, *, dt=0.1, unit=u.m, t0=0.0):
 # ---------------------------------------------------------------------------
 # _parse_rule_to_dt
 # ---------------------------------------------------------------------------
+
 
 def test_parse_rule_int():
     result = _parse_rule_to_dt(1)
@@ -78,6 +81,7 @@ def test_parse_rule_invalid_string():
 # _validate_time_unit
 # ---------------------------------------------------------------------------
 
+
 def test_validate_time_unit_time():
     target_dt = 1.0 * u.s
     is_time, is_dimless = _validate_time_unit(target_dt)
@@ -101,6 +105,7 @@ def test_validate_time_unit_invalid_raises():
 # ---------------------------------------------------------------------------
 # _resolve_origin
 # ---------------------------------------------------------------------------
+
 
 def test_resolve_origin_t0():
     val = _resolve_origin("t0", None, 5.0, u.s, "ceil")
@@ -137,6 +142,7 @@ def test_resolve_origin_unknown_fallback():
 # _generate_target_grid
 # ---------------------------------------------------------------------------
 
+
 def test_generate_target_grid_ceil():
     times, grid_start = _generate_target_grid(0.0, 0.1, 0.0, 0.5, "ceil")
     assert len(times) == 5
@@ -162,6 +168,7 @@ def test_generate_target_grid_invalid_align():
 # ---------------------------------------------------------------------------
 # _determine_output_dtype
 # ---------------------------------------------------------------------------
+
 
 def test_determine_output_dtype_float_fill_nan():
     dtype, fill = _determine_output_dtype(None, np.nan, np.dtype(float))
@@ -189,26 +196,29 @@ def test_determine_output_dtype_int_with_nan_fill():
 
 
 @pytest.mark.parametrize(
-    "self_dtype", [np.dtype(bool), np.dtype("int16"), np.dtype("uint16")]
-)
-@pytest.mark.parametrize(
     "fill_value", [np.float32(0.5), np.complex64(1 + 2j), np.int16(7)]
 )
-def test_determine_output_dtype_finite_boolean_and_integer_fill_uses_result_type(
-    self_dtype, fill_value
-):
+def test_determine_output_dtype_boolean_fill_uses_result_type(fill_value):
+    self_dtype = np.dtype(bool)
     dtype, fill = _determine_output_dtype(None, fill_value, self_dtype)
     assert dtype == np.result_type(self_dtype, np.asarray(fill_value).dtype)
     assert fill == fill_value
+
+
+@pytest.mark.parametrize("self_dtype", [np.dtype("int16"), np.dtype("uint16")])
+def test_determine_output_dtype_representable_integer_fill_keeps_source_dtype(
+    self_dtype,
+):
+    dtype, fill = _determine_output_dtype(None, np.int16(7), self_dtype)
+    assert dtype == self_dtype
+    assert fill == 7
 
 
 @pytest.mark.parametrize(
     "self_dtype", [np.dtype(bool), np.dtype("int16"), np.dtype("uint16")]
 )
 @pytest.mark.parametrize("fill_value", [np.inf, -np.inf])
-def test_determine_output_dtype_nonfinite_fill_uses_result_type(
-    self_dtype, fill_value
-):
+def test_determine_output_dtype_nonfinite_fill_uses_result_type(self_dtype, fill_value):
     dtype, _ = _determine_output_dtype(None, fill_value, self_dtype)
     assert dtype == np.result_type(self_dtype, np.asarray(fill_value).dtype)
 
@@ -225,9 +235,62 @@ def test_determine_output_dtype_float32_keeps_own_dtype(fill_value):
     assert dtype == np.dtype("float32")
 
 
+def test_determine_output_dtype_uint64_rejects_negative_integer_fill():
+    with pytest.raises(ValueError, match="cannot be represented"):
+        _determine_output_dtype(None, -1, np.dtype("uint64"))
+
+
+@pytest.mark.parametrize("fill_value", [0, np.int64(0)])
+def test_determine_output_dtype_uint64_keeps_dtype_for_representable_integer_fill(
+    fill_value,
+):
+    dtype, _ = _determine_output_dtype(None, fill_value, np.dtype("uint64"))
+
+    assert dtype == np.dtype("uint64")
+
+
+def test_determine_output_dtype_int64_keeps_dtype_for_representable_unsigned_fill():
+    dtype, _ = _determine_output_dtype(None, np.uint64(1), np.dtype("int64"))
+
+    assert dtype == np.dtype("int64")
+
+
+@pytest.mark.parametrize(
+    ("self_dtype", "fill_value"),
+    [
+        (np.dtype("uint64"), -1),
+        (np.dtype("int8"), 128),
+    ],
+)
+def test_determine_output_dtype_rejects_out_of_range_integer_fill(
+    self_dtype, fill_value
+):
+    with pytest.raises(ValueError, match="cannot be represented"):
+        _determine_output_dtype(None, fill_value, self_dtype)
+
+
+@pytest.mark.parametrize(
+    ("fill_value", "expected_dtype"),
+    [
+        (0.5, np.dtype("float64")),
+        (1 + 2j, np.dtype("complex128")),
+        (np.nan, np.dtype("float64")),
+        (np.inf, np.dtype("float64")),
+        (-np.inf, np.dtype("float64")),
+    ],
+)
+def test_determine_output_dtype_uint64_promotes_noninteger_fill(
+    fill_value, expected_dtype
+):
+    dtype, _ = _determine_output_dtype(None, fill_value, np.dtype("uint64"))
+
+    assert dtype == expected_dtype
+
+
 # ---------------------------------------------------------------------------
 # _reindex_by_method
 # ---------------------------------------------------------------------------
+
 
 def _make_reindex_inputs():
     old_times = np.array([0.0, 0.1, 0.2, 0.3, 0.4])
@@ -348,6 +411,7 @@ def test_reindex_nearest_with_tolerance():
 # ---------------------------------------------------------------------------
 # TimeSeries.asfreq (integration via mixin)
 # ---------------------------------------------------------------------------
+
 
 def test_asfreq_basic():
     ts = _make_ts(np.arange(10, dtype=float), dt=0.1)
@@ -478,6 +542,25 @@ def test_asfreq_int16_integer_fill_keeps_integer_dtype_kind():
     np.testing.assert_array_equal(result.value, [10, 0, 20, 0, 30, 0])
 
 
+@pytest.mark.parametrize("fill_value", [0, np.int64(0)])
+def test_asfreq_uint64_representable_integer_fill_preserves_exact_values(fill_value):
+    values = np.array([2**63 + 1, 2**63 + 3], dtype=np.uint64)
+    ts = TimeSeries(values, dt=1.0 * u.s)
+
+    result = ts.asfreq(0.5 * u.s, method=None, fill_value=fill_value)
+
+    assert result.dtype == np.dtype("uint64")
+    np.testing.assert_array_equal(result.value[::2], values)
+    np.testing.assert_array_equal(result.value[1::2], [0, 0])
+
+
+def test_asfreq_uint64_rejects_negative_integer_fill():
+    ts = TimeSeries(np.array([2**63 + 1, 2**63 + 3], dtype=np.uint64), dt=1.0 * u.s)
+
+    with pytest.raises(ValueError, match="cannot be represented"):
+        ts.asfreq(0.5 * u.s, method=None, fill_value=-1)
+
+
 @pytest.mark.parametrize("fill_value", [None, np.nan])
 def test_asfreq_int16_none_and_nan_fill_remain_float64_nan(fill_value):
     ts = TimeSeries(np.array([10, 20, 30], dtype=np.int16), dt=1.0 * u.s)
@@ -496,9 +579,7 @@ def test_asfreq_int16_none_and_nan_fill_remain_float64_nan(fill_value):
         ({}, [10.0, np.nan, 20.0, np.nan, 30.0, np.nan]),
     ],
 )
-def test_asfreq_float32_finite_and_default_nan_fill_remain_float32(
-    kwargs, expected
-):
+def test_asfreq_float32_finite_and_default_nan_fill_remain_float32(kwargs, expected):
     ts = TimeSeries(np.array([10, 20, 30], dtype=np.float32), dt=1.0 * u.s)
 
     result = ts.asfreq(0.5 * u.s, method=None, **kwargs)
@@ -530,6 +611,7 @@ def test_asfreq_preserves_unit():
 # ---------------------------------------------------------------------------
 # TimeSeries.resample — time-bin path (string rule)
 # ---------------------------------------------------------------------------
+
 
 def test_resample_string_rule_uses_timebin():
     data = np.arange(100, dtype=float)
@@ -609,9 +691,7 @@ def test_resample_time_bin_closed_right_excludes_samples_before_ceil_grid_start(
         unit=u.m,
     )
 
-    result = ts.resample(
-        "2s", closed="right", origin="gps0", align="ceil"
-    )
+    result = ts.resample("2s", closed="right", origin="gps0", align="ceil")
 
     # The 1 s sample is before the generated first edge at 2 s.
     np.testing.assert_allclose(result.value, [25.0])
@@ -695,6 +775,7 @@ def test_resample_time_bin_accepts_dimensionless_string_rule():
 # ---------------------------------------------------------------------------
 # _resample_time_bin — aggregation variants
 # ---------------------------------------------------------------------------
+
 
 def test_resample_time_bin_mean():
     data = np.array([1.0, 3.0, 5.0, 7.0])
