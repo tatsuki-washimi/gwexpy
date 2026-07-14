@@ -16,9 +16,9 @@ scope:
   physics_behavior_changed: false
   metadata_behavior_changed: false
 decisions:
-  - "Compare represented linear coordinate intervals with rtol=2e-14."
+  - "Compare represented linear coordinate intervals with rtol=2.5e-14."
   - "Use an absolute tolerance of one ULP at the largest represented interval magnitude in the input floating dtype."
-  - "Bound ordinary float64 accumulated round-off with rtol=2e-14, while not deriving the absolute tolerance from the coordinate offset."
+  - "Bound ordinary float64 accumulated round-off with rtol=2.5e-14, while not deriving the absolute tolerance from the coordinate offset."
   - "Use equal_nan=False and classify non-finite coordinates as irregular without rejecting construction."
   - "Preserve integer coordinate dtype and compare integer intervals exactly using Python integers to avoid float precision loss and unsigned-difference overflow."
   - "Preserve complex coordinate dtype so regularity comparison includes imaginary components."
@@ -78,6 +78,14 @@ commands:
     result: "RED: 1 failed, 27 passed; rtol=1e-12 accepted a float64 axis whose final interval differed by 2,252 ULPs. GREEN: 28 passed with rtol=2e-14 and the one-ULP interval floor."
   - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
     result: "767 passed, 13 skipped, 1 xfailed; 30 existing dependency warnings only."
+  - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -k centisecond -p no:cacheprovider"
+    result: "RED: 1 failed with rtol=2e-14; GREEN: 1 passed with rtol=2.5e-14."
+  - cmd: "rtk proxy pytest -q tests/fields/test_scalarfield_signal.py -p no:cacheprovider"
+    result: "30 passed; this is the field-signal group that failed in PR Fast at the previous head."
+  - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+    result: "768 passed, 13 skipped, 1 xfailed; 30 existing dependency warnings only."
+  - cmd: "rtk proxy python scripts/ci/run_gate.py pr-fast"
+    result: "Static checks and fixture generation passed; local pytest stopped at an unrelated joblib child-process NumPy import error after 129 passed."
 changed_files:
   - path: gwexpy/types/axis.py
     change: "Compare represented intervals using a one-ULP interval-scale tolerance, classify non-finite axes as irregular, and document the local ascending-axis precondition of iloc_slice."
@@ -128,6 +136,12 @@ validation:
       result: "RED: 1 failed, 27 passed; GREEN: 28 passed after tightening the bounded relative tolerance from 1e-12 to 2e-14."
     - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
       result: "767 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
+    - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -k centisecond -p no:cacheprovider"
+      result: "RED: 1 failed; GREEN: 1 passed after increasing rtol from 2e-14 to 2.5e-14."
+    - cmd: "rtk proxy pytest -q tests/fields/test_scalarfield_signal.py -p no:cacheprovider"
+      result: "30 passed after the centisecond-axis compatibility adjustment."
+    - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+      result: "768 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
     - cmd: "rtk proxy ruff check gwexpy/ tests/"
       result: "Passed."
     - cmd: "rtk proxy mypy gwexpy/"

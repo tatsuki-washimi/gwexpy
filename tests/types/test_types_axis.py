@@ -36,6 +36,12 @@ def test_axis_descriptor_arange_float64_regular_axis_is_regular():
     assert AxisDescriptor("time", values * u.s).regular
 
 
+def test_axis_descriptor_arange_float64_centisecond_axis_is_regular():
+    values = np.arange(128, dtype=float) * 0.01
+
+    assert AxisDescriptor("time", values * u.s).regular
+
+
 def test_axis_descriptor_multi_ulp_float64_axis_is_not_regular():
     values = np.array([0.0, 1.0, 2.0000000000005])
 
@@ -123,7 +129,7 @@ def test_axis_descriptor_regular_delta_matches_all_represented_intervals(index):
 
     assert axis.regular
     assert axis.delta is not None
-    assert np.allclose(diffs, axis.delta.to_value(axis.unit), rtol=2e-14, atol=atol)
+    assert np.allclose(diffs, axis.delta.to_value(axis.unit), rtol=2.5e-14, atol=atol)
 
 
 @pytest.mark.parametrize(

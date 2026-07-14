@@ -7,7 +7,7 @@ from astropy.units import Quantity
 
 __all__ = ["AxisDescriptor", "coerce_1d_quantity"]
 
-_REGULAR_RTOL = 2e-14
+_REGULAR_RTOL = 2.5e-14
 _REGULAR_ATOL_ULPS = 1
 
 
@@ -64,7 +64,7 @@ class AxisDescriptor:
 
         Integer coordinates are compared exactly. Other numeric coordinates
         have adjacent intervals compared with a relative tolerance of
-        ``2e-14`` and an absolute tolerance of one ULP at the largest
+        ``2.5e-14`` and an absolute tolerance of one ULP at the largest
         represented interval magnitude. This keeps ``delta`` consistent with
         every represented interval while allowing bounded accumulated
         floating-point round-off.
