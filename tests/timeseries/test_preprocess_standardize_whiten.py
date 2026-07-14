@@ -245,6 +245,14 @@ class TestStandardizeMatrix:
 class TestWhitenMatrix:
     """Tests for whiten_matrix function."""
 
+    @staticmethod
+    def _correlated_matrix(scale: float = 1.0) -> TimeSeriesMatrix:
+        rng = np.random.default_rng(482)
+        data = rng.normal(size=(3, 1, 512))
+        data[1] += 0.5 * data[0]
+        data[2] -= 0.25 * data[0] + 0.2 * data[1]
+        return TimeSeriesMatrix(data * scale, dt=0.01 * u.s)
+
     def test_pca_covariance_identity(self):
         """Test PCA whitening produces covariance approximately identity."""
         np.random.seed(42)
@@ -351,6 +359,30 @@ class TestWhitenMatrix:
         assert not np.any(np.isnan(mat_w.value))
         assert not np.any(np.isinf(mat_w.value))
 
+    def test_eps_contract_scale_invariance_and_nonfinite_input(self):
+        unit = self._correlated_matrix()
+        strain = self._correlated_matrix(1e-21)
+
+        unit_w, _ = whiten_matrix(unit)
+        strain_w, _ = whiten_matrix(strain)
+        np.testing.assert_allclose(strain_w.value, unit_w.value, rtol=1e-10)
+
+        auto, _ = whiten_matrix(unit, eps="auto")
+        none, _ = whiten_matrix(unit, eps=None)
+        np.testing.assert_allclose(none.value, auto.value)
+        assert np.all(np.isfinite(whiten_matrix(unit, eps=0.0)[0].value))
+        assert np.all(np.isfinite(whiten_matrix(unit, eps=np.float64(1e-6))[0].value))
+
+        for eps in (True, np.bool_(True), -1.0, np.nan, np.inf, -np.inf, "bad"):
+            with pytest.raises(ValueError, match="eps"):
+                whiten_matrix(unit, eps=eps)
+            with pytest.raises(ValueError, match="eps"):
+                unit.whiten_channels(eps=eps)
+
+        unit.value[0, 0, 0] = np.nan
+        with pytest.raises(ValueError, match="finite"):
+            whiten_matrix(unit)
+
     def test_output_unit_dimensionless_pca(self):
         """Test PCA output unit is dimensionless."""
         np.random.seed(42)
@@ -413,6 +445,17 @@ class TestWhitenMatrix:
         # Variance should be ~1
         var = np.var(mat_w.value.flatten())
         assert np.abs(var - 1.0) < 0.1
+
+    def test_single_feature_float32_zero_variance_auto_is_finite(self):
+        """Automatic whitening keeps a float32 zero feature finite."""
+        matrix = TimeSeriesMatrix(np.zeros((1, 1, 16), dtype=np.float32), dt=1.0 * u.s)
+
+        whitened, model = whiten_matrix(matrix, eps="auto")
+
+        assert np.all(np.isfinite(whitened.value))
+        np.testing.assert_array_equal(whitened.value, 0.0)
+        assert all(unit == u.dimensionless_unscaled for unit in whitened.units.flat)
+        assert np.all(np.isfinite(model.W))
 
 
 class TestModelInverseTransform:

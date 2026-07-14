@@ -11,7 +11,7 @@
 ## 代表的なシグネチャ
 
 ```python
-WhitenTransform(fftlength=1.0, overlap=0.5, **kwargs)
+WhitenTransform(method="pca", eps="auto", n_components=None)
 WhitenTransform.transform(x)
 ```
 
@@ -20,7 +20,7 @@ WhitenTransform.transform(x)
 ```python
 from gwexpy.timeseries import WhitenTransform
 
-whitened = WhitenTransform(fftlength=1.0, overlap=0.5).fit_transform(ts)
+whitened = WhitenTransform(eps="auto").fit_transform(ts)
 ```
 
 ## 関連理論
@@ -49,10 +49,14 @@ TimeSeriesMatrix ライクなデータに対して PCA または ZCA を使用�
 ### `__init__`
 
 ```python
-__init__(self, method: str = 'pca', eps: float = 1e-12, n_components: Optional[int] = None, *, multivariate: bool = True, align: str = 'intersection')
+__init__(self, method: str = 'pca', eps: float | Literal['auto'] | None = 'auto', n_components: Optional[int] = None, *, multivariate: bool = True, align: str = 'intersection')
 ```
 
 self を初期化します。正確なシグネチャは help(type(self)) を参照してください。
+
+`eps="auto"`（または `None`）では、フィットしたデータの分散から正則化値を求めます。
+明示値は有限かつ非負でなければなりません。
+`eps=0` はこの ridge 項を無効にするため、階数不足の入力には適さない場合があります。
 
 *(Transform から継承)*
 

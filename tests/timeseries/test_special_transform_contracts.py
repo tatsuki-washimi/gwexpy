@@ -142,6 +142,99 @@ def test_stlt_laplacegram_axes_units_metadata_and_time_centers():
     assert sigma_plane.unit == stlt.unit
 
 
+def _laplacegram_for_normalization(
+    scale: float = 1.0, *, complex_values: bool = False
+) -> LaplaceGram:
+    values = np.array(
+        [
+            [[1.0, 2.0, 3.0], [0.0, 0.0, 0.0]],
+            [[4.0, 1.0, 1.0], [2.0, 3.0, 5.0]],
+        ]
+    )
+    if complex_values:
+        values = values.astype(complex)
+    return LaplaceGram(
+        (
+            values * scale,
+            np.array([0.0, 1.0]) * u.s,
+            np.array([0.0, 1.0]) / u.s,
+            np.array([10.0, 20.0, 30.0]) * u.Hz,
+            u.V,
+        ),
+        kind="stlt",
+        meta={"source": "normalization-test"},
+    )
+
+
+def test_laplacegram_normalize_per_sigma_auto_contract():
+    laplacegram = _laplacegram_for_normalization()
+    normalized = laplacegram.normalize_per_sigma()
+
+    np.testing.assert_allclose(np.sum(normalized.value, axis=-1)[[0, 1], [0, 1]], 1.0)
+    np.testing.assert_allclose(normalized.value[0, 1], 0.0)
+    assert np.all(np.isfinite(normalized.value))
+    assert normalized.unit == u.dimensionless_unscaled
+    assert [axis.name for axis in normalized.axes] == ["time", "sigma", "frequency"]
+    assert normalized.meta == laplacegram.meta
+
+    none = laplacegram.normalize_per_sigma(eps=None)
+    np.testing.assert_allclose(none.value, normalized.value)
+    np.testing.assert_allclose(
+        laplacegram.normalize_per_sigma(eps=0.0).value[0, 1], 0.0
+    )
+    np.testing.assert_allclose(
+        _laplacegram_for_normalization(1e-21).normalize_per_sigma().value,
+        normalized.value,
+        rtol=1e-10,
+    )
+    below_floor = _laplacegram_for_normalization(1e-60).normalize_per_sigma()
+    assert np.all(np.isfinite(below_floor.value))
+    np.testing.assert_allclose(below_floor.value, normalized.value, rtol=1e-10)
+
+
+def test_laplacegram_auto_normalizes_disparate_nonzero_slices():
+    laplacegram = LaplaceGram(
+        (
+            np.array([[[1e12, 2e12], [1e-12, 2e-12]]]),
+            np.array([0.0]) * u.s,
+            np.array([0.0, 1.0]) / u.s,
+            np.array([10.0, 20.0]) * u.Hz,
+            u.V,
+        )
+    )
+
+    normalized = laplacegram.normalize_per_sigma()
+
+    np.testing.assert_allclose(np.sum(normalized.value, axis=-1), 1.0)
+
+
+def test_laplacegram_normalize_per_sigma_rejects_invalid_inputs():
+    laplacegram = _laplacegram_for_normalization()
+    for eps in (True, np.bool_(True), -1.0, np.nan, np.inf, -np.inf, "bad"):
+        with pytest.raises(ValueError, match="eps"):
+            laplacegram.normalize_per_sigma(eps=eps)
+
+    nonfinite = _laplacegram_for_normalization(complex_values=True)
+    nonfinite._data.value[0, 0, 0] = np.inf + 1j
+    with pytest.raises(ValueError, match="finite"):
+        nonfinite.normalize_per_sigma()
+
+    overflow_values = np.zeros((2, 2, 2))
+    overflow_values[0, 0, 0] = 1e308
+    overflow = LaplaceGram(
+        (
+            overflow_values,
+            np.array([0.0, 1.0]) * u.s,
+            np.array([0.0, 1.0]) / u.s,
+            np.array([10.0, 20.0]) * u.Hz,
+            u.V,
+        )
+    )
+    overflow_normalized = overflow.normalize_per_sigma()
+    assert np.all(np.isfinite(overflow_normalized.value))
+    np.testing.assert_allclose(np.sum(overflow_normalized.value[0, 0]), 1.0)
+
+
 def test_stlt_explicit_quantity_frequencies_and_raw_scaling_unit():
     ts = _regular_signal(n=16)
     frequencies = [0, 12.5, 25] * u.Hz

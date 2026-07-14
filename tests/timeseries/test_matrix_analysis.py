@@ -1,4 +1,5 @@
 """Tests for gwexpy/timeseries/matrix_analysis.py"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -18,6 +19,7 @@ def _make_tsm(n_rows=2, n_cols=2, n_time=100, seed=0) -> TimeSeriesMatrix:
 # _resolve_axis
 # ---------------------------------------------------------------------------
 
+
 def test_resolve_axis_time():
     tsm = _make_tsm()
     assert tsm._resolve_axis("time") == tsm._x_axis_norm
@@ -36,6 +38,7 @@ def test_resolve_axis_int():
 # ---------------------------------------------------------------------------
 # Statistical methods — ignore_nan paths
 # ---------------------------------------------------------------------------
+
 
 def test_mean_ignore_nan():
     tsm = _make_tsm()
@@ -83,6 +86,7 @@ def test_kurtosis():
 # ---------------------------------------------------------------------------
 # Signal transforms
 # ---------------------------------------------------------------------------
+
 
 def test_hilbert():
     tsm = _make_tsm()
@@ -133,6 +137,7 @@ def test_vectorized_detrend_inplace():
 # Resampling (time-bin path)
 # ---------------------------------------------------------------------------
 
+
 def test_resample_time_bin_string():
     tsm = _make_tsm(n_time=200)
     result = tsm.resample("0.1s")
@@ -150,6 +155,7 @@ def test_resample_time_quantity():
 # ---------------------------------------------------------------------------
 # Impute / standardize / whiten
 # ---------------------------------------------------------------------------
+
 
 def test_impute():
     data = np.ones((2, 1, 50))
@@ -182,6 +188,7 @@ def test_whiten_channels_no_model():
 # ---------------------------------------------------------------------------
 # Rolling methods
 # ---------------------------------------------------------------------------
+
 
 def test_rolling_mean():
     tsm = _make_tsm()
@@ -217,6 +224,7 @@ def test_rolling_max():
 # Crop
 # ---------------------------------------------------------------------------
 
+
 def test_crop_float():
     tsm = _make_tsm(n_time=200)
     result = tsm.crop(0.5, 1.0)
@@ -233,6 +241,7 @@ def test_crop_quantity():
 # ---------------------------------------------------------------------------
 # PCA
 # ---------------------------------------------------------------------------
+
 
 def test_pca_fit_transform():
     pytest.importorskip("sklearn")
@@ -269,6 +278,7 @@ def test_pca_return_model():
 # ICA
 # ---------------------------------------------------------------------------
 
+
 def test_ica_fit_transform():
     pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
@@ -303,6 +313,7 @@ def test_ica_return_model():
 # ---------------------------------------------------------------------------
 # Correlation
 # ---------------------------------------------------------------------------
+
 
 def test_correlation_pairwise():
     tsm = _make_tsm()
@@ -347,6 +358,16 @@ def test_distance_correlation():
 # partial_correlation_matrix
 # ---------------------------------------------------------------------------
 
+
+def _make_full_rank_correlation_matrix(scale: float = 1.0) -> TimeSeriesMatrix:
+    """Build a deterministic correlated matrix with nonsingular covariance."""
+    rng = np.random.default_rng(482)
+    samples = rng.normal(size=(3, 512))
+    samples[1] += 0.6 * samples[0]
+    samples[2] -= 0.3 * samples[0] + 0.2 * samples[1]
+    return TimeSeriesMatrix((samples * scale)[:, None, :], dt=0.01 * u.s, t0=0.0 * u.s)
+
+
 def test_partial_correlation_matrix():
     tsm = _make_tsm(n_time=200)
     result = tsm.partial_correlation_matrix()
@@ -371,6 +392,60 @@ def test_partial_correlation_matrix_return_precision():
     pcorr, precision = tsm.partial_correlation_matrix(return_precision=True)
     assert pcorr.shape == (4, 4)
     assert precision.shape == (4, 4)
+
+
+def test_partial_correlation_matrix_auto_is_scale_invariant():
+    unit = _make_full_rank_correlation_matrix()
+    strain = _make_full_rank_correlation_matrix(1e-21)
+
+    pcorr_unit, precision_unit = unit.partial_correlation_matrix(
+        shrinkage="auto", return_precision=True
+    )
+    pcorr_strain, precision_strain = strain.partial_correlation_matrix(
+        shrinkage="auto", return_precision=True
+    )
+
+    np.testing.assert_allclose(pcorr_strain, pcorr_unit, rtol=1e-10, atol=1e-10)
+    np.testing.assert_allclose(
+        precision_strain, precision_unit * 1e42, rtol=1e-10, atol=1e20
+    )
+
+
+def test_partial_correlation_matrix_eps_contract_and_nonfinite_input():
+    matrix = _make_full_rank_correlation_matrix()
+
+    _, none_precision = matrix.partial_correlation_matrix(
+        eps=None, return_precision=True
+    )
+    _, zero_precision = matrix.partial_correlation_matrix(
+        eps=0.0, return_precision=True
+    )
+    np.testing.assert_array_equal(none_precision, zero_precision)
+    assert np.all(np.isfinite(matrix.partial_correlation_matrix(eps="auto")))
+    assert np.all(np.isfinite(matrix.partial_correlation_matrix(eps=0.0)))
+    assert np.all(np.isfinite(matrix.partial_correlation_matrix(eps=np.float64(1e-6))))
+
+    for eps in (True, np.bool_(True), -1.0, np.nan, np.inf, -np.inf, "bad"):
+        with pytest.raises(ValueError, match="eps"):
+            matrix.partial_correlation_matrix(eps=eps)
+
+    matrix.value[0, 0, 0] = np.nan
+    with pytest.raises(ValueError, match="finite"):
+        matrix.partial_correlation_matrix()
+
+
+def test_partial_correlation_matrix_single_channel_and_floor_limit():
+    matrix = TimeSeriesMatrix(
+        np.linspace(-1.0, 1.0, 16)[None, None, :], dt=0.01 * u.s, t0=0.0 * u.s
+    )
+    np.testing.assert_allclose(matrix.partial_correlation_matrix(), [[1.0]])
+
+    unit = _make_full_rank_correlation_matrix()
+    below_floor = _make_full_rank_correlation_matrix(1e-30)
+    assert np.all(np.isfinite(below_floor.partial_correlation_matrix()))
+    assert not np.allclose(
+        below_floor.partial_correlation_matrix(), unit.partial_correlation_matrix()
+    )
 
 
 def test_partial_correlation_matrix_invalid_estimator():

@@ -90,7 +90,8 @@ coh = mat.coherence(mat)
 | `pca()` / `ica()` | PCA/ICA 分解 |
 | `impute()` | 欠損値の補完 |
 | `correlation_vector()` | ターゲット時系列と全チャンネルの相関（`method="pearson"` は高速なベクトル化パスあり） |
-| `partial_correlation_matrix()` | 全チャンネルの偏相関行列（precision から計算、shrinkage/eps 対応） |
+| `partial_correlation_matrix(eps="auto")` | 全チャンネルの偏相関行列。`"auto"` は共分散スケールの ridge 項を選び、`None` と `0` は従来どおり追加 ridge 項を無効にする。有限の `eps > 0` は明示指定として使う。 |
+| `whiten_channels(eps="auto")` | チャンネル間ホワイトニング。`None` も自動値を選び、有限の `eps >= 0` は明示指定として使う。 |
 | `coherence()` / `csd()` | コヒーレンス/クロススペクトル計算 |
 
 ## 線形代数

@@ -178,6 +178,18 @@ to_array3d(self)
 
 Return the underlying Array3D object (advanced usage).
 
+## LaplaceGram normalization
+
+```python
+LaplaceGram.normalize_per_sigma(eps: float | Literal['auto'] | None = 'auto')
+```
+
+Normalize each `(time, sigma)` magnitude slice across frequency.
+``eps="auto"`` (or ``None``) preserves every finite nonzero summed magnitude,
+so each nonzero slice sums to one.
+An explicit finite positive `eps` is a floor in stored-value units.
+All-zero slices return finite zeros, and non-finite input raises `ValueError`.
+
 ### `unit`
 
 Physical unit of the data values.
