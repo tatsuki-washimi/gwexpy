@@ -1,0 +1,58 @@
+issue: 489
+title: "Preserve fractional scalar weights in Histogram.fill"
+branch: fix/issue-489-scalar-weights
+date: 2026-07-12
+agent: Codex
+target_release: "next v0.1.x patch release"
+skills:
+  - github:github
+  - github:yeet
+  - superpowers:test-driven-development
+  - superpowers:using-git-worktrees
+  - superpowers:requesting-code-review
+scope:
+  summary: "Prevent scalar fractional histogram weights from being truncated for integer coordinate arrays."
+  included:
+    - "Broadcast scalar weights with a dtype independent of the coordinate array dtype."
+    - "Preserve weighted bin, sumw2, underflow, and overflow values for integer coordinate arrays."
+    - "Add plain, unit-bearing, and integer scalar-weight regression coverage."
+  excluded:
+    - "No public API, array-weight, bin-boundary, or complex-scalar policy change."
+    - "No release publication or package artifact changes."
+changed_files:
+  - path: gwexpy/histogram/histogram.py
+    change: "Broadcast scalar weights using a result dtype derived from the scalar weight and histogram values instead of the coordinate dtype."
+  - path: tests/histogram/test_histogram_contracts.py
+    change: "Added integer-coordinate scalar-weight regressions for bin and flow-bin values, sumw2, and fractional fills with an integer-input covariance matrix."
+  - path: docs/developers/plans/manifests/audit-manifest-489-histogram-scalar-weights.yaml
+    change: "Recorded scope, validation evidence, and review status for this fix."
+validation:
+  red:
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/histogram/test_histogram_contracts.py::test_fill_preserves_scalar_weights_for_integer_coordinates -p no:cacheprovider"
+      result: "2 failed, 1 passed before the implementation; fractional scalar weights were truncated to zero while integer scalar weights retained their existing behavior."
+  completed:
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/histogram/test_histogram_contracts.py::test_fill_preserves_scalar_weights_for_integer_coordinates -p no:cacheprovider"
+      result: "3 passed."
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/histogram -p no:cacheprovider"
+      result: "39 passed, 4 skipped, 1 existing ArviZ FutureWarning."
+    - cmd: "rtk ruff check gwexpy/ tests/"
+      result: "No issues found."
+    - cmd: "rtk mypy gwexpy/"
+      result: "No issues found."
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/histogram/test_histogram_contracts.py::test_fill_promotes_integer_covariance_for_fractional_scalar_weights -p no:cacheprovider"
+      result: "1 passed. Histogram construction normalizes the integer-input covariance matrix to float64, so the reviewed in-place cast failure does not reproduce."
+    - cmd: "rtk env XDG_CACHE_HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib pytest -q tests/ -x -p no:cacheprovider"
+      result: "1 failed, 129 passed, 8 skipped: existing joblib child-process import failure (numpy._core.numeric) in tests/analysis/test_coupling_analysis.py::test_compute_parallel; reproduced on main."
+review:
+  human_review_required: true
+  physics_review_required: false
+  statistics_metadata_review_required: true
+  rationale: "The fix restores existing weighted-count and sumw2 semantics without changing formulas or physical-unit conversions. Human review is required because the output is statistical metadata."
+review_comments:
+  - source: "PR #495 review: blocking dtype issue in covariance update"
+    disposition: "No production-code change required."
+    evidence: "Histogram.__init__ stores cov=np.eye(2, dtype=int) as float64 Quantity data; a fractional scalar fill returns a float64 covariance diagonal of [1.25, 1.25]."
+release_notes:
+  user_visible_change: "Histogram.fill now preserves fractional scalar weights for integer-valued coordinate arrays."
+deferred_follow_ups:
+  - "Repair the environment-specific joblib child-process NumPy import failure separately from this issue."
