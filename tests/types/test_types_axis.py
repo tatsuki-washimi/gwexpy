@@ -21,12 +21,12 @@ def test_axis_descriptor_irregular():
 
 
 def test_axis_descriptor_regular():
-    idx = Index(np.linspace(0, 10, 101), unit="s")
+    idx = Index(np.arange(101, dtype=float) * 0.125, unit="s")
     # depending on Index implementation, it might have .regular=True or we calculate it
     desc = AxisDescriptor("time", idx)
 
     assert desc.regular
-    assert np.isclose(desc.delta.value, 0.1)
+    assert np.isclose(desc.delta.value, 0.125)
     assert desc.delta.unit == u.s
 
 
@@ -57,11 +57,11 @@ def test_axis_descriptor_regular_is_invariant_under_equivalent_units(
 
 
 def test_axis_descriptor_large_offset_regular_axis_is_regular():
-    """Coordinate subtraction round-off must not reject GPS-like regular axes."""
-    desc = AxisDescriptor("time", (1e9 + np.arange(4) * 0.1) * u.s)
+    """A represented uniform large-offset axis is regular."""
+    desc = AxisDescriptor("time", (1e9 + np.arange(4) * 0.125) * u.s)
 
     assert desc.regular
-    assert np.isclose(desc.delta.to_value(u.s), 0.1)
+    assert np.isclose(desc.delta.to_value(u.s), 0.125)
 
 
 def test_axis_descriptor_large_offset_irregular_axis_is_not_regular():
@@ -71,21 +71,45 @@ def test_axis_descriptor_large_offset_irregular_axis_is_not_regular():
 
 
 def test_axis_descriptor_float32_large_offset_regular_axis_is_regular():
-    values = np.float32(1e9) + np.arange(4, dtype=np.float32) * np.float32(100)
+    values = np.float32(1e9) + np.arange(4, dtype=np.float32) * np.float32(128)
 
     assert AxisDescriptor("time", values * u.s).regular
 
 
 def test_axis_descriptor_float32_large_offset_irregular_axis_is_not_regular():
-    values = np.float32(1e9) + np.array([0, 128, 896], dtype=np.float32)
+    values = np.float32(1e9) + np.array([0, 128, 640], dtype=np.float32)
+
+    assert not AxisDescriptor("time", values * u.s).regular
+
+
+def test_axis_descriptor_float32_large_offset_quantized_axis_is_not_regular():
+    values = np.float32(1e9) + np.arange(4, dtype=np.float32) * np.float32(100)
 
     assert not AxisDescriptor("time", values * u.s).regular
 
 
 def test_axis_descriptor_complex64_large_offset_regular_axis_is_regular():
-    values = np.complex64(1e9) + np.arange(4, dtype=np.float32) * np.complex64(100)
+    values = np.complex64(1e9) + np.arange(4, dtype=np.float32) * np.complex64(128)
 
     assert AxisDescriptor("complex", values * u.s).regular
+
+
+@pytest.mark.parametrize(
+    "index",
+    [
+        np.float32(1e9) + np.arange(4, dtype=np.float32) * np.float32(128),
+        np.complex64(1e9) + np.arange(4, dtype=np.float32) * np.complex64(128),
+    ],
+)
+def test_axis_descriptor_regular_delta_matches_all_represented_intervals(index):
+    axis = AxisDescriptor("coordinate", Quantity(index, "s"))
+    diffs = np.diff(axis.index.to_value(axis.unit))
+    interval_scale = np.max(np.abs(diffs))
+    atol = abs(np.spacing(interval_scale))
+
+    assert axis.regular
+    assert axis.delta is not None
+    assert np.allclose(diffs, axis.delta.to_value(axis.unit), rtol=0, atol=atol)
 
 
 @pytest.mark.parametrize(

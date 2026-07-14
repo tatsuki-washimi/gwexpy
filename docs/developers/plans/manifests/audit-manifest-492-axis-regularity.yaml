@@ -16,9 +16,9 @@ scope:
   physics_behavior_changed: false
   metadata_behavior_changed: false
 decisions:
-  - "Compare linear coordinate intervals with rtol=1e-9."
-  - "Use an absolute tolerance of 8 * abs(np.spacing(maximum absolute coordinate value)) in the input floating dtype."
-  - "The factor 8 is a small ULP-level allowance for coordinate subtraction round-off, not a domain-level spacing tolerance."
+  - "Compare represented linear coordinate intervals with rtol=0."
+  - "Use an absolute tolerance of one ULP at the largest represented interval magnitude in the input floating dtype."
+  - "Do not derive the interval tolerance from the coordinate offset, because that can accept materially unequal represented intervals."
   - "Use equal_nan=False and classify non-finite coordinates as irregular without rejecting construction."
   - "Preserve integer coordinate dtype and compare integer intervals exactly using Python integers to avoid float precision loss and unsigned-difference overflow."
   - "Preserve complex coordinate dtype so regularity comparison includes imaginary components."
@@ -66,11 +66,15 @@ commands:
     result: "RED: 1 failed after temporarily restoring float(...); GREEN: 1 passed after restoring the input-dtype ULP calculation."
   - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
     result: "760 passed, 13 skipped, 1 xfailed; 30 existing dependency warnings only."
+  - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+    result: "RED: 2 failed, 22 passed; float32 [0, 128, 640] and a quantized 100-step axis were incorrectly accepted as regular. GREEN: 24 passed after narrowing the tolerance to one interval ULP."
+  - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+    result: "763 passed, 13 skipped, 1 xfailed; 30 existing dependency warnings only."
 changed_files:
   - path: gwexpy/types/axis.py
-    change: "Replace fixed absolute regularity detection with a scale-aware linear-spacing comparison, classify non-finite axes as irregular, and document the local ascending-axis precondition of iloc_slice."
+    change: "Compare represented intervals using a one-ULP interval-scale tolerance, classify non-finite axes as irregular, and document the local ascending-axis precondition of iloc_slice."
   - path: tests/types/test_types_axis.py
-    change: "Add regression coverage for small scales, equivalent units, integer and floating-point large offsets, complex coordinates, coordinate-step rejection, descending regularity, and non-finite axes."
+    change: "Add regression coverage for represented float32 and complex64 large-offset intervals, delta consistency, small scales, equivalent units, integer coordinates, descending axes, and non-finite axes."
   - path: docs/developers/plans/manifests/audit-manifest-492-axis-regularity.yaml
     change: "Record agent actions, tolerance decisions, changed files, and validation results."
 validation:
@@ -104,6 +108,10 @@ validation:
       result: "760 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
     - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
       result: "21 passed."
+    - cmd: "rtk proxy pytest -q tests/types/test_types_axis.py -p no:cacheprovider"
+      result: "RED: 2 failed, 22 passed; GREEN: 24 passed after using one ULP of the represented interval scale with rtol=0."
+    - cmd: "rtk proxy pytest -q tests/types/ -p no:cacheprovider"
+      result: "763 passed, 13 skipped, 1 xfailed; existing dependency warnings only."
     - cmd: "rtk proxy ruff check gwexpy/ tests/"
       result: "Passed."
     - cmd: "rtk proxy mypy gwexpy/"
