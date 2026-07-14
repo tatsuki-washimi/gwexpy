@@ -25,6 +25,7 @@ VERSIONS = (
     "0.1.7",
     "0.1.8",
     "0.1.9",
+    "0.1.10",
 )
 
 SECTION_RE = re.compile(
@@ -66,6 +67,7 @@ def build_release_note(version: str, body: str) -> str:
 
 
 def main() -> None:
+    """Generate Markdown release notes for every configured release."""
     changelog_text = CHANGELOG.read_text(encoding="utf-8")
     sections = parse_sections(changelog_text)
 

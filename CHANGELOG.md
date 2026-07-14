@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## [0.1.10] - 2026-07-18
+
+This is a bugfix release covering numerical regularization, axis regularity,
+histogram weights, and TimeSeries resampling dtype and boundary contracts.
+
 ### Behaviour-visible bug fixes
 
 - **numerics**: `TimeSeriesMatrix.partial_correlation_matrix()` now defaults
@@ -14,9 +19,24 @@
   disable its added ridge for compatibility. All three APIs now reject
   non-finite input and invalid epsilon values with `ValueError` (#482).
 
-- `TimeSeries.asfreq()` now derives the output dtype for boolean and integer
-  source data from the source and a numeric scalar `fill_value` through NumPy
-  result-type promotion, instead of silently truncating the fill value (#490).
+- **types**: `AxisDescriptor.regular` now compares represented adjacent
+  intervals with a narrowly bounded interval-scale tolerance. It accepts
+  ordinary floating-point regular grids while rejecting materially unequal
+  large-offset float32 intervals that could yield an incorrect `delta` (#492).
+
+- **histogram**: `Histogram.fill()` now preserves fractional scalar weights
+  when histogram coordinates use an integer dtype, including flow-bin values
+  and variance accumulation (#489).
+
+- **timeseries**: time-bin `resample()` now implements `closed="right"` as an
+  include-lowest first bin followed by right-closed bins. It also validates
+  enum options, widths, and offsets before constructing the bin grid (#491).
+
+- **timeseries**: `TimeSeries.asfreq()` preserves integer source dtype and
+  exact values when an integral `fill_value` is representable. Out-of-range
+  integral fills now raise `ValueError` rather than causing a lossy dtype
+  promotion; fractional, complex, NaN, and infinite fills still promote to a
+  dtype that can represent them (#490).
 
 ## [0.1.9] - 2026-07-11
 
