@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../../_static/documentation_options.js?v=3d055840"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -577,7 +577,7 @@ for crucial physical attributes, particularly the physical unit.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – A human-readable name or label (default: “”).</p></li>
-<li><p><strong>channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>gwpy.detector.Channel</em><em>, </em><em>optional</em>) – The data channel associated with this metadata (default: “”).</p></li>
+<li><p><strong>channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.detector.Channel/#gwpy.detector.Channel" title="(in GWpy v4.0.1)"><em>gwpy.detector.Channel</em></a><em>, </em><em>optional</em>) – The data channel associated with this metadata (default: “”).</p></li>
 <li><p><strong>unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.units.UnitBase.html#astropy.units.UnitBase" title="(in Astropy v8.0)"><em>astropy.units.UnitBase</em></a><em>, or </em><em>pint.Unit</em><em>, </em><em>optional</em>) – The physical unit of the data. Automatically converted to an
 <cite>astropy.units.UnitBase</cite> instance (default: dimensionless).</p></li>
 <li><p><strong>**kwargs</strong> – Additional arbitrary metadata key-value pairs.</p></li>
@@ -601,7 +601,7 @@ for crucial physical attributes, particularly the physical unit.</p>
 <dd><p>The associated data channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>gwpy.detector.Channel</p>
+<dd class="field-odd"><p><a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.detector.Channel/#gwpy.detector.Channel" title="(in GWpy v4.0.1)">gwpy.detector.Channel</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -825,12 +825,23 @@ supporting vectorized attribute access (names, units, channels).</p>
 <dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.iloc_slice">
 <span class="sig-name descname"><span class="pre">iloc_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.14)"><span class="pre">slice</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.types.AxisDescriptor.iloc_slice" title="Link to this definition">#</a></dt>
 <dd><p>Convert a coordinate slice (start, stop, step) to an integer slice.</p>
+<p>Coordinate start and stop bounds require an ascending axis because they
+are resolved with <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html#numpy.searchsorted" title="(in NumPy v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.searchsorted()</span></code></a>. Descending and unordered
+axes remain valid for <a class="reference internal" href="#gwexpy.types.AxisDescriptor.iloc_nearest" title="gwexpy.types.AxisDescriptor.iloc_nearest"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iloc_nearest()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gwexpy.types.AxisDescriptor.regular">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regular</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#gwexpy.types.AxisDescriptor.regular" title="Link to this definition">#</a></dt>
-<dd><p>Return whether the axis spacing is regular.</p>
+<dd><p>Return whether the axis has regular linear spacing.</p>
+<p>Integer coordinates are compared exactly. Other numeric coordinates
+have adjacent intervals compared with a relative tolerance of
+<code class="docutils literal notranslate"><span class="pre">2.5e-14</span></code> and an absolute tolerance of one ULP at the largest
+represented interval magnitude. This keeps <code class="docutils literal notranslate"><span class="pre">delta</span></code> consistent with
+every represented interval while allowing bounded accumulated
+floating-point round-off.</p>
+<p>Logarithmic (equal-ratio) axes are not regular under this linear-spacing
+contract.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1000,7 +1011,7 @@ supporting vectorized attribute access (names, units, channels).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.types.Array">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">Array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.types.Array" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#gwexpy.types.AxisApiMixin" title="gwexpy.types.axis_api.AxisApiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisApiMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#gwexpy.types.AxisApiMixin" title="gwexpy.types.axis_api.AxisApiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisApiMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Array/#gwpy.types.Array" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code></a></p>
 <p>N-dimensional array with a unified axis API.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="gwexpy.types.Array.axes">
@@ -1019,7 +1030,7 @@ supporting vectorized attribute access (names, units, channels).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.types.Array2D">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.types.</span></span><span class="sig-name descname"><span class="pre">Array2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.types.Array2D" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#gwexpy.types.AxisApiMixin" title="gwexpy.types.axis_api.AxisApiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisApiMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Array2D</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#gwexpy.types.AxisApiMixin" title="gwexpy.types.axis_api.AxisApiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AxisApiMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <a class="reference external" href="https://gwpy.readthedocs.io/en/stable/reference/gwpy.types.Array2D/#gwpy.types.Array2D" title="(in GWpy v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Array2D</span></code></a></p>
 <p>2D array with a unified axis API.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="gwexpy.types.Array2D.axes">

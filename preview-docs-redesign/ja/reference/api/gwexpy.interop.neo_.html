@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=dffd92de"></script>
+    <script src="../../_static/documentation_options.js?v=bf418079"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -573,7 +573,7 @@
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.interop.neo_.from_neo" title="gwexpy.interop.neo_.from_neo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_neo</span></code></a>(cls, sig)</p></td>
-<td><p>Create a <cite>TimeSeriesMatrix</cite> from <cite>neo.AnalogSignal</cite>.</p></td>
+<td><p>Create a <cite>TimeSeriesMatrix</cite> from a neo object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.interop.neo_.to_neo" title="gwexpy.interop.neo_.to_neo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_neo</span></code></a>(obj[, units])</p></td>
 <td><p>Convert a <cite>TimeSeries</cite> or <cite>TimeSeriesMatrix</cite> to <cite>neo.AnalogSignal</cite>.</p></td>
@@ -590,7 +590,10 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="gwexpy.interop.neo_.from_neo">
 <span class="sig-prename descclassname"><span class="pre">gwexpy.interop.neo_.</span></span><span class="sig-name descname"><span class="pre">from_neo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.interop.neo_.from_neo" title="Link to this definition">#</a></dt>
-<dd><p>Create a <cite>TimeSeriesMatrix</cite> from <cite>neo.AnalogSignal</cite>.</p>
+<dd><p>Create a <cite>TimeSeriesMatrix</cite> from a neo object.</p>
+<p>Accepts a single <cite>neo.AnalogSignal</cite>, or a <cite>neo.Block</cite>/<cite>neo.Segment</cite>
+containing exactly one <cite>AnalogSignal</cite> (the form returned by most
+<code class="docutils literal notranslate"><span class="pre">neo.io</span></code> readers).</p>
 </dd></dl>
 
 </section>

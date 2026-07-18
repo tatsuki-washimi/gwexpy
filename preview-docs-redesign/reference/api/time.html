@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../../_static/documentation_options.js?v=3d055840"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -721,7 +721,7 @@ to guarantee long-ness.</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
 <p>Protocol for types that are implementations of LIGOTimeGPS.</p>
 <p>This is used for type hinting functions that can accept
-<a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/lal/"><code class="docutils literal notranslate"><span class="pre">lal.LIGOTimeGPS</span></code></a>, or <cite>ligotimegps.LIGOTimeGPS</cite>, or any
+<a class="reference external" href="https://docs.ligo.org/lscsoft/lalsuite/lal/group___x_l_a_l_time__c.html"><code class="docutils literal notranslate"><span class="pre">lal.LIGOTimeGPS</span></code></a>, or <cite>ligotimegps.LIGOTimeGPS</cite>, or any
 other implementation of the <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> standard.</p>
 <p>This can also be used at runtime with <cite>isinstance</cite> to check if an
 object is a LIGOTimeGPS-like object, but cannot be used with
@@ -918,9 +918,9 @@ finite-distance effects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>skycoord</strong> (<cite>~astropy.coordinates.SkyCoord</cite>) – The sky location to calculate the correction for.</p></li>
+<li><p><strong>skycoord</strong> (<cite>~astropy.coordinates.SkyCoord</cite>) – The sky location(s) to calculate the correction for.</p></li>
 <li><p><strong>kind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">'barycentric'</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">'heliocentric'</span></code></p></li>
-<li><p><strong>location</strong> (<cite>~astropy.coordinates.EarthLocation</cite>, optional) – The location of the observatory to calculate the correction for.
+<li><p><strong>location</strong> (<cite>~astropy.coordinates.EarthLocation</cite>, optional) – The location(s) of the observatory to calculate the correction for.
 If no location is given, the <code class="docutils literal notranslate"><span class="pre">location</span></code> attribute of the Time
 object is used</p></li>
 <li><p><strong>ephemeris</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Solar system ephemeris to use (e.g., ‘builtin’, ‘jpl’). By default,
@@ -932,7 +932,8 @@ For more information, see <cite>~astropy.coordinates.solar_system_ephemeris</cit
 <dd class="field-even"><p><strong>time_offset</strong> – The time offset between the barycentre or Heliocentre and Earth,
 in TDB seconds.  Should be added to the original time to get the
 time in the Solar system barycentre or the Heliocentre.
-Also, the time conversion to BJD will then include the relativistic correction as well.</p>
+Also, the time conversion to BJD will then include the relativistic correction as well.
+The shape will be the broadcast shape of <code class="docutils literal notranslate"><span class="pre">skycoord</span></code> and <code class="docutils literal notranslate"><span class="pre">location</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>~astropy.time.TimeDelta</cite></p>

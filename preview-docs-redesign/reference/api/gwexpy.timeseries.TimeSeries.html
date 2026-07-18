@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../../_static/documentation_options.js?v=3d055840"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -866,16 +866,16 @@ Xarray, and Polars.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dask</span></code>(array, *[, t0, dt, unit, compute])</p></td>
 <td><p>Create from dask.array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code>(data_dict)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict</span></code>(data_dict, *[, unit, channel, ...])</p></td>
 <td><p>Create TimeSeries from a dictionary.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hdf5_dataset</span></code>(group, path)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hdf5_dataset</span></code>(group, path, *[, unit, ...])</p></td>
 <td><p>Read from HDF5 group/dataset.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_jax</span></code>(array, *[, t0, dt, unit])</p></td>
 <td><p>Create from jax array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code>(json_str)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json</span></code>(json_str, *[, unit, channel, ...])</p></td>
 <td><p>Create TimeSeries from a JSON string.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_lal</span></code>(lalts, *[, copy])</p></td>
@@ -887,7 +887,7 @@ Xarray, and Polars.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_nds2_buffer</span></code>(buffer, *[, scaled, copy])</p></td>
 <td><p>Construct a new series from an <cite>nds2.buffer</cite> object.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_netcdf4</span></code>(ds, var_name)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_netcdf4</span></code>(ds, var_name, *[, unit, ...])</p></td>
 <td><p>Read from a live netCDF4 Dataset object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_obspy</span></code>(tr, *[, unit, name_policy])</p></td>
@@ -896,10 +896,10 @@ Xarray, and Polars.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_obspy_trace</span></code>(tr, *[, unit, name_policy])</p></td>
 <td><p>Alias for from_obspy().</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pandas</span></code>(series, *[, unit, t0, dt])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pandas</span></code>(series, *[, unit, t0, dt, ...])</p></td>
 <td><p>Create TimeSeries from pandas.Series.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_polars</span></code>(data[, times, unit])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_polars</span></code>(data[, times, unit, channel, ...])</p></td>
 <td><p>Create TimeSeries from polars.DataFrame or polars.Series.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_pycbc</span></code>(pycbcseries, *[, copy])</p></td>
@@ -941,7 +941,7 @@ Xarray, and Polars.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_torch</span></code>(tensor, *[, t0, dt, unit])</p></td>
 <td><p>Create from torch.Tensor.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_xarray</span></code>(da, *[, unit])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_xarray</span></code>(da, *[, unit, channel, name])</p></td>
 <td><p>Create TimeSeries from xarray.DataArray.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_zarr</span></code>(store, path)</p></td>
@@ -1674,16 +1674,6 @@ behavior when <cite>.read()</cite> is called through the public API.</p>
 <td><p>Yes</p></td>
 <td><p>No</p></td>
 <td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p>win</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>Yes</p></td>
-</tr>
-<tr class="row-even"><td><p>win32</p></td>
-<td><p>Yes</p></td>
-<td><p>No</p></td>
-<td><p>Yes</p></td>
 </tr>
 <tr class="row-odd"><td><p>wvf</p></td>
 <td><p>Yes</p></td>

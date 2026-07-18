@@ -12,7 +12,7 @@ For reproducibility of analysis results and continued maintenance of the softwar
   title = {GWexpy: Extended Analysis Utilities for Gravitational Wave Data},
   year = {2026},
   url = {https://github.com/tatsuki-washimi/gwexpy},
-  version = {0.1.5}
+  version = {0.1.10}
 }
 ```
 

@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../../_static/documentation_options.js?v=3d055840"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -574,7 +574,7 @@
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.interop.netcdf4_.from_netcdf4" title="gwexpy.interop.netcdf4_.from_netcdf4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_netcdf4</span></code></a>(cls, ds, var_name)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.interop.netcdf4_.from_netcdf4" title="gwexpy.interop.netcdf4_.from_netcdf4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_netcdf4</span></code></a>(cls, ds, var_name, *[, unit, ...])</p></td>
 <td><p>Read from a netCDF4 dataset.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.interop.netcdf4_.to_netcdf4" title="gwexpy.interop.netcdf4_.to_netcdf4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_netcdf4</span></code></a>(ts, ds, var_name[, dim_time, ...])</p></td>
@@ -592,8 +592,11 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="gwexpy.interop.netcdf4_.from_netcdf4">
-<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.netcdf4_.</span></span><span class="sig-name descname"><span class="pre">from_netcdf4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.interop.netcdf4_.from_netcdf4" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">gwexpy.interop.netcdf4_.</span></span><span class="sig-name descname"><span class="pre">from_netcdf4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.interop.netcdf4_.from_netcdf4" title="Link to this definition">#</a></dt>
 <dd><p>Read from a netCDF4 dataset.</p>
+<p>Metadata absent from the variable can be supplied explicitly; an explicit
+argument takes priority over the stored attribute. Missing <code class="docutils literal notranslate"><span class="pre">t0</span></code>/<code class="docutils literal notranslate"><span class="pre">dt</span></code>
+fall back to <code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code> with a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#UserWarning" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UserWarning</span></code></a> rather than silently.</p>
 </dd></dl>
 
 </section>

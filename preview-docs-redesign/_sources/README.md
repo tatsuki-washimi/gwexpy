@@ -2,10 +2,10 @@
 orphan: true
 ---
 
-# docs_redesign — prototype notes
+# docs_redesign — website source notes
 
-This tree is the **B1 (pydata + Diátaxis) redesign prototype**, built in parallel
-with the production `docs/` tree. It is not yet the published site.
+This tree is the **B1 (pydata + Diátaxis) redesign** source for the published
+website. The deployment workflow builds it into the existing `/docs/` site path.
 
 ## Notebook single-source contract
 
