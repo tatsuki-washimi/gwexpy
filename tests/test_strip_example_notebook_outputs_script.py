@@ -72,6 +72,23 @@ def test_strip_notebook_clears_public_docs_outputs(tmp_path: Path):
     assert notebook["cells"][0]["execution_count"] is None
 
 
+def test_strip_notebook_clears_redesign_docs_outputs(tmp_path: Path):
+    module = load_script_module()
+    notebook_path = tmp_path / "docs_redesign" / "tutorials" / "sample.ipynb"
+    write_notebook(
+        notebook_path,
+        outputs=[{"output_type": "stream", "name": "stdout", "text": "ok\n"}],
+        execution_count=3,
+    )
+
+    changed = module.strip_notebook(notebook_path)
+    notebook = read_notebook(notebook_path)
+
+    assert changed is True
+    assert notebook["cells"][0]["outputs"] == []
+    assert notebook["cells"][0]["execution_count"] is None
+
+
 def test_strip_notebook_clears_example_outputs(tmp_path: Path):
     module = load_script_module()
     notebook_path = tmp_path / "examples" / "sample.ipynb"

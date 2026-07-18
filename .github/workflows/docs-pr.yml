@@ -110,7 +110,7 @@ jobs:
   docs-redesign-pr:
     name: docs_redesign build smoke check
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     defaults:
       run:
         shell: bash -leo pipefail {0}
@@ -143,6 +143,15 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install -r docs_redesign/requirements.txt
 
+      # Build from a disposable copy so executed outputs are publish artifacts,
+      # never changes to the clean notebooks committed in this repository.
+      - name: Prepare isolated docs_redesign source
+        id: prepare_docs_redesign
+        run: |
+          docs_src="${RUNNER_TEMP}/gwexpy-docs-redesign-pr"
+          rsync -a --delete --exclude "_build/" docs_redesign/ "${docs_src}/"
+          echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
+
       # Same plain `sphinx-build -b html` invocation (no -W) that
       # docs-redesign-preview.yml and docs-pages.yml use for the real
       # deploy, so a green build here is the same build that would run at
@@ -151,11 +160,13 @@ jobs:
       # offline intersphinx timeouts) which this repo does not yet treat
       # as a hard gate for this tree.
       - name: Build EN HTML
-        working-directory: docs_redesign
         run: |
-          sphinx-build -b html -d _build/doctrees_en . _build/html
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -d "${docs_src}/_build/doctrees_en" \
+            "${docs_src}" "${docs_src}/_build/html"
 
       - name: Build JA HTML
-        working-directory: docs_redesign
         run: |
-          sphinx-build -b html -D language=ja -d _build/doctrees_ja . _build/html/ja
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -D language=ja -d "${docs_src}/_build/doctrees_ja" \
+            "${docs_src}" "${docs_src}/_build/html/ja"

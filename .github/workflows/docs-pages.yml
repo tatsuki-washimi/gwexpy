@@ -68,19 +68,31 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install -r docs_redesign/requirements.txt
 
+      # Keep executed notebooks and MyST-NB's cache outside the checkout.
+      # The generated HTML retains outputs, but Git continues to track only
+      # clean notebook source.
+      - name: Prepare isolated docs_redesign source
+        id: prepare_docs_redesign
+        run: |
+          docs_src="${RUNNER_TEMP}/gwexpy-docs-redesign-pages"
+          rsync -a --delete --exclude "_build/" docs_redesign/ "${docs_src}/"
+          echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
+
       - name: Build EN HTML
-        working-directory: docs_redesign
         env:
           GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/docs/"
         run: |
-          sphinx-build -b html -d _build/doctrees_en . _build/html
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -d "${docs_src}/_build/doctrees_en" \
+            "${docs_src}" "${docs_src}/_build/html"
 
       - name: Build JA HTML
-        working-directory: docs_redesign
         env:
           GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/docs/ja/"
         run: |
-          sphinx-build -b html -D language=ja -d _build/doctrees_ja . _build/html/ja
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -D language=ja -d "${docs_src}/_build/doctrees_ja" \
+            "${docs_src}" "${docs_src}/_build/html/ja"
 
       - name: Publish to gh-pages
         env:
@@ -93,7 +105,8 @@ jobs:
             "${publish_dir}"
 
           mkdir -p "${publish_dir}/docs"
-          rsync -a --delete "docs_redesign/_build/html/" "${publish_dir}/docs/"
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          rsync -a --delete "${docs_src}/_build/html/" "${publish_dir}/docs/"
 
           # Regenerate the old-site redirect stubs *after* the --delete above,
           # since they live under the same docs/ tree it just wiped (Step F-3

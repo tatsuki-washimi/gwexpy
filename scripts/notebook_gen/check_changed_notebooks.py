@@ -63,11 +63,9 @@ def list_changed_notebooks(base: str, head: str) -> list[str]:
             f"{base}...{head}",
             "--",
             "*.ipynb",
-            # docs_redesign ships pre-executed notebook outputs (myst-nb,
-            # nb_execution_mode="off") and is covered by its own Sphinx-build
-            # smoke check in docs-pr.yml; papermill-executing it here would
-            # both duplicate that check and fight the pre-baked-output
-            # contract.
+            # docs_redesign executes clean notebook sources through MyST-NB in
+            # its own isolated Sphinx-build check.  Do not duplicate that work
+            # with papermill here or write outputs into the checkout.
             ":(exclude)docs_redesign/**",
         ],
         capture_output=True,

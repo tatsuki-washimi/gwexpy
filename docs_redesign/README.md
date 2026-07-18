@@ -25,6 +25,12 @@ were **derived** from the canonical notebooks at
 
 ## Rendering
 
-`nb_execution_mode = "off"`: notebooks render code + prose only (their outputs
-are stripped per policy). Figures are produced by the executed-notebook CI path,
-not by the local prototype build.
+`nb_execution_mode = "cache"`: notebooks execute into an untracked build cache.
+The rendered site therefore includes plots and other outputs, while committed
+notebooks remain clean source with outputs and execution counts stripped. The
+publish workflows build from an isolated temporary copy of this tree, so no
+executed notebook is ever written back to the checkout.
+
+Notebook execution is fail-closed and has a 180-second per-cell limit, which
+accommodates fitting and file-I/O examples without silently publishing a page
+whose output failed to generate.

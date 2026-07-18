@@ -69,19 +69,31 @@ jobs:
           python -m pip install -e . --no-deps
           python -m pip install -r docs_redesign/requirements.txt
 
+      # Execute notebooks only in a disposable copy.  MyST-NB stores their
+      # outputs in this copy's build cache; tracked source notebooks remain
+      # output-free even when the published HTML contains plots.
+      - name: Prepare isolated docs_redesign source
+        id: prepare_docs_redesign
+        run: |
+          docs_src="${RUNNER_TEMP}/gwexpy-docs-redesign-preview"
+          rsync -a --delete --exclude "_build/" docs_redesign/ "${docs_src}/"
+          echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
+
       - name: Build EN HTML
-        working-directory: docs_redesign
         env:
           GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
         run: |
-          sphinx-build -b html -d _build/doctrees_en . _build/html
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -d "${docs_src}/_build/doctrees_en" \
+            "${docs_src}" "${docs_src}/_build/html"
 
       - name: Build JA HTML
-        working-directory: docs_redesign
         env:
           GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/"
         run: |
-          sphinx-build -b html -D language=ja -d _build/doctrees_ja . _build/html/ja
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -D language=ja -d "${docs_src}/_build/doctrees_ja" \
+            "${docs_src}" "${docs_src}/_build/html/ja"
 
       - name: Publish preview to gh-pages
         env:
@@ -95,7 +107,8 @@ jobs:
 
           preview_dir="${publish_dir}/preview-docs-redesign"
           mkdir -p "${preview_dir}"
-          rsync -a --delete "docs_redesign/_build/html/" "${preview_dir}/"
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          rsync -a --delete "${docs_src}/_build/html/" "${preview_dir}/"
 
           touch "${publish_dir}/.nojekyll"
 

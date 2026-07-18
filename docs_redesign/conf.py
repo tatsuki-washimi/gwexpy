@@ -61,8 +61,18 @@ myst_enable_extensions = [
 # Resolve in-page Markdown anchor links (e.g. [text](#section)).
 myst_heading_anchors = 3
 
-# Do not execute notebooks in this prototype.
-nb_execution_mode = "off"
+# Execute clean notebook sources through MyST-NB's build cache.  The cache is
+# an untracked build artifact: rendered HTML therefore includes plots and
+# other cell outputs, while the .ipynb files committed to Git remain clean.
+# ``cache`` also lets the JA build reuse the executed EN notebooks instead of
+# running the same code a second time.
+nb_execution_mode = "cache"
+nb_execution_cache_path = "_build/jupyter-cache"
+# Fitting and file-I/O examples exceed MyST-NB's 30-second default on the
+# GitHub Pages runner.
+nb_execution_timeout = 180
+nb_execution_allow_errors = False
+nb_execution_raise_on_error = True
 
 # -- Internationalization (gettext single-source) ----------------------------
 # English is the single source; Japanese is delivered via gettext catalogs in
