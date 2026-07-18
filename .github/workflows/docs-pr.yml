@@ -143,7 +143,9 @@ jobs:
       - name: Provision docs_redesign build environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . --no-deps
+          # Match preview/production: execute the public notebooks with their
+          # optional analysis, control, and I/O dependencies available.
+          python -m pip install -e ".[all]"
           python -m pip install -r docs_redesign/requirements.txt
 
       # Build from a disposable copy so executed outputs are publish artifacts,
