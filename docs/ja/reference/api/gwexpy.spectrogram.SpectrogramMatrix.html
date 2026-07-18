@@ -1,0 +1,1307 @@
+
+<!DOCTYPE html>
+
+
+<html lang="ja" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>gwexpy.spectrogram.SpectrogramMatrix &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=bf418079"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/api/gwexpy.spectrogram.SpectrogramMatrix';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/reference/api/gwexpy.spectrogram.SpectrogramMatrix.html" />
+    <link rel="icon" href="../../_static/favicon.svg"/>
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="検索" href="../../search.html" />
+    <link rel="next" title="Fields" href="fields.html" />
+    <link rel="prev" title="gwexpy.frequencyseries.FrequencySeriesMatrix" href="gwexpy.frequencyseries.FrequencySeriesMatrix.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="ja"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/api/gwexpy.spectrogram.SpectrogramMatrix.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/reference/api/gwexpy.spectrogram.SpectrogramMatrix.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/api/gwexpy.spectrogram.SpectrogramMatrix.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">本文へスキップ</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>トップに戻る</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="ドキュメントを検索..."
+         aria-label="ドキュメントを検索..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="バージョン警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="サイトナビゲーション">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="アイコンリンク">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/api/gwexpy.spectrogram.SpectrogramMatrix.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="このページでは">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="アイコンリンク">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/api/gwexpy.spectrogram.SpectrogramMatrix.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="セクションナビゲーション">
+  <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">コンテナ</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="timeseries.html">Time Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.timeseries.TimeSeries.html">gwexpy.timeseries.TimeSeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="frequencyseries.html">Frequency Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeries.html">gwexpy.frequencyseries.FrequencySeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="spectrogram.html">Spectrogram</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html">gwexpy.spectrogram.Spectrogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="matrix.html">Matrix Containers</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.timeseries.TimeSeriesMatrix.html">gwexpy.timeseries.TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.frequencyseries.FrequencySeriesMatrix.html">gwexpy.frequencyseries.FrequencySeriesMatrix</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">gwexpy.spectrogram.SpectrogramMatrix</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="fields.html">Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="table.html">Table</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.table.SegmentTable.html">gwexpy.table.SegmentTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.table.SegmentCell.html">gwexpy.table.SegmentCell</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="histogram.html">Histogram (gwexpy.histogram)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.Histogram.html">gwexpy.histogram.Histogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.HistogramDict.html">gwexpy.histogram.HistogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.histogram.HistogramList.html">gwexpy.histogram.HistogramList</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">解析と信号処理</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal.html">Signal Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Noise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="segments.html">Segments</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.DataQualityFlag.html">gwexpy.segments.DataQualityFlag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.DataQualityDict.html">gwexpy.segments.DataQualityDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.Segment.html">gwexpy.segments.Segment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.segments.SegmentList.html">gwexpy.segments.SegmentList</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="detector.html">Detector Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="astro.html">Astrophysics Utilities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">相互運用と入出力</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="interop.html">Interoperability (gwexpy.interop)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.hdf5_.html">gwexpy.interop.hdf5_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.frequency.html">gwexpy.interop.frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.json_.html">gwexpy.interop.json_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sqlite_.html">gwexpy.interop.sqlite_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.zarr_.html">gwexpy.interop.zarr_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.netcdf4_.html">gwexpy.interop.netcdf4_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pandas_.html">gwexpy.interop.pandas_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.polars_.html">gwexpy.interop.polars_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.xarray_.html">gwexpy.interop.xarray_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.astropy_.html">gwexpy.interop.astropy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.dask_.html">gwexpy.interop.dask_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.torch_.html">gwexpy.interop.torch_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.torch_dataset.html">gwexpy.interop.torch_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.tensorflow_.html">gwexpy.interop.tensorflow_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.jax_.html">gwexpy.interop.jax_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.cupy_.html">gwexpy.interop.cupy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.finesse_.html">gwexpy.interop.finesse_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.control_.html">gwexpy.interop.control_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.simpeg_.html">gwexpy.interop.simpeg_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.mt_.html">gwexpy.interop.mt_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.mne_.html">gwexpy.interop.mne_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.neo_.html">gwexpy.interop.neo_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.quantities_.html">gwexpy.interop.quantities_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyroomacoustics_.html">gwexpy.interop.pyroomacoustics_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pydub_.html">gwexpy.interop.pydub_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.specutils_.html">gwexpy.interop.specutils_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyspeckit_.html">gwexpy.interop.pyspeckit_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyspice_.html">gwexpy.interop.pyspice_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.skrf_.html">gwexpy.interop.skrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pyoma_.html">gwexpy.interop.pyoma_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.multitaper_.html">gwexpy.interop.multitaper_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sdypy_.html">gwexpy.interop.sdypy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.sdynpy_.html">gwexpy.interop.sdynpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.meep_.html">gwexpy.interop.meep_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.openems_.html">gwexpy.interop.openems_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.emg3d_.html">gwexpy.interop.emg3d_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.meshio_.html">gwexpy.interop.meshio_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.metpy_.html">gwexpy.interop.metpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.wrf_.html">gwexpy.interop.wrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.harmonica_.html">gwexpy.interop.harmonica_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.exudyn_.html">gwexpy.interop.exudyn_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.opensees_.html">gwexpy.interop.opensees_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.obspy_.html">gwexpy.interop.obspy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.lal_.html">gwexpy.interop.lal_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.gwinc_.html">gwexpy.interop.gwinc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.pycbc_.html">gwexpy.interop.pycbc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.interop.root_.html">gwexpy.interop.root_</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">I/O</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">プロットとツール</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="plot.html">Plotting</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="time.html">Time (gwexpy.time)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.Time.html">gwexpy.time.Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.LIGOTimeGPS.html">gwexpy.time.LIGOTimeGPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.to_gps.html">gwexpy.time.to_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.from_gps.html">gwexpy.time.from_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy.time.tconvert.html">gwexpy.time.tconvert</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">GWpy との差分</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../gwpy_added_api.html">GWpy 差分 API インデックス</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="パンくずリスト" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="ホーム">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">リファレンス</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="matrix.html" class="nav-link">Matrix Containers</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">gwexpy.spectrogram.SpectrogramMatrix</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="gwexpy-spectrogram-spectrogrammatrix">
+<h1>gwexpy.spectrogram.SpectrogramMatrix<a class="headerlink" href="#gwexpy-spectrogram-spectrogrammatrix" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.spectrogram.</span></span><span class="sig-name descname"><span class="pre">SpectrogramMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix" title="gwexpy.spectrogram.SpectrogramMatrix"><span class="pre">SpectrogramMatrix</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IndexLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IndexLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnitLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MetaDataCollectionType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MetaDataCollectionType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix" title="Link to this definition">#</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrogramMatrixCoreMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrogramMatrixAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SeriesMatrix</span></code></p>
+<p>Evaluation Matrix for Spectrograms (Time-Frequency maps).</p>
+<p><cite>SpectrogramMatrix</cite> represents a collection of Spectrograms,
+structured as a multivariate matrix with dimensions either:</p>
+<ul class="simple">
+<li><p>3D: <code class="docutils literal notranslate"><span class="pre">(Batch,</span> <span class="pre">Time,</span> <span class="pre">Frequency)</span></code></p></li>
+<li><p>4D: <code class="docutils literal notranslate"><span class="pre">(Row,</span> <span class="pre">Col,</span> <span class="pre">Time,</span> <span class="pre">Frequency)</span></code></p></li>
+</ul>
+<p>It extends the core <cite>~gwexpy.types.seriesmatrix.SeriesMatrix</cite> with
+spectrogram-specific axes (times and frequencies) and analysis
+methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>array-like</em>) -- The data values for the matrix. Should be 3D or 4D.</p></li>
+<li><p><strong>times</strong> (<em>array-like</em><em>, </em><em>optional</em>) -- The time values corresponding to each row.</p></li>
+<li><p><strong>frequencies</strong> (<em>array-like</em><em>, </em><em>optional</em>) -- The frequency values corresponding to each column.</p></li>
+<li><p><strong>unit</strong> (<cite>str</cite>, <cite>~astropy.units.Unit</cite>, optional) -- Physical unit of the data.</p></li>
+<li><p><strong>**kwargs</strong> -- Additional keyword arguments passed to the
+<cite>~gwexpy.types.seriesmatrix.SeriesMatrix</cite> constructor.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition- admonition">
+<p class="admonition-title">メモ</p>
+<p>Serialization is supported via HDF5 and Pickle. Metadata is
+preserved per-element in the <cite>meta</cite> attribute.</p>
+<p>Key methods:</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.plot_summary" title="gwexpy.spectrogram.SpectrogramMatrix.plot_summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_summary</span></code></a>(**kwargs)</p></td>
+<td><p>Plot the matrix as side-by-side spectrograms and percentile summaries.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.to_dict" title="gwexpy.spectrogram.SpectrogramMatrix.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
+<td><p>Convert to SpectrogramDict.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.to_list" title="gwexpy.spectrogram.SpectrogramMatrix.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a>()</p></td>
+<td><p>Convert to SpectrogramList.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">radian</span></code>([unwrap])</p></td>
+<td><p>Calculate the phase of the matrix in radians.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p class="rubric">サンプル</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sm</span> <span class="o">=</span> <span class="n">SpectrogramMatrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sm</span>
+<span class="go">&lt;SeriesMatrix shape=(1, 2, 2) rows=(&#39;batch0&#39;,) cols=(&#39;col0&#39;,)&gt;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.__init__" title="gwexpy.spectrogram.SpectrogramMatrix.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">abs</span></code>()</p></td>
+<td><p>Return the absolute value of the matrix element-wise.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code>([axis, out, keepdims, where])</p></td>
+<td><p>Returns True if all elements evaluate to True.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">angle</span></code>([unwrap, deg])</p></td>
+<td><p>Alias for <cite>phase(unwrap=unwrap, deg=deg)</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code>([axis, out, keepdims, where])</p></td>
+<td><p>Returns True if any of the elements of <cite>a</cite> evaluate to True.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code>(other[, inplace, pad, gap, resize])</p></td>
+<td><p>Append another matrix along the sample axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_exact</span></code>(other[, inplace, pad, gap, tol])</p></td>
+<td><p>Append another matrix with strict contiguity checking.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code>([axis, out, keepdims])</p></td>
+<td><p>Return indices of the maximum values along the given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmin</span></code>([axis, out, keepdims])</p></td>
+<td><p>Return indices of the minimum values along the given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argpartition</span></code>(kth[, axis, kind, order])</p></td>
+<td><p>Returns the indices that would partition this array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argsort</span></code>([axis, kind, order, stable])</p></td>
+<td><p>Returns the indices that would sort this array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">astype</span></code>(dtype[, order, casting, subok, copy])</p></td>
+<td><p>Cast matrix data to a specified type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">byteswap</span></code>([inplace])</p></td>
+<td><p>Swap the bytes of the array elements</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">choose</span></code>(choices[, out, mode])</p></td>
+<td><p>Use an index array to construct a new array from a set of choices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clip</span></code>([min, max, out])</p></td>
+<td><p>Return an array whose values are limited to <code class="docutils literal notranslate"><span class="pre">[min,</span> <span class="pre">max]</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.col_index" title="gwexpy.spectrogram.SpectrogramMatrix.col_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">col_index</span></code></a>(key)</p></td>
+<td><p>Return the integer index for a column key.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.col_keys" title="gwexpy.spectrogram.SpectrogramMatrix.col_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">col_keys</span></code></a>()</p></td>
+<td><p>Return the column metadata keys.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compress</span></code>(condition[, axis, out])</p></td>
+<td><p>Return selected slices of this array along given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">conj</span></code>()</p></td>
+<td><p>Complex conjugate of the matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">conjugate</span></code>()</p></td>
+<td><p>Return the complex conjugate, element-wise.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code>([order])</p></td>
+<td><p>Create a deep copy of this matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">crop</span></code>([start, end, copy])</p></td>
+<td><p>Crop the matrix to a specified range along the sample axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumprod</span></code>([axis, dtype, out])</p></td>
+<td><p>Return the cumulative product of the elements along the given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code>([axis, dtype, out])</p></td>
+<td><p>Return the cumulative sum of the elements along the given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree</span></code>([unwrap])</p></td>
+<td><p>Calculate the phase of the matrix in degrees.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">det</span></code>()</p></td>
+<td><p>Compute the determinant of the matrix at each sample point.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">diagonal</span></code>([offset, axis1, axis2])</p></td>
+<td><p>Extract diagonal elements from the matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">diff</span></code>([n, axis])</p></td>
+<td><p>Calculate the n-th discrete difference along the sample axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dot</span></code>(other, /[, out])</p></td>
+<td><p>Refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dot.html#numpy.dot" title="(in NumPy v2.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.dot()</span></code></a> for full documentation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump</span></code>(file)</p></td>
+<td><p>Dump a pickle of the array to the specified file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dumps</span></code>()</p></td>
+<td><p>Returns the pickle of the array as a string.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill</span></code>(value)</p></td>
+<td><p>Fill the array with a scalar value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flatten</span></code>([order])</p></td>
+<td><p>Return a copy of the array collapsed into one dimension.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_index</span></code>(key_row, key_col)</p></td>
+<td><p>Get the (row, col) integer indices for given keys.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">getfield</span></code>(dtype[, offset])</p></td>
+<td><p>Returns a field of the given array as a certain type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate</span></code>(xindex, **kwargs)</p></td>
+<td><p>Interpolate the matrix to a new sample axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inv</span></code>([swap_rowcol])</p></td>
+<td><p>Compute the matrix inverse at each sample point.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.is_compatible" title="gwexpy.spectrogram.SpectrogramMatrix.is_compatible"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_compatible</span></code></a>(other)</p></td>
+<td><p>Check compatibility with another SpectrogramMatrix/object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_compatible_exact</span></code>(other)</p></td>
+<td><p>Check strict compatibility with another matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_contiguous</span></code>(other[, tol])</p></td>
+<td><p>Check if this matrix is contiguous with another.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_contiguous_exact</span></code>(other[, tol])</p></td>
+<td><p>Check contiguity with strict shape matching.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">item</span></code>(*args)</p></td>
+<td><p>Copy an element of an array to a standard Python scalar and return it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keys</span></code>()</p></td>
+<td><p>Get both row and column keys.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kurtosis</span></code>([axis, fisher, nan_policy])</p></td>
+<td><p>Compute the kurtosis (Fisher or Pearson) of the data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code>([axis, out, keepdims, initial, where])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code>([axis, dtype, out, keepdims, where])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code>([axis, out, overwrite_input, keepdims])</p></td>
+<td><p>Compute the median.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code>([axis, out, keepdims, initial, where])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonzero</span></code>()</p></td>
+<td><p>Return the indices of the elements that are non-zero.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pad</span></code>(pad_width, **kwargs)</p></td>
+<td><p>Pad the matrix along the sample axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">partition</span></code>(kth[, axis, kind, order])</p></td>
+<td><p>Partially sorts the elements in the array in such a way that the value of the element in k-th position is in the position it would be in a sorted array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">phase</span></code>([unwrap, deg])</p></td>
+<td><p>Calculate the phase of the data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>(**kwargs)</p></td>
+<td><p>Plot this object using <a class="reference internal" href="plot.html#gwexpy.plot.Plot" title="gwexpy.plot.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">gwexpy.plot.Plot</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.plot_summary" title="gwexpy.spectrogram.SpectrogramMatrix.plot_summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_summary</span></code></a>(**kwargs)</p></td>
+<td><p>Plot the matrix as side-by-side spectrograms and percentile summaries.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepend</span></code>(other[, inplace, pad, gap, resize])</p></td>
+<td><p>Prepend another matrix at the beginning along the sample axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepend_exact</span></code>(other[, inplace, pad, gap, tol])</p></td>
+<td><p>Prepend another matrix with strict contiguity checking.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code>([axis, dtype, out, keepdims, initial, ...])</p></td>
+<td><p>Return the product of the array elements over the given axis</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">put</span></code>(indices, values[, mode])</p></td>
+<td><p>Set <code class="docutils literal notranslate"><span class="pre">a.flat[n]</span> <span class="pre">=</span> <span class="pre">values[n]</span></code> for all <code class="docutils literal notranslate"><span class="pre">n</span></code> in indices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">radian</span></code>([unwrap])</p></td>
+<td><p>Calculate the phase of the matrix in radians.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ravel</span></code>([order])</p></td>
+<td><p>Return a flattened array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code>(source[, format])</p></td>
+<td><p>Read a SeriesMatrix from file.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code>(repeats[, axis])</p></td>
+<td><p>Repeat elements of an array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reshape</span></code>(*shape[, order, copy])</p></td>
+<td><p>Reshape the matrix dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize</span></code>()</p></td>
+<td><p>Change shape and size of array in-place.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rms</span></code>([axis, keepdims, ignore_nan])</p></td>
+<td><p>Compute the Root Mean Square (RMS) value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code>([decimals, out])</p></td>
+<td><p>Return <cite>a</cite> with each element rounded to the given number of decimals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.row_index" title="gwexpy.spectrogram.SpectrogramMatrix.row_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">row_index</span></code></a>(key)</p></td>
+<td><p>Return the integer index for a row key.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.row_keys" title="gwexpy.spectrogram.SpectrogramMatrix.row_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">row_keys</span></code></a>()</p></td>
+<td><p>Return the row metadata keys.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">schur</span></code>(keep_rows[, keep_cols, ...])</p></td>
+<td><p>Compute the Schur complement of a block matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code>(v[, side, sorter])</p></td>
+<td><p>Find indices where elements of <cite>v</cite> should be inserted in <cite>a</cite> to maintain order.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setfield</span></code>(val, dtype[, offset])</p></td>
+<td><p>Put a value into a specified place in a field defined by a data-type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setflags</span></code>([write, align, uic])</p></td>
+<td><p>Set array flags WRITEABLE, ALIGNED, WRITEBACKIFCOPY, respectively.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shift</span></code>(delta)</p></td>
+<td><p>Shift the sample axis by a constant offset.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">skewness</span></code>([axis, nan_policy])</p></td>
+<td><p>Compute the skewness of the data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code>([axis, kind, order, stable])</p></td>
+<td><p>Sort an array in-place.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code>([axis])</p></td>
+<td><p>Remove axes of length one from <cite>a</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code>([axis, dtype, out, ddof, keepdims, where])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">step</span></code>([where])</p></td>
+<td><p>Plot the matrix as a step function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">submatrix</span></code>(row_keys, col_keys)</p></td>
+<td><p>Extract a submatrix by selecting specific rows and columns.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code>([axis, dtype, out, keepdims, initial, where])</p></td>
+<td><p>Return the sum of the array elements over the given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">swapaxes</span></code>(axis1, axis2, /)</p></td>
+<td><p>Return a view of the array with <cite>axis1</cite> and <cite>axis2</cite> interchanged.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code>(indices[, axis, out, mode])</p></td>
+<td><p>Return an array formed from the elements of <cite>a</cite> at the given indices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_cupy</span></code>([dtype])</p></td>
+<td><p>Convert to CuPy Array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dask</span></code>([chunks])</p></td>
+<td><p>Convert to Dask Array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_device</span></code>(device, /, *[, stream])</p></td>
+<td><p>For Array API compatibility.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.to_dict" title="gwexpy.spectrogram.SpectrogramMatrix.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>()</p></td>
+<td><p>Convert to SpectrogramDict.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict_flat</span></code>()</p></td>
+<td><p>Convert matrix to a flat dictionary mapping name to Series.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_hdf5</span></code>(filepath, **kwargs)</p></td>
+<td><p>Write matrix to HDF5 file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_jax</span></code>()</p></td>
+<td><p>Convert to JAX Array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.to_list" title="gwexpy.spectrogram.SpectrogramMatrix.to_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_list</span></code></a>()</p></td>
+<td><p>Convert to SpectrogramList.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_pandas</span></code>([format])</p></td>
+<td><p>Convert the matrix to a pandas DataFrame.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.to_series_1Dlist" title="gwexpy.spectrogram.SpectrogramMatrix.to_series_1Dlist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_series_1Dlist</span></code></a>()</p></td>
+<td><p>Convert matrix to a flat 1D list of Spectrogram objects.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.to_series_2Dlist" title="gwexpy.spectrogram.SpectrogramMatrix.to_series_2Dlist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_series_2Dlist</span></code></a>()</p></td>
+<td><p>Convert matrix to a 2D nested list of Spectrogram objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_tensorflow</span></code>([dtype])</p></td>
+<td><p>Convert to tensorflow.Tensor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_torch</span></code>([device, dtype, requires_grad, copy])</p></td>
+<td><p>Convert to torch.Tensor.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_zarr</span></code>(store[, path])</p></td>
+<td><p>Save to Zarr storage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tobytes</span></code>([order])</p></td>
+<td><p>Construct Python bytes containing the raw data bytes in the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tofile</span></code>(fid, /[, sep, format])</p></td>
+<td><p>Write array to a file as text or binary (default).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code>()</p></td>
+<td><p>Return the array as an <code class="docutils literal notranslate"><span class="pre">a.ndim</span></code>-levels deep nested list of Python scalars.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trace</span></code>([offset, axis1, axis2, dtype, out])</p></td>
+<td><p>Compute the trace of the matrix (sum of diagonal elements).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code>(*axes)</p></td>
+<td><p>Transpose rows and columns, preserving sample axis as 2.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>(other[, inplace, pad, gap])</p></td>
+<td><p>Update matrix by appending without resizing (rolling buffer style).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_at</span></code>(x)</p></td>
+<td><p>Get the matrix values at a specific x-axis location.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code>([axis, dtype, out, ddof, keepdims, where])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code>([dtype][, type])</p></td>
+<td><p>New view of array with the same data.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code>(target[, format])</p></td>
+<td><p>Write the matrix to a file.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaDataMatrix</span></code></p></td>
+<td><p>Metadata matrix containing per-element metadata.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">N_samples</span></code></p></td>
+<td><p>Number of samples along the x-axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td><p>Transpose of the matrix (rows and columns swapped).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">base</span></code></p></td>
+<td><p>Base object if memory is from some other object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_names</span></code></p></td>
+<td><p>Flattened list of all element names.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">channels</span></code></p></td>
+<td><p>2D array of channel identifiers for each matrix element.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ctypes</span></code></p></td>
+<td><p>An object to simplify the interaction of the array with the ctypes module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></p></td>
+<td><p>Python buffer object pointing to the start of the array's data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">df</span></code></p></td>
+<td><p>Return the frequency spacing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></p></td>
+<td><p>Time spacing (dx).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></p></td>
+<td><p>Data-type of the array's elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">duration</span></code></p></td>
+<td><p>Duration covered by the samples.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dx</span></code></p></td>
+<td><p>Step size between samples on the x-axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">f0</span></code></p></td>
+<td><p>Return the starting frequency.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></p></td>
+<td><p>Information about the memory layout of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flat</span></code></p></td>
+<td><p>A 1-D iterator over the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">frequencies</span></code></p></td>
+<td><p>Frequency array (yindex).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></p></td>
+<td><p>Imaginary part of the matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_regular</span></code></p></td>
+<td><p>Return True if this series has a regular grid (constant spacing).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
+<td><p>Length of one array element in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">loc</span></code></p></td>
+<td><p>Label-based indexer for direct value access.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mT</span></code></p></td>
+<td><p>View of the matrix transposed array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">names</span></code></p></td>
+<td><p>2D array of names for each matrix element.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></p></td>
+<td><p>Total bytes consumed by the elements of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></p></td>
+<td><p>Number of array dimensions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p>Real part of the matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
+<td><p>Tuple of array dimensions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.shape3D" title="gwexpy.spectrogram.SpectrogramMatrix.shape3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape3D</span></code></a></p></td>
+<td><p>Return the display-oriented 3D shape view.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<td><p>Number of elements in the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
+<td><p>Tuple of bytes to step in each dimension when traversing an array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">t0</span></code></p></td>
+<td><p>Start time (x0).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">times</span></code></p></td>
+<td><p>Time array (xindex).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">units</span></code></p></td>
+<td><p>2D array of units for each matrix element.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>Underlying numpy array of data values.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x0</span></code></p></td>
+<td><p>Starting value of the sample axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xarray</span></code></p></td>
+<td><p>Return the sample axis values.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xindex</span></code></p></td>
+<td><p>Sample axis index array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xspan</span></code></p></td>
+<td><p>Full extent of the sample axis as a tuple (start, end).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xunit</span></code></p></td>
+<td><p>Unit of the sample axis.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.series_class">
+<span class="sig-name descname"><span class="pre">series_class</span></span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.series_class" title="Link to this definition">#</a></dt>
+<dd><p>:py:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~gwexpy.spectrogram.spectrogram.Spectrogram`の別名です。</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.dict_class">
+<span class="sig-name descname"><span class="pre">dict_class</span></span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.dict_class" title="Link to this definition">#</a></dt>
+<dd><p>:py:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>~gwexpy.spectrogram.collections.SpectrogramDict`の別名です。</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.list_class">
+<span class="sig-name descname"><span class="pre">list_class</span></span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.list_class" title="Link to this definition">#</a></dt>
+<dd><p>:py:class:<a href="#id5"><span class="problematic" id="id6">`</span></a>~gwexpy.spectrogram.collections.SpectrogramList`の別名です。</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.row_keys">
+<span class="sig-name descname"><span class="pre">row_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.row_keys" title="Link to this definition">#</a></dt>
+<dd><p>Return the row metadata keys.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.col_keys">
+<span class="sig-name descname"><span class="pre">col_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.col_keys" title="Link to this definition">#</a></dt>
+<dd><p>Return the column metadata keys.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.is_compatible">
+<span class="sig-name descname"><span class="pre">is_compatible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.is_compatible" title="Link to this definition">#</a></dt>
+<dd><p>Check compatibility with another SpectrogramMatrix/object.</p>
+<p>Overrides SeriesMatrix.is_compatible to avoid loop range issues due to
+mismatch between data shape (Time axis) and metadata shape (Batch/Col).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.row_index">
+<span class="sig-name descname"><span class="pre">row_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.row_index" title="Link to this definition">#</a></dt>
+<dd><p>Return the integer index for a row key.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.col_index">
+<span class="sig-name descname"><span class="pre">col_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.col_index" title="Link to this definition">#</a></dt>
+<dd><p>Return the integer index for a column key.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.to_series_2Dlist">
+<span class="sig-name descname"><span class="pre">to_series_2Dlist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.to_series_2Dlist" title="Link to this definition">#</a></dt>
+<dd><p>Convert matrix to a 2D nested list of Spectrogram objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.to_series_1Dlist">
+<span class="sig-name descname"><span class="pre">to_series_1Dlist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.to_series_1Dlist" title="Link to this definition">#</a></dt>
+<dd><p>Convert matrix to a flat 1D list of Spectrogram objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.to_list">
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.to_list" title="Link to this definition">#</a></dt>
+<dd><p>Convert to SpectrogramList.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.to_dict" title="Link to this definition">#</a></dt>
+<dd><p>Convert to SpectrogramDict.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.shape3D">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape3D</span></span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.shape3D" title="Link to this definition">#</a></dt>
+<dd><p>Return the display-oriented 3D shape view.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.plot_summary">
+<span class="sig-name descname"><span class="pre">plot_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.plot_summary" title="Link to this definition">#</a></dt>
+<dd><p>Plot the matrix as side-by-side spectrograms and percentile summaries.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="gwexpy.frequencyseries.FrequencySeriesMatrix.html"
+       title="前のページ">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">前へ</p>
+        <p class="prev-next-title">gwexpy.frequencyseries.FrequencySeriesMatrix</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="fields.html"
+       title="次ページ">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">Fields</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> このページでは
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.__init__"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.series_class"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.series_class</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.dict_class"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.dict_class</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.list_class"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.list_class</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.row_keys"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.row_keys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.col_keys"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.col_keys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.is_compatible"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.is_compatible()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.row_index"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.row_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.col_index"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.col_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.to_series_2Dlist"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.to_series_2Dlist()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.to_series_1Dlist"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.to_series_1Dlist()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.to_list"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.to_list()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.to_dict"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.to_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.shape3D"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.shape3D</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.plot_summary"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.plot_summary()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/reference/api/gwexpy.spectrogram.SpectrogramMatrix.rst">
+      <i class="fa-solid fa-file-lines"></i> ソースコードを表示
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3 を使用して作成されました。
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0 で構築されています。
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

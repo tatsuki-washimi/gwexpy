@@ -1,0 +1,742 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="Understand GWexpy numerical stability behavior, including whitening eps handling, safe log plotting, NaN and Inf failure modes, and when users should tune parameters." name="description" />
+
+    <title>Numerical Stability and Precision &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=3d055840"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'explanation/numerical_stability';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/explanation/numerical_stability.html" />
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Validated Algorithms" href="validated_algorithms.html" />
+    <link rel="prev" title="Physics Models and Analysis Theory" href="physics_models.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/explanation/numerical_stability.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/numerical_stability.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/explanation/numerical_stability.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/numerical_stability.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/numerical_stability.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Design and concepts</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture and Data Flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwexpy_for_gwpy_users.html">GWexpy for GWpy Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Theory and quality</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="physics_models.html">Physics Models and Analysis Theory</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Numerical Stability and Precision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification_and_quality.html">Verification and Quality Signals</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Explanation</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Numerical Stability and Precision</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="numerical-stability-and-precision">
+<h1>Numerical Stability and Precision<a class="headerlink" href="#numerical-stability-and-precision" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Who should read this page?</strong>
+Refer to this detailed guide when:</p>
+<ul class="simple">
+<li><p>You see “holes” or “unusual colors” in your plots caused by <code class="docutils literal notranslate"><span class="pre">NaN</span></code> or <code class="docutils literal notranslate"><span class="pre">Inf</span></code>.</p></li>
+<li><p>You are working with a dynamic range that makes a numerical parameter or plotted scale hard to choose.</p></li>
+<li><p>You want to deeply understand the numerical behavior of algorithms and tune parameters like <code class="docutils literal notranslate"><span class="pre">eps</span></code> or <code class="docutils literal notranslate"><span class="pre">tol</span></code>.</p></li>
+</ul>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides selected stabilization utilities for operations such as whitening and logarithmic conversion. Their behavior and limits depend on the API used.</p>
+<section id="tl-dr">
+<span id="numerical-stability-en-tldr"></span><h2>TL;DR<a class="headerlink" href="#tl-dr" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>For normal analysis, start by trusting the default <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> settings.</p></li>
+<li><p>Do not add manual offsets such as <code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">1e-20</span></code> before plotting unless you have a concrete reason.</p></li>
+<li><p>Tune parameters only when you actually observe <code class="docutils literal notranslate"><span class="pre">NaN</span></code> / <code class="docutils literal notranslate"><span class="pre">Inf</span></code>, work with extreme amplitudes, or need algorithm-level validation.</p></li>
+</ul>
+</section>
+<section id="impact-of-stabilization-before-after">
+<span id="numerical-stability-en-impact"></span><h2>Impact of Stabilization (Before &amp; After)<a class="headerlink" href="#impact-of-stabilization-before-after" title="Link to this heading">#</a></h2>
+<p>A comparison between standard methods (simple <code class="docutils literal notranslate"><span class="pre">log10</span></code> or fixed <code class="docutils literal notranslate"><span class="pre">eps</span></code>) and <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>’s robust numerical stabilization algorithms.</p>
+<p><img alt="Numerical stabilization comparison: Noisy visualization with NaN/Inf artifacts (Left) vs. Clean gravitational-wave signal (Right)" src="../_images/numerical_stability_comparison.png" /></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Item</p></th>
+<th class="head text-left"><p>Standard path</p></th>
+<th class="head text-left"><p>GWexpy path</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>Zero Values</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">log10(0)</span></code> produces <code class="docutils literal notranslate"><span class="pre">-inf</span></code>, which a caller must handle</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> applies a data-dependent floor before converting to dB</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>Small denominators</strong></p></td>
+<td class="text-left"><p>A fixed <code class="docutils literal notranslate"><span class="pre">eps</span></code> can be unsuitable for the data scale</p></td>
+<td class="text-left"><p>The documented whitening entry points accept <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>Non-finite input</strong></p></td>
+<td class="text-left"><p>A numerical operation can be undefined</p></td>
+<td class="text-left"><p>Individual APIs validate or reject input according to their documented contract</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+</section>
+<section id="core-stabilization-methods-and-apis">
+<span id="numerical-stability-en-methods"></span><h2>Core Stabilization Methods and APIs<a class="headerlink" href="#core-stabilization-methods-and-apis" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Method</p></th>
+<th class="head text-left"><p>Target API</p></th>
+<th class="head text-left"><p>Issues Resolved</p></th>
+<th class="head text-left"><p>Configuration Hint</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>Adaptive Whitening</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.whiten_channels()</span></code>, <code class="docutils literal notranslate"><span class="pre">whiten_matrix()</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.signal.preprocessing.whiten()</span></code></p></td>
+<td class="text-left"><p>Small denominators</p></td>
+<td class="text-left"><p>Use <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> where that parameter is supported</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>Safe Log Conversion</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gwexpy.numerics.safe_log_scale()</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">-inf</span></code> from zero values during dB conversion</p></td>
+<td class="text-left"><p>Set <code class="docutils literal notranslate"><span class="pre">dynamic_range_db</span></code> for the intended display range</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>Data-scaled epsilon</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gwexpy.numerics.safe_epsilon()</span></code></p></td>
+<td class="text-left"><p>Selecting an epsilon from the data scale</p></td>
+<td class="text-left"><p>Specify <code class="docutils literal notranslate"><span class="pre">rel_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">abs_tol</span></code> when the defaults do not match the operation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+</section>
+<section id="detailed-explanations-and-examples">
+<span id="numerical-stability-en-examples"></span><h2>Detailed Explanations and Examples<a class="headerlink" href="#detailed-explanations-and-examples" title="Link to this heading">#</a></h2>
+<section id="adaptive-whitening">
+<h3>1. Adaptive Whitening<a class="headerlink" href="#adaptive-whitening" title="Link to this heading">#</a></h3>
+<p><strong>Goal:</strong> Avoid signal loss caused by a fixed <code class="docutils literal notranslate"><span class="pre">eps</span></code>.
+<strong>Input:</strong> A <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> containing very small amplitudes.
+<strong>Output:</strong> A whitened series with automatic scaling.</p>
+<p>Standard whitening often uses a fixed normalization parameter (<code class="docutils literal notranslate"><span class="pre">eps</span></code>) to prevent division by zero. If this value is too large, micro-signals are lost.</p>
+<section id="bad-example-fixed-eps-causing-signal-loss">
+<h4>❌ Bad Example: Fixed eps causing signal loss<a class="headerlink" href="#bad-example-fixed-eps-causing-signal-loss" title="Link to this heading">#</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># A fixed eps of 1e-12 rounds a 1e-21 signal to zero</span>
+<span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span> <span class="o">/</span> <span class="p">(</span><span class="n">asd</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span> 
+</pre></div>
+</div>
+</section>
+<section id="good-example-gwexpy-s-eps-auto">
+<h4>✅ Good Example: GWexpy’s <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code><a class="headerlink" href="#good-example-gwexpy-s-eps-auto" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> dynamically scales <code class="docutils literal notranslate"><span class="pre">eps</span></code> relative to the data range and uses a <code class="docutils literal notranslate"><span class="pre">SAFE_FLOOR</span></code> (1e-50) for singularities. The adaptive <code class="docutils literal notranslate"><span class="pre">eps</span></code> is available on the channel-whitening entry points: <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.whiten_channels()</span></code>, the functional <code class="docutils literal notranslate"><span class="pre">whiten_matrix()</span></code>, and <code class="docutils literal notranslate"><span class="pre">gwexpy.signal.preprocessing.whiten()</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-21</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">whitened</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">whiten_channels</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>  <span class="c1"># adaptive eps (returns matrix + model)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="safe-logarithmic-scaling-safe-log">
+<h3>2. Safe Logarithmic Scaling (Safe Log)<a class="headerlink" href="#safe-logarithmic-scaling-safe-log" title="Link to this heading">#</a></h3>
+<p><strong>Goal:</strong> Prevent <code class="docutils literal notranslate"><span class="pre">-inf</span></code> values and broken plots when zeros are present.
+<strong>Input:</strong> ASD/PSD-like data with zeros or very quiet regions.
+<strong>Output:</strong> A stable visualization with a dynamic floor.</p>
+<p>Prevents <code class="docutils literal notranslate"><span class="pre">-inf</span></code> values when visualizing spectrograms or PSDs containing zeros or quiet regions.</p>
+<section id="bad-example-numerical-errors-via-manual-conversion">
+<h4>❌ Bad Example: Numerical errors via manual conversion<a class="headerlink" href="#bad-example-numerical-errors-via-manual-conversion" title="Link to this heading">#</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asd_db</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">asd</span><span class="p">)</span>  <span class="c1"># Zeros become -inf, breaking the plot</span>
+</pre></div>
+</div>
+</section>
+<section id="good-example-explicit-safe-log-conversion">
+<h4>✅ Good Example: Explicit safe-log conversion<a class="headerlink" href="#good-example-explicit-safe-log-conversion" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> calculates a floor from the finite data maximum and the requested dynamic range, then returns decibels.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.numerics</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_log_scale</span>
+
+<span class="n">asd_db</span> <span class="o">=</span> <span class="n">safe_log_scale</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">dynamic_range_db</span><span class="o">=</span><span class="mf">120.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+</section>
+<section id="recommendations-for-users">
+<span id="numerical-stability-en-recommendations"></span><h2>Recommendations for Users<a class="headerlink" href="#recommendations-for-users" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Use an explicit floor for dB conversion</strong>: Call <code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> when converting data that may contain zeros or quiet regions.</p></li>
+<li><p><strong>Choose whitening parameters at the API boundary</strong>: Use <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> only on the whitening entry points that document it, then inspect the result for the scientific application.</p></li>
+<li><p><strong>Check the API contract</strong>: Validation, finite-value handling, and tolerances are implemented per operation rather than by a single global policy.</p></li>
+</ul>
+</section>
+<section id="next-to-read">
+<h2>Next to Read<a class="headerlink" href="#next-to-read" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/api/signal.html"><span class="doc std std-doc">Signal Processing API Reference</span></a></p></li>
+<li><p><a class="reference internal" href="validated_algorithms.html"><span class="std std-doc">Validated Algorithms</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/index.html"><span class="std std-doc">API Reference</span></a> — Entry point to all API pages</p></li>
+<li><p><a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">Prerequisites and Conventions</span></a> — Shared FFT and numerical assumptions across the docs</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="physics_models.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Physics Models and Analysis Theory</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="validated_algorithms.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Validated Algorithms</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tl-dr">TL;DR</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#impact-of-stabilization-before-after">Impact of Stabilization (Before &amp; After)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-stabilization-methods-and-apis">Core Stabilization Methods and APIs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-explanations-and-examples">Detailed Explanations and Examples</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adaptive-whitening">1. Adaptive Whitening</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bad-example-fixed-eps-causing-signal-loss">❌ Bad Example: Fixed eps causing signal loss</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#good-example-gwexpy-s-eps-auto">✅ Good Example: GWexpy’s <code class="docutils literal notranslate"><span class="pre">eps="auto"</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#safe-logarithmic-scaling-safe-log">2. Safe Logarithmic Scaling (Safe Log)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bad-example-numerical-errors-via-manual-conversion">❌ Bad Example: Numerical errors via manual conversion</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#good-example-explicit-safe-log-conversion">✅ Good Example: Explicit safe-log conversion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#recommendations-for-users">Recommendations for Users</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-to-read">Next to Read</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/explanation/numerical_stability.md">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

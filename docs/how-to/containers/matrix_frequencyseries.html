@@ -1,0 +1,1282 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>FrequencySeriesMatrix: Matrix Basics &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=3d055840"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/containers/matrix_frequencyseries';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/containers/matrix_frequencyseries.html" />
+    <link rel="icon" href="../../_static/favicon.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="SpectrogramMatrix: Matrix Basics" href="matrix_spectrogram.html" />
+    <link rel="prev" title="Containers &amp; matrices" href="index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/containers/matrix_frequencyseries.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/containers/matrix_frequencyseries.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/how-to/containers/matrix_frequencyseries.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/containers/matrix_frequencyseries.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    How-to guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../explanation/index.html">
+    Explanation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../about/index.html">
+    About
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <span class="active">EN / </span>
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/how-to/containers/matrix_frequencyseries.html" title="日本語">
+      <i class="fa-solid fa-language"></i> 日本語</a>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Data and formats</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../interop.html">Interop / Conversion Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../interop/intro_interop.html">Interoperability: Basics</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../time_utilities.html">GPS Time Utility Functions (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tools and operations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migration.html">Migrating Between GWexpy Versions</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Technique recipes</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Containers &amp; matrices</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">FrequencySeriesMatrix: Matrix Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix_spectrogram.html">SpectrogramMatrix: Matrix Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="field_scalar_intro.html">Field API: ScalarField Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="field_advanced_workflow.html">Field API: Advanced Analysis Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">Scalar Field Slicing Guide (Why 4D is Preserved)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro_histogram.html">Histogram: Basics</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../spectral/index.html">Spectral &amp; time-frequency</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_spectrogram_processing.html">Spectrogram: Normalization and Cleaning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_hht.html">HHT: Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_detection.html">Peak Detection: Finding Peaks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/advanced_peak_tracking.html">Peak Tracking: Time Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../spectral/time_frequency_analysis_comparison.html">Time-Frequency Analysis: Interactive Comparison</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fitting/index.html">Fitting &amp; statistics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_fitting.html">Fitting: Spectral Line Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_arima.html">ARIMA: Time Series Forecasting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_decomposition.html">Decomposition Analysis: PCA, ICA, and Eigenmodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fitting/advanced_correlation.html">Correlation Analysis: Statistical Methods</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../fitting/rayleigh_gauch_tutorial.html">Non-Gaussian Noise Analysis: Rayleigh and Gaussian-Chi</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../control/index.html">Control &amp; modeling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_basics.html">Control Analysis: Resonance and Feedback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_modeling.html">Control Analysis: Plant Modeling from Measured Response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_control_discretization.html">Control Analysis: Discretization (ZOH vs Tustin)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../control/advanced_modal_analysis.html">High-Precision Modal Analysis of Suspension Systems</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../coupling/index.html">Coupling &amp; correlation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_bruco.html">Bruco: Coherence Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_coupling.html">Coupling Analysis: Multi-Channel Coupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coupling/advanced_field_analysis.html">Multi-Dimensional Field Analysis: Beam Profiles and Spatial Statistics</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../segments/index.html">Segments &amp; tables</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_asd_pipeline.html">ASD Analysis: Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/segment_visualization.html">Segment Analysis: Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_segment_table.html">SegmentTable: Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segments/intro_table.html">Segment Analysis: Basic Pipeline</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../viz/index.html">Visualization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../viz/intro_mapplotting.html">Map Plotting: Basics</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Case studies</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../case-studies/index.html">Case studies</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_active_damping.html">Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_transfer_function.html">Tutorial: Transfer Function Measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_calibration_pipeline.html">Calibration Pipeline: Counts → Strain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_dttxml_calibration.html">Reading and Using DTT XML Files with gwexpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_finesse_optics.html">Finesse 3 Interoperability: Simulation vs. Measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_seismic_obspy.html">Case Study: Seismic Analysis with ObsPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_gbd_format.html">Case Study: GBD Format I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_hdf5_provenance.html">Reproducible Metadata Management with HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_pycbc_search.html">PyCBC Interoperability: From gwexpy Preprocessing to GW Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bootstrap_gls_fitting.html">Case Study: Bootstrap PSD and GLS Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_ml_preprocessing.html">Case Study: ML Preprocessing Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_segment_analysis.html">Case Study: Event-Synchronized Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_physics_validation.html">Physical Validity Checking: Units, Floors, and Sanity Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_arima_burst_search.html">ARIMA-Based Burst Detection</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_signal_extraction.html">Signal Extraction: Weak Signal Recovery from Colored Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_noise_budget.html">Noise Budgeting and Multi-Channel Correlation Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_lockin_detection.html">Lock-in Detection: Recovering Weak AM/FM Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_wiener_filter.html">Wiener Filtering: Coherent Noise Subtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_coupling_analysis.html">Coupling Analysis: Estimating Transfer Paths Between Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_ica_denoising.html">Case Study: Bruco and ICA Noise Reduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_bruco_advanced.html">Bruco: Bilinear Coupling and AM/FM Demodulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_violin_mode.html">Case Study: Violin Mode Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_schumann_resonance.html">Case Study: Schumann Resonance Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../case-studies/case_glitch_analysis.html">Glitch Analysis: Q-Transform and Omega-Scan</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">How-to guides</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Containers &amp; matrices</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FrequencySeriesMatrix: Matrix Basics</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="frequencyseriesmatrix-matrix-basics">
+<h1>FrequencySeriesMatrix: Matrix Basics<a class="headerlink" href="#frequencyseriesmatrix-matrix-basics" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> is a 3-dimensional array container that extends <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> for the frequency domain (FrequencySeries) with shape: Nrow × Ncol × Nfreq.</p>
+<ul class="simple">
+<li><p>FrequencySeries-compatible aliases such as <code class="docutils literal notranslate"><span class="pre">df</span> <span class="pre">/</span> <span class="pre">f0</span> <span class="pre">/</span> <span class="pre">frequencies</span></code></p></li>
+<li><p>Element access returns <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> (<code class="docutils literal notranslate"><span class="pre">fsm[i,</span> <span class="pre">j]</span></code>)</p></li>
+<li><p>Filter application (magnitude-only: <code class="docutils literal notranslate"><span class="pre">filter</span></code>) and complex response application (<code class="docutils literal notranslate"><span class="pre">apply_response</span></code>)</p></li>
+<li><p>Conversion to time-domain <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> via <code class="docutils literal notranslate"><span class="pre">ifft()</span></code></p></li>
+<li><p>Direct use of display methods (<code class="docutils literal notranslate"><span class="pre">plot</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">repr</span></code>, <code class="docutils literal notranslate"><span class="pre">_repr_html_</span></code>)</p></li>
+</ul>
+<p>In this notebook, we do not define additional utility functions; instead, we directly call class methods to verify their behavior.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesMatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot;axes.grid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="prepare-representative-data">
+<h2>Prepare Representative Data<a class="headerlink" href="#prepare-representative-data" title="Link to this heading">#</a></h2>
+<p>We calculate <code class="docutils literal notranslate"><span class="pre">fft/asd</span></code> from <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> to obtain <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">tone10</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">tone20</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">tone10</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">tone10</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">tone10</span> <span class="o">-</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">tone20</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">units</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">)</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;ch00&quot;</span><span class="p">,</span> <span class="s2">&quot;ch01&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;ch10&quot;</span><span class="p">,</span> <span class="s2">&quot;ch11&quot;</span><span class="p">]]</span>
+<span class="n">channels</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
+
+<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">fft</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tsm&quot;</span><span class="p">,</span> <span class="n">tsm</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">,</span> <span class="n">tsm</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fft&quot;</span><span class="p">,</span> <span class="n">fft</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">fft</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="n">fft</span><span class="o">.</span><span class="n">f0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;asd&quot;</span><span class="p">,</span> <span class="n">asd</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">asd</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;frequencies[:5]&quot;</span><span class="p">,</span> <span class="n">asd</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+
+<span class="n">display</span><span class="p">(</span><span class="n">asd</span><span class="p">)</span>
+<span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tsm (2, 2, 1024) sample_rate 256.0 Hz
+fft (2, 2, 513) df 0.25 Hz f0 0.0 Hz
+asd (2, 2, 129) unit V / Hz(1/2)
+frequencies[:5] [0. 1. 2. 3. 4.] Hz
+</pre></div>
+</div>
+<div class="output text_html"><h3>SeriesMatrix: shape=(2, 2, 129), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 Hz, <b>dx:</b> 1.0 Hz, <b>N_samples:</b> 129</li><li><b>xunit:</b> Hz</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>r0</th>
+      <td>row0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td>row1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Column Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c0</th>
+      <td>col0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>c1</th>
+      <td>col1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Element Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>unit</th>
+      <th>name</th>
+      <th>channel</th>
+      <th>row</th>
+      <th>col</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch00</td>
+      <td>X:A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch01</td>
+      <td>X:B</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch10</td>
+      <td>Y:A</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch11</td>
+      <td>Y:B</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div><img alt="../../_images/17f68f66409d49a4a55014c86e6736f05234a80621ec26fad6419e0742e74be7.png" src="../../_images/17f68f66409d49a4a55014c86e6736f05234a80621ec26fad6419e0742e74be7.png" />
+</div>
+</div>
+</section>
+<section id="various-input-patterns-constructor-examples">
+<h2>Various Input Patterns (Constructor Examples)<a class="headerlink" href="#various-input-patterns-constructor-examples" title="Link to this heading">#</a></h2>
+<p>We verify inputs via <code class="docutils literal notranslate"><span class="pre">df/f0</span></code>, <code class="docutils literal notranslate"><span class="pre">frequencies</span></code>, 2D list of <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> input, etc.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== FrequencySeriesMatrix Constructor Examples ===&quot;</span><span class="p">)</span>
+
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">65</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">freqs</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+
+<span class="n">peak10</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.5</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">peak20</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">data_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">data_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">peak10</span>
+<span class="n">data_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">peak20</span>
+<span class="n">data_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">peak10</span> <span class="o">+</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">peak20</span>
+<span class="n">data_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">peak10</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">peak20</span>
+
+<span class="n">units_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">V</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">names_f</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;p10&quot;</span><span class="p">,</span> <span class="s2">&quot;p20&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;mix&quot;</span><span class="p">,</span> <span class="s2">&quot;diff&quot;</span><span class="p">]]</span>
+<span class="n">channels_f</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
+
+<span class="c1"># Case 1: Explicitly specify frequencies</span>
+<span class="n">fsm</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="n">units_f</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">names_f</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="n">channels_f</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;peaks&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case1 frequencies&quot;</span><span class="p">,</span> <span class="n">fsm</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">fsm</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="n">fsm</span><span class="o">.</span><span class="n">f0</span><span class="p">)</span>
+
+<span class="c1"># Case 2: Specify df/f0 (axis generated via Index.define)</span>
+<span class="n">fsm_df</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units_f</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names_f</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case2 df/f0&quot;</span><span class="p">,</span> <span class="n">fsm_df</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">fsm_df</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+
+<span class="c1"># Case 3: Construct from 2D list of FrequencySeries</span>
+<span class="n">fs00</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;p10&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;X:A&quot;</span>
+<span class="p">)</span>
+<span class="n">fs01</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units_f</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;p20&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;X:B&quot;</span>
+<span class="p">)</span>
+<span class="n">fs10</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mix&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;Y:A&quot;</span>
+<span class="p">)</span>
+<span class="n">fs11</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+    <span class="n">data_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units_f</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;Y:B&quot;</span>
+<span class="p">)</span>
+<span class="n">fsm_from_fs</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">([[</span><span class="n">fs00</span><span class="p">,</span> <span class="n">fs01</span><span class="p">],</span> <span class="p">[</span><span class="n">fs10</span><span class="p">,</span> <span class="n">fs11</span><span class="p">]])</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;case3 from FrequencySeries&quot;</span><span class="p">,</span>
+    <span class="n">fsm_from_fs</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+    <span class="s2">&quot;cell type&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">(</span><span class="n">fsm_from_fs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+<span class="p">)</span>
+
+<span class="c1"># Case 4: Quantity input (units set automatically)</span>
+<span class="n">fsm_q</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span><span class="n">data_f</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">mV</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="o">**</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case4 Quantity meta unit&quot;</span><span class="p">,</span> <span class="n">fsm_q</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+
+<span class="c1"># Case 5: Irregular frequencies</span>
+<span class="n">irreg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">fsm_irreg</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">irreg</span><span class="p">))),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">irreg</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="p">[[</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">]],</span> <span class="n">names</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;irreg&quot;</span><span class="p">]]</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case5 irregular frequencies&quot;</span><span class="p">,</span> <span class="n">fsm_irreg</span><span class="o">.</span><span class="n">frequencies</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== FrequencySeriesMatrix Constructor Examples ===
+case1 frequencies (2, 2, 65) df 1.0 Hz f0 0.0 Hz
+case2 df/f0 (2, 2, 65) df 1.0 Hz
+case3 from FrequencySeries (2, 2, 65) cell type &lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt;
+case4 Quantity meta unit mV / Hz(1/2)
+case5 irregular frequencies [0. 1. 2. 4. 8.] Hz
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="indexing-and-slicing">
+<h2>Indexing and Slicing<a class="headerlink" href="#indexing-and-slicing" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fsm[i,</span> <span class="pre">j]</span></code> returns a <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code></p></li>
+<li><p>Slicing returns a <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code></p></li>
+<li><p>Access is also possible using row/col labels</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s00</span> <span class="o">=</span> <span class="n">asd</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[0,0]&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">s00</span><span class="p">),</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">f0</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[0,0]&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">s00</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+<span class="n">s00</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+<span class="n">s01</span> <span class="o">=</span> <span class="n">asd</span><span class="p">[</span><span class="s2">&quot;r0&quot;</span><span class="p">,</span> <span class="s2">&quot;c1&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[r0,c1]&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">s01</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="n">s01</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+
+<span class="n">sub</span> <span class="o">=</span> <span class="n">asd</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;asd[:,0] -&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">sub</span><span class="p">),</span> <span class="n">sub</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">sub</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0,0] type &lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt; df 1.0 Hz f0 0.0 Hz unit V / Hz(1/2)
+[0,0] name ch00 channel X:A
+[r0,c1] name ch01 channel X:B
+asd[:,0] -&gt; &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 1, 129)
+</pre></div>
+</div>
+<img alt="../../_images/0bffdcce18f078ff25272709628e62644a0f0a83408b506bc9320396032d5a3e.png" src="../../_images/0bffdcce18f078ff25272709628e62644a0f0a83408b506bc9320396032d5a3e.png" />
+<img alt="../../_images/255d72f489c6c348a8c5b34b039fb984ed6d1e1939689e5696a6a3a0a7fd92b6.png" src="../../_images/255d72f489c6c348a8c5b34b039fb984ed6d1e1939689e5696a6a3a0a7fd92b6.png" />
+</div>
+</div>
+</section>
+<section id="sample-axis-editing-frequency-axis">
+<h2>Sample Axis Editing (frequency axis)<a class="headerlink" href="#sample-axis-editing-frequency-axis" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">diff</span></code> / <code class="docutils literal notranslate"><span class="pre">pad</span></code> return a <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code></p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">band</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">40</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;band&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">band</span><span class="p">),</span> <span class="n">band</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="n">band</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
+<span class="n">band</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+
+<span class="n">diffed</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;diffed&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">diffed</span><span class="p">),</span> <span class="n">diffed</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">diffed</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+
+<span class="n">padded</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;padded&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">padded</span><span class="p">),</span> <span class="n">padded</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">,</span> <span class="n">padded</span><span class="o">.</span><span class="n">f0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>band &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 35) span (&lt;Quantity 5. Hz&gt;, &lt;Quantity 40. Hz&gt;)
+diffed &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 34) df 1.0 Hz
+padded &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 45) f0 0.0 Hz
+</pre></div>
+</div>
+<img alt="../../_images/80f6e94dbd6abb2cb80b947beab013b6341719ac58b6d2340fe81780dfc7a45f.png" src="../../_images/80f6e94dbd6abb2cb80b947beab013b6341719ac58b6d2340fe81780dfc7a45f.png" />
+</div>
+</div>
+</section>
+<section id="operations-ufunc-apply-response">
+<h2>Operations (ufunc / apply_response)<a class="headerlink" href="#operations-ufunc-apply-response" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Ufunc operations such as scalar multiplication preserve units</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_response</span></code> is an extended method to apply complex/real frequency responses (dimensionless)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scaled</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">band</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scaled unit&quot;</span><span class="p">,</span> <span class="n">scaled</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+
+<span class="c1"># Simple real response suppressing around 30 Hz</span>
+<span class="n">resp_mag</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">/</span> <span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">))</span> <span class="o">**</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">shaped</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">apply_response</span><span class="p">(</span><span class="n">resp_mag</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;apply_response&quot;</span><span class="p">,</span>
+    <span class="n">shaped</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+    <span class="s2">&quot;dtype&quot;</span><span class="p">,</span>
+    <span class="n">shaped</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+    <span class="s2">&quot;unit&quot;</span><span class="p">,</span>
+    <span class="n">shaped</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">shaped</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>scaled unit V / Hz(1/2)
+apply_response (2, 2, 35) dtype float64 unit V / Hz(1/2)
+</pre></div>
+</div>
+<img alt="../../_images/c60d2477660f1d008e115ecce4ed1df4cebd4e2b8fb0a625f0e71d5e6f92c3f2.png" src="../../_images/c60d2477660f1d008e115ecce4ed1df4cebd4e2b8fb0a625f0e71d5e6f92c3f2.png" />
+</div>
+</div>
+</section>
+<section id="filter-magnitude-only">
+<h2>filter (magnitude-only)<a class="headerlink" href="#filter-magnitude-only" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">filter</span></code> delegates to GWpy’s <code class="docutils literal notranslate"><span class="pre">fdfilter</span></code>, applying the filter’s “magnitude response” only (not the phase).</p>
+<p>As an example, we apply an IIR filter created with <code class="docutils literal notranslate"><span class="pre">scipy.signal.butter</span></code> to the <code class="docutils literal notranslate"><span class="pre">fft</span></code> and then convert back to the time domain with <code class="docutils literal notranslate"><span class="pre">ifft()</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+
+<span class="n">sr</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sr</span><span class="p">)</span>
+
+<span class="n">fft_filt</span> <span class="o">=</span> <span class="n">fft</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">analog</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">tsm_filt</span> <span class="o">=</span> <span class="n">fft_filt</span><span class="o">.</span><span class="n">ifft</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fft_filt&quot;</span><span class="p">,</span> <span class="n">fft_filt</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="n">fft_filt</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tsm_filt&quot;</span><span class="p">,</span> <span class="n">tsm_filt</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="n">tsm_filt</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+<span class="n">tsm_filt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fft_filt (2, 2, 513) df 0.25 Hz
+tsm_filt (2, 2, 1024) dt 0.00390625 s
+</pre></div>
+</div>
+<img alt="../../_images/74ce3b8cf211184d3e2befdd8cd48c9b3947ec2f74e467e231ec3c76434611b9.png" src="../../_images/74ce3b8cf211184d3e2befdd8cd48c9b3947ec2f74e467e231ec3c76434611b9.png" />
+</div>
+</div>
+</section>
+<section id="ifft-fft-to-time-domain">
+<h2>ifft (FFT to Time Domain)<a class="headerlink" href="#ifft-fft-to-time-domain" title="Link to this heading">#</a></h2>
+<p>Applying <code class="docutils literal notranslate"><span class="pre">ifft()</span></code> to the output of <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.fft()</span></code> reproduces the original <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> (within numerical precision).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsm_back</span> <span class="o">=</span> <span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">()</span>
+<span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">tsm_back</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">tsm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ifft back&quot;</span><span class="p">,</span> <span class="n">tsm_back</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="n">tsm_back</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;t0&quot;</span><span class="p">,</span> <span class="n">tsm_back</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rms error (cell 0,0)&quot;</span><span class="p">,</span> <span class="n">rms</span><span class="p">)</span>
+
+<span class="n">tsm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+<span class="n">tsm_back</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ifft back (2, 2, 1024) dt 0.00390625 s t0 0.0 s
+rms error (cell 0,0) 8.131556499372449e-17
+</pre></div>
+</div>
+<img alt="../../_images/a42ace97b93b52e1642e1713c92f48c1a606dedfca563ce801aa7ce2c2ea91a2.png" src="../../_images/a42ace97b93b52e1642e1713c92f48c1a606dedfca563ce801aa7ce2c2ea91a2.png" />
+<img alt="../../_images/a42ace97b93b52e1642e1713c92f48c1a606dedfca563ce801aa7ce2c2ea91a2.png" src="../../_images/a42ace97b93b52e1642e1713c92f48c1a606dedfca563ce801aa7ce2c2ea91a2.png" />
+</div>
+</div>
+</section>
+<section id="display-methods-repr-plot-step">
+<h2>Display Methods: repr / plot / step<a class="headerlink" href="#display-methods-repr-plot-step" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">repr</span></code>: Text representation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_repr_html_</span></code>: In notebooks, <code class="docutils literal notranslate"><span class="pre">display(fsm)</span></code> shows tabular format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plot</span></code> / <code class="docutils literal notranslate"><span class="pre">step</span></code>: Class methods for direct plotting (not saved)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;repr:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">band</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+
+<span class="n">band</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+
+<span class="n">band</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="s2">&quot;mid&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>repr:
+ SeriesMatrix(shape=(2, 2, 35),  name=&#39;demo&#39;)
+  epoch   : 0.0 s
+  x0      : 5.0 Hz
+  dx      : 1.0 Hz
+  xunit   : Hz
+  samples : 35
+
+[ Row metadata ]
+     name channel unit
+key                   
+r0   row0             
+r1   row1             
+
+[ Column metadata ]
+     name channel unit
+key                   
+c0   col0             
+c1   col1             
+
+[ Elements metadata ]
+          unit  name channel  row  col
+0  V / Hz(1/2)  ch00     X:A    0    0
+1  V / Hz(1/2)  ch01     X:B    0    1
+2  V / Hz(1/2)  ch10     Y:A    1    0
+3  V / Hz(1/2)  ch11     Y:B    1    1
+</pre></div>
+</div>
+<div class="output text_html"><h3>SeriesMatrix: shape=(2, 2, 35), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 5.0 Hz, <b>dx:</b> 1.0 Hz, <b>N_samples:</b> 35</li><li><b>xunit:</b> Hz</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>r0</th>
+      <td>row0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td>row1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Column Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c0</th>
+      <td>col0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>c1</th>
+      <td>col1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Element Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>unit</th>
+      <th>name</th>
+      <th>channel</th>
+      <th>row</th>
+      <th>col</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch00</td>
+      <td>X:A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch01</td>
+      <td>X:B</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch10</td>
+      <td>Y:A</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch11</td>
+      <td>Y:B</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div><img alt="../../_images/80f6e94dbd6abb2cb80b947beab013b6341719ac58b6d2340fe81780dfc7a45f.png" src="../../_images/80f6e94dbd6abb2cb80b947beab013b6341719ac58b6d2340fe81780dfc7a45f.png" />
+<img alt="../../_images/b7d1aac86a4b41fd169edb049793982d1afff01f3e4149b4eb6cde8c21ea1357.png" src="../../_images/b7d1aac86a4b41fd169edb049793982d1afff01f3e4149b4eb6cde8c21ea1357.png" />
+</div>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> allows batch processing as a matrix while preserving the frequency axis (<code class="docutils literal notranslate"><span class="pre">df/f0/frequencies</span></code>) and element metadata.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> applies magnitude-only filtering, while <code class="docutils literal notranslate"><span class="pre">apply_response</span></code> can apply arbitrary frequency responses including complex responses.</p></li>
+<li><p>Using <code class="docutils literal notranslate"><span class="pre">ifft()</span></code>, you can convert back to the time-domain <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>, enabling workflows where processing is done in the frequency domain and then verified as waveforms.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Containers &amp; matrices</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="matrix_spectrogram.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">SpectrogramMatrix: Matrix Basics</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-representative-data">Prepare Representative Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#various-input-patterns-constructor-examples">Various Input Patterns (Constructor Examples)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indexing-and-slicing">Indexing and Slicing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-axis-editing-frequency-axis">Sample Axis Editing (frequency axis)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operations-ufunc-apply-response">Operations (ufunc / apply_response)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filter-magnitude-only">filter (magnitude-only)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ifft-fft-to-time-domain">ifft (FFT to Time Domain)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-methods-repr-plot-step">Display Methods: repr / plot / step</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/how-to/containers/matrix_frequencyseries.ipynb">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

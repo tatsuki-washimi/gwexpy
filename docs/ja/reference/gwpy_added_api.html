@@ -1,0 +1,921 @@
+
+<!DOCTYPE html>
+
+
+<html lang="ja" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>GWpy 差分 API インデックス &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=bf418079"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../_static/translations.js?v=4755f45a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/gwpy_added_api';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/reference/gwpy_added_api.html" />
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="解説" href="../explanation/index.html" />
+    <link rel="prev" title="gwexpy.time.tconvert" href="api/gwexpy.time.tconvert.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="ja"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/gwpy_added_api.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/reference/gwpy_added_api.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/gwpy_added_api.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">本文へスキップ</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>トップに戻る</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="ドキュメントを検索..."
+         aria-label="ドキュメントを検索..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="バージョン警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="サイトナビゲーション">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="アイコンリンク">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/gwpy_added_api.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="このページでは">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../explanation/index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="アイコンリンク">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/reference/gwpy_added_api.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="セクションナビゲーション">
+  <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">コンテナ</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/timeseries.html">Time Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.timeseries.TimeSeries.html">gwexpy.timeseries.TimeSeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/frequencyseries.html">Frequency Series</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.frequencyseries.FrequencySeries.html">gwexpy.frequencyseries.FrequencySeries</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/spectrogram.html">Spectrogram</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.spectrogram.Spectrogram.html">gwexpy.spectrogram.Spectrogram</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/matrix.html">Matrix Containers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.timeseries.TimeSeriesMatrix.html">gwexpy.timeseries.TimeSeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.frequencyseries.FrequencySeriesMatrix.html">gwexpy.frequencyseries.FrequencySeriesMatrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.spectrogram.SpectrogramMatrix.html">gwexpy.spectrogram.SpectrogramMatrix</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/fields.html">Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/types.html">Types</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/table.html">Table</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.table.SegmentTable.html">gwexpy.table.SegmentTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.table.SegmentCell.html">gwexpy.table.SegmentCell</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/histogram.html">Histogram (gwexpy.histogram)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.histogram.Histogram.html">gwexpy.histogram.Histogram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.histogram.HistogramDict.html">gwexpy.histogram.HistogramDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.histogram.HistogramList.html">gwexpy.histogram.HistogramList</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">解析と信号処理</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api/spectral.html">Spectral</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/signal.html">Signal Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/fitting.html">Fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/noise.html">Noise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/segments.html">Segments</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.segments.DataQualityFlag.html">gwexpy.segments.DataQualityFlag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.segments.DataQualityDict.html">gwexpy.segments.DataQualityDict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.segments.Segment.html">gwexpy.segments.Segment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.segments.SegmentList.html">gwexpy.segments.SegmentList</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/detector.html">Detector Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/astro.html">Astrophysics Utilities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">相互運用と入出力</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/interop.html">Interoperability (gwexpy.interop)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.hdf5_.html">gwexpy.interop.hdf5_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.frequency.html">gwexpy.interop.frequency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.json_.html">gwexpy.interop.json_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.sqlite_.html">gwexpy.interop.sqlite_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.zarr_.html">gwexpy.interop.zarr_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.netcdf4_.html">gwexpy.interop.netcdf4_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pandas_.html">gwexpy.interop.pandas_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.polars_.html">gwexpy.interop.polars_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.xarray_.html">gwexpy.interop.xarray_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.astropy_.html">gwexpy.interop.astropy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.dask_.html">gwexpy.interop.dask_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.torch_.html">gwexpy.interop.torch_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.torch_dataset.html">gwexpy.interop.torch_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.tensorflow_.html">gwexpy.interop.tensorflow_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.jax_.html">gwexpy.interop.jax_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.cupy_.html">gwexpy.interop.cupy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.finesse_.html">gwexpy.interop.finesse_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.control_.html">gwexpy.interop.control_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.simpeg_.html">gwexpy.interop.simpeg_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.mt_.html">gwexpy.interop.mt_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.mne_.html">gwexpy.interop.mne_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.neo_.html">gwexpy.interop.neo_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.quantities_.html">gwexpy.interop.quantities_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pyroomacoustics_.html">gwexpy.interop.pyroomacoustics_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pydub_.html">gwexpy.interop.pydub_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.specutils_.html">gwexpy.interop.specutils_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pyspeckit_.html">gwexpy.interop.pyspeckit_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pyspice_.html">gwexpy.interop.pyspice_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.skrf_.html">gwexpy.interop.skrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pyoma_.html">gwexpy.interop.pyoma_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.multitaper_.html">gwexpy.interop.multitaper_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.sdypy_.html">gwexpy.interop.sdypy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.sdynpy_.html">gwexpy.interop.sdynpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.meep_.html">gwexpy.interop.meep_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.openems_.html">gwexpy.interop.openems_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.emg3d_.html">gwexpy.interop.emg3d_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.meshio_.html">gwexpy.interop.meshio_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.metpy_.html">gwexpy.interop.metpy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.wrf_.html">gwexpy.interop.wrf_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.harmonica_.html">gwexpy.interop.harmonica_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.exudyn_.html">gwexpy.interop.exudyn_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.opensees_.html">gwexpy.interop.opensees_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.obspy_.html">gwexpy.interop.obspy_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.lal_.html">gwexpy.interop.lal_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.gwinc_.html">gwexpy.interop.gwinc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.pycbc_.html">gwexpy.interop.pycbc_</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.interop.root_.html">gwexpy.interop.root_</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/io.html">I/O</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">プロットとツール</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="api/plot.html">Plotting</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/time.html">Time (gwexpy.time)</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.Time.html">gwexpy.time.Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.LIGOTimeGPS.html">gwexpy.time.LIGOTimeGPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.to_gps.html">gwexpy.time.to_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.from_gps.html">gwexpy.time.from_gps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/gwexpy.time.tconvert.html">gwexpy.time.tconvert</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">GWpy との差分</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">GWpy 差分 API インデックス</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="パンくずリスト" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="ホーム">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">リファレンス</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">GWpy 差分 API インデックス</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="gwpy-difference-api-index">
+<h1>GWpy 差分 API インデックス<a class="headerlink" href="#gwpy-difference-api-index" title="Link to this heading">#</a></h1>
+<p>このページは、GWexpy が GWpy に対して追加するものを <strong>差分中心で検索</strong>するためのものです。   完全な API 一覧ではありません。API 全体については <a class="reference internal" href="index.html"><span class="std std-doc">API リファレンス</span></a> を参照してください。</p>
+<p>まず移行の入口を知りたい場合は、<a class="reference internal" href="../explanation/gwexpy_for_gwpy_users.html"><span class="std std-doc">GWpy ユーザーのための GWexpy</span></a> に戻ってください。</p>
+<section id="start-with-categories">
+<h2>カテゴリから始める<a class="headerlink" href="#start-with-categories" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>カテゴリ</p></th>
+<th class="head"><p>次のことをしたいときに参照：</p></th>
+<th class="head"><p>代表的な項目</p></th>
+<th class="head"><p>エントリポイント</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>マルチチャンネル</p></td>
+<td><p>多数のチャンネルをまとめて処理する</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code></p></td>
+<td><p><a class="reference internal" href="../tutorials/matrix_timeseries.html"><span class="doc std std-doc">行列チュートリアル</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>追加メソッド群</p></td>
+<td><p>外部関数呼び出しをデータオブジェクト側へ寄せたい</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.find_peaks()</span></code>, <code class="docutils literal notranslate"><span class="pre">.fit()</span></code>, <code class="docutils literal notranslate"><span class="pre">.hht()</span></code>, <code class="docutils literal notranslate"><span class="pre">.arima()</span></code></p></td>
+<td><p><a class="reference internal" href="#gwpy-added-methods">追加メソッド</a></p></td>
+</tr>
+<tr class="row-even"><td><p>フィールド API</p></td>
+<td><p>時空のような構造や 4 次元データ構造を扱う</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>, <code class="docutils literal notranslate"><span class="pre">FieldList</span></code>, <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code>, <code class="docutils literal notranslate"><span class="pre">fft_space()</span></code></p></td>
+<td><p><a class="reference internal" href="#gwpy-added-field-api">フィールド API</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>共有／互換性</p></td>
+<td><p>結果共有の挙動を理解する</p></td>
+<td><p>透過的 Pickle</p></td>
+<td><p><a class="reference internal" href="#gwpy-added-sharing-compat">共有・互換性</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="detailed-index">
+<h2>詳細インデックス<a class="headerlink" href="#detailed-index" title="Link to this heading">#</a></h2>
+<section id="multi-channel">
+<h3>マルチチャンネル<a class="headerlink" href="#multi-channel" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API の種類</p></th>
+<th class="head"><p>代表的な API</p></th>
+<th class="head"><p>安定性</p></th>
+<th class="head"><p>GWpy に対して追加されるもの</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>変換メソッド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.to_matrix()</span></code> → <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code></p></td>
+<td><p>安定</p></td>
+<td><p>チャンネルのコレクションを、スペクトル解析や統計ワークフロー向けのバッチ解析コンテナに変換する</p></td>
+<td><p><a class="reference internal" href="../tutorials/matrix_timeseries.html"><span class="doc std std-doc">行列チュートリアル</span></a>, <a class="reference internal" href="api/timeseries.html"><span class="doc std std-doc">TimeSeriesDict</span></a>, <a class="reference internal" href="api/timeseries.html"><span class="doc std std-doc">TimeSeriesMatrix</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>変換メソッド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict.to_matrix()</span></code> → <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code></p></td>
+<td><p>安定</p></td>
+<td><p>周波数系列オブジェクトのコレクションを、ペアワイズ解析やバッチ解析に適したコンテナに変換する</p></td>
+<td><p><a class="reference internal" href="api/frequencyseries.html"><span class="doc std std-doc">FrequencySeriesDict</span></a>, <a class="reference internal" href="api/frequencyseries.html"><span class="doc std std-doc">FrequencySeriesMatrix</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>変換メソッド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SpectrogramDict.to_matrix()</span></code> / <code class="docutils literal notranslate"><span class="pre">SpectrogramList.to_matrix()</span></code> → <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code></p></td>
+<td><p>安定</p></td>
+<td><p>時間周波数のコレクションを、後段処理向けの行列スタイルのコンテナに移せるようにする</p></td>
+<td><p><a class="reference internal" href="api/spectrogram.html"><span class="doc std std-doc">SpectrogramDict</span></a>, <a class="reference internal" href="api/spectrogram.html"><span class="doc std std-doc">SpectrogramList</span></a>, <a class="reference internal" href="api/spectrogram.html"><span class="doc std std-doc">SpectrogramMatrix</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="family-specific-to-matrix-contract-current-stable-behavior">
+<h4>ファミリー固有の <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> 契約（現行の安定挙動）<a class="headerlink" href="#family-specific-to-matrix-contract-current-stable-behavior" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> は現時点では意図的にファミリー固有です。どの変換チェックとメタデータ保証が適用されるかの公開契約として、この表を利用してください。</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>ファミリー</p></th>
+<th class="head"><p>コレクションのエントリポイント</p></th>
+<th class="head"><p>軸ポリシー</p></th>
+<th class="head"><p>リサンプリング／許容誤差</p></th>
+<th class="head"><p>単位ポリシー</p></th>
+<th class="head"><p>ラベル／往復変換の注記</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.to_matrix()</span></code> と <code class="docutils literal notranslate"><span class="pre">TimeSeriesList.to_matrix()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">align_timeseries_collection()</span></code> によって共通の時間グリッドに整列します。整列が成功すれば、軸の厳密な一致は不要です。</p></td>
+<td><p>既定は <code class="docutils literal notranslate"><span class="pre">align=&quot;intersection&quot;</span></code>。整列用のキーワード引数（<code class="docutils literal notranslate"><span class="pre">method</span></code> や <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> を含む）を整列ヘルパーに転送します。</p></td>
+<td><p>この変換経路では、元の <code class="docutils literal notranslate"><span class="pre">TimeSeries.unit</span></code> はセル単位の行列メタデータに引き継がれません。メタデータを別途設定しない限り、復元された要素は無次元になります。</p></td>
+<td><p>辞書のキーは要素名に書き込まれます。往復変換の辞書キーには、生成された行キー（<code class="docutils literal notranslate"><span class="pre">row0</span></code>、<code class="docutils literal notranslate"><span class="pre">row1</span></code>、…）が使われます。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict.to_matrix()</span></code></p></td>
+<td><p>サンプル長の一致のみを確認します。周波数座標値は先頭要素から取得されます。</p></td>
+<td><p>リサンプリングも許容誤差パラメータもありません。</p></td>
+<td><p>要素ごとの <code class="docutils literal notranslate"><span class="pre">unit</span></code> / <code class="docutils literal notranslate"><span class="pre">name</span></code> / <code class="docutils literal notranslate"><span class="pre">channel</span></code> は行列メタデータに保持され、往復変換で復元されます。</p></td>
+<td><p>辞書キーは行キーとして保持されます。出力列は単一の <code class="docutils literal notranslate"><span class="pre">value</span></code> です。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SpectrogramDict.to_matrix()</span></code> と <code class="docutils literal notranslate"><span class="pre">SpectrogramList.to_matrix()</span></code></p></td>
+<td><p>先頭軸の単位に変換した後、形状が等しく、かつ時間／周波数軸が等しいことを要求します。</p></td>
+<td><p>リサンプリングも許容誤差パラメータもありません。単位変換後の比較は厳密です。</p></td>
+<td><p>要素ごとの <code class="docutils literal notranslate"><span class="pre">unit</span></code> / <code class="docutils literal notranslate"><span class="pre">name</span></code> / <code class="docutils literal notranslate"><span class="pre">channel</span></code> は保持されます。全体の行列単位は、すべての要素が同じ単位を共有する場合にのみ設定されます。</p></td>
+<td><p>辞書キーは行キーとして保持されます。リストの行は生成されます（<code class="docutils literal notranslate"><span class="pre">batch0</span></code>、<code class="docutils literal notranslate"><span class="pre">batch1</span></code>、…）。</p></td>
+</tr>
+<tr class="row-odd"><td><p>フィールド</p></td>
+<td><p>SeriesMatrix の <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> コレクション API はなし</p></td>
+<td><p>SeriesMatrix の変換ではなく、<code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> の検証ルールを使用します。</p></td>
+<td><p>フィールド検証は独自の軸許容誤差チェックを持ちます。</p></td>
+<td><p>単位はフィールドオブジェクト側に残ります。<code class="docutils literal notranslate"><span class="pre">to_array()</span></code> は生の配列を返します。</p></td>
+<td><p>SeriesMatrix の往復変換経路ではありません。</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="added-methods">
+<span id="gwpy-added-methods"></span><h3>追加メソッド<a class="headerlink" href="#added-methods" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API の種類</p></th>
+<th class="head"><p>代表的な API</p></th>
+<th class="head"><p>安定性</p></th>
+<th class="head"><p>GWpy に対して追加されるもの</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>インスタンスメソッド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.find_peaks()</span></code></p></td>
+<td><p>安定</p></td>
+<td><p>配列に落とすことなく、データオブジェクト上で直接ピーク検出を実行できるようにする</p></td>
+<td><p><a class="reference internal" href="../tutorials/intro_frequencyseries.html"><span class="doc std std-doc">周波数系列チュートリアル</span></a>, <a class="reference internal" href="api/timeseries.html"><span class="doc std std-doc">TimeSeries</span></a>, <a class="reference internal" href="api/frequencyseries.html"><span class="doc std std-doc">FrequencySeries</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>インスタンスメソッド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.fit()</span></code></p></td>
+<td><p>安定</p></td>
+<td><p>データオブジェクトから直接フィッティングのワークフローを開始する</p></td>
+<td><p><a class="reference internal" href="../tutorials/intro_fitting.html"><span class="doc std std-doc">フィッティング</span></a>, <a class="reference internal" href="index.html"><span class="std std-doc">Fitting Reference</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>インスタンスメソッド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.hht()</span></code></p></td>
+<td><p>実験的</p></td>
+<td><p>ヒルベルト–黄（HHT）変換解析をオブジェクトメソッドとして提供する</p></td>
+<td><p><a class="reference internal" href="../how-to/spectral/advanced_hht.html"><span class="doc std std-doc">HHT</span></a>, <a class="reference internal" href="api/timeseries.html"><span class="doc std std-doc">TimeSeries</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>インスタンスメソッド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.arima()</span></code></p></td>
+<td><p>実験的</p></td>
+<td><p>時系列のモデリングと予測をオブジェクトメソッドとして提供する</p></td>
+<td><p><a class="reference internal" href="../how-to/fitting/advanced_arima.html"><span class="doc std std-doc">ARIMA</span></a>, <a class="reference internal" href="api/timeseries.html"><span class="doc std std-doc">TimeSeries</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="field-api">
+<span id="gwpy-added-field-api"></span><h3>フィールド API<a class="headerlink" href="#field-api" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API の種類</p></th>
+<th class="head"><p>代表的な API</p></th>
+<th class="head"><p>安定性</p></th>
+<th class="head"><p>GWpy に対して追加されるもの</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>クラス</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code></p></td>
+<td><p>実験的</p></td>
+<td><p>時間軸と空間軸を持つ、メタデータ対応の 4 次元フィールドコンテナを導入する</p></td>
+<td><p><a class="reference internal" href="../how-to/containers/field_scalar_intro.html"><span class="doc std std-doc">Field API 入門</span></a>, <a class="reference internal" href="api/fields.html"><span class="doc std std-doc">ScalarField</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>インスタンスメソッド</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ScalarField.fft_space()</span></code></p></td>
+<td><p>実験的</p></td>
+<td><p>Field オブジェクトモデルの中にとどまったまま空間領域変換を実行する</p></td>
+<td><p><a class="reference internal" href="../how-to/containers/field_scalar_intro.html"><span class="doc std std-doc">Field API 入門</span></a>, <a class="reference internal" href="api/fields.html"><span class="doc std std-doc">ScalarField</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>コレクション</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FieldList</span></code> / <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code></p></td>
+<td><p>実験的</p></td>
+<td><p>複数の <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> オブジェクトをまとめて、バッチ処理と共有的な検証を行う</p></td>
+<td><p><a class="reference internal" href="../how-to/containers/field_scalar_intro.html"><span class="doc std std-doc">Field API 入門</span></a>, <a class="reference internal" href="api/fields.html"><span class="doc std std-doc">FieldList</span></a>, <a class="reference internal" href="api/fields.html"><span class="doc std std-doc">FieldDict</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sharing-compatibility">
+<span id="gwpy-added-sharing-compat"></span><h3>共有／互換性<a class="headerlink" href="#sharing-compatibility" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API の種類</p></th>
+<th class="head"><p>代表的な API／挙動</p></th>
+<th class="head"><p>安定性</p></th>
+<th class="head"><p>GWpy に対して追加されるもの</p></th>
+<th class="head"><p>詳細</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>挙動</p></td>
+<td><p>透過的 Pickle</p></td>
+<td><p>安定</p></td>
+<td><p>GWexpy が生成したオブジェクトを、受け取り側に GWexpy が無くても GWpy の基底オブジェクトとして復元できるようにする</p></td>
+<td><p><a class="reference internal" href="../explanation/gwexpy_for_gwpy_users.html"><span class="std std-doc">GWpy ユーザーのための GWexpy</span></a>, <a class="reference internal" href="../tutorials/installation.html"><span class="std std-doc">インストールガイド</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="what-this-page-does-not-duplicate">
+<h2>このページが重複させないもの<a class="headerlink" href="#what-this-page-does-not-duplicate" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>直接 I/O 形式</strong>については、<a class="reference internal" href="../how-to/io_formats.html"><span class="std std-doc">ファイル I/O 対応フォーマットガイド</span></a> を参照してください。</p></li>
+<li><p><strong>外部ライブラリ変換の一覧</strong>については、<a class="reference internal" href="../how-to/interop.html"><span class="std std-doc">Interop / 変換ガイド</span></a> を参照してください。</p></li>
+<li><p><strong>API 全体</strong>については、<a class="reference internal" href="index.html"><span class="std std-doc">API リファレンス</span></a> を参照してください。</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="api/gwexpy.time.tconvert.html"
+       title="前のページ">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">前へ</p>
+        <p class="prev-next-title">gwexpy.time.tconvert</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../explanation/index.html"
+       title="次ページ">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">解説</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> このページでは
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-with-categories">カテゴリから始める</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-index">詳細インデックス</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-channel">マルチチャンネル</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#family-specific-to-matrix-contract-current-stable-behavior">ファミリー固有の <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> 契約（現行の安定挙動）</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added-methods">追加メソッド</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#field-api">フィールド API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sharing-compatibility">共有／互換性</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-this-page-does-not-duplicate">このページが重複させないもの</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/reference/gwpy_added_api.md">
+      <i class="fa-solid fa-file-lines"></i> ソースコードを表示
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3 を使用して作成されました。
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0 で構築されています。
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
