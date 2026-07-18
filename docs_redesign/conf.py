@@ -69,8 +69,12 @@ myst_heading_anchors = 3
 nb_execution_mode = "cache"
 nb_execution_cache_path = "_build/jupyter-cache"
 # Fitting and file-I/O examples exceed MyST-NB's 30-second default on the
-# GitHub Pages runner.
-nb_execution_timeout = 180
+# GitHub Pages runner. Seasonal auto-ARIMA search (m=50) and per-bin
+# Student-t MLE spectrogram fits measured at ~170-225s locally, right at
+# the previous 180s ceiling and prone to timing out under CI load
+# variance; 600s gives real headroom without approaching the 60-minute
+# job timeout.
+nb_execution_timeout = 600
 nb_execution_allow_errors = False
 nb_execution_raise_on_error = True
 
