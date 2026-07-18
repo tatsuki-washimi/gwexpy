@@ -695,7 +695,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
            channel: None)
 </pre></div>
 </div>
-<img alt="../../_images/e31fa1c0a7b834b075b48abf5637662c13ac90e91dfc3ada62b6e6013e7fde2d.png" src="../../_images/e31fa1c0a7b834b075b48abf5637662c13ac90e91dfc3ada62b6e6013e7fde2d.png" />
+<img alt="../../_images/99b1cba873a753c4fbf402b394da4c3faf406d6629423f5f223255d2bd3f4fd3.png" src="../../_images/99b1cba873a753c4fbf402b394da4c3faf406d6629423f5f223255d2bd3f4fd3.png" />
 </div>
 </div>
 </section>
@@ -757,7 +757,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 Name: demo_signal, Length: 1000, dtype: float64
 </pre></div>
 </div>
-<img alt="../../_images/ff7d9f65593e7383fdfab8bc6b71d655ec8eabb93cec5641528832b00dfed06e.png" src="../../_images/ff7d9f65593e7383fdfab8bc6b71d655ec8eabb93cec5641528832b00dfed06e.png" />
+<img alt="../../_images/abe6ee97e47d208fb1cc482b45f80445e6cee1f058d5b2d8fbc12196aa19644a.png" src="../../_images/abe6ee97e47d208fb1cc482b45f80445e6cee1f058d5b2d8fbc12196aa19644a.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Restored TimeSeries from Pandas ---
 TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
             -0.18738131, -0.12533323, -0.06279052],
@@ -850,21 +850,22 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Converted to Xarray DataArray ---
-&lt;xarray.DataArray &#39;demo_signal&#39; (time: 1000)&gt; Size: 8kB
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;xarray.DataArray &#39;demo_signal&#39; (time: 1000)&gt; Size: 8kB
 array([ 0.        ,  0.06279052,  0.12533323, ..., -0.18738131,
        -0.12533323, -0.06279052], shape=(1000,))
 Coordinates:
   * time     (time) datetime64[us] 8kB 2019-02-18T23:31:49 ... 2019-02-18T23:...
 Attributes:
     unit:        V
-    name:        demo_signal
-    channel:     None
     epoch:       1234567890.0
     time_coord:  datetime
-Attributes: {&#39;unit&#39;: &#39;V&#39;, &#39;name&#39;: &#39;demo_signal&#39;, &#39;channel&#39;: &#39;None&#39;, &#39;epoch&#39;: 1234567890.0, &#39;time_coord&#39;: &#39;datetime&#39;}
+    name:        demo_signal
+Attributes: {&#39;unit&#39;: &#39;V&#39;, &#39;epoch&#39;: 1234567890.0, &#39;time_coord&#39;: &#39;datetime&#39;, &#39;name&#39;: &#39;demo_signal&#39;}
 </pre></div>
 </div>
-<img alt="../../_images/c9f38db1d794e2b30585dc584b7dee4ba4499c35aa9fb4f5e48c4db6831d32dd.png" src="../../_images/c9f38db1d794e2b30585dc584b7dee4ba4499c35aa9fb4f5e48c4db6831d32dd.png" />
+<img alt="../../_images/d4c22e3b537da34518a3b937e478d0380d84f263c7bc70389d7227ce4b47baa3.png" src="../../_images/d4c22e3b537da34518a3b937e478d0380d84f263c7bc70389d7227ce4b47baa3.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Restored TimeSeries from Xarray ---
 TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
             -0.18738131, -0.12533323, -0.06279052],
@@ -959,6 +960,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
   &quot;dt&quot;: 0.01,
   &quot;unit&quot;: &quot;V&quot;,
   &quot;name&quot;: &quot;demo_signal&quot;,
+  &quot;channel&quot;: null,
   &quot;data&quot;: [
     0.0,
     0.06279051952931337,
@@ -976,11 +978,10 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     0.7289686274214116,
     0.7705132427757893,
     0.8090169943749475,
-    0.8443279255020151,
-    0.876306680...
+    0.84432792550201...
 </pre></div>
 </div>
-<img alt="../../_images/5745092debbbbd8838d4c69a41d26709addac7c8c85fc9545d6ebe21fc57fedd.png" src="../../_images/5745092debbbbd8838d4c69a41d26709addac7c8c85fc9545d6ebe21fc57fedd.png" />
+<img alt="../../_images/d7cf0bcecb0f3ac46f08b04dd5f24682c5d574e9689f637dc69c267c5cfde65d.png" src="../../_images/d7cf0bcecb0f3ac46f08b04dd5f24682c5d574e9689f637dc69c267c5cfde65d.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recovered from JSON: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
             -0.18738131, -0.12533323, -0.06279052],
            unit: V,
@@ -1042,9 +1043,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- HDF5 Dataset Info ---
 Shape: (1000,), Dtype: float64
 Attributes: {&#39;dt&#39;: np.float64(0.01), &#39;name&#39;: &#39;demo_signal&#39;, &#39;t0&#39;: np.float64(1234567890.0), &#39;unit&#39;: &#39;V&#39;}
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
+Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
             -0.18738131, -0.12533323, -0.06279052],
            unit: V,
            t0: 1234567890.0 s,
@@ -1053,7 +1052,7 @@ Attributes: {&#39;dt&#39;: np.float64(0.01), &#39;name&#39;: &#39;demo_signal&#3
            channel: None)
 </pre></div>
 </div>
-<img alt="../../_images/96699dc58789c8dd637cdee80657e46c76c5ed1f22093f20b5c89885c815bf3d.png" src="../../_images/96699dc58789c8dd637cdee80657e46c76c5ed1f22093f20b5c89885c815bf3d.png" />
+<img alt="../../_images/82cd89c0cd129382a9ad9fb0dd7930aae8dd5553f7a4a68206138a1e8167f305.png" src="../../_images/82cd89c0cd129382a9ad9fb0dd7930aae8dd5553f7a4a68206138a1e8167f305.png" />
 </div>
 </div>
 </section>
@@ -1104,7 +1103,7 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
            channel: None)
 </pre></div>
 </div>
-<img alt="../../_images/d43ca01e9e8c1981287c5822d8896b710c39957470a9d94055b69919085697dd.png" src="../../_images/d43ca01e9e8c1981287c5822d8896b710c39957470a9d94055b69919085697dd.png" />
+<img alt="../../_images/7557823240f574ff39791e1136f043aaeb50ba5ffaf5380db58037abb15d8299.png" src="../../_images/7557823240f574ff39791e1136f043aaeb50ba5ffaf5380db58037abb15d8299.png" />
 </div>
 </div>
 </section>
@@ -1174,7 +1173,7 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
            channel: None)
 </pre></div>
 </div>
-<img alt="../../_images/d2c12934d666a72664a6102d444ff2d31fd5cd7b07b6105e795fea0306c02b02.png" src="../../_images/d2c12934d666a72664a6102d444ff2d31fd5cd7b07b6105e795fea0306c02b02.png" />
+<img alt="../../_images/2ac78c54689cf0126143cb5febd29b69c5cad66406a1d679cb2aedea77033223.png" src="../../_images/2ac78c54689cf0126143cb5febd29b69c5cad66406a1d679cb2aedea77033223.png" />
 </div>
 </div>
 </section>
@@ -1245,7 +1244,7 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
            channel: None)
 </pre></div>
 </div>
-<img alt="../../_images/201581a2cbc371b1312c24280e3cb9de054911a5c443ab7cf0203fda710930e3.png" src="../../_images/201581a2cbc371b1312c24280e3cb9de054911a5c443ab7cf0203fda710930e3.png" />
+<img alt="../../_images/8f3874649208ea4dca813a3fdd48086aabb8ed9c1c9a29bfce021a654ab84c7b.png" src="../../_images/8f3874649208ea4dca813a3fdd48086aabb8ed9c1c9a29bfce021a654ab84c7b.png" />
 </div>
 </div>
 </section>
@@ -1285,17 +1284,7 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Converted to PyTorch Tensor ---
-Tensor shape: torch.Size([1000]), dtype: torch.float32
-
---- Restored from Torch ---
-TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052],
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PyTorch is not installed.
 </pre></div>
 </div>
 </div>
@@ -1385,29 +1374,6 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
         <span class="k">pass</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-I0000 00:00:1783277770.795993   29252 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Converted to TensorFlow Tensor ---
-Tensor shape: (1000,)
-Tensor dtype: &lt;dtype: &#39;float64&#39;&gt;
-Recovered from TF: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052],
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
-I0000 00:00:1783277772.507203   29252 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-I0000 00:00:1783277772.507738   29252 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
 </pre></div>
 </div>
 </div>
@@ -1507,7 +1473,7 @@ I0000 00:00:1783277772.507738   29252 cudart_stub.cc:31] Could not find cuda dri
 1234567890.04  0.2486898871648548
 </pre></div>
 </div>
-<img alt="../../_images/f0dd78185651c242b8fddf56f6944ef0913f52c1907d1623727830cd501fb567.png" src="../../_images/f0dd78185651c242b8fddf56f6944ef0913f52c1907d1623727830cd501fb567.png" />
+<img alt="../../_images/faf60aaefa8279d566b0163008f7fe283f0fff39ebf64a4ea1296179d347690e.png" src="../../_images/faf60aaefa8279d566b0163008f7fe283f0fff39ebf64a4ea1296179d347690e.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--- Restored from Astropy ---
 TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
             -0.18738131, -0.12533323, -0.06279052],
@@ -1731,7 +1697,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 .demo_signal.. | 2019-02-18T23:31:12.000000Z - 2019-02-18T23:31:21.990000Z | 100.0 Hz, 1000 samples
 </pre></div>
 </div>
-<img alt="../../_images/722a2a6117f228d295664748bf6751198c43a1578f82f577d50e743e1d7d4814.png" src="../../_images/722a2a6117f228d295664748bf6751198c43a1578f82f577d50e743e1d7d4814.png" />
+<img alt="../../_images/9723dc941df462766728f1561d0442d020f23ca449ce4031cb0c71cf37853074.png" src="../../_images/9723dc941df462766728f1561d0442d020f23ca449ce4031cb0c71cf37853074.png" />
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recovered from ObsPy: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
             -0.18738131, -0.12533323, -0.06279052],
            unit: dimensionless,
@@ -1855,16 +1821,16 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-07-05T18:56:15.321574+0000 | INFO | mth5.mth5 | _initialize_file | line: 900 | Initialized MTH5 0.2.0 file /tmp/tmpw0zuv9rl.h5 in mode a</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-07-18T08:35:30.627728+0000 | INFO | mth5.mth5 | _initialize_file | line: 900 | Initialized MTH5 0.2.0 file /tmp/tmpd6tjapml.h5 in mode a</span>
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-07-05T18:56:16.203349+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpw0zuv9rl.h5</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-07-18T08:35:31.431593+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpd6tjapml.h5</span>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved to temporary MTH5 file
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-07-05T18:56:16.432408+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpw0zuv9rl.h5</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">2026-07-18T08:35:31.666768+0000 | INFO | mth5.mth5 | close_mth5 | line: 1035 | Flushing and closing /tmp/tmpd6tjapml.h5</span>
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Recovered from MTH5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
@@ -1876,7 +1842,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
            channel: None)
 </pre></div>
 </div>
-<img alt="../../_images/c29dcc3cdf4606a6802fdc69fab579080e4e8070796098136fc8de63b25d8f89.png" src="../../_images/c29dcc3cdf4606a6802fdc69fab579080e4e8070796098136fc8de63b25d8f89.png" />
+<img alt="../../_images/192e23a1a94f6ceef121568f83b463e6b66fc14ab1f9919714183bf754ae97ff.png" src="../../_images/192e23a1a94f6ceef121568f83b463e6b66fc14ab1f9919714183bf754ae97ff.png" />
 </div>
 </div>
 </section>

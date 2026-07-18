@@ -14,7 +14,13 @@
    .. autosummary::
    
       ~LIGOTimeGPS.__init__
+      ~LIGOTimeGPS.acquire
+      ~LIGOTimeGPS.append
+      ~LIGOTimeGPS.asutcstr
+      ~LIGOTimeGPS.disown
+      ~LIGOTimeGPS.next
       ~LIGOTimeGPS.ns
+      ~LIGOTimeGPS.own
    
    
 
@@ -26,5 +32,7 @@
    
       ~LIGOTimeGPS.gpsNanoSeconds
       ~LIGOTimeGPS.gpsSeconds
+      ~LIGOTimeGPS.this
+      ~LIGOTimeGPS.thisown
    
    

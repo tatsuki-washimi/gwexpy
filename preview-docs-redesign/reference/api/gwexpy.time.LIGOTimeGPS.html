@@ -569,60 +569,40 @@
 <h1>gwexpy.time.LIGOTimeGPS<a class="headerlink" href="#gwexpy-time-ligotimegps" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">LIGOTimeGPS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LIGOTimeGPSLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nanoseconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>An object for storing times with nanosecond resolution.</p>
-<p>Internally the time is represented as a signed integer <cite>gpsSeconds</cite> part
-and an unsigned integer <cite>gpsNanoseconds</cite> part.
-The actual time is always constructed by adding the nanoseconds to the
-seconds.
-So -0.5 s is represented by setting seconds = -1, and nanoseconds to
-500000000.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seconds</strong> (<cite>int</cite>, <cite>str</cite>) – the count of seconds</p></li>
-<li><p><strong>nanoseconds</strong> (<cite>int</cite>, <cite>str</cite>, optional) – the count of nanoseconds</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mf">100.5</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(100, 500000000)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="s2">&quot;100.5&quot;</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(100, 500000000)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">500000000</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(100, 500000000)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100500000000</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(100, 500000000)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mf">100.2</span><span class="p">,</span> <span class="mi">300000000</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(100, 500000000)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="s2">&quot;0.000000001&quot;</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(0, 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="s2">&quot;0.0000000012&quot;</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(0, 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="s2">&quot;0.0000000018&quot;</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(0, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="s2">&quot;-0.8&quot;</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(-1, 200000000)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="s2">&quot;-1.2&quot;</span><span class="p">)</span>
-<span class="go">LIGOTimeGPS(-2, 800000000)</span>
-</pre></div>
-</div>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">LIGOTimeGPS</span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SwigPyObject</span></code></p>
+<p>::tagLIGOTimeGPS</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LIGOTimeGPSLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nanoseconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.__init__" title="Link to this definition">#</a></dt>
-<dd><p>Create a LIGOTimeGPS instance.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.__init__" title="gwexpy.time.LIGOTimeGPS.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([seconds, nanoseconds])</p></td>
-<td><p>Create a LIGOTimeGPS instance.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.__init__" title="gwexpy.time.LIGOTimeGPS.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.ns" title="gwexpy.time.LIGOTimeGPS.ns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ns</span></code></a>()</p></td>
-<td><p>Convert a <cite>LIGOTimeGPS</cite> to a count of nanoseconds as an int.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">acquire</span></code></p></td>
+<td><p>acquires ownership of the pointer</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code></p></td>
+<td><p>appends another 'this' object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.asutcstr" title="gwexpy.time.LIGOTimeGPS.asutcstr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asutcstr</span></code></a>(LIGOTimeGPS self)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">disown</span></code></p></td>
+<td><p>releases ownership of the pointer</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">next</span></code></p></td>
+<td><p>returns the next 'this' object</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.ns" title="gwexpy.time.LIGOTimeGPS.ns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ns</span></code></a>(LIGOTimeGPS self)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">own</span></code></p></td>
+<td><p>returns/sets ownership of the pointer</p></td>
 </tr>
 </tbody>
 </table>
@@ -631,38 +611,61 @@ So -0.5 s is represented by setting seconds = -1, and nanoseconds to
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.gpsNanoSeconds" title="gwexpy.time.LIGOTimeGPS.gpsNanoSeconds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gpsNanoSeconds</span></code></a></p></td>
-<td><p>residual nanoseconds</p></td>
+<td><p>INT4</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.gpsSeconds" title="gwexpy.time.LIGOTimeGPS.gpsSeconds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gpsSeconds</span></code></a></p></td>
-<td><p>Seconds since 0h UTC 6 Jan 1980</p></td>
+<td><p>INT4</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.this" title="gwexpy.time.LIGOTimeGPS.this"><code class="xref py py-obj docutils literal notranslate"><span class="pre">this</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.time.LIGOTimeGPS.thisown" title="gwexpy.time.LIGOTimeGPS.thisown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">thisown</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<dl class="py property">
-<dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.gpsSeconds">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gpsSeconds</span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.gpsSeconds" title="Link to this definition">#</a></dt>
-<dd><p>Seconds since 0h UTC 6 Jan 1980</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.asutcstr">
+<span class="sig-name descname"><span class="pre">asutcstr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">char</span> <span class="pre">*</span></span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.asutcstr" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.gpsNanoSeconds">
+<span class="sig-name descname"><span class="pre">gpsNanoSeconds</span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.gpsNanoSeconds" title="Link to this definition">#</a></dt>
+<dd><p>INT4</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpsNanoSeconds</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.gpsNanoSeconds">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gpsNanoSeconds</span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.gpsNanoSeconds" title="Link to this definition">#</a></dt>
-<dd><p>residual nanoseconds</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.gpsSeconds">
+<span class="sig-name descname"><span class="pre">gpsSeconds</span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.gpsSeconds" title="Link to this definition">#</a></dt>
+<dd><p>INT4</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpsSeconds</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.ns">
-<span class="sig-name descname"><span class="pre">ns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.ns" title="Link to this definition">#</a></dt>
-<dd><p>Convert a <cite>LIGOTimeGPS</cite> to a count of nanoseconds as an int.</p>
-<p>When running python2.7 on Windows this is returned as <cite>numpy.long</cite>
-to guarantee long-ness.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mf">100.5</span><span class="p">)</span><span class="o">.</span><span class="n">ns</span><span class="p">()</span>
-<span class="go">100500000000</span>
-</pre></div>
-</div>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">ns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">INT8</span></span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.ns" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.this">
+<span class="sig-name descname"><span class="pre">this</span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.this" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwexpy.time.LIGOTimeGPS.thisown">
+<span class="sig-name descname"><span class="pre">thisown</span></span><a class="headerlink" href="#gwexpy.time.LIGOTimeGPS.thisown" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -717,9 +720,12 @@ to guarantee long-ness.</p>
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS.__init__"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS.gpsSeconds"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS.gpsSeconds</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS.asutcstr"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS.asutcstr()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS.gpsNanoSeconds"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS.gpsNanoSeconds</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS.gpsSeconds"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS.gpsSeconds</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS.ns"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS.ns()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS.this"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS.this</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.time.LIGOTimeGPS.thisown"><code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS.thisown</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -444,9 +444,14 @@ should move to a build-time step rather than committed copies.</p></li>
 </section>
 <section id="rendering">
 <h2>Rendering<a class="headerlink" href="#rendering" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">nb_execution_mode</span> <span class="pre">=</span> <span class="pre">&quot;off&quot;</span></code>: notebooks render code + prose only (their outputs
-are stripped per policy). Figures are produced by the executed-notebook CI path,
-not by the local prototype build.</p>
+<p><code class="docutils literal notranslate"><span class="pre">nb_execution_mode</span> <span class="pre">=</span> <span class="pre">&quot;cache&quot;</span></code>: notebooks execute into an untracked build cache.
+The rendered site therefore includes plots and other outputs, while committed
+notebooks remain clean source with outputs and execution counts stripped. The
+publish workflows build from an isolated temporary copy of this tree, so no
+executed notebook is ever written back to the checkout.</p>
+<p>Notebook execution is fail-closed and has a 180-second per-cell limit, which
+accommodates fitting and file-I/O examples without silently publishing a page
+whose output failed to generate.</p>
 </section>
 </section>
 
