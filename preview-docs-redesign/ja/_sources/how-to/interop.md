@@ -44,7 +44,7 @@ Legacy aliases remain supported during the transition, but new examples should p
 - [S. Foundation Layer](#interop-en-foundation-layer)
 - [A. Storage Formats and Container Conversion](#interop-en-storage-conversion)
 - [B. Analysis Library and Object Conversion](#interop-en-analysis-conversion)
-- [C. Scientific Computing, Machine Learning, and Array Backends](#interop-en-ml-conversion)
+- [C. Scientific Computing, Signal Processing, Machine Learning, and Array Backends](#interop-en-ml-conversion)
 - [D. Physics and Domain-Specific Libraries](#interop-en-domain-conversion)
 
 (interop-en-how-to-read)=
@@ -151,7 +151,7 @@ Use it when the question is “which analysis-library object do I bridge to?”
 | [dask](https://www.dask.org/) | `to_dask()`, `from_dask()` | Public | dask array bridge | [API](../reference/api/gwexpy.interop.dask_) |
 
 (interop-en-ml-conversion)=
-## C. Scientific Computing, Machine Learning, and Array Backends
+## C. Scientific Computing, Signal Processing, Machine Learning, and Array Backends
 
 This section is for accelerated computing and ML-oriented bridges.  
 Check whether only the array payload moves, or whether metadata can also be reconstructed.
