@@ -14,6 +14,13 @@ scope:
   excluded:
     - "No v0.1.11 publication, PR merge, or deployment to gh-pages."
     - "No complete translation of English-fallback API reference pages or exhaustive execution of optional notebooks."
+public_content_corrections:
+  - "Exclude docs_redesign/README.md so internal source notes are not built or published."
+  - "Separate the legacy notebook-policy checks from the redesigned site's isolated MyST-NB cache build."
+  - "Replace unmeasured interop priorities with a foundation layer and workflow-oriented categories."
+  - "Scope validation and numerical-stability claims to the documented algorithms and APIs."
+  - "Replace citation placeholders, link the security policy, and mark the minepy helper as source-checkout-only."
+  - "Replace unsupported architecture and physics superlatives with observable behavior."
 changed_files:
   - path: docs_redesign/
     change: "Aligned release facts with v0.1.10 and repaired verified external documentation links."
@@ -39,6 +46,12 @@ changed_files:
     change: "Provision the all extra so optional notebook integrations can render their outputs."
   - path: scripts/check_repo_hygiene.py
     change: "Enforce clean-source notebook hygiene for docs_redesign notebooks."
+  - path: docs_redesign/explanation/
+    change: "Correct public verification, interop, validation, numerical-stability, architecture, and physics claims to match current implementation and workflow scope."
+  - path: docs_redesign/locales/ja/LC_MESSAGES/
+    change: "Translate all corrected public-content entries without empty or fuzzy Japanese body messages."
+  - path: tests/docs/test_docs_redesign_public_content.py
+    change: "Add regression coverage for publication exclusion, current CI descriptions, scoped claims, actionable guidance, and Japanese catalogs."
 validation:
   completed:
     - cmd: "rtk sphinx-build -b gettext -D nb_execution_mode=off docs_redesign <temporary-gettext-dir>"
@@ -61,12 +74,17 @@ validation:
       result: "Generated all 58 EN/JA stubs after validating all 29 configured redirect target pairs."
     - cmd: "rtk env PYTHONPATH=. MPLCONFIGDIR=/tmp/matplotlib sphinx-build -E -q -b linkcheck -D linkcheck_timeout=10 docs_redesign docs_redesign/_build/linkcheck-network-final"
       result: "Exited 0. Existing upstream autodoc and duplicate-object warnings remain; no external-link failures were reported."
+    - cmd: "rtk pytest -q tests/docs/test_docs_redesign_public_content.py -p no:cacheprovider"
+      result: "7 passed, covering the public-content corrections and their complete Japanese gettext catalogs."
+    - cmd: "rtk msgfmt --check --output-file <temporary-mo> <corrected-ja-catalogs>"
+      result: "All corrected Japanese catalogs compile; no body message is empty or fuzzy."
 findings:
   release_blocking:
     - "None found after the merged-main alignment; stale v0.1.5 release claims and the pygwinc package spelling were corrected."
   corrected_before_publish:
     - "Updated the obsolete GWpy CLI, LALSuite LIGOTimeGPS, DTT, and openEMS documentation targets discovered by linkcheck."
     - "Replaced the abbreviated redesign changelog with the canonical complete history and a fully translated Japanese catalog."
+    - "Removed internal README publication and unsupported universal claims about verification, numerical stability, visualization, and interop priority."
   known_limitations:
     - "The redirect map intentionally preserves only 29 legacy paths; other historical per-tutorial and API URLs can still return 404 after rsync --delete."
     - "Japanese API source pages retain English fallback where no Japanese catalog exists."

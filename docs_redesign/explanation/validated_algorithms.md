@@ -19,15 +19,15 @@ myst:
 This page intentionally stays under the user guide so readers can discover it from feature docs, but it is not an onboarding page. Treat it as the advanced/theory landing for audit-oriented reading across the API reference, theory notes, and targeted tutorials. For first-use guidance, start with [Getting Started](../tutorials/getting_started.md), [Prerequisites and Conventions](prerequisites_and_conventions.md), or the linked tutorials for each method.
 :::
 
-The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability.
+The algorithms listed on this page have public implementation tests, theory references, or audit records. Those evidence types are distinct and their scope is stated for each algorithm below.
 
 (validated-algorithms-validation-criteria)=
 ## Validation Criteria and Numerical Precision
 
-Algorithms labeled as "Validated" meet the following standards and achieve specific precision (tolerance) benchmarks:
+The algorithms listed on this page are assessed against the evidence recorded in their own sections.
 
-- **Tolerance**: We generally use $10^{-12}$ (relative error) as the passing criterion. This indicates no significant logic differences beyond standard double-precision rounding errors.
-- **Invariance**: All algorithms are verified for "Scale Invariance," ensuring results remain consistent even after scaling data (e.g., multiplying by 1000).
+- **Tolerance**: Numerical tolerance is algorithm- and test-specific. The relevant test or audit entry states the comparison and acceptance condition where one is available.
+- **Invariance**: Scale-invariance checks apply only to algorithms whose evidence explicitly records such a check; they are not a package-wide guarantee.
 
 (validated-en-objective-evidence)=
 ## Objective Evidence
