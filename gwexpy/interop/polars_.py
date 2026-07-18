@@ -53,10 +53,25 @@ def to_polars_dataframe(ts, index_column="time", time_unit="datetime"):
     return pl.DataFrame({index_column: t_vals, ts.name or "value": data})
 
 
-def from_polars_series(cls, series, unit=None, t0=0, dt=1):
-    """Create TimeSeries or FrequencySeries from polars.Series."""
+def from_polars_series(cls, series, unit=None, t0=None, dt=None, channel=None, name=None):
+    """Create TimeSeries or FrequencySeries from polars.Series.
+
+    A plain polars Series carries no timing or channel metadata. Missing
+    ``t0``/``dt`` fall back to ``0``/``1`` with a :class:`UserWarning` (instead
+    of silently), and ``channel``/``name`` may be supplied explicitly.
+    """
+    from .base import resolve_timing
+
     # polars Series is basically just an array.
-    return cls(series.to_numpy(), unit=unit, t0=t0, dt=dt)
+    final_t0, final_dt = resolve_timing(t0, dt, source="polars Series")
+    return cls(
+        series.to_numpy(),
+        unit=unit,
+        t0=final_t0,
+        dt=final_dt,
+        channel=channel,
+        name=name,
+    )
 
 
 def to_polars_frequencyseries(fs, index_column="frequency", index_unit="Hz"):
@@ -75,12 +90,21 @@ def to_polars_frequencyseries(fs, index_column="frequency", index_unit="Hz"):
     return pl.DataFrame({index_column: freqs, fs.name or "value": data})
 
 
-def from_polars_dataframe(cls, df, index_column="time", unit=None):
+def from_polars_dataframe(
+    cls, df, index_column="time", unit=None, *, channel=None, name=None
+):
     """Create TimeSeries from polars.DataFrame.
 
-    Attempts to infer t0 and dt from the time_column.
+    ``t0``/``dt`` are inferred from the time column (handling GPS, unix and
+    datetime values). If the column is empty or holds a single sample, the
+    missing timing falls back to ``0``/``1`` with a :class:`UserWarning` instead
+    of silently. ``channel`` (which a DataFrame cannot carry) and ``name`` may be
+    supplied explicitly; ``name`` defaults to the data column label.
     """
     require_optional("polars")
+    from gwexpy.time import to_gps
+
+    from .base import resolve_meta, resolve_timing
 
     # Extract data column (everything except index_column)
     cols = [c for c in df.columns if c != index_column]
@@ -91,60 +115,51 @@ def from_polars_dataframe(cls, df, index_column="time", unit=None):
     data = df[cols[0]].to_numpy()
     times = df[index_column]
 
-    # Infer t0, dt
-    t0: float = 0.0
-    dt: float = 1.0
-
-    if len(times) > 0:
-        t0_val = times[0]
-        # Handle datetime
-        if isinstance(t0_val, (np.datetime64,)):
-            # Convert to GPS
-            from astropy.time import Time
-
-            t0 = Time(t0_val).gps
-        elif hasattr(t0_val, "timestamp"):  # datetime.datetime
-            from ._time import datetime_utc_to_gps
-
-            t0 = datetime_utc_to_gps(t0_val)
-        else:
-            t0 = float(t0_val)
-
-        if len(times) > 1:
-            t1_val = times[1]
-            if isinstance(t1_val, (np.datetime64,)):
-                from astropy.time import Time
-
-                t1 = Time(t1_val).gps
-                dt = t1 - t0
-            elif hasattr(t1_val, "timestamp"):
-                from ._time import datetime_utc_to_gps
-
-                t1 = datetime_utc_to_gps(t1_val)
-                dt = t1 - t0
-            else:
-                dt = float(t1_val) - float(t0)
-
-    # If it is a regular grid, use x0, dx for efficiency.
-    # Otherwise, pass the full index.
-    from gwexpy.time import to_gps
-
+    # Convert the whole time axis to GPS seconds once (handles datetime/unix/gps).
     times_gps_arr = np.asarray(to_gps(times.to_list()), dtype=float)
     diffs = np.diff(times_gps_arr)
     is_regular = len(diffs) < 1 or np.allclose(diffs, diffs[0], atol=1e-12, rtol=1e-10)
 
+    final_name = resolve_meta(name, cols[0])
+
     if is_regular:
-        t0_final = times_gps_arr[0] if len(times_gps_arr) > 0 else t0
-        dt_final = diffs[0] if len(diffs) > 0 else dt
+        # Infer t0/dt from the axis; warn (not silent) if either is unavailable
+        # (empty column -> no t0; single sample -> no dt).
+        inferred_t0 = float(times_gps_arr[0]) if len(times_gps_arr) > 0 else None
+        inferred_dt = float(diffs[0]) if len(diffs) > 0 else None
+        t0_final, dt_final = resolve_timing(
+            None,
+            None,
+            source=f"polars DataFrame (column '{index_column}')",
+            inferred_t0=inferred_t0,
+            inferred_dt=inferred_dt,
+        )
         return cls(
-            data, x0=float(t0_final), dx=float(dt_final), unit=unit, name=cols[0]
+            data,
+            x0=float(t0_final),
+            dx=float(dt_final),
+            unit=unit,
+            name=final_name,
+            channel=channel,
         )
     else:
-        # Non-regular grid
+        # Non-regular grid: pass the full index, so no t0/dt fabrication occurs.
         if "Frequency" in cls.__name__:
-            return cls(data, frequencies=times_gps_arr, unit=unit, name=cols[0])
+            return cls(
+                data,
+                frequencies=times_gps_arr,
+                unit=unit,
+                name=final_name,
+                channel=channel,
+            )
         else:
-            return cls(data, times=times_gps_arr, unit=unit, name=cols[0])
+            return cls(
+                data,
+                times=times_gps_arr,
+                unit=unit,
+                name=final_name,
+                channel=channel,
+            )
 
 
 def to_polars_dict(tsd, index_column="time", time_unit="datetime"):

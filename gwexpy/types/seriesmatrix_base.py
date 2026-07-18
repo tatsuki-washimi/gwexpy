@@ -314,6 +314,13 @@ class SeriesMatrix(  # type: ignore[misc]
         self.cols = cast(MetaDataDict, getattr(obj, "cols", None))
         self.name = getattr(obj, "name", "")
         self.epoch = getattr(obj, "epoch", 0.0)
+        # NOTE: attrs is shared by reference here on purpose -- a plain
+        # ``.view()`` is a lightweight view and the metadata contract
+        # (test_typed_view_preserves_metadata_by_reference) requires
+        # ``viewed.attrs is matrix.attrs``.  Operations that produce a
+        # genuinely new logical object (math ops, crop/append/diff/pad via
+        # _get_meta_for_constructor, and __array_ufunc__) deep-copy attrs at
+        # their own construction site instead.
         self.attrs = getattr(obj, "attrs", getattr(self, "attrs", {}))
 
         # Propagate custom _gwex_ attributes
@@ -383,7 +390,9 @@ class SeriesMatrix(  # type: ignore[misc]
         cols = self.cols
         epoch = getattr(self, "epoch", 0.0)
         name = getattr(self, "name", "")
-        attrs = getattr(self, "attrs", {})
+        # Deep-copy so the ufunc result does not alias the source's attrs
+        # dict (the #442 metadata-sharing defect).
+        attrs = deepcopy(getattr(self, "attrs", {}))
 
         for inp in inputs:
             if isinstance(inp, SeriesMatrix):

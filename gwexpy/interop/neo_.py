@@ -89,8 +89,8 @@ def to_neo(obj, units=None):
     return sig
 
 
-def from_neo(cls, sig):
-    """Create a `TimeSeriesMatrix` from `neo.AnalogSignal`."""
+def _analogsignal_to_matrix(cls, sig):
+    """Convert a single `neo.AnalogSignal` to a `TimeSeriesMatrix`."""
     # sig shape: (time, ch)
     data = sig.magnitude.T  # (ch, time)
     data = data[:, None, :]  # (ch, 1, time)
@@ -105,3 +105,44 @@ def from_neo(cls, sig):
     ch_names = sig.array_annotations.get("channel_names", None)
 
     return cls(data, t0=t0, dt=dt, unit=unit, channel_names=ch_names)
+
+
+def from_neo(cls, sig):
+    """Create a `TimeSeriesMatrix` from a neo object.
+
+    Accepts a single `neo.AnalogSignal`, or a `neo.Block`/`neo.Segment`
+    containing exactly one `AnalogSignal` (the form returned by most
+    ``neo.io`` readers).
+    """
+    neo = require_optional("neo")
+
+    if isinstance(sig, neo.AnalogSignal):
+        return _analogsignal_to_matrix(cls, sig)
+
+    if isinstance(sig, (neo.Block, neo.Segment)):
+        if isinstance(sig, neo.Block):
+            signals = [
+                asig
+                for segment in sig.segments
+                for asig in segment.analogsignals
+            ]
+        else:  # neo.Segment
+            signals = list(sig.analogsignals)
+
+        if len(signals) == 1:
+            return _analogsignal_to_matrix(cls, signals[0])
+        if len(signals) == 0:
+            raise ValueError(
+                "no AnalogSignal found in the neo "
+                f"{type(sig).__name__}"
+            )
+        raise TypeError(
+            f"neo {type(sig).__name__} contains {len(signals)} AnalogSignals; "
+            "pass a single neo.AnalogSignal "
+            "(e.g. block.segments[0].analogsignals[0])."
+        )
+
+    raise TypeError(
+        f"Unsupported type for from_neo: {type(sig)}; "
+        "expected a neo.AnalogSignal, neo.Block or neo.Segment."
+    )

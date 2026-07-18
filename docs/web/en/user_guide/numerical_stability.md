@@ -70,6 +70,17 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 | **Internal Standardization** | `ica_fit()` | Non-convergence | Works regardless of input amplitude |
 | **Relative Tolerance** | Various | Early termination | Auto-scales `tol` based on variance |
 
+### Epsilon contract
+
+`eps="auto"` and `eps=None` select data-relative regularization for whitening.
+For partial correlation, `eps=None` preserves the legacy behavior of no added
+ridge, while `eps="auto"` selects the covariance-relative ridge.
+Explicit values must be finite and non-negative.
+For covariance-based operations, `eps=0` disables only the added ridge term;
+shrinkage and pseudo-inverse behavior remain independent.
+For per-sigma Laplace normalization, automatic mode preserves each finite
+nonzero denominator; zero-magnitude slices remain zero.
+
 ---
 
 (numerical-stability-en-examples)=

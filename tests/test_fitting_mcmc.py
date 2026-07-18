@@ -222,3 +222,63 @@ def test_mcmc_with_custom_cost_function_gls():
     intervals = result.parameter_intervals
     assert "a" in intervals
     assert "b" in intervals
+
+
+def test_run_mcmc_rejects_n_walkers_below_twice_ndim():
+    """n_walkers < 2*ndim should raise a clear ValueError before reaching emcee."""
+    from gwexpy.fitting import fit_series
+    from gwexpy.timeseries import TimeSeries
+
+    def linear(t, a, b):
+        return a * t + b
+
+    x = np.linspace(0, 10, 10)
+    y = linear(x, 2.0, 1.0)
+    ts = TimeSeries(y, times=x)
+
+    result = fit_series(ts, linear, p0={"a": 1, "b": 0})  # ndim == 2
+
+    with pytest.raises(ValueError, match=r"n_walkers >= 2 \* ndim"):
+        result.run_mcmc(n_walkers=3, n_steps=10, burn_in=1, progress=False)
+
+
+def test_run_mcmc_accepts_n_walkers_exactly_twice_ndim():
+    """n_walkers == 2*ndim is the documented minimum and must succeed."""
+    from gwexpy.fitting import fit_series
+    from gwexpy.timeseries import TimeSeries
+
+    def linear(t, a, b):
+        return a * t + b
+
+    x = np.linspace(0, 10, 10)
+    y = linear(x, 2.0, 1.0)
+    ts = TimeSeries(y, times=x)
+
+    result = fit_series(ts, linear, p0={"a": 1, "b": 0})  # ndim == 2
+
+    result.run_mcmc(n_walkers=4, n_steps=10, burn_in=1, progress=False)
+
+    assert result.samples is not None
+
+
+def test_run_mcmc_n_walkers_validation_uses_free_parameter_count():
+    """Fixed parameters reduce ndim, so the n_walkers threshold must follow suit."""
+    from gwexpy.fitting import fit_series
+    from gwexpy.timeseries import TimeSeries
+
+    def quadratic(t, a, b, c):
+        return a * t**2 + b * t + c
+
+    x = np.linspace(0, 10, 10)
+    y = quadratic(x, 1.0, 2.0, 1.0)
+    ts = TimeSeries(y, times=x)
+
+    # Three parameters, but two are fixed, so ndim == 1 (not 3).
+    result = fit_series(ts, quadratic, p0={"a": 1, "b": 2, "c": 1}, fixed=["b", "c"])
+
+    with pytest.raises(ValueError, match=r"n_walkers >= 2 \* ndim"):
+        result.run_mcmc(n_walkers=1, n_steps=10, burn_in=1, progress=False)
+
+    result.run_mcmc(n_walkers=2, n_steps=10, burn_in=1, progress=False)
+    assert result.samples is not None
+    assert result.samples.shape[1] == 1  # Only "a" is free

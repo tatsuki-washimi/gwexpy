@@ -484,16 +484,13 @@ def load_dttxml_products(source, *, native: bool = False):
                     data, df=1, f0=0, epoch=t0, name=name, unit=unit
                 )  # Fallback
         except (AttributeError, TypeError, ValueError) as e:
-            warnings.warn(f"Failed to create gwexpy object for {name}: {e}")
-            return {
-                "data": data,
-                "x_axis": x_axis
-                if x_axis is not None
-                else (np.arange(len(data)) * dt if dt else None),
-                "dt": dt,
-                "t0": t0,
-                "unit": unit,
-            }
+            # Do NOT degrade to a dict here: every caller stores the result as
+            # a TimeSeries/FrequencySeries and later accesses Series attributes
+            # (.value/.f0/...), so a dict fallback only defers an opaque
+            # AttributeError downstream.  Fail clearly at the source instead.
+            raise ValueError(
+                f"Failed to create gwexpy {type} series for {name!r}: {e}"
+            ) from e
 
     # 1. Time Series (TS)
     # Return raw dicts (not TimeSeries objects) so that read_timeseriesdict_dttxml

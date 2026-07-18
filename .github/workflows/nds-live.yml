@@ -1,5 +1,10 @@
 name: NDS Live Tests
 
+# Manual-only diagnostic workflow (workflow_dispatch). It connects to a live NDS
+# server (e.g. nds.ligo.caltech.edu) which requires network access and Kerberos
+# credentials not available to scheduled CI, so it is intentionally never run on
+# a schedule or on pull requests. Trigger it on demand from the Actions tab when
+# validating NDS connectivity. An empty run history is expected, not a failure.
 on:
   workflow_dispatch:
     inputs:
@@ -33,7 +38,7 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up micromamba (conda-forge)
         uses: mamba-org/setup-micromamba@v3

@@ -89,10 +89,18 @@ def from_pandas_series(
     unit: Optional[str] = None,
     t0: Optional[float] = None,
     dt: Optional[float] = None,
+    channel: Optional[str] = None,
+    name: Optional[str] = None,
 ) -> T:
-    """Create a `TimeSeries` from `pandas.Series`."""
+    """Create a `TimeSeries` from `pandas.Series`.
+
+    ``t0``/``dt`` are inferred from the index when possible; if inference fails
+    they fall back to ``0``/``1`` with a :class:`UserWarning` rather than
+    silently. ``channel``/``name`` (which a plain Series cannot carry) may be
+    supplied explicitly.
+    """
     pd = require_optional("pandas")
-    from .base import to_plain_array
+    from .base import resolve_meta, resolve_timing, to_plain_array
 
     values = to_plain_array(series)  # Use to_plain_array on the series values
     index = series.index
@@ -147,8 +155,8 @@ def from_pandas_series(
                             "Consider providing dt explicitly if this is unexpected.",
                             UserWarning,
                         )
-        elif isinstance(index, (pd.Index, pd.RangeIndex)) and np.issubdtype(
-            index.dtype, np.number
+        elif isinstance(index, (pd.Index, pd.RangeIndex)) and pd.api.types.is_numeric_dtype(
+            index
         ):
             inferred_t0 = float(index[0])
             if len(index) > 1:
@@ -164,14 +172,28 @@ def from_pandas_series(
                         UserWarning,
                     )
 
-    final_t0 = t0 if t0 is not None else (inferred_t0 if inferred_t0 is not None else 0)
-    final_dt = dt if dt is not None else (inferred_dt if inferred_dt is not None else 1)
+    final_t0, final_dt = resolve_timing(
+        t0,
+        dt,
+        source="pandas Series",
+        inferred_t0=inferred_t0,
+        inferred_dt=inferred_dt,
+    )
 
     # Ensure dt is not LIGOTimeGPS (convert to float seconds)
     if isinstance(final_dt, LIGOTimeGPS):
         final_dt = float(final_dt)
 
-    return cls(values, t0=final_t0, dt=final_dt, unit=unit, name=series.name)
+    final_name = resolve_meta(name, series.name)
+
+    return cls(
+        values,
+        t0=final_t0,
+        dt=final_dt,
+        unit=unit,
+        name=final_name,
+        channel=channel,
+    )
 
 
 def to_pandas_dataframe(

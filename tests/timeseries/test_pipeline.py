@@ -11,6 +11,7 @@ Covers all classes and helper functions:
 - PCATransform
 - ICATransform
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -270,20 +271,24 @@ class TestPipeline:
     def test_pipeline_multiple_steps_fit_transform(self):
         ts = _make_ts()
         ts.value[5] = np.nan
-        pipe = Pipeline([
-            ("impute", ImputeTransform(method="mean")),
-            ("std", StandardizeTransform()),
-        ])
+        pipe = Pipeline(
+            [
+                ("impute", ImputeTransform(method="mean")),
+                ("std", StandardizeTransform()),
+            ]
+        )
         result = pipe.fit_transform(ts)
         assert isinstance(result, TimeSeries)
         assert not np.any(np.isnan(result.value))
 
     def test_pipeline_inverse_strict_with_mixed_steps(self):
         ts = _make_ts()
-        pipe = Pipeline([
-            ("impute", ImputeTransform()),
-            ("std", StandardizeTransform()),
-        ])
+        pipe = Pipeline(
+            [
+                ("impute", ImputeTransform()),
+                ("std", StandardizeTransform()),
+            ]
+        )
         pipe.fit(ts)
         transformed = pipe.transform(ts)
         # strict=True should raise because ImputeTransform doesn't support inverse
@@ -292,10 +297,12 @@ class TestPipeline:
 
     def test_pipeline_inverse_not_strict_with_mixed_steps(self):
         ts = _make_ts()
-        pipe = Pipeline([
-            ("impute", ImputeTransform()),
-            ("std", StandardizeTransform()),
-        ])
+        pipe = Pipeline(
+            [
+                ("impute", ImputeTransform()),
+                ("std", StandardizeTransform()),
+            ]
+        )
         transformed = pipe.fit_transform(ts)
         # strict=False should succeed, applying only StandardizeTransform inverse
         result = pipe.inverse_transform(transformed, strict=False)
@@ -596,6 +603,14 @@ class TestStandardizeTransform:
 
 
 class TestWhitenTransform:
+    @staticmethod
+    def _correlated_matrix(scale: float = 1.0) -> TimeSeriesMatrix:
+        rng = np.random.default_rng(482)
+        data = rng.normal(size=(3, 1, 512))
+        data[1] += 0.5 * data[0]
+        data[2] -= 0.25 * data[0] + 0.2 * data[1]
+        return TimeSeriesMatrix(data * scale, t0=0.0 * u.s, dt=0.01 * u.s)
+
     def test_fit_transform_matrix(self):
         mat = _make_tsm(n_channels=3, n_time=50)
         wt = WhitenTransform()
@@ -658,6 +673,55 @@ class TestWhitenTransform:
         result = wt.fit_transform(mat)
         assert isinstance(result, TimeSeriesMatrix)
 
+    def test_default_auto_epsilon_is_scale_invariant(self):
+        unit = self._correlated_matrix()
+        strain = self._correlated_matrix(1e-21)
+
+        unit_w = WhitenTransform().fit_transform(unit)
+        strain_w = WhitenTransform().fit_transform(strain)
+        np.testing.assert_allclose(strain_w.value, unit_w.value, rtol=1e-10)
+
+        explicit_auto = WhitenTransform(eps="auto").fit_transform(unit)
+        none_auto = WhitenTransform(eps=None).fit_transform(unit)
+        np.testing.assert_allclose(none_auto.value, explicit_auto.value)
+
+    def test_rejects_invalid_epsilon(self):
+        for eps in (True, np.bool_(True), -1.0, np.nan, np.inf, -np.inf, "bad"):
+            with pytest.raises(ValueError, match="eps"):
+                WhitenTransform(eps=eps)
+
+    def test_fitted_transform_rejects_nonfinite_input(self):
+        transform = WhitenTransform().fit(self._correlated_matrix())
+        nonfinite = self._correlated_matrix()
+        nonfinite.value[0, 0, 0] = np.nan
+
+        with pytest.raises(ValueError, match="finite"):
+            transform.transform(nonfinite)
+
+    def test_transform_is_dimensionless_and_preserves_time_metadata(self):
+        matrix = self._correlated_matrix()
+        matrix.unit = u.m
+        transform = WhitenTransform()
+
+        result = transform.fit_transform(matrix)
+
+        assert result.unit == u.dimensionless_unscaled
+        assert result.t0 == matrix.t0
+        assert result.dt == matrix.dt
+
+    def test_single_feature_float32_zero_variance_auto_is_finite(self):
+        matrix = TimeSeriesMatrix(np.zeros((1, 1, 16), dtype=np.float32), dt=1.0 * u.s)
+        transform = WhitenTransform()
+
+        whitened = transform.fit_transform(matrix)
+
+        assert np.all(np.isfinite(whitened.value))
+        np.testing.assert_array_equal(whitened.value, 0.0)
+        assert whitened.unit == u.dimensionless_unscaled
+        assert all(unit == u.dimensionless_unscaled for unit in whitened.units.flat)
+        assert transform.model is not None
+        assert np.all(np.isfinite(transform.model.W))
+
     def test_fit_transform_dict(self):
         tsd = _make_tsd(n_channels=3, n_time=100)
         wt = WhitenTransform()
@@ -686,6 +750,7 @@ class TestPCATransform:
     @pytest.fixture(autouse=True)
     def _setup_imports(self):
         from gwexpy.timeseries.pipeline import PCATransform
+
         self.PCATransform = PCATransform
 
     def test_fit_transform_matrix(self):
@@ -704,7 +769,7 @@ class TestPCATransform:
         assert isinstance(rec, TimeSeriesMatrix)
         # Note: tolerance might need adjustment depending on mock vs real
         if "MagicMock" not in str(type(pca)):
-             np.testing.assert_allclose(rec.value, mat.value, atol=1e-6)
+            np.testing.assert_allclose(rec.value, mat.value, atol=1e-6)
 
     def test_inverse_transform_not_fitted_raises(self):
         pytest.importorskip("sklearn")
@@ -774,6 +839,7 @@ class TestPCATransform:
 
     def test_supports_inverse_is_true(self):
         from gwexpy.timeseries.pipeline import PCATransform
+
         assert PCATransform.supports_inverse is True
 
     def test_fit_transform_dict(self):
@@ -804,6 +870,7 @@ class TestPCATransformMocked:
     @pytest.fixture(autouse=True)
     def _setup_imports(self):
         from gwexpy.timeseries.pipeline import PCATransform
+
         self.PCATransform = PCATransform
 
     def test_pca_mocked_basic(self):
@@ -831,6 +898,7 @@ class TestICATransform:
     @pytest.fixture(autouse=True)
     def _setup_imports(self):
         from gwexpy.timeseries.pipeline import ICATransform
+
         self.ICATransform = ICATransform
 
     def test_fit_transform_matrix(self):
@@ -917,6 +985,7 @@ class TestICATransform:
 
     def test_supports_inverse_is_true(self):
         from gwexpy.timeseries.pipeline import ICATransform
+
         assert ICATransform.supports_inverse is True
 
     def test_fit_transform_dict(self):
@@ -925,7 +994,6 @@ class TestICATransform:
         ica = self.ICATransform(n_components=2)
         result = ica.fit_transform(tsd)
         assert isinstance(result, TimeSeriesDict)
-
 
     def test_fit_transform_list_attempts_conversion(self):
         pytest.importorskip("sklearn")
@@ -948,6 +1016,7 @@ class TestICATransformMocked:
     @pytest.fixture(autouse=True)
     def _setup_imports(self):
         from gwexpy.timeseries.pipeline import ICATransform
+
         self.ICATransform = ICATransform
 
     def test_ica_mocked_basic(self):

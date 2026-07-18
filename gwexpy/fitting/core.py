@@ -66,6 +66,36 @@ except ImportError:
     corner = None
 
 
+def _validate_sigma(dy):
+    """Return a strictly-positive, real, float ndarray for use as 1/weight.
+
+    ``dy`` is a measurement uncertainty, so both cost classes require a
+    real-valued, strictly-positive sigma. Degenerate inputs are rejected at
+    construction so they cannot silently reach Minuit as an ``inf``/complex
+    chi2 (issue #456):
+
+    - a complex ``dy`` with a non-negligible imaginary part (which makes chi2
+      complex, or would silently discard the imaginary part) -> ``ValueError``;
+      an effectively-real complex array is accepted and its real part used;
+    - any non-finite ``dy`` (NaN/Inf) -> ``ValueError``;
+    - any ``dy <= 0`` (a zero divides residuals to ``inf``) -> ``ValueError``.
+    """
+    dy_arr = np.asarray(dy)
+    if np.iscomplexobj(dy_arr):
+        if np.any(np.abs(dy_arr.imag) > 1e-12 * np.maximum(1.0, np.abs(dy_arr.real))):
+            raise ValueError("dy must be real-valued")
+        dy_arr = dy_arr.real
+    dy_arr = dy_arr.astype(float)
+    if np.any(~np.isfinite(dy_arr)):
+        raise ValueError("dy must be finite; got NaN/Inf")
+    if np.any(dy_arr <= 0):
+        bad = np.where(dy_arr <= 0)[0]
+        raise ValueError(
+            f"dy must be strictly positive; got zeros/negatives at indices {bad}"
+        )
+    return dy_arr
+
+
 class ComplexLeastSquares:
     """Least Squares cost function for complex-valued data.
 
@@ -77,9 +107,10 @@ class ComplexLeastSquares:
     def __init__(self, x, y, dy, model):
         self.x = x
         self.y = y  # Complex data
-        self.dy = (
-            dy  # Error (assumed isotropic for real/imag unless specified otherwise)
-        )
+        # Error, assumed isotropic for real/imag. Enforce a strictly-positive,
+        # real-valued sigma so a zero/complex dy cannot silently produce an
+        # inf/complex chi2 that makes Minuit fail without a diagnostic.
+        self.dy = _validate_sigma(dy)
         self.model = model
 
         # Determine parameters from model (skipping 'x')
@@ -119,7 +150,10 @@ class RealLeastSquares:
     def __init__(self, x, y, dy, model):
         self.x = x
         self.y = y
-        self.dy = dy
+        # Enforce a strictly-positive, real-valued sigma so a zero/complex dy
+        # cannot silently produce an inf chi2 (or discard the imaginary part)
+        # and make Minuit fail without a diagnostic.
+        self.dy = _validate_sigma(dy)
         self.model = model
 
         params = describe(model)[1:]
@@ -380,6 +414,10 @@ class FitResult:
             x0, x1 = x_range
             x_plot = np.linspace(min(x0, x1), max(x0, x1), num_points)
         else:
+            if len(self.x) == 0:
+                raise ValueError(
+                    "FitResult.x is empty; cannot produce plot x range."
+                )
             x_plot = np.linspace(min(self.x), max(self.x), num_points)
         y_plot = self.model(x_plot, **self.params)
         ax.plot(x_plot, y_plot, label=kwargs.pop("label", "Fit"), **kwargs)
@@ -592,7 +630,9 @@ class FitResult:
         Parameters
         ----------
         n_walkers : int, optional
-            Number of MCMC walkers. Default is 32.
+            Number of MCMC walkers. Default is 32. Must be at least
+            ``2 * ndim``, where ``ndim`` is the number of free (non-fixed)
+            parameters, as required by emcee's ensemble sampler.
         n_steps : int, optional
             Number of MCMC steps per walker. Default is 3000.
         burn_in : int, optional
@@ -604,6 +644,12 @@ class FitResult:
         -------
         sampler : emcee.EnsembleSampler
             The emcee sampler object containing the full chain.
+
+        Raises
+        ------
+        ValueError
+            If there are no free parameters, or if ``n_walkers`` is below
+            ``2 * ndim``.
 
         Notes
         -----
@@ -652,6 +698,21 @@ class FitResult:
         # Filter out fixed parameters for MCMC
         float_params = [p for p in self.minuit.parameters if not self.minuit.fixed[p]]
         ndim = len(float_params)
+
+        if ndim == 0:
+            raise ValueError(
+                "run_mcmc() requires at least one free parameter. "
+                "All parameters are currently fixed."
+            )
+
+        min_walkers = 2 * ndim
+        if n_walkers < min_walkers:
+            raise ValueError(
+                f"run_mcmc() requires n_walkers >= 2 * ndim ({min_walkers} for "
+                f"{ndim} free parameter(s)), got n_walkers={n_walkers}. "
+                "emcee's ensemble sampler needs at least twice as many walkers as "
+                "free parameters to update the ensemble."
+            )
 
         # Dictionary of fixed parameters
         fixed_params = {
@@ -898,6 +959,10 @@ class FitResult:
             fig, ax = plt.subplots()
 
         # Generate x values for plotting
+        if len(self.x) == 0:
+            raise ValueError(
+                "FitResult.x is empty; cannot produce plot x range."
+            )
         x_plot = np.linspace(np.min(self.x), np.max(self.x), num_points)
 
         # Get random subset of samples
@@ -1093,12 +1158,18 @@ def fit_series(
             sigma_arr: npt.NDArray[Any] = np.asarray(sigma)
             sigma_full_for_plot = sigma_arr if len(sigma_arr) == original_len else None
             if len(sigma_arr) == original_len and x_range is not None:
-                # Crop sigma by x range using the full x array
-                x0, x1 = x_range
-                lo, hi = (x0, x1) if x0 <= x1 else (x1, x0)
-                idx0 = int(np.searchsorted(x_full, lo, side="left"))
-                idx1 = int(np.searchsorted(x_full, hi, side="right"))
-                dy = sigma_arr[idx0:idx1]
+                # Anchor on `target`'s actual x-values (already produced by
+                # series.crop()) instead of recomputing lo/hi bounds
+                # independently, so the sigma slice always matches target's
+                # index range exactly (#466: side="right" on the upper bound
+                # could previously include one extra bin at an exact
+                # boundary match).
+                if len(x) == 0:
+                    dy = sigma_arr[:0]
+                else:
+                    idx0 = int(np.searchsorted(x_full, x[0], side="left"))
+                    idx1 = idx0 + len(x)
+                    dy = sigma_arr[idx0:idx1]
             else:
                 dy = sigma_arr
 

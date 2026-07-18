@@ -29,6 +29,7 @@ def write_gwf_parts(
     tmp_path: Path,
     *,
     starts: tuple[float, float] = (1000.0, 1001.0),
+    dtype: type = float,
 ) -> tuple[list[Path], np.ndarray]:
     """Create two contiguous real GWF files for multi-file read tests."""
     rate_hz = 16.0
@@ -40,7 +41,7 @@ def write_gwf_parts(
         values = np.arange(
             index * samples_per_file,
             (index + 1) * samples_per_file,
-            dtype=float,
+            dtype=dtype,
         )
         ts = TimeSeries(
             values,
@@ -61,6 +62,7 @@ def write_gwf_dict_parts(
     tmp_path: Path,
     *,
     starts: tuple[float, float] = (1000.0, 1001.0),
+    dtype: type = float,
 ) -> tuple[list[Path], dict[str, np.ndarray]]:
     """Create two-channel real GWF files for TimeSeriesDict read tests."""
     rate_hz = 16.0
@@ -72,7 +74,7 @@ def write_gwf_dict_parts(
         values = np.arange(
             index * samples_per_file,
             (index + 1) * samples_per_file,
-            dtype=float,
+            dtype=dtype,
         )
         tsd = TimeSeriesDict(
             {
@@ -405,6 +407,7 @@ def test_read_gwf_multiple_files_rejects_overlap_without_pad(tmp_path, reader, m
     [
         (np.nan, np.nan),
         (-1.0, -1.0),
+        (0.0, 0.0),  # backward compatibility: the old zero-pad default
     ],
 )
 def test_read_gwf_timeseriesdict_multiple_files_pads_gaps(tmp_path, pad, expected_pad):
@@ -427,15 +430,94 @@ def test_read_gwf_timeseriesdict_multiple_files_pads_gaps(tmp_path, pad, expecte
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
 @pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
-def test_read_gwf_timeseriesdict_multiple_files_gap_pad_defaults_to_zero(tmp_path):
+def test_read_gwf_timeseriesdict_multiple_files_gap_pad_defaults_to_nan(tmp_path):
     files, _ = write_gwf_parts(tmp_path, starts=(1000.0, 1001.5))
 
     tsd = TimeSeriesDict.read(files, CHANNEL, gap="pad")
 
     assert len(tsd[CHANNEL]) == 40
-    np.testing.assert_allclose(tsd[CHANNEL].value[16:24], 0.0)
+    assert np.isnan(tsd[CHANNEL].value[16:24]).all()
     np.testing.assert_allclose(tsd[CHANNEL].value[:16], np.arange(16, dtype=float))
     np.testing.assert_allclose(tsd[CHANNEL].value[24:], np.arange(16, 32, dtype=float))
+
+
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+def test_read_gwf_timeseriesdict_multiple_files_gap_pad_int_dtype_requires_explicit_pad(
+    tmp_path,
+):
+    files, _ = write_gwf_parts(tmp_path, starts=(1000.0, 1001.5), dtype=np.int32)
+
+    with pytest.raises(ValueError, match="non-floating dtype"):
+        TimeSeriesDict.read(files, CHANNEL, gap="pad")
+
+    tsd = TimeSeriesDict.read(files, CHANNEL, gap="pad", pad=-1)
+    np.testing.assert_allclose(tsd[CHANNEL].value[16:24], -1)
+
+
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+def test_read_gwf_timeseriesdict_multiple_files_gap_pad_int_dtype_no_gap_is_safe(
+    tmp_path,
+):
+    # Regression test: contiguous multi-file reads must not trigger the NaN
+    # dtype guard just because gap="pad" was requested (no actual gap).
+    files, expected = write_gwf_parts(tmp_path, starts=(1000.0, 1001.0), dtype=np.int32)
+
+    tsd = TimeSeriesDict.read(files, CHANNEL, gap="pad")
+
+    np.testing.assert_allclose(tsd[CHANNEL].value, expected)
+
+
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+def test_read_gwf_timeseriesdict_multiple_files_gap_pad_int_dtype_multichannel(
+    tmp_path,
+):
+    files, _ = write_gwf_dict_parts(tmp_path, starts=(1000.0, 1001.5), dtype=np.int32)
+
+    with pytest.raises(ValueError, match="non-floating dtype"):
+        TimeSeriesDict.read(files, [CHANNEL, AUX_CHANNEL], gap="pad")
+
+    tsd = TimeSeriesDict.read(files, [CHANNEL, AUX_CHANNEL], gap="pad", pad=-1)
+    np.testing.assert_allclose(tsd[CHANNEL].value[16:24], -1)
+    np.testing.assert_allclose(tsd[AUX_CHANNEL].value[16:24], -1)
+
+
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+def test_read_gwf_timeseriesdict_outer_interval_int_dtype_requires_explicit_pad(
+    tmp_path,
+):
+    # Outer start/end padding (not just inter-file gaps) also materializes the
+    # pad value, so a NaN default on an int channel must raise the clear
+    # gwexpy ValueError rather than NumPy's opaque "cannot convert float NaN
+    # to integer" (#481).
+    files, _ = write_gwf_parts(tmp_path, starts=(1000.0, 1001.0), dtype=np.int32)
+
+    with pytest.raises(ValueError, match="non-floating dtype"):
+        TimeSeriesDict.read(files[0], CHANNEL, start=999.5, end=1001.5, gap="pad")
+
+    tsd = TimeSeriesDict.read(
+        files[0], CHANNEL, start=999.5, end=1001.5, gap="pad", pad=-1
+    )
+    assert int(tsd[CHANNEL].value[0]) == -1
+    assert int(tsd[CHANNEL].value[-1]) == -1
+
+
+@pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")
+@pytest.mark.skipif(not has_gwf_backend(), reason="gwf backend not available")
+def test_read_gwf_timeseriesdict_outer_interval_float_dtype_pads_with_nan(
+    tmp_path,
+):
+    # Regression guard: the outer-interval dtype check must not disturb the
+    # NaN default for floating-point channels.
+    files, _ = write_gwf_parts(tmp_path, starts=(1000.0, 1001.0), dtype=float)
+
+    tsd = TimeSeriesDict.read(files[0], CHANNEL, start=999.5, end=1001.5, gap="pad")
+
+    assert np.isnan(tsd[CHANNEL].value[0])
+    assert np.isnan(tsd[CHANNEL].value[-1])
 
 
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gwf fixture not found")

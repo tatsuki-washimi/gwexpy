@@ -6,6 +6,7 @@ for correlations between data points.
 """
 from __future__ import annotations
 
+import warnings
 from collections.abc import Callable
 from typing import Any
 
@@ -48,13 +49,36 @@ class GLS:
     ):
         self.X = np.asarray(X)
         self.y = np.asarray(y)
+        if self.X.ndim != 2:
+            raise ValueError(f"X must be 2-D, got shape {self.X.shape}")
+        n_samples, n_params = self.X.shape
+        if len(self.y) != n_samples:
+            raise ValueError(
+                f"X and y length mismatch: X has {n_samples} rows but y has "
+                f"{len(self.y)} elements"
+            )
+        if n_samples < n_params:
+            raise ValueError(
+                f"Underdetermined system: n_samples={n_samples} < "
+                f"n_params={n_params}; GLS requires n_samples >= n_params"
+            )
         if cov_inv is not None:
             self.cov_inv = np.asarray(cov_inv)
         elif cov is not None:
-            self.cov_inv = np.linalg.inv(np.asarray(cov))
+            cov_arr = np.asarray(cov, dtype=float)
+            cond = np.linalg.cond(cov_arr)
+            if cond > 1.0 / np.finfo(float).eps:
+                warnings.warn(
+                    f"GLS: covariance matrix is ill-conditioned (cond={cond:.3e}); "
+                    "the computed inverse may be inaccurate. "
+                    "Consider supplying cov_inv directly.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+            self.cov_inv = np.linalg.inv(cov_arr)
         else:
             # Ordinary Least Squares (identity weight)
-            self.cov_inv = np.eye(len(y))
+            self.cov_inv = np.eye(n_samples)
 
     def solve(self) -> np.ndarray:
         """Solve the linear GLS problem.
@@ -64,8 +88,17 @@ class GLS:
         """
         W = self.cov_inv
         XTW = self.X.T @ W
-        # Use np.linalg.solve for better stability than explicit inverse
-        beta = np.linalg.solve(XTW @ self.X, XTW @ self.y)
+        A = XTW @ self.X
+        b = XTW @ self.y
+        cond = np.linalg.cond(A)
+        if cond > 1.0 / np.finfo(float).eps:
+            warnings.warn(
+                f"GLS.solve: normal equations matrix is ill-conditioned "
+                f"(cond={cond:.3e}); solution may be inaccurate.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        beta, _, _, _ = np.linalg.lstsq(A, b, rcond=None)
         return beta
 
 
@@ -119,17 +152,42 @@ class GeneralizedLeastSquares:
     ) -> None:
         self.x = np.asarray(x)
         self.y = np.asarray(y)
-        self.cov_inv = np.asarray(cov_inv)
+        cov_inv_arr = np.asarray(cov_inv, dtype=float)
         self.cov = np.asarray(cov) if cov is not None else None
         self.model = model
 
         # Validate dimensions
         n = len(self.y)
-        if self.cov_inv.shape != (n, n):
+        if cov_inv_arr.shape != (n, n):
             raise ValueError(
-                f"cov_inv shape {self.cov_inv.shape} does not match "
+                f"cov_inv shape {cov_inv_arr.shape} does not match "
                 f"data length {n}. Expected ({n}, {n})."
             )
+
+        if not np.all(np.isfinite(cov_inv_arr)):
+            raise ValueError("cov_inv must contain only finite values (no NaN/Inf)")
+
+        # Warn if cov_inv is indefinite (negative eigenvalue in the symmetric
+        # part): chi2 = r^T W r depends only on (W+W^T)/2, so negative
+        # eigenvalues produce chi2 < 0 making the Minuit objective non-convex.
+        # Emit RuntimeWarning rather than raise so that pipeline callers (e.g.
+        # fit_bootstrap_spectrum) that compute cov_inv from empirical data can
+        # degrade gracefully (issue #457 / G6-F2).
+        W_sym = (cov_inv_arr + cov_inv_arr.T) / 2.0
+        eigvals = np.linalg.eigvalsh(W_sym)
+        min_eig = float(eigvals.min())
+        scale = max(float(eigvals.max()), 1.0)
+        if min_eig < -1e-10 * scale:
+            warnings.warn(
+                f"GeneralizedLeastSquares: cov_inv is indefinite "
+                f"(min eigenvalue of symmetric part={min_eig:.3e}); "
+                "chi2 may be negative, making the fit non-convex. "
+                "Consider supplying a positive (semi-)definite cov_inv.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
+        self.cov_inv = cov_inv_arr
 
         # Precompute Cholesky factor if covariance is available for better stability
         self.cov_cho = None
@@ -137,7 +195,13 @@ class GeneralizedLeastSquares:
             try:
                 self.cov_cho = np.linalg.cholesky(self.cov)
             except np.linalg.LinAlgError:
-                # Fallback to cov_inv if not positive definite
+                warnings.warn(
+                    "GeneralizedLeastSquares: cov is not positive definite; "
+                    "Cholesky decomposition failed. Falling back to direct cov_inv. "
+                    "Numerical stability may be reduced.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
                 self.cov_cho = None
 
         # Extract parameter names from model (skip first arg 'x')

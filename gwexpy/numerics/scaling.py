@@ -9,9 +9,11 @@ Gravitational-wave strain is O(1e-21), so a fixed ``eps`` can be
 :func:`safe_epsilon` and :class:`AutoScaler` solve this by computing
 an epsilon *relative to the data's own scale*.
 """
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from numbers import Real
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 
@@ -21,6 +23,23 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike, NDArray
 
 __all__ = ["safe_epsilon", "get_safe_epsilon", "AutoScaler", "safe_log_scale"]
+
+
+def _resolve_epsilon(eps: float | Literal["auto"] | None) -> float | None:
+    """Validate an epsilon override and return ``None`` for automatic scaling."""
+    if eps is None:
+        return None
+    if isinstance(eps, str):
+        if eps == "auto":
+            return None
+        raise ValueError("eps must be a finite real number, None, or 'auto'")
+    if isinstance(eps, (bool, np.bool_)) or not isinstance(eps, Real):
+        raise ValueError("eps must be a finite real number, None, or 'auto'")
+
+    value = float(eps)
+    if not np.isfinite(value) or value < 0:
+        raise ValueError("eps must be a non-negative finite real number")
+    return value
 
 
 def safe_epsilon(

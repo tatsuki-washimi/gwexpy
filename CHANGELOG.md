@@ -1,6 +1,234 @@
 # Changelog
 
-## [Unreleased]
+## Unreleased
+
+## [0.1.10] - 2026-07-18
+
+This is a bugfix release covering numerical regularization, axis regularity,
+histogram weights, and TimeSeries resampling dtype and boundary contracts.
+
+### Behaviour-visible bug fixes
+
+- **numerics**: `TimeSeriesMatrix.partial_correlation_matrix()` now defaults
+  to `eps="auto"` instead of `1e-8`, and `WhitenTransform` now defaults to
+  `eps="auto"` instead of `1e-12`. `LaplaceGram.normalize_per_sigma()` now
+  defaults to `eps="auto"` instead of `1e-30`. These defaults scale their
+  regularization to the input, so strain-scale partial correlations and
+  whitening no longer collapse toward zero. Pass the former explicit value to
+  retain prior behavior. `partial_correlation_matrix(eps=None)` continues to
+  disable its added ridge for compatibility. All three APIs now reject
+  non-finite input and invalid epsilon values with `ValueError` (#482).
+
+- **types**: `AxisDescriptor.regular` now compares represented adjacent
+  intervals with a narrowly bounded interval-scale tolerance. It accepts
+  ordinary floating-point regular grids while rejecting materially unequal
+  large-offset float32 intervals that could yield an incorrect `delta` (#492).
+
+- **histogram**: `Histogram.fill()` now preserves fractional scalar weights
+  when histogram coordinates use an integer dtype, including flow-bin values
+  and variance accumulation (#489).
+
+- **timeseries**: time-bin `resample()` now implements `closed="right"` as an
+  include-lowest first bin followed by right-closed bins. It also validates
+  enum options, widths, and offsets before constructing the bin grid (#491).
+
+- **timeseries**: `TimeSeries.asfreq()` preserves integer source dtype and
+  exact values when an integral `fill_value` is representable. Out-of-range
+  integral fills now raise `ValueError` rather than causing a lossy dtype
+  promotion; fractional, complex, NaN, and infinite fills still promote to a
+  dtype that can represent them (#490).
+
+## [0.1.9] - 2026-07-11
+
+This is a bugfix release. It completes the GWF read-path NaN-padding
+harmonization deferred from 0.1.8 (#481) and fixes two fitting bugs
+surfaced by the #461 follow-up audit: an off-by-one in `fit_series`'s
+`sigma` cropping at exact `x_range` boundaries, and an unvalidated
+`run_mcmc(n_walkers=...)` that let emcee's internal error leak through
+(#466).
+
+### Behaviour-visible bug fixes
+
+- GWF-specific reads (`TimeSeries.read`/`TimeSeriesDict.read`/`TimeSeriesMatrix.read`
+  with `format="gwf"`) now default `gap="pad"` to `NaN` padding instead of `0.0`,
+  completing the harmonization with `SeriesMatrix.append`'s NaN default shipped in
+  0.1.8. Code that relied on zero-filled GWF gaps should pass an explicit `pad=`
+  value. Padding a missing region (an inter-file gap or a requested interval
+  that extends beyond the available data) with `NaN` on a non-floating-point
+  GWF channel dtype now raises a clear `ValueError` instead of silently
+  corrupting the data with an out-of-range integer fill value or leaking
+  NumPy's opaque ``cannot convert float NaN to integer`` (#481).
+
+### Bug fixes
+
+- **fitting**: `fit_series(..., sigma=..., x_range=...)` no longer crashes with
+  a spurious `Sigma length mismatch` `ValueError` when `x_range`'s upper bound
+  exactly matches a data bin edge. The sigma array is now cropped using the
+  same index range that `Series.crop()` actually used for the fitted data (#466).
+- **fitting**: `FitResult.run_mcmc()` now validates `n_walkers >= 2 * ndim`
+  before invoking `emcee.EnsembleSampler`, raising a clear `ValueError` with
+  the required minimum instead of letting emcee's internal `RuntimeError`
+  surface with no gwexpy-level context (#466).
+
+### Development
+
+- Move maintainer-only `.harness/` AI workflow files out of the public
+  repository and skip private harness sync tests when the harness is absent
+  (#483).
+
+## [0.1.8] - 2026-07-04
+
+This is a bugfix and I/O-hardening release. It fixes the `from_obspy`
+crash on `obspy.Stream` input (#452) and hardens the SeriesMatrix / I/O
+layer: gap handling, metadata aliasing, key round-trips, and reader
+failure modes surfaced by the #443 follow-up audit are fixed with explicit
+contracts and regression tests (#450).
+
+### Behaviour-visible bug fixes
+
+- `SeriesMatrix.append(gap="pad")` (and the matrix multi-source merge paths
+  built on it) now pads gaps with `NaN` instead of `0.0` by default, matching
+  the missing-data convention already used by the multi-source readers.
+  Code that relied on zero-filled gaps should pass an explicit `pad=` value
+  or handle NaNs before reductions/FFT/filtering. Padding a gap with `NaN`
+  on a non-floating matrix dtype now raises `ValueError` instead of silently
+  inserting an invalid fill value.
+- **io/netcdf4**: A failed per-channel series construction no longer degrades
+  to a plain dict (which deferred an opaque `AttributeError` downstream); the
+  reader now raises a clear `ValueError` at the source.
+- **io/netcdf4**: Time-coordinate detection now prefers an explicitly named
+  coordinate (`time`/`Time`/`TIME`/`t`) and warns when it has to fall back to
+  a datetime64 coordinate — more loudly when several candidates make the
+  choice ambiguous. Pass `time_coord=` to select the axis explicitly.
+- **io/zarr**: Reading a store without a stored epoch now emits a
+  `UserWarning` (the silent default was GPS epoch 1980); a new
+  `t0_override=` argument sets the epoch explicitly.
+- **io/sdb**: Non-numeric values dropped by numeric coercion are no longer
+  silently lost; the reader warns with the affected column and count.
+
+### Bug fixes
+
+- **interop/obspy**: `TimeSeries.from_obspy` no longer crashes with an opaque
+  `AttributeError` when given an `obspy.Stream`: a single-trace Stream is
+  converted directly, and a multi-trace Stream raises a clear `TypeError`
+  pointing to the new `TimeSeriesDict.from_obspy` / `to_obspy` methods.
+  The `from_neo` (Block/Segment), `from_torch` (non-1D tensors) and
+  `from_root` (container inputs) converters gained equivalent clear-error
+  guards (#452).
+- `SeriesMatrix` metadata aliasing is now fully closed out: `rows`/`cols`/
+  `meta`/`attrs` are deep-copied in `_get_meta_for_constructor` (used by
+  `crop`/`append`/`diff`/`pad`/`interpolate`), in the matrix math ops
+  (`trace`, `matmul`, `schur`, `abs`, …) and in `__array_ufunc__`, so
+  mutating a derived object's metadata no longer corrupts the source.
+  This extends the `astype`/`real`/`imag` fix shipped in 0.1.6 (#442) to the
+  remaining construction paths.
+- **io/hdf5**: `SeriesMatrix` row/column keys are now JSON-encoded on write
+  (`key_format="json"`, mirroring the NetCDF4/Zarr encoders), so tuple and
+  numeric keys survive HDF5 round-trips instead of collapsing to strings.
+  Legacy string-keyed files remain readable.
+- **io/dttxml**: JSON key decoding now recursively converts nested lists to
+  tuples (matching the Zarr decoder) so round-trips preserve tuple keys and
+  hashability.
+- **interop**: `to_xarray()` (and `to_xarray_frequencyseries()`) no longer
+  persist an unset `channel`/`name` as the literal string `"None"`, which
+  previously round-tripped back into a bogus `Channel("None")`. The
+  `channel` metadata now survives `to_dict`/`from_dict`,
+  `to_xarray`/`from_xarray` and `to_hdf5`/`from_hdf5` round-trips.
+
+### Behaviour changes
+
+- **interop**: `TimeSeries.from_dict`/`from_json`/`from_xarray`/`from_pandas`/
+  `from_hdf5_dataset`/`from_netcdf4`/`from_polars` (and the underlying interop
+  helpers) now accept explicit `channel`/`unit`/`name`/`t0`/`dt` keyword
+  arguments to supply metadata the source object cannot carry; an explicit
+  argument always takes priority over a stored value (`user > source`).
+- **interop**: when `t0`/`dt` cannot be recovered or inferred, the converters
+  (`from_dict`, `from_pandas`, `from_hdf5`, `from_netcdf4`, `from_polars`) now
+  fall back to `t0=0`/`dt=1` with a `UserWarning` instead of silently, matching
+  the Zarr reader. The fallback values are unchanged, so this is a backward-
+  compatible (SemVer MINOR) addition; pass `t0=`/`dt=` explicitly to silence it.
+
+### Dependencies
+
+- Added upper version bounds to I/O backends to guard against major-version
+  API breaks: `h5py>=3.0,<4` (core), `obspy<2`, `nptdms<2`, `netCDF4<2`,
+  `zarr>=2,<4` (extras). These caps stay within the currently tested major
+  series but can affect dependency resolution in environments that already
+  pin newer majors (#450, D1).
+
+### Tests
+
+- **interop**: Added regression tests for the `resolve_timing`/`resolve_meta`
+  helpers, `channel` round-trips across dict/json/xarray/hdf5/netcdf4, the
+  `"None"`-string guard, falsy-zero `t0=0.0` handling, user-supplied metadata
+  overrides, and the new missing-timing `UserWarning` for each converter.
+- Added matrix key round-trip contracts across HDF5/NetCDF4/Zarr, multi-source
+  reader and gap-padding coverage, SDB/Zarr reader warning tests, and
+  io-conformance generators/validators for the SDB and Zarr backends.
+
+### Known limitations
+
+- GWF-specific read padding still follows its existing zero-padding path
+  (`gwexpy/timeseries/_gwf_io.py`); harmonizing GWF padding with the
+  matrix/core NaN convention is deferred to a follow-up issue.
+
+## [0.1.7] - 2026-06-27
+
+This is a numerical-robustness hardening release. A Phase 1 audit across the
+statistics, fitting, and spectral modules surfaced a set of silent-failure and
+degenerate-input bugs; this release adds explicit input-contract guards and a
+matching suite of regression tests so that invalid inputs raise clear errors
+instead of producing Inf/NaN or silently wrong results.
+
+### Bug fixes
+
+- **fitting/core**: LSQ cost classes now validate `dy` — zero, negative,
+  non-finite, or complex elements raise `ValueError` instead of causing silent
+  fit failures or Inf/NaN results (#469).
+- **fitting/gls**: GLS classes gained covariance / inverse-covariance
+  conditioning guards and PSD checks (#457 via #472).
+- **fitting/models**: Added degenerate-parameter guards to model shape
+  functions (#455 via #471).
+- **statistics**: Guarded degenerate and non-finite inputs across
+  `rayleigh_test`, `gauch`, `dq_flag`, and `student_t_indicator` — all-NaN
+  inputs, `p=0` false vetoes, Inf-corrupted distributions, an `IndexError`,
+  and mis-sized segments are now handled explicitly (#459 via #470).
+- **statistics/roc**: `calculate_roc` and `evaluate_detection_performance`
+  enforce their input contract — empty classes, shape mismatch, non-finite
+  scores, and tied-FPR bias now raise `ValueError`, and sklearn-style
+  `{-1, +1}` labels are handled correctly (#468).
+- **spectral**: Guarded `bootstrap_spectrogram` edge cases — float truncation,
+  NaN/Inf energy, `rebin_width` validation, covariance mean-imputation, and
+  zero-width confidence-interval warnings (#460 via #473).
+
+### Tests
+
+- Added input-contract regression suites covering the fixes above:
+  `tests/fitting/test_lsq_cost_dy_contract.py`,
+  `tests/fitting/test_gls_contracts.py`,
+  `tests/fitting/test_models_domain_contract.py`,
+  `tests/statistics/test_degenerate_input_contract.py`,
+  `tests/statistics/test_roc_input_contract.py`,
+  `tests/spectral/test_bootstrap_spectrogram_contract.py`.
+
+### Maintenance
+
+- Centralized gwexpy provisioning across CI workflows and fixed nightly drift
+  via a shared `setup-gwexpy` composite action (#454).
+- Added release-note tooling (`tools/gen_release_notes.py`,
+  `tools/publish_releases.sh`) that generates standardized GitHub Release notes
+  from `CHANGELOG.md`.
+
+### Documentation
+
+- Added the Phase 1 numerical-robustness sweep and supplement reports under
+  `tech_notes/` (#462).
+
+## [0.1.6] - 2026-06-11
+
+This is a bugfix and maintenance release: plotting/I/O follow-up fixes
+(#440, #441, #442 via #443), a development dependency sweep (#431), and
+FrequencySeries collection registry audit tests (#438).
 
 ### Bug fixes
 
@@ -24,6 +252,16 @@
 - `SeriesMatrix.astype()`, `.real`, `.imag`, `.conj()`, `.transpose()`/`.T`
   and `.reshape()` now deep-copy `attrs` like `.copy()` does, so mutating
   the result's attrs no longer leaks into the source matrix (#442).
+- Multi-file NetCDF4/Zarr reads into `TimeSeriesMatrix` now preserve the
+  matrix row/column keys instead of collapsing them through the dict-reader
+  shortcut, and NetCDF4 gained a dedicated matrix writer.
+- Multi-file matrix segment merging now passes `pad=np.nan`, so gaps between
+  files are NaN-padded instead of raising.
+
+### Maintenance
+
+- Updated the development dependency group (24 packages) in
+  `requirements-dev.txt` (#431).
 
 ### Tests
 

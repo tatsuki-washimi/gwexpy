@@ -133,6 +133,26 @@ class TestFromXarrayFrequencySeries:
         fs2 = from_xarray_frequencyseries(FrequencySeries, da, unit="m")
         assert str(fs2.unit) == "m"
 
+    def test_unset_channel_not_persisted_as_none_string(self):
+        # An unset channel must not be written as the literal string "None"
+        # (which would round-trip back into a bogus Channel("None")).
+        pytest.importorskip("xarray")
+        fs = _make_fs()
+        da = to_xarray_frequencyseries(fs)
+        assert da.attrs.get("channel") in (None,)
+        fs2 = from_xarray_frequencyseries(FrequencySeries, da)
+        assert fs2.channel is None
+
+    def test_channel_roundtrip(self):
+        pytest.importorskip("xarray")
+        fs = FrequencySeries(
+            np.arange(5.0), frequencies=np.arange(5.0), channel="X1:FS-CHAN"
+        )
+        da = to_xarray_frequencyseries(fs)
+        assert da.attrs["channel"] == "X1:FS-CHAN"
+        fs2 = from_xarray_frequencyseries(FrequencySeries, da)
+        assert str(fs2.channel) == "X1:FS-CHAN"
+
 
 # ---------------------------------------------------------------------------
 # HDF5 round-trip

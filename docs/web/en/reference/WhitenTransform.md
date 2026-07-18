@@ -11,7 +11,7 @@ Use `WhitenTransform` as a ready-made preprocessing step inside direct analysis 
 ## Representative Signatures
 
 ```python
-WhitenTransform(fftlength=1.0, overlap=0.5, **kwargs)
+WhitenTransform(method="pca", eps="auto", n_components=None)
 WhitenTransform.transform(x)
 ```
 
@@ -20,7 +20,7 @@ WhitenTransform.transform(x)
 ```python
 from gwexpy.timeseries import WhitenTransform
 
-whitened = WhitenTransform(fftlength=1.0, overlap=0.5).fit_transform(ts)
+whitened = WhitenTransform(eps="auto").fit_transform(ts)
 ```
 
 ## Related Theory
@@ -51,10 +51,14 @@ Whitening using PCA or ZCA on TimeSeriesMatrix-like data.
 ### `__init__`
 
 ```python
-__init__(self, method: str = 'pca', eps: float = 1e-12, n_components: Optional[int] = None, *, multivariate: bool = True, align: str = 'intersection')
+__init__(self, method: str = 'pca', eps: float | Literal['auto'] | None = 'auto', n_components: Optional[int] = None, *, multivariate: bool = True, align: str = 'intersection')
 ```
 
 Initialize self.  See help(type(self)) for accurate signature.
+
+``eps="auto"`` (or ``None``) derives variance-relative regularization from
+the fitted data. Explicit values must be finite and non-negative. ``eps=0``
+disables this ridge term and may be unsuitable for rank-deficient input.
 
 *(Inherited from `Transform`)*
 

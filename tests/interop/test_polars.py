@@ -112,8 +112,35 @@ class TestFromPolarsSeriesNoImport:
     def test_unit_preserved(self):
         from gwexpy.interop.polars_ import from_polars_series
         fake_series = SimpleNamespace(to_numpy=lambda: np.ones(3))
-        ts = from_polars_series(TimeSeries, fake_series, unit="km")
+        # No t0/dt supplied -> the missing timing now warns (not silent).
+        with pytest.warns(UserWarning, match="timing metadata"):
+            ts = from_polars_series(TimeSeries, fake_series, unit="km")
         assert str(ts.unit) == "km"
+
+    def test_missing_timing_warns(self):
+        from gwexpy.interop.polars_ import from_polars_series
+        fake_series = SimpleNamespace(to_numpy=lambda: np.ones(3))
+        with pytest.warns(UserWarning, match="timing metadata"):
+            from_polars_series(TimeSeries, fake_series)
+
+    def test_explicit_timing_no_warning(self):
+        import warnings
+
+        from gwexpy.interop.polars_ import from_polars_series
+        fake_series = SimpleNamespace(to_numpy=lambda: np.ones(3))
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            ts = from_polars_series(TimeSeries, fake_series, t0=0.0, dt=0.5)
+        assert ts.t0.value == pytest.approx(0.0)
+        assert ts.dt.value == pytest.approx(0.5)
+
+    def test_user_channel(self):
+        from gwexpy.interop.polars_ import from_polars_series
+        fake_series = SimpleNamespace(to_numpy=lambda: np.ones(3))
+        ts = from_polars_series(
+            TimeSeries, fake_series, t0=0.0, dt=1.0, channel="X1:POL"
+        )
+        assert str(ts.channel) == "X1:POL"
 
 
 class TestToPolarsFrequencyseriesRaisesWithoutPolars:

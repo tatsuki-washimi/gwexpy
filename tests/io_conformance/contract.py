@@ -96,6 +96,8 @@ _DEFAULT_FIXTURE_GENERATORS = {
     "csv": "csv_txt",
     "txt": "csv_txt",
     "wav": "audio",
+    "sdb": "sdb",
+    "zarr": "zarr_store",
 }
 
 _MISSING_DEPENDENCY_POLICY_BY_BEHAVIOR = {

@@ -25,11 +25,16 @@ def to_xarray(
     data = ts.value
     attrs = {
         "unit": str(ts.unit),
-        "name": str(ts.name),
-        "channel": str(ts.channel),
         "epoch": float(ts.t0.value if hasattr(ts.t0, "value") else ts.t0),
         "time_coord": time_coord,
     }
+    # Only write ``name``/``channel`` when actually set: ``str(None)`` would
+    # persist the literal string "None", which round-trips back into a bogus
+    # Channel("None")/name="None" on read (the T5 metadata-loss trap).
+    if ts.name:
+        attrs["name"] = str(ts.name)
+    if ts.channel:
+        attrs["channel"] = str(ts.channel)
 
     times_gps = ts.times.value
     if time_coord == "datetime":
@@ -55,34 +60,71 @@ def to_xarray(
     return da
 
 
-def from_xarray(cls: type[T], da: xr.DataArray, unit: Optional[str] = None) -> T:
-    """Convert `xarray.DataArray` to `TimeSeries`."""
+def from_xarray(
+    cls: type[T],
+    da: xr.DataArray,
+    *,
+    unit: Optional[str] = None,
+    channel: Optional[str] = None,
+    name: Optional[str] = None,
+) -> T:
+    """Convert `xarray.DataArray` to `TimeSeries`.
+
+    ``t0``/``dt`` are recomputed from the ``time`` coordinate. Metadata absent
+    from the source (``unit``/``channel``/``name``) can be supplied explicitly;
+    an explicit argument takes priority over the stored attribute.
+    """
     require_optional("xarray")
+    from .base import resolve_meta, resolve_timing
 
     val = da.values
     t_coord = da.coords["time"].values
 
     time_coord = da.attrs.get("time_coord")
+    inferred_dt: Optional[float]
     if np.issubdtype(t_coord.dtype, np.datetime64):
         from astropy.time import Time
 
         t_obj = Time(t_coord, format="datetime64")
         t0_gps = float(t_obj[0].gps)
-        dt = float(t_obj[1].gps - t0_gps) if len(t_coord) > 1 else 1.0
+        inferred_dt = float(t_obj[1].gps - t0_gps) if len(t_coord) > 1 else None
     elif time_coord == "seconds":
         from astropy.time import Time
 
         t_obj = Time(t_coord, format="unix")
         t0_gps = float(t_obj[0].gps)
-        dt = float(t_obj[1].gps - t0_gps) if len(t_coord) > 1 else 1.0
+        inferred_dt = float(t_obj[1].gps - t0_gps) if len(t_coord) > 1 else None
     else:
         t0_gps = float(t_coord[0])
-        dt = float(t_coord[1] - t0_gps) if len(t_coord) > 1 else 1.0
+        inferred_dt = float(t_coord[1] - t0_gps) if len(t_coord) > 1 else None
 
-    _unit = unit or da.attrs.get("unit")
-    name = da.name or da.attrs.get("name")
+    # ``t0`` always comes from the coordinate; only ``dt`` can be missing (a
+    # single-sample array), in which case resolve_timing warns before using 1.0.
+    _, dt = resolve_timing(
+        None,
+        None,
+        source="xarray DataArray",
+        inferred_t0=t0_gps,
+        inferred_dt=inferred_dt,
+    )
 
-    return cls(val, t0=LIGOTimeGPS(t0_gps), dt=dt, unit=_unit, name=name)
+    _unit = resolve_meta(unit, da.attrs.get("unit"))
+    ch = da.attrs.get("channel")
+    # Defend against legacy stores that persisted the literal string "None"
+    # for an unset channel (see the guard in to_xarray).
+    if ch == "None":
+        ch = None
+    _channel = resolve_meta(channel, ch)
+    _name = resolve_meta(name, da.name if da.name is not None else da.attrs.get("name"))
+
+    return cls(
+        val,
+        t0=LIGOTimeGPS(t0_gps),
+        dt=dt,
+        unit=_unit,
+        name=_name,
+        channel=_channel,
+    )
 
 
 # ---------------------------------------------------------------------------

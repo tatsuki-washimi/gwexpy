@@ -7,6 +7,9 @@ from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 import numpy as np
 from astropy import units as u
 
+from gwexpy.numerics import SAFE_FLOOR_STRAIN
+from gwexpy.numerics.scaling import _resolve_epsilon
+
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -431,7 +434,7 @@ class TimeSeriesMatrixAnalysisMixin:
         self: Any,
         *,
         method: str = "pca",
-        eps: float | str | None = "auto",
+        eps: float | Literal["auto"] | None = "auto",
         n_components: int | None = None,
         return_model: bool = True,
     ) -> Any:
@@ -791,19 +794,33 @@ class TimeSeriesMatrixAnalysisMixin:
         *,
         estimator: str = "empirical",
         shrinkage: float | str | None = None,
-        eps: float = 1e-8,
+        eps: float | Literal["auto"] | None = "auto",
         return_precision: bool = False,
     ) -> Any:
-        """Compute a partial-correlation matrix across all channels."""
+        """Compute a partial-correlation matrix across all channels.
+
+        ``eps='auto'`` adds a covariance-scale-relative ridge term after
+        optional shrinkage.  ``eps=None`` preserves the legacy behavior of
+        adding no ridge, as does ``eps=0``.  A finite explicit ``eps > 0``
+        uses that value instead; optional shrinkage and the pseudo-inverse
+        fallback remain in effect.
+
+        Input data and the computed covariance must be finite.  Singular
+        inputs with ``eps=0`` can still yield non-finite off-diagonal values.
+        """
         data = self.value.reshape(-1, self.shape[-1])
         n_channels, n_samples = data.shape
         if n_samples < 2:
             raise ValueError("Need at least 2 samples to compute covariance.")
+        if not np.all(np.isfinite(data)):
+            raise ValueError("partial correlation requires finite input data")
 
         if estimator != "empirical":
             raise ValueError(f"Unknown estimator: {estimator}")
 
-        cov = np.cov(data, rowvar=True)
+        cov = np.atleast_2d(np.cov(data, rowvar=True))
+        if not np.all(np.isfinite(cov)):
+            raise ValueError("partial correlation covariance must be finite")
 
         if shrinkage is not None:
             if isinstance(shrinkage, str):
@@ -816,8 +833,18 @@ class TimeSeriesMatrixAnalysisMixin:
             avg_var = np.trace(cov) / n_channels
             cov = (1.0 - shrink) * cov + shrink * avg_var * np.eye(n_channels)
 
-        if eps is not None and eps > 0:
-            cov = cov + eps * np.eye(n_channels)
+        # ``None`` historically disabled the added ridge in this API.  Keep
+        # that behavior while reserving the new ``"auto"`` default for the
+        # covariance-scale-relative regularization.
+        eps_value = 0.0 if eps is None else _resolve_epsilon(eps)
+        if eps_value is None:
+            covariance_scale = float(abs(np.trace(cov) / n_channels))
+            if not np.isfinite(covariance_scale):
+                raise ValueError("partial correlation covariance scale must be finite")
+            eps_value = max(SAFE_FLOOR_STRAIN, covariance_scale * 1e-6)
+
+        if eps_value > 0:
+            cov = cov + eps_value * np.eye(n_channels)
 
         try:
             precision = np.linalg.inv(cov)
@@ -896,9 +923,7 @@ class TimeSeriesMatrixAnalysisMixin:
         target_ts = flat[target]
         # Build a TimeSeriesDict so Bruco.compute takes Case A-1 (in-memory)
         # and does NOT fall through to the network-fetch Case B.
-        aux_tsdict = _TimeSeriesDict(
-            {k: v for k, v in flat.items() if k != target}
-        )
+        aux_tsdict = _TimeSeriesDict({k: v for k, v in flat.items() if k != target})
 
         _overlap = overlap if overlap is not None else fftlength / 2
 

@@ -1,6 +1,7 @@
 """gwexpy.statistics.rayleigh_test - Rayleigh statistic test p-values."""
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -59,7 +60,22 @@ def rayleigh_pvalue(
     p_vals = 2.0 * np.minimum(upper_counts, lower_counts) / len(dist)
 
     # Clip p-values to [0, 1]
-    p_vals = np.clip(p_vals, 0.0, 1.0)
+    p_vals = np.clip(p_vals, 0.0, 1.0).astype(float)
+
+    # A non-finite Rayleigh statistic sorts to the end of `dist`, so
+    # searchsorted would make min(upper, lower)=0 -> p=0.0, i.e. a false
+    # maximal-significance detection that triggers a spurious veto in
+    # to_segments. Report NaN for those bins instead (issue #459 / S6).
+    nonfinite = ~np.isfinite(r_vals)
+    if np.any(nonfinite):
+        n_bad = int(np.count_nonzero(nonfinite))
+        warnings.warn(
+            f"rayleigh_pvalue: {n_bad} non-finite Rayleigh statistic value(s) "
+            "set to NaN p-value (excluded from veto) instead of a false p=0",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        p_vals[nonfinite] = np.nan
 
     return Spectrogram(
         p_vals,
@@ -70,11 +86,23 @@ def rayleigh_pvalue(
     )
 
 
-_RAYLEIGH_STAT_CACHE: dict[int, np.ndarray] = {}
+_RAYLEIGH_STAT_CACHE: dict[tuple[int, int], np.ndarray] = {}
 
 def _get_rayleigh_stat_null_distribution(n: int, n_trials: int = 1000) -> np.ndarray:
     """Generate the null distribution of the Rayleigh statistic for `n` segments."""
-    if n not in _RAYLEIGH_STAT_CACHE:
+    # Entry-point guards: an empty sample (n<=0) makes np.std/np.mean return NaN
+    # -> all-NaN distribution -> p=0 for every bin; an empty trial set
+    # (n_trials<=0) makes the later len(dist) division a silent 0/0 -> all-NaN
+    # p-values (issue #459).
+    if n <= 0:
+        raise ValueError(f"n_samples must be >= 1, got {n}")
+    if n_trials <= 0:
+        raise ValueError(f"n_monte_carlo must be >= 1, got {n_trials}")
+
+    # Key the cache by (n, n_trials): keying by n alone silently returns a
+    # low-resolution distribution when a later caller requests more trials.
+    key = (n, n_trials)
+    if key not in _RAYLEIGH_STAT_CACHE:
         # Simulate Rayleigh statistic (matching GWpy implementation)
         # In GWpy, rayleigh_spectrogram computes:
         # std(ASD_i) / (ASD_mean * sqrt( (4-pi)/pi ))
@@ -84,12 +112,14 @@ def _get_rayleigh_stat_null_distribution(n: int, n_trials: int = 1000) -> np.nda
         const = np.sqrt((4.0 - np.pi) / np.pi)
 
         for i in range(n_trials):
-            # Rayleigh(sigma=1) samples
-            s = np.sqrt(-2.0 * np.log(np.random.rand(n)))
+            # Rayleigh(sigma=1) samples; floor the uniform draw away from 0 so
+            # log(0)=-inf cannot inject an Inf into the null distribution.
+            u = np.clip(np.random.rand(n), np.finfo(float).tiny, 1.0)
+            s = np.sqrt(-2.0 * np.log(u))
             # Rayleigh statistic R
             r = np.std(s) / (np.mean(s) * const)
             null_stats[i] = r
 
-        _RAYLEIGH_STAT_CACHE[n] = np.sort(null_stats)
+        _RAYLEIGH_STAT_CACHE[key] = np.sort(null_stats)
 
-    return _RAYLEIGH_STAT_CACHE[n]
+    return _RAYLEIGH_STAT_CACHE[key]

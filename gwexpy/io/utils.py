@@ -178,6 +178,27 @@ def _ceil_nonnegative_sample_count(value: Any) -> int:
     return int(math.ceil(numeric - 1e-12))
 
 
+def check_pad_dtype_compatible(dtype: Any, pad: Any) -> None:
+    """Raise ValueError if a NaN pad value cannot be represented by dtype."""
+    # Detect NaN for any float scalar type (Python ``float``, ``np.float64``,
+    # ``np.float32``, ...), not just ``isinstance(pad, float)`` which misses the
+    # numpy 32-bit scalar. ``np.isnan`` raises on non-numeric pads (None, str),
+    # so treat those as "not NaN" and let the actual pad path handle them.
+    try:
+        pad_is_nan = bool(np.isnan(pad))
+    except (TypeError, ValueError):
+        pad_is_nan = False
+    if (
+        pad_is_nan
+        and not np.issubdtype(dtype, np.floating)
+        and not np.issubdtype(dtype, np.complexfloating)
+    ):
+        raise ValueError(
+            f"Cannot pad a gap with NaN for non-floating dtype {dtype!r}; "
+            f"pass an explicit ``pad=`` value that the dtype can represent."
+        )
+
+
 def _pad_gwf_series_to_span(
     ts: Any,
     pad: Any,
@@ -204,6 +225,12 @@ def _pad_gwf_series_to_span(
             f"requested interval {type(span)(start, end)}"
         )
         raise ValueError(msg)
+    # Outer start/end padding materializes `pad` values just like the
+    # multi-file gap-merge path, so it needs the same non-floating dtype
+    # guard: a NaN pad on an int channel would otherwise surface NumPy's
+    # opaque "cannot convert float NaN to integer" instead of the clear
+    # gwexpy-level ValueError promised for GWF reads (#481).
+    check_pad_dtype_compatible(ts.dtype, pad)
     return ts.pad((pada, padb), mode="constant", constant_values=(pad,))
 
 

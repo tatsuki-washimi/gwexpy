@@ -44,44 +44,59 @@ def test_x_range_excludes_upper_boundary_and_preserves_full_plot_data():
     assert result.x_unit == series.xunit
 
 
-def test_full_length_sigma_with_exact_x_range_boundary_currently_mismatches_crop():
+def test_full_length_sigma_with_exact_x_range_boundary_matches_crop():
     series = _linear_frequency_series()
-    sigma = np.full(len(series), 0.1)
+    sigma = 0.1 * (1.0 + np.arange(len(series), dtype=float))
 
-    with pytest.raises(ValueError, match=r"Sigma length mismatch: got 7, expected 6"):
-        fit_series(
-            series,
-            _linear,
-            p0={"a": 2.0, "b": 1.0},
-            sigma=sigma,
-            x_range=(2.0, 8.0),
-        )
+    result = fit_series(
+        series,
+        _linear,
+        p0={"a": 2.0, "b": 1.0},
+        sigma=sigma,
+        x_range=(2.0, 8.0),
+    )
+
+    np.testing.assert_array_equal(result.x, np.arange(2.0, 8.0))
+    np.testing.assert_allclose(result.dy, sigma[2:8])
 
 
-def test_sigma_zero_nan_and_inf_values_are_preserved_without_validation():
+def test_full_length_sigma_with_non_aligned_x_range_boundary_matches_crop():
+    series = _linear_frequency_series()
+    sigma = 0.1 * (1.0 + np.arange(len(series), dtype=float))
+
+    result = fit_series(
+        series,
+        _linear,
+        p0={"a": 2.0, "b": 1.0},
+        sigma=sigma,
+        x_range=(2.4, 8.6),
+    )
+
+    np.testing.assert_array_equal(result.x, np.arange(3.0, 9.0))
+    np.testing.assert_allclose(result.dy, sigma[3:9])
+
+
+def test_sigma_zero_nan_and_inf_values_are_rejected():
+    # Resolves the previously-unspecified sigma policy (issue #456): a
+    # degenerate sigma (zero / NaN / Inf) used to be silently passed through to
+    # the cost function, producing an inf chi2 and a failed Minuit fit with no
+    # diagnostic. It is now rejected at fit time with a clear ValueError.
     series = _linear_frequency_series()
     p0 = {"a": 2.0, "b": 1.0}
 
     zero = np.zeros(len(series))
-    result_zero = fit_series(series, _linear, p0=p0, sigma=zero)
-    np.testing.assert_array_equal(result_zero.dy, zero)
-    assert result_zero.has_dy is True
-    assert not result_zero.minuit.valid
-    assert np.isnan(result_zero.chi2)
+    with pytest.raises(ValueError, match="strictly positive"):
+        fit_series(series, _linear, p0=p0, sigma=zero)
 
     with_nan = np.full(len(series), 0.1)
     with_nan[3] = np.nan
-    result_nan = fit_series(series, _linear, p0=p0, sigma=with_nan)
-    np.testing.assert_array_equal(result_nan.dy, with_nan)
-    assert np.isnan(result_nan.dy[3])
-    assert not result_nan.minuit.valid
+    with pytest.raises(ValueError, match="finite"):
+        fit_series(series, _linear, p0=p0, sigma=with_nan)
 
     with_inf = np.full(len(series), 0.1)
     with_inf[3] = np.inf
-    result_inf = fit_series(series, _linear, p0=p0, sigma=with_inf)
-    np.testing.assert_array_equal(result_inf.dy, with_inf)
-    assert np.isinf(result_inf.dy[3])
-    # Optimizer validity is intentionally unspecified until the sigma policy is resolved.
+    with pytest.raises(ValueError, match="finite"):
+        fit_series(series, _linear, p0=p0, sigma=with_inf)
 
 
 def test_ndarray_covariance_with_x_range_currently_requires_cropped_shape():
