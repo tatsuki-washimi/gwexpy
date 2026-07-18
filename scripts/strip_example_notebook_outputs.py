@@ -9,7 +9,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DISPLAY_ONLY_TAG = "display-only"
-TRACKED_NOTEBOOK_PREFIXES = ("docs/web/", "examples/")
+TRACKED_NOTEBOOK_PREFIXES = ("docs/web/", "docs_redesign/", "examples/")
 
 
 def _normalize(path: str) -> str:

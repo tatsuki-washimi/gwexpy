@@ -226,6 +226,20 @@ def test_public_docs_notebook_flags_execution_count_on_clean_source(tmp_path: Pa
     assert violations[0].rule == "notebook-execution-count-present"
 
 
+def test_redesign_docs_notebook_flags_execution_count_on_clean_source(tmp_path: Path):
+    module = load_script_module()
+    notebook_path = tmp_path / "docs_redesign" / "tutorials" / "executed.ipynb"
+    write_notebook(notebook_path, execution_count=1)
+
+    violations = module.check_paths(
+        [str(notebook_path.relative_to(tmp_path))],
+        repo_root=tmp_path,
+    )
+
+    assert len(violations) == 1
+    assert violations[0].rule == "notebook-execution-count-present"
+
+
 def test_non_docs_notebook_is_not_hygiene_checked(tmp_path: Path):
     module = load_script_module()
     notebook_path = tmp_path / "tests" / "fixtures" / "retained.ipynb"

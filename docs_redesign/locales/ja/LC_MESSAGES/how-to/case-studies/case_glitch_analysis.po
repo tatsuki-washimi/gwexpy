@@ -1,0 +1,444 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10002
+#: faa307c1197248a597302570cdfae21d
+msgid "Glitch Analysis: Q-Transform and Omega-Scan"
+msgstr "グリッチ詳細解析：Q-変換と Omega スキャン"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10004
+#: e3cfd5acdfe24151aaf4d02ed7ba791a
+msgid ""
+"**Glitches** are short-duration, non-Gaussian noise transients that "
+"contaminate gravitational-wave data.  The **Q-transform** (or Omega scan) is"
+" the standard time-frequency representation used to characterise and "
+"classify glitches at all major detector sites."
+msgstr ""
+"**グリッチ** は、重力波データを汚染する短時間・非ガウス的なノイズトランジェントです。**Q 変換**（または Omega "
+"スキャン）は、主要な検出器サイトでグリッチを特徴づけ分類するために用いられる標準的な時間周波数表現です。"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10009
+#: f85449b779f6416e8e092446fed264b5
+msgid ""
+"The Q-transform tiles the time-frequency plane with constant-Q (constant "
+"bandwidth-to-frequency ratio) windows and measures the normalised energy in "
+"each tile.  A glitch appears as a cluster of tiles with anomalously high "
+"SNR."
+msgstr ""
+"Q 変換は、時間周波数平面を定 Q（帯域幅と周波数の比が一定）の窓で敷き詰め、各タイルの正規化エネルギーを測定します。グリッチは、異常に高い SNR "
+"を持つタイルの集まりとして現れます。"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10013
+#: f096c1cba6c643998cf945578edc9e20
+msgid "**What this tutorial covers:**"
+msgstr "**このチュートリアルで学ぶこと：**"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10014
+#: c7a4882d90ff465d83cb6237ceac9680
+msgid "Injecting synthetic glitches into a noise background"
+msgstr "ノイズ背景に合成グリッチを注入する"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10015
+#: 977394e60953496aa7a8a24bcb34836c
+msgid "Computing the Q-transform with `q_scan()` and `QTiling`"
+msgstr "`q_scan()` と `QTiling` による Q 変換の計算"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10016
+#: 8dab17c42a86437b917a7092aef27c17
+msgid "Visualising the time-frequency map (Omega scan)"
+msgstr "時間周波数マップ（Omega スキャン）の可視化"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10017
+#: 8af99f4e76d74d82b178a867d3e145ce
+msgid "Extracting peak SNR, time, and frequency from `QGram`"
+msgstr "`QGram` からピーク SNR・時刻・周波数を抽出する"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10018
+#: 39920603a5eb4be6940187f3743d7986
+msgid "Characterising glitch morphology (duration, bandwidth, Q)"
+msgstr "グリッチ形態（継続時間、帯域幅、Q）の特徴づけ"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10020
+#: a311aa4e09b94320a35248f2e242fb3c
+msgid "**Related tutorials:**"
+msgstr "**関連チュートリアル:**"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10021
+#: 8229b5cd998d49778751ff3024242c0d
+msgid "`advanced_peak_detection.ipynb` — spectral line detection"
+msgstr "`advanced_peak_detection.ipynb` — スペクトルラインの検出"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10022
+#: 8eed7d8464b04d92808c51a596bec941
+msgid "`advanced_peak_tracking.ipynb` — tracking lines over time"
+msgstr "`advanced_peak_tracking.ipynb` — ラインの時間追跡"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:10023
+#: c5e3264a2f2f49b7a790907c50c3162b
+msgid "`case_bruco_advanced.ipynb` — coherence-based noise coupling"
+msgstr "`case_bruco_advanced.ipynb` — コヒーレンスに基づくノイズカップリング"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:20002
+#: dbd7d735e28c4c9ebe0b7c97efa4f893
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:40002
+#: abac8e854e2b4a97ac13a3b6300c37e3
+msgid "1. Synthetic Data with Injected Glitches"
+msgstr "1\\. グリッチを含む合成データの生成"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:40004
+#: 11ed9f4a4be24a08ab7fe8feb312d849
+msgid ""
+"We create a 4 s segment of KAGRA-like DARM noise with three injected "
+"glitches representative of common morphologies seen in practice:"
+msgstr ""
+"KAGRA 類似の DARM ノイズの 4 秒間セグメントに、実際に観測される典型的な形態を代表する 3 種類のグリッチを注入して合成します："
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 954dfb08c8e84bcc94e8119f0e0ea01f
+msgid "Glitch"
+msgstr "グリッチ"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 1188732b35f447258a36a651fadf11e7
+msgid "Morphology"
+msgstr "形態"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: b1ddc5d73e54428d95d3d30515039a16
+msgid "Typical origin"
+msgstr "典型的な原因"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 80051d54a24847c08ff9faca54875fdc b2e717f69a2546c6aac888414348af5d
+msgid "Blip"
+msgstr "Blip"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: e688c6d17f4f402597317da00ab3c004
+msgid "Short broadband burst"
+msgstr "短時間広帯域バースト"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: f9ed9c2a174646308f1bdabc7747c3d4
+msgid "Unknown / scattered light"
+msgstr "不明 / 散乱光"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 4117a151920e41d99173e4b4e801f95b 5479655248ae42358d856b070ea39d4d
+msgid "Scattered light"
+msgstr "散乱光"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 4fac4b553a924cb69e052002bb9b2207
+msgid "Arch-shaped frequency sweep"
+msgstr "アーチ状周波数スウィープ"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: de13935ac0eb46a8a756ee4590ba341e
+msgid "Mirror motion + scattering"
+msgstr "ミラー運動 + 散乱"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 169d1d9e01a84379a0c6a1d8621eb9c9 caaa114644544227aa28638a73ff06f6
+msgid "Koi fish"
+msgstr "鯉（Koi fish）"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 50c1934b708146888cd233e1b339b01f
+msgid "Low-frequency with harmonic"
+msgstr "低周波 + 高調波"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 42c125ba33084468bd6bc90d8dbbad07
+msgid "Suspension resonance"
+msgstr "懸架共振"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:60002
+#: 313407618aa342d0a692ebd014b7b68c
+msgid "2. Q-Transform (Omega Scan)"
+msgstr "2\\. Q-変換（Omega スキャン）"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:60004
+#: 5c15671b64c640329bc21ea8288ae005
+msgid ""
+"`q_scan()` searches over a range of Q values and returns the tile with the "
+"highest normalised energy together with the full `QGram` object for "
+"plotting."
+msgstr ""
+"`q_scan()` は Q 値の範囲を探索し、最高正規化エネルギーを持つタイルと プロット用の完全な `QGram` オブジェクトを返します。"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:60007
+#: 69c229c67dca4cf48ab60b09a710fde3
+msgid "Key parameters:"
+msgstr "主要パラメータ："
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:60008
+#: 88264ca785dc4122b0d2ee243c7af16a
+msgid "`qrange` — range of Q values to search (default: 4–64)"
+msgstr "`qrange` — 探索する Q 値の範囲（デフォルト: 4〜64）"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:60009
+#: d7e18556113b4502ba5e48aded9090b1
+msgid "`frange` — frequency range in Hz"
+msgstr "`frange` — 周波数範囲 [Hz]"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:60010
+#: edac27ea271849e1b29ea5ae46d015b1
+msgid "`mismatch` — fractional tile overlap (smaller = finer grid, slower)"
+msgstr "`mismatch` — タイルオーバーラップの割合（小さいほど細かいグリッド）"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:80002
+#: 4beee31e147d4b499731c2ad6a2f760e
+msgid "3. Time-Frequency Map (Omega Scan Plot)"
+msgstr "3\\. 時間周波数マップ（Omega スキャンプロット）"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:80004
+#: e6639000ebce44fba5164d2b040d5208
+msgid ""
+"`QGram.interpolate()` resamples the irregular Q tiles onto a regular time-"
+"frequency grid suitable for imshow."
+msgstr ""
+"`QGram.interpolate()` は、不規則な Q タイルを imshow に適した規則的な時間周波数グリッドへ再サンプリングします。"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:100002
+#: 77a4c5f13dcb474abae9022c39fd1532
+msgid "4. Glitch Characterisation with QTiling"
+msgstr "4\\. QTiling によるグリッチ特性評価"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:100004
+#: 3c28464ba1fe401a99837a9a37aeea41
+msgid ""
+"`QTiling` lets us search a specific Q plane and extract glitch parameters "
+"(peak time, frequency, duration, bandwidth) for each candidate event."
+msgstr ""
+"`QTiling` を使うと、特定の Q 平面を探索し、各候補イベントについてグリッチパラメータ（ピーク時刻、周波数、継続時間、帯域幅）を抽出できます。"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:120002
+#: d985637e8a5f4bc2b9493cda05db0813
+msgid "5. Statistical Significance — Rayleigh Test"
+msgstr "5\\. 統計的有意性 — Rayleigh 検定"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:120004
+#: d8d88e1f46d24281bfcfb02e2d092e7e
+msgid ""
+"The `rayleigh_test` measures how non-Gaussian the time-frequency energy "
+"distribution is.  A p-value below 0.01 in a quiet background suggests the "
+"data segment contains a significant non-Gaussian transient."
+msgstr ""
+"`rayleigh_test` は、時間周波数エネルギー分布がどれだけ非ガウス的かを測定します。静穏な背景で p 値が 0.01 "
+"を下回る場合、そのデータセグメントに有意な非ガウス的トランジェントが含まれていることを示唆します。"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:140002
+#: 452768d63b7a44d68584bde9eb66915b
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: a1011a2ceb4945a280f7de9a4797c79a
+msgid "Step"
+msgstr "ステップ"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 2582d9f30c0349ed965c50658181f1c3
+msgid "API"
+msgstr "API"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: d75875b28a164b7898c62284d4ed0e67
+msgid "Output"
+msgstr "返り値"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: e47cbd20f9af4ad6b9e41c00ff763d53
+msgid "Whiten data"
+msgstr "データのホワイトニング"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 18c964c90f6649d2ab7200595e885c1c
+msgid "`whiten(ts, fftlength, overlap)`"
+msgstr "`whiten(ts, fftlength, overlap)`"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 57a00408b62744729a70749c00b747b7
+msgid "Whitened TimeSeries"
+msgstr "ホワイトニング済み TimeSeries"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 9e66fdec22f6493f9f4f5200eb3c456e
+msgid "Q-scan"
+msgstr "Q スキャン"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 4d7cd77f9fa94c34962105ca58abce99
+msgid "`q_scan(ts, qrange, frange, mismatch)`"
+msgstr "`q_scan(ts, qrange, frange, mismatch)`"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 52d9deca7f5c41479ca0f9e8a86bbbd1
+msgid "QGram, FAR"
+msgstr "QGram, FAR"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: dd81038ba43541e08384ad5d48174c2b
+msgid "Plot Omega scan"
+msgstr "Omega スキャンプロット"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: a468305455b34eb6a04a7ed3f69d876e
+msgid "`qgram.interpolate(dt, df)`"
+msgstr "`qgram.interpolate(dt, df)`"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 59143f0cabb34659ad80db363a2cdc05
+msgid "2D energy array"
+msgstr "2D エネルギー配列"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 7514d26dfb2d4dc49e7851edbf2d4da7
+msgid "Glitch parameters"
+msgstr "グリッチパラメータ"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 23b2a23848634f6c9c11f1b2ad39b600
+msgid "`qgram.peak`"
+msgstr "`qgram.peak`"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: b7d9375aa871476eaf98c0794d62ff2b
+msgid "time, frequency, SNR, Q"
+msgstr "時刻、周波数、SNR、Q"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 8e6d4ebf5982496da47038225f3706bd
+msgid "Statistical test"
+msgstr "統計検定"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 335aba76754e41ca956ef24da9d7dbe3
+msgid "`rayleigh_test(energies)`"
+msgstr "`rayleigh_test(energies)`"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 1243e9169c114ae9b8729cd6a61333b8
+msgid "statistic, p-value"
+msgstr "統計量、p 値"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:140012
+#: 3e2c8ccf5dd44ca493572186cf967e84
+msgid "**Glitch morphology guide:**"
+msgstr "**グリッチ形態ガイド：**"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: b7e15c1a126849d29159cfd4537d7f9c
+msgid "Type"
+msgstr "型"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 6ef0bde634424207957e2d5aa11a5442
+msgid "Frequency sweep"
+msgstr "周波数スウィープ"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 1f32b17839bd42d58cabfe3661919403
+msgid "Duration"
+msgstr "継続時間"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 6b079476382545358727d5442d38ec17
+msgid "Q range"
+msgstr "Q 範囲"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 3fc9bbf4e2c8420b81cacd4a38572e4a
+msgid "None"
+msgstr "なし"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 6da8759010a54b149c1a4b3a6d7e0206
+msgid "< 10 ms"
+msgstr "< 10 ms"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: a30bd318d5da41a99e5c80371a6ad8d4
+msgid "4–20"
+msgstr "4–20"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: c15d49603e5b4455a3a68f813a6340a9
+msgid "Arch / inverted arch"
+msgstr "アーチ状"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: b1bf7fa3bf354c3e97d4a19b40dfbf2c
+msgid "0.1–1 s"
+msgstr "0.1–1 s"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 364193d20cf146b88127d9dcf75ae600
+msgid "4–16"
+msgstr "4–16"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: b5bdae94db3642e181b7de871a2edb6a
+msgid "Low-freq + harmonics"
+msgstr "低周波 + 高調波"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 4b19e6095f17408f9c0ca9db153c6051
+msgid "50–200 ms"
+msgstr "50–200 ms"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: fb2c543969574109b37bd3ae7bc6e561
+msgid "16–64"
+msgstr "16–64"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 9ef2b433e27f49048719fc7694c9126e
+msgid "Whistle"
+msgstr "ホイッスル"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 728bf35771ee46878f449c3418f7a585
+msgid "Monotone sweep"
+msgstr "単調スウィープ"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: 5246e9bb6dbe4965a21aa8709177be42
+msgid "0.1–2 s"
+msgstr "0.1–2 s"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb
+#: a0b6a004fd9a4814a86a137d7e4f5de3
+msgid "20–100"
+msgstr "20–100"
+
+#: ../../how-to/case-studies/case_glitch_analysis.ipynb:140021
+#: 56f96a7362c1414ca11598dd2b4e5ac2
+msgid ""
+"**Tip**: For production glitch cataloguing, use `q_scan` with the default "
+"`qrange=(4,64)` and then manually inspect tiles with SNR > 8."
+msgstr ""
+"**ヒント**: 実運用のグリッチカタログ作成では、デフォルトの `qrange=(4,64)` で `q_scan` を実行し、SNR > 8 "
+"のタイルを手動で確認してください。"

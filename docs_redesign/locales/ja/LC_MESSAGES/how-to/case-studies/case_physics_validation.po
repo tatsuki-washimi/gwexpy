@@ -1,0 +1,316 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10002
+#: 0572b87ca9ba48eaafef5510695edb3d
+msgid "Physical Validity Checking: Units, Floors, and Sanity Tests"
+msgstr "物理妥当性検証：単位・数値床・健全性テスト"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10004
+#: 748d76e1e71c46ca8423b198b9221280
+msgid ""
+"One of gwexpy's design principles is **numerical safety for GW-scale "
+"quantities**.  Gravitational-wave strain is ~10⁻²³ — close to the limits of "
+"double-precision floating point — so naive computations can silently produce"
+" wrong answers."
+msgstr ""
+"gwexpy の設計原則の一つは **GW スケール量に対する数値的安全性**です。重力波のひずみは ~10⁻²³ "
+"であり、倍精度浮動小数点の限界に近いため、素朴な計算は誤った答えを静かに生成しかねません。"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10009
+#: bae987a23b874707988464b498776b1c
+msgid ""
+"gwexpy provides `gwexpy.numerics.constants` and `gwexpy.numerics.scaling` to"
+" handle:"
+msgstr ""
+"gwexpy は次に対応するために `gwexpy.numerics.constants` と `gwexpy.numerics.scaling` "
+"を提供します："
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10011
+#: 38058341865d46108e8f6ea7dcc3f449
+msgid "**Numerical floors** that prevent log(0) and division-by-zero"
+msgstr "log(0) やゼロ除算を防ぐ**数値フロア**"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10012
+#: eef7f0781fee4b0fb470e77da0277881
+msgid "**Dtype-aware epsilons** that adapt to float32 / float64"
+msgstr "float32 / float64 に適応する **dtype を考慮したイプシロン**"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10013
+#: 7a34209407734ed1b67a5eed09904d1b
+msgid "**Safe log-scale visualisation** with a physical dynamic range"
+msgstr "物理的なダイナミックレンジを持つ**安全な対数スケール可視化**"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10015
+#: be97883d550f4f89abda8554bde18a27
+msgid ""
+"This tutorial demonstrates these tools through a series of **validation "
+"exercises** that every GW analyst should perform on their data pipelines."
+msgstr ""
+"このチュートリアルでは、すべての GW 解析者がデータパイプラインに対して行うべき一連の**検証演習**を通して、これらのツールを実演します。"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10018
+#: cfa027b6fe5143ccadbef2bcc46a6380
+msgid "**What this tutorial covers:**"
+msgstr "**このチュートリアルで学ぶこと：**"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10019
+#: 7ad78d4a4fd0487d82f0193d2bc13c90
+msgid "Why strain-scale quantities need special numerical care"
+msgstr "なぜひずみスケールの量に特別な数値的配慮が必要なのか"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10020
+#: 187e502eda864012aa3f2be8c2c25ab3
+msgid "Using `SAFE_FLOOR`, `EPS_PSD`, and `EPS_COHERENCE`"
+msgstr "`SAFE_FLOOR`、`EPS_PSD`、`EPS_COHERENCE` の使用"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10021
+#: 5c59b7c45e9745bfa001a406d0baf0cb
+msgid "Unit-consistent ASD / PSD operations with `astropy.units`"
+msgstr "`astropy.units` による単位整合的な ASD / PSD 演算"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10022
+#: c2edf78b7e604aa7912758c9c025840c
+msgid "Safe log-scale plotting with `safe_log_scale`"
+msgstr "`safe_log_scale` による安全な対数スケールプロット"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:10023
+#: c2b8fe9adfd84cfea7e38aa95c944938
+msgid "A checklist of physics sanity tests for an ASD pipeline"
+msgstr "ASD パイプラインのための物理的妥当性テストのチェックリスト"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:20002
+#: 75a981b36841422d8eb755d8ec9c3a3b
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:40002
+#: 6b7a5d7131b547aa9baa11372cf847d8
+msgid "1. Why GW Strain Needs Special Care"
+msgstr "1\\. GW 歪みに特別な数値的注意が必要な理由"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:40004
+#: 1812a6521f9a44259558b158795e6688
+msgid ""
+"Double-precision floating point has a machine epsilon of ~2.2×10⁻¹⁶. GW "
+"strain is ~10⁻²³ — only 7 orders of magnitude above machine epsilon. This "
+"means that **squaring strain to compute PSD, then taking log for plotting, "
+"can lose significant bits without careful flooring**."
+msgstr ""
+"倍精度浮動小数点のマシンイプシロンは ~2.2×10⁻¹⁶ です。 GW 歪みは ~10⁻²³ — マシンイプシロンの 7 桁上。 "
+"これはつまり、**歪みを二乗して PSD を計算し、ログ変換する操作が 適切なフロアなしに大きなビット損失を引き起こす可能性がある**ことを意味します。"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:60002
+#: bdafecb9548e4666a29702f64c4d27d8
+msgid "2. Numerical Floors in ASD Computation"
+msgstr "2\\. ASD 計算における数値床"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:60004
+#: 35aed5dacee644979209db6f2df76c0f
+msgid ""
+"gwexpy's Welch estimator uses `EPS_PSD` internally to prevent zero PSD "
+"values.  Here we show explicitly what happens without vs. with flooring."
+msgstr ""
+"gwexpy の Welch 推定器は内部で `EPS_PSD` を使用して PSD "
+"値がゼロになるのを防ぎます。ここでは、フロアリングなしの場合とありの場合に何が起こるかを明示的に示します。"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:80002
+#: a12eb96e65ff46b393adc25fc4145eb1
+msgid "3. Unit-Consistent Operations with astropy.units"
+msgstr "3\\. astropy.units による単位一貫性の確認"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:80004
+#: 1c47704c0c7645c998076fdf328d6cbf
+msgid ""
+"gwexpy uses `astropy.units` throughout.  Physical validation means checking "
+"that unit arithmetic is self-consistent: ASD² = PSD, etc."
+msgstr ""
+"gwexpy は全体を通して `astropy.units` を使用します。物理的検証とは、単位の算術が自己整合的であること（ASD² = PSD "
+"など）を確認することを意味します。"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:100002
+#: 215ce3f09e0a4db890a19e84168a8fcc
+msgid "4. Safe Log-Scale Plotting"
+msgstr "4\\. safe_log_scale による安全な対数スケールプロット"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:100004
+#: 0063687bd802455c927ae045d93d584b
+msgid ""
+"`safe_log_scale()` converts an array to decibels with a configurable dynamic"
+" range, preventing -inf from appearing in plots."
+msgstr "`safe_log_scale()` は配列を設定可能なダイナミックレンジでデシベルに変換し、プロットに -inf が現れるのを防ぎます。"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:120002
+#: 53b81fefa47b436ead3074a1eb86607a
+msgid "5. Physics Sanity Checklist"
+msgstr "5\\. 物理健全性チェックリスト"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:120004
+#: 6c31ac66cef54141b6f19928a7d2e311
+msgid ""
+"A systematic set of tests that every ASD pipeline should pass before results"
+" are trusted or shared."
+msgstr "結果が信頼され共有される前に、すべての ASD パイプラインが通過すべき体系的なテスト群です。"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:140002
+#: 51a4e4f546c0418f9eb911181561b960
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: d0e3bfaf64914518b012447ab5b18f85
+msgid "Tool"
+msgstr "ツール"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 632e972699fa4db8bc231299aa8c9697
+msgid "Purpose"
+msgstr "目的"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 7178de53872b46ac8915fb532c942e46
+msgid "When to use"
+msgstr "使いどき"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 7bf4898a526a4ad89797fa241698f187
+msgid "`SAFE_FLOOR`"
+msgstr "`SAFE_FLOOR`"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 2814e2958f1b47f9a46b5a261ebb78bb
+msgid "Absolute floor (1e-50) for log ops"
+msgstr "絶対フロア（1e-50）"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 0d107f37435144bbabc0e9d8cf2b81e5
+msgid "Before any `log10(x)` call"
+msgstr "`log10(x)` 前"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 2f3eacb312e3449685e5fadbda470bee
+msgid "`EPS_PSD`"
+msgstr "`EPS_PSD`"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: d1a945c2c83c4297857cc6aaac7bbdce
+msgid "Regularises Welch PSD denominator"
+msgstr "Welch PSD 分母の正則化"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: acc0fe6cf4d342c4a9cc874324af214b
+msgid "Internal to `ts.asd()`"
+msgstr "`ts.asd()` 内部"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: ba2980886f5c46168a5496bb3fd66fef
+msgid "`EPS_COHERENCE`"
+msgstr "`EPS_COHERENCE`"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: c72b281833374322983946d7a382310d
+msgid "Clips coherence denominator"
+msgstr "コヒーレンス分母のクリッピング"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 118a5e1fe2c242a7920a9f279beec747
+msgid "Internal to coherence estimation"
+msgstr "コヒーレンス推定内部"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 91bcae7dd353486f9d1fd7879b366cf9
+msgid "`eps_for_dtype(dtype)`"
+msgstr "`eps_for_dtype(dtype)`"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 5fa0fe4c1ba044dab96ca403273beb77
+msgid "Machine epsilon for the working dtype"
+msgstr "作業 dtype のマシンイプシロン"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 573213870cf84a0598514d0e36f1ced3
+msgid "When mixing float32/float64"
+msgstr "float32/float64 混合時"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 0a01407b8fc0466fb3c70631dd56ec98
+msgid "`safe_log_scale(x, db)`"
+msgstr "`safe_log_scale(x, db)`"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 4b33ec5162e9404ead3c0dc94c98ce3d
+msgid "dB conversion with bounded dynamic range"
+msgstr "動的範囲制限付き dB 変換"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: 5cd4734873974027805119143b19eaa3
+msgid "All dB / log plots"
+msgstr "全 dB/ログプロット"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: fb97e7eb802243df8662c47da5db9015
+msgid "`safe_epsilon(x)`"
+msgstr "`safe_epsilon(x)`"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: dcdf63bfafda4382901db8d929db404a
+msgid "Data-relative epsilon"
+msgstr "データ相対イプシロン"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb
+#: ad94b3f38f9641d9a75cd2c290b66f21
+msgid "Adaptive thresholding"
+msgstr "適応的閾値処理"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:140013
+#: 7339971d9e804cbba74aa8127bc64213
+msgid "**Physics sanity checklist for ASD pipelines:**"
+msgstr "**ASD パイプラインの物理健全性チェックリスト：**"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:140014
+#: f0ba821aad0e412ba609eac3efdd225f
+msgid "No NaN or Inf in the output"
+msgstr "出力に NaN や Inf が含まれない"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:140015
+#: 92824cc950924211b34322efdd23f2b1
+msgid "All bins ≥ `SAFE_FLOOR_STRAIN` (1e-50 strain/√Hz)"
+msgstr "すべてのビンが `SAFE_FLOOR_STRAIN`（1e-50 strain/√Hz）以上"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:140016
+#: d89daa84d3f94b72a86e490c5977f3e5
+msgid "PSD integral gives finite, positive RMS"
+msgstr "PSD の積分が有限かつ正の RMS を与える"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:140017
+#: 0f6d529dd9e94cd99714054a91648ba3
+msgid "PSD-derived RMS ≈ data RMS within 10%"
+msgstr "PSD 由来の RMS がデータの RMS と 10% 以内で一致"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:140018
+#: 18cd584585b845b3b58e91cc82df1ae2
+msgid "No >20x amplitude jump between adjacent bins"
+msgstr "隣接ビン間で 20 倍を超える振幅ジャンプがない"
+
+#: ../../how-to/case-studies/case_physics_validation.ipynb:140019
+#: c83c62c9f16046b8a81b3c8477523652
+msgid "Nyquist bin is not the dominant peak (no aliasing)"
+msgstr "ナイキストビンが支配的なピークでない（エイリアシングなし）"

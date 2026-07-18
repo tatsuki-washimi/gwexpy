@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/segments/segment_visualization.ipynb:10002
+#: afce515758c945d480ca5900469ffe8f
+msgid "Segment Analysis: Visualization"
+msgstr "セグメント解析: 可視化"
+
+#: ../../how-to/segments/segment_visualization.ipynb:10004
+#: a8b7d1d7387a4d03990cad01193b5c56
+msgid ""
+"`SegmentTable` provides rich plotting features, specifically optimized for "
+"comparing spectra over multiple segments via `overlay_spectra()`."
+msgstr ""
+"`SegmentTable` は豊富な描画機能を提供します。特に `overlay_spectra()` "
+"は、複数セグメント間のスペクトルを美しく比較するために最適化されています。"
+
+#: ../../how-to/segments/segment_visualization.ipynb:10006
+#: 0a9cdaf0528546eea046b8f8b64d64cd
+msgid ""
+"The segment boundaries are still `gwpy.segments.Segment`, and the spectra "
+"being overlaid are GWpy `FrequencySeries` objects. gwexpy adds the table-"
+"oriented visualization layer by collecting those GWpy base classes in "
+"`SegmentTable` and providing overlay, color grading, and overview layouts on"
+" top. For the base relationship between GWpy classes and gwexpy extensions, "
+"see [SegmentTable: Basics](intro_segment_table.ipynb)."
+msgstr ""
+"ここでも区間そのものは `gwpy.segments.Segment`、重ね描きするスペクトルは GWpy の `FrequencySeries` "
+"を使います。gwexpy はそれらの GWpy 基盤クラスを `SegmentTable` "
+"にまとめ、可視化や色分け、俯瞰レイアウトを表処理として追加しています。基礎関係は [SegmentTable: "
+"基本](intro_segment_table.ipynb) を参照してください。"
+
+#: ../../how-to/segments/segment_visualization.ipynb:30002
+#: 742fcc7795464a86b3ef49e360daeaa0
+msgid "Color Grading by Meta Column"
+msgstr "メタデータ列による色付け"
+
+#: ../../how-to/segments/segment_visualization.ipynb:30004
+#: 7530c069659a48ff9f91ed6a75993e76
+msgid ""
+"You can color individual lines based on any numeric meta column (e.g., SNR)."
+msgstr "任意の数値メタデータ（例：SNR）に基づいて、各行のラインに色をつけることができます。"
+
+#: ../../how-to/segments/segment_visualization.ipynb:50002
+#: a07afb8a99594f1e90d6b368a046c21e
+msgid "Overview Layouts"
+msgstr "俯瞰レイアウト"
+
+#: ../../how-to/segments/segment_visualization.ipynb:50004
+#: ff37c2fd60404584bfd98a83618f9278
+msgid "Use `segments()` to see the temporal layout of your table."
+msgstr "`segments()` を使用して、テーブルの時間的なレイアウトを確認します。"

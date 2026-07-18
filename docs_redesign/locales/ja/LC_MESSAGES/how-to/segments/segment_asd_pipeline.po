@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/segments/segment_asd_pipeline.ipynb:10002
+#: 7a19f3010c79437bb0c28ff5caf31149
+msgid "ASD Analysis: Pipeline"
+msgstr "ASD 解析: パイプライン"
+
+#: ../../how-to/segments/segment_asd_pipeline.ipynb:10004
+#: f853c7db563c403a8c57dfbb3eb3a787
+msgid ""
+"This tutorial demonstrates how to use `SegmentTable` for a batch ASD "
+"analysis pipeline. We will crop data for each segment, compute ASDs, and "
+"visualize the variation."
+msgstr ""
+"このチュートリアルでは、`SegmentTable` を使用して、複数セグメントにわたる一括 "
+"ASD（振幅スペクトル密度）解析パイプラインを構築する方法を学びます。各セグメントの切り出し（crop）、ASD計算、可視化までを流れるように実行します。"
+
+#: ../../how-to/segments/segment_asd_pipeline.ipynb:10006
+#: dc30a668865e4a8dae170bb474e16657
+msgid ""
+"The segment windows are still `gwpy.segments.Segment`, and the waveform "
+"payload in each row is a GWpy `TimeSeries`. gwexpy extends that GWpy base-"
+"class setup by placing the rows in `SegmentTable` and applying `crop()` and "
+"`asd()` across the whole table at once. For the core relationship between "
+"GWpy base classes and gwexpy extensions, see [SegmentTable: "
+"Basics](intro_segment_table.ipynb)."
+msgstr ""
+"ここで使う区間は `gwpy.segments.Segment`、各行の波形データは GWpy の `TimeSeries` です。gwexpy "
+"はそれらの GWpy 基盤クラスを `SegmentTable` に載せ、`crop()` / `asd()` "
+"で表単位の一括処理を行う部分を拡張しています。セグメント解析の基礎関係は [SegmentTable: "
+"基本](intro_segment_table.ipynb) を参照してください。"
+
+#: ../../how-to/segments/segment_asd_pipeline.ipynb:30002
+#: 5d328cbec6e44b96bae8a22c2aa66d7d
+msgid "Crop and ASD"
+msgstr "切り出し (Crop) と ASD 計算"
+
+#: ../../how-to/segments/segment_asd_pipeline.ipynb:30004
+#: 99b89f80f99749eaad463a3475894ecd
+msgid ""
+"We can use sugar APIs like `crop()` and `asd()` to process all segments at "
+"once."
+msgstr "`crop()` と `asd()` という便利な Sugar API を使って、全セグメントを一括処理できます。"
+
+#: ../../how-to/segments/segment_asd_pipeline.ipynb:50002
+#: e53d12495392499c816e811c0070f382
+msgid "Multi-channel Summary"
+msgstr "解析結果の集計"
+
+#: ../../how-to/segments/segment_asd_pipeline.ipynb:50004
+#: c0d249783be44d66855adc90968a0639
+msgid ""
+"You can map custom functions (like calculating band RMS) using `map()`."
+msgstr "`map()` を使うことで、独自関数（例：特定の周波数帯域の RMS 計算）を適用してテーブルに結果を統合できます。"

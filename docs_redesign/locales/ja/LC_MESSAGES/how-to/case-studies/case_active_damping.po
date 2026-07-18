@@ -1,0 +1,277 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-05 14:57+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:10002
+#: f76aa54ac85d4bf7968c1747680a4c24
+msgid "**Case navigation:**"
+msgstr "**ケーススタディのフロー:**"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:10003
+#: 12b23a264b994160b6b9225c6ff029d1
+msgid "Back to the canonical gallery: [Case Studies](index.md)"
+msgstr "ケーススタディ一覧に戻る: [ケーススタディ](index.md)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:10004
+#: cbf9cd91664d4baab5e25ebd72f6b36a
+msgid ""
+"Related reference surfaces: [Reference Index](../../reference/index.md), "
+"[API: Matrix Containers](../../reference/api/matrix), [API: Frequency "
+"Series](../../reference/api/frequencyseries)"
+msgstr ""
+"関連リファレンス: [リファレンス索引](../../reference/index.md)、[API: "
+"行列コンテナ](../../reference/api/matrix)、[API: "
+"周波数系列](../../reference/api/frequencyseries)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:10005
+#: f80ba9a666204d308eb030e2a5979c9b
+msgid ""
+"Neighboring featured workflows: [Noise Budgeting](case_noise_budget.ipynb), "
+"[Transfer Function Measurement](case_transfer_function.ipynb)"
+msgstr ""
+"前後の注目ワークフロー: [ノイズバジェット解析](case_noise_budget.ipynb), "
+"[伝達関数推定](case_transfer_function.ipynb)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20002
+#: 9149cce7479142b199794932f55269a5
+msgid ""
+"Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated "
+"Configuration)"
+msgstr "6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20004
+#: 6cac7962a5584244befd543675a746a7
+msgid ""
+"This tutorial demonstrates an end-to-end workflow combining `gwexpy` and "
+"`python-control` to perform simulation, system identification, and control "
+"design for a multi-degree-of-freedom (MIMO) system."
+msgstr ""
+"このチュートリアルでは、`gwexpy` と `python-control` "
+"を組み合わせて、多自由度（MIMO）システムのシミュレーション、システム同定、そして制御系設計を行う一連の流れを実演します。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20006
+#: 9498a0319c3e47de8a3766508ce6a26f
+msgid ""
+"**Scenario:** We consider an equilateral triangular vibration isolation "
+"platform supported by three legs (6-DOF rigid body). In this case, we deal "
+"with a **non-collocated configuration where actuators and sensors are "
+"located at different positions**."
+msgstr ""
+"**シナリオ:** 3つの足で支持された正三角形の防振台（6自由度剛体）を想定します。 "
+"今回は、**アクチュエータとセンサーの位置が異なる（非コロケート）** 構成を扱います。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20009
+#: 2e94a88f302946b9a43373dad0c48250
+msgid ""
+"**Actuators**: Located at the three leg positions (support points) at "
+"$0^\\circ, 120^\\circ, 240^\\circ$"
+msgstr "**アクチュエータ**: 3つの足の位置（支持点）に設置 ($0^\\circ, 120^\\circ, 240^\\circ$)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20010
+#: 6cda1c5155384aba9cffee24bdeead8c
+msgid ""
+"**Sensors**: Located at mid-points between the legs at $60^\\circ, "
+"180^\\circ, 300^\\circ$"
+msgstr "**センサー**: 足と足の中間地点に設置 ($60^\\circ, 180^\\circ, 300^\\circ$)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20012
+#: cc0c23a9aac143c7a82bb28aa0a572eb
+msgid ""
+"When the input/output positions are misaligned like this, simple independent"
+" control for each axis does not work well. Therefore, we perform controller "
+"design in **Modal Space**."
+msgstr ""
+"このように入出力位置がずれている場合、単純な各軸独立制御ではうまくいかないため、**モード空間（Modal Space）** での制御器設計を行います。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20014
+#: 1c6cc8da87134112918852cdb3ca7d78
+msgid "**Steps:**"
+msgstr "**ステップ:**"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20015
+#: c85493be9087492bbad22cb210d55a2e
+msgid ""
+"**Physical Model Construction**: Create a state-space model considering "
+"sensor and actuator placement."
+msgstr "**物理モデルの構築**: センサー・アクチュエータ配置を考慮した状態空間モデルを作成します。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20016
+#: 8ecdbed510cb4872870c8b2edab9f0ad
+msgid ""
+"**MIMO Transfer Function Measurement**: Visualize the transfer function "
+"matrix including off-diagonal components using `FrequencySeriesMatrix`."
+msgstr "**MIMO伝達関数の測定**: `FrequencySeriesMatrix` で非対角成分を含む伝達関数行列を可視化します。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20017
+#: cfe9c1fa486a4baea0aa47350f36a30f
+msgid ""
+"**System Identification**: Define a control model from physical parameters "
+"and geometric configuration."
+msgstr "**システム同定**: 物理パラメータと幾何学配置から制御用モデルを定義します。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20018
+#: 1369b136bfe148c8a103f71f30f54684
+msgid ""
+"**Damping Controller Design**: Design \"modal control\" that converts sensor"
+" signals to modal coordinates and applies damping to each mode."
+msgstr "**ダンピング制御器の設計**: センサー信号をモード座標に変換し、モードごとにダンピングをかける「モード制御」を設計します。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:20019
+#: ec63f3ba14f44cf79aad5d6db18f979a
+msgid ""
+"**Closed-Loop Verification**: Confirm vibration suppression performance "
+"through impulse response and ASD comparison."
+msgstr "**閉ループ検証**: インパルス応答とASD比較により制振性能を確認します。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:40002
+#: cf35586850a04e599abc3603ecaaa034
+msgid "1. Simulation of 6-DOF Active Vibration Isolation System (Plant Model)"
+msgstr "1\\. 6自由度アクティブ防振装置のシミュレーション (Plant Model)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:40004
+#: 054b6d12a2424f77bce670aa44eb26f7
+#, python-brace-format
+msgid ""
+"We define the rigid body equation of motion $M \\ddot{q} + C \\dot{q} + K q "
+"= F$. Here we focus on the three vertical degrees of freedom ($z, \\theta_x,"
+" \\theta_y$)."
+msgstr ""
+"剛体の運動方程式 $M \\ddot{q} + C \\dot{q} + K q = F$ を定義します。 ここでは垂直3自由度（$z, "
+"\\theta_x, \\theta_y$）に焦点を当てます。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:40007
+#: 0000416c9b2a4f5a81325417db0487a7
+msgid ""
+"**Coordinate Transformation:** For modal coordinates $q = [z, \\theta_x, "
+"\\theta_y]^T$,"
+msgstr "**座標変換:** モード座標 $q = [z, \\theta_x, \\theta_y]^T$ に対し、"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:40009
+#: 876b0b449489456187146d48ef0b4eb8
+#, python-brace-format
+msgid "Actuator physical coordinates $p_{act}$: $0^\\circ, 120^\\circ, 240^\\circ$"
+msgstr "アクチュエータ物理座標 $p_{act}$: $0^\\circ, 120^\\circ, 240^\\circ$"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:40010
+#: e6351d17ee7f470c91b75fd89c73d4ee
+#, python-brace-format
+msgid "Sensor physical coordinates $p_{sen}$: $60^\\circ, 180^\\circ, 300^\\circ$"
+msgstr "センサー物理座標 $p_{sen}$: $60^\\circ, 180^\\circ, 300^\\circ$"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:40012
+#: fd85d1afe55c46628acfff404a2bb3bb
+#, python-brace-format
+msgid ""
+"We define the transformation matrices $T_{act}, T_{sen}$ for each and "
+"incorporate them into the state-space model."
+msgstr "それぞれの変換行列 $T_{act}, T_{sen}$ を定義し、状態空間モデルに組み込みます。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:60002
+#: 49cd99a4bc07473c95f864166cac4064
+msgid "2. MIMO Transfer Function Measurement"
+msgstr "2\\. MIMO伝達関数の測定"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:60004
+#: bc61b00651c54684b84ae80a408fac2f
+msgid ""
+"Since the sensor and actuator positions differ, strong responses should "
+"appear not only in the diagonal components (ACT1->SEN1) but also in the off-"
+"diagonal components."
+msgstr "センサーとアクチュエータの位置が異なるため、対角成分（ACT1->SEN1）だけでなく、非対角成分にも強い応答が現れるはずです。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:80002
+#: f5cdfc18046e4a64a074a8870eef5bdc
+msgid "3 & 4. Modal Control Design"
+msgstr "3 & 4. モード制御系の設計 (Modal Control Design)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:80004
+#: b7f3837e8ff14ac0bc162d9a0aa5d6ff
+#, python-brace-format
+msgid ""
+"Since the actuator and sensor positions do not coincide, simple "
+"decentralized control ($F_i \\propto \\dot{y}_i$) may become unstable. "
+"Therefore, we adopt a method that **estimates modal displacement from sensor"
+" signals using transformation matrices, applies damping in modal space, and "
+"then distributes the result to actuator forces**."
+msgstr ""
+"アクチュエータとセンサーの位置が一致していないため、単純な分散制御（$F_i \\propto \\dot{y}_i$）では不安定になる恐れがあります。"
+" そこで、**座標変換行列を用いてセンサー信号からモード変位を推定し、モード空間でダンピングをかけた後、アクチュエータ推力に分配する** "
+"手法を採ります。"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:80007
+#: fc54ae914b7b476e979920564d59537b
+msgid "**Control Flow:**"
+msgstr "**制御フロー:**"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:80008
+#: b42b73c873d34e74a9e6aa954aea256c
+#, python-brace-format
+msgid ""
+"**Sensing**: Estimate modal displacement $q$ from sensor output $y$ $$ "
+"q_{est} = T_{sen}^{-1} y $$"
+msgstr ""
+"**センシング**: センサ出力 $y$ からモード変位 $q$ を推定します $$ q_{est} = T_{sen}^{-1} y $$"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:80010
+#: 56721d20fb0d4bc1ac065d99d405f7f7
+#, python-brace-format
+msgid ""
+"**Modal Damping**: Apply pseudo-derivative filter $K(s)$ to each mode to "
+"calculate modal force $F_{modal}$ $$ F_{modal} = -K_{modal}(s) q_{est} $$"
+msgstr ""
+"**モード制振**: 各モードに擬似微分フィルタ $K(s)$ を適用し、モード力 $F_{modal}$ を計算します $$ F_{modal} = "
+"-K_{modal}(s) q_{est} $$"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:80012
+#: 4f5f00063edb43208ec7ad68799897d4
+#, python-brace-format
+msgid ""
+"**Actuation**: Distribute modal force $F_{modal}$ to actuator forces $u$ $$ "
+"u = (T_{act}^T)^{-1} F_{modal} $$"
+msgstr ""
+"**アクチュエーション**: モード力 $F_{modal}$ をアクチュエータ力 $u$ に分配します $$ u = (T_{act}^T)^{-1}"
+" F_{modal} $$"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:80015
+#: bdc0c51f50b941b48cdeca0f6d99ec8d
+#, python-brace-format
+msgid ""
+"Overall, the MIMO controller $K_{MIMO}$ becomes: $$ K_{MIMO}(s) = "
+"(T_{act}^T)^{-1} \\cdot \\mathrm{diag}(K_{z}(s), K_{\\theta x}(s), "
+"K_{\\theta y}(s)) \\cdot T_{sen}^{-1} $$"
+msgstr ""
+"全体として、MIMO コントローラ $K_{MIMO}$ は次のようになります： $$ K_{MIMO}(s) = (T_{act}^T)^{-1} "
+"\\cdot \\mathrm{diag}(K_{z}(s), K_{\\theta x}(s), K_{\\theta y}(s)) \\cdot "
+"T_{sen}^{-1} $$"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:100002
+#: 6bd420707bcc4417b2fb347535efb0bf
+msgid "5 & 6. Closed-Loop Verification (Impulse Response & ASD)"
+msgstr "5 & 6. 閉ループ検証 (インパルス応答 & ASD)"
+
+#: ../../how-to/case-studies/case_active_damping.ipynb:100004
+#: afc42e3bf00d440aa12fa993367ebce4
+msgid ""
+"Using the constructed modal control system, we perform closed-loop "
+"simulation. We verify the response to an impulse disturbance on actuator 1 "
+"and to steady-state ground vibration on all axes."
+msgstr ""
+"構築したモード制御系を用いて、閉ループシミュレーションを行います。 "
+"アクチュエータ1へのインパルス外乱、および全軸への定常地面振動に対する応答を確認します。"

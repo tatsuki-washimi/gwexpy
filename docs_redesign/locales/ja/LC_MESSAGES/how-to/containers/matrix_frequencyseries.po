@@ -1,0 +1,228 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:10002
+#: 27d310eaf25943b69c9a209dc0256038
+msgid "FrequencySeriesMatrix: Matrix Basics"
+msgstr "FrequencySeriesMatrix: 行列処理の基本"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:10004
+#: 1e881ac1f76046aa8656e1d86e7870b1
+msgid ""
+"`FrequencySeriesMatrix` is a 3-dimensional array container that extends "
+"`SeriesMatrix` for the frequency domain (FrequencySeries) with shape: Nrow ×"
+" Ncol × Nfreq."
+msgstr ""
+"`FrequencySeriesMatrix` は `SeriesMatrix` を周波数領域（FrequencySeries）向けに拡張した 3 "
+"次元配列コンテナです（shape: Nrow × Ncol × Nfreq）。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:10006
+#: 0770feb9f6364af8ad94d0a840e4d566
+msgid "FrequencySeries-compatible aliases such as `df / f0 / frequencies`"
+msgstr "`df / f0 / frequencies` など FrequencySeries 互換のエイリアス"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:10007
+#: cbf530b4d7e6424a8fd5c5d959d57f3c
+msgid "Element access returns `FrequencySeries` (`fsm[i, j]`)"
+msgstr "要素アクセスで `FrequencySeries` を返す（`fsm[i, j]`）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:10008
+#: 009ebda252e6483f8b13a89455ed5267
+msgid ""
+"Filter application (magnitude-only: `filter`) and complex response "
+"application (`apply_response`)"
+msgstr "フィルタ適用（magnitude-only: `filter`）と、複素応答の適用（`apply_response`）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:10009
+#: 73a6fddf5afb4876b6d29b41185aa57b
+msgid "Conversion to time-domain `TimeSeriesMatrix` via `ifft()`"
+msgstr "`ifft()` による時間領域 `TimeSeriesMatrix` への変換"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:10010
+#: c5c8b86864944c7b9e92dfac952f92ac
+msgid "Direct use of display methods (`plot`, `step`, `repr`, `_repr_html_`)"
+msgstr "表示系 (`plot`, `step`, `repr`, `_repr_html_`) をそのまま使用"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:10012
+#: aaef29ee501d4ed5a7c540354c2c5b29
+msgid ""
+"In this notebook, we do not define additional utility functions; instead, we"
+" directly call class methods to verify their behavior."
+msgstr "このノートブックでは追加のユーティリティ関数は定義せず、クラスメソッドを直接呼び出して動作を確認します。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:30002
+#: 73af88f28c9d42108dc90066e2195f71
+msgid "Prepare Representative Data"
+msgstr "代表データを用意"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:30003
+#: 1c640fe7d75e46948c2945a226432072
+msgid ""
+"We calculate `fft/asd` from `TimeSeriesMatrix` to obtain "
+"`FrequencySeriesMatrix`."
+msgstr "`TimeSeriesMatrix` から `fft/asd` を計算して、`FrequencySeriesMatrix` を得ます。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:50002
+#: 4b7146d1800a41f0ae5545f56e1bc6b8
+msgid "Various Input Patterns (Constructor Examples)"
+msgstr "多様な入力パターン（コンストラクタ例）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:50003
+#: ada5f6f7e46640fba9cd14dcd3161b70
+msgid ""
+"We verify inputs via `df/f0`, `frequencies`, 2D list of `FrequencySeries`, "
+"`Quantity` input, etc."
+msgstr ""
+"`df/f0`、`frequencies`、`FrequencySeries` の 2D リスト、`Quantity` 入力などを確認します。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:70002
+#: 6aa3ed7fb09f4c75b23393cbe0c49f9b
+msgid "Indexing and Slicing"
+msgstr "参照・切り出し"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:70003
+#: b6962e5235fa4621861f73435a81b925
+msgid "`fsm[i, j]` returns a `FrequencySeries`"
+msgstr "`fsm[i, j]` は `FrequencySeries` を返す"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:70004
+#: 72db32d8631c4d24aa3850ac4e9dea8f
+msgid "Slicing returns a `FrequencySeriesMatrix`"
+msgstr "スライスは `FrequencySeriesMatrix` を返す"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:70005
+#: 515075b9838f482bbfdc1151e4970ef8
+msgid "Access is also possible using row/col labels"
+msgstr "row/col ラベルでもアクセスできる"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:90002
+#: 94fe6d16a4be4f3487abc844109c64a7
+msgid "Sample Axis Editing (frequency axis)"
+msgstr "サンプル軸編集（frequency axis）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:90003
+#: aeea2ae905ba4a6280ae770abbf85bc7
+msgid "`diff` / `pad` return a `FrequencySeriesMatrix`"
+msgstr "`diff` / `pad` は `FrequencySeriesMatrix` を返す"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:110002
+#: 83f4f3e89bc248038a8494c6424204ad
+msgid "Operations (ufunc / apply_response)"
+msgstr "演算（ufunc / apply_response）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:110003
+#: 02a0541d33c9462a90bc3b0f5ffb2293
+msgid "Ufunc operations such as scalar multiplication preserve units"
+msgstr "係数倍などの ufunc では unit が保たれる"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:110004
+#: 56de1de1152e4122ae8550b42e36ae42
+msgid ""
+"`apply_response` is an extended method to apply complex/real frequency "
+"responses (dimensionless)"
+msgstr "`apply_response` は複素/実の周波数応答（dimensionless）を掛け合わせる拡張メソッド"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:130002
+#: 5b858e918e8e48d296379ddb537fbb76
+msgid "filter (magnitude-only)"
+msgstr "filter（magnitude-only）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:130003
+#: ad39c486bb5a456e94e5f923b6d55cc6
+msgid ""
+"`filter` delegates to GWpy's `fdfilter`, applying the filter's \"magnitude "
+"response\" only (not the phase)."
+msgstr ""
+"`filter` は GWpy の `fdfilter` に委譲し、フィルタの「振幅応答（magnitude）」を適用します（位相は適用しません）。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:130005
+#: f0c09b7554624370a8804f71838d6be3
+msgid ""
+"As an example, we apply an IIR filter created with `scipy.signal.butter` to "
+"the `fft` and then convert back to the time domain with `ifft()`."
+msgstr ""
+"ここでは例として、`scipy.signal.butter` で作った IIR フィルタを `fft` に適用してから `ifft()` "
+"で時間領域に戻します。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:150002
+#: 9a4620ef07cd4f40aabc08e81f92b1b2
+msgid "ifft (FFT to Time Domain)"
+msgstr "ifft（FFT から時間領域へ）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:150003
+#: 0ff8fb4064ed45f8bd9382048c3083e1
+msgid ""
+"Applying `ifft()` to the output of `TimeSeriesMatrix.fft()` reproduces the "
+"original `TimeSeriesMatrix` (within numerical precision)."
+msgstr ""
+"`TimeSeriesMatrix.fft()` の出力に対して `ifft()` を適用すると、元の `TimeSeriesMatrix` "
+"が再現されます（数値誤差の範囲）。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:170002
+#: 9aa5245837024f8e9f67f7c166377a11
+msgid "Display Methods: repr / plot / step"
+msgstr "表示系: repr / plot / step"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:170003
+#: de43ca6e8ea440789a9f8ebe9bb327bd
+msgid "`repr`: Text representation"
+msgstr "`repr`: テキスト表示"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:170004
+#: 7ff9490d13ba4e2d95a4620ad0cd458f
+msgid "`_repr_html_`: In notebooks, `display(fsm)` shows tabular format"
+msgstr "`_repr_html_`: ノートブックでは `display(fsm)` で表形式"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:170005
+#: 75181f3945084e6e9a7fa02e4275a1cb
+msgid "`plot` / `step`: Class methods for direct plotting (not saved)"
+msgstr "`plot` / `step`: クラスメソッドで直接描画（保存はしない）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:190002
+#: 5447e1654d72427d8bcc227717370e1c
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:190003
+#: c8907d96d6c649bf9c47ccd5da493da4
+msgid ""
+"`FrequencySeriesMatrix` allows batch processing as a matrix while preserving"
+" the frequency axis (`df/f0/frequencies`) and element metadata."
+msgstr ""
+"`FrequencySeriesMatrix` "
+"は周波数軸（`df/f0/frequencies`）と要素メタデータを保ったまま、行列として一括処理できる。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:190004
+#: ae53f4a2534b454dbde9426ccf24bfe0
+msgid ""
+"`filter` applies magnitude-only filtering, while `apply_response` can apply "
+"arbitrary frequency responses including complex responses."
+msgstr ""
+"`filter` は magnitude-only のフィルタ適用、`apply_response` は複素応答を含む任意の周波数応答の適用に使える。"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:190005
+#: aaffdeafe3884ee3bb8aa92df51e98b0
+msgid ""
+"Using `ifft()`, you can convert back to the time-domain `TimeSeriesMatrix`, "
+"enabling workflows where processing is done in the frequency domain and then"
+" verified as waveforms."
+msgstr ""
+"`ifft()` により時間領域 `TimeSeriesMatrix` に戻せるので、周波数領域で処理してから波形として確認する流れが作れる。"

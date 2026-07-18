@@ -1,0 +1,91 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/segments/intro_table.ipynb:10002
+#: a7ede36036cc44c68d511c9170d02491
+msgid "Segment Analysis: Basic Pipeline"
+msgstr "セグメント解析: 基本パイプライン"
+
+#: ../../how-to/segments/intro_table.ipynb:10004
+#: 455b359a58d5495fb2205e2ad09cd376
+msgid ""
+"**Goal**: Learn how to use `SegmentTable` to manage time-keyed data "
+"analysis."
+msgstr "**目的**: `SegmentTable` を使用して時刻キー付きデータ解析を管理する方法を学びます。"
+
+#: ../../how-to/segments/intro_table.ipynb:10006
+#: 74c88a821d954e4897f3785fc0bf0f2a
+msgid ""
+"`SegmentTable` is a container for metadata and payload data (like TimeSeries"
+" or PSDs) associated with specific time segments. It supports lazy-loading "
+"to handle large datasets efficiently."
+msgstr ""
+"`SegmentTable` は、特定の時間セグメントに関連付けられたメタデータとペイロードデータ（TimeSeries や PSD "
+"など）のコンテナです。大規模なデータセットを効率的に扱うため、遅延読み込みをサポートしています。"
+
+#: ../../how-to/segments/intro_table.ipynb:20002
+#: ed66e0e59e4d456ca536c339cd8be51a
+msgid "1. Creating a SegmentTable"
+msgstr "1\\. SegmentTable の作成"
+
+#: ../../how-to/segments/intro_table.ipynb:20004
+#: ac51b77fa38f447cb661d9286e6c6831
+msgid ""
+"We'll start by loading sample data from a CSV file. This CSV defines "
+"segments with GPS start and end times."
+msgstr "GPS 開始・終了時刻を持つセグメントを定義した CSV ファイルからサンプルデータを読み込みます。"
+
+#: ../../how-to/segments/intro_table.ipynb:40002
+#: e96aed8bc8044e0db7345ff533dea2a3
+msgid "2. Visualizing Segments"
+msgstr "2\\. セグメントの可視化"
+
+#: ../../how-to/segments/intro_table.ipynb:40004
+#: 14231e95a00c4d3f8ad3102905b55dee
+msgid "You can quickly visualize the timeline of your segments."
+msgstr "セグメントのタイムラインを素早く可視化できます。"
+
+#: ../../how-to/segments/intro_table.ipynb:60002
+#: 7ed3bcea959d44dea009800ad3e32e50
+msgid "3. Lazy Loading Payloads"
+msgstr "3\\. ペイロードの遅延読み込み"
+
+#: ../../how-to/segments/intro_table.ipynb:60004
+#: 49f9b87374cd4d338b901c62056a4a08
+msgid ""
+"`SegmentTable` allows you to attach \"loaders\" to columns. Data is only "
+"loaded when actually accessed."
+msgstr "`SegmentTable` ではカラムに「ローダー」を紐付けることができます。データは実際にアクセスされたときのみ読み込まれます。"
+
+#: ../../how-to/segments/intro_table.ipynb:80002
+#: 068d29cbefe5405096804c3de4bcb92e
+msgid "4. Processing Rows"
+msgstr "4\\. 行ごとの処理"
+
+#: ../../how-to/segments/intro_table.ipynb:80004
+#: a6bc95eefdbc463dad05006f1b262bed
+msgid "You can iterate over rows or use `apply` to process data."
+msgstr "行をイテレートしたり、`apply` を使ってデータを処理したりできます。"
+
+#: ../../how-to/segments/intro_table.ipynb:100002
+#: 24ec77192227418797d63744c2311500
+msgid "5. Quick Check (NBMAKE)"
+msgstr "5\\. 検証セル（NBMAKE）"

@@ -41,7 +41,7 @@ FORBIDDEN_NOTEBOOK_METADATA_KEYS = (
 )
 DEFAULT_MAX_OUTPUT_JSON_BYTES = 200_000
 DEFAULT_MAX_TOTAL_OUTPUT_JSON_BYTES = 500_000
-NOTEBOOK_HYGIENE_PREFIXES = ("docs/web/", "examples/")
+NOTEBOOK_HYGIENE_PREFIXES = ("docs/web/", "docs_redesign/", "examples/")
 
 
 class Violation(NamedTuple):
@@ -199,7 +199,7 @@ def _check_notebook(
             Violation(
                 normalized_path,
                 "notebook-outputs-present",
-                "Tracked notebooks under 'docs/web/' and 'examples/' must be committed "
+                "Tracked notebooks under 'docs/web/', 'docs_redesign/', and 'examples/' must be committed "
                 "clean. Build docs from executed temp trees or generated artifacts, "
                 "then strip notebook outputs before committing source files. Use the "
                 f"'{DISPLAY_ONLY_TAG}' tag only for intentional checked-in outputs.",

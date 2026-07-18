@@ -1,0 +1,597 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-18 17:47+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md
+#: 8d4094705a80469198fdec7a2fab3afd
+msgid ""
+"Understand what GWexpy validates publicly for notebooks, direct I/O formats, "
+"algorithm audit notes, and repository coverage signals, and where each evidence "
+"source lives."
+msgstr ""
+"GWexpy が公開で検証している範囲（ノートブック、direct I/O 形式、アルゴリズム監査ノート、リポジトリの coverage "
+"シグナル）と、各根拠の所在を整理します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:7
+#: 734ad164bddb453e95e7b04ab0e3edf1
+msgid "Verification and Quality Signals"
+msgstr "検証と品質の見方"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:9
+#: a2ef7a924aa446bb99c568915aab464e
+msgid ""
+"This page explains what kinds of public verification signals `gwexpy` exposes today, "
+"where those signals come from, and how to interpret their limits."
+msgstr "このページでは、`gwexpy` が現在どの種類の検証シグナルを公開しているか、その根拠がどこにあるか、そしてその限界をどう読むべきかを整理します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:11
+#: 42ba5a2be331414497541657b4890131
+msgid ""
+"It is not a single \"all features are verified\" claim. Instead, it points you to the"
+" current evidence sources for notebooks, direct I/O formats, algorithm audits, and "
+"repository-level coverage reporting."
+msgstr ""
+"ここで示すのは「すべての機能が一様に検証済み」という主張ではありません。Notebook、direct I/O、アルゴリズム監査、リポジトリ全体の coverage "
+"について、それぞれ別の根拠に辿れるようにするための案内ページです。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:14
+#: 55d6d2c01c17414e85ec8128493d2e6d
+msgid "**Read this page as a transparency map, not as a blanket guarantee**"
+msgstr "**このページは「透明性の地図」であって、一括保証ではありません**"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:16
+#: f0abc4f652d54709acf36807c1ad65c2
+msgid ""
+"Different parts of the project are verified in different ways. The extended "
+"verification workflow runs cross-platform import smoke tests and targeted gates "
+"(network/backend I/O, docs notebooks, Zarr I/O) on demand, some notebooks are fully "
+"executed, some heavy notebooks are only structure-checked, and some optional-"
+"dependency tests can be skipped when the backend is unavailable."
+msgstr ""
+"検証の方法は対象ごとに異なります。extended verification workflow "
+"は、手動実行時にクロスプラットフォームのインポートスモークテストと対象を絞ったゲート（ネットワーク/バックエンド I/O、docs ノートブック、Zarr "
+"I/O）を実行します。Notebook の中には CI で全実行されるものもあれば、重い notebook のように構造確認中心のものもあり、optional "
+"dependency を持つテストは環境によって skip される場合もあります。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:19
+#: 5d1319e5774c49fdb0251a2ec278a767
+msgid "Public Evidence Sources"
+msgstr "公開されている根拠の入口"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: c2a690817d63482b9b022b81e99e43a7
+msgid "Area"
+msgstr "対象"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 6ea84cf190b549d683eb56948494d9c6
+msgid "Public source"
+msgstr "公開資料"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: e764f08da08448a3ad7dd94219a6914d
+msgid "What it tells you"
+msgstr "何がわかるか"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: bbf288103c1944b6bd66bb0d185cbf3d
+msgid "Notebook tutorials"
+msgstr "Notebook チュートリアル"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 94ea26e235aa4fc3baf90ea0385f65b9
+msgid ""
+"[Notebook Policy](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md)"
+msgstr ""
+"[ノートブックポリシー](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: d359f989986e40ea83387bfec19f5b55
+msgid ""
+"Which notebook classes are treated as `Light`, `Heavy`, or `Display-only`, and how CI"
+" handles each class"
+msgstr "`Light` / `Heavy` / `Display-only` の分類と、CI がそれぞれをどう扱うか"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 0036df5bfaf54e8f88c1b2affc4c40d8
+msgid "Extended verification gates"
+msgstr "拡張検証ゲート"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: c1e0e27326694d5ea0879ae2e8070895
+msgid ""
+"[Extended verification workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml)"
+msgstr ""
+"[拡張検証ワークフロー](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows"
+"/extended-verification.yml)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 7697cbaa9dad48e8b0fe8d2176b1bbb4
+msgid ""
+"Which checks the on-demand extended verification workflow covers: import smoke tests "
+"on Linux/macOS/Windows plus the `io-network-backend`, `docs-notebook`, and `io-zarr` "
+"gates driven by `scripts/ci/run_gate.py`"
+msgstr ""
+"extended verification workflow（手動実行）が対象とするチェック：Linux/macOS/Windows "
+"でのインポートスモークテストに加え、`scripts/ci/run_gate.py` が駆動する `io-network-backend`・`docs-notebook"
+"`・`io-zarr` ゲート"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: ecbe0be89eac45a79ad588eba0ffb02b
+msgid "Direct I/O formats"
+msgstr "direct I/O 形式"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 14deb657e92141e6b8f2636d1bb867b3
+msgid ""
+"[SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md)"
+msgstr ""
+"[SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 275a758dd7bc4a79a91468aab17e65d3
+msgid "Which public format families are tied to which tests and which backends are optional"
+msgstr "どの公開 format 群に、どのテストファイルが対応づけられているかと、どこに optional backend があるか"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: bdae5c9cd72c47e09df35b749edca3e0
+msgid "Algorithm audit trail"
+msgstr "アルゴリズム監査"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:99
+#: 38bc739a42ac45a09eb569afd455dd9b 6d11d66d332943e4a6ff72a5dbf6c9c1
+msgid "[Validated Algorithms](validated_algorithms.md)"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: e36c46c79d5a43538255f9c79fc3d18d
+msgid ""
+"Numerical tolerances, assumptions, and links to audit evidence for selected high-"
+"value algorithms"
+msgstr "数値許容誤差、前提条件、監査証跡へのリンク"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 06e0a15d949d486aab2442248b0b5f8b
+msgid "Repository coverage signal"
+msgstr "リポジトリ全体の coverage"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 35ea5cfdd15e4137a269f0cea7f69db7
+msgid ""
+"[README codecov badge](https://github.com/tatsuki-washimi/gwexpy) and the linked "
+"[Codecov dashboard](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
+msgstr ""
+"[README の codecov バッジ](https://github.com/tatsuki-washimi/gwexpy) と、そのリンク先である "
+"[Codecov ダッシュボード](https://codecov.io/gh/tatsuki-washimi/gwexpy)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:13
+#: 3d2d494e7d0a4abaac30b6fb5ff0bdd1
+msgid ""
+"Where repository-level line coverage is surfaced publicly, useful as a broad signal "
+"rather than a per-feature proof"
+msgstr "リポジトリ全体の line coverage がどこで公開されているかを示す入口。feature 単位の証明ではなく、全体傾向のシグナルとして使います"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:29
+#: 5826fcbfb0c6443086f9e110a5e36836
+msgid "Notebook Validation Policy"
+msgstr "Notebook の検証方針"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:31
+#: df84d2c60e0047309cefc2bd85809c1d
+msgid ""
+"The public notebook policy is defined in the repository's [Notebook "
+"Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md)."
+msgstr ""
+"公開 notebook の扱いは、リポジトリ内の [Notebook Policy](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) に基づきます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:33
+#: f2cdeece1f9048b68ceed418382b3da0
+msgid "The legacy notebook policy and the redesigned website have separate build paths."
+msgstr "旧ドキュメントの Notebook 方針と、刷新後 Web サイトのビルド経路は分かれています。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:35
+#: 611ae1b10ab74dcca92ac5a23c42c58a
+msgid ""
+"The legacy documentation tree follows the repository Notebook Policy: its `Light`, "
+"`Heavy`, and `Display-only` classes describe the older notebook-validation regime, "
+"including its Papermill and nbval checks."
+msgstr ""
+"旧ドキュメントツリーはリポジトリの Notebook Policy に従います。`Light`、`Heavy`、`Display-only` の分類は、Papermill"
+" と nbval の確認を含む従来の Notebook 検証制度を示します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:36
+#: 51ff85e55a974e7e8a6f54d1c645393e
+msgid ""
+"The redesigned website builds EN and JA HTML from an isolated temporary copy. MyST-NB"
+" executes clean notebook sources through its build cache when an execution result is "
+"needed; the cache and rendered outputs are publish artifacts, not changes to tracked "
+"`.ipynb` files."
+msgstr ""
+"刷新後 Web サイトは、隔離した一時コピーから EN と JA の HTML をビルドします。実行結果が必要な場合、MyST-NB はクリーンな Notebook "
+"ソースをビルドキャッシュで実行します。キャッシュとレンダリング済み出力は公開用アーティファクトであり、追跡対象の `.ipynb` ファイルを変更しません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:37
+#: 04a2f0cb39fd448fb27cf2d7b4ba34a4
+msgid ""
+"The redesigned-site PR, preview, and production workflows use that same isolated "
+"build path. They are distinct from the legacy-docs checks in the general Docs PR "
+"workflow."
+msgstr ""
+"刷新後サイトの PR、プレビュー、production のワークフローは、同じ隔離ビルド経路を使用します。これらは一般の Docs PR "
+"ワークフローにある旧ドキュメントの検査とは別です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:39
+#: dfbd67c5584d42c9a0515c84137e7ec2
+msgid "The current public model is:"
+msgstr "現時点の公開方針は次のとおりです。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:41
+#: 85affcbaac144e7b97c1d0c1989457a7
+msgid ""
+"The public [extended verification workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) runs cross-"
+"platform import smoke tests and the `io-network-backend`, `docs-notebook`, and `io-"
+"zarr` gates; it is intentionally scoped to these checks and does not run docstring "
+"doctests."
+msgstr ""
+"公開されている [extended verification workflow](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) "
+"は、クロスプラットフォームのインポートスモークテストと `io-network-backend`・`docs-notebook`・`io-zarr` "
+"ゲートを実行します。意図的にこれらのチェックへ範囲を絞っており、docstring の doctest は実行しません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:42
+#: 61bd0570ccef48d2abd532ed44666f49
+msgid ""
+"**Light**, **Heavy**, and **Display-only** describe the legacy policy. Consult that "
+"policy before inferring the execution status of a legacy notebook."
+msgstr "**Light**、**Heavy**、**Display-only** は旧方針の分類です。旧 Notebook の実行状況を判断する前に、その方針を確認してください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:43
+#: d654a07d55fd4350b3c4426771d45a39
+msgid ""
+"The redesigned website is validated by its EN and JA Sphinx builds from an isolated "
+"temporary copy. Its rendered notebook outputs are produced by the MyST-NB cache and "
+"are not committed to Git."
+msgstr ""
+"刷新後 Web サイトは、隔離した一時コピーから行う EN と JA の Sphinx ビルドで検証されます。レンダリング済み Notebook 出力は MyST-NB "
+"キャッシュで生成され、Git にはコミットされません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:44
+#: 56ffa4763792434b85f1c3158a419d68
+msgid ""
+"The on-demand extended verification workflow remains a separate, targeted check; it "
+"does not make every documentation example a release gate."
+msgstr "手動実行の extended verification ワークフローは、対象を絞った独立の検査です。すべてのドキュメント例をリリースゲートにするものではありません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:46
+#: 409e107322dc414da87e9a58a6259875
+msgid ""
+"This is why a notebook or docstring example being present in the docs is a useful "
+"signal, but not enough on its own to infer that every published sample is executed in"
+" every PR, nightly, and release path."
+msgstr ""
+"したがって、「公開 docs に notebook や例がある」こと自体は有益なシグナルですが、それだけで「あらゆる PR / Nightly / release "
+"経路で毎回一律に実行・保証される」とまでは読まない方が安全です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:48
+#: 86450d32ecf04eb989dcb4d4083de5e5
+msgid "Current CI Coverage and Its Limits"
+msgstr "現在の CI カバレッジとその限界"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:50
+#: ba9d7997ebd14d6485c41c9ea6272983
+msgid ""
+"The current public evidence supports a narrower statement than \"all sample code is "
+"universally guaranteed.\""
+msgstr "現在の公開根拠から言えるのは、「すべてのサンプルコードが一律に保証される」よりも狭い範囲です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:52
+#: 7fdbe1f346694678a49f7801dc92fe1d
+msgid ""
+"The extended verification workflow shows that `gwexpy` runs automated import smoke "
+"tests on three platforms plus targeted I/O and docs-notebook gates when the workflow "
+"is triggered."
+msgstr ""
+"extended verification workflow が示すように、`gwexpy` はワークフロー実行時に、3 "
+"つのプラットフォームでのインポートスモークテストに加え、I/O と docs ノートブックのゲートを自動実行します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:53
+#: 79bf324269e845ef99465813c0c8851d
+msgid ""
+"The [Notebook Policy](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) shows that notebook handling is "
+"class-dependent: `Light` notebooks are executed with `papermill`, while `Heavy` "
+"notebooks are checked with `nbval --nbval-lax`."
+msgstr ""
+"[Notebook Policy](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) が示すように、notebook の扱いは分類依存で、`Light` は"
+" `papermill` で実行、`Heavy` は `nbval --nbval-lax` で確認されます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:54
+#: 37ba243c7b0c46ff9fbc5dd85f7a6f15
+msgid ""
+"The redesigned-site build executes notebook sources only in its isolated temporary "
+"copy and retains the results in the MyST-NB cache."
+msgstr "刷新後サイトのビルドは、隔離した一時コピー内でのみ Notebook ソースを実行し、結果を MyST-NB キャッシュに保持します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:56
+#: c8db730fd92e4d288f4dbfb6e286119c
+msgid "Read those signals carefully:"
+msgstr "このシグナルは次のように読んでください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:58
+#: 1ac1eeffcac3417eb0a4a8a7f182a6e3
+msgid ""
+"They show that public examples are not unmanaged; the redesigned-site build and the "
+"legacy notebook policy exercise different scopes."
+msgstr "公開例が管理されていないわけではありません。刷新後サイトのビルドと旧 Notebook 方針は、異なる範囲を検証します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:59
+#: c28a263ed93c443a94565d3d2d6b8bb3
+msgid "They do **not** mean every published code block is executed in every workflow."
+msgstr "ただし、すべての公開コード片が、すべての workflow で毎回実行されることを意味しません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:60
+#: 741b1ac5cd83464ca175908f29c268c0
+msgid ""
+"They do **not** mean Doctest or notebook coverage is a single release-blocking gate "
+"for the whole documentation set."
+msgstr "Doctest や notebook 検証が、ドキュメント全体に対する単一の release-blocking gate だという意味でもありません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:61
+#: 1e3aa6aed48e456498ac0f848770daaa
+msgid ""
+"They do **not** remove the need to check notebook class, optional dependencies, and "
+"workflow scope before treating an example as strongly guaranteed."
+msgstr "強い保証として読む前に、notebook の分類、optional dependency、どの workflow がその対象を見ているかを確認する必要があります。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:63
+#: ba82246b7e23432d828b91317291e35a
+msgid "Direct I/O Verification Visibility"
+msgstr "direct I/O の検証可視化"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:65
+#: ab5086e86305461db2046f4cebffa772
+msgid ""
+"The public [SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) is the main visibility layer for "
+"direct I/O verification."
+msgstr ""
+"public direct I/O の検証可視化では、[SUPPORTED_IO_MATRIX](https://github.com/tatsuki-"
+"washimi/gwexpy/blob/main/SUPPORTED_IO_MATRIX.md) が主要な入口です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:67
+#: bfe22ae81c0c40a585f793db05a50f34
+msgid "Use it when you need to answer questions such as:"
+msgstr "この表は、たとえば次のような疑問に答えるときに使います。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:69
+#: 53818e3281284b84a606eed7dbfa1753
+msgid "\"Is this format publicly documented as supported?\""
+msgstr "「この format は公開対応としてどこまで見てよいか」"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:70
+#: 8dfb2fceac854098af280c89aaa59703
+msgid "\"Which test file is meant to back this format claim?\""
+msgstr "「この format claim はどのテストファイルに紐づいているか」"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:71
+#: 720e64da910844a297c7efeb66966014
+msgid "\"Does this route depend on an optional backend?\""
+msgstr "「この経路は optional backend に依存するのか」"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:73
+#: 230b6781a7754326ad8b96895efc44f6
+msgid ""
+"The matrix is especially useful together with the [File I/O Supported Formats Guide"
+"](../how-to/io_formats.md):"
+msgstr "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md) と合わせて読むと、特に役割分担が明確になります："
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:75
+#: 7678a91737894001b72b72e191ce94aa
+msgid "the user guide explains how to choose and call a public direct-I/O path,"
+msgstr "user guide 側は「どう選ぶか」「どう呼ぶか」を説明し、"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:76
+#: 65f03d3eeb714f328aaa285b0c1a8ac8
+msgid "the matrix shows which tests are intended to back that path,"
+msgstr "matrix 側は「どのテストが根拠か」を示し、"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:77
+#: 17300003d66743b0a2533c55ebb8fb02
+msgid ""
+"and the notes clarify when optional dependencies can cause skips instead of hard "
+"failures."
+msgstr "備考が optional dependency や skip 条件を補います。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:79
+#: a7d82c44842f4256a4d5e97a33d29394
+msgid "Coverage Signals and Their Limits"
+msgstr "coverage 表示の読み方と限界"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:81
+#: 176288af95154ab8a5aee11479313f6a
+msgid ""
+"`gwexpy` publishes a repository-level coverage signal through "
+"[Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy), and the repository "
+"[README.md](https://github.com/tatsuki-washimi/gwexpy) surfaces that badge and link "
+"publicly."
+msgstr ""
+"`gwexpy` は [Codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy) によって、リポジトリ全体の "
+"coverage シグナルを公開しています。リポジトリの [README.md](https://github.com/tatsuki-washimi/gwexpy) "
+"にも codecov の状態バッジとリンクがあり、公開された確認入口として辿れます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:83
+#: f24ffbad1cd5425d92ba6070f68e6078
+msgid "Read that signal conservatively:"
+msgstr "ただし、この値は慎重に読む必要があります。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:85
+#: 10a3e7c798ad4f8abc45537d64ab9f4c
+msgid "it is useful for understanding overall automated test health,"
+msgstr "自動テスト全体の健康度をざっくり把握するには有用です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:86
+#: b77ab4c5fb054dc4b31c31fa86ce025f
+msgid ""
+"it does **not** prove that every algorithm branch, notebook, or optional-backend path"
+" is equally exercised,"
+msgstr "一方で、すべてのアルゴリズム分岐、すべての notebook、すべての optional-backend 経路が同じ強さで実行されていることまでは保証しません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:87
+#: ddd4c0a14cae4a18ad693ac524104cd1
+msgid ""
+"and it should be read alongside page-specific evidence such as the notebook policy, "
+"I/O matrix, and audit notes."
+msgstr "実際の判断では、Notebook Policy、I/O matrix、アルゴリズム監査ノートと併読してください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:89
+#: e6323e436cb345bd8436cff602fbfca9
+msgid "What This Page Does Not Claim"
+msgstr "このページが主張しないこと"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:91
+#: a1b7204762ba444cb29f4d2bc87789f0
+msgid "It does **not** claim that every public notebook is fully executed in every CI run."
+msgstr "すべての公開 notebook が、すべての CI 実行で全セル再実行されるとは主張しません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:92
+#: 9dddde4cb29941eb86d5e44c16a3f287
+msgid ""
+"It does **not** claim that every docstring example or sample code block is executed "
+"in every PR, nightly, and release workflow."
+msgstr "すべての docstring 例やサンプルコード片が、すべての PR / Nightly / release workflow で毎回実行されるとは主張しません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:93
+#: a71c7854852c42909028e84286c8b3c9
+msgid ""
+"It does **not** claim that every optional dependency is present in every test "
+"environment."
+msgstr "すべての optional dependency が、すべての test 環境に入っているとは主張しません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:94
+#: e72ff08448fa45348d870562a0f7a56f
+msgid ""
+"It does **not** replace the algorithm-specific assumptions and tolerances documented "
+"on [Validated Algorithms](validated_algorithms.md)."
+msgstr "[検証済みアルゴリズム](validated_algorithms.md) に書かれた個別の前提条件や許容誤差を、このページが置き換えるものではありません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:95
+#: 9b96985aa0fa4e5bb9543ccfb04f8606
+msgid ""
+"It does **not** turn repository-wide line coverage into a substitute for per-feature "
+"scientific validation."
+msgstr "repository-wide の line coverage を、そのまま feature 単位の科学的妥当性の証明に読み替えるべきだとは主張しません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:97
+#: 296f6183e3434c5ca8ad89e477c84406
+msgid "Related Pages"
+msgstr "関連ページ"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:100
+#: 01c30bb6b0834053a05d92774a95843d
+msgid "[File I/O Supported Formats Guide](../how-to/io_formats.md)"
+msgstr "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:101
+#: c4c8d8b5401a41be8788612ce7919c31
+msgid "[Troubleshooting](../how-to/troubleshooting.md)"
+msgstr "[トラブルシューティング](../how-to/troubleshooting.md)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:103
+#: e8bcf673d83e45cb8ed9190d70e39bde
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:105
+#: 0874ee02a4ba4d7d8a692a18e1659497
+msgid ""
+"[Validated Algorithms](validated_algorithms.md) for algorithm-specific assumptions, "
+"tolerances, and audit links"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md) でアルゴリズム単位の前提条件、許容誤差、監査リンクを確認する"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:106
+#: 4b594bc9fdc4419094ef6ad84ceac7b0
+msgid ""
+"[File I/O Supported Formats Guide](../how-to/io_formats.md) for direct user-facing "
+"format choice and backend notes"
+msgstr "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md) で利用者向けの format 選択と backend 条件を確認する"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/verification_and_quality.md:107
+#: 563a5dcde4ab4b658022eb3930143100
+msgid ""
+"[Troubleshooting](../how-to/troubleshooting.md) if you need error-first guidance "
+"after checking the public verification signals"
+msgstr "[トラブルシューティング](../how-to/troubleshooting.md) で、公開検証シグナルを確認した後に実行時エラーから逆引きする"
+
+#~ msgid ""
+#~ "**Light** notebooks are classified for full "
+#~ "execution and validation in CI through "
+#~ "`papermill`."
+#~ msgstr "**Light** notebook は、Notebook Policy 上では CI で `papermill` により全実行される想定です。"
+
+#~ msgid ""
+#~ "**Heavy** notebooks are kept in CI, but "
+#~ "the policy describes them as `nbval "
+#~ "--nbval-lax` checks rather than guaranteed full"
+#~ " execution."
+#~ msgstr ""
+#~ "**Heavy** notebook は CI "
+#~ "対象ではありますが、全セル実行を常に保証するものではなく、`nbval --nbval-lax` による確認に寄せて扱われます。"
+
+#~ msgid ""
+#~ "**Display-only** notebooks prioritize curated "
+#~ "outputs and are outside normal execution "
+#~ "validation, or limited to load-style checks."
+#~ msgstr "**Display-only** notebook は整えた出力の保持を重視しており、「CI で毎回全実行される notebook」と同義ではありません。"
+
+#~ msgid ""
+#~ "The public [docs PR workflow](https://github.com"
+#~ "/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) "
+#~ "also executes changed notebooks with `papermill` "
+#~ "before building Sphinx HTML."
+#~ msgstr ""
+#~ "公開されている [docs PR workflow](https://github.com/tatsuki-"
+#~ "washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) では、docs "
+#~ "Pull Request で変更された notebook に対して `papermill` "
+#~ "が実行されます。"
+
+#~ msgid ""
+#~ "Public tutorial notebooks under "
+#~ "`docs/web/{en,ja}/user_guide/tutorials/` are treated as "
+#~ "the authoritative published copies."
+#~ msgstr "`docs/web/{en,ja}/user_guide/tutorials/` 配下の公開チュートリアル notebook が、正式な公開版として扱われます。"
+
+#~ msgid ""
+#~ "The docs PR workflow shows that notebooks "
+#~ "changed in docs pull requests are executed "
+#~ "with `papermill` before the docs build."
+#~ msgstr "docs PR workflow では、docs PR で変更された notebook に対して `papermill` が実行されます。"
+
+#~ msgid "Nightly CI gates"
+#~ msgstr "Nightly CI ゲート"
+

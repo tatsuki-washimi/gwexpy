@@ -1,0 +1,163 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:10002
+#: 9d3a3e92821848218ea6f3cbbf798329
+msgid "SpectrogramMatrix: Matrix Basics"
+msgstr "SpectrogramMatrix: 行列処理の基本"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:10004
+#: ad39706b69b44d81b47c5165dd137f6d
+msgid ""
+"This notebook introduces the basic usage of the `SpectrogramMatrix` class in"
+" `gwexpy`."
+msgstr "このノートブックでは `gwexpy` の `SpectrogramMatrix` クラスの基本的な使い方を紹介します。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:10006
+#: 9e5804d0477d46808693d373bace8cec
+msgid ""
+"`SpectrogramMatrix` is a class designed to efficiently handle multiple "
+"`gwpy.spectrogram.Spectrogram` objects as a 3-dimensional matrix (Batch, "
+"Time, Frequency). It inherits from `numpy.ndarray`, enabling fast numerical "
+"computation and seamless integration with PyTorch/CuPy."
+msgstr ""
+"`SpectrogramMatrix` は、複数の `gwpy.spectrogram.Spectrogram` オブジェクトを 3次元 (Batch,"
+" Time, Frequency) の行列として効率的に扱うためのクラスです。`numpy.ndarray` を継承しており、高速な数値計算や "
+"PyTorch/CuPy との連携が可能です。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:30002
+#: 05aa10db13b049f6abee831a64bfaf4e
+msgid "1. Data Preparation"
+msgstr "1\\. データの準備"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:50002
+#: 47706a041df74607863fb50730a1c561
+msgid "2. Creating a SpectrogramMatrix"
+msgstr "2\\. SpectrogramMatrix の作成"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:50004
+#: 70a28efaaa8c4e2f87cf63cf5621ec5f
+msgid ""
+"Using the `to_matrix()` method of `SpectrogramList`, all spectrograms are "
+"stacked into a single `SpectrogramMatrix`. This yields a 3-dimensional array"
+" with shape `(N, Time, Frequency)`."
+msgstr ""
+"`SpectrogramList` の `to_matrix()` メソッドを使用すると、全てのスペクトログラムが一つの "
+"`SpectrogramMatrix` にスタックされます。 これにより、形状が `(N, Time, Frequency)` "
+"の3次元配列が得られます。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:70002
+#: c8f75a98b0784d158032d900a1556cc0
+msgid "Accessing Attributes"
+msgstr "属性へのアクセス"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:70003
+#: 309676ac354a454c97936e1df1083c56
+msgid ""
+"`SpectrogramMatrix` preserves information about the time and frequency axes "
+"from the original spectrograms."
+msgstr "`SpectrogramMatrix` は元のスペクトログラムの時間軸や周波数軸の情報を保持しています。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:90002
+#: fd7b807eeb3345afad4ecebd8c963153
+msgid "3. Numerical Computation and Statistics"
+msgstr "3\\. 数値計算と統計"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:90004
+#: 2b021d160efe4f6b9eb3d596fcb4283a
+msgid ""
+"Since `SpectrogramMatrix` is a subclass of `numpy.ndarray`, NumPy functions "
+"can be applied directly. Methods like `mean()` are also available."
+msgstr ""
+"`SpectrogramMatrix` は `numpy.ndarray` のサブクラスであるため、Numpy の関数をそのまま適用できます。 "
+"また、`mean()` などのメソッドも利用可能です。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:90007
+#: 5f8c6efdf865499a9d229619fbb2b87d
+msgid ""
+"For example, let's calculate the average spectrogram across all channels "
+"(batch dimension)."
+msgstr "例えば、全チャネル（バッチ方向）の平均スペクトログラムを計算してみましょう。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:110002
+#: f7cf9ba0177449fca93c1ff7bfd982d3
+msgid "4. Plotting"
+msgstr "4\\. プロット"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:110004
+#: 371233de54f24a0aa8fb5bb20095626d
+msgid ""
+"Use the `plot()` method to visualize the data. When calling `plot()` on "
+"3-dimensional data (Batch, Time, Freq), by default the **mean across the "
+"batch dimension** is plotted. This is useful for examining the average "
+"characteristics across multiple events."
+msgstr ""
+"`plot()` メソッドを使用すると、データを可視化できます。 3次元データ（Batch, Time, Freq）に対して `plot()` "
+"を呼び出すと、デフォルトでは**バッチ方向の平均**がプロットされます。 これは複数のイベントの平均的な特徴を確認するのに便利です。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:130002
+#: a9bf45daef234fc8b1f6708ca2c9797b
+msgid ""
+"To plot only a specific channel, specify an index using the `monitor` "
+"argument."
+msgstr "特定のチャネルだけをプロットしたい場合は、`monitor` 引数にインデックスを指定します。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:150002
+#: fd8ad29a03064b7cb664519296288f18
+msgid "5. Integration with External Libraries"
+msgstr "5\\. 外部ライブラリとの連携"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:150004
+#: 0aab2ab0228344a29b31db33485ff473
+msgid ""
+"For machine learning or GPU computing, the data can be easily converted to "
+"PyTorch or CuPy tensors."
+msgstr "機械学習やGPU計算のために、PyTorch や CuPy のテンソルへ簡単に変換できます。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:170002
+#: f674dd74e87540cca78500fe536d1c6d
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:170004
+#: d9a665337f1e4d8dbd1c08c54b08eea1
+msgid ""
+"**`SpectrogramMatrix`** can be created using `SpectrogramList.to_matrix()`."
+msgstr "**`SpectrogramMatrix`** は `SpectrogramList.to_matrix()` で作成できます。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:170005
+#: 51862c4c11dc4f1a971e88b5b29f70d1
+msgid "It holds data as a 3-dimensional array `(Batch, Time, Freq)`."
+msgstr "3次元配列 `(Batch, Time, Freq)` としてデータを保持します。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:170006
+#: e6eb363d7d604fadb12f5cfe86d9a151
+msgid ""
+"Methods like `mean()` and `plot()` make it easy to aggregate and visualize "
+"data."
+msgstr "`mean()` や `plot()` メソッドで、データの集約や可視化が簡単に行えます。"
+
+#: ../../how-to/containers/matrix_spectrogram.ipynb:170007
+#: ce739bc35540464cbdabdc126e9e5edf
+msgid ""
+"It serves as a useful intermediate format for passing data to deep learning "
+"frameworks via methods like `to_torch()`."
+msgstr "`to_torch()` などでディープラーニングフレームワークへデータを渡す際の中間形式としても有用です。"

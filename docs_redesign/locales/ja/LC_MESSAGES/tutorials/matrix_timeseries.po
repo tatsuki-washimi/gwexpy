@@ -1,0 +1,278 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/matrix_timeseries.ipynb:10002
+#: afb342d5acd740dd9619cc2511b962f7
+msgid "TimeSeriesMatrix: Matrix Basics"
+msgstr "TimeSeriesMatrix: 行列処理の基本"
+
+#: ../../tutorials/matrix_timeseries.ipynb:10004
+#: 0076b632b822435692a686c74eff06bd
+msgid ""
+"`TimeSeriesMatrix` is a 3-dimensional array container that extends "
+"`SeriesMatrix` for TimeSeries (shape: Nrow × Ncol × Nsample)."
+msgstr ""
+"`TimeSeriesMatrix` は `SeriesMatrix` を TimeSeries 用に拡張した 3 次元配列コンテナです（shape: "
+"Nrow × Ncol × Nsample）。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:10006
+#: 0814340777704ffd989a84c7fb3d35f1
+msgid "TimeSeries-compatible aliases such as `dt / t0 / times`"
+msgstr "`dt / t0 / times` など TimeSeries 互換のエイリアス"
+
+#: ../../tutorials/matrix_timeseries.ipynb:10007
+#: d9fb9ef513e44c6795ba96366762e3d9
+msgid "Element access returns `TimeSeries` (`tsm[i, j]`)"
+msgstr "要素アクセスで `TimeSeries` を返す（`tsm[i, j]`）"
+
+#: ../../tutorials/matrix_timeseries.ipynb:10008
+#: 00096b24120c434fb3fd60eada287f3e
+msgid ""
+"Time-domain processing (detrend/bandpass/resample ...) applied element-wise"
+msgstr "時間領域処理（detrend/bandpass/resample ...）を要素ごとに適用"
+
+#: ../../tutorials/matrix_timeseries.ipynb:10009
+#: c3c0a8286c5742808e4822bef50d8c4b
+msgid ""
+"Spectral analysis such as FFT/PSD/ASD and coherence (returns "
+"`FrequencySeriesMatrix`)"
+msgstr "FFT/PSD/ASD や coherence などのスペクトル解析（返り値は `FrequencySeriesMatrix`）"
+
+#: ../../tutorials/matrix_timeseries.ipynb:10010
+#: f7f6694e71bd455caa2c376a4450e481
+msgid ""
+"Display methods (`plot`, `step`, `repr`, `_repr_html_`) work out of the box"
+msgstr "表示系 (`plot`, `step`, `repr`, `_repr_html_`) をそのまま使用"
+
+#: ../../tutorials/matrix_timeseries.ipynb:10012
+#: eb97b78bb80949499dfcae4d9ca9e33e
+msgid ""
+"In this notebook, we do not define additional utility functions but directly"
+" call class methods to verify their behavior."
+msgstr "このノートブックでは追加のユーティリティ関数は定義せず、クラスメソッドを直接呼び出して動作を確認します。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:30002
+#: 4571d657b9474252bc93694bc87d78e2
+msgid "Prepare Representative Data"
+msgstr "代表データを用意"
+
+#: ../../tutorials/matrix_timeseries.ipynb:30003
+#: 6825e70c311447159cbcab43ab280fb5
+msgid ""
+"Create a 2×2 `TimeSeriesMatrix` and check `dt/t0/times` and metadata "
+"(unit/name/channel)."
+msgstr ""
+"2×2 の `TimeSeriesMatrix` を作り、`dt/t0/times` やメタデータ（unit/name/channel）を確認します。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:50002
+#: ffede80c05d44522985b5cce92eae73d
+msgid "Various Input Patterns (Constructor Examples)"
+msgstr "多様な入力パターン（コンストラクタ例）"
+
+#: ../../tutorials/matrix_timeseries.ipynb:50003
+#: bb31ab52f50c41d3a074ebfed454ac8d
+msgid ""
+"In addition to `dt/t0`, we verify `sample_rate` or `times`, 2D lists of "
+"`TimeSeries`, `Quantity` input, etc."
+msgstr ""
+"`dt/t0` のほか、`sample_rate` や `times`、`TimeSeries` の 2D リスト、`Quantity` "
+"入力などを確認します。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:70002
+#: 051ab70e949d4bd49077c1cca92f1b63
+msgid "Indexing and Slicing"
+msgstr "参照・切り出し"
+
+#: ../../tutorials/matrix_timeseries.ipynb:70003
+#: bf6d27c0c56443f3aa0a808dcdb2e531
+msgid "`tsm[i, j]` returns a `TimeSeries`"
+msgstr "`tsm[i, j]` は `TimeSeries` を返す"
+
+#: ../../tutorials/matrix_timeseries.ipynb:70004
+#: de39799b8afb411799ca969931c7167c
+msgid "Slicing returns a `TimeSeriesMatrix`"
+msgstr "スライスは `TimeSeriesMatrix` を返す"
+
+#: ../../tutorials/matrix_timeseries.ipynb:70005
+#: 0041963db8a1459bbb7eb8c4251a5a2b
+msgid "Can also access via row/col labels"
+msgstr "row/col ラベルでもアクセスできる"
+
+#: ../../tutorials/matrix_timeseries.ipynb:90002
+#: 7d6c5d89b3ac43dc940c976b5e2dcfa4
+msgid "Sample Axis Editing"
+msgstr "サンプル軸編集"
+
+#: ../../tutorials/matrix_timeseries.ipynb:90003
+#: 8f353f8bf53646e8ac5ac32addd37ff0
+msgid "`diff` / `pad` return `TimeSeriesMatrix`"
+msgstr "`diff` / `pad` は `TimeSeriesMatrix` を返す"
+
+#: ../../tutorials/matrix_timeseries.ipynb:90004
+#: fb1658eb6fad487581a198a7e488db88
+msgid ""
+"`crop` currently returns `SeriesMatrix`, so use `view(TimeSeriesMatrix)` to "
+"restore (contents are the same)"
+msgstr "`crop` は現在 `SeriesMatrix` を返すので、`view(TimeSeriesMatrix)` で戻します（中身は同じ）"
+
+#: ../../tutorials/matrix_timeseries.ipynb:110002
+#: 495e6de75f0b41e3b893b2b2280f21e6
+msgid ""
+"Time-Domain Processing (Element-wise Application of TimeSeries Methods)"
+msgstr "時間領域処理（TimeSeries メソッドの要素ごと適用）"
+
+#: ../../tutorials/matrix_timeseries.ipynb:110003
+#: 28287517fe8f4d3b94281fb12917ebb0
+msgid ""
+"`TimeSeries` methods (`detrend`, `bandpass`, `resample`, etc.) are applied "
+"element-wise to the matrix."
+msgstr ""
+"`TimeSeries` のメソッド（`detrend`, `bandpass`, `resample` など）を行列要素ごとに適用します。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:130002
+#: 961bf46d07e84aaeab7c9198302e4c3d
+msgid "Missing Value Imputation"
+msgstr "欠損値処理 (Imputation)"
+
+#: ../../tutorials/matrix_timeseries.ipynb:130003
+#: bbde382a83f44640bf86647999d4e425
+msgid ""
+"Impute missing values (NaN) in the matrix. Applied to each channel "
+"separately."
+msgstr "Matrix内の欠損値 (NaN) を補完します。各チャンネルごとに適用されます。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:150002
+#: 7e5b829f69a94d92bc739ed720a386b3
+msgid "Preprocessing: Standardization and Whitening"
+msgstr "前処理: 標準化と白色化"
+
+#: ../../tutorials/matrix_timeseries.ipynb:150003
+#: 81b3cf2dec1d4344962dfb0dfaf22e56
+msgid "Useful as preprocessing for multivariate analysis."
+msgstr "多変量解析の前処理として有用です。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:170002
+#: 72f998b1fd5e44afbef3199b76a5d181
+msgid "Decomposition (PCA / ICA)"
+msgstr "成分分解 (PCA / ICA)"
+
+#: ../../tutorials/matrix_timeseries.ipynb:170003
+#: 9b1cef0af1ac4cdc824d23880a89d1f1
+msgid "Efficient dimensionality reduction or source separation."
+msgstr "効率的な次元圧縮や、信号源分離を行います。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:190002
+#: 5a424a93be96461d8c0e40187cb65d96
+msgid "Interoperability Introduction"
+msgstr "相互運用性 (Interop) 入門"
+
+#: ../../tutorials/matrix_timeseries.ipynb:190003
+#: a4836fa979fe46c3bb1917377cd117a4
+msgid "Data can be passed to external libraries such as PyTorch."
+msgstr "PyTorchなどの外部ライブラリへデータを渡すことができます。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:210002
+#: 1cbdad828a494b1eb01af9046e3e39a3
+msgid "Spectral Analysis (FFT / PSD / ASD)"
+msgstr "スペクトル解析（FFT / PSD / ASD）"
+
+#: ../../tutorials/matrix_timeseries.ipynb:210003
+#: 6c126e7fd76640e680267095b6a1d6a6
+msgid "`fft/psd/asd` return `FrequencySeriesMatrix`."
+msgstr "`fft/psd/asd` は `FrequencySeriesMatrix` を返します。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:230002
+#: 3fd5435ab16d4ba1a26e805771ed2c48
+msgid "Bivariate Spectral Analysis (Coherence Example)"
+msgstr "bivariate スペクトル解析（coherence 例）"
+
+#: ../../tutorials/matrix_timeseries.ipynb:230003
+#: e4ceb7b80a6945719391270e61043ac3
+msgid ""
+"`TimeSeriesMatrix.coherence(other)` computes coherence element-wise and "
+"returns `FrequencySeriesMatrix`."
+msgstr ""
+"`TimeSeriesMatrix.coherence(other)` は要素ごとに coherence "
+"を計算し、`FrequencySeriesMatrix` を返します。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:230005
+#: 82ebba9804d3416db0a569206af7d9a9
+msgid ""
+"Passing a `TimeSeries` as `other` compares \"all elements vs. the same "
+"reference\""
+msgstr "`other` に `TimeSeries` を渡すと「全要素 vs 同一参照」の比較になります"
+
+#: ../../tutorials/matrix_timeseries.ipynb:230006
+#: 326abd4387604ec8a28da92212c64ad4
+msgid ""
+"Passing a `TimeSeriesMatrix` as `other` requires matching shape (Nrow, Ncol)"
+msgstr "`other` に `TimeSeriesMatrix` を渡す場合は shape (Nrow, Ncol) が一致している必要があります"
+
+#: ../../tutorials/matrix_timeseries.ipynb:250002
+#: 37eda9c0231b44b58233918335b2b876
+msgid "Display Methods: repr / plot / step"
+msgstr "表示系: repr / plot / step"
+
+#: ../../tutorials/matrix_timeseries.ipynb:250003
+#: 9b8b75f4a6e4455aa266f39f56d73473
+msgid "`repr`: Text display"
+msgstr "`repr`: テキスト表示"
+
+#: ../../tutorials/matrix_timeseries.ipynb:250004
+#: 55fd9f26960d435d9ad18455ffb6e680
+msgid "`_repr_html_`: In notebooks, `display(tsm)` shows a table format"
+msgstr "`_repr_html_`: ノートブックでは `display(tsm)` で表形式"
+
+#: ../../tutorials/matrix_timeseries.ipynb:250005
+#: aac960b74147427a9767c6d8a1ee6381
+msgid "`plot` / `step`: Direct plotting with class methods"
+msgstr "`plot` / `step`: クラスメソッドで直接描画"
+
+#: ../../tutorials/matrix_timeseries.ipynb:270002
+#: a3646d72bb9149bdb1d9fe31ca90713a
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../tutorials/matrix_timeseries.ipynb:270003
+#: 4ab7d342a0784610813f891de29adb8e
+msgid ""
+"`TimeSeriesMatrix` preserves TimeSeries-compatible axis information "
+"(`dt/t0/times`) and element metadata while enabling batch processing as a "
+"matrix."
+msgstr ""
+"`TimeSeriesMatrix` は TimeSeries "
+"互換の軸情報（`dt/t0/times`）と要素メタデータを保ったまま、行列として一括処理できる。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:270004
+#: 96150d8f9dcc4865b50f4a5de2a8acc0
+msgid ""
+"Time-domain processing (detrend/bandpass/resample, etc.) and spectral "
+"analysis (asd/psd/coherence, etc.) can be applied element-wise in batches."
+msgstr ""
+"時間領域処理（detrend/bandpass/resample 等）やスペクトル解析（asd/psd/coherence "
+"等）を、要素ごとにまとめて適用できる。"
+
+#: ../../tutorials/matrix_timeseries.ipynb:270005
+#: a8461383e9314d50a7e962ecc2311b02
+msgid ""
+"First extract a `TimeSeries` with `tsm[i, j]` to check behavior, then once "
+"familiar, process the entire matrix for convenience."
+msgstr "まず `tsm[i, j]` で `TimeSeries` を取り出して挙動を確認し、慣れたら行列のまま処理するのが簡単。"

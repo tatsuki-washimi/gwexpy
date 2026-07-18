@@ -1,0 +1,270 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-05 00:42+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../explanation/prerequisites_and_conventions.md
+#: db000fd4a4844500a565ef9eb085f048
+msgid ""
+"Check GWexpy prerequisites, GPS-time assumptions, FFT conventions, and GWpy "
+"compatibility before moving into tutorials, theory, or API pages."
+msgstr "GWexpy の前提条件、GPS 時刻の扱い、FFT 規約、GWpy 互換性を、チュートリアル・理論・API へ進む前に確認します。"
+
+#: ../../explanation/prerequisites_and_conventions.md:7
+#: a4298b1a96f846e18bc025e100dfac06
+msgid "Prerequisites and Conventions"
+msgstr "前提条件と規約"
+
+#: ../../explanation/prerequisites_and_conventions.md:9
+#: 7b0053b52b834c009a1aca5349d42862
+msgid ""
+"This page is the entry point for the **shared prerequisites** and "
+"**conventions** used across the GWexpy guides and tutorials. Page-specific "
+"assumptions and mathematical details remain on their original pages; this "
+"guide is meant to show where to check first."
+msgstr ""
+"このページは、GWexpy のガイドやチュートリアルを読む前に把握しておきたい**共通の前提条件**と**規約**をまとめたページです。 "
+"個別アルゴリズムの仮定や数式の詳細は各ページに記載し、このページでは「どこを先に確認すべきか」を案内します。"
+
+#: ../../explanation/prerequisites_and_conventions.md:13
+#: 84e0e7d3ed4c4ba48bd600ca2ac3eedf
+msgid "1. Environment Prerequisites"
+msgstr "1. 環境前提"
+
+#: ../../explanation/prerequisites_and_conventions.md:15
+#: 079bd3546793474ea3cfb83b5c69e823
+msgid "The basic user-facing environment assumes **Python 3.11+**."
+msgstr "基本的な利用環境は **Python 3.11 以上** を前提にしています。"
+
+#: ../../explanation/prerequisites_and_conventions.md:16
+#: 4cede796e53b4e6f84a442dfc6882429
+msgid ""
+"The minimum background is **basic Python**, **NumPy array handling**, and "
+"optionally **Matplotlib**."
+msgstr "最低限の前提知識は、**Python の基礎**、**NumPy 配列操作**、必要に応じて **Matplotlib** です。"
+
+#: ../../explanation/prerequisites_and_conventions.md:17
+#: 60ff16412b4e4b5da95051f07af4ab0f
+msgid ""
+"Optional dependencies unlock additional features. See the [Installation "
+"Guide](../tutorials/installation.md) for setup details."
+msgstr ""
+"オプション依存パッケージを導入すると追加機能が利用できます。セットアップの詳細は "
+"[インストールガイド](../tutorials/installation.md) を参照してください。"
+
+#: ../../explanation/prerequisites_and_conventions.md:19
+#: bf31b45b39424d7093ce913cf4fcff6d
+msgid ""
+"If you want the shortest overall learning path first, start with [Getting "
+"Started](../tutorials/getting_started.md)."
+msgstr ""
+"全体の最短学習経路をまず知りたい場合は、[はじめに](../tutorials/getting_started.md) から始めてください。"
+
+#: ../../explanation/prerequisites_and_conventions.md:22
+#: c66a8404ef4b457da8acb2cae32bec93
+msgid "2. Data and Time Assumptions"
+msgstr "2. データと時刻の前提"
+
+#: ../../explanation/prerequisites_and_conventions.md:24
+#: d20a6066deb74ae7bdf2336c5a797f77
+msgid ""
+"GWexpy is designed to stay compatible with `gwpy`-style time-series and "
+"frequency-series containers."
+msgstr "GWexpy は `gwpy` 系の時系列・周波数系列コンテナとの互換性を重視しています。"
+
+#: ../../explanation/prerequisites_and_conventions.md:25
+#: 798baf8d6a60462dbaabb42b73cb4f50
+msgid ""
+"Some APIs assume **GPS time** explicitly. In particular, forecast timestamps"
+" such as ARIMA outputs should not be confused with UTC-style time systems "
+"that include leap seconds."
+msgstr ""
+"時刻の扱いでは **GPS 時刻** を前提とする API があります。特に ARIMA 予測時刻などは UTC の閏秒系と混同しないでください。"
+
+#: ../../explanation/prerequisites_and_conventions.md:26
+#: c7f7460211aa41f9baaa20d0ab1d352f
+msgid ""
+"Some file formats do not preserve absolute timestamps. Audio formats are a "
+"representative case where `t0=0.0` may be used only as a convenience "
+"convention."
+msgstr "ファイル形式によっては絶対時刻を保持しません。たとえば音声形式は `t0=0.0` を便宜的に使う場合があります。"
+
+#: ../../explanation/prerequisites_and_conventions.md:27
+#: 675beb94ed844820a543a303231cc516
+msgid ""
+"Formats that only store local wall-clock time may require an explicit "
+"`timezone`. A common example is GBD in the [File I/O Supported Formats "
+"Guide](../how-to/io_formats.md)."
+msgstr ""
+"ローカルの壁時計時刻のみを保持する形式では、明示的な `timezone` の指定が必要になる場合があります。代表例は [ファイル I/O "
+"対応フォーマットガイド](../how-to/io_formats.md) の GBD です。"
+
+#: ../../explanation/prerequisites_and_conventions.md:29
+#: 8b3f932075ac45e39f6e9eef36dd8825
+msgid ""
+"For algorithm-specific assumptions, see [Validated "
+"Algorithms](validated_algorithms.md)."
+msgstr ""
+"アルゴリズムごとの仮定まで確認したい場合は [検証済みアルゴリズム](validated_algorithms.md) を参照してください。"
+
+#: ../../explanation/prerequisites_and_conventions.md:32
+#: 0fe5a3b56d4f401891a16d491f0f7736
+msgid "3. FFT and Spectral Conventions"
+msgstr "3. FFT とスペクトルの規約"
+
+#: ../../explanation/prerequisites_and_conventions.md:34
+#: b4ace9c6fa9741db8fc359b88f6f550d
+msgid ""
+"GWexpy treats FFT **normalization**, **one-sided vs two-sided spectra**, and"
+" **sign conventions** explicitly."
+msgstr "GWexpy では、FFT の**正規化**、**片側/両側スペクトル**、**符号規約**を明示的に扱います。"
+
+#: ../../explanation/prerequisites_and_conventions.md:35
+#: bf9b310b66aa4f6697c076d054db1cfc
+msgid ""
+"`fft_time` and `fft_space` follow different assumptions for target axes and "
+"normalization."
+msgstr "`fft_time` と `fft_space` では、対象軸と正規化の考え方が異なります。"
+
+#: ../../explanation/prerequisites_and_conventions.md:36
+#: 760eb2ba2f244ef09c6bc86390f1ab65
+msgid ""
+"`spectral_density` distinguishes PSD-style density from per-bin spectrum "
+"values."
+msgstr "`spectral_density` では PSD と spectrum の意味を区別して扱います。"
+
+#: ../../explanation/prerequisites_and_conventions.md:38
+#: 23a2ded41bcf4297bb7db4ed9410c05d
+msgid ""
+"For implementation-level details of each spectral method, see the [API "
+"Reference](../reference/index.md)."
+msgstr "各スペクトル手法の実装レベルの詳細は、[API リファレンス](../reference/index.md) を参照してください。"
+
+#: ../../explanation/prerequisites_and_conventions.md:41
+#: 9e79b79b3ac14f2fa4fbf7852e593cfa
+msgid "4. GWpy Compatibility and GWexpy Extensions"
+msgstr "4. GWpy 互換と GWexpy 拡張"
+
+#: ../../explanation/prerequisites_and_conventions.md:43
+#: eb33423efde54d0ba72a7bf303a636d4
+msgid ""
+"GWexpy is built on top of GWpy and preserves the basic data model and "
+"workflow expectations where possible."
+msgstr "GWexpy は GWpy の上に構築されており、基本的なデータモデルと操作感を尊重しています。"
+
+#: ../../explanation/prerequisites_and_conventions.md:44
+#: 41ea1eedeb324240bad2857863687c33
+msgid ""
+"At the same time, it adds Matrix containers, the Field API, broader I/O "
+"support, and extra analysis utilities that do not exist in GWpy."
+msgstr "一方で、Matrix 系コンテナ、フィールド API、追加 I/O、解析ユーティリティなど GWpy にはない拡張があります。"
+
+#: ../../explanation/prerequisites_and_conventions.md:45
+#: a2bf4daa534b41ffaeaef3b9560f5ae3
+msgid ""
+"If you want a quick view of what is still \"GWpy-like\" and what is GWexpy-"
+"specific, the migration guide is the fastest entry point."
+msgstr "「GWpy と共通の仕様」と「GWexpy 固有の追加要素」を切り分けて確認したい場合は、移行ガイドを参照してください。"
+
+#: ../../explanation/prerequisites_and_conventions.md:47
+#: 2486de11c2274bbfb8ea10581cda008c
+msgid ""
+"For migration-oriented guidance, see [GWexpy for GWpy "
+"Users](gwexpy_for_gwpy_users.md) and the [GWpy Difference API "
+"Index](../reference/gwpy_added_api.md)."
+msgstr ""
+"移行向けの案内は [GWpy ユーザーのための GWexpy](gwexpy_for_gwpy_users.md) と [GWpy 差分 API "
+"インデックス](../reference/gwpy_added_api.md) を参照してください。"
+
+#: ../../explanation/prerequisites_and_conventions.md:50
+#: 429b728ef4c241e5a408a49ec6fbac0b
+msgid "5. Where to Go Next"
+msgstr "5. どこから読むか"
+
+#: ../../explanation/prerequisites_and_conventions.md:52
+#: 1b01e7512bab4a779b4e46cdfd323fc0
+msgid "First-time users: [Getting Started](../tutorials/getting_started.md)"
+msgstr "はじめての方: [はじめに](../tutorials/getting_started.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:53
+#: 9eaf22e8c9e94b3cbca0e5a41b5c6830
+msgid "Hands-on learning: [Tutorial Index](../tutorials/index.md)"
+msgstr "手を動かして学ぶ: [チュートリアル一覧](../tutorials/index.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:54
+#: 56ce0303214c4b09bae4fedbe1f6c446
+msgid ""
+"Spectral method implementation details: [API "
+"Reference](../reference/index.md)"
+msgstr "スペクトル手法の実装詳細: [API リファレンス](../reference/index.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:55
+#: fee56ff4467347dbb413477249d39a8d
+msgid ""
+"Algorithm assumptions and validation basis: [Validated "
+"Algorithms](validated_algorithms.md)"
+msgstr "アルゴリズムごとの仮定や検証根拠を確認したい場合: [検証済みアルゴリズム](validated_algorithms.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:56
+#: 1cdd442a8eb347f5a2946dec92332685
+msgid "GWpy migration: [GWexpy for GWpy Users](gwexpy_for_gwpy_users.md)"
+msgstr "GWpy からの移行: [GWpy ユーザーのための GWexpy](gwexpy_for_gwpy_users.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:59
+#: c57916eae94d4dcc9e771849b1042bf1
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../../explanation/prerequisites_and_conventions.md:61
+#: 2fee9824076040eabf98ab8e05769e0a
+msgid "[Installation Guide](../tutorials/installation.md)"
+msgstr "[インストールガイド](../tutorials/installation.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:62
+#: 05fb677708364725bf0a33af4228c09a
+msgid "[Getting Started](../tutorials/getting_started.md)"
+msgstr "[はじめに](../tutorials/getting_started.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:63
+#: f4f1ce7bfecb4a99aade1bd8bc0e6df2
+msgid "[File I/O Supported Formats Guide](../how-to/io_formats.md)"
+msgstr "[ファイル I/O 対応フォーマットガイド](../how-to/io_formats.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:64
+#: 1f9753db95a64e7c813d6c97f8401596
+msgid "[Validated Algorithms](validated_algorithms.md)"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
+
+#: ../../explanation/prerequisites_and_conventions.md:65
+#: 8e443e055a1041b08b672da5b277d1c7
+msgid "[API Reference](../reference/index.md)"
+msgstr "[API リファレンス](../reference/index.md)"
+
+#~ msgid ""
+#~ "For the mathematical details, see [FFT Specifications and "
+#~ "Conventions](../reference/index.md)."
+#~ msgstr "数学的な詳細は [FFT の仕様と規約](../reference/index.md) を参照してください。"
+
+#~ msgid ""
+#~ "FFT mathematics and normalization details: [FFT Specifications and "
+#~ "Conventions](../reference/index.md)"
+#~ msgstr "FFT の数学と正規化の詳細: [FFT の仕様と規約](../reference/index.md)"
+
+#~ msgid "[FFT Specifications and Conventions](../reference/index.md)"
+#~ msgstr "[FFT の仕様と規約](../reference/index.md)"

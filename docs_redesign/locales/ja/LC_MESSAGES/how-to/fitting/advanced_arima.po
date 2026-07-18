@@ -1,0 +1,237 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-05 14:57+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:10002
+#: 008e36853d00437693b7f4969d40fe0f
+msgid "ARIMA: Time Series Forecasting"
+msgstr "ARIMA: 時系列予測"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:10004
+#: 38e7e77b7ed74509941d0924edad4c60
+msgid ""
+"This notebook demonstrates how to model and forecast time series data using "
+"ARIMA-related functions (AR, MA, ARMA, ARIMA/SARIMAX) that have been added "
+"to the `gwexpy` `TimeSeries` class."
+msgstr ""
+"このノートブックでは、`gwexpy` の `TimeSeries` クラスに追加された ARIMA 関連の機能（AR, MA, ARMA, "
+"ARIMA/SARIMAX）を使用して、時系列データのモデリングと未来予測を行う方法を解説します。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:10006
+#: ../../how-to/fitting/advanced_arima.ipynb:240006
+#: 1d0116188e254ff3b88070e2a5d9aafb 6d6f771f6689444d90234b6c19a550d3
+msgid "**Related API**: [Time Series API](../../reference/api/timeseries)"
+msgstr "**関連 API**: [Time Series API](../../reference/api/timeseries)"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:10007
+#: ../../how-to/fitting/advanced_arima.ipynb:240007
+#: 49c6387dfa004d5d822317897fd4189e 510cd4074c5b4367a5a697ea68c860cf
+msgid ""
+"**Related theory**: [Validated "
+"Algorithms](../../explanation/validated_algorithms.md), [Numerical "
+"Stability](../../explanation/numerical_stability.md)"
+msgstr ""
+"**関連理論**: "
+"[検証済みアルゴリズム](../../explanation/validated_algorithms.md)、[数値的安定性](../../explanation/numerical_stability.md)"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:10009
+#: 41b4968053ac4d9986b766e79ffa3203
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:10011
+#: e58b8a1595bf4088bb60b7cec27f11bc
+msgid "Import the necessary libraries."
+msgstr "必要なライブラリをインポートします。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:30002
+#: 1a9887a6eebc4a3f8093f8a0ee5983be
+msgid "Creating Sample Data"
+msgstr "サンプルデータの作成"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:30004
+#: 4ca6e6107430497783af08a83345a33e
+msgid ""
+"To verify the effectiveness of ARIMA models, we create synthetic data that "
+"includes a trend, seasonality (periodicity), and noise."
+msgstr "ARIMAモデルの効果を確認するために、トレンド、季節性（周期性）、ノイズを含んだ模擬データを作成します。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:50002
+#: 70cad1dfb6434f04bb57897c6ee8eda6
+msgid "1. AR (AutoRegressive) Model"
+msgstr "1\\. AR (AutoRegressive) モデル"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:50004
+#: 528b58f5bf3c479ab9ec651ec3a203e0
+msgid ""
+"The AR model assumes that the current value depends on past values. Use the "
+"`ts.ar(p)` method, where `p` is the order."
+msgstr "ARモデルは、現在の値が過去の値に依存すると仮定するモデルです。 `ts.ar(p)` メソッドを使用します。`p` は次数です。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:70002
+#: 528a483150294b71958a5dd31bb10750
+msgid "2. MA (Moving Average) Model"
+msgstr "2\\. MA (Moving Average) モデル"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:70004
+#: 7d38928128cc46fbbe27e2667afdc153
+msgid ""
+"The MA model assumes that the current value depends on past prediction "
+"errors (white noise). Use the `ts.ma(q)` method."
+msgstr "MAモデルは、現在の値が過去の予測誤差（ホワイトノイズ）に依存すると仮定するモデルです。 `ts.ma(q)` メソッドを使用します。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:90002
+#: d91a0f80ddc14ed495044a9879e73839
+msgid "3. ARMA (AutoRegressive Moving Average) Model"
+msgstr "3\\. ARMA (AutoRegressive Moving Average) モデル"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:90004
+#: 5609168db46b46a886868fccbcbfd630
+msgid "The ARMA model combines AR and MA. Use the `ts.arma(p, q)` method."
+msgstr "ARとMAを組み合わせたモデルです。 `ts.arma(p, q)` メソッドを使用します。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:110002
+#: 0839d25211c545ee893c8e43c001c577
+msgid "4. ARIMA / Auto-ARIMA"
+msgstr "4\\. ARIMA / Auto-ARIMA"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:110004
+#: 9c59b83b48114863b0920a1b5ef12467
+msgid ""
+"The ARIMA model removes non-stationarity (such as trends) by differencing, "
+"then applies the ARMA model."
+msgstr "ARIMAモデルは、差分を取ることで非定常性（トレンドなど）を除去し、ARMAモデルを適用します。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:110006
+#: bd22c6f9b0da4d88bdc3d1f12053853a
+msgid ""
+"Use the `ts.arima()` method. With the `auto=True` option, the `pmdarima` "
+"library is used to automatically search for optimal parameters (p, d, q). "
+"This is the most recommended approach."
+msgstr ""
+"`ts.arima()` メソッドを使用します。 `auto=True` オプションを指定すると、`pmdarima` "
+"ライブラリを使用して最適なパラメータ (p, d, q) を自動的に探索します。これが最も推奨される方法です。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:130002
+#: 52ebb4db6fb84ed8b4211c33b565ad08
+msgid "5. Obtaining Forecast Data"
+msgstr "5\\. 予測データの取得"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:130004
+#: b0ed6713723242389bb16e4661287cf2
+msgid ""
+"Beyond plotting, you can directly obtain forecast values as a `TimeSeries` "
+"object using the `.forecast()` method. This also includes confidence "
+"intervals."
+msgstr ""
+"プロットだけでなく、`.forecast()` メソッドを使用して予測値の `TimeSeries` オブジェクトを直接取得できます。 "
+"これには信頼区間（Confidence Interval）も含まれます。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:150002
+#: e69b9d6a24264bb39d572515cfe01c8c
+msgid ""
+"6. Application in Gravitational Wave Data Analysis: Noise Removal "
+"(Whitening) with ARIMA"
+msgstr "6\\. 重力波データ解析における応用: ARIMAによるノイズ除去 (Whitening)"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:150004
+#: f438b31acc4645c6bbe372c50c8ced2e
+msgid ""
+"In gravitational wave data analysis, a process called **whitening** is "
+"performed to extract burst signals or ringdown waveforms from stationary "
+"\"colored noise\". By training an ARIMA model as a predictive model for "
+"background noise and subtracting the predicted values from the measured "
+"values (taking residuals), it is possible to remove noise and enhance the "
+"signal."
+msgstr ""
+"重力波データ解析では、定常的な「有色ノイズ」の中から突発的なバースト信号やリングダウン波形を抽出するために、**白色化 (Whitening)** "
+"という処理が行われます。 "
+"ARIMAモデルを背景ノイズの予測モデルとして学習させ、実測値からその予測値を引く（残差をとる）ことで、ノイズを除去し信号を強調することが可能です。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:160002
+#: dda567a67d774becbedde9cafbce7963
+msgid "Step 1: Generating Colored Noise and Injecting a Signal"
+msgstr "Step 1: 有色ノイズの生成と信号の注入"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:160003
+#: 901749541e634543b786d564b11ab9b1
+msgid ""
+"First, we create colored noise with strong low-frequency components (AR(1) "
+"process), and embed a weak signal (sine-Gaussian) that is difficult to "
+"distinguish otherwise. Note: We use \"strain\" as the unit, which is "
+"recognizable by Astropy."
+msgstr ""
+"まず、低周波成分が強い有色ノイズ（AR(1)プロセス）を作成し、そこにそのままでは判別しにくい微弱な信号（サインガウシアン）を埋め込みます。 ※単位には"
+" Astropy で認識可能な \"strain\" を使用します。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:180002
+#: 00e7064222b840239d6ec6ff372a77b3
+msgid "Step 2: Noise Modeling with ARIMA"
+msgstr "Step 2: ARIMAによるノイズモデリング"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:180003
+#: 7e2711eaa0dd4032a6e258f5849122b8
+msgid ""
+"Using `auto=True`, we search for the optimal model that expresses the "
+"autocorrelation structure of the background noise."
+msgstr "`auto=True` を使って、背景ノイズの自己相関構造を表現する最適なモデルを探索します。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:200002
+#: 07e3222934aa46279dc8875799afbc77
+msgid "Step 3: Extracting and Visualizing Residuals"
+msgstr "Step 3: 残差（Residuals）の抽出と可視化"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:200003
+#: 95a435ce7d6a425bba3be606d284486c
+#, python-brace-format
+msgid ""
+"By subtracting the \"stationary noise\" predicted by the model, we obtain "
+"the residuals $x_r = x - \\hat{x}$. This is the whitened data."
+msgstr "モデルが予測した「定常ノイズ」を引くことで、残差 $x_r = x - \\hat{x}$ を求めます。これが白色化されたデータとなります。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:220002
+#: 389872def2b84d7bafcfd9bcdc39dc77
+msgid "Step 4: Evaluation in the Frequency Domain"
+msgstr "Step 4: 周波数領域での評価"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:220003
+#: df4950afca9e4519a02acdb0fc7dbd13
+msgid "We calculate and compare the Power Spectral Density (PSD)."
+msgstr "パワースペクトル密度 (PSD) を計算して比較します。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:240002
+#: b5698b14fb5548f9a95c0f36cce48dc6
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:240003
+#: 1a8932b6cbf049cfb14ce3c9a34114a6
+msgid ""
+"Using `model.residuals()`, whitening can be easily performed without writing"
+" complex mathematical formulas."
+msgstr "`model.residuals()` を用いることで、複雑な数式を書かずに簡単に白色化処理が実行できます。"
+
+#: ../../how-to/fitting/advanced_arima.ipynb:240004
+#: 5d5a9a92dbe340cd857e57ffae279400
+msgid ""
+"This technique is very powerful for searching for burst signals in "
+"gravitational wave analysis and for extracting ringdown waveforms "
+"(exponentially decaying sinusoids) immediately after events."
+msgstr "この手法は、重力波解析におけるバースト信号の探索や、イベント直後のリングダウン波形（指数減衰する正弦波）の抽出に非常に強力です。"

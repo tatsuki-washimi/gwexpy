@@ -1,0 +1,507 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-18 17:47+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md
+#: 53107770a75f473c920106df98931fde
+msgid ""
+"Understand GWexpy numerical stability behavior, including whitening eps handling, "
+"safe log plotting, NaN and Inf failure modes, and when users should tune parameters."
+msgstr "GWexpy の数値安定性ガイドです。whiten の eps 処理、安全な対数表示、NaN / Inf の失敗モード、調整が必要な場面を整理します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:7
+#: d8d2108ce6c540d99e4f48ca573560f1
+msgid "Numerical Stability and Precision"
+msgstr "数値的安定性と精度"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:10
+#: 64924dfb4d11457ea0b172ad74c34d84
+msgid "**Who should read this page?** Refer to this detailed guide when:"
+msgstr "**このページを読むべき方**：次の場合に、この詳細ガイドを参照してください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:12
+#: 80d5eef35c7e4e97ba9899ba7eae2d61
+msgid "You see \"holes\" or \"unusual colors\" in your plots caused by `NaN` or `Inf`."
+msgstr "プロット結果に `NaN` や `Inf` による「穴」や「異常な色」が現れた場合"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:13
+#: 7cd34395b68043cfa2c2c694e35b2aa8
+msgid ""
+"You are working with a dynamic range that makes a numerical parameter or plotted "
+"scale hard to choose."
+msgstr "数値パラメータや描画スケールを選びにくいダイナミックレンジのデータを扱っている。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:14
+#: 4e5d39d401c748a28df5da8acf17f8fa
+msgid ""
+"You want to deeply understand the numerical behavior of algorithms and tune "
+"parameters like `eps` or `tol`."
+msgstr "解析アルゴリズムの数値的な挙動を深く理解し、詳細パラメータ（`eps`, `tol`）を調整したい場合"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:17
+#: 4825609c79294056a4d6e0a0982962e5
+msgid ""
+"`gwexpy` provides selected stabilization utilities for operations such as whitening "
+"and logarithmic conversion. Their behavior and limits depend on the API used."
+msgstr "`gwexpy` は、whitening や対数変換などの操作向けに、限定された安定化ユーティリティを提供します。動作と限界は使用する API に依存します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:20
+#: c13d8fdc9fe94c7987bec152cb5718fa
+msgid "TL;DR"
+msgstr "まず結論だけ知りたい方へ"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:22
+#: 6f10606301b846aa814e7cacf1c43e39
+msgid "For normal analysis, start by trusting the default `gwexpy` settings."
+msgstr "通常の解析では、まず `gwexpy` のデフォルト設定をそのまま使ってください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:23
+#: 1be466e5e5694ca6a7868a534cea32a2
+msgid ""
+"Do not add manual offsets such as `+ 1e-20` before plotting unless you have a "
+"concrete reason."
+msgstr "プロット前に `+ 1e-20` のような手動オフセットを足す必要はありません。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:24
+#: 6cb3e64cd3d84ad39e588c72262b9051
+msgid ""
+"Tune parameters only when you actually observe `NaN` / `Inf`, work with extreme "
+"amplitudes, or need algorithm-level validation."
+msgstr "調整が必要なのは、`NaN` / `Inf` が見える、極端に小さい信号を扱う、アルゴリズム検証をしたい場合に限られます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:27
+#: 4df08c5a4a704a1799e2c3d5736734a3
+msgid "Impact of Stabilization (Before & After)"
+msgstr "可視化における安定化の効果 (Before & After)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:29
+#: d0692f1f60ac4ae6a55c80fde5bee286
+msgid ""
+"A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexpy`'s "
+"robust numerical stabilization algorithms."
+msgstr "標準的な手法（単純な `log10` や 固定 `eps`）と、`gwexpy` の数値安定化アルゴリズムを適用した結果の比較です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:31
+#: ab80e8cf1d944784b32f3903a05d6f9b
+msgid ""
+"![Numerical stabilization comparison: Noisy visualization with NaN/Inf artifacts "
+"(Left) vs. Clean gravitational-wave signal "
+"(Right)](../_static/images/numerical_stability_comparison.png)"
+msgstr ""
+"![数値安定化の比較：NaN/Inf "
+"アーティファクトを含むノイズの多い可視化（左）と、クリーンな重力波信号（右）](../_static/images/numerical_stability_comparison.png)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:31
+#: a9d4c19f009d47ed86c365ed91789b66
+msgid ""
+"Numerical stabilization comparison: Noisy visualization with NaN/Inf artifacts (Left)"
+" vs. Clean gravitational-wave signal (Right)"
+msgstr "数値安定化の比較：NaN/Inf アーティファクトを含むノイズの多い可視化（左）と、クリーンな重力波信号（右）"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 90983f0108d441949e77756580e54e25
+msgid "Item"
+msgstr "項目"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: b9fe814387464874afcbf5f4751ac1e5
+msgid "Standard path"
+msgstr "一般的な経路"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: eb4c6317858e41f5a1e013fa375da740
+msgid "GWexpy path"
+msgstr "GWexpy の経路"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 2ec9f09cf0a4468eabeeab8b75df22a0
+msgid "**Zero Values**"
+msgstr "**ゼロ値の扱い**"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: ee5407c39d47487fafa48052093f7705
+msgid "`log10(0)` produces `-inf`, which a caller must handle"
+msgstr "`log10(0)` は `-inf` を生成するため、呼び出し側で扱う必要があります"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: e6728feeb67f4e548ce1857092a5f081
+msgid "`safe_log_scale()` applies a data-dependent floor before converting to dB"
+msgstr "`safe_log_scale()` は、dB へ変換する前にデータ依存の下限を適用します"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 39ce6701b6934130a00c66a37935b699
+msgid "**Small denominators**"
+msgstr "**小さい分母**"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: dfb62de40c5c489b8a7a09e2e913efb1
+msgid "A fixed `eps` can be unsuitable for the data scale"
+msgstr "固定の `eps` はデータスケールに適さない場合があります"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 34e1eb6337f64e5cb95a02ff4ebc8faf
+msgid "The documented whitening entry points accept `eps=\"auto\"`"
+msgstr "ドキュメントに記載した whitening エントリポイントは `eps=\"auto\"` を受け付けます"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 46bea092d6a140489b2ce96d12f64fc9
+msgid "**Non-finite input**"
+msgstr "**非有限の入力**"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 8d6536538f144818bb75575e68cf92d7
+msgid "A numerical operation can be undefined"
+msgstr "数値演算が未定義になる場合があります"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 19765c51503241cdaaf7c56c55fdad1b
+msgid "Individual APIs validate or reject input according to their documented contract"
+msgstr "各 API は、文書化された契約に従って入力を検証または拒否します"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:42
+#: b2f0bbbd85ce4d2f8fd201e73880b478
+msgid "Core Stabilization Methods and APIs"
+msgstr "主な安定化手法と API"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: c13e6d4a8e4e4f4396ce72c0f31cbbcd
+msgid "Method"
+msgstr "メソッド"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 6eab793778494e32ac149c28e783da9c
+msgid "Target API"
+msgstr "対象 API"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 2a01cf57deac457fb9f6fde9ba3d68c5
+msgid "Issues Resolved"
+msgstr "解決する問題"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: e0e38ae4c4614c168e8b56f800e17855
+msgid "Configuration Hint"
+msgstr "設定のヒント"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 52ce3ab95d20481c9fa0cdf9ca8e6737
+msgid "**Adaptive Whitening**"
+msgstr "**適応ホワイトニング**"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 5d5ed7065b5a48b1b54e2335a74bcdde
+msgid ""
+"`TimeSeriesMatrix.whiten_channels()`, `whiten_matrix()`, "
+"`gwexpy.signal.preprocessing.whiten()`"
+msgstr "`TimeSeriesMatrix.whiten_channels()`、`whiten_matrix()`、`gwexpy.signal.preprocessing.whiten()`"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: b346b88c072142bf948af899334529d2
+msgid "Small denominators"
+msgstr "小さい分母"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 46aba1182f694206b754373989dfa6c5
+msgid "Use `eps=\"auto\"` where that parameter is supported"
+msgstr "このパラメータをサポートする API では `eps=\"auto\"` を使用します"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 0fda0f87b5a549758dfb2b153ddb0954
+msgid "**Safe Log Conversion**"
+msgstr "**安全な対数変換**"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: fef2ce73234d433690d7192fdd785f1c
+msgid "`gwexpy.numerics.safe_log_scale()`"
+msgstr "`gwexpy.numerics.safe_log_scale()`"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: c7f76dca89f44220b28b52c6836e083e
+msgid "`-inf` from zero values during dB conversion"
+msgstr "dB 変換でゼロ値から生じる `-inf`"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: ed071815a5d845e0bea2cc0eb9b3721f
+msgid "Set `dynamic_range_db` for the intended display range"
+msgstr "目的の表示範囲に合わせて `dynamic_range_db` を設定します"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: cb545bd6e66749b9827cb3a7f96eab6c
+msgid "**Data-scaled epsilon**"
+msgstr "**データスケールに応じた epsilon**"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 2b6a4959ff8e40538482530a1846cfd4
+msgid "`gwexpy.numerics.safe_epsilon()`"
+msgstr "`gwexpy.numerics.safe_epsilon()`"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: fc6086fcecd1408188bbb5b2392ad0d0
+msgid "Selecting an epsilon from the data scale"
+msgstr "データスケールから epsilon を選択する"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:9
+#: 2ccd5b1a3c3b463f9cf07f1802c90977
+msgid "Specify `rel_tol` and `abs_tol` when the defaults do not match the operation"
+msgstr "既定値が操作に合わない場合は `rel_tol` と `abs_tol` を指定します"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:53
+#: e05ee0bee1c5450abc7c57b8f2201310
+msgid "Detailed Explanations and Examples"
+msgstr "各機能の解説とコード例"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:55
+#: 30e73860b545411a969653809353ea51
+msgid "1. Adaptive Whitening"
+msgstr "1. 適応的ホワイトニング"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:57
+#: 54d2593ec334439f99a65720be1392ff
+msgid ""
+"**Goal:** Avoid signal loss caused by a fixed `eps`. **Input:** A `TimeSeries` "
+"containing very small amplitudes. **Output:** A whitened series with automatic "
+"scaling."
+msgstr ""
+"**目的:** 固定 `eps` による信号消失を避ける。 **入力:** 極小信号を含む `TimeSeries`。 **出力:** "
+"自動スケーリングされたホワイトニング結果。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:61
+#: a8229fa21d15458a95b01945a5c11e30
+msgid ""
+"Standard whitening often uses a fixed normalization parameter (`eps`) to prevent "
+"division by zero. If this value is too large, micro-signals are lost."
+msgstr "標準的なホワイトニングは、ゼロ除算を防ぐために固定の正規化パラメータ（`eps`）を使用しますが、これが大きすぎると微小な信号が埋もれます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:63
+#: 9776da674a0d41ab9e8890c2e6d3544f
+msgid "❌ Bad Example: Fixed eps causing signal loss"
+msgstr "❌ 悪い例: 固定 eps による信号消失"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:69
+#: 6f8c985336c245e6ae60c2e4282a0674
+msgid "✅ Good Example: GWexpy's `eps=\"auto\"`"
+msgstr "✅ 良い例: GWexpy の `eps=\"auto\"`"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:70
+#: e63f439a874141d59492aac6ccec59a8
+msgid ""
+"`gwexpy` dynamically scales `eps` relative to the data range and uses a `SAFE_FLOOR` "
+"(1e-50) for singularities. The adaptive `eps` is available on the channel-whitening "
+"entry points: `TimeSeriesMatrix.whiten_channels()`, the functional `whiten_matrix()`,"
+" and `gwexpy.signal.preprocessing.whiten()`."
+msgstr ""
+"`gwexpy` は `eps` をデータのレンジに応じて動的にスケーリングし、特異点には `SAFE_FLOOR`（1e-50）を使用します。適応的な `eps` "
+"は、チャンネル白色化のエントリポイントである `TimeSeriesMatrix.whiten_channels()`、関数版の "
+"`whiten_matrix()`、および `gwexpy.signal.preprocessing.whiten()` で利用できます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:80
+#: e14f9b36ed2d4446b0af10e7407bea57
+msgid "2. Safe Logarithmic Scaling (Safe Log)"
+msgstr "2. 安全な対数スケーリング (Safe Log)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:82
+#: 6e2bbd4f6c3a42ad98b8dc2b3fa378cb
+msgid ""
+"**Goal:** Prevent `-inf` values and broken plots when zeros are present. **Input:** "
+"ASD/PSD-like data with zeros or very quiet regions. **Output:** A stable "
+"visualization with a dynamic floor."
+msgstr ""
+"**目的:** ゼロが存在する場合の `-inf` 値と描画破綻を防ぐ。 **入力:** ゼロや静穏区間を含む ASD/PSD 系データ。 **出力:** "
+"動的フロア付きの安定した可視化。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:86
+#: 79479b5bd4094402855b15131843fccc
+msgid ""
+"Prevents `-inf` values when visualizing spectrograms or PSDs containing zeros or "
+"quiet regions."
+msgstr "スペクトログラムや、ゼロ・静穏区間を含む PSD を可視化する際の `-inf` の発生を防ぎます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:88
+#: ba37e121f9b64340b95edbe913f942f0
+msgid "❌ Bad Example: Numerical errors via manual conversion"
+msgstr "❌ 悪い例: 手動変換による数値エラー"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:93
+#: d4f16543fea74078b1862447402ea258
+msgid "✅ Good Example: Explicit safe-log conversion"
+msgstr "✅ 良い例：明示的な安全対数変換"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:94
+#: 2845f793adbd4e0a98f6c6e624096f89
+msgid ""
+"`safe_log_scale()` calculates a floor from the finite data maximum and the requested "
+"dynamic range, then returns decibels."
+msgstr "`safe_log_scale()` は、有限なデータ最大値と指定したダイナミックレンジから下限を計算し、デシベル値を返します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:105
+#: 7fe7d916fab846c8877a0efbc3953c06
+msgid "Recommendations for Users"
+msgstr "ユーザーへの推奨事項"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:107
+#: 872b4b6f317049cd869f2a0e2c956e1c
+msgid ""
+"**Use an explicit floor for dB conversion**: Call `safe_log_scale()` when converting "
+"data that may contain zeros or quiet regions."
+msgstr "**dB 変換では明示的な下限を使う**：ゼロ値や静かな領域を含み得るデータを変換するときは、`safe_log_scale()` を呼び出します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:108
+#: eb247ee10d85427f8cfb0a73940258f4
+msgid ""
+"**Choose whitening parameters at the API boundary**: Use `eps=\"auto\"` only on the "
+"whitening entry points that document it, then inspect the result for the scientific "
+"application."
+msgstr ""
+"**whitening パラメータは API 境界で選ぶ**：`eps=\"auto\"` は、これを文書化した whitening "
+"エントリポイントだけで使用し、科学的用途に照らして結果を確認します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:109
+#: 6511e90dec724b428feb2befdc8ee65f
+msgid ""
+"**Check the API contract**: Validation, finite-value handling, and tolerances are "
+"implemented per operation rather than by a single global policy."
+msgstr "**API 契約を確認する**：検証、有限値の扱い、許容誤差は、単一の全体方針ではなく操作ごとに実装されています。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:111
+#: 7ac7f62c5008498ebfb0f69b51fb81f0
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:113
+#: 53e690c0ef6e4ef0875a68e71af8bfa4
+msgid "[Signal Processing API Reference](../reference/api/signal)"
+msgstr "[信号処理 API リファレンス](../reference/api/signal)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:114
+#: f5fb7a7d221141c49103adce24e7133c
+msgid "[Validated Algorithms](validated_algorithms.md)"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:115
+#: 821be736afce463288aaecb440c8dd57
+msgid "[API Reference](../reference/index.md) — Entry point to all API pages"
+msgstr "[API リファレンス](../reference/index.md) — すべての API ページへの入口"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/numerical_stability.md:116
+#: 1ce240af371240ccaec3e47512e068a1
+msgid ""
+"[Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared FFT and "
+"numerical assumptions across the docs"
+msgstr "[前提条件と規約](prerequisites_and_conventions.md) — ドキュメント全体で共有する FFT・数値計算の前提"
+
+#~ msgid ""
+#~ "You are working with extremely small signals"
+#~ " (below $10^{-23}$) or huge signals (above "
+#~ "1) simultaneously."
+#~ msgstr "非常に微小な信号（$10^{-23}$以下）や、逆に 1 を超える巨大な信号を同時に扱う場合"
+
+#~ msgid ""
+#~ "`gwexpy` is designed to handle data with "
+#~ "an extremely wide dynamic range without "
+#~ "numerical breakdown."
+#~ msgstr "`gwexpy` は、重力波データ解析で頻繁に扱われる極めて広いダイナミックレンジを持つデータを、数値的な破綻なく処理できるように設計されています。"
+
+#~ msgid "**Safe Log** automatically sets an optimal floor based on the max value"
+#~ msgstr "**Safe Log** により最大値から適切なフロアを自動設定"
+
+#~ msgid "**Micro-signals**"
+#~ msgstr "**微小信号**"
+
+#~ msgid "Rounded to zero by fixed `eps=1e-12`, causing signal loss"
+#~ msgstr "固定 `eps=1e-12` 等で丸められ、信号消失"
+
+#~ msgid "**Adaptive Whitening** (`eps=\"auto\"`) maintains signal sensitivity"
+#~ msgstr "**適応ホワイトニング** (`eps=\"auto\"`) で信号感度を維持"
+
+#~ msgid "**Failures**"
+#~ msgstr "**計算不能点**"
+
+#~ msgid "`NaN` propagates, making the entire dataset uncomputable"
+#~ msgstr "`NaN` が伝播し、全領域が計算不能になる"
+
+#~ msgid "Pre/Post-computation validation protects data integrity"
+#~ msgstr "演算前後のバリデーションにより属性を保護"
+
+#~ msgid "`.whiten()`"
+#~ msgstr "`.whiten()`"
+
+#~ msgid "Zero-division / Signal loss"
+#~ msgstr "ゼロ除算・信号埋没"
+
+#~ msgid "`eps=\"auto\"` is recommended"
+#~ msgstr "デフォルトの `eps=\"auto\"` を推奨"
+
+#~ msgid "`.plot()`, `.spectrogram()`"
+#~ msgstr "`.plot()`, `.spectrogram()`"
+
+#~ msgid "`-inf` holes in plots"
+#~ msgstr "`-inf` によるプロットの穴"
+
+#~ msgid "Adjustable via `dynamic_range`"
+#~ msgstr "`dynamic_range=200` 等で調整可能"
+
+#~ msgid "**Internal Standardization**"
+#~ msgstr "**内部標準化 (ICA)**"
+
+#~ msgid "`ica_fit()`"
+#~ msgstr "`ica_fit()`"
+
+#~ msgid "Non-convergence"
+#~ msgstr "振幅依存による不収束"
+
+#~ msgid "Works regardless of input amplitude"
+#~ msgstr "入力振幅を気にせず実行可能"
+
+#~ msgid "**Relative Tolerance**"
+#~ msgstr "**相対許容誤差**"
+
+#~ msgid "Various"
+#~ msgstr "各種数値計算"
+
+#~ msgid "Early termination"
+#~ msgstr "スケール違いによる早期終了"
+
+#~ msgid "Auto-scales `tol` based on variance"
+#~ msgstr "データの分散に基づき `tol` を自動計算"
+
+#~ msgid "`gwexpy` calculates a safe floor based on the maximum value in the data."
+#~ msgstr "`gwexpy` では、データの最大値から逆算した安全なフロアを自動適用します。"
+
+#~ msgid ""
+#~ "**Avoid Manual Offsets**: Do not add arbitrary"
+#~ " small values like `data + 1e-20` before"
+#~ " plotting. `gwexpy` handles this internally."
+#~ msgstr "**手動オフセットの回避**: プロットの前に `data + 1e-20` のような恣意的な値を足す必要はありません。`gwexpy` が内部で適切に処理します。"
+
+#~ msgid ""
+#~ "**Trust the Defaults**: Default parameters for "
+#~ "`whiten()` and `ica_fit()` are tuned for "
+#~ "numerical safety."
+#~ msgstr "**デフォルトを信頼する**: `whiten()` や `ica_fit()` のデフォルト値は、数値的な安全性を最優先に調整されています。"
+
+#~ msgid ""
+#~ "**Check Warnings**: `gwexpy` issues informative "
+#~ "warnings with suggested fixes for truly "
+#~ "unstable operations."
+#~ msgstr "**警告を確認する**: 真に不安定な操作（全区間ゼロのデータのホワイトニング等）に対しては、解決策を含む警告が出力されます。"
+
+#~ msgid "[Glossary](../reference/index.md) — Definitions for `NaN/Inf propagation` and more"
+#~ msgstr "[用語集](../reference/index.md) — `NaN/Inf propagation` 等の用語定義"
+

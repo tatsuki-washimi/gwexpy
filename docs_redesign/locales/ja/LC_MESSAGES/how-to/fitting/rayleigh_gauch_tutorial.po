@@ -1,0 +1,155 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10002
+#: f762a178031443b5801816d3b0d2f4d6
+msgid "Non-Gaussian Noise Analysis: Rayleigh and Gaussian-Chi"
+msgstr "非ガウス雑音解析: Rayleigh と Gaussian-Chi"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10004
+#: 208571069e1c40f5ab6c7d1109696ab4
+msgid ""
+"This tutorial demonstrates the implementation of a comprehensive non-"
+"Gaussian noise analysis toolkit in GWexpy, based on research by Yamamura "
+"(2024) and Yamamoto (2015-2016)."
+msgstr ""
+"このチュートリアルでは、Yamamura (2024) および Yamamoto (2015-2016) の研究に基づく、GWexpy "
+"の包括的な非ガウスノイズ解析ツールキットの実装を示します。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10006
+#: 3f95a57ee01b4de588e339fa82c98e43
+msgid "Contents"
+msgstr "目次"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10007
+#: 6ad88bd406164cc88ba07c1ae6fd7569
+msgid ""
+"**Noise Simulation**: Generating non-stationary and scattered light noise."
+msgstr "**ノイズシミュレーション**：非定常ノイズと散乱光ノイズの生成。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10008
+#: 64e266ff79204d0b8a3de77f3fbcfb88
+msgid ""
+"**Rayleigh Statistics**: Testing deviations from Rayleigh distribution."
+msgstr "**レイリー統計**：レイリー分布からのずれの検定。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10009
+#: 9eacaa3fccf24875b1bfb21a1d9da60f
+msgid "**GauCh (Modified KS Test)**: Advanced non-Gaussianity detection."
+msgstr "**GauCh（修正 KS 検定）**：高度な非ガウス性の検出。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10010
+#: a7832c5c658f494698698b978bed8257
+msgid "**Student-t Indicator**: Measuring distribution tail thickness."
+msgstr "**Student-t 指標**：分布の裾の厚さの測定。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10011
+#: 81363968fa8f4e4da869f332fd9b8c9d
+msgid "**Data Quality Flags**: Generating veto segments automatically."
+msgstr "**データ品質フラグ**：拒否区間（veto セグメント）の自動生成。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:10012
+#: f3cf3219c9754c428e87d57464ef01a8
+msgid "**Evaluation & Visualization**: ROC curves and composite dashboards."
+msgstr "**評価と可視化**：ROC 曲線と複合ダッシュボード。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:30002
+#: e059defc4d2347989319e6231e3c470b
+msgid "1. Noise Simulation"
+msgstr "1\\. ノイズシミュレーション"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:30003
+#: 067d063fb88f40afa9d41130789bbf5c
+msgid ""
+"We simulate two types of non-Gaussian noise models used in KAGRA "
+"characterization."
+msgstr "KAGRA の特性評価で用いられる 2 種類の非ガウスノイズモデルをシミュレートします。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:30004
+#: ac99a03a810d49a5a88ee30e46555d4a
+msgid "**Model I**: Transient Gaussian noise (glitches)."
+msgstr "**モデル I**：過渡的ガウスノイズ（グリッチ）。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:30005
+#: 7ed05c711d924a5886561ac03e02ea9c
+msgid "**Model II**: Scattered light noise (stationary non-Gaussianity)."
+msgstr "**モデル II**：散乱光ノイズ（定常的な非ガウス性）。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:50002
+#: 8d5dbe442b414d47890f219072404a7d
+msgid "2. Rayleigh Spectrogram"
+msgstr "2\\. レイリースペクトログラム"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:50003
+#: 5299d122e2e64b53b542cd41f2464153
+msgid ""
+"The Rayleigh statistic $R$ measures the consistency of the ASD distribution "
+"with a Rayleigh distribution. We use the `rayleigh_test` method to get a "
+"p-value map."
+msgstr ""
+"レイリー統計量 $R$ は、ASD 分布がレイリー分布とどれだけ整合するかを測ります。`rayleigh_test` メソッドを使って p "
+"値マップを取得します。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:70002
+#: dd098891502b43fdb1d032bcf151c64f
+msgid "3. GauCh (Modified KS Test)"
+msgstr "3\\. GauCh（修正 KS 検定）"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:70003
+#: d61c8c20705148a08f671cb129440f1a
+msgid ""
+"GauCh is a more sensitive test for non-Gaussianity using a modified "
+"Kolmogorov-Smirnov test."
+msgstr "GauCh は、修正コルモゴロフ–スミルノフ検定を用いた、非ガウス性に対するより感度の高い検定です。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:90002
+#: 30e9e9ee9b914783aa9b9626bc86b0af
+msgid "4. Student-t Indicator"
+msgstr "4\\. Student-t 指標"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:90003
+#: 5c3a1abe77cf46909f0f048bf083afb6
+msgid ""
+"The Student-t indicator fits a Student-t distribution to FFT components and "
+"outputs the degree of freedom $\\nu$."
+msgstr "Student-t 指標は、FFT 成分に Student-t 分布をフィットし、自由度 $\\nu$ を出力します。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:110002
+#: c44960f859cf476881d8511f716e41f8
+msgid "5. Data Quality Flags"
+msgstr "5\\. データ品質フラグ"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:110003
+#: b5c2ee3012bf4638a139bcb2b4b0dde2
+msgid ""
+"We can automatically generate veto segments where the p-value is below a "
+"threshold."
+msgstr "p 値がしきい値を下回る区間を、拒否区間（veto セグメント）として自動生成できます。"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:130002
+#: e89c89f5f0e5436d89e78328629af26e
+msgid "6. Composite Dashboard"
+msgstr "6\\. 複合ダッシュボード"
+
+#: ../../how-to/fitting/rayleigh_gauch_tutorial.ipynb:130003
+#: 2d21140a353d455998832f5d42ce44c8
+msgid "Finally, we can visualize everything in a single dashboard."
+msgstr "最後に、すべてを単一のダッシュボードで可視化できます。"

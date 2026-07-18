@@ -1,0 +1,367 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10002
+#: b01a05b24cda420f872cf68d4d70d61e
+msgid "Reproducible Metadata Management with HDF5"
+msgstr "HDF5 による再現可能なメタデータ管理"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10004
+#: 7d52ffb0de46402e84bd0c5c0b01da06
+msgid ""
+"**Provenance** means recording *who did what, when, and how* so that any "
+"analysis result can be reproduced exactly by someone else — or by yourself "
+"six months later."
+msgstr ""
+"**プロバナンス（来歴）**とは、「誰が・何を・いつ・どのように」行ったかを記録し、 "
+"解析結果を他者（または半年後の自分）が完全に再現できるようにする概念です。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10008
+#: bab6c484642a46b99f78234cce9ac723
+msgid "In gravitational-wave data analysis, provenance is critical because:"
+msgstr "重力波データ解析においてプロバナンスが重要な理由："
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10009
+#: 5bbb4124c3c249d1a2ddf450edbdff23
+msgid ""
+"Parameters (GPS times, FFT lengths, filter settings) change between runs"
+msgstr "GPS 時刻・FFT 長・フィルタ設定などのパラメータがランごとに変化する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10010
+#: 55ad0851fa684814aaefc371cfddc943
+msgid "Software versions affect numerical results"
+msgstr "ソフトウェアのバージョンが数値結果に影響する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10011
+#: a3be6df90d9c4805b3b10b2fba0d0cb8
+msgid "Sharing results with collaborators requires a self-describing file"
+msgstr "共同研究者との結果共有には自己記述型ファイルが必要"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10013
+#: 850882d5ebf7438f9e0e2ffc5ea0a139
+msgid ""
+"This tutorial shows how to use gwexpy's HDF5 interop layer together with "
+"`h5py` attribute metadata to build **self-describing, provenance-rich "
+"analysis archives**."
+msgstr ""
+"このチュートリアルでは、gwexpy の HDF5 相互運用層と `h5py` "
+"属性メタデータを使って**自己記述型・プロバナンス付き解析アーカイブ**を 構築する方法を示します。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10017
+#: 73587d9df6704f29b5081f1b11972db0
+msgid "**What this tutorial covers:**"
+msgstr "**このチュートリアルで学ぶこと：**"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10018
+#: 09d0aecf4622493bb9d130cece084ed7
+msgid "Saving a `TimeSeries` to HDF5 with basic metadata"
+msgstr "`TimeSeries` を基本メタデータ付きで HDF5 に保存する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10019
+#: bfb9c74a735b412594f7dd01981ba004
+msgid "Adding provenance attributes (software version, parameters, GPS time)"
+msgstr "プロバナンス属性（ソフトウェアバージョン、パラメータ、GPS 時刻）を追加する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10020
+#: 2e3a9e0706654336b160e92136862a43
+msgid "Storing derived products (ASD, spectrogram) with full lineage"
+msgstr "派生量（ASD、スペクトログラム）を完全なリネージ情報付きで保存する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10021
+#: b83875d366c34ab9b4d278b6fc90202f
+msgid "Reading back and verifying provenance"
+msgstr "読み戻してプロバナンスを検証する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:10022
+#: a16b0590e7744badbd31f6ffecde5991
+msgid "Building a provenance-aware analysis pipeline helper"
+msgstr "プロバナンス対応解析パイプラインヘルパーを構築する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:20002
+#: 8e033ff8dcfd4b848acf14362cd8d23c
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:40002
+#: d4ee609f3d1347e298ade8581f3b1f1b
+msgid "1. Synthetic Data"
+msgstr "1\\. 合成データの準備"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:40004
+#: 5cf5b374736a4456aac2c9785b38edfb
+msgid ""
+"We create a short DARM-like time series with a known injection for later "
+"verification."
+msgstr "後で検証するために、既知の注入を含む短い DARM 様の時系列を作成します。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:60002
+#: 3987b4432ce0469fbfd2792b712790c6
+msgid "2. Writing to HDF5 with Provenance Metadata"
+msgstr "2\\. プロバナンス属性付きで HDF5 に書き込む"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:60004
+#: a37b914662a740a3b2ab287f00ec28f7
+msgid ""
+"`to_hdf5()` saves the data array and basic metadata (t0, dt, unit, name). We"
+" then add **provenance attributes** directly on the HDF5 dataset:"
+msgstr ""
+"`to_hdf5()` はデータ配列と基本メタデータ（t0、dt、unit、name）を保存します。 その後、HDF5 "
+"データセットに直接**プロバナンス属性**を追加します："
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:60006
+#: 58be0676e2af402ab41180adf937f806
+msgid "Software versions"
+msgstr "ソフトウェアバージョン"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:60007
+#: 950c30f210e4437a82dd9cf867a3c83c
+msgid "Analysis parameters"
+msgstr "解析パラメータ"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:60008
+#: 617159753de0403bb7107e8d5477dad6
+msgid "Timestamp of the run"
+msgstr "実行タイムスタンプ"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:60009
+#: 6c9b6750b2fc4009ab4e4e60f6148865
+msgid "Host information"
+msgstr "ホスト情報"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:80002
+#: 83aac914fd3140fcb7bb74671ec54627
+msgid "3. Storing Derived Products with Full Lineage"
+msgstr "3\\. 派生量をリネージ情報付きで保存する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:80004
+#: f421e1d4dfa54bc8af5a354d48d2a008
+msgid ""
+"Each derived product (ASD, spectrogram, filtered series) should reference "
+"the parent dataset so the full processing chain is traceable."
+msgstr "各派生量（ASD、スペクトログラム、フィルタ済み時系列）には 親データセットへの参照を含め、完全な処理チェーンを追跡できるようにします。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:100002
+#: d78badc44dce4ac5a7fbb79959a2555b
+msgid "4. Reading Back and Verifying Provenance"
+msgstr "4\\. 読み戻してプロバナンスを検証する"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:100004
+#: 4af0b415dbf84c55a30195eff67a260e
+msgid ""
+"A collaborator (or future-you) can open the file and immediately understand "
+"what analysis produced each dataset, using what parameters and software."
+msgstr ""
+"共同研究者（または将来の自分）は、ファイルを開けば、各データセットがどの解析によって、どのパラメータとソフトウェアを用いて生成されたかをすぐに理解できます。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:120002
+#: 0cca775790a64ae48ab7818e338d061c
+msgid "5. Provenance-Aware Pipeline Helper"
+msgstr "5\\. プロバナンス対応パイプラインヘルパー"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:120004
+#: ce11272c3b864b1c986069c433e884ec
+msgid ""
+"For repeated use, wrap the provenance pattern in a reusable context manager "
+"that automatically attaches metadata to every dataset written inside it."
+msgstr ""
+"繰り返し使用する場合は、来歴のパターンを再利用可能なコンテキストマネージャにまとめ、その内部で書き込まれるすべてのデータセットにメタデータを自動的に付加するようにします。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:140002
+#: 34604042d38644e4bacfbcae49098ea2
+msgid "6. Visualise the Stored ASD (Reproducibility Check)"
+msgstr "6\\. 再現性確認：保存済み ASD の可視化"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:140004
+#: dae4818aa5e445e8adc1985f90314bec
+msgid ""
+"Verify that the ASD loaded from the archive matches the in-memory result."
+msgstr "アーカイブから読み込んだ ASD がメモリ上の結果と一致することを検証します。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:160002
+#: dd78b6c454b84341948b4ef0afb201a9
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 5004db4036bf46748acd1a1e8541e700
+msgid "Step"
+msgstr "ステップ"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 06d9a9dab3244ff7adf2027bb8993373
+msgid "API / Pattern"
+msgstr "API / パターン"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: f67f737f670649a69e6141704131f653
+msgid "Purpose"
+msgstr "目的"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: c29f4525819a417fa717008e82d999ce
+msgid "Write TimeSeries"
+msgstr "TimeSeries の書き込み"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 3f109252e550497693de63b6555e5f28
+msgid "`to_hdf5(ts, group, path)`"
+msgstr "`to_hdf5(ts, group, path)`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 4af8520b9c0647b380f87975f313bc41
+msgid "Save data array + basic metadata"
+msgstr "データ配列 + 基本メタデータの保存"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 4cc0e590b04042b69116e1b9bb660fc4
+msgid "Read TimeSeries"
+msgstr "TimeSeries の読み込み"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 9b21743eacf8450cbe40a3fb68df32f8
+msgid "`from_hdf5(TimeSeries, group, path)`"
+msgstr "`from_hdf5(TimeSeries, group, path)`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 8af75174eff54ba3b6e238eb950c1965
+msgid "Reconstruct from archive"
+msgstr "アーカイブから復元"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: a32ce1d546a24d32affb715399bbc159
+msgid "Add provenance"
+msgstr "プロバナンスの追加"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: afd7833062304762802894a3fec98db9
+msgid "`dset.attrs[key] = value`"
+msgstr "`dset.attrs[key] = value`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 6347591f71b14836bca86bb83be0a4cb
+msgid "Software version, params, timestamp"
+msgstr "バージョン、パラメータ、タイムスタンプ"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: c561f815fdfb45cfa7cbcae2fbd98ac9
+msgid "Structured pipeline"
+msgstr "構造化パイプライン"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: c4deb3ba13e44fd9b257cddd323dca52
+msgid "`provenance_file(path, params)` context manager"
+msgstr "`provenance_file(path, params)` コンテキストマネージャ"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 80363410c2fd4ef6a902cd8cc0b39c67
+msgid "Auto-attach provenance to all writes"
+msgstr "全書き込みに自動でプロバナンスを付与"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:160011
+#: 959243c4d15749c0ae57e0b1c00dd43f
+msgid "**Recommended provenance attributes:**"
+msgstr "**推奨プロバナンス属性：**"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: b0cbd4693e89446d98b05c6af9435eb5
+msgid "Attribute"
+msgstr "属性"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 83c50de1e6d049a2a3ef606a5f787646
+msgid "Content"
+msgstr "内容"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 7147fa0f739c472b90a566bc394d04fe
+msgid "`gwexpy_version`"
+msgstr "`gwexpy_version`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 731f0045f9a84fe283bee502448872a3
+msgid "`gwexpy.__version__`"
+msgstr "`gwexpy.__version__`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: cdc5868d97324f6cbbe0dff7a6d797c5
+msgid "`created_utc`"
+msgstr "`created_utc`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 4acc31cc6a874a558e74e65d7c661a3b
+msgid "`datetime.datetime.utcnow().isoformat()`"
+msgstr "`datetime.datetime.utcnow().isoformat()`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 583e492f2b0345e7b2d2c5e70ee719ac
+msgid "`params_json`"
+msgstr "`params_json`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 9ae3bbf1c895404fa0ae337ad1d56d9a
+msgid "`json.dumps(analysis_params)`"
+msgstr "`json.dumps(analysis_params)`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 3e83410a0e704bbd9194e68c215ea540
+msgid "`parent_dataset`"
+msgstr "`parent_dataset`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 48012d59bfe246f2ae516d76418bf8c7
+msgid "HDF5 path to the input dataset"
+msgstr "入力データセットの HDF5 パス"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 11994f06fe4a4fbaaba96092f55c8b85
+msgid "`processing_step`"
+msgstr "`processing_step`"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb
+#: 23131263604b464ebe716b0b3cf61573
+msgid "Human-readable description of what was done"
+msgstr "実行した処理の説明"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:160021
+#: f1226454981146b08ebd52a86ea9b422
+msgid "**Tips:**"
+msgstr "**ヒント：**"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:160022
+#: 5b765166af784ac8946fe3e9b92c08d2
+msgid ""
+"Use `h5py.File(..., \"a\")` to append to existing archives without "
+"overwriting."
+msgstr "既存のアーカイブを上書きせずに追記するには `h5py.File(..., \"a\")` を使用します。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:160023
+#: 2ec0b07394b74ba08f404770ee1eee7b
+msgid ""
+"Store `params_json` as a JSON string so arbitrary nested parameters are "
+"preserved."
+msgstr "任意のネストされたパラメータを保持できるよう、`params_json` を JSON 文字列として格納します。"
+
+#: ../../how-to/case-studies/case_hdf5_provenance.ipynb:160024
+#: 04cd0cdca0fe4588bd9f5770c8935456
+msgid ""
+"For long pipelines, add a `pipeline_version` attribute tied to your analysis"
+" code's git hash."
+msgstr "長いパイプラインでは、解析コードの git ハッシュに紐づけた `pipeline_version` 属性を追加します。"

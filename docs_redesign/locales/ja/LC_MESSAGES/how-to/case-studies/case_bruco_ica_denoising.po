@@ -1,0 +1,343 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10002
+#: ac33064789484dbaa120cf7e022dce4a
+msgid "Case Study: Bruco and ICA Noise Reduction"
+msgstr "ケーススタディ: Bruco と ICA によるノイズ削減"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10004
+#: 62fee693038c40f49edaeeb198fc97ad
+msgid ""
+"This notebook demonstrates an end-to-end noise reduction workflow used in "
+"real interferometer commissioning:"
+msgstr "このノートブックでは、実際の干渉計コミッショニングで使われる **エンドツーエンドのノイズ削減ワークフロー** を示します："
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10006
+#: 0aeba96033334e87991f3c4fa45153e0
+msgid ""
+"**Bruco** – brute-force coherence scan to identify the most correlated "
+"auxiliary channels."
+msgstr "**Bruco** — ブルートフォースコヒーレンス スキャンで最相関の補助チャンネルを特定"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10007
+#: 8fbaa1bc29bc4fa2adddec06f1c09966
+msgid "**ICA** – Independent Component Analysis to separate noise sources."
+msgstr "**ICA** — 独立成分分析でノイズ源を分離"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10008
+#: b3b41647bb8844e7aae1afb67d06fb4c
+msgid ""
+"**Noise subtraction** – remove noise contributions from the DARM channel and"
+" compare ASDs."
+msgstr "**ノイズ差し引き** — DARM からノイズ寄与を除去し、ASD を比較"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10010
+#: 1822478735d54331a3753eb7a9b22be6
+msgid ""
+"This reproduces the workflow used in O4b commissioning (e.g., DARM 116 Hz "
+"line investigation). The physical intent is to move from \"which sensor sees"
+" the line\" to \"which latent source can be subtracted from DARM without "
+"destroying unrelated structure\"."
+msgstr ""
+"これは O4b コミッショニング（DARM 116 Hz ライン調査など）で使われたワークフローを再現しています。 "
+"物理的な狙いは、「どのセンサに線が見えるか」から一歩進んで、「どの潜在ノイズ源なら DARM から差し引いても他の構造を壊さないか」を判断することです。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10013
+#: 09c47f34b4f043368477a78791f7c160
+msgid "**Prerequisites**: Familiarity with"
+msgstr "**前提条件**：以下に慣れていること"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10014
+#: 4749261f3edb4a75aa401c6f2e9cc592
+msgid "[Bruco tutorial](../coupling/advanced_bruco.ipynb) — Bruco basics"
+msgstr "[Bruco チュートリアル](../coupling/advanced_bruco.ipynb) — Bruco の基礎"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:10015
+#: 2aa59253b750455ea73abe0d14617e94
+msgid ""
+"[PCA/ICA tutorial](../fitting/advanced_decomposition.ipynb) — decomposition "
+"basics"
+msgstr "[PCA/ICA チュートリアル](../fitting/advanced_decomposition.ipynb) — 分解の基礎"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:20002
+#: a1eebfb038dd4aab86cf27b603c48fbd
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:40002
+#: ffbfbd50a4b24e6f8d671e2582930605
+msgid "1. Mock Data Generation"
+msgstr "1\\. モックデータ生成"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:40004
+#: 9f3f4bfc48db4dca9ca63c346ad9d3ed
+msgid "We simulate a scenario where the DARM channel contains:"
+msgstr "DARM チャンネルに以下が混入するシナリオをシミュレートします："
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:40005
+#: a73f90cb215641198eaa636fac788d0c
+msgid "Broadband Gaussian noise (the \"signal\" floor)"
+msgstr "広帯域ガウスノイズ（バックグラウンド雑音フロア）"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:40006
+#: 6be6aa0424444ab8b94c14681fe93145
+msgid "A 116 Hz line noise leaking from environmental sensors"
+msgstr "環境センサーから漏れた 116 Hz ラインノイズ"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:40008
+#: 4d8a26dae703432f85462d6c5fbc5931
+msgid ""
+"Four PEM (Physical Environment Monitor) auxiliary channels each contain "
+"varying amounts of the same 116 Hz line.  This mirrors the real O4b "
+"commissioning case."
+msgstr ""
+"4 つの PEM（Physical Environment Monitor）補助チャンネルは、それぞれ異なる割合で同じ 116 Hz ラインを含みます。"
+" これは O4b コミッショニングの実際のケースを模倣しています。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:70002
+#: cef1967e74f049f0bdcf895620cc7c91
+msgid "2. Bruco: Identify Correlated Auxiliary Channels"
+msgstr "2\\. Bruco: 相関補助チャンネルの特定"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:70004
+#: 295749949c684af995072aec021dc683
+msgid ""
+"`Bruco.compute()` scans all auxiliary channels and returns the top-*N* most "
+"coherent channels at each frequency.  This is the **first stage** of the "
+"pipeline: identify *which* sensors see the same noise as DARM."
+msgstr ""
+"`Bruco.compute()` は全補助チャンネルをスキャンし、各周波数ビンで上位 *N* 件の最相関チャンネルを返します。 これがパイプラインの "
+"**第 1 ステージ** です：DARM と同じノイズを観測しているセンサーを特定します。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:70008
+#: aaf8571db34f445d8382871623d90115
+msgid ""
+"**Common mistake**: feeding every available witness into ICA. Bruco is used "
+"here as a physics filter so the decomposition focuses on channels that "
+"plausibly share the 116 Hz contamination."
+msgstr ""
+"**よくある誤り**：利用可能なすべての witness を ICA に投入すること。ここでは Bruco を物理的なフィルタとして用い、116 Hz "
+"の汚染をもっともらしく共有するチャンネルに分解を集中させます。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110002
+#: a26d05dfaa384b11ae046801e403b84f
+msgid "3. ICA: Separate Noise Sources"
+msgstr "3\\. ICA: ノイズ源の分離"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110004
+#: 32daa9be9419474d954fd2bc1c193c0b
+msgid ""
+"From the Bruco scan we know which channels are highly coherent with DARM "
+"near 116 Hz. We now stack these channels into a `TimeSeriesMatrix` and apply"
+" **ICA** to unmix the underlying independent sources."
+msgstr ""
+"Bruco スキャンから、DARM と 116 Hz 付近で高いコヒーレンスを持つチャンネルが分かりました。 次にこれらのチャンネルを "
+"`TimeSeriesMatrix` に積み上げ、**ICA** を適用して 独立したノイズ源を分離します。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110008
+#: 21bf22a72d7d4cddbac4d0ffeb32672d
+msgid "The ICA model gives us a *mixing matrix* **A** such that:"
+msgstr "ICA モデルは混合行列 **A** を求めます："
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110012
+#: 0fcfe458fc4b4f9f841a81d0a13d540b
+msgid "We can then subtract the noise-source contributions from DARM."
+msgstr "この行列を使って DARM からノイズ成分の寄与を差し引けます。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:110014
+#: 8d4b9901aa7d45ea8c69411e8cd807f8
+msgid ""
+"**Failure mode to watch for**: ICA components are not automatically ordered "
+"by physical importance, and the sign / scale of each component is arbitrary."
+" Always inspect spectra and channel loadings before deciding which component"
+" represents the line you want to subtract."
+msgstr ""
+"**注意すべき失敗モード**：ICA "
+"成分は物理的重要度で自動的に並べられるわけではなく、各成分の符号／スケールは任意です。どの成分が差し引きたい線を表すかを判断する前に、必ずスペクトルとチャンネル負荷を確認してください。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:120002
+#: 60b65c259d354f71957e00a8c3b16f98
+msgid ""
+"**Note — ICA convergence**: FastICA may not converge within the default "
+"number of iterations on some datasets. If a `ConvergenceWarning` appears, "
+"consider increasing `max_iter` or `tol` in the ICA parameters. Results may "
+"still be usable even without full convergence."
+msgstr ""
+"**注 — ICA の収束**：FastICA "
+"は一部のデータセットでは既定の反復回数内で収束しないことがあります。`ConvergenceWarning` が表示された場合は、ICA パラメータの "
+"`max_iter` または `tol` を増やすことを検討してください。完全には収束していなくても、結果が利用可能な場合があります。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:120004
+#: f991c1cd42424c08ac0f7dc6d316a921
+msgid ""
+"A second common failure mode is rank deficiency: if you feed nearly "
+"identical witnesses into ICA, the decomposition becomes unstable and the "
+"subtraction weights are hard to trust. Prefer a small set of informative but"
+" not perfectly redundant channels."
+msgstr ""
+"二つ目のよくある失敗モードはランク落ちです。ほぼ同一の witness を ICA "
+"に投入すると、分解が不安定になり、差し引きの重みが信頼しにくくなります。情報量はあるが完全には冗長でない少数のチャンネルを選ぶようにしてください。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:150002
+#: 837850ffad7341f5852b75456d90a89c
+msgid "4. Noise Subtraction and ASD Comparison"
+msgstr "4\\. ノイズ差し引きと ASD 比較"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:150004
+#: 42d6ab9f0d094411a8ce553acdd62926
+msgid ""
+"Identify which ICA components contain the 116 Hz line (by inspecting the "
+"ASD), then subtract their contribution from DARM using the mixing matrix."
+msgstr "116 Hz ラインを含む ICA 成分を特定し（ASD を確認して選択）、 混合行列を使って DARM からその寄与を差し引きます。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:150011
+#: 3fa9232aafac458bb229018a1bdf4952
+msgid ""
+"**Common mistake**: subtracting every ICA component that looks non-Gaussian."
+" Only subtract components whose spectral content and witness loadings match "
+"the targeted coupling mechanism; otherwise you risk removing unrelated "
+"detector structure along with the line."
+msgstr ""
+"**よくある誤り**：非ガウス的に見える ICA 成分をすべて差し引くこと。スペクトル内容と witness "
+"負荷が対象とする結合メカニズムに一致する成分だけを差し引いてください。さもないと、線とともに無関係な検出器構造まで除去してしまう恐れがあります。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180002
+#: 89dae26688334726a103d539dfc44389
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 347963d18c024b9c9331500ccccca831
+msgid "Step"
+msgstr "ステップ"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 1c1ba237bb164546a06258d580f3eecc
+msgid "Tool"
+msgstr "ツール"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 42cc64ba4dd9496b8f83940a2d1163b8
+msgid "Output"
+msgstr "返り値"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 74cf981d644646469c00ade2de43271a
+msgid "1. Coherence scan"
+msgstr "1\\. コヒーレンス スキャン"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: d7063e89014b471293cf320ab7912fd6
+msgid "`Bruco.compute()`"
+msgstr "`Bruco.compute()`"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 26c61b401e4341c09815d625fa055f18
+msgid "Top correlated channels at each frequency"
+msgstr "各周波数での最相関チャンネル"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: bc345c1c179b4196b9a42a0995e146a4
+msgid "2. Source separation"
+msgstr "2\\. ノイズ源分離"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 0fb076f63cab4a65a5c8e1a1f9de40c3
+msgid "`TimeSeriesMatrix.ica()`"
+msgstr "`TimeSeriesMatrix.ica()`"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: aebdb8bbd94241d188b3c8b98c262b19
+msgid "Independent components + mixing matrix"
+msgstr "独立成分 + 混合行列"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 32d84488b26440c798559d959733695d
+msgid "3. Noise subtraction"
+msgstr "3\\. ノイズ差し引き"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 48134f8550f24611b0817f8d157329dc
+msgid "Mixing matrix algebra"
+msgstr "混合行列の代数演算"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb
+#: 4edf630d560140309ec274e567cabe32
+msgid "Cleaned DARM channel"
+msgstr "クリーン DARM チャンネル"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180010
+#: d4563da469084ba6960fe1f0b39f1053
+msgid "Key takeaways"
+msgstr "重要なポイント"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180012
+#: e320b4c8dc9348e88fb0f683d895c227
+msgid ""
+"**Bruco** efficiently narrows down thousands of channels to the few that "
+"matter."
+msgstr "**Bruco** は数千のチャンネルを、重要な少数へと効率的に絞り込みます。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180013
+#: f7d12b45f4824e4b877e2edb65694d12
+msgid ""
+"**ICA** goes beyond coherence: it separates *independent* source "
+"contributions even when multiple sensors share a common noise."
+msgstr "**ICA** はコヒーレンスを超えます。複数のセンサーが共通のノイズを共有している場合でも、*独立な*ソースの寄与を分離します。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180015
+#: f9f9fd38c3cd455ea21d4a5f6baa8881
+msgid ""
+"The mixing matrix `A` provides a direct subtraction formula without time-"
+"domain filtering."
+msgstr "混合行列 `A` は、時間領域フィルタリングなしで直接的な差し引きの式を与えます。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180016
+#: 16d6823850454746a62d5f3164720a67
+msgid ""
+"Stable subtraction depends on witness selection and component "
+"identification, not on the ICA solver alone."
+msgstr "安定した差し引きは、ICA ソルバーだけでなく、witness の選択と成分の同定に依存します。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180018
+#: c04b5da895cf45ac82682e7319e583cb
+msgid "Next steps"
+msgstr "次のステップ"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180020
+#: bf80897407fc4c859701955b072efb88
+msgid ""
+"Replace mock data with real NDS/GWF data (`TimeSeries.read()` or NDS2)."
+msgstr "モックデータを実データ（`TimeSeries.read()` や NDS2）に置き換える。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180021
+#: a8c19f5db9fe4751b3746d1faed448af
+msgid ""
+"Run on longer segments and cross-validate with Bruco's projection estimate."
+msgstr "より長いセグメントで解析し、Bruco の投影推定と照合する。"
+
+#: ../../how-to/case-studies/case_bruco_ica_denoising.ipynb:180022
+#: b6cf310493ea4bab8d0d0c9cf34318a9
+msgid ""
+"Combine with `Spectrogram.normalize()` (SNR spectrogram) to track the line "
+"over time."
+msgstr "`Spectrogram.normalize()`（SNR スペクトログラム）と組み合わせて、ラインの時間変化を追跡する。"

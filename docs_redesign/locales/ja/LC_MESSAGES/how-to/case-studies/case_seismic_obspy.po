@@ -1,0 +1,259 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-11 06:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:10002
+#: 64bd71a173c642d693bcb2ff268a32c7
+msgid "Case Study: Seismic Analysis with ObsPy"
+msgstr "ケーススタディ: ObsPy 連携による地震データ解析"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:10004
+#: 52949aaed7fb4268bbad0737d8bc4f48
+msgid ""
+"This tutorial demonstrates how to read seismological data in **MiniSEED /"
+" SAC / FDSN** formats and analyze it using gwexpy, with seamless "
+"conversion between `obspy` and gwexpy objects."
+msgstr ""
+"このチュートリアルでは **MiniSEED / SAC / FDSN** 形式の地震データを読み込み、gwexpy "
+"で解析する方法と、`obspy` ↔ gwexpy 間の双方向変換を解説します。"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:10006
+#: 558d3bdaacfe4e009d0784427ce1d3cc
+msgid "Use cases in GW detector science"
+msgstr "重力波検出器科学での用途"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:10007
+#: d03fc0f8b1de4a7e8291bc714ed253ca
+msgid "Reading seismometer data from KAGRA, LIGO, or Virgo environment monitors"
+msgstr "KAGRA・LIGO・Virgo 環境モニターの地震計データ読み込み"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:10008
+#: 318c0847c9234179b57655a42534f797
+msgid "Seismic noise analysis and coupling to detector sensitivity"
+msgstr "地震ノイズ解析と検出器感度へのカップリング"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:10009
+#: b5de8870694949ae92c5644b8ca8db0f
+msgid "Cross-correlation of seismic channels with gravitational-wave data"
+msgstr "地震チャンネルと重力波データのクロス相関"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:10011
+#: f7f5de3273b14c9796d29bd9663e9813
+msgid ""
+"**Legacy migration note:**   If your code used `obspy.read()` directly "
+"followed by manual numpy processing, replace it with "
+"`TimeSeries.read(format='miniseed')` and gwexpy's high-level signal "
+"processing methods.   See the [Interop / Conversion Guide](../interop.md)"
+" and [Interop API reference](../../reference/api/interop) for the current"
+" public interop surface."
+msgstr ""
+"**レガシー移行に関する注記：**   コードが `obspy.read()` を直接呼び出し、その後に手動の numpy "
+"処理を行っていた場合は、`TimeSeries.read(format='miniseed')` と gwexpy "
+"の高水準な信号処理メソッドに置き換えてください。   現在の公開 interop インターフェースについては [Interop / "
+"変換ガイド](../interop.md) および [Interop API "
+"リファレンス](../../reference/api/interop) を参照してください。"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:30002
+#: fdc07b4530dd41b4aa4f4fe7dddf704d
+msgid "1. Route 1: `TimeSeries.read(format='miniseed')`"
+msgstr "1\\. ルート 1: `TimeSeries.read(format='miniseed')`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:30004
+#: f6280a6050274595b5727732b6c69c32
+msgid ""
+"gwexpy's I/O layer supports reading MiniSEED files directly, returning a "
+"`TimeSeries` object with correct units and time axis."
+msgstr "gwexpy の I/O レイヤーは MiniSEED ファイルを直接読み込み、正しい単位と時間軸を持つ `TimeSeries` を返します。"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:50002
+#: 9f9b6b7436104e5a8a2169ecedabd1d0
+msgid "2. Route 2: `from_obspy_trace()` – Convert from obspy objects"
+msgstr "2\\. ルート 2: `from_obspy_trace()` – obspy オブジェクトから変換"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:50004
+#: 9546dcc4f20e423487f15a7ff5aad859
+msgid ""
+"If you already have an `obspy.Trace` or `obspy.Stream`, convert it to "
+"gwexpy with `from_obspy_trace()`."
+msgstr ""
+"すでに `obspy.Trace` / `obspy.Stream` がある場合は `from_obspy_trace()` で gwexpy "
+"に変換します。"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:70002
+#: bb528479ae2249c1818e565cf159501f
+msgid "3. Signal Processing on Seismic Data"
+msgstr "3\\. 地震データの信号処理"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:70004
+#: a05b7cd61b7d481782a2db3be7ee2f97
+msgid ""
+"Once converted to `TimeSeries`, all gwexpy signal processing methods are "
+"available."
+msgstr "`TimeSeries` に変換すると、gwexpy のすべての信号処理メソッドが利用可能になります。"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:120002
+#: 8d373eaf04ee4b2fbdfbfcff72c5f2da
+msgid "4. Convert Back to obspy"
+msgstr "4\\. obspy に戻す変換"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:120004
+#: 1b00232510d443f99b96b34aa7d08550
+msgid ""
+"After gwexpy processing, convert the result back to obspy for further "
+"seismological analysis (e.g., instrument response removal, FDSN upload)."
+msgstr "gwexpy での処理後、さらなる地震学的解析（例：装置応答の除去、FDSN へのアップロード）のために、結果を obspy に戻すことができます。"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:140002
+#: e34492e5453241e28c21fa239e9a0d5e
+msgid "5. Multi-channel Seismic Analysis"
+msgstr "5\\. マルチチャンネル地震解析"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:140004
+#: 6517ff32345742f5afa370c12c7bc5fa
+msgid ""
+"When you have multiple seismic channels (3-component seismometer: X, Y, "
+"Z), use `TimeSeriesMatrix` for batch processing."
+msgstr "3 成分地震計（X, Y, Z）のように複数チャネルを同時に扱う場合は、`TimeSeriesMatrix` を使うと一括処理できます。"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:160002
+#: e11ecbb2d745465ab13585fb4c49caf4
+msgid "6. Migration Guide: obspy → gwexpy"
+msgstr "6\\. 移行ガイド: obspy + numpy → gwexpy"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:160004
+#: 67281449c375410b8dacf1ce023441d3
+msgid "**Before (obspy + numpy):**"
+msgstr "**移行前（obspy + scipy）:**"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:160024
+#: 4774a98e8cd345f2814ec80418103c9e
+msgid "**After (gwexpy):**"
+msgstr "**移行後（gwexpy）:**"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:170002
+#: 37faa800b4774fffae806ddf5462577d
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 741bc8a395ac4a74b75cd415c1c65ebe
+msgid "Task"
+msgstr "タスク"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 70d1c63f460e451a9abbbebdec6b28c4
+msgid "gwexpy API"
+msgstr "gwexpy API"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 9557efef94514ec6bf2c0d3d19e211b2
+msgid "Read MiniSEED file"
+msgstr "MiniSEED 読み込み"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: df329aa4effa43979a28dd741f0d6863
+msgid "`TimeSeries.read(path, format='miniseed')`"
+msgstr "`TimeSeries.read(path, format='miniseed')`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 8c0f44e211684a1394caf870a73df018
+msgid "Read SAC file"
+msgstr "SAC 読み込み"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: af95ee9c46044bb1b920cad6bbd9aa3c
+msgid "`TimeSeries.read(path, format='sac')`"
+msgstr "`TimeSeries.read(path, format='sac')`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: b2c5e7bfdcad4309b5e714aeee6359d5
+msgid "Convert from obspy Trace"
+msgstr "obspy Trace から変換"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: fba1eee218b2436b837e386d734f427d
+msgid "`TimeSeries.from_obspy_trace(tr, unit=...)`"
+msgstr "`TimeSeries.from_obspy_trace(tr, unit=...)`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: fd5bfd6c667f4a09ab58d6056450aa40
+msgid "Convert to obspy Trace"
+msgstr "obspy Trace に変換"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 83fa0000df1948f2ab6fa5ab357ea9e8
+msgid "`ts.to_obspy_trace()` or `to_obspy(ts)`"
+msgstr "`ts.to_obspy_trace()` または `to_obspy(ts)`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 11eddfebce2b40f6b88d101fef835077
+msgid "Bandpass filter"
+msgstr "帯域フィルタ"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: d6b91916b181430ba2e83f5ea4ebe9f0
+msgid "`ts.bandpass(fmin, fmax)`"
+msgstr "`ts.bandpass(fmin, fmax)`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 581cc314390d449fa0943c6b1a113cf1
+msgid "ASD"
+msgstr "ASD"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: ac78e6bf62a44bde98d054a4bdee41c0
+msgid "`ts.asd(fftlength=..., overlap=...)`"
+msgstr "`ts.asd(fftlength=..., overlap=...)`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 698e7425602d41c2a00e026daabe98ea
+msgid "Spectrogram"
+msgstr "スペクトログラム"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: 96854e081b814407b26e16df3a08d184
+msgid "`ts.spectrogram2(fftlength=..., overlap=...)`"
+msgstr "`ts.spectrogram2(fftlength=..., overlap=...)`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: a142d8166bce45c28276373b078e2821
+msgid "Multi-channel"
+msgstr "マルチチャンネル"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb
+#: d222b0ee5c354849a4af30223c14e461
+msgid "`TimeSeriesMatrix` with element-wise operations"
+msgstr "要素ごとの演算を備えた `TimeSeriesMatrix`"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:170015
+#: 1507c00f285a42d6bb7760bae4927670
+msgid "**See also:**"
+msgstr "**関連チュートリアル:**"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:170016
+#: 5d439f4e486d49c59e7ad8d39d6634b9
+msgid "[Intro Interoperability](../interop/intro_interop.ipynb)"
+msgstr "[相互運用入門](../interop/intro_interop.ipynb)"
+
+#: ../../how-to/case-studies/case_seismic_obspy.ipynb:170017
+#: 056de3a4f10440a1b218abb32e21859a
+msgid "[Coupling Function Analysis](../coupling/advanced_coupling.ipynb)"
+msgstr "[結合関数解析](../coupling/advanced_coupling.ipynb)"
+

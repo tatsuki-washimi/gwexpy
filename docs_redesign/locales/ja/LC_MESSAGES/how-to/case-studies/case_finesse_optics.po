@@ -1,0 +1,325 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:10002
+#: f1ca426f6da44505bf2e3d350df2b758
+msgid "Finesse 3 Interoperability: Simulation vs. Measurement"
+msgstr "Finesse 3 連携: シミュレーションと測定の統合"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:10004
+#: a7cfafa3e3c644859a7bb3e58a6d3ef0
+msgid ""
+"[Finesse 3](https://finesse.ifosim.org/) is an interferometer simulation "
+"toolkit used at gravitational-wave detector sites to model optical transfer "
+"functions and noise budgets.  gwexpy provides a direct bridge from Finesse 3"
+" solutions to its own `FrequencySeries` types."
+msgstr ""
+"[Finesse 3](https://finesse.ifosim.org/)は、重力波検出器サイトで干渉計の光学 "
+"伝達関数やノイズバジェットをモデル化するシミュレーションツールです。 gwexpy は Finesse 3 のソリューションオブジェクトを "
+"`FrequencySeries` に 直接変換するブリッジを提供します。"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:10009
+#: 54689c37032e4653a32dbc6d1a950c8b
+msgid "**What this tutorial covers:**"
+msgstr "**このチュートリアルで学ぶこと：**"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:10010
+#: e3f155245a4344c1ba5355321caa6e92
+msgid "Setting up a Finesse 3 interferometer model (Fabry-Pérot cavity)"
+msgstr "Finesse 3 で Fabry-Pérot キャビティモデルを構築する"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:10011
+#: 744e597a5cf14451a182134bc7fa78b4
+msgid "Running a frequency response analysis and converting to gwexpy"
+msgstr "周波数応答解析を実行し gwexpy に変換する"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:10012
+#: 7fc463fc583a426ab446cfe2c672ed96
+msgid "Running a noise projection and converting to gwexpy"
+msgstr "ノイズプロジェクションを実行し gwexpy に変換する"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:10013
+#: 0895766d62694510a3da1941ae2ec3d4
+msgid "Overlaying simulation and measurement for comparison"
+msgstr "シミュレーションと測定データをオーバーレイ比較する"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:10015
+#: 737c38bc780f4d349da8755bec0b7b4d
+msgid ""
+"**Note**: This notebook is self-contained. When Finesse 3 is not installed "
+"it synthesises equivalent data analytically so every cell still executes. "
+"Install Finesse 3 with `pip install finesse` to run the real simulation."
+msgstr ""
+"**注**：このノートブックは自己完結型です。Finesse 3 "
+"がインストールされていない場合は、等価なデータを解析的に合成するため、すべてのセルが実行されます。実際のシミュレーションを実行するには `pip "
+"install finesse` で Finesse 3 をインストールしてください。"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:20002
+#: 592b5c6353f44be380975ad7a7fef0ce
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:40002
+#: 79e068bf1f574961a959203c5abaf826
+msgid "1. Finesse 3 Model — Fabry-Pérot Cavity"
+msgstr "1\\. Finesse 3 モデル — Fabry-Pérot キャビティ"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:40004
+#: b06d443253ff4b6cab63da12004132b5
+msgid ""
+"The cell below builds a single Fabry-Pérot cavity (mirror + beam splitter) "
+"and computes the intracavity power transfer function from the input mirror "
+"drive to the cavity transmission."
+msgstr ""
+"以下のセルで、単純な Fabry-Pérot キャビティ（ミラー + ビームスプリッター）を "
+"構築し、入力ミラードライブからキャビティ透過光への伝達関数を計算します。"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:40008
+#: 0b51ae0ea11f4bfd926b720fb01c1457
+msgid ""
+"If Finesse 3 is **not** installed the cell falls back to analytic formulas "
+"for an equivalent optical cavity and wraps the result in `FrequencySeries` "
+"directly — the gwexpy objects produced by both paths are identical."
+msgstr ""
+"Finesse 3 がインストールされていない場合は、等価な光学キャビティの解析式に フォールバックします。どちらのパスも同一の gwexpy "
+"オブジェクトを生成します。"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:60002
+#: 75e178d0a175450897efbb1c4f86f528
+msgid "2. Multi-DOF Transfer Function Matrix"
+msgstr "2\\. 多自由度（マルチ DOF）伝達関数マトリクス"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:60004
+#: e2892acded954c919b8d74b28a6e6700
+msgid ""
+"Real interferometers have multiple degrees of freedom (DARM, CARM, MICH, …)."
+" `from_finesse_frequency_response` returns a **FrequencySeriesMatrix** when "
+"multiple output / input DOF pairs are present."
+msgstr ""
+"実際の干渉計には複数の自由度（DARM、CARM、MICH 等）があります。 複数の出力/入力 DOF "
+"ペアがある場合、`from_finesse_frequency_response` は 自動的に **FrequencySeriesDict** "
+"を返します。"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:80002
+#: 4d9747d2b05e4809bc49589519fcd885
+msgid "3. Noise Projection"
+msgstr "3\\. ノイズプロジェクション"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:80004
+#: 7a1c2f4a687d41dbb4384b57a9c146cc
+msgid ""
+"`from_finesse_noise` converts a Finesse 3 `NoiseProjectionSolution` to a "
+"`FrequencySeriesDict` keyed by `\"<output_node>: <noise_source>\"`."
+msgstr ""
+"`from_finesse_noise` は Finesse 3 の `NoiseProjectionSolution` "
+"を、`\"<output_node>: <noise_source>\"` をキーとする `FrequencySeriesDict` に変換します。"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:80007
+#: a6f0c5f8a41c437ab426adc7f4da31c9
+msgid "Typical noise sources in an optical cavity:"
+msgstr "光共振器における典型的なノイズ源："
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:80008
+#: f352fd448f0a42239492a18c735a66a3
+msgid "**laser_freq** — laser frequency noise"
+msgstr "**laser_freq** — レーザー周波数ノイズ"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:80009
+#: 6c4715be97124945ac86a5e55a860e34
+msgid "**laser_amp** — laser amplitude noise"
+msgstr "**laser_amp** — レーザー振幅ノイズ"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:80010
+#: 5654348f331e44a595a20bc9f8d023eb
+msgid "**shot** — shot noise at the detector"
+msgstr "**shot** — 検出器におけるショットノイズ"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:80011
+#: becde1d26d2f4119b69f0e1a6aeb92a8
+msgid "**thermal_mir** — mirror thermal noise (coating + substrate)"
+msgstr "**thermal_mir** — 鏡の熱雑音（コーティング＋基板）"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:100002
+#: 445d5b9fe6e34063a3c15ddd3294a116
+msgid "4. Simulation vs. Measurement Overlay"
+msgstr "4\\. シミュレーション vs. 測定データのオーバーレイ比較"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:100004
+#: 4f5974daef444ae297801991ed861cd1
+msgid ""
+"The real power of the Finesse ↔ gwexpy bridge is comparing simulation with "
+"in-situ measurements.  Here we overlay the simulated cavity TF with a "
+"synthetic \"measured\" TF that includes a calibration error and a parasitic "
+"resonance — typical of real commissioning data."
+msgstr ""
+"Finesse ↔ gwexpy ブリッジの最大の利点は、シミュレーションと 現場測定を同一のオブジェクトで比較できることです。 "
+"ここでは、ゲイン誤差と寄生共振を含む合成「測定値」をオーバーレイします。"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:120002
+#: 1d84b850104d477fbb61f708f869983a
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: d9f0ae7529d6470b941fb01cbf7aae14
+msgid "Step"
+msgstr "ステップ"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 97c03ef3d85d48ef94a525d9d84d322b
+msgid "gwexpy API"
+msgstr "gwexpy API"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 9c181851418e40b08fc6f6dcb8efa4bd
+msgid "Input"
+msgstr "入力"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: be7a508fee9a417f9232684d829f5598
+msgid "Output"
+msgstr "返り値"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: e7f8b061d70d4b5e81817a7a1c219e4d
+msgid "Single TF"
+msgstr "単一 TF"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: d05a6a0a69ec4759a6121091740837f9
+msgid ""
+"`FrequencySeries.from_finesse_frequency_response(sol, output=..., "
+"input_dof=..., unit=...)`"
+msgstr ""
+"`FrequencySeries.from_finesse_frequency_response(sol, output=..., "
+"input_dof=..., unit=...)`"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: ad33d057e25846648e009030c27d7cfd fb4a97d3d71c42e0a3dceebc081cb670
+msgid "FrequencyResponseSolution"
+msgstr "FrequencyResponseSolution"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 8033799dfba04f38a58f213f638c3edf
+msgid "FrequencySeries"
+msgstr "FrequencySeries"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 5b6b09791dc541c192a6268f017dc8cc
+msgid "Multi-DOF TF"
+msgstr "多自由度 TF"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 4a3c5e4065fd483f99675df9dce866cb
+msgid "`FrequencySeriesDict.from_finesse_frequency_response(sol, unit=...)`"
+msgstr "`FrequencySeriesDict.from_finesse_frequency_response(sol, unit=...)`"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: e4cd145096a5439597d6790d133c8e51 f4245f20adb14f81a5dcbf615a06933a
+msgid "FrequencySeriesDict"
+msgstr "FrequencySeriesDict"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: be2fc65046d44f05a6a5bc304897d935
+msgid "Noise budget"
+msgstr "ノイズバジェット"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 496af2061729470ca6833dd3e28d6808
+msgid "`FrequencySeriesDict.from_finesse_noise(sol, unit=...)`"
+msgstr "`FrequencySeriesDict.from_finesse_noise(sol, unit=...)`"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 6539425b3d6343caa2f6fc58b687ae06
+msgid "NoiseProjectionSolution"
+msgstr "NoiseProjectionSolution"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:120010
+#: 673559ac47ff4dcabf248395e6012704
+msgid "**Key attributes accessed on Finesse solution objects:**"
+msgstr "**Finesse ソリューションオブジェクトの重要な属性：**"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 3c2654ee464c4dd183b58d3958d4305e
+msgid "Attribute"
+msgstr "属性"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 999945a21cb9488c901f5ffb8e27d685
+msgid "Used for"
+msgstr "用途"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: dfab1559a1c040b2a170e9d16f423904
+msgid "`sol.f`"
+msgstr "`sol.f`"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: b07b8bf905964b03963edcee215fbbc9
+msgid "Frequency axis"
+msgstr "周波数軸"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: cb659072ff744ed8ac79665994750c79
+msgid "`sol[output, input_dof]`"
+msgstr "`sol[output, input_dof]`"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: e276c7bd9a8a4aacb1f5c38b51433d37
+msgid "Single TF data"
+msgstr "単一 TF データ"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 413d666ffdb3432d9cbcbe5cd7d73594
+msgid "`sol.outputs`, `sol.inputs`"
+msgstr "`sol.outputs`, `sol.inputs`"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: 5b72c63053e6422589b0d1b77308fb6f
+msgid "DOF enumeration"
+msgstr "DOF 列挙"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: bfe008ef888d47fe8256ab7913275219
+msgid "`sol.noises`, `sol.output_nodes`"
+msgstr "`sol.noises`, `sol.output_nodes`"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: dc661c3460df45f3ae787f701ae7abbf
+msgid "Noise enumeration"
+msgstr "ノイズ列挙"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: a5e9a13b6f8c42d3b36d18207591d9c5
+msgid "`sol.out[node]`"
+msgstr "`sol.out[node]`"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb
+#: ef90ddf4de1f4dda97678d6940838f71
+msgid "Noise projection matrix"
+msgstr "ノイズプロジェクション行列"
+
+#: ../../how-to/case-studies/case_finesse_optics.ipynb:120020
+#: fb8fe10e3e054c1cb0f29d26f64fb358
+msgid ""
+"**Tip**: Always pass `unit=` to `from_finesse_frequency_response` and "
+"`from_finesse_noise` — Finesse solutions carry no astropy units."
+msgstr "**ヒント**: `unit=` は必ず指定してください — Finesse ソリューションは astropy ユニット情報を持ちません。"

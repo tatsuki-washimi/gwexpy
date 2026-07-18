@@ -1,0 +1,179 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10002
+#: 7f916bee5cce4a20ba24c0e5b6325030
+msgid "ARIMA-Based Burst Detection"
+msgstr "ARIMA を用いたバーストイベント検出"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10003
+#: 2089273afb0c43b79567c93a4f8dd853
+msgid "Idea sketch for burst gravitational-wave searches"
+msgstr "バースト重力波探索のアイデアスケッチ"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10005
+#: 4b2827034b314805a0331a89d256d842
+msgid "Introduction"
+msgstr "はじめに"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10006
+#: 0baabc00e46b426faf34267121a4db88
+msgid ""
+"Detector data are dominated by approximately stationary background noise, "
+"while burst gravitational waves (for example from core-collapse supernovae) "
+"appear as short, non-stationary transients embedded in that noise."
+msgstr ""
+"検出器データは近似的に定常な背景ノイズに支配されており、バースト重力波（例：コアコラプス超新星由来）はそのノイズ中に埋め込まれた短時間の非定常過渡現象として現れます。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10008
+#: 02800070a4b44b079b0a55a65a165298
+msgid ""
+"This notebook demonstrates the idea of using an **autoregressive model "
+"(ARIMA)** to learn the stationary background and make burst-like residuals "
+"stand out. It is a simple example of an unmodeled search strategy that does "
+"not rely on waveform templates."
+msgstr ""
+"本ノートブックでは、**自己回帰モデル（ARIMA）** "
+"を用いて定常背景を学習し、バースト的な残差を際立たせるアイデアを示します。これは波形テンプレートに依存しない、アンモデルド探索戦略の基本的な例です。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10010
+#: 6cdd43fdf068422aa68feec8916bf9f4
+msgid "References"
+msgstr "参考文献"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10011
+#: 0c1acff7725642ea988d246343ba9360
+msgid ""
+"Autoregressive Search of Gravitational Waves: Denoising (ARIMA_DeNoise.pdf)"
+msgstr ""
+"Autoregressive Search of Gravitational Waves: Denoising (ARIMA_DeNoise.pdf)"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10012
+#: 2ba3493828f64d2fb88733dde452a79d
+msgid "BEACON: Autoregressive Search for Unmodeled transients (BEACON.pdf)"
+msgstr "BEACON: Autoregressive Search for Unmodeled transients (BEACON.pdf)"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:10013
+#: 8a9ce90441174e64a50d0f463696eb24
+msgid "Sparkler: Autoregressive Search of Unmodeled GW (Sparkler_1min.pdf)"
+msgstr "Sparkler: Autoregressive Search of Unmodeled GW (Sparkler_1min.pdf)"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:30002
+#: 597b9ac173544aefb853ec493110e407
+msgid "1. Generate detector noise"
+msgstr "1\\. 検出器ノイズの生成"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:30003
+#: f1a270a3f96742dcb6b3db8f466cc42a
+msgid ""
+"First we simulate detector background noise. When available we use an aLIGO "
+"design-sensitivity model; otherwise we fall back to generic colored noise."
+msgstr ""
+"まず検出器の背景ノイズをシミュレートします。aLIGO "
+"設計感度モデルが利用可能な場合はそれを使用し、利用できない場合は汎用カラードノイズにフォールバックします。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:50002
+#: 8100e9bbb5c44813b0b87a36947c2ff5
+msgid "2. Inject a burst signal"
+msgstr "2\\. バースト信号の注入"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:50003
+#: decbe106f36a4d419bae300f999c6fd2
+msgid ""
+"We inject a sine-Gaussian burst into the second half of the data and use it "
+"as the test segment."
+msgstr "サイン・ガウスバーストをデータの後半に注入し、それをテストセグメントとして使用します。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:70002
+#: fea484bd791d4e1486782d5bba20bb68
+msgid "3. Learn the background with ARIMA"
+msgstr "3\\. ARIMA による背景学習"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:70003
+#: 0c222ebae49346d990ab46ee25ffbd5a
+msgid ""
+"We fit an ARIMA model on the first 8 seconds, where no burst is present, so "
+"that the model captures the stationary background statistics. The data are "
+"moderately downsampled to keep the example lightweight."
+msgstr ""
+"バーストが存在しない最初の 8 秒間のデータに ARIMA "
+"モデルをフィットし、定常背景の統計的特性をモデルが学習できるようにします。例を軽量に保つため、データは適度にダウンサンプリングされます。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:90002
+#: 72c01f91928b4e35845caa58896fa874
+msgid "4. Compute residuals and detect anomalies"
+msgstr "4\\. 残差の計算と異常検出"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:90003
+#: e1adaea79a2e420898dfbea698d18e43
+msgid ""
+"We apply the fitted model to the remaining data and inspect the residuals. "
+"Stationary noise should leave small residuals, while an unmodeled burst "
+"produces a localized excess."
+msgstr ""
+"フィットしたモデルを残りのデータに適用し、残差を調べます。定常ノイズでは残差が小さく収まりますが、モデル化されていないバーストが存在すると局所的な過剰が生じます。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:110002
+#: 6128398ffc0945089b053e640bb1672a
+msgid "5. Evaluate performance versus SNR"
+msgstr "5\\. SNR に対する性能評価"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:110003
+#: 7083ff1ac9ae4570afc9e333c7f8a2de
+msgid ""
+"Finally we repeat the injection for several signal-to-noise ratios to "
+"estimate how the residual-based detection responds as the burst becomes "
+"weaker."
+msgstr "最後に、さまざまな信号対雑音比でバースト注入を繰り返し、バーストが弱くなるにつれて残差ベースの検出がどのように応答するかを推定します。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:130002
+#: b37699f565024e3e9b6ab3017c220f31
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:130004
+#: ccd9ef69f97b4d5d82ad1c045c3d5d6a
+msgid "Key ideas behind ARIMA-based burst searches"
+msgstr "ARIMA を用いたバースト探索の核心的なアイデア"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:130005
+#: 81b38eeb42d9410488552fad51069939
+msgid ""
+"**Background suppression**: model and subtract stationary noise to improve "
+"the visibility of weak transients."
+msgstr "**背景抑制**: 定常ノイズをモデル化・差し引きすることで、弱い過渡現象の視認性を向上させる。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:130006
+#: bbc859207cfe466a81ebf0a12a557c3e
+msgid ""
+"**Residual analysis**: monitor deviations from the expected residual "
+"distribution to identify unmodeled events."
+msgstr "**残差解析**: 期待される残差分布からの逸脱を監視し、モデル化されていないイベントを同定する。"
+
+#: ../../how-to/case-studies/case_arima_burst_search.ipynb:130008
+#: 9288a6e93fa24c4ea3a81b30dfd6353b
+msgid ""
+"Production pipelines such as BEACON extend this idea to multiple channels "
+"and coherence checks, but this notebook captures the core intuition in a "
+"compact example."
+msgstr ""
+"BEACON "
+"などの本番パイプラインはこのアイデアを複数チャンネルおよびコヒーレンスチェックへと拡張していますが、本ノートブックはその核心的な直観をコンパクトな例で示しています。"

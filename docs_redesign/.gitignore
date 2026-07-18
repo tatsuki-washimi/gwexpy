@@ -1,0 +1,13 @@
+_build/
+__pycache__/
+*.pyc
+
+# autosummary-generated API stub pages (rebuilt on every build)
+reference/api/_autosummary/
+reference/api/gwexpy.*.md
+reference/api/gwexpy.*.rst
+
+# gettext: .pot/.mo are regenerated; only the .po catalogs are tracked
+locales/**/*.pot
+locales/**/*.mo
+locales/.doctrees/

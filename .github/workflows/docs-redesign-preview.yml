@@ -1,0 +1,132 @@
+name: Docs Redesign Preview
+
+on:
+  push:
+    branches: [claude/docs-redesign-pydata]
+    paths:
+      - "CHANGELOG.md"
+      - "docs_redesign/**"
+      - ".github/workflows/docs-redesign-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Shares the gh-pages-publish group with docs-pages.yml so a preview build and
+# a production deploy never push to the gh-pages branch at the same time.
+# Queue rather than cancel: cancel-in-progress would let this preview push
+# abort an in-flight production deploy before it reaches git push, silently
+# dropping the production update.
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  publish-preview:
+    name: Publish docs_redesign preview to gh-pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+      MPLCONFIGDIR: /tmp/matplotlib
+      # docs_redesign/conf.py reads GWEXPY_DOCS_LANG_BASEURL to compute the
+      # language-switcher's counterpart-language URL (shared by EN and JA);
+      # GWEXPY_DOCS_BASEURL is the per-build canonical base and is set
+      # separately for the EN and JA build steps below, since the JA build's
+      # canonical must point at .../ja/, not at the EN root.
+      GWEXPY_DOCS_LANG_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
+      # This is a staging deploy, not the production site -- keep it out of
+      # search results until the production cutover (Step F-4).
+      GWEXPY_DOCS_NOINDEX: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          environment-name: gwexpy
+          create-args: >-
+            python=3.11
+          init-shell: bash
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc fonts-noto-cjk
+
+      - name: Provision docs_redesign build environment
+        run: |
+          python -m pip install --upgrade pip
+          # The public notebook pages exercise optional analysis, control, and
+          # I/O integrations, so their rendered outputs need the full runtime
+          # dependency set rather than the package's core-only install.
+          python -m pip install -e ".[all]"
+          python -m pip install -r docs_redesign/requirements.txt
+
+      # Execute notebooks only in a disposable copy.  MyST-NB stores their
+      # outputs in this copy's build cache; tracked source notebooks remain
+      # output-free even when the published HTML contains plots.
+      - name: Prepare isolated docs_redesign source
+        id: prepare_docs_redesign
+        run: |
+          docs_root="${RUNNER_TEMP}/gwexpy-docs-redesign-preview"
+          docs_src="${docs_root}/docs_redesign"
+          mkdir -p "${docs_root}"
+          rsync -a --delete --exclude "_build/" docs_redesign/ "${docs_src}/"
+          cp CHANGELOG.md "${docs_root}/CHANGELOG.md"
+          echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
+
+      - name: Build EN HTML
+        env:
+          GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/"
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -d "${docs_src}/_build/doctrees_en" \
+            "${docs_src}" "${docs_src}/_build/html"
+
+      - name: Build JA HTML
+        env:
+          GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/"
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -D language=ja -d "${docs_src}/_build/doctrees_ja" \
+            "${docs_src}" "${docs_src}/_build/html/ja"
+
+      - name: Publish preview to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          publish_dir="${RUNNER_TEMP}/gwexpy-gh-pages"
+
+          git clone --branch gh-pages --depth 1 \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "${publish_dir}"
+
+          preview_dir="${publish_dir}/preview-docs-redesign"
+          mkdir -p "${preview_dir}"
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          rsync -a --delete "${docs_src}/_build/html/" "${preview_dir}/"
+
+          touch "${publish_dir}/.nojekyll"
+
+          cd "${publish_dir}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No gh-pages changes to publish"
+          else
+            git commit -m "deploy(preview): docs_redesign ${GITHUB_SHA}"
+            git push origin gh-pages
+          fi

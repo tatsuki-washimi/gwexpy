@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-04 07:52+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10002
+#: 5768e2bc65314c7e920e49eea55d74a8
+msgid "Case Study: Event-Synchronized Analysis"
+msgstr "ケーススタディ: イベント同期解析"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10004
+#: 13ea03d74a064b6bbcabbbb325b19a3e
+msgid ""
+"This tutorial shows a real-world workflow: matching events from two "
+"different logs, applying clock corrections, and generating event-by-event "
+"summary plots."
+msgstr ""
+"このチュートリアルでは、実務でのワークフローに即した例を紹介します。ログからのイベント抽出、時刻補正（模した例）、そしてイベントごとの解析・プロット生成までの一連の流れを"
+" `SegmentTable` で管理します。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:10006
+#: bfc8a1e8ac9148638051915e508f96dc
+msgid ""
+"The event windows are still represented by `gwpy.segments.Segment`, while "
+"gwexpy provides the table-management and `apply()`-driven batch workflow "
+"through `SegmentTable`. The division between GWpy base classes and gwexpy "
+"extensions is the same as in [SegmentTable: "
+"Basics](../segments/intro_segment_table.ipynb)."
+msgstr ""
+"イベント窓は引き続き `gwpy.segments.Segment` で表され、gwexpy は `SegmentTable` を通じてテーブル管理と "
+"`apply()` 駆動のバッチワークフローを提供します。GWpy の基本クラスと gwexpy 拡張の役割分担は、[SegmentTable: "
+"基本](../segments/intro_segment_table.ipynb) と同じです。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:30002
+#: 9207bc2946fa465197572a5425cedef8
+msgid "Batch Plot Generation"
+msgstr "バッチプロット生成"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:30004
+#: d86450c697f54cd7a07695cc8db45f8b
+msgid ""
+"We can use `apply()` to generate plots for each event and save them, storing"
+" the paths back in the table."
+msgstr "`apply()` を使って、各イベントのズームプロットなどを一括生成し、そのファイルパスをテーブル自体に保存できます。"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:50002
+#: 60569482b9ca42a5858fbc64a85f4c0b
+msgid "Result Summary"
+msgstr "結果の絞り込みと出力"
+
+#: ../../../../../../home/user/gwexpy-redesign-pydata/docs_redesign/how-to/case-studies/case_segment_analysis.ipynb:50004
+#: 470b75de35dd455ab26ddd7a16e984b1
+msgid "Finally, we can filter the table and export results."
+msgstr "最後に、特定の条件（SNR > 10 など）でテーブルをフィルタリングし、結果をエクスポートします。"

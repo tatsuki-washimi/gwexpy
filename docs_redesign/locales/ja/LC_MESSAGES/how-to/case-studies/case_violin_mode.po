@@ -1,0 +1,266 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10002
+#: 27ab18321f494dcd8c9d1337c4baf02b
+msgid "Case Study: Violin Mode Analysis"
+msgstr "ケーススタディ: バイオリンモード解析"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10004
+#: ad51ecb351cc40ea8ae915ccb8b6dd0b
+msgid ""
+"In gravitational-wave detectors, suspension fibres holding the mirrors "
+"resonate as stretched strings. Their modes — **violin modes** — appear as "
+"sharp Lorentzian peaks in the strain ASD."
+msgstr ""
+"重力波検出器では鏡を吊るす懸架ファイバーが弦楽器の弦のように振動し、 **バイオリンモード**と呼ばれる鋭いローレンツピークが strain ASD "
+"上に現れます。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10008
+#: 46df9a4338a848d2830dcf84fae73c7c
+msgid "This tutorial shows how to:"
+msgstr "このチュートリアルでは以下を学びます："
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10009
+#: e6b1626b89444c55b3e9b1e408f21a2a
+msgid "Model violin-mode peaks with `lorentzian_q`"
+msgstr "`lorentzian_q` でバイオリンモードをモデル化"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10010
+#: f0bbf9b917554492b767d38f44616420
+msgid "Fit an ASD to extract **Q value, FWHM, and ring-down time**"
+msgstr "ASD フィットから **Q 値・FWHM・リングダウン時間** を抽出"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10011
+#: 4c97c526d6b249b992537320bcf44579
+msgid "Batch-process multiple harmonics"
+msgstr "複数の倍音をバッチ処理"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10012
+#: 8f4147bf9e8848e3a7c8a8389e8ed077
+msgid "Track a slowly drifting mode frequency through time"
+msgstr "ゆっくりドリフトするモード周波数の時間追跡"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10014
+#: f7441a8eb08b4297bd27f204e96cece5
+msgid ""
+"The physical goal is to distinguish a true suspension resonance from nearby "
+"control lines or broadband floor changes, then quantify whether its "
+"frequency and damping drift are consistent with thermal or mechanical "
+"changes in the suspension."
+msgstr ""
+"物理的な狙いは、真の懸架共振を近傍の制御線や広帯域フロア変動から見分け、その周波数や減衰のドリフトが熱的・機械的状態変化と整合するかを評価することです。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:10016
+#: f43226de4b474e869635e465d5234f16
+msgid ""
+"**Prerequisites:** [Advanced Fitting](../fitting/advanced_fitting.ipynb)"
+msgstr "**前提:** [フィッティングの応用](../fitting/advanced_fitting.ipynb)"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:30002
+#: 0a9d5bc070ae4011a9752406bdf2a595
+msgid "1. Physics Background"
+msgstr "1\\. 物理的背景"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:30004
+#: 3416f1912f0d4efa8b1cb64ade2f6baa
+msgid ""
+"The $n$-th resonant frequency of a fibre (length $L$, tension $T$, density "
+"$\\rho$, cross-section $A$):"
+msgstr "長さ $L$、張力 $T$、密度 $\\rho$、断面積 $A$ のファイバーの $n$ 次共振周波数："
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:30007
+#: 0ddd8d2c9dfc4c82acc495fef32a5d13
+msgid "f_n = \\frac{n}{2L}\\sqrt{\\frac{T}{\\rho A}}"
+msgstr "f_n = \\frac{n}{2L}\\sqrt{\\frac{T}{\\rho A}}"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:30009
+#: c628b0e8932044a3965043e661714fed
+msgid "KAGRA typical values: 1st violin ~170–190 Hz, 2nd ~340–380 Hz."
+msgstr "KAGRA 代表値：1st バイオリン ~170–190 Hz、2nd ~340–380 Hz。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:30011
+#: 00798618f3594630af595ec1db821c9a
+#, python-brace-format
+msgid "Each mode is a Lorentzian with quality factor $Q = f_0/\\text{FWHM}$:"
+msgstr "各モードは品質係数 $Q = f_0/\\text{FWHM}$ のローレンツ関数："
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:30013
+#: 445311514c1a49f5bec505ee9400470b
+#, python-brace-format
+msgid ""
+"\\text{ASD}(f) \\approx \\frac{A\\,\\gamma^2}{(f-f_0)^2 + \\gamma^2},\\quad "
+"\\gamma = \\frac{f_0}{2Q}"
+msgstr ""
+"\\text{ASD}(f) \\approx \\frac{A\\,\\gamma^2}{(f-f_0)^2 + \\gamma^2},\\quad "
+"\\gamma = \\frac{f_0}{2Q}"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:30015
+#: 0b6c9edfe093471e9e4eb624ff594790
+msgid "Ring-down time constant: $\\tau = Q / (\\pi f_0)$"
+msgstr "リングダウン時定数：$\\tau = Q / (\\pi f_0)$"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:30017
+#: 0b73f4d4ad25474f8219ceda3f73fd70
+msgid ""
+"**Common mistake**: fitting a broad control feature or blended doublet as if"
+" it were one violin mode. A physically meaningful violin-mode fit should be "
+"narrow, isolated, and stable under modest changes of the fit window."
+msgstr ""
+"**よくある誤り**: 広い制御特徴や混ざった二重線を、1 "
+"本のバイオリンモードであるかのようにフィットすること。物理的に意味のあるバイオリンモードのフィットは、狭く、孤立しており、フィット窓を多少変えても安定しているはずです。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:40002
+#: 6555d7cd23fe45458a2768674adfa903
+msgid "2. Synthetic ASD Data"
+msgstr "2\\. 合成 ASD データの準備"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:40004
+#: 4620bce010104f68bbef5d511daf3ff3
+msgid ""
+"Generate a synthetic ASD with two violin modes on a flat background using "
+"`lorentzian_q`.  The same function is used for fitting, so the model is "
+"self-consistent."
+msgstr ""
+"`gwexpy.fitting.models.lorentzian_q` を使って、フラット背景に 2 本のバイオリンモードを 含む合成 ASD "
+"を生成します。フィットにも同じ関数を使うためモデルが自己整合します。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:60002
+#: 0eca29033f964a078bb295bce8ad37b6
+msgid "3. Single-Mode Fit"
+msgstr "3\\. 単一モードフィット"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:60004
+#: da033597f89340758aa795953bd11bd9
+msgid ""
+"Crop the ASD to a narrow band around the 1st violin mode, subtract the local"
+" flat background, and fit the isolated excess ASD with `'lorentzian_q'`. "
+"Initial guesses (`p0`) should be within a factor ~2 of the true values, and "
+"the optimizer should be limited to physically meaningful ranges for `x0` and"
+" `Q`."
+msgstr ""
+"1st バイオリンモード付近の狭帯域に ASD をクロップし、 局所的なフラット背景を差し引いてから余剰 ASD を `'lorentzian_q'` "
+"でフィットします。初期値 (`p0`) は真値の ~2 倍以内を目安とし、 最適化は `x0` と `Q` の物理的に意味のある範囲へ制限します。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:60010
+#: 154b70212dcc4ce6a367932aafb2c6b4
+msgid ""
+"**Failure-prone pattern**: choosing a crop window so wide that neighbouring "
+"harmonics or local baseline curvature dominate the optimizer. When that "
+"happens, the fitted `Q` often becomes a statement about the window, not "
+"about the mode."
+msgstr ""
+"**失敗しやすいパターン**: "
+"切り出し窓を広く取りすぎて、隣接する倍音や局所的なベースラインの湾曲が最適化を支配してしまうこと。そうなると、フィットされた `Q` "
+"はモードではなく窓についての値になりがちです。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:80002
+#: 1d8b9e6514eb49c3895a9b24fbf0aa87
+msgid "4. Extracting Physical Parameters"
+msgstr "4\\. 物理パラメータの抽出"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:80004
+#: db318dab80ed4537b51827f9a62c4d1a
+msgid "From the fit parameters $(f_0, Q)$ derive all relevant quantities:"
+msgstr "フィットパラメータ $(f_0, Q)$ からすべての関連量を導出します："
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:80006
+#: c7d256f114a64165aca877435b7669ef
+msgid ""
+"Use these derived values as physics cross-checks: implausibly short ring-"
+"down times or mode frequencies that jump between harmonics usually indicate "
+"a poor fit, not a surprising suspension state."
+msgstr ""
+"導出量は報告値であるだけでなく物理クロスチェックにも使えます。極端に短いリングダウン時間や倍音間で飛び跳ねる周波数は、興味深い懸架状態ではなくフィット不良を示していることが多いです。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:100002
+#: 21c8a1fa1cfc4b46b7b5d6095eaa807d
+msgid "5. Multi-Mode Batch Processing"
+msgstr "5\\. 複数モードのバッチ処理"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:100004
+#: 5d354dfcf6ee4a6ead6192a298e6b4c7
+msgid ""
+"Loop over a configuration dictionary to fit each harmonic and collect "
+"results in a summary table."
+msgstr "設定辞書をループして各倍音をフィットし、サマリーテーブルにまとめます。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:120002
+#: d454967beff148fc924db8337ef9adfd
+msgid "6. Time-Variation Tracking"
+msgstr "6\\. 時間変動の追跡"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:120004
+#: 562cae8df28e409a9458778cd5a9c523
+msgid ""
+"Violin-mode frequencies drift slowly with temperature. Monitor them by "
+"computing a spectrogram and tracking the peak position inside a narrow "
+"frequency band."
+msgstr "バイオリンモード周波数は温度とともにゆっくりドリフトします。 スペクトログラムを計算し、狭帯域内でピーク位置を追跡します。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:120008
+#: 0170deecfec240edb6aa1bcbb1110e6d
+#, python-format
+msgid ""
+"**Resolution guardrail**: the spectrogram bin width must be small enough for"
+" the claimed drift. A 4 s FFT gives only 0.25 Hz bins, so a 20 mHz drift is "
+"invisible to raw `argmax`. This example uses a 16 s FFT (`df = 62.5 mHz`) "
+"plus a quadratic sub-bin interpolation step, then checks that the recovered "
+"drift stays within about 20% of the injected drift."
+msgstr ""
+"**分解能のガードレール**: スペクトログラムのビン幅は、主張するドリフトに対して十分小さくなければなりません。4 秒 FFT ではビンが 0.25 "
+"Hz しかなく、20 mHz のドリフトは生の `argmax` では見えません。この例では 16 秒 FFT（`df = 62.5 "
+"mHz`）に加え、二次関数によるサブビン補間を行い、回復したドリフトが注入したドリフトの約 20% 以内に収まることを確認します。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:120010
+#: 29705138b0da4543a8ecd666ea63b5f8
+msgid ""
+"**Common mistake**: using `argmax` without checking the bin width against "
+"the expected line motion. In that case the tracker can jump between bins and"
+" turn FFT quantization into a fake temperature trend."
+msgstr ""
+"**よくある誤り**: 期待されるラインの動きに対してビン幅を確認せずに `argmax` を使うこと。その場合、トラッカーがビン間を飛び移り、FFT "
+"の量子化を偽の温度トレンドに変えてしまうことがあります。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:140002
+#: d84b68783f42401aa3aea3ba399c550a
+msgid "7. Summary"
+msgstr "7\\. まとめ"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:140004
+#: 8152af0a4f7a45b3b4062da28293b2f1
+msgid ""
+"Fit windows should be chosen to isolate one resonance family at a time."
+msgstr "フィット窓は 1 つの共振ファミリーを分離できる範囲に選ぶ。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:140005
+#: 9ec4eb896706418faf97f2e3c6393b3e
+msgid ""
+"Derived $Q$, FWHM, and ring-down time are useful sanity checks, not just "
+"reporting numbers."
+msgstr "導出した Q、FWHM、リングダウン時間は sanity check としても使う。"
+
+#: ../../how-to/case-studies/case_violin_mode.ipynb:140006
+#: 8f6df045c36b44bc917156781b6cd51a
+msgid ""
+"Peak-tracking failures usually come from line crowding or poor SNR, so "
+"interpret drifts conservatively."
+msgstr "追跡失敗の多くはライン混雑や低 SNR が原因なので、ドリフト解釈は保守的に行う。"

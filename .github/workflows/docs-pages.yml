@@ -4,31 +4,31 @@ on:
   push:
     branches: [main]
     paths:
-      - "docs/**"
-      - "scripts/check_terms.py"
-      - "scripts/check_docs_sync.py"
-      - "scripts/check_forbidden_artifacts.py"
-      - "scripts/run_quickstart_test.py"
-      - "scripts/notebook_gen/prepare_docs_notebook_tree.py"
-      - "docs/requirements.txt"
+      - "CHANGELOG.md"
+      - "docs_redesign/**"
+      - "scripts/generate_docs_redirect_stubs.py"
       - "environment.yml"
-      - "pyproject.toml"
       - ".github/workflows/docs-pages.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
+# Shared with docs-redesign-preview.yml so a preview build and a production
+# deploy never push to the gh-pages branch at the same time. Queue rather
+# than cancel: cancel-in-progress would let a preview push abort an
+# in-flight production deploy before it reaches git push, silently
+# dropping the production update.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: gh-pages-publish
+  cancel-in-progress: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   publish-pages:
-    name: Publish docs to gh-pages
+    name: Publish docs_redesign to gh-pages
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -36,9 +36,13 @@ jobs:
         shell: bash -leo pipefail {0}
     env:
       PYTHONFAULTHANDLER: "1"
-      NBS_EXECUTE: never
-      NBS_ALLOW_ERRORS: "0"
       MPLCONFIGDIR: /tmp/matplotlib
+      # docs_redesign/conf.py reads GWEXPY_DOCS_LANG_BASEURL to compute the
+      # language-switcher's counterpart-language URL (shared by EN and JA);
+      # GWEXPY_DOCS_BASEURL is the per-build canonical base and is set
+      # separately for the EN and JA build steps below, since the JA build's
+      # canonical must point at .../docs/ja/, not at the EN root.
+      GWEXPY_DOCS_LANG_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/docs/"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -57,50 +61,44 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 pandoc fonts-noto-cjk
+          sudo apt-get install -y pandoc fonts-noto-cjk
 
-      - name: Provision gwexpy docs environment
+      - name: Provision docs_redesign build environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . --no-deps
-          python -m pip install -r docs/requirements.txt
-          python -m pip install sphinx-intl papermill nbformat nbclient nbconvert
+          # Public notebook pages exercise optional integrations; install the
+          # full runtime set before executing them into the HTML build cache.
+          python -m pip install -e ".[all]"
+          python -m pip install -r docs_redesign/requirements.txt
 
-      - name: Check terminology consistency
-        run: python scripts/check_terms.py
-
-      - name: Check JA/EN synchronization
-        run: python scripts/check_docs_sync.py
-
-      - name: Check forbidden generated artifacts
-        run: python scripts/check_forbidden_artifacts.py
-
-      - name: Run quickstart tests
+      # Keep executed notebooks and MyST-NB's cache outside the checkout.
+      # The generated HTML retains outputs, but Git continues to track only
+      # clean notebook source.
+      - name: Prepare isolated docs_redesign source
+        id: prepare_docs_redesign
         run: |
-          python scripts/run_quickstart_test.py --lang ja
-          python scripts/run_quickstart_test.py --lang en
-
-      - name: Prepare executed docs source tree
-        id: prepare_docs_tree
-        run: |
-          docs_src="${RUNNER_TEMP}/gwexpy-pages-src"
-          python scripts/notebook_gen/prepare_docs_notebook_tree.py \
-            --output-root "${docs_src}" \
-            --mode full \
-            --jobs 8
+          docs_root="${RUNNER_TEMP}/gwexpy-docs-redesign-pages"
+          docs_src="${docs_root}/docs_redesign"
+          mkdir -p "${docs_root}"
+          rsync -a --delete --exclude "_build/" docs_redesign/ "${docs_src}/"
+          cp CHANGELOG.md "${docs_root}/CHANGELOG.md"
           echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
 
-      - name: Build Sphinx HTML
-        id: build_docs
+      - name: Build EN HTML
+        env:
+          GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/docs/"
         run: |
-          html_dir="${RUNNER_TEMP}/gwexpy-pages-html"
-          doctree_dir="${RUNNER_TEMP}/gwexpy-pages-doctrees"
-          docs_src="${{ steps.prepare_docs_tree.outputs.docs_src }}"
-          sphinx-build -b html -W --keep-going -d "${doctree_dir}" \
-            -D nbsphinx_execute=never \
-            -D nbsphinx_allow_errors=0 \
-            "${docs_src}/docs" "${html_dir}"
-          echo "html_dir=${html_dir}" >> "${GITHUB_OUTPUT}"
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -d "${docs_src}/_build/doctrees_en" \
+            "${docs_src}" "${docs_src}/_build/html"
+
+      - name: Build JA HTML
+        env:
+          GWEXPY_DOCS_BASEURL: "https://tatsuki-washimi.github.io/gwexpy/docs/ja/"
+        run: |
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          sphinx-build -b html -D language=ja -d "${docs_src}/_build/doctrees_ja" \
+            "${docs_src}" "${docs_src}/_build/html/ja"
 
       - name: Publish to gh-pages
         env:
@@ -113,7 +111,13 @@ jobs:
             "${publish_dir}"
 
           mkdir -p "${publish_dir}/docs"
-          rsync -a --delete "${{ steps.build_docs.outputs.html_dir }}/" "${publish_dir}/docs/"
+          docs_src="${{ steps.prepare_docs_redesign.outputs.docs_src }}"
+          rsync -a --delete "${docs_src}/_build/html/" "${publish_dir}/docs/"
+
+          # Regenerate the old-site redirect stubs *after* the --delete above,
+          # since they live under the same docs/ tree it just wiped (Step F-3
+          # design, Step F-4 cutover).
+          python scripts/generate_docs_redirect_stubs.py "${publish_dir}"
 
           cat > "${publish_dir}/index.html" <<'EOF'
           <html><head><meta http-equiv="refresh" content="0; url=docs/index.html"></head><body>Redirecting to documentation...</body></html>
@@ -127,8 +131,7 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No gh-pages changes to publish"
-            exit 0
+          else
+            git commit -m "deploy: switch website to docs_redesign (${GITHUB_SHA})"
+            git push origin gh-pages
           fi
-
-          git commit -m "deploy: ${GITHUB_SHA}"
-          git push origin gh-pages

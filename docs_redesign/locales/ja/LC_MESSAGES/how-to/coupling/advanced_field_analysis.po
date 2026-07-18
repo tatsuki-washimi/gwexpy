@@ -1,0 +1,338 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10002
+#: 432363ebb19e4bbfb67ee5a23598f31d
+msgid "Multi-Dimensional Field Analysis: Beam Profiles and Spatial Statistics"
+msgstr "多次元フィールド解析：ビームプロファイルと空間統計"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10004
+#: d6489e834b5a4526a4f22028f3f8f83d
+msgid ""
+"The `gwexpy.fields` module extends gwexpy to **4-D spatial-temporal data**: "
+"`(time, x, y, z)`.  This enables analysis of phenomena that have both "
+"temporal and spatial structure — such as:"
+msgstr ""
+"`gwexpy.fields` モジュールは gwexpy を **4 次元の時空間データ** `(time, x, y, z)` "
+"へ拡張します。これにより、時間構造と空間構造の両方を持つ現象を解析できます。例えば："
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10008
+#: f9f0835bec7847c5a6c3672dca0aa2d1
+msgid "**Optical beam profiles** measured across a mirror surface"
+msgstr "鏡面上で測定した**光ビームプロファイル**"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10009
+#: a214268d357b43eabdc6b54fec7b4ac1
+msgid "**Seismic wavefield maps** from distributed accelerometer arrays"
+msgstr "分散配置した加速度計アレイによる**地震波動場マップ**"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10010
+#: dcd62b6511a94770a31c3633704168b3
+msgid ""
+"**Environmental field maps** (magnetic, acoustic, temperature) around the "
+"detector"
+msgstr "検出器周辺の**環境場マップ**（磁場・音響・温度）"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10013
+#: d1115c193ae7473aa5aba9eeebba803d
+msgid "**What this tutorial covers:**"
+msgstr "**このチュートリアルで学ぶこと：**"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10014
+#: 6e46465d968e411e954780649babada3
+msgid "Creating synthetic beam and wavefield data with `ScalarField`"
+msgstr "`ScalarField` による合成ビーム・波動場データの生成"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10015
+#: 38a09947afc64d54b499b211c793c7db
+msgid "Spatial statistics: mean profile, variance map, and spatial PSD"
+msgstr "空間統計: 平均プロファイル、分散マップ、空間 PSD"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10016
+#: 295c21726a4049a6a7995600c60f9dc6
+msgid "Coherence map: how coherent is the field across space?"
+msgstr "コヒーレンスマップ: 場が空間的にどれだけコヒーレントか"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10017
+#: d73421d2131746e78a9b966ccdf0619a
+msgid "Time-delay map: estimating signal propagation velocity"
+msgstr "時間遅延マップ: 信号の伝播速度の推定"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10018
+#: 9979c839d2d64c4a993d1aa2ba54f3de
+msgid "`VectorField` operations: gradient, curl (rotation), norm"
+msgstr "`VectorField` の演算: 勾配、回転 (curl)、ノルム"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10019
+#: 8eed4826d01747f79a554c1baa0b6d1e
+msgid "k-space analysis: from spatial FFT to wavenumber spectrum"
+msgstr "k 空間解析: 空間 FFT から波数スペクトルへ"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:10021
+#: 45f47481a6c34c92a4ee24be18b05cf0
+msgid ""
+"**Relation to `field_scalar_intro.ipynb`**: That notebook introduces the "
+"`ScalarField` data structure.  This tutorial focuses on **advanced spatial "
+"analysis** — coherence maps, time-delay estimation, and wavenumber spectra —"
+" building on those foundations."
+msgstr ""
+"**`field_scalar_intro.ipynb` との関係**: あちらのノートブックは `ScalarField` "
+"データ構造を紹介します。本チュートリアルはそれを土台に、コヒーレンスマップ・時間遅延推定・波数スペクトルといった**高度な空間解析**に焦点を当てます。"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:20002
+#: cd71e834c6ec40f89362faf13de6fb4a
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:40002
+#: 147c1648d2434a65ac975b8c31cd40ad
+msgid "1. Synthetic Beam Profile Data"
+msgstr "1\\. 合成ビームプロファイルデータの生成"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:40004
+#: ad42535618bb4eb6afdd53b925dc63af
+msgid ""
+"We create a 4-D `ScalarField` representing the optical intensity of a laser "
+"beam measured at 64 spatial points across a 1 m × 1 m mirror surface at 100 "
+"time steps."
+msgstr ""
+"1 m × 1 m の鏡面上の 64 空間点で、100 時間ステップにわたり測定したレーザービームの光強度を表す 4 次元 `ScalarField` "
+"を作成します。"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:40008
+#: 88d8d635961b4708956708bc9601771f
+msgid ""
+"The beam has a Gaussian profile with a slow random walk in centroid position"
+" — simulating thermal drift of the optic."
+msgstr "ビームはガウス型プロファイルを持ち、重心位置がゆっくりとランダムウォークします。これは光学素子の熱ドリフトを模擬したものです。"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:60002
+#: b267b729e38a404f81bdb1c39c9671ab
+msgid "2. Mean Beam Profile and Variance Map"
+msgstr "2\\. 平均ビームプロファイルと分散マップ"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:60004
+#: a07cbbdcd3ac443fa2435ea73aa1724b
+msgid ""
+"Averaging over time reveals the mean beam shape. The variance map shows "
+"where intensity fluctuates most — typically at the beam edge where pointing "
+"jitter is amplified."
+msgstr ""
+"時間方向に平均すると平均的なビーム形状が得られます。分散マップは強度の揺らぎが最も大きい場所を示し、通常はポインティングジッタが増幅されるビーム端になります。"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:80002
+#: 7b1db05279704b4bace12cc1e803821d
+msgid "3. Spatial PSD — Wavenumber Spectrum"
+msgstr "3\\. 空間 PSD — 波数スペクトル"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:80004
+#: a67744b203c746b4af18e735abffcc4d
+msgid ""
+"`spectral_density(axis='x')` computes the power spectral density along the "
+"spatial x-axis.  The wavenumber spectrum reveals the spatial frequency "
+"content of the beam — a Gaussian beam has a Gaussian wavenumber spectrum."
+msgstr ""
+"`spectral_density(axis='x')` は空間 x "
+"軸に沿ったパワースペクトル密度を計算します。波数スペクトルはビームの空間周波数成分を明らかにします。ガウスビームの波数スペクトルはガウス型になります。"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:100002
+#: 2d23ec053bfd418f87b63b825c884cb0
+msgid "4. Wavefield Propagation and Time-Delay Map"
+msgstr "4\\. 波動場伝播と時間遅延マップ"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:100004
+#: f17be287315c465a81898e249f23a5a6
+msgid ""
+"Now we switch to a seismic wavefield scenario: a propagating Gaussian pulse "
+"measured at a 2-D accelerometer array.  The `time_delay_map()` function "
+"estimates the arrival time of the pulse at each sensor relative to a "
+"reference sensor — giving the apparent propagation velocity."
+msgstr ""
+"分散加速度計アレイで測定した地震波動場シナリオです。 `time_delay_map()` は各センサーの到着時刻を参照センサーに対して推定し、 "
+"見かけの伝播速度を求めます。"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:120002
+#: df07736d1e814c5bbf9ffe3460aefdc8
+msgid "5. Coherence Map"
+msgstr "5\\. コヒーレンスマップ"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:120004
+#: 1e94d16350c84de6b41253f785bbf9c6
+msgid ""
+"`coherence_map()` computes the coherence between each spatial location and a"
+" reference location as a function of frequency.  High coherence at a "
+"specific frequency indicates correlated oscillation — e.g. a common seismic "
+"mode or an optical cavity resonance seen across multiple positions."
+msgstr ""
+"`coherence_map()` "
+"は、各空間位置と基準位置との間のコヒーレンスを周波数の関数として計算します。特定の周波数で高いコヒーレンスが見られる場合は相関した振動を示します。例えば共通の地震モードや、複数位置で観測される光共振器の共鳴です。"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:140002
+#: ecc699436a37466681fd17960cc992bb
+msgid "6. VectorField: Gradient and Norm"
+msgstr "6\\. VectorField：勾配とノルム"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:140004
+#: 2ec5c98b402146d8b47aa5e7f7c91eee
+msgid ""
+"For physical fields with vector character (e.g. magnetic field, velocity), "
+"`VectorField` stores multiple `ScalarField` components.  Here we compute the"
+" beam intensity gradient — useful for wavefront sensing."
+msgstr ""
+"磁場や速度のようなベクトル的性質を持つ物理場には、`VectorField` が複数の `ScalarField` "
+"成分を保持します。ここではビーム強度の勾配を計算します。これは波面センシングに有用です。"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:160002
+#: cd38f27b6f71421bbac8f01477f24751
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 3c7e9afd71e5485f825c6db79d4a4010
+msgid "Analysis"
+msgstr "解析"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 4a679c0f9e9d4e1fa0387bc1adfd3b3a
+msgid "API"
+msgstr "API"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: df5088132f044f8594fcbbd48065a751
+msgid "Use case"
+msgstr "ユースケース"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 64c8e42d0d274afc8d329e5b6ea73f98
+msgid "Mean / variance profile"
+msgstr "平均・分散プロファイル"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 0fcf1404d72a464e94a55349accf4f68
+msgid "`sf.data.mean(axis=0)`"
+msgstr "`sf.data.mean(axis=0)`"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: d545b131258c4ae7bc5a181ae6054daa
+msgid "Beam centring, stability"
+msgstr "ビーム安定性の評価"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: f31d0bc38692466fbe2d8eda77e161ea
+msgid "Temporal PSD"
+msgstr "時間 PSD"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: b661123dd92640d599fe214d58371695
+msgid "`spectral_density(sf, axis=0)`"
+msgstr "`spectral_density(sf, axis=0)`"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 2312f454213f400096919edbdda7b30c
+msgid "Frequency content at each pixel"
+msgstr "各ピクセルの周波数成分"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 85ea65720853457fbf3cc94e101a0e67
+msgid "Wavenumber spectrum"
+msgstr "波数スペクトル"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 20fd099cd4e046448140a779c1961655
+msgid "`np.fft.rfft` + `ScalarField`"
+msgstr "`np.fft.rfft` + `ScalarField`"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: f9b861575cfc43ee9bf159f8cc7ec8b2
+msgid "Spatial frequency content"
+msgstr "空間周波数内容"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 2485ed98e0f74471b6a94d60d693f242
+msgid "Time-delay map"
+msgstr "時間遅延マップ"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 0913e7942c0e4358847432733156a602
+msgid "`time_delay_map(sf, ref_indices, axis)`"
+msgstr "`time_delay_map(sf, ref_indices, axis)`"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 78e8820599984fb6aa07a0e2dae8dd0f
+msgid "Propagation velocity"
+msgstr "伝播速度の推定"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: e62fee8dc7044cbd89b921a7c87abbf1
+msgid "Coherence map"
+msgstr "コヒーレンスマップ"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: c6cbcf1b971544d389efebcb2042572b
+msgid "`coherence_map(sf, ref_indices, axis, fftlength)`"
+msgstr "`coherence_map(sf, ref_indices, axis, fftlength)`"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: d6a15956ed4848aea34b3526d51e2b25
+msgid "Correlated oscillations"
+msgstr "相関振動の特定"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 7fa1354cc0dc450496d227c8c1e10505
+msgid "Gradient / norm"
+msgstr "勾配・ノルム"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: e6c87ca2602e4c009a30225c752f4950
+#, python-brace-format
+msgid "`VectorField(components={...}).norm()`"
+msgstr "`VectorField(components={...}).norm()`"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb
+#: 7bbbb8e8ad66473c859d51b135177b87
+msgid "Wavefront sensing"
+msgstr "波面センシング"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:160013
+#: 6c43195cee02429f85031f7aa93674d7
+msgid "**Applications at KAGRA / LIGO:**"
+msgstr "**KAGRA / LIGO での応用：**"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:160014
+#: 20b08438930541c59994a6e3b0d49a0b
+msgid "Beam profile monitoring and pointing drift correction"
+msgstr "ビームプロファイル監視とポインティングドリフト補正"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:160015
+#: df00fa3fbfc04efb907dc7844ff34855
+msgid ""
+"Seismic wavefield characterisation with distributed accelerometer arrays"
+msgstr "分散加速度計アレイによる地震波動場特性評価"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:160016
+#: e7ed5938825a4c92ad47cd0f847076b6
+msgid "Environmental field mapping (magnetic, acoustic) for noise hunting"
+msgstr "ノイズハンティングのための環境場マッピング"
+
+#: ../../how-to/coupling/advanced_field_analysis.ipynb:160017
+#: c4c2b8ec382e4d4793ca9cd2bea06045
+msgid "Mirror surface deformation from displacement sensor arrays"
+msgstr "変位センサーアレイからのミラー表面変形解析"

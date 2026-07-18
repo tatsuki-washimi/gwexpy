@@ -1,0 +1,432 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:10002
+#: 0c0db946ab3349398a69456816c677b0
+msgid "Bruco: Bilinear Coupling and AM/FM Demodulation"
+msgstr "Bruco: バイリニアカップリングと AM/FM 復調"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:10004
+#: ed2374b16c8149be90ecd7d7088045cd
+msgid ""
+"Standard Bruco scans only detect **linear** coherence between DARM and "
+"auxiliary channels. Real interferometer noise often involves **nonlinear** "
+"coupling mechanisms that a linear scan misses entirely. This tutorial covers"
+" two common advanced patterns found in O4 commissioning data and distilled "
+"from the gwexpy usage catalog:"
+msgstr ""
+"標準的な Bruco スキャンは、DARM "
+"と補助チャンネル間の**線形**コヒーレンスのみを検出します。実際の干渉計ノイズには、線形スキャンが完全に見逃す**非線形**結合メカニズムがしばしば関与します。このチュートリアルでは、O4"
+" コミッショニングデータで見られ、gwexpy のユースケースカタログから抽出された 2 つの一般的な高度なパターンを扱います："
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:10009
+#: bdf02daebd564c3fac73361cd345858f
+msgid ""
+"**Bilinear coupling detection** — build a synthetic witness `fast × slow` "
+"and run Bruco on the extended channel set."
+msgstr ""
+"**双線形結合の検出** — 合成 witness `fast × slow` を構築し、拡張したチャンネルセットに対して Bruco を実行します。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:10011
+#: 998f6c26c09e47acb6dddf889b40de1e
+msgid ""
+"**Hilbert AM/FM demodulation** — extract the instantaneous amplitude / "
+"frequency of a spectral line and correlate these slowly-varying envelopes "
+"with environmental sensors."
+msgstr ""
+"**ヒルベルト AM/FM 復調** — スペクトル線の瞬時振幅／周波数を抽出し、これらのゆっくり変化する包絡線を環境センサーと相関させます。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:10014
+#: 59be0d539b6b450ab40d62c24a1f2dac
+msgid ""
+"The physical question in both cases is the same: which slow environmental or"
+" control variable is modulating a higher-frequency feature seen in DARM, and"
+" how should we encode that hypothesis so Bruco can test it."
+msgstr ""
+"どちらの場合も物理的な問いは同じです。どのゆっくりした環境変数や制御変数が DARM に見られる高周波の特徴を変調しているのか、そしてその仮説を "
+"Bruco が検証できるようにどう符号化すべきか、ということです。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:10016
+#: 16016ecdaaa14bad888fb7ebe27fccc2
+msgid "**Prerequisites**:"
+msgstr "**前提条件**:"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:10017
+#: 09b881f532824eb1954d21189f0ba6eb
+msgid "[Noise Hunting with Bruco](../coupling/advanced_bruco.ipynb)"
+msgstr "[Bruco によるノイズハンティング](../coupling/advanced_bruco.ipynb)"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:10018
+#: 3a3d5e1f0295466083dfe9df26917c5c
+msgid "[Bruco + ICA End-to-End Denoising](case_bruco_ica_denoising.ipynb)"
+msgstr "[Bruco + ICA エンドツーエンドのノイズ除去](case_bruco_ica_denoising.ipynb)"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:20002
+#: 3fd7c00b906b435483eba7f7000b6df0
+msgid "Setup"
+msgstr "準備"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:40002
+#: 4a2b31608f544190ae6976cf3d90cd7e
+msgid "1. Mock Data Generation"
+msgstr "1\\. モックデータ生成"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:40004
+#: bd42c8e32f0a4c55a2ea3ce967fa2c64
+msgid ""
+"We synthesize a DARM channel that contains two types of noise beyond the "
+"Gaussian floor:"
+msgstr "DARM チャンネルには Gaussian フロアに加え、以下の 2 種類のノイズを重畳します。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 6a9b606611e549dab7ce3a7704ebfcd6
+msgid "Noise type"
+msgstr "ノイズ種別"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: ca0ff333cf81483cae8aead39c11a581
+msgid "Mechanism"
+msgstr "機構"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 182cbe44aab44d6296aecbd70cd5116f
+msgid "Signature"
+msgstr "特徴"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 96807e2826f3474db9f4d5aa464bdd96
+msgid "**Bilinear**"
+msgstr "**バイリニア**"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 9428368e31da43099b05b837826d2e35
+msgid "`DARM += α · fast_witness × slow_witness`"
+msgstr "`DARM += α · fast × slow`"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 16717a7a7b7e4bb79c41529079fcb394
+msgid "Sidebands around fast-channel frequency"
+msgstr "fast チャンネル周波数付近にサイドバンド"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 84e368685ba7407a97f8d79c11f05353
+msgid "**AM line**"
+msgstr "**AM ライン**"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 346105c589bf4b5a8fa6dafa02e7eec6
+msgid "`DARM += A(t) · sin(2π·30Hz·t)` where A(t) ∝ slow_env"
+msgstr "`DARM += A(t) · sin(2π·30Hz·t)`, A(t) ∝ 環境ドリフト"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 4b3bb46eef17496abe104208084011ba
+msgid "30 Hz line whose amplitude fluctuates"
+msgstr "振幅が揺らぐ 30 Hz ライン"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:40011
+#: 71dfe24390414c02aa790aed8b4eeb38
+msgid ""
+"A linear Bruco scan will **not** detect bilinear coupling because the "
+"witness channels are individually incoherent with DARM — only their "
+"*product* is."
+msgstr ""
+"線形 Bruco では個々のウィットネスチャンネルと DARM の直接コヒーレンスは低く、 バイリニアカップリングは**検出されません**。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:40014
+#: 7939b7594daf426aabdf8013d63bf0ed
+msgid ""
+"**Common mistake**: concluding that \"no coherence\" means \"no coupling\" "
+"after only the baseline scan. For bilinear problems, the failure of the "
+"linear witness is the expected diagnostic, not a negative result."
+msgstr ""
+"**よくある誤り**：ベースラインスキャンだけで「コヒーレンスがない」ことを「結合がない」と結論づけること。双線形問題では、線形 witness "
+"の失敗は否定的な結果ではなく、予期される診断です。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:70002
+#: 6964521efc0d4508a46b05e86eb02199
+msgid "2. Linear Bruco Scan (Baseline)"
+msgstr "2\\. 線形 Bruco スキャン（ベースライン）"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:70004
+#: 537f22e29a7944239c8780859e233c9b
+msgid ""
+"Run the standard Bruco coherence scan with the two individual witnesses. The"
+" bilinear coupling between them and DARM should remain invisible here."
+msgstr "2 つのウィットネスチャンネルで通常の線形コヒーレンススキャンを実行します。 バイリニアカップリングはここでは見えないことを確認します。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:90002
+#: 125ba24e51254ca5b72a539131d773e1
+msgid "3. Bilinear Coupling Detection"
+msgstr "3\\. バイリニアカップリング検出"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:90004
+#: a22f166ad54843c29b2b34a4a8ad202e
+msgid ""
+"**Recipe** (from O4b DARM-116 Hz and IMMT bilinear commissioning analyses):"
+msgstr "**レシピ**（O4b DARM 116 Hz 解析・IMMT バイリニアコミッショニング解析より）:"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:90012
+#: a26bdee4347b41a1b130ecac59c5a2ad
+msgid ""
+"This synthetic channel mimics the product nonlinearity inside the "
+"interferometer. If DARM contains `fast × slow`, the bilinear witness will be"
+" highly coherent with it."
+msgstr ""
+"この合成チャンネルは干渉計内部の積型非線形性を模擬します。 DARM が `fast × slow` "
+"を含む場合、バイリニアウィットネスとの高いコヒーレンスが現れます。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:90015
+#: 549e836cf5e94b908ed365ddc10ce505
+msgid "We then pass this extended channel set back to `Bruco.compute()`."
+msgstr "拡張チャンネルセットを `Bruco.compute()` に渡して再スキャンします。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:90017
+#: 073516d5e97a4d4b963f871515351b6b
+msgid ""
+"**Failure-prone pattern**: using an overly broad slow-band or leaving DC "
+"trends in the fast witness. Both choices smear the product witness and often"
+" create impressive-looking but non-local coherence. Keep the slow witness "
+"tied to the modulation band you expect physically."
+msgstr ""
+"**失敗しやすいパターン**：過度に広いスローバンドを使ったり、fast witness に DC トレンドを残したりすること。どちらの選択も積 "
+"witness を不鮮明にし、見栄えはよいが非局所的なコヒーレンスをしばしば生み出します。スロー witness "
+"は、物理的に予想される変調帯域に結びつけておきましょう。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:120002
+#: 1e241909c61a4a26b53a4e3447f9ad36
+msgid "4. Hilbert AM/FM Demodulation"
+msgstr "4\\. Hilbert AM/FM 復調"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:120004
+#: 7b7b110b1166470c93dfee1bf499e62f
+msgid ""
+"When a spectral line is amplitude- or frequency-modulated by a slow "
+"environmental perturbation, the line's *carrier* frequency shows no direct "
+"coherence with the slow channel — but the **envelope** does."
+msgstr ""
+"スペクトル線がゆっくりした環境擾乱で振幅変調（AM）または周波数変調（FM）されている場合、 "
+"キャリア周波数と低速チャンネルの**直接コヒーレンスはゼロ**です。しかし、 **包絡線**は高いコヒーレンスを持ちます。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:120008
+#: 2c0219cdcfe74756864d525b78fab90c
+msgid "**Recipe** (from O4c PEM injection shaker analyses):"
+msgstr "**レシピ**（O4c PEM injection シェーカー解析より）:"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:120017
+#: a06910313e414b5e86fcb34df5da071d
+msgid ""
+"We then correlate `inst_amp` and `inst_freq` with slow auxiliary channels to"
+" identify what is driving the amplitude / frequency modulation."
+msgstr "`inst_amp` および `inst_freq` を低速補助チャンネルと相関させ、 変調源を特定します。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:120020
+#: 715d6ce0dcd941f78b0d58194b72aeb3
+msgid ""
+"**Common mistake**: correlating the raw carrier ASD with the slow witness "
+"and stopping there. AM/FM problems usually live in the envelope or "
+"instantaneous-frequency channel, not in the carrier bin itself."
+msgstr ""
+"**よくある誤り**：生のキャリア ASD をスロー witness と相関させ、そこで止めること。AM/FM "
+"問題は通常、キャリアビン自体ではなく、包絡線または瞬時周波数チャンネルに存在します。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:140002
+#: a6faa9514dfe48a8891ec0b2637869b8
+msgid "5. AM/FM Coherence with Slow Witnesses"
+msgstr "5\\. AM/FM と低速ウィットネスのコヒーレンス"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:140004
+#: de258dcd20a34f6aaa4933488af951d5
+msgid ""
+"The Hilbert envelope (`inst_amp`) and instantaneous frequency (`inst_freq`) "
+"have their own ASD in the modulation frequency range (0 – 5 Hz here). We "
+"compute coherence of these signals with slow environmental witnesses to "
+"identify the modulation source."
+msgstr ""
+"Hilbert 包絡線（`inst_amp`）と瞬時周波数（`inst_freq`）は 変調周波数帯域（ここでは 0 – 5 Hz）に独自の ASD "
+"を持ちます。 これらと低速環境チャンネルのコヒーレンスを計算し、変調源を特定します。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:140009
+#: 46e47aa836324379be4567f743f2add4
+msgid ""
+"**Failure mode to watch for**: if the band-pass around the carrier is too "
+"wide, neighbouring lines leak into the analytic signal; if it is too narrow,"
+" the demodulated envelope is artificially suppressed. Tune the carrier "
+"window to isolate one physical line family."
+msgstr ""
+"**注意すべき失敗モード**：キャリア周りのバンドパスが広すぎると、隣接する線が解析信号に漏れ込みます。狭すぎると、復調された包絡線が人為的に抑制されます。一つの物理的な線系列を分離するようにキャリア窓を調整してください。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160002
+#: 1bebb755a82744dcafbe53b6f5e29e3c
+msgid "Summary"
+msgstr "まとめ"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 13e68b99ce384dc9bf44f71279670745
+msgid "Step"
+msgstr "ステップ"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: c698c4a7c0634b01bd72ebe18dba72b3
+msgid "Tool"
+msgstr "ツール"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 024b8214acd347f8b4327620667f46d4
+msgid "Purpose"
+msgstr "目的"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 378c06a6a8e949eba26e7cf1161894db
+msgid "1."
+msgstr "1."
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 71c3844acf3a41b38e04e56a4579d801
+msgid "Mock data"
+msgstr "モックデータ"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 2ad08e43f99445208511164a83141267
+msgid "Bilinear noise + AM line"
+msgstr "バイリニアノイズ + AM ライン"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: c3cec767c75f485caaca1f312715163d
+msgid "2."
+msgstr "2."
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 2d3e3bb8921c459db98f2935a0cecdfe
+msgid "`Bruco.compute()` (linear)"
+msgstr "`Bruco.compute()`（線形）"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: d6e8e002446641deb269383af441b265
+msgid "Baseline — misses nonlinear coupling"
+msgstr "ベースライン確認 — 非線形カップリングは見えない"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 4746d1ee3339463d9ea2a8f1c5c3b150
+msgid "3."
+msgstr "3."
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 1bfdc359650246798cdc0c86ed16982a
+msgid "`fast.highpass() * slow.bandpass()` → `Bruco.compute()`"
+msgstr "`fast.highpass() * slow.bandpass()` → `Bruco.compute()`"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 8123bb45a78842928766a347afbb470b
+msgid "Detect bilinear coupling"
+msgstr "バイリニアカップリング検出"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: d876fb29687c485cb064124bc8cad1f2
+msgid "4."
+msgstr "4."
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: dad99af0966945988719c7fcfaee82f1
+msgid "`scipy.signal.hilbert`"
+msgstr "`scipy.signal.hilbert`"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: c2540682055745cdb8754ccfe6ad48c0
+msgid "Extract AM/FM from spectral line"
+msgstr "スペクトル線の AM/FM 成分抽出"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: e8768ed69a2c46d2bfcdaf2f136550ff
+msgid "5."
+msgstr "5."
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: 1ba0734a8daa405eab32a2e974e53c0f
+msgid "`inst_amp.coherence(slow)`"
+msgstr "`inst_amp.coherence(slow)`"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb
+#: d3fad3adae9b4629b53d203235606fa6
+msgid "Identify modulation source"
+msgstr "変調源の特定"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160012
+#: 72103f66adf44de0bd2a3b2558fb2139
+msgid "Key takeaways"
+msgstr "重要なポイント"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160014
+#: 1df999ae50e1409fa53bc7f271787734
+msgid ""
+"**Linear Bruco is not sufficient** when coupling has the form `DARM ≈ f_fast"
+" × f_slow`. Building a synthetic `fast × slow` witness restores coherence."
+msgstr ""
+"結合が `DARM ≈ f_fast × f_slow` の形をとる場合、**線形 Bruco では不十分**です。合成 `fast × slow` "
+"witness を構築するとコヒーレンスが回復します。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160016
+#: 38d95b7fb6794e6e90e7b6d4eae39e1e
+msgid ""
+"**Hilbert demodulation** decouples the carrier (high frequency) from the "
+"modulation (low frequency), enabling coherence searches in the modulation "
+"band."
+msgstr "**ヒルベルト復調**はキャリア（高周波）を変調（低周波）から分離し、変調帯域でのコヒーレンス探索を可能にします。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160018
+#: c67d7e4fcedc4427b5944700bb8c7c4a
+msgid ""
+"Both patterns require only `TimeSeries` arithmetic (`*`, `.highpass()`, "
+"`.bandpass()`) plus `Bruco.compute()` — no additional gwexpy modules."
+msgstr ""
+"どちらのパターンも `TimeSeries` の算術（`*`、`.highpass()`、`.bandpass()`）と "
+"`Bruco.compute()` のみを必要とし、追加の gwexpy モジュールは不要です。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160020
+#: 2a31efc55cbc44c8a0cdf401f07b9194
+msgid ""
+"Failure of the baseline linear scan is itself useful evidence when the "
+"expected physics is multiplicative or slowly modulated."
+msgstr "期待される物理が積型や低速変調なら、ベースライン線形スキャンの失敗自体が重要な手掛かりになる。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160022
+#: 20bab50dfd6c4282b19bb7cea682c3d5
+msgid "Next steps"
+msgstr "次のステップ"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160024
+#: 02dd5a0b2af640a8b1c7f388a817d326
+msgid "Replace mock data with real NDS/GWF channels (`TimeSeries.read()`)."
+msgstr "実データは `TimeSeries.read()` で NDS/GWF から読み込む。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160025
+#: f7d331cfab59484e90560cec7704db45
+msgid ""
+"Extend the bilinear search to all `(ch_fast, ch_slow)` pairs systematically."
+msgstr "バイリニアスキャンを全 `(ch_fast, ch_slow)` ペアに系統的に拡張する。"
+
+#: ../../how-to/case-studies/case_bruco_advanced.ipynb:160026
+#: c7fa00437c854729b1420167dabf18ff
+msgid ""
+"Combine with `Spectrogram.normalize(method='snr')` to track amplitude "
+"modulation as a SNR spectrogram over time."
+msgstr ""
+"`Spectrogram.normalize(method='snr')` と組み合わせて、振幅変調を時間にわたる SNR "
+"スペクトログラムとして追跡できます。"

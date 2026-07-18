@@ -55,7 +55,19 @@ def resolve_default_base() -> str:
 def list_changed_notebooks(base: str, head: str) -> list[str]:
     """Return changed notebook paths from git diff."""
     result = run_command(
-        ["git", "diff", "--name-only", "--diff-filter=ACMR", f"{base}...{head}", "--", "*.ipynb"],
+        [
+            "git",
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMR",
+            f"{base}...{head}",
+            "--",
+            "*.ipynb",
+            # docs_redesign executes clean notebook sources through MyST-NB in
+            # its own isolated Sphinx-build check.  Do not duplicate that work
+            # with papermill here or write outputs into the checkout.
+            ":(exclude)docs_redesign/**",
+        ],
         capture_output=True,
     )
     if result.returncode != 0:
@@ -70,6 +82,8 @@ def filter_changed_notebooks(paths: Iterable[str], repo_root: Path = REPO_ROOT) 
         if rel_path.endswith(".ipynb") is False:
             continue
         if "_build" in rel_path or ".ipynb_checkpoints" in rel_path:
+            continue
+        if rel_path.startswith("docs_redesign/"):
             continue
         abs_path = repo_root / rel_path
         if abs_path.is_file():

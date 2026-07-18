@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-05 11:26+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/control/advanced_control_basics.ipynb:10002
+#: 03ec3801127d4682aad37f9a5ac6ecd9
+msgid "Control Analysis: Resonance and Feedback"
+msgstr "制御解析: 共振とフィードバック"
+
+#: ../../how-to/control/advanced_control_basics.ipynb:20002
+#: e2cca86f003c495aa631edfe41219473
+msgid ""
+"This notebook turns the legacy control measurement tutorial into a public "
+"control-analysis entrypoint. The core question is how to recognize a "
+"resonant plant from time-series data before any controller is designed."
+msgstr ""
+"この notebook は legacy の計測・スペクトル解析チュートリアルを、公開 docs "
+"用に共振解析の入口として整理したものです。コントローラを設計する前に知りたいのは、**どこに共振があり、入力が本当に出力を説明しているか** です。"
+
+#: ../../how-to/control/advanced_control_basics.ipynb:20004
+#: 56884d0422e34ad6922e27e112dc9311
+msgid ""
+"We use a broadband drive, a second-order plant, ASD, coherence, and a "
+"measured transfer function. Those are the measurements that tell you whether"
+" the mode is real, where it sits, and whether the input truly explains the "
+"output."
+msgstr ""
+"広帯域励振、2 "
+"次系のプラント、ASD、コヒーレンス、実測の伝達関数を用います。これらは、そのモードが実在するか、どの周波数にあるのか、入力が出力を本当に説明しているのかを教えてくれる測定量です。"
+
+#: ../../how-to/control/advanced_control_basics.ipynb:40002
+#: 89dd104a33624dc9bffa6e9d26b43787
+msgid "1. Inspect the time series"
+msgstr "1\\. 時間波形を見る"
+
+#: ../../how-to/control/advanced_control_basics.ipynb:40004
+#: 09191a24b1194fa2b8a63ff18a88a2dc
+msgid ""
+"A short zoom shows that the output is not just delayed input: it rings "
+"because energy is temporarily stored in the resonant mode."
+msgstr "短時間のズームでは、出力が単なる遅れた入力ではなく、共振モードにエネルギーが一時的に蓄えられていることが見えます。"
+
+#: ../../how-to/control/advanced_control_basics.ipynb:60002
+#: 79121cdf2d1344fc9fe1cc6f9f61af5d
+msgid "2. ASD, coherence, and measured transfer function"
+msgstr "2\\. ASD・コヒーレンス・伝達関数"
+
+#: ../../how-to/control/advanced_control_basics.ipynb:60004
+#: 6176f640a03a4ba8a033bcf40136e8ef
+msgid ""
+"ASD shows where energy accumulates, coherence shows whether the drive really"
+" explains the response, and the transfer function combines both into the "
+"plant's complex frequency response."
+msgstr "ASD はどこにエネルギーが集まるか、コヒーレンスは入力がどこまで出力を説明しているか、伝達関数はその両方をまとめた複素応答です。"

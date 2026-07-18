@@ -1,0 +1,355 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-18 17:47+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:1
+#: ca43299ecd2341248c931722f5156201
+msgid "Physics Models and Analysis Theory"
+msgstr "物理モデルと解析理論"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:3
+#: 5b7de4c7ff0444c29089b54531ca18e7
+msgid ""
+"This page explains the advanced models and analytical theories implemented in "
+"`gwexpy` for handling specific physical phenomena and hardware responses."
+msgstr "`gwexpy` に実装されている、特定の物理現象やハードウェア応答を扱うための高度なモデルについて解説します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:5
+#: 238e0769fb1a48dd9950ef4057a3d53b
+msgid "Response and Coupling Functions"
+msgstr "応答関数と結合関数 (Response & Coupling)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:7
+#: 8f2bbed9550b4b12b547a5add2c15204
+msgid "Automatic Excitation Detection"
+msgstr "励起セグメントの自動検出"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:9
+#: 7b73d933520a4dc5b53a9988848651ef
+msgid ""
+"Extracts stable intervals for analysis from data containing injections (such as swept"
+" sine or stepped sine). By tracking power in specific frequency bands on a "
+"spectrogram, it identifies segments that exceed thresholds, eliminating the need for "
+"manual time-range specification."
+msgstr "インジェクション（スウェプトサインやステップサインなど）を含むデータから、解析に有効な安定区間を自動的に抽出します。スペクトログラム上で特定の周波数バンドのパワーを追跡し、閾値を超えたセグメントを抽出することで、手動での時刻指定を不要にします。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:11
+#: 9f4d03b5a0e74e04bff48475b4665fc7
+msgid "Coupling Function (:term:`Coupling Function`; CF)"
+msgstr "結合関数 (:term:`Coupling Function`; CF)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:13
+#: 67d8968047ea432098af35468bec1620
+msgid ""
+"Estimates coupling functions while accounting for background noise. By comparing "
+"power during injection and background periods for both the target and witness "
+"signals, it isolates the true coupling degree."
+msgstr ""
+"バックグラウンドノイズを考慮した結合関数の推定を行います。 "
+"ターゲット信号と参照信号（ウィットネス信号）の両方について、インジェクション時とバックグラウンド時のパワーを比較することで、真の結合度を推定します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:15
+#: eaf4181e4a564964b8d0d151127159d0
+msgid ""
+"\n"
+"\\text{CF}(f) = \\sqrt{\\frac{P_{\\text{tgt,inj}}(f) - "
+"P_{\\text{tgt,bkg}}(f)}{P_{\\text{wit,inj}}(f) - P_{\\text{wit,bkg}}(f)}}\n"
+msgstr ""
+"\n"
+"\\text{CF}(f) = \\sqrt{\\frac{P_{\\text{tgt,inj}}(f) - "
+"P_{\\text{tgt,bkg}}(f)}{P_{\\text{wit,inj}}(f) - P_{\\text{wit,bkg}}(f)}}\n"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 00d6c9984b87467ea7315150c6420aa1
+msgid "Variable"
+msgstr "変数"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: f51ed2a7a3a2433baabe5a8725304084
+msgid "Definition"
+msgstr "定義"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: a61844d3714d4740881b4158e1d923e5
+msgid "Physical Meaning"
+msgstr "物理的意味"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 4bd36ab9db6b43e8a85567b7a62e929c
+msgid "$f$"
+msgstr "$f$"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 2f0f862f05b54acba5567393fef7e849
+msgid "Frequency"
+msgstr "周波数"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 3b5f8a76e20548069574f2669e71aab2
+msgid "Frequency point for analysis"
+msgstr "解析対象の周波数点"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 99124003cc054e8aaf733e6b13c04415
+msgid "$P_{\\text{tgt,inj}}(f)$"
+msgstr "$P_{\\text{tgt,inj}}(f)$"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: da33685654fc4650a4547994bdee41c6
+msgid "Target signal power (during injection)"
+msgstr "ターゲット信号パワー（インジェクション時）"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 9b6e9418ac1c478fb6e84656313fe656
+msgid "Power distribution of the main signal during excitation"
+msgstr "加振中のメイン信号のパワー分布"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 53b8050a35354e5c816ea4b0ca293993
+msgid "$P_{\\text{tgt,bkg}}(f)$"
+msgstr "$P_{\\text{tgt,bkg}}(f)$"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 1aa563b2b5bc47a48e88b52c05f77d9b
+msgid "Target signal power (during background)"
+msgstr "ターゲット信号パワー（バックグラウンド時）"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 2d74c139b521458f8257face82e258e6
+msgid "Noise floor of the main signal without excitation"
+msgstr "無加振時のメイン信号のノイズフロア"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: d518f48fbf0a4264ab176eaf5329efc4
+msgid "$P_{\\text{wit,inj}}(f)$"
+msgstr "$P_{\\text{wit,inj}}(f)$"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 025246385b4a453c84ea03cf2a25530e
+msgid "Witness signal power (during injection)"
+msgstr "ウィットネス信号パワー（インジェクション時）"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 1def0820596b47bb984b9bb9db386ac3
+msgid "Power of the reference signal (e.g., environmental noise)"
+msgstr "加振中の参照信号（環境ノイズ源等）のパワー"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: 4c9ec35acc08447ebbe38e104cf410d6
+msgid "$P_{\\text{wit,bkg}}(f)$"
+msgstr "$P_{\\text{wit,bkg}}(f)$"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: ee4fc275f4294372bec7d23f8fe5cd7e
+msgid "Witness signal power (during background)"
+msgstr "ウィットネス信号パワー（バックグラウンド時）"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md
+#: be0ef1ce49f141208831a37b5cb6441f
+msgid "Noise floor of the reference signal without excitation"
+msgstr "無加振時の参照信号のノイズフロア"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:27
+#: eb25b28c1a044ec78818332263f108b0
+#, python-brace-format
+msgid ""
+"**Related API**: {doc}`../reference/api/analysis` "
+"(`gwexpy.analysis.coupling.estimate_coupling`)"
+msgstr ""
+"**関連 API**: {doc}`../reference/api/analysis` "
+"(`gwexpy.analysis.coupling.estimate_coupling`)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:31
+#: d41483313db3438790125fd54b3e712e
+msgid "Built-in Noise Models"
+msgstr "組み込みノイズモデル"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:33
+#: 9f28f8f5aca442449248f404f3d6ac5e
+msgid ""
+"Provides physically motivated noise generators for use as initial models in "
+"simulations or fitting."
+msgstr "シミュレーションやフィッティングの初期モデルとして利用可能な、物理的に裏付けられたノイズジェネレーターを提供しています。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:35
+#: 9b6d3811109f45b7b243fc7ad687db56
+msgid "1. Schumann Resonance (:term:`Schumann Resonance`)"
+msgstr "1. シューマン共鳴 (:term:`Schumann Resonance`)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:37
+#: b50327c9321946ec8ac476000f69c7ad
+msgid ""
+"Models magnetic noise corresponding to the resonance modes of the Earth-ionosphere "
+"cavity. It reproduces the low-frequency magnetic background by superimposing multiple"
+" independent Lorentzian profiles."
+msgstr ""
+"地球-電離層空洞の共振モードに対応する地磁気ノイズをモデル化します。 "
+"複数の独立したローレンツプロファイル（Lorentzian）を重畳することで、低周波領域の磁場バックグラウンドを再現します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:39
+#: 7bced4cdb621428e99b2caabd74521e0
+#, python-brace-format
+msgid ""
+"**Related API**: {doc}`../reference/api/noise` "
+"(`gwexpy.noise.magnetic.schumann_resonance`)"
+msgstr "**関連 API**: {doc}`../reference/api/noise` (`gwexpy.noise.magnetic.schumann_resonance`)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:41
+#: 3085de75206a4512908c2dde3dd3da5b
+msgid "2. Voigt Profile"
+msgstr "2. フォークト関数 (Voigt Profile)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:43
+#: 0db23208c12546c1b323fdf29b16f594
+msgid ""
+"Generates peak shapes found in atomic physics or high-Q mechanical resonances, which "
+"combine Gaussian (Doppler broadening, etc.) and Lorentzian (collision/natural "
+"broadening, etc.) characteristics. It is calculated efficiently using the Faddeeva "
+"function."
+msgstr ""
+"原子物理学や高 Q "
+"値のメカニカル共振で見られる、ガウシアン（ドップラー広がり等）とローレンツィアン（衝突広がり・自然広がり等）が組み合わさったピーク形状を生成します。内部では "
+"Faddeeva 関数を用いて効率的かつ正確に計算されます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:45
+#: e6fa4655338d4d3388a124fa27ee0dcb
+#, python-brace-format
+msgid "**Related API**: {doc}`../reference/api/noise` (`gwexpy.noise.peaks.voigt_line`)"
+msgstr "**関連 API**: {doc}`../reference/api/noise` (`gwexpy.noise.peaks.voigt_line`)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:49
+#: ee9e29e5c72948a894ec595077387e18
+msgid "Advanced Analysis Engines and Algorithms"
+msgstr "高度な解析エンジンとアルゴリズム"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:51
+#: ff9983caba7a496c9b2fdccd46756ad5
+msgid "1. Independent and Principal Component Analysis (ICA/PCA)"
+msgstr "1. 独立成分分析・主成分分析 (ICA/PCA)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:53
+#: 8f4b6bf86c90403cb451b162200d5a1f
+msgid ""
+"The ICA/PCA implementation in `gwexpy` provides preprocessing and metadata behavior "
+"intended for physical-data workflows:"
+msgstr "`gwexpy` の ICA/PCA 実装は、物理データのワークフローを想定した前処理とメタデータの扱いを提供します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:55
+#: b144ae8da7ad4707b91ecaa25f3313f5
+msgid ""
+"**Unit Variance Standardization**: Standardizes data to unit variance internally to "
+"improve convergence, then restores (re-scales) the original physical scale after "
+"computation."
+msgstr "**単位分散標準化**: アルゴリズムの収束性を高めるため、内部でデータを単位分散に標準化し、演算後に元の物理スケールを復元（再スケーリング）します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:56
+#: 3ce9f7b02c034ae2993e7dc0ea4826c5
+msgid ""
+"**Spatio-temporal Metadata Inheritance**: Automatically inherits the GPS time "
+"conventions from the input data for each statistically extracted component."
+msgstr "**時空メタデータの継承**: 統計的に抽出された各成分に対し、入力データが保持していた GPS 時刻規約を自動的に継承させます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:58
+#: d9eb6ade3bc644b29efe060685d62a87
+#, python-brace-format
+msgid "**Related API**: {doc}`../reference/api/signal` (ICA, PCA)"
+msgstr "**関連 API**: {doc}`../reference/api/signal` (ICA, PCA)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:60
+#: 633f044048404a819a3555573c5b374d
+msgid "2. Fast Correlation Engine (:term:`Bruco`)"
+msgstr "2. 高速相関計算エンジン (:term:`Bruco`)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:62
+#: 86dc0c1200f3407f9e42fcdbdcddccf9
+msgid ""
+"The `FastCoherenceEngine` supports batch coherence scans over auxiliary channels for "
+"a target signal."
+msgstr "`FastCoherenceEngine` は、ターゲット信号に対する補助チャネルのコヒーレンスをバッチで走査できます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:64
+#: 7bd32a7f6fdf4306a4e388c3dd9595a4
+msgid "**FFT Caching**: Reuses FFT results for a common target signal in memory."
+msgstr "**FFT キャッシング**: 共通のターゲット信号に対する FFT 計算結果をメモリ内で再利用。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:65
+#: 3ecce6b8d8fc421bb3a5b7de16296dac
+msgid ""
+"**Sparse-like Computation**: Skips non-correlated channels early to focus resources "
+"on significant contributors."
+msgstr "**疎行列演算**: 相関のないチャネルを早期にスキップし、計算リソースを重要チャネルに集中させます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:67
+#: 889c41fc218b4951afc5a5432da32a9f
+#, python-brace-format
+msgid ""
+"**Related API**: {doc}`../reference/api/analysis` "
+"(`gwexpy.analysis.bruco.FastCoherenceEngine`)"
+msgstr ""
+"**関連 API**: {doc}`../reference/api/analysis` "
+"(`gwexpy.analysis.bruco.FastCoherenceEngine`)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:69
+#: 58d9d160fe1349228d778f44c54d2adf
+msgid "3. Bayesian Inference and GLS Fitting"
+msgstr "3. ベイズ推定と GLS フィッティング"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:71
+#: 3f8b37cf3c90482ebc10a9336a8cdb2b
+msgid "Handles parameter estimation for multidimensional data with complex error structures."
+msgstr "複雑な誤差構造を持つ多次元データのパラメータ推定を行います。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:73
+#: e31069972dce41108c1f59baa716e3ae
+msgid ""
+"**GLS (Generalized Least Squares)**: Applies statistically justified weighting when "
+"bins at different frequencies have correlated (non-diagonal) covariance."
+msgstr "**GLS (Generalized Least Squares)**: 各周波数点のビン間に相関（非対角の共分散）がある場合に、統計的に正当な重み付けを行います。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:74
+#: 958d95f4391d4a0ca95173ad783a57a8
+msgid ""
+"**MCMC Integration**: Uses `emcee` for posterior sampling, enabling robust fitting "
+"even for non-linear physical models."
+msgstr "**MCMC 統合**: `emcee` を用いた事後分布のサンプリングにより、非線形な物理モデルに対しても頑健なフィッティングが可能です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:76
+#: 966f56dfbff64d0ab9c2a422be08e60f
+#, python-brace-format
+msgid "**Related API**: {doc}`../reference/api/analysis`"
+msgstr "**関連 API**: {doc}`../reference/api/analysis`"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:78
+#: 39c5cf1af2b2432480873854ffd58840
+msgid "Related Documents"
+msgstr "関連ドキュメント"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:80
+#: c9e304e89fa7466f9ce764fbe281f886
+#, python-brace-format
+msgid "{doc}`architecture` — Internal data structures and engine design"
+msgstr "{doc}`architecture` — 内部データ構造とエンジンの設計"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/physics_models.md:81
+#: 5a839b15c06c4ea3935bf4241d201323
+#, python-brace-format
+msgid "{doc}`validated_algorithms` — Validation reports for mathematical formulas"
+msgstr "{doc}`validated_algorithms` — 各数式の妥当性検証レポート"
+

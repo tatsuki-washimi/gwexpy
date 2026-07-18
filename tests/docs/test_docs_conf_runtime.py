@@ -5,8 +5,10 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 CONF_PATH = ROOT / "docs" / "conf.py"
+REDESIGN_CONF_PATH = ROOT / "docs_redesign" / "conf.py"
 DOCS_PR_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pr.yml"
 DOCS_PAGES_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pages.yml"
+DOCS_PREVIEW_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-redesign-preview.yml"
 
 
 def _load_conf_module(name: str):
@@ -29,6 +31,20 @@ def test_local_build_defaults_disable_notebook_execution_and_exclude_ipynb(
     assert conf.nbsphinx_execute == "never"
     assert "**/*.ipynb" in conf.exclude_patterns
     assert "nbsphinx" not in conf.extensions
+
+
+def test_docs_redesign_executes_clean_notebooks_in_an_untracked_cache(monkeypatch):
+    monkeypatch.delenv("GWEXPY_NB_EXECUTION_MODE", raising=False)
+    spec = importlib.util.spec_from_file_location("gwexpy_docs_redesign_conf", REDESIGN_CONF_PATH)
+    conf = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(conf)
+
+    assert conf.nb_execution_mode == "cache"
+    assert conf.nb_execution_cache_path == "_build/jupyter-cache"
+    assert conf.nb_execution_timeout == 600
+    assert conf.nb_execution_allow_errors is False
+    assert conf.nb_execution_raise_on_error is True
 
 
 def test_explicit_notebook_build_keeps_nbsphinx_when_pandoc_exists(monkeypatch):
@@ -92,17 +108,63 @@ def _load_workflow(path: Path) -> dict:
 
 def test_docs_pr_workflow_executes_notebooks_by_default_in_github_actions():
     workflow = _load_workflow(DOCS_PR_WORKFLOW_PATH)
+    assert "CHANGELOG.md" in workflow[True]["pull_request"]["paths"]
     env = workflow["jobs"]["docs-pr"]["env"]
     assert env["NBS_EXECUTE"] == "never"
     assert env["NBS_ALLOW_ERRORS"] == "0"
 
 
-def test_docs_pages_workflow_executes_notebooks_by_default_in_github_actions():
-    workflow = _load_workflow(DOCS_PAGES_WORKFLOW_PATH)
-    env = workflow["jobs"]["publish-pages"]["env"]
-    assert env["NBS_EXECUTE"] == "never"
-    assert env["NBS_ALLOW_ERRORS"] == "0"
+def test_docs_redesign_pr_workflow_stages_the_canonical_changelog():
+    workflow = _load_workflow(DOCS_PR_WORKFLOW_PATH)
+    steps_by_name = {
+        step["name"]: step
+        for step in workflow["jobs"]["docs-redesign-pr"]["steps"]
+        if "name" in step
+    }
+    prepare = steps_by_name["Prepare isolated docs_redesign source"]
 
-    build_run = workflow["jobs"]["publish-pages"]["steps"][-2]["run"]
-    assert "-D nbsphinx_execute=never" in build_run
-    assert "-D nbsphinx_allow_errors=0" in build_run
+    assert 'mkdir -p "${docs_root}"' in prepare["run"]
+    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]
+
+
+def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs():
+    workflow = _load_workflow(DOCS_PAGES_WORKFLOW_PATH)
+    assert "CHANGELOG.md" in workflow[True]["push"]["paths"]
+    job = workflow["jobs"]["publish-pages"]
+
+    # MyST-NB executes clean notebook sources in an isolated runner copy; the
+    # old nbsphinx toggles for the previous docs/ tree do not apply here.
+    assert "NBS_EXECUTE" not in job.get("env", {})
+    assert "NBS_ALLOW_ERRORS" not in job.get("env", {})
+
+    steps_by_name = {step["name"]: step for step in job["steps"] if "name" in step}
+    prepare = steps_by_name["Prepare isolated docs_redesign source"]
+    provision = steps_by_name["Provision docs_redesign build environment"]
+    en_build = steps_by_name["Build EN HTML"]
+    ja_build = steps_by_name["Build JA HTML"]
+
+    assert "rsync -a --delete --exclude \"_build/\" docs_redesign/" in prepare["run"]
+    assert 'mkdir -p "${docs_root}"' in prepare["run"]
+    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]
+    assert 'python -m pip install -e ".[all]"' in provision["run"]
+    assert "prepare_docs_redesign.outputs.docs_src" in en_build["run"]
+    assert "prepare_docs_redesign.outputs.docs_src" in ja_build["run"]
+    assert "nbsphinx" not in en_build["run"]
+    assert "nbsphinx" not in ja_build["run"]
+    assert "-D language=ja" in ja_build["run"]
+    assert "GWEXPY_DOCS_BASEURL" in en_build["env"]
+    assert "GWEXPY_DOCS_BASEURL" in ja_build["env"]
+
+
+def test_docs_preview_workflow_rebuilds_when_the_canonical_changelog_changes():
+    workflow = _load_workflow(DOCS_PREVIEW_WORKFLOW_PATH)
+
+    assert "CHANGELOG.md" in workflow[True]["push"]["paths"]
+    steps_by_name = {
+        step["name"]: step
+        for step in workflow["jobs"]["publish-preview"]["steps"]
+        if "name" in step
+    }
+    prepare = steps_by_name["Prepare isolated docs_redesign source"]
+    assert 'mkdir -p "${docs_root}"' in prepare["run"]
+    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]

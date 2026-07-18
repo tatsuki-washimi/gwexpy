@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../how-to/case-studies/case_coupling_analysis.ipynb:10002
+#: 661384cbe90e4548bbff3298f526f115
+msgid "Coupling Analysis: Estimating Transfer Paths Between Channels"
+msgstr "カップリング解析: チャンネル間伝達経路の推定"
+
+#: ../../how-to/case-studies/case_coupling_analysis.ipynb:20002
+#: 568d961b1f584ed4b36bcc9a4c6ae25f
+msgid ""
+"This case study promotes the legacy PEM injection tutorial into the public "
+"docs. The output is a **coupling function**: a frequency-dependent estimate "
+"of how witness-channel noise projects into the target channel."
+msgstr ""
+"このケーススタディは legacy の PEM injection notebook を公開 docs 用に整理したものです。出力は **結合関数** "
+"で、witness チャンネルの雑音が target にどう投影されるかを周波数ごとに推定します。"
+
+#: ../../how-to/case-studies/case_coupling_analysis.ipynb:20004
+#: 0819a449b289435a9154dc35a2111679
+msgid ""
+"That estimate is powerful for diagnosis, but it still models a transfer path"
+" rather than proving the physical mechanism behind it."
+msgstr "ただし、この推定は伝達経路のモデルであって、物理機構そのものを証明するものではありません。"
+
+#: ../../how-to/case-studies/case_coupling_analysis.ipynb:40002
+#: d8e74a038a6c42bd8261045f2e281ed0
+msgid "1. Estimate the coupling function"
+msgstr "1\\. 結合関数を推定する"
+
+#: ../../how-to/case-studies/case_coupling_analysis.ipynb:40004
+#: 554ec629ad5f486cb8538b11bc2e5385
+msgid ""
+"The coupling function compares target excess to witness excess. If the "
+"witness injection does not produce significant target excess, the result "
+"becomes an upper limit rather than a direct estimate."
+msgstr ""
+"結合関数は target の excess と witness の excess を比で見ています。target 側に有意な excess "
+"が出なければ、推定値ではなく upper limit を返す帯域もあります。"
+
+#: ../../how-to/case-studies/case_coupling_analysis.ipynb:60002
+#: 23c17d77914a4784889d5d1abd3f9d41
+msgid "2. Compare threshold strategies"
+msgstr "2\\. しきい値戦略を変えて比べる"
+
+#: ../../how-to/case-studies/case_coupling_analysis.ipynb:60004
+#: f7ed6c2f3a0e4437a14727270d760edb
+msgid ""
+"Changing the threshold strategy changes how conservative the coupling "
+"estimate is. This matters when injection lines are intermittent or when the "
+"target channel barely rises above background."
+msgstr "しきい値の選び方を変えると、どこまで保守的に coupling を見積もるかが変わります。注入線が弱い帯域ほど、その違いが効きます。"

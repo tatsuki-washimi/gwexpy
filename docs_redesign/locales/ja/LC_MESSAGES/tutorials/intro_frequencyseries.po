@@ -1,0 +1,185 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:10002
+#: c18ad30d47b045ce9770be8992e7e179
+msgid "FrequencySeries: Basics"
+msgstr "FrequencySeries: 基本"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:10004
+#: 5688d44ca1ef4ee08b9bc6fa6a770af9
+msgid ""
+"This notebook introduces the new methods and features of the "
+"`FrequencySeries` class extended in `gwexpy`. We will focus on handling "
+"complex spectra, calculus operations, filtering (smoothing), and integration"
+" with other libraries."
+msgstr ""
+"このノートブックでは、`gwexpy` で拡張された `FrequencySeries` クラスの新しいメソッドと機能について紹介します。 "
+"主に複素スペクトルの扱い、微積分、フィルタリング（スムージング）、および他ライブラリとの連携機能に焦点を当てます。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:30002
+#: 3ce5982424124029ad6a7fa6de6a3660
+msgid "1. Data Preparation"
+msgstr "1\\. データの準備"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:30004
+#: 7c1d403609c04845b16dfe86c213c6a2
+msgid ""
+"First, we create a `FrequencySeries` from a `TimeSeries` using FFT. Here, we"
+" generate a test signal with specific frequency components."
+msgstr ""
+"まずは `TimeSeries` から FFT を用いて `FrequencySeries` を作成します。 "
+"ここでは、特定の周波数成分を持つテスト信号を生成します。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:50002
+#: d17fa69864ca4f52b351326c802b4d2c
+msgid "2. Visualization and Conversion of Complex Spectra"
+msgstr "2\\. 複素スペクトルの可視化と変換"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:50004
+#: c0fad562d40246829efe50165cb1c124
+msgid "Phase and Amplitude"
+msgstr "位相と振幅"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:50005
+#: eaba5b2f3cf04847a0740561119b208b
+msgid ""
+"Using the `phase()`, `degree()`, and `to_db()` methods, you can convert "
+"complex spectra into intuitive units."
+msgstr "`phase()`, `degree()`, `to_db()` メソッドを使用すると、複素スペクトルを直感的な単位に変換できます。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:70002
+#: 64e3146ab35f45d1aca2f949b240aeed
+msgid "3. Calculus in Frequency Domain"
+msgstr "3\\. 周波数ドメインでの微積分"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:70004
+#: 7ecba49dba774881b4390d65c73cfaa5
+msgid ""
+"The `differentiate()` and `integrate()` methods allow you to perform "
+"differentiation and integration in the frequency domain. You can specify the"
+" order using the `order` argument (default is 1). This feature makes it easy"
+" to convert between displacement, velocity, and acceleration "
+"(multiplication/division by $(2 \\pi i f)^n$)."
+msgstr ""
+"`differentiate()` および `integrate()` メソッドにより、周波数ドメインで微分・積分を行うことができます。 引数 "
+"`order` で階数を指定できます（デフォルトは1）。 これは「変位・速度・加速度」の変換（$(2 \\pi i f)^n$ "
+"の乗算・除算）を簡単に行うための機能です。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:90002
+#: f6663bd9e6bb4e5188be91a51515d512
+msgid "4. Spectrum Smoothing and Peak Detection"
+msgstr "4\\. スペクトルのスムージングとピーク検出"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:90004
+#: 0979ed306c87462993f9a0d9db872ba7
+msgid "Smoothing"
+msgstr "スムージング"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:90005
+#: 64b9bae5b04c4e56a46bd5c579fd5135
+msgid ""
+"The `smooth()` method enables smoothing of the spectrum using moving "
+"averages and other techniques."
+msgstr "`smooth()` メソッドを使用すると、移動平均などによるスペクトルの平滑化が可能です。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:110002
+#: cb448fcca1d44c2a847cdb012af683a3
+msgid "Peak Detection"
+msgstr "ピーク検出"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:110003
+#: cfa222f43e544719beb58ef26ef339e0
+msgid ""
+"The `find_peaks()` method wraps `scipy.signal.find_peaks`, making it easy to"
+" extract peaks above a specific threshold."
+msgstr ""
+"`find_peaks()` メソッドは `scipy.signal.find_peaks` "
+"をラップしており、特定の閾値を超えるピークを簡単に抽出できます。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:130002
+#: 0dd04cae4b884214bac1748772733f50
+msgid "5. Advanced Analysis Features"
+msgstr "5\\. 高度な解析機能"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:130004
+#: 8c420f8bbbc44e77895f3acf001207b7
+msgid "Group Delay"
+msgstr "群遅延 (Group Delay)"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:130005
+#: 11d78f5909014a7097710e7ecf70b5cf
+msgid ""
+"The `group_delay()` method calculates the group delay (delay of the signal "
+"envelope) from the frequency derivative of the phase."
+msgstr "`group_delay()` メソッドは、位相の周波数微分から群遅延（信号のエンベロープの遅延）を計算します。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:150002
+#: 523eaa802e724e5285333b47be84e8b1
+msgid "Inverse FFT (ifft)"
+msgstr "逆FFT (ifft)"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:150003
+#: 53de4bcd50414c91a87f8ffa2070c6e6
+msgid ""
+"The `ifft()` method returns a `TimeSeries`. Even for results from FFT with "
+"`mode=\"transient\"`, it can inherit the information and control restoration"
+" to the original length (trim=True)."
+msgstr ""
+"`ifft()` メソッドは、`TimeSeries` を返します。`mode=\"transient\"` で FFT "
+"した結果であっても、情報を引き継いで元の長さに戻す (trim=True) などの制御が可能です。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:170002
+#: 9ddbecd8aa33414f92e448af2826dfc9
+msgid "6. Integration with Other Libraries"
+msgstr "6\\. 他ライブラリとの連携"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:170004
+#: 695ac00dd5df413cbc77dd86a8ad9c8b
+msgid ""
+"Interconversion with Pandas, xarray, and control libraries has been added."
+msgstr "Pandas, xarray, control ライブラリとの相互変換が追加されています。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:190002
+#: d23a9b0502774edba4d7ac2260d6b309
+msgid "7. Integration with Python Control Library"
+msgstr "7\\. Python Control Library との連携"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:190004
+#: 5125150b7d90462e8bd7c6d0ba5a5afd
+msgid ""
+"Interconversion with the **Frequency Response Data (FRD)** object from the "
+"`control` library, which is standard in the field of control engineering, is"
+" possible. This allows transfer functions measured with GWexpy to be "
+"directly used for control system design and analysis."
+msgstr ""
+"制御工学の分野で標準的な `control` ライブラリの **Frequency Response Data (FRD)** "
+"オブジェクトと相互変換が可能です。 これにより、GWexpyで計測した伝達関数を、制御系の設計や解析に直接利用できます。"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:210002
+#: 1450628e944248de8d787dfbab4442ae
+msgid "8. Quadrature Sum"
+msgstr "8\\. 求積和 (Quadrature Sum)"
+
+#: ../../tutorials/intro_frequencyseries.ipynb:210004
+#: 361caac5b50e40c1b5e1cabfe0bcd340
+msgid "This feature calculates the sum of orthogonal components."
+msgstr "直交位相の和を計算する機能です。"

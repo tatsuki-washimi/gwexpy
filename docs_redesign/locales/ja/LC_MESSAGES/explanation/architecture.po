@@ -1,0 +1,331 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-18 17:47+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md
+#: c7d0a4b42072472ea21a8447d6c98a49
+msgid ""
+"Understand GWexpy architecture, container design, data flow, field and matrix API "
+"roles, and where to continue into theory or reference pages."
+msgstr "GWexpy のアーキテクチャ、コンテナ設計、データフロー、Field API と Matrix API の役割、次に辿る理論・リファレンスへのリンクを説明します。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:7
+#: bcd109a3706140558fb5682f47c2998e
+msgid "Architecture and Data Flow"
+msgstr "アーキテクチャとデータフロー"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:9
+#: 346a5c2aecef4612a7a0dbd90792bf95
+msgid ""
+"This section details the design philosophy of `gwexpy` and the internal data handling"
+" logic. `gwexpy` extends GWpy to provide intuitive multi-channel time-series matrix "
+"operations and 4D physical field handling."
+msgstr ""
+"`gwexpy` の設計思想と、内部的なデータ処理の流れについて解説します。 本パッケージは GWpy を拡張し、多チャネルの `TimeSeriesMatrix` "
+"操作や 4次元の物理的な場を表すフィールドを扱いやすくすることを目指しています。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:13
+#: a97ef6a314ec4f14b94bc36c21e88675
+msgid "How to Read This Page"
+msgstr "このページの読み方"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:15
+#: ade09b8cb2e74feeb60b1d45039fba6b
+msgid ""
+"Read this page first if you want the mental model behind `gwexpy` container design "
+"and internal reshaping."
+msgstr "`gwexpy` の内部表現や変換の考え方を掴みたい場合は、このページを先に読んでください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:16
+#: 158b9c230e2f430e8b5dc366655bacdc
+msgid ""
+"For the mathematical foundations of each algorithm, continue to [Physics Models and "
+"Analysis Theory](physics_models.md)."
+msgstr "具体的なアルゴリズムの理論は [物理モデルと解析理論](physics_models.md) を参照してください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:17
+#: 645f44ee2bbe40838a68076275893add
+msgid ""
+"For concrete callable surfaces, follow the API entry links in each section to the "
+"[matrix API](../reference/api/matrix), [fields API](../reference/api/fields), and "
+"[fitting API](../reference/api/fitting)."
+msgstr ""
+"実装 API を確認したい場合は、各節末尾の API リンクから [matrix API](../reference/api/matrix), [fields "
+"API](../reference/api/fields), [fitting API](../reference/api/fitting) へ進んでください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:20
+#: e7a1dccda9ac415982894c88998e15ad
+msgid "Design Philosophy"
+msgstr "データ構造の設計思想"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:22
+#: 58d5e9abf7864d9f87a3c1b19112b199
+msgid "1. Matrix Object Flattening Flow"
+msgstr "1. 行列オブジェクトの平坦化フロー"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:23
+#: 41f055c749234723a847aa21a2392258
+msgid ""
+"**Goal:** Explain how matrix-like containers are reshaped for analysis while "
+"preserving metadata. **Input:** Multi-channel or matrix-like series data such as "
+"`TimeSeriesMatrix` and `FrequencySeriesMatrix`. **Output:** A 2D feature "
+"representation for computation, with metadata restored on the way back."
+msgstr ""
+"**目的:** 行列系コンテナが解析向けにどのように整形され、メタデータをどう保つかを示す。 **入力:** `TimeSeriesMatrix` や "
+"`FrequencySeriesMatrix` のような多チャネル・行列型データ。 **出力:** 計算に使いやすい 2 次元表現と、復元後も保たれるメタデータ。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:27
+#: 2df6b727225442de8805ff6ab2da1784
+msgid ""
+"Classes like `TimeSeriesMatrix` and `FrequencySeriesMatrix` handle automatic "
+"conversion to formats compatible with machine learning libraries like scikit-learn. "
+"Typically, 3D data (Channels/Rows $\\times$ Columns $\\times$ Samples) is temporarily"
+" flattened into a 2D feature matrix for computation, while metadata (GPS timestamps, "
+"units) is preserved and restored after processing."
+msgstr ""
+"`TimeSeriesMatrix` や `FrequencySeriesMatrix` は、scikit-learn "
+"などの機械学習ライブラリと親和性の高い形式への変換を自動で行います。通常、3 次元データ（チャンネル/行 $\\times$ 列 $\\times$ "
+"サンプル）を計算のために一時的に 2 次元の特徴量行列へ平坦化し、メタデータ（GPS タイムスタンプ、単位）は保持されて処理後に復元されます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:30
+#: 3e98e72e78564b3ca7a5c7fa3c595538
+msgid ""
+"API entry: [matrix API](../reference/api/matrix), [timeseries "
+"API](../reference/api/timeseries)"
+msgstr ""
+"API 入口: [matrix API](../reference/api/matrix), [timeseries "
+"API](../reference/api/timeseries)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:32
+#: 5ab002a8391348749bb69e9af6354e79
+msgid "2. 4D Field API Model"
+msgstr "2. 4次元フィールド（フィールド API）モデル"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:33
+#: 1d9b34199d9346079c11ff84fb454447
+msgid ""
+"**Goal:** Explain why field containers keep all axes aligned during slicing and "
+"indexing. **Input:** A `ScalarField` with one time (or frequency) axis and three "
+"spatial axes. **Output:** A field object whose grid and axis metadata remain "
+"synchronized after selection operations."
+msgstr ""
+"**目的:** フィールド系コンテナがスライスやインデクシングの間もすべての軸を揃えて保つ理由を示す。 **入力:** 1 本の時間軸（または周波数軸）と 3 "
+"本の空間軸を持つ `ScalarField`。 **出力:** 選択操作の後もグリッド情報と軸メタデータが同期したフィールドオブジェクト。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:37
+#: a5c54eba472e45e58c63b2231c13457a
+msgid ""
+"`ScalarField` adopts a 4D structure as its base unit: axis 0 is the **time axis** (or"
+" the **frequency axis** after `fft_time()`), and axes 1–3 are the **spatial axes** "
+"`x, y, z` (mapped to wavenumbers `kx, ky, kz` by `fft_space()`) — for example `(t, x,"
+" y, z)`, `(f, x, y, z)`, or `(f, kx, ky, kz)`. By maintaining all 4 dimensions during"
+" indexing operations, the Field APIs are designed to preserve grid information and "
+"axis metadata with the data."
+msgstr ""
+"`ScalarField` は 4 次元構造を基本単位とします。axis 0 は **時間軸**（`fft_time()` 後は **周波数軸**）、軸 1–3 は "
+"**空間軸** `x, y, z` です（`fft_space()` により波数 `kx, ky, kz` へ写像されます）。例は `(t, x, y, z)`、`(f,"
+" x, y, z)`、`(f, kx, ky, kz)` です。Field API は、インデクシング操作中に 4 "
+"次元を保つことで、グリッド情報と軸メタデータをデータとともに保持するよう設計されています。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:40
+#: 9a771d223f8b41ba9934af6833494a8e
+msgid ""
+"API entry: [fields API](../reference/api/fields), [Scalar Field Slicing Guide"
+"](../how-to/containers/scalarfield_slicing.md)"
+msgstr ""
+"API 入口: [fields API](../reference/api/fields), [スカラー場のスライス操作ガイド](../how-"
+"to/containers/scalarfield_slicing.md)"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:43
+#: 79f0e994741f45b88a4ef39af0d15ac1
+msgid "Data Flow Diagram"
+msgstr "データフロー図"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:45
+#: 5c6c4da0dcc4441ca6fd2c0be7f8304d
+msgid ""
+"The static diagram below summarizes how the main GWexpy containers move from raw "
+"inputs to analysis APIs while keeping axis metadata available in the current docs "
+"build."
+msgstr ""
+"以下の静的図は、現在の docs ビルド環境でも確実に表示できる形で、GWexpy の主要コンテナが生データから解析 API "
+"に渡るまでの流れと、軸メタデータがどこで保たれるかをまとめたものです。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:47
+#: 8bb4200ba3f2493687fc0ccc3b738244
+msgid "Static data-flow diagram for GWexpy containers and metadata preservation."
+msgstr "GWexpy のコンテナとメタデータ保持を示す静的データフロー図。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:51
+#: ffd566383e9a4ad7bff14b5692d7fa1b
+msgid ""
+"GWexpy data flow from raw arrays and GWpy objects through matrix and field analysis "
+"paths, with axis metadata preserved across reshaping and transforms."
+msgstr ""
+"生配列や GWpy "
+"オブジェクトから、行列解析経路とフィールド解析経路を通って下流の出力へ進むまでの流れと、軸メタデータがリシェイプや変換をまたいで保持される位置をまとめた図。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:54
+#: 4795fbb4249f45718f6e8db1b081115b
+msgid "Reading notes:"
+msgstr "読み方の要点:"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:56
+#: f3652277d7984823bb1b38b85280af8f
+msgid ""
+"`TimeSeriesDict -> TimeSeriesMatrix -> Flatten to 2D features` is the matrix-analysis"
+" path used when scikit-learn-style algorithms expect 2D inputs."
+msgstr ""
+"`TimeSeriesDict -> TimeSeriesMatrix -> 2次元特徴量へ平坦化` は、scikit-learn 系の 2 "
+"次元入力へ接続するための行列解析経路です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:57
+#: 1babbb657dd44855825e0dcc02c4d53e
+msgid ""
+"`ScalarField -> Field slicing / indexing -> Field-aware transforms` is the field-"
+"analysis path used when the time/frequency axis and the spatial axes must stay "
+"aligned."
+msgstr ""
+"`ScalarField -> フィールドのスライス / インデクシング -> フィールド対応変換` "
+"は、時間/周波数軸と空間軸を揃えたまま扱う必要がある場合のフィールド解析経路です。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:58
+#: 47b41adac4804413a139b33501062eab
+msgid ""
+"Metadata is preserved across both paths so derived outputs can still be interpreted "
+"in physical coordinates rather than raw array indices alone."
+msgstr "どちらの経路でもメタデータを保持するため、結果を単なる配列インデックスではなく物理座標に対応づけて解釈できます。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:63
+#: 7731b1b49c954767be06800de7d9e9bb
+msgid "Core Analysis Components"
+msgstr "主要な解析コンポーネントの概念"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:65
+#: 256f57b367c247dfa83cb6a6d98ae59f
+msgid ""
+"`gwexpy` builds advanced analysis pipelines by combining the following core "
+"components. For detailed mathematical and physical foundations, refer to [Physics "
+"Models and Analysis Theory](physics_models.md)."
+msgstr ""
+"`gwexpy` は、以下の主要コンポーネントを組み合わせて高度な解析パイプラインを構築します。個別のアルゴリズム詳細は "
+"[物理モデルと解析理論](physics_models.md) を参照してください。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:67
+#: bc2b645ad8a54a79859e3a23625ecc2a
+msgid ""
+"**Multi-channel Analysis Engine**: Implementation of ICA/PCA for environmental noise "
+"isolation."
+msgstr "**多チャネル解析エンジン**: 環境ノイズ分離のための ICA/PCA 実装。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:68
+#: 522880c678734e4db72486e436d206de
+msgid ""
+"**Fast Correlation Framework**: Accelerated coherence calculations (Bruco) for large-"
+"scale observation data."
+msgstr "**高速相関計算基盤**: 大規模観測データに対する高速コヒーレンス計算（BruCo）。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:69
+#: 96c0e6c278244677a5f269020f89d305
+msgid "**Statistical Inference & Fitting**: Parameter estimation using GLS and MCMC."
+msgstr "**統計的推定・フィッティング**: GLS や MCMC を用いた物理パラメータ推定。"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:72
+#: 20495741dbe44b01baebdb98971db34e
+msgid "Related Documents"
+msgstr "関連ドキュメント"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:74
+#: 87fb0ea8a71c4fc6b466d886a0a06891
+msgid ""
+"[Physics Models and Analysis Theory](physics_models.md) — Mathematical context for "
+"the containers and transforms summarized here"
+msgstr "[物理モデルと解析理論](physics_models.md) — ここで触れたコンテナ設計の数理的背景"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:75
+#: 9926230d4d1348df954da5bbac3521ac
+msgid ""
+"[Validated Algorithms](validated_algorithms.md) — Audit-backed behavior for numerical"
+" paths referenced by this design guide"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md) — 設計上参照される数値経路の監査根拠"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:76
+#: 0a12b9eef83e49ca9158ac1e384a4d15
+msgid ""
+"[Scalar Field Slicing Guide](../how-to/containers/scalarfield_slicing.md) — Why the "
+"Field API preserves 4D structure"
+msgstr ""
+"[スカラー場のスライス操作ガイド](../how-to/containers/scalarfield_slicing.md) — フィールド API が 4 "
+"次元構造を保つ理由"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:77
+#: 87d9b8786d1d45abb031e12098a72927
+msgid ""
+"[Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared time, FFT,"
+" and compatibility assumptions"
+msgstr "[前提条件と規約](prerequisites_and_conventions.md) — 時刻系、FFT、互換性の共通前提"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:78
+#: ff2a744b69cd4efa953ceaabfcba5972
+msgid ""
+"[Matrix API](../reference/api/matrix) — Reference entry for container reshaping and "
+"matrix-style operations"
+msgstr "[Matrix API](../reference/api/matrix) — 行列系コンテナと平坦化の参照入口"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:79
+#: 0d4588ea3fdf4504a8f0163638e9c6d3
+msgid ""
+"[Fields API](../reference/api/fields) — Reference entry for field-aware transforms "
+"and slicing"
+msgstr "[フィールド API](../reference/api/fields) — フィールド変換とスライスの参照入口"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:82
+#: d9a5a6537cfe4dc1802b32e4751a6d99
+msgid "Next to Read"
+msgstr "次に読む"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:83
+#: 0fa91f951b764c02b8bd63e47407dcc8
+msgid ""
+"[Physics Models and Analysis Theory](physics_models.md) — Detailed analysis theory "
+"and physics models (ICA/Bruco/MCMC)"
+msgstr "[物理モデルと解析理論](physics_models.md) — ICA/BruCo/MCMC などの解析理論・物理モデル詳細"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:84
+#: 84a52f2ceca14a52b59943bb0d9ff140
+msgid ""
+"[Validated Algorithms](validated_algorithms.md) — Validation reports for numerical "
+"algorithms"
+msgstr "[検証済みアルゴリズム](validated_algorithms.md) — 各数値アルゴリズムの信頼性検証"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:85
+#: 792abe3921b4445aa61a2c5c9e04bd84
+msgid ""
+"[Scalar Field Slicing Guide](../how-to/containers/scalarfield_slicing.md) — Details "
+"on 4D field operations"
+msgstr "[スカラー場のスライス操作ガイド](../how-to/containers/scalarfield_slicing.md) — 4次元フィールド操作の詳細"
+
+#: ../gwexpy-pr487-docs-update/docs_redesign/explanation/architecture.md:86
+#: 7c676cd8d13b45f3a48020cf66ac90e6
+msgid ""
+"[Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared FFT, GPS "
+"time, and compatibility assumptions"
+msgstr "[前提条件と規約](prerequisites_and_conventions.md) — FFT・GPS 時刻・GWpy 互換の前提を整理する"
+

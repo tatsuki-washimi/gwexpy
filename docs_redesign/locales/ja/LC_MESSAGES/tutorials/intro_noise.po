@@ -1,0 +1,175 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-28 19:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/intro_noise.ipynb:10002 9fc1178eb7354fca98d7b03dc61d5727
+msgid "Noise Generation: Basics"
+msgstr "ノイズ生成: 基本"
+
+#: ../../tutorials/intro_noise.ipynb:10004 c300f87ced6f4dc2b1e66a153caff644
+msgid ""
+"**Goal**: Learn how to generate, manipulate, and model noise in "
+"gravitational-wave data using **GWexpy**."
+msgstr "**目的**: **GWexpy** を使用して重力波データのノイズを生成・操作・モデル化する方法を学びます。"
+
+#: ../../tutorials/intro_noise.ipynb:10006 39d58b03e06148ddbf8fca4f29eae384
+msgid "**Prerequisites**:"
+msgstr "**前提条件**:"
+
+#: ../../tutorials/intro_noise.ipynb:10007 40b98c1ffdbf4bcc9f3e1ebd1228a4d9
+msgid "`pygwinc` (optional, for detector models)"
+msgstr "`pygwinc`（オプション、検出器モデル用）"
+
+#: ../../tutorials/intro_noise.ipynb:10008 70b01f0015054bd5ae274c06a8b03d39
+msgid "`obspy` (optional, for seismic models)"
+msgstr "`obspy`（オプション、地震モデル用）"
+
+#: ../../tutorials/intro_noise.ipynb:20002 4af161fd7486464d94857f5c47679081
+msgid "1. Generating ASD (Amplitude Spectral Density)"
+msgstr "1\\. ASD（振幅スペクトル密度）の生成"
+
+#: ../../tutorials/intro_noise.ipynb:20004 c27c97f6122b44b09c1c934d0146bd6f
+msgid ""
+"GWexpy provides several ways to generate ASDs, from theoretical power-laws "
+"to detector-specific models."
+msgstr "GWexpy は、理論的なべき乗則から検出器固有モデルまで、ASD を生成するいくつかの方法を提供します。"
+
+#: ../../tutorials/intro_noise.ipynb:40002 eb0e5e1ff5884c6f8ebc13263b83759f
+msgid "2. Generating Time-domain Noise"
+msgstr "2\\. 時間領域ノイズの生成"
+
+#: ../../tutorials/intro_noise.ipynb:40004 a0ecbbc2407d43e383ea64993a744dc6
+msgid ""
+"You can generate colored noise directly in the time domain using "
+"`gwexpy.noise.wave`."
+msgstr "`gwexpy.noise.wave` を使用して、時間領域でカラードノイズを直接生成できます。"
+
+#: ../../tutorials/intro_noise.ipynb:60002 6253dce1e45e4e4fa53ee19683dba8d4
+msgid "3. Spectral Lines and Masking"
+msgstr "3\\. スペクトル線とマスキング"
+
+#: ../../tutorials/intro_noise.ipynb:60004 33a9ef0759804bad870562172daadb36
+msgid ""
+"Real noise contains narrow resonance peaks (lines). You can add them using "
+"Lorentzian or Gaussian shapes."
+msgstr "実際のノイズには狭帯域の共鳴ピーク（スペクトル線）が含まれます。ローレンツ型またはガウス型の形状で追加できます。"
+
+#: ../../tutorials/intro_noise.ipynb:80002 ca9f96ea6f9442a49effc85fda615597
+msgid "4. Non-Gaussian Noise (Glitches)"
+msgstr "4\\. 非ガウスノイズ（グリッチ）"
+
+#: ../../tutorials/intro_noise.ipynb:80004 0c651dc3c47349088bc64ec2210a7b4e
+msgid ""
+"`gwexpy.noise.non_gaussian` provides models for non-stationary noise like "
+"scattered light or transient bursts."
+msgstr "`gwexpy.noise.non_gaussian` は、散乱光や過渡バーストなどの非定常ノイズのモデルを提供します。"
+
+#: ../../tutorials/intro_noise.ipynb:100002 2493cbfd353a45e1bbf77b09ec20e6e9
+msgid "5. Case Study: Simple Noise Budget"
+msgstr "5\\. ケーススタディ：簡単なノイズバジェット"
+
+#: ../../tutorials/intro_noise.ipynb:100004 3c4da5fcd4984cc98f5f80d0d3861b42
+msgid ""
+"Combine multiple noise sources (seismic, thermal, shot noise) to create a "
+"total noise budget."
+msgstr "複数のノイズ源（地震、熱、ショットノイズ）を組み合わせて、合計ノイズバジェットを作成します。"
+
+#: ../../tutorials/intro_noise.ipynb:120002 dba8e619d083402d9181fcd653e0b1fe
+msgid "Common Mistakes and Failure Modes"
+msgstr "よくある落とし穴と失敗モード"
+
+#: ../../tutorials/intro_noise.ipynb:120004 85fecb611f644ef78c3595430778566e
+msgid ""
+"**Assuming the ASD slope alone validates the time-domain realization**: a "
+"generated noise series can match the target trend on average while still "
+"differing in finite-length variance, line structure, or transient content."
+msgstr ""
+"**ASD の傾きだけで時間領域ノイズが妥当だと判断すること**: "
+"目標スペクトルに平均的には合っていても、有限長の分散、線構造、過渡成分は別の挙動を示すことがあります。"
+
+#: ../../tutorials/intro_noise.ipynb:120005 c0f2fa60341842a3987a770918d4aeb0
+msgid ""
+"**Reading synthetic components as independent just because they were "
+"generated separately**: when you combine seismic, thermal, and shot-noise-"
+"like terms, the total curve is a modeling construction, not evidence that "
+"real detector subsystems are separable that way."
+msgstr ""
+"**別々に生成した成分をそのまま独立な物理源だと読むこと**: "
+"地震・熱・ショットノイズを合成した合計曲線は、数値モデルの例であり、実機で同じ分離が観測的に確立していることを意味しません。"
+
+#: ../../tutorials/intro_noise.ipynb:120006 79ff7d78f7684363b82078b56adc2975
+msgid ""
+"**Confusing line amplitude with line width or quality factor**: for narrow "
+"spectral features, changing `Q` or `gamma` affects interpretation "
+"differently from changing overall amplitude."
+msgstr "**スペクトル線の高さと幅を混同すること**: 狭線では `Q` や `gamma` の変更は、単純な振幅変更とは別の解釈を持ちます。"
+
+#: ../../tutorials/intro_noise.ipynb:120007 b19fff944c7746c7844caa921a78da61
+msgid ""
+"**Over-interpreting glitches as realistic populations**: the non-Gaussian "
+"examples illustrate shapes and workflow behavior, not a calibrated model of "
+"real glitch rates or detector environments."
+msgstr ""
+"**グリッチ例を実環境の発生分布だと思うこと**: "
+"非ガウスノイズの例は形状とワークフローを示すためのもので、実際の発生率や装置環境を校正したモデルではありません。"
+
+#: ../../tutorials/intro_noise.ipynb:120008 34d5036ab43142f59a06d7ddc5875c86
+msgid ""
+"**Comparing curves without checking units and reference frequencies**: a "
+"visually reasonable power law can still be mis-parameterized if `amplitude`,"
+" `exponent`, or `f_ref` are interpreted inconsistently."
+msgstr ""
+"**単位や基準周波数を確認せずに曲線を比較すること**: 見た目がもっともらしくても、`amplitude`、`exponent`、`f_ref` "
+"の意味づけを誤ると解釈は崩れます。"
+
+#: ../../tutorials/intro_noise.ipynb:120009 8c4dbc5b2f864b7a890b51dce4cf179a
+msgid ""
+"**Treating a simple noise budget as a validated instrument budget**: the "
+"case study shows how to combine terms numerically, but it is not a "
+"substitute for validated coupling measurements or full uncertainty "
+"accounting."
+msgstr ""
+"**簡易ノイズバジェットを検証済みの装置バジェットだと扱うこと**: "
+"このケーススタディは合成方法の説明であり、結合測定や不確かさ評価を含む検証済みバジェットの代替ではありません。"
+
+#: ../../tutorials/intro_noise.ipynb:130002 81c807f6cccc4c578d74bf553c4d00e7
+msgid "6. Exercises"
+msgstr "6\\. 演習"
+
+#: ../../tutorials/intro_noise.ipynb:130004 2c01f61c393844ef9c4f599dee859004
+msgid ""
+"**Spectrum-to-Time**: Use `wave.colored` to generate a 10-second signal with"
+" an exponent of 1.5, then plot its ASD to verify the slope."
+msgstr ""
+"**スペクトルから時系列へ**: `wave.colored` を使って指数 1.5、10秒間の信号を生成し、ASD "
+"をプロットして傾きを確認してください。"
+
+#: ../../tutorials/intro_noise.ipynb:130005 873cfe4853ed4cf8873c763b4a254fb5
+msgid ""
+"**Line Removal**: (Challenge) Remove the 60Hz line generated in Section 3."
+msgstr "**スペクトル線除去**（発展）: セクション 3 で追加した 60Hz 線を除去してみてください。"
+
+#: ../../tutorials/intro_noise.ipynb:140002 dfe99183f4594c2291e50e91ae398eac
+msgid "7. Quick Check Cell (NBMAKE)"
+msgstr "7\\. 検証セル（NBMAKE）"
+
+#: ../../tutorials/intro_noise.ipynb:140004 beee7b2cd74e44d98eb96e28562a6312
+msgid "Used for automated CI validation."
+msgstr "自動 CI 検証に使用します。"

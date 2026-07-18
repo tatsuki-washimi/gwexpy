@@ -40,6 +40,11 @@ jobs:
 
       - name: Set up gwexpy environment
         uses: ./.github/actions/setup-gwexpy
+        with:
+          # tests/docs/test_docs_redesign_release_facts.py reads the JA
+          # changelog catalog with babel.messages.pofile (the same library
+          # sphinx-intl uses internally).
+          extras: "babel"
 
       - name: Run PR-fast gate
         run: python scripts/ci/run_gate.py pr-fast

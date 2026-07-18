@@ -1,0 +1,525 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version:  GWexpy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-11 06:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../tutorials/installation.md 9309c8e145524d8a9c1559ce519429e8
+msgid ""
+"Install GWexpy for Python 3.11 or 3.12 with minimal, recommended, GW-"
+"analysis, or developer setups, including extras guidance and dependency "
+"troubleshooting."
+msgstr ""
+"GWexpy のインストール方法を、最小構成、推奨構成、GW 解析向け構成、開発者向け構成ごとに整理し、extras "
+"と依存関係の注意点もまとめます。"
+
+#: ../../tutorials/installation.md:7 9d2e34724909436e875d4c0bcc3e418b
+msgid "Installation Guide"
+msgstr "インストールガイド (Installation)"
+
+#: ../../tutorials/installation.md:10 03151b742ffd4a26b300a9dc85a0b204
+msgid ""
+"GWexpy is published on PyPI (current release: v0.1.10). A conda-forge "
+"feedstock is also available, though the conda-forge package may lag the "
+"latest PyPI release. Install from PyPI for the latest version, or use "
+"`conda install -c conda-forge gwexpy` once the desired version is "
+"available on the conda-forge channel."
+msgstr ""
+"GWexpy は PyPI に公開されています（最新リリース: v0.1.10）。 conda-forge フィードストックも利用可能ですが"
+"、conda-forge パッケージは 最新の PyPI リリースより遅れる場合があります。 最新バージョンが必要な場合は PyPI "
+"からインストールしてください。 希望のバージョンが conda-forge チャンネルで利用可能になり次第、 `conda install -c "
+"conda-forge gwexpy` でもインストールできます。"
+
+#: ../../tutorials/installation.md:17 adc441b5d11b46779aaa829f0317bc51
+msgid ""
+"GWexpy supports **Python 3.11 and 3.12** (the versions declared in "
+"`pyproject.toml`). You can choose from several installation options "
+"(extras) depending on your analysis goals."
+msgstr ""
+"GWexpy は **Python 3.11 と 3.12**（`pyproject.toml` "
+"で宣言されているバージョン）をサポートしています。解析の目的に合わせて、いくつかのインストールオプション（extras）を選択できます。"
+
+#: ../../tutorials/installation.md:20 d068c1186bb54732b529aa6d0ae5cdba
+msgid "Install Commands"
+msgstr "インストールコマンド"
+
+#: ../../tutorials/installation.md:9 e6cd2b4d64e5417a8c97afa8a182d0cd
+msgid "Goal"
+msgstr "目的"
+
+#: ../../tutorials/installation.md:9 379221d988de4c03ab5ca43bc3af1417
+msgid "Installation Command"
+msgstr "インストールコマンド"
+
+#: ../../tutorials/installation.md:9 52e0ac009f5943678783b48109f6da8f
+msgid "Features"
+msgstr "主な機能"
+
+#: ../../tutorials/installation.md:9 ../../tutorials/installation.md:31
+#: 9b7615c7d37f4a9683f8074733ee55f9 ebd24f0f506a4996a58a0e3e00cb2d07
+msgid "Minimal"
+msgstr "最小構成 (Minimal)"
+
+#: ../../tutorials/installation.md:9 72f8bb9f15d34d5188f8531fe427cff7
+msgid "`pip install gwexpy`"
+msgstr "`pip install gwexpy`"
+
+#: ../../tutorials/installation.md:9 c34a04b9183e4c499148e063774e4358
+msgid "Numerical containers and basic arithmetic. Minimal dependencies."
+msgstr "数値コンテナと基本演算のみ。依存最小。"
+
+#: ../../tutorials/installation.md:9 36b668ca936b43629a3470d3f74de083
+msgid "**Recommended**"
+msgstr "**推奨構成**"
+
+#: ../../tutorials/installation.md:9 48131ac621d14c069bc3efc07da9150b
+msgid "`pip install \"gwexpy[analysis,fitting,plotting]\"`"
+msgstr "`pip install \"gwexpy[analysis,fitting,plotting]\"`"
+
+#: ../../tutorials/installation.md:9 abf856831f6646be87593f9358df0977
+msgid "Advanced statistics, curve fitting, and mapping features."
+msgstr "高度な統計解析、最小二乗法、地図描画など。"
+
+#: ../../tutorials/installation.md:9 b190d68a669a47bdb0056add37d1df7a
+msgid "GW Analysis"
+msgstr "重力波解析"
+
+#: ../../tutorials/installation.md:9 d2859cf51c534086ac0cd899d5c47f2b
+msgid "`pip install \"gwexpy[gw,io]\"`"
+msgstr "`pip install \"gwexpy[gw,io]\"`"
+
+#: ../../tutorials/installation.md:9 34d063de587745b0be786a7e5203dc25
+msgid ""
+"Frame file support and official GW tools (NDS2 requires the Conda step "
+"below)."
+msgstr "フレームファイル対応と公式 GW ツール（NDS2 は下記の Conda 手順が必要です）。"
+
+#: ../../tutorials/installation.md:9 45e333cd0cef4b19837a540a98ed66e3
+msgid "Dev / Full"
+msgstr "開発 / 全機能"
+
+#: ../../tutorials/installation.md:9 ec897d34136946dbb0d60ecbeb80c05e
+msgid "`pip install \"gwexpy[all]\"`"
+msgstr "`pip install \"gwexpy[all]\"`"
+
+#: ../../tutorials/installation.md:9 7d1862ff06d841a1bd0385256f0875fb
+msgid "Enables declared non-GUI optional features."
+msgstr "GUI を除く宣言済みオプション機能を有効化。"
+
+#: ../../tutorials/installation.md:29 7566fffa2c1a4c6a972747124cdb04e9
+msgid "1. Installation Steps"
+msgstr "1. インストール手順 (Installation Steps)"
+
+#: ../../tutorials/installation.md:33 4fd97b67e5834459890a1e885e1afe26
+msgid ""
+"For users who want to keep dependencies minimal and only use core "
+"containers like `ScalarField`."
+msgstr "依存パッケージを最小限に抑え、`ScalarField` などの基本フィールド系データ構造だけを利用する場合です。"
+
+#: ../../tutorials/installation.md:35 608f0a8b41d5421b8c9888b3c22c37ae
+msgid ""
+"Purpose: verify import and core container usage with the smallest "
+"dependency set"
+msgstr "目的: まず import と基本コンテナだけを試す"
+
+#: ../../tutorials/installation.md:36 86a26796256645dba38c6ab8e76ab4c0
+msgid "Input: Python 3.11+ and `pip`"
+msgstr "入力: Python 3.11 以上と `pip`"
+
+#: ../../tutorials/installation.md:37 d8972a4ae9a3401fa34db70692efe687
+msgid "Output: a minimal GWexpy environment"
+msgstr "出力: 最小依存の GWexpy 環境"
+
+#: ../../tutorials/installation.md:39 dd038c0d15c94b3dab49b9fad7a2a802
+msgid ""
+"If you need NDS2, FrameLIB, `pygmt`, or other binary-heavy tools, skip "
+"this section and start with [Conda Environment (Recommended / GW Analysis"
+")](#conda-environment-recommended-gw-analysis)."
+msgstr ""
+"NDS2、FrameLIB、`pygmt` などのバイナリ依存を使う場合は、この節ではなく [コンダ環境 (Recommended / GW "
+"Analysis)](#conda-environment-recommended-gw-analysis) から始めてください。"
+
+#: ../../tutorials/installation.md:46 01a5e39fe3bd465481a416a73b490b74
+msgid "Conda Environment (Recommended / GW Analysis)"
+msgstr "コンダ環境 (Recommended / GW Analysis)"
+
+#: ../../tutorials/installation.md:48 e01f926b11f547128dba21fdb99bb97b
+msgid ""
+"For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly"
+" recommend using Conda (e.g., Miniforge) to resolve binary dependencies "
+"first."
+msgstr ""
+"重力波解析（NDS2 や FrameLIB 等）を行う場合は、Conda (Miniforge 等) "
+"を使用してバイナリ依存関係を先に解決することを強く推奨します。"
+
+#: ../../tutorials/installation.md:50 d3349155bb1b4c3aa8ae207e917f8f3e
+msgid ""
+"This workflow uses Conda for the environment and binary dependencies, "
+"then uses PyPI for GWexpy itself. A conda-forge feedstock for `gwexpy` is"
+" also available, but may lag the latest PyPI release."
+msgstr ""
+"この手順は、環境とバイナリ依存関係を Conda で管理し、GWexpy 本体は PyPI から入れる方法です。`gwexpy` の conda-"
+"forge フィードストックも利用可能ですが、 最新の PyPI リリースより遅れる場合があります。"
+
+#: ../../tutorials/installation.md:55 baf9f828a00b45cdbaa518c2a572559b
+msgid ""
+"If you use Conda, avoid running `pip install` directly in `base` or in a "
+"shared environment for unrelated work. Create a **dedicated environment "
+"for GWexpy** first, then install both the Conda-managed binary "
+"dependencies and the `pip` packages there. This keeps binary dependency "
+"resolution isolated and reduces the risk of breaking the environment."
+msgstr ""
+"Conda 環境を使う場合は、`base` や別用途の既存環境に直接 `pip install` せず、**GWexpy 専用の新しい環境** "
+"を作成してから導入してください。Conda が管理するバイナリ依存関係と `pip` で追加する Python "
+"パッケージを同じ専用環境に閉じ込めることで、環境破損のリスクを下げられます。"
+
+#: ../../tutorials/installation.md:58 a3365717a4eb400986c96ed88a5fc629
+msgid ""
+"Purpose: build a GW-ready environment with binary dependencies such as "
+"NDS2 and FrameLIB"
+msgstr "目的: NDS2 / FrameLIB などのバイナリ依存を含む GW 解析環境を作る"
+
+#: ../../tutorials/installation.md:59 f2883ed285dc42f385676e6bf43eb630
+msgid "Input: a shell with Conda available"
+msgstr "入力: Conda が使える端末環境"
+
+#: ../../tutorials/installation.md:60 ee85c89503fd489c9e4ed7e1dd2cb95f
+msgid "Output: a dedicated `gwexpy` environment with `gw` extras enabled"
+msgstr "出力: `gw` extras を含む専用 `gwexpy` 環境"
+
+#: ../../tutorials/installation.md:72 ce6418fd6aae40b0b987c971c17021a2
+msgid ""
+"If you see `No module named nds2` or FrameLIB-related import errors, re-"
+"run the `conda install -c conda-forge ...` step inside that dedicated "
+"environment first. If you do not need NDS2 or FrameLIB, the minimal or "
+"recommended installation without the `gw` extras is usually sufficient."
+msgstr ""
+"`No module named nds2` や FrameLIB 関連の import error が出る場合は、まず上の `conda "
+"install -c conda-forge ...` を専用環境で再実行してください。NDS2 や FrameLIB を使わない場合は、`gw`"
+" extras を外した最小構成または推奨構成で十分です。"
+
+#: ../../tutorials/installation.md:74 7da467a218f34d069666a902e6d21708
+msgid "Developer Mode"
+msgstr "開発者モード (For Developers)"
+
+#: ../../tutorials/installation.md:76 652aae0a20174d05820a1f70547d9ab9
+msgid ""
+"For contributors who want to install from source and set up a testing "
+"environment. **Conda is optional here.** Use the Conda workflow above "
+"when you need to validate `gw`-related binary dependencies; otherwise, a "
+"standard virtual environment such as `venv` is fine for documentation "
+"work and general development."
+msgstr ""
+"ソースコードから最新版をインストールし、テスト環境を構築する場合です。**Conda は必須ではありません。** `gw` "
+"系のバイナリ依存関係まで検証する場合は上の Conda 環境を使い、それ以外のドキュメント修正や通常開発では `venv` "
+"等の標準的な仮想環境でも構いません。"
+
+#: ../../tutorials/installation.md:78 e0ae473f7f9a48bc80f1aea036093e5b
+msgid "Purpose: install from a local clone for editing and tests"
+msgstr "目的: ローカル clone から編集・テストできる状態にする"
+
+#: ../../tutorials/installation.md:79 61e14301bb494dfa9cd5f0b4ead31cef
+msgid "Input: Git plus a Python virtual environment"
+msgstr "入力: Git と Python 仮想環境"
+
+#: ../../tutorials/installation.md:80 174235f319894a90b4b3d2b70457bdc9
+msgid "Output: an editable install via `pip install -e`"
+msgstr "出力: `pip install -e` による編集可能インストール"
+
+#: ../../tutorials/installation.md:88 434834fcbb0746b4bf8d7f94933ea6b5
+msgid ""
+"Use the developer mode only when you need to edit GWexpy itself or test "
+"unreleased changes from the repository. For normal use, prefer the PyPI "
+"commands above."
+msgstr ""
+"開発者モードは、GWexpy 本体を編集する場合や、未リリースのリポジトリ上の 変更を検証する場合に使ってください。通常利用では上の PyPI "
+"版の導入手順を 推奨します。"
+
+#: ../../tutorials/installation.md:92 c84b9197a0d34333b2db2b0164847c36
+msgid "2. Dependency Troubleshooting"
+msgstr "2\\. 依存関係トラブルシューティング"
+
+#: ../../tutorials/installation.md:94 c79d5f14a12241768a57552a70160980
+msgid ""
+"For `No module named nds2`, FrameLIB / `framecpp` import errors, and "
+"mixed-environment repairs, see the [Troubleshooting guide](../how-"
+"to/troubleshooting.md#installation-issues) — it covers these cases in "
+"more depth."
+msgstr ""
+"`No module named nds2`、FrameLIB / `framecpp` の import "
+"エラー、環境が混線した場合の修復については、[トラブルシューティング](../how-to/troubleshooting.md"
+"#installation-issues) を参照してください。より詳しい対処法をまとめています。"
+
+#: ../../tutorials/installation.md:96 ea66692121d74bfea8667e2668ca73b3
+msgid ""
+"If you installed from [Quickstart](quickstart.md) and later discover you "
+"need GW binary dependencies, return to [Conda Environment (Recommended / "
+"GW Analysis)](#conda-environment-recommended-gw-analysis) before adding "
+"more packages."
+msgstr ""
+"[クイックスタート](quickstart.md) から導入したあとで GW 系のバイナリ依存が必要になった場合: "
+"パッケージを場当たり的に足す前に [コンダ環境 (Recommended / GW Analysis)](#conda-environment-"
+"recommended-gw-analysis) に戻ってください。"
+
+#: ../../tutorials/installation.md:101 9730709f20974914a12c3e76bcbf6941
+msgid "3. Optional Dependencies (Extras) Details"
+msgstr "3. オプション依存関係 (Extras) の詳細"
+
+#: ../../tutorials/installation.md:54 bf75ec02e51f45b9845aa824388de59d
+msgid "Extra Name"
+msgstr "エクストラ名"
+
+#: ../../tutorials/installation.md:54 0d420ea8b0e649b7a448a1a90459aeff
+msgid "Key Packages"
+msgstr "主要な導入パッケージ"
+
+#: ../../tutorials/installation.md:54 d5b9f5ee310e4c3594c6cd359ad83178
+msgid "Primary Use Cases"
+msgstr "主な用途"
+
+#: ../../tutorials/installation.md:54 a1f4f16243444c2d863759f1b011db7d
+msgid "`analysis`"
+msgstr "`analysis`"
+
+#: ../../tutorials/installation.md:54 ba58a3ddb5c24da58701d7975e2c94b1
+msgid "`scikit-learn`, `statsmodels`, `pmdarima`"
+msgstr "`scikit-learn`, `statsmodels`, `pmdarima`"
+
+#: ../../tutorials/installation.md:54 fe6857312def4bf983d0c2d14108bc01
+msgid "Noise cancellation, forecasting, and machine learning."
+msgstr "ノイズ除去、統計予測、機械学習。"
+
+#: ../../tutorials/installation.md:54 47171c6f3e8243caa4a57d1cf4a11b5f
+msgid "`fitting`"
+msgstr "`fitting`"
+
+#: ../../tutorials/installation.md:54 168298c527fd40e9a31f7124e1b74da2
+msgid "`iminuit`, `emcee`, `corner`"
+msgstr "`iminuit`, `emcee`, `corner`"
+
+#: ../../tutorials/installation.md:54 c1b8a4b74a7a474c9f2217037551be18
+msgid "Least-squares fitting and MCMC analysis."
+msgstr "最小二乗法、MCMC 解析。"
+
+#: ../../tutorials/installation.md:54 97370e3f0100481e94dee92d4698114d
+msgid "`gw`"
+msgstr "`gw`"
+
+#: ../../tutorials/installation.md:54 6ffb57c1edc94123b8cd9e4cb58fb09b
+msgid "`lalsuite`, `gwosc`, `gwinc`, `ligo.skymap`"
+msgstr "`lalsuite`, `gwosc`, `gwinc`, `ligo.skymap`"
+
+#: ../../tutorials/installation.md:54 34ac9d8176a042928981f713f0cdf280
+msgid "Data discovery, sensitivity calculations, and sky mapping."
+msgstr "重力波データ検索、感度計算、スカイマップ描画。"
+
+#: ../../tutorials/installation.md:54 d2713a40e84b4387b90a973c32e7439a
+msgid "`io`"
+msgstr "`io`"
+
+#: ../../tutorials/installation.md:54 d885f5cb627e4343aeb50596f9ea6031
+msgid "`nptdms`"
+msgstr "`nptdms`"
+
+#: ../../tutorials/installation.md:54 1fa578854d8d40c480b4474f17da7d98
+msgid "Reading LabVIEW TDMS formats."
+msgstr "LabVIEW TDMS 形式の読み込み。"
+
+#: ../../tutorials/installation.md:54 bc50fd43e84b4fd2ba4d4ecdde0365a8
+msgid "`netcdf4`"
+msgstr "`netcdf4`"
+
+#: ../../tutorials/installation.md:54 652b3328d1db413f8b85944dd3b5208e
+msgid "`netCDF4`, `xarray`"
+msgstr "`netCDF4`, `xarray`"
+
+#: ../../tutorials/installation.md:54 8f3fa3351e4f4de2a71a2eb35c2e9e73
+msgid "Reading and writing NetCDF4 time-series files via xarray."
+msgstr "xarray 経由の NetCDF4 時系列ファイルの読み書き。"
+
+#: ../../tutorials/installation.md:54 272e72e6a8eb4c958828bffb2c491cd9
+#: 29a07bc997e34b81935bd464a8ff7239
+msgid "`zarr`"
+msgstr "`zarr`"
+
+#: ../../tutorials/installation.md:54 8206dd46b31e45749c582ed2154c5bdb
+msgid "Reading and writing Zarr array stores."
+msgstr "Zarr array store の読み書き。"
+
+#: ../../tutorials/installation.md:54 d08916d04f9a45f7a66076e9823c6bf5
+msgid "`plotting`"
+msgstr "`plotting`"
+
+#: ../../tutorials/installation.md:54 3ab39a11ddca45828f29ed1645064467
+msgid "`pygmt`"
+msgstr "`pygmt`"
+
+#: ../../tutorials/installation.md:54 3252fdf45f4a4e8999e2a192a3d17826
+msgid "High-precision geographic mapping (GeoMap)."
+msgstr "高精度な地図投影（GeoMap）。"
+
+#: ../../tutorials/installation.md:54 57df9b2ba33f46faa3ccda3dd36c14c4
+msgid "`audio`"
+msgstr "`audio`"
+
+#: ../../tutorials/installation.md:54 165671c1343a42228a0efc6094e33828
+msgid "`pydub`, `tinytag`"
+msgstr "`pydub`, `tinytag`"
+
+#: ../../tutorials/installation.md:54 6159f7257ab54fdead16088dcad9a6dc
+msgid "Audio export, processing, and optional metadata extraction."
+msgstr "音声書き出し、オーディオ解析、任意のメタデータ抽出。"
+
+#: ../../tutorials/installation.md:54 940b0fc8cb2e44c49796c77783897868
+msgid "`seismic`"
+msgstr "`seismic`"
+
+#: ../../tutorials/installation.md:54 1ca969acbd8b414a96abaed934d14609
+msgid "`obspy`, `mth5`, `mtpy`"
+msgstr "`obspy`, `mth5`, `mtpy`"
+
+#: ../../tutorials/installation.md:54 915c94a748af4fdb9b20958fb1ec23c3
+msgid "Seismic and magnetotelluric data."
+msgstr "地震・地磁気データ解析。"
+
+#: ../../tutorials/installation.md:54 3efdb0f71a514805b523d66e68574b6d
+msgid "`control`"
+msgstr "`control`"
+
+#: ../../tutorials/installation.md:54 728e7dc8de5040ec83ea74c85ebd9b0d
+msgid "`control` (python-control)"
+msgstr "`control` (python-control)"
+
+#: ../../tutorials/installation.md:54 1e716ea86d754681baed85ac88d12459
+msgid "Control systems and transfer functions."
+msgstr "制御系モデル・伝達関数解析。"
+
+#: ../../tutorials/installation.md:118 9d4ae981d7994bf7b62092b39d06dd67
+msgid "4. OS-Specific Notes"
+msgstr "4. OS 別の注意点"
+
+#: ../../tutorials/installation.md:120 31cf873f665f41c6b0beed7e5a571c4b
+msgid "**Linux**: Ensure standard build tools (`build-essential`) are installed."
+msgstr "**Linux**: 標準的なビルドツール (`build-essential`) を事前に導入してください。"
+
+#: ../../tutorials/installation.md:121 86fec912691e4dba9de9983647c8aa5c
+msgid ""
+"**macOS (Apple Silicon)**: Using the `conda-forge` channel ensures most "
+"binaries run natively on M1/M2/M3."
+msgstr ""
+"**macOS (Apple Silicon)**: `conda-forge` チャンネルを利用することで、多くのバイナリが M1/M2/M3 "
+"ネイティブで動作します。"
+
+#: ../../tutorials/installation.md:122 99e156c8d6b2449f9dffc9503020a5f8
+msgid ""
+"**Windows (WSL2)**: We recommend installing GWexpy within a Linux "
+"environment on WSL2 rather than on Windows proper."
+msgstr "**Windows (WSL2)**: Windows 本体ではなく、WSL2 上の Linux 環境へのインストールを推奨します。"
+
+#: ../../tutorials/installation.md:124 bb9185208f98422cb78c6cf5918837d8
+msgid "5. Security Note (Pickle)"
+msgstr "5. セキュリティに関する注意 (Pickle)"
+
+#: ../../tutorials/installation.md:126 d9feea337de44abcb10e4b619bb9eae7
+msgid ""
+"To facilitate sharing analysis results, GWexpy supports saving and "
+"restoring objects via `Pickle`. This uses **Transparent Pickle** "
+"technology, allowing objects to be restored as base GWpy objects even if "
+"the recipient does not have GWexpy installed."
+msgstr ""
+"GWexpy は解析結果の共有を容易にするため、`Pickle` を用いた保存・復元機能をサポートしています。これには **透過 Pickle**"
+" 技術が使われており、読み込み側に GWexpy がなくても GWpy オブジェクトとして復元できる利便性があります。"
+
+#: ../../tutorials/installation.md:129 6e20d29c5cc44808a2b63ea54f1f804a
+msgid ""
+"**Never load Pickle files from untrusted sources.** Python's `pickle` "
+"module has inherent security risks (Arbitrary Code Execution) when "
+"loading data. Always exchange data through trusted channels or consider "
+"more secure serialization formats like `HDF5`."
+msgstr ""
+"**信頼できないソースからの Pickle ファイルをロードしないでください。** Python の `pickle` "
+"モジュールは、ロード時に任意のコードを実行できる脆弱性（Arbitrary Code "
+"Execution）を持っています。解析データの授受は、常に信頼できる経路で行うか、`HDF5` "
+"などのより安全なシリアライズ形式を検討してください。"
+
+#: ../../tutorials/installation.md:133 2f958175603945859a4a25abde9ca91b
+msgid "<a id=\"next-to-read\"></a> <a id=\"next-steps\"></a>"
+msgstr "<a id=\"next-to-read\"></a> <a id=\"next-steps\"></a>"
+
+#: ../../tutorials/installation.md:136 02798725942042038bdf576d823e92a6
+msgid "6. Next to Read"
+msgstr "6. 次に読む"
+
+#: ../../tutorials/installation.md:138 34f2315c83184fb49d3eea2990fa7099
+msgid ""
+"[Quickstart](quickstart.md) - confirm import and plotting with the "
+"smallest possible example"
+msgstr "[クイックスタート](quickstart.md) - 最小コードで import と描画を確認する"
+
+#: ../../tutorials/installation.md:139 f08bbbac390d430da40c62900250e0a2
+msgid ""
+"[Troubleshooting](../how-to/troubleshooting.md) - reverse-lookup common "
+"install, plotting, and binary dependency issues"
+msgstr ""
+"[トラブルシューティング](../how-to/troubleshooting.md) - "
+"インストール・描画・バイナリ依存の問題を症状から逆引きする"
+
+#: ../../tutorials/installation.md:140 6b9bdfd0578047208867057a7a46fed3
+msgid ""
+"[Getting Started](getting_started.md) - choose the right learning path "
+"after installation"
+msgstr "[はじめに](getting_started.md) - インストール後の学習順序を決める"
+
+#: ../../tutorials/installation.md:141 5f02c44a10e6408396c1598234a5e89a
+msgid ""
+"[Prerequisites and "
+"Conventions](../explanation/prerequisites_and_conventions.md) - review "
+"FFT, GPS time, and GWpy-compatibility assumptions"
+msgstr ""
+"[前提条件と規約](../explanation/prerequisites_and_conventions.md) - FFT・GPS "
+"時刻・GWpy 互換性の前提を確認する"
+
+#~ msgid ""
+#~ "If you see `No module named nds2`:"
+#~ " install `python-nds2-client` in the "
+#~ "active dedicated Conda environment."
+#~ msgstr ""
+#~ "`No module named nds2` が出る場合: "
+#~ "`python-nds2-client` が未導入です。専用の Conda "
+#~ "環境を有効化し、`conda install -c conda-forge "
+#~ "python-nds2-client` を実行してください。"
+
+#~ msgid ""
+#~ "If you see FrameLIB / `framecpp`-related"
+#~ " errors: reinstall `python-framel` and "
+#~ "`ldas-tools-framecpp` in the same "
+#~ "environment."
+#~ msgstr ""
+#~ "FrameLIB / `framecpp` 系のエラーが出る場合: `python-"
+#~ "framel` と `ldas-tools-framecpp` を同じ "
+#~ "Conda 環境に入れ直してください。"
+
+#~ msgid ""
+#~ "If the environment has already been "
+#~ "mixed with unrelated packages: recreating "
+#~ "it with `conda create -n gwexpy "
+#~ "python=3.11` is usually safer than "
+#~ "trying to repair it in place."
+#~ msgstr ""
+#~ "既存の Conda 環境で依存関係が混線した場合: その環境を修復するより、`conda "
+#~ "create -n gwexpy python=3.11` で作り直す方が安全です。"
