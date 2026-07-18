@@ -36,9 +36,10 @@ absent.
 
 References
 ----------
-https://openems.de/index.php/HDF5_Field_Dumps.html
+https://docs.openems.de/python/CSXCAD/CSProperties/CSPropDumpBox.html
 
 """
+
 from __future__ import annotations
 
 import re

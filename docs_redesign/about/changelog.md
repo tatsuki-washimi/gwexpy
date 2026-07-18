@@ -2,6 +2,14 @@
 
 Notable changes to the GWexpy project.
 
+## [0.1.10] - 2026-07-18
+
+This bugfix release improves numerical regularization, axis regularity,
+histogram weights, and time-series resampling behavior.
+
+For detailed behavior changes, see the
+[v0.1.10 release notes](https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.10).
+
 ## [0.1.5] - 2026-06-10
 
 This is a patch release focused on plotting and I/O hotfixes.

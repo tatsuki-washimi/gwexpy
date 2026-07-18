@@ -1,0 +1,56 @@
+issue: 487
+title: "Refresh redesigned website against the v0.1.10 release"
+branch: claude/docs-redesign-pydata
+date: 2026-07-18
+agent: Codex
+target_release: "v0.1.10 website rollout (no package release)"
+scope:
+  summary: "Merge the released main branch, align redesign content with v0.1.10, and audit the resulting website source."
+  included:
+    - "Merge origin/main containing tag v0.1.10 into the redesign branch without rebasing or force-pushing."
+    - "Synchronize release facts, installation guidance, CLI examples, citation metadata, EN/JA translations, and changelog content."
+    - "Verify redirect destinations, public API references, representative quickstart code, EN/JA builds, and external links."
+  excluded:
+    - "No v0.1.11 publication, PR merge, or deployment to gh-pages."
+    - "No complete translation of English-fallback API reference pages or exhaustive execution of optional notebooks."
+changed_files:
+  - path: docs_redesign/
+    change: "Aligned release facts with v0.1.10 and repaired verified external documentation links."
+  - path: scripts/generate_docs_redirect_stubs.py
+    change: "Fail redirect-stub generation when a configured publish target is absent."
+  - path: tests/test_generate_docs_redirect_stubs.py
+    change: "Added missing-target redirect regression coverage."
+  - path: tests/docs/test_docs_redesign_release_facts.py
+    change: "Added release-fact and verified-link regression coverage."
+  - path: docs/developers/plans/manifests/audit-manifest-487-web-docs-rollout.yaml
+    change: "Recorded scope, findings, validation evidence, and remaining rollout limits."
+validation:
+  completed:
+    - cmd: "rtk pytest -q tests/docs/test_docs_redesign_release_facts.py tests/test_generate_docs_redirect_stubs.py tests/docs/test_docs_conf_runtime.py tests/test_check_changed_notebooks_script.py tests/docs/test_check_terms.py -p no:cacheprovider"
+      result: "16 passed after the release-fact and external-link corrections."
+    - cmd: "rtk sphinx-build -b html docs_redesign docs_redesign/_build/html"
+      result: "English build succeeded with pre-existing autodoc and duplicate-object warnings."
+    - cmd: "rtk sphinx-build -b html -D language=ja docs_redesign docs_redesign/_build/html/ja"
+      result: "Japanese build succeeded with existing translation and autodoc warnings."
+    - cmd: "rtk python scripts/generate_docs_redirect_stubs.py <staged-publish-dir>"
+      result: "Generated all 58 EN/JA stubs after validating all 29 configured redirect target pairs."
+    - cmd: "rtk env PYTHONPATH=. MPLCONFIGDIR=/tmp/matplotlib sphinx-build -E -q -b linkcheck -D linkcheck_timeout=10 docs_redesign docs_redesign/_build/linkcheck-network-final"
+      result: "Exited 0. Existing upstream autodoc and duplicate-object warnings remain; no external-link failures were reported."
+findings:
+  release_blocking:
+    - "None found after the merged-main alignment; stale v0.1.5 release claims and the pygwinc package spelling were corrected."
+  corrected_before_publish:
+    - "Updated the obsolete GWpy CLI, LALSuite LIGOTimeGPS, DTT, and openEMS documentation targets discovered by linkcheck."
+  known_limitations:
+    - "The redirect map intentionally preserves only 29 legacy paths; other historical per-tutorial and API URLs can still return 404 after rsync --delete."
+    - "Japanese API source pages retain English fallback where no Japanese catalog exists."
+    - "scripts/check_terms.py scans docs/web/ja rather than docs_redesign; redesign terminology coverage is not yet automated."
+    - "Optional-network and heavyweight notebook execution remains outside this focused quickstart check."
+review:
+  human_review_required: true
+  physics_review_required: false
+  statistics_metadata_review_required: false
+  rationale: "This changes the public website topology and translations; a maintainer must approve the rollout despite code-level verification."
+deferred_follow_ups:
+  - "Expand legacy redirects before deployment if preserving additional deep links is required."
+  - "Port terminology validation to docs_redesign and add Japanese catalogs for the API reference."

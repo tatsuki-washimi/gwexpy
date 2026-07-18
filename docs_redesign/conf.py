@@ -6,6 +6,8 @@
 
 import os
 
+from gwexpy._version import __version__
+
 # Default matches the confirmed production URL (Step F-2: keep the existing
 # /docs/ path rather than moving docs_redesign to the site root).
 _DEFAULT_SITE_ROOT = "https://tatsuki-washimi.github.io/gwexpy/docs/"
@@ -28,7 +30,7 @@ NOINDEX = os.environ.get("GWEXPY_DOCS_NOINDEX") == "1"
 project = "GWexpy"
 copyright = "2026, GWexpy Developers"
 author = "GWexpy Developers"
-release = "0.0.0"
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 extensions = [
@@ -96,7 +98,7 @@ rst_prolog = r"""
 .. role:: mpltype(code)
 .. role:: doi(code)
 .. |lal.LIGOTimeGPS| replace:: ``lal.LIGOTimeGPS``
-.. _lal.ligotimegps: https://lscsoft.docs.ligo.org/lalsuite/lal/
+.. _lal.ligotimegps: https://docs.ligo.org/lscsoft/lalsuite/lal/group___x_l_a_l_time__c.html
 """
 
 # Optional third-party backends that need not be installed to build the docs.
@@ -129,8 +131,15 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
-    "gwpy": ("https://gwpy.github.io/docs/stable/", None),
+    "gwpy": ("https://gwpy.readthedocs.io/en/stable/", None),
 }
+
+# The LALSuite publisher serves this valid public reference to browsers, but
+# returns 404 to Sphinx linkcheck's HTTP client. Keep the authoritative target
+# while excluding that false negative from the automated external-link gate.
+linkcheck_ignore = [
+    r"https://docs\.ligo\.org/lscsoft/lalsuite/lal/group___x_l_a_l_time__c\.html",
+]
 
 # -- HTML output -------------------------------------------------------------
 html_theme = "pydata_sphinx_theme"
@@ -213,9 +222,10 @@ def setup(app):
     def _publish_msgstr(app, source, source_path, source_line, config, settings):
         if source_path and str(source_path).endswith(".ipynb"):
             import contextlib
+
             from docutils.io import StringInput
-            from sphinx.io import SphinxI18nReader
             from myst_parser.parsers.sphinx_ import MystParser
+            from sphinx.io import SphinxI18nReader
 
             rst_prolog = config.rst_prolog
             config.rst_prolog = None
