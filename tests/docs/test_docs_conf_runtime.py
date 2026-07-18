@@ -42,7 +42,7 @@ def test_docs_redesign_executes_clean_notebooks_in_an_untracked_cache(monkeypatc
 
     assert conf.nb_execution_mode == "cache"
     assert conf.nb_execution_cache_path == "_build/jupyter-cache"
-    assert conf.nb_execution_timeout == 180
+    assert conf.nb_execution_timeout == 600
     assert conf.nb_execution_allow_errors is False
     assert conf.nb_execution_raise_on_error is True
 
