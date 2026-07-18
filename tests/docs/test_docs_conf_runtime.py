@@ -8,6 +8,7 @@ CONF_PATH = ROOT / "docs" / "conf.py"
 REDESIGN_CONF_PATH = ROOT / "docs_redesign" / "conf.py"
 DOCS_PR_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pr.yml"
 DOCS_PAGES_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pages.yml"
+DOCS_PREVIEW_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-redesign-preview.yml"
 
 
 def _load_conf_module(name: str):
@@ -107,13 +108,28 @@ def _load_workflow(path: Path) -> dict:
 
 def test_docs_pr_workflow_executes_notebooks_by_default_in_github_actions():
     workflow = _load_workflow(DOCS_PR_WORKFLOW_PATH)
+    assert "CHANGELOG.md" in workflow[True]["pull_request"]["paths"]
     env = workflow["jobs"]["docs-pr"]["env"]
     assert env["NBS_EXECUTE"] == "never"
     assert env["NBS_ALLOW_ERRORS"] == "0"
 
 
+def test_docs_redesign_pr_workflow_stages_the_canonical_changelog():
+    workflow = _load_workflow(DOCS_PR_WORKFLOW_PATH)
+    steps_by_name = {
+        step["name"]: step
+        for step in workflow["jobs"]["docs-redesign-pr"]["steps"]
+        if "name" in step
+    }
+    prepare = steps_by_name["Prepare isolated docs_redesign source"]
+
+    assert 'mkdir -p "${docs_root}"' in prepare["run"]
+    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]
+
+
 def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs():
     workflow = _load_workflow(DOCS_PAGES_WORKFLOW_PATH)
+    assert "CHANGELOG.md" in workflow[True]["push"]["paths"]
     job = workflow["jobs"]["publish-pages"]
 
     # MyST-NB executes clean notebook sources in an isolated runner copy; the
@@ -128,6 +144,8 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
     ja_build = steps_by_name["Build JA HTML"]
 
     assert "rsync -a --delete --exclude \"_build/\" docs_redesign/" in prepare["run"]
+    assert 'mkdir -p "${docs_root}"' in prepare["run"]
+    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]
     assert 'python -m pip install -e ".[all]"' in provision["run"]
     assert "prepare_docs_redesign.outputs.docs_src" in en_build["run"]
     assert "prepare_docs_redesign.outputs.docs_src" in ja_build["run"]
@@ -136,3 +154,17 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
     assert "-D language=ja" in ja_build["run"]
     assert "GWEXPY_DOCS_BASEURL" in en_build["env"]
     assert "GWEXPY_DOCS_BASEURL" in ja_build["env"]
+
+
+def test_docs_preview_workflow_rebuilds_when_the_canonical_changelog_changes():
+    workflow = _load_workflow(DOCS_PREVIEW_WORKFLOW_PATH)
+
+    assert "CHANGELOG.md" in workflow[True]["push"]["paths"]
+    steps_by_name = {
+        step["name"]: step
+        for step in workflow["jobs"]["publish-preview"]["steps"]
+        if "name" in step
+    }
+    prepare = steps_by_name["Prepare isolated docs_redesign source"]
+    assert 'mkdir -p "${docs_root}"' in prepare["run"]
+    assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]

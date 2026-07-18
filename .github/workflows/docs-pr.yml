@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - "CHANGELOG.md"
       - "docs/**"
       - "docs_redesign/**"
       - "scripts/check_terms.py"
@@ -150,8 +151,11 @@ jobs:
       - name: Prepare isolated docs_redesign source
         id: prepare_docs_redesign
         run: |
-          docs_src="${RUNNER_TEMP}/gwexpy-docs-redesign-pr"
+          docs_root="${RUNNER_TEMP}/gwexpy-docs-redesign-pr"
+          docs_src="${docs_root}/docs_redesign"
+          mkdir -p "${docs_root}"
           rsync -a --delete --exclude "_build/" docs_redesign/ "${docs_src}/"
+          cp CHANGELOG.md "${docs_root}/CHANGELOG.md"
           echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
 
       # Same plain `sphinx-build -b html` invocation (no -W) that

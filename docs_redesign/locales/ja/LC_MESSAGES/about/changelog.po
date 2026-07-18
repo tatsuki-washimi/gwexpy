@@ -1,397 +1,1612 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2026, GWexpy Developers
-# This file is distributed under the same license as the GWexpy package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
-#
-#, fuzzy
+# Japanese translations for the public GWexpy changelog.
 msgid ""
 msgstr ""
 "Project-Id-Version:  GWexpy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 06:33+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2026-07-18 16:15+0900\n"
+"PO-Revision-Date: 2026-07-18 00:00+0000\n"
+"Last-Translator: GWexpy Developers\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: Japanese\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.18.0\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: ../../about/changelog.md:1 55182e4e0a58468eae7c29974833cb1c
+#: ../gwexpy-pr487-docs-update/docs_redesign/about/changelog.md:1 e80a1b4a964b42589d91ade2f5611acc
 msgid "Changelog"
-msgstr "更新履歴 (Changelog)"
+msgstr "更新履歴"
 
-#: ../../about/changelog.md:3 0f7d558bd3e44215bebcb955a7d0fea4
-msgid "Notable changes to the GWexpy project."
-msgstr "GWexpy の主な変更履歴を記載します。"
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:15 b8d7df3e26df48e295c6c1283486f689
+msgid "Unreleased"
+msgstr "未リリース"
 
-#: ../../about/changelog.md:5
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:17 e61f7d3c91484287b5fae5394553b131
 msgid "[0.1.10] - 2026-07-18"
 msgstr "[0.1.10] - 2026-07-18"
 
-#: ../../about/changelog.md:7
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:19 4448badcd0ba4d709972d0ad08cac6b5
 msgid ""
-"This bugfix release improves numerical regularization, axis regularity, "
-"histogram weights, and time-series resampling behavior."
-msgstr ""
-"このバグ修正リリースでは、数値正則化、軸の規則性、ヒストグラムの重み付け、"
-"時系列リサンプリングの動作を改善しました。"
+"This is a bugfix release covering numerical regularization, axis regularity, histogram weights, "
+"and TimeSeries resampling dtype and boundary contracts."
+msgstr "数値正則化、軸の規則性、ヒストグラムの重み、TimeSeries のリサンプリングにおける dtype と境界の契約を対象としたバグ修正リリースです。"
 
-#: ../../about/changelog.md:10
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:22 ../gwexpy-pr487-docs-update/CHANGELOG.md:62
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:99 94ca05c08ea840228bae6ad2549f5698
+#: 9c6b758190254866a089afeabd9abc49 add6db54fdbe4db7a74c885559505f71
+msgid "Behaviour-visible bug fixes"
+msgstr "動作に影響するバグ修正"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:24 ca13908c92be48beb8c2cf003bb89532
 msgid ""
-"For detailed behavior changes, see the [v0.1.10 release notes](https://github.com/"
-"tatsuki-washimi/gwexpy/releases/tag/v0.1.10)."
+"**numerics**: `TimeSeriesMatrix.partial_correlation_matrix()` now defaults to `eps=\"auto\"` "
+"instead of `1e-8`, and `WhitenTransform` now defaults to `eps=\"auto\"` instead of `1e-12`. "
+"`LaplaceGram.normalize_per_sigma()` now defaults to `eps=\"auto\"` instead of `1e-30`. These "
+"defaults scale their regularization to the input, so strain-scale partial correlations and "
+"whitening no longer collapse toward zero. Pass the former explicit value to retain prior "
+"behavior. `partial_correlation_matrix(eps=None)` continues to disable its added ridge for "
+"compatibility. All three APIs now reject non-finite input and invalid epsilon values with "
+"`ValueError` (#482)."
 msgstr ""
-"詳細な挙動変更については、[v0.1.10 リリースノート](https://github.com/"
-"tatsuki-washimi/gwexpy/releases/tag/v0.1.10)を参照してください。"
+"**numerics**: `TimeSeriesMatrix.partial_correlation_matrix()` のデフォルトが `1e-8` から `eps=\"auto\"` "
+"に変更され、`WhitenTransform` のデフォルトも `1e-12` から `eps=\"auto\"` "
+"に変更されました。`LaplaceGram.normalize_per_sigma()` のデフォルトも `1e-30` から `eps=\"auto\"` "
+"に変更されました。これらのデフォルトでは入力に応じて正則化の大きさが調整されるため、strain "
+"スケールの偏相関とホワイトニングがゼロ近傍に潰れなくなります。以前の動作を維持するには、従来の値を明示的に渡してください。互換性のため、`partial_correlation_matrix(eps=None)`"
+" は追加のリッジを無効にする動作を引き続き維持します。3 つの API はすべて、非有限入力と無効な epsilon 値を `ValueError` として拒否するようになりました "
+"(#482)。"
 
-#: ../../about/changelog.md:5 dae645f3f36341a3a6580f33b0433fe1
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:34 2006187be98240f3b62caf324d2ddab4
+msgid ""
+"**types**: `AxisDescriptor.regular` now compares represented adjacent intervals with a narrowly "
+"bounded interval-scale tolerance. It accepts ordinary floating-point regular grids while "
+"rejecting materially unequal large-offset float32 intervals that could yield an incorrect `delta`"
+" (#492)."
+msgstr ""
+"**types**: `AxisDescriptor.regular` "
+"は、表現された隣接区間を狭く制限された区間スケール許容誤差で比較するようになりました。通常の浮動小数点の規則格子は受け入れつつ、誤った `delta` "
+"を生じる可能性がある、大きなオフセットを持ち実質的に等しくない float32 区間は拒否します (#492)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:39 034859ef3fe649c6be6da6898327c9c3
+msgid ""
+"**histogram**: `Histogram.fill()` now preserves fractional scalar weights when histogram "
+"coordinates use an integer dtype, including flow-bin values and variance accumulation (#489)."
+msgstr ""
+"**histogram**: ヒストグラム座標が整数 dtype の場合でも、`Histogram.fill()` "
+"がフロー・ビンの値や分散の累積を含め、スカラー重みの小数部分を保持するようになりました (#489)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:43 22bafd5f4ec841b298933490f805c5be
+msgid ""
+"**timeseries**: time-bin `resample()` now implements `closed=\"right\"` as an include-lowest "
+"first bin followed by right-closed bins. It also validates enum options, widths, and offsets "
+"before constructing the bin grid (#491)."
+msgstr ""
+"**timeseries**: 時間ビンの `resample()` は、`closed=\"right\"` "
+"を「最小値を含む最初のビン」に続く右閉区間のビンとして実装するようになりました。また、ビン格子を構築する前に enum オプション、幅、オフセットを検証します (#491)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:47 87386d54570f48a9ad7dad8da6ccc821
+msgid ""
+"**timeseries**: `TimeSeries.asfreq()` preserves integer source dtype and exact values when an "
+"integral `fill_value` is representable. Out-of-range integral fills now raise `ValueError` rather"
+" than causing a lossy dtype promotion; fractional, complex, NaN, and infinite fills still promote"
+" to a dtype that can represent them (#490)."
+msgstr ""
+"**timeseries**: 整数の `fill_value` を表現できる場合、`TimeSeries.asfreq()` は整数のソース dtype "
+"と正確な値を保持するようになりました。範囲外の整数の fill は、情報を失う dtype 昇格を起こす代わりに `ValueError` を送出します。小数、複素数、NaN、無限大の fill"
+" は引き続き、それらを表現できる dtype に昇格します (#490)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:53 be147f802217491691e2213180322892
+msgid "[0.1.9] - 2026-07-11"
+msgstr "[0.1.9] - 2026-07-11"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:55 0d8f13037b3d48ba9e815752fdc1d16b
+msgid ""
+"This is a bugfix release. It completes the GWF read-path NaN-padding harmonization deferred from "
+"0.1.8 (#481) and fixes two fitting bugs surfaced by the #461 follow-up audit: an off-by-one in "
+"`fit_series`'s `sigma` cropping at exact `x_range` boundaries, and an unvalidated "
+"`run_mcmc(n_walkers=...)` that let emcee's internal error leak through (#466)."
+msgstr ""
+"バグ修正リリースです。0.1.8 から延期されていた GWF 読み取りパスの NaN パディング統一を完了し (#481)、#461 のフォローアップ監査で明らかになった 2 "
+"つのフィッティングバグを修正しました。具体的には、`x_range` の境界が正確に一致する場合の `fit_series` における `sigma` の切り出しの off-by-one "
+"と、検証されていない `run_mcmc(n_walkers=...)` によって emcee 内部のエラーがそのまま表面化する問題です (#466)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:64 d52edd66e4c946768714132ec51000d5
+msgid ""
+"GWF-specific reads (`TimeSeries.read`/`TimeSeriesDict.read`/`TimeSeriesMatrix.read` with "
+"`format=\"gwf\"`) now default `gap=\"pad\"` to `NaN` padding instead of `0.0`, completing the "
+"harmonization with `SeriesMatrix.append`'s NaN default shipped in 0.1.8. Code that relied on "
+"zero-filled GWF gaps should pass an explicit `pad=` value. Padding a missing region (an inter-"
+"file gap or a requested interval that extends beyond the available data) with `NaN` on a non-"
+"floating-point GWF channel dtype now raises a clear `ValueError` instead of silently corrupting "
+"the data with an out-of-range integer fill value or leaking NumPy's opaque ``cannot convert float"
+" NaN to integer`` (#481)."
+msgstr ""
+"GWF 固有の読み取り（`format=\"gwf\"` を指定した "
+"`TimeSeries.read`/`TimeSeriesDict.read`/`TimeSeriesMatrix.read`）では、`gap=\"pad\"` のデフォルトが `0.0` "
+"ではなく `NaN` パディングになり、0.1.8 で導入された `SeriesMatrix.append` の NaN デフォルトとの統一が完了しました。GWF "
+"のギャップがゼロで埋まることに依存していたコードでは、明示的な `pad=` "
+"値を渡してください。欠損領域（ファイル間のギャップ、または利用可能なデータを超えて延長された要求区間）を、浮動小数点でない GWF チャネル dtype に対して `NaN` "
+"でパディングすると、範囲外の整数 fill 値によるデータの暗黙の破損や、NumPy の不透明な ``cannot convert float NaN to integer`` "
+"エラーの漏出ではなく、明確な `ValueError` が送出されるようになりました (#481)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:74 ../gwexpy-pr487-docs-update/CHANGELOG.md:121
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:195 ../gwexpy-pr487-docs-update/CHANGELOG.md:245
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:294 03cdabcff4404dc396eec2c371f01699
+#: 2ed80acad1904342a7cd5b4bd7cbeaf1 709f2d5af04a44ad82fdd4b243ec5f6d be1841f2b01941058087f40c1858fcb6
+#: c08b45abd58e42f3865fed819ce218b9
+msgid "Bug fixes"
+msgstr "バグ修正"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:76 bc5b4ff5c24c45179989a32d2e9c1f3e
+msgid ""
+"**fitting**: `fit_series(..., sigma=..., x_range=...)` no longer crashes with a spurious `Sigma "
+"length mismatch` `ValueError` when `x_range`'s upper bound exactly matches a data bin edge. The "
+"sigma array is now cropped using the same index range that `Series.crop()` actually used for the "
+"fitted data (#466)."
+msgstr ""
+"**fitting**: `x_range` の上限がデータ・ビンの端と正確に一致する場合でも、`fit_series(..., sigma=..., x_range=...)` が偽の "
+"`Sigma length mismatch` `ValueError` でクラッシュしなくなりました。sigma 配列は、フィット対象データに対して `Series.crop()` "
+"が実際に使用したものと同じインデックス範囲で切り出されます (#466)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:80 4c9661c10a7b4d6abbd44079f5805523
+msgid ""
+"**fitting**: `FitResult.run_mcmc()` now validates `n_walkers >= 2 * ndim` before invoking "
+"`emcee.EnsembleSampler`, raising a clear `ValueError` with the required minimum instead of "
+"letting emcee's internal `RuntimeError` surface with no gwexpy-level context (#466)."
+msgstr ""
+"**fitting**: `FitResult.run_mcmc()` は `emcee.EnsembleSampler` を呼び出す前に `n_walkers >= 2 * ndim` "
+"を検証するようになりました。必要な最小値を示す明確な `ValueError` を送出し、gwexpy レベルのコンテキストなしに emcee 内部の `RuntimeError` "
+"が表面化することを防ぎます (#466)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:85 64d88d4b7e6f4e35925aab8390dd0796
+msgid "Development"
+msgstr "開発"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:87 cc67f38204d247819040be561f245e53
+msgid ""
+"Move maintainer-only `.harness/` AI workflow files out of the public repository and skip private "
+"harness sync tests when the harness is absent (#483)."
+msgstr "メンテナー専用の `.harness/` AI ワークフローファイルを公開リポジトリの外へ移動し、ハーネスが存在しない場合はプライベート・ハーネス同期テストをスキップします (#483)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:91 d68713bc5f4a4d48bdeea0e2f7f08559
+msgid "[0.1.8] - 2026-07-04"
+msgstr "[0.1.8] - 2026-07-04"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:93 8a8de22e1bcf4bfa9620c50acfdfee2b
+msgid ""
+"This is a bugfix and I/O-hardening release. It fixes the `from_obspy` crash on `obspy.Stream` "
+"input (#452) and hardens the SeriesMatrix / I/O layer: gap handling, metadata aliasing, key "
+"round-trips, and reader failure modes surfaced by the #443 follow-up audit are fixed with "
+"explicit contracts and regression tests (#450)."
+msgstr ""
+"バグ修正および I/O 堅牢化リリースです。`obspy.Stream` 入力時の `from_obspy` のクラッシュを修正し (#452)、SeriesMatrix / I/O "
+"層を堅牢化しました。#443 "
+"のフォローアップ監査で明らかになったギャップ処理、メタデータのエイリアシング、キーのラウンドトリップ、リーダーの失敗モードを、明示的な契約と回帰テストによって修正しています (#450)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:101 33b0e68fd0ab47c28215b9d7ff2c5a28
+msgid ""
+"`SeriesMatrix.append(gap=\"pad\")` (and the matrix multi-source merge paths built on it) now pads"
+" gaps with `NaN` instead of `0.0` by default, matching the missing-data convention already used "
+"by the multi-source readers. Code that relied on zero-filled gaps should pass an explicit `pad=` "
+"value or handle NaNs before reductions/FFT/filtering. Padding a gap with `NaN` on a non-floating "
+"matrix dtype now raises `ValueError` instead of silently inserting an invalid fill value."
+msgstr ""
+"`SeriesMatrix.append(gap=\"pad\")`（およびこれを基盤とする行列のマルチソース統合パス）は、デフォルトでギャップを `0.0` ではなく `NaN` "
+"でパディングするようになり、マルチソース・リーダーですでに使用されている欠損データの規約に一致しました。ギャップがゼロで埋まることに依存していたコードでは、明示的な `pad=` "
+"値を渡すか、削減・FFT・フィルタリングの前に NaN を処理してください。浮動小数点でない行列 dtype のギャップを `NaN` でパディングすると、無効な fill "
+"値を暗黙に挿入する代わりに `ValueError` が送出されます。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:108 6734cf39b9334932bc06345c5d524280
+msgid ""
+"**io/netcdf4**: A failed per-channel series construction no longer degrades to a plain dict "
+"(which deferred an opaque `AttributeError` downstream); the reader now raises a clear "
+"`ValueError` at the source."
+msgstr ""
+"**io/netcdf4**: チャネルごとの Series 構築に失敗しても、単純な dict に劣化しなくなりました（これまでは下流で不透明な `AttributeError` "
+"が遅れて発生していました）。リーダーは発生源で明確な `ValueError` を送出します。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:111 0e426c4c881f433cb983ffda6f87d7d8
+msgid ""
+"**io/netcdf4**: Time-coordinate detection now prefers an explicitly named coordinate "
+"(`time`/`Time`/`TIME`/`t`) and warns when it has to fall back to a datetime64 coordinate — more "
+"loudly when several candidates make the choice ambiguous. Pass `time_coord=` to select the axis "
+"explicitly."
+msgstr ""
+"**io/netcdf4**: 時間座標の検出では、明示的に命名された座標（`time`/`Time`/`TIME`/`t`）が優先され、datetime64 "
+"座標へフォールバックする場合は警告されるようになりました。複数の候補があり選択が曖昧な場合は、より強い警告になります。軸を明示的に選択するには `time_coord=` を渡してください。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:115 caf4eb4dc35348049f87a8b7392afd0f
+msgid ""
+"**io/zarr**: Reading a store without a stored epoch now emits a `UserWarning` (the silent default"
+" was GPS epoch 1980); a new `t0_override=` argument sets the epoch explicitly."
+msgstr ""
+"**io/zarr**: epoch が保存されていないストアを読み取ると `UserWarning` が発生するようになりました（以前は GPS epoch 1980 "
+"が黙ってデフォルトとして使用されていました）。新しい `t0_override=` 引数で epoch を明示的に設定できます。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:118 680f1c8a1c994c3491f835e46a11996f
+msgid ""
+"**io/sdb**: Non-numeric values dropped by numeric coercion are no longer silently lost; the "
+"reader warns with the affected column and count."
+msgstr "**io/sdb**: 数値への強制変換で破棄された非数値は、黙って失われなくなりました。リーダーは影響を受けた列と件数を含む警告を出します。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:123 7fabc68f0a1e4a348e042ce3b8d499dc
+msgid ""
+"**interop/obspy**: `TimeSeries.from_obspy` no longer crashes with an opaque `AttributeError` when"
+" given an `obspy.Stream`: a single-trace Stream is converted directly, and a multi-trace Stream "
+"raises a clear `TypeError` pointing to the new `TimeSeriesDict.from_obspy` / `to_obspy` methods. "
+"The `from_neo` (Block/Segment), `from_torch` (non-1D tensors) and `from_root` (container inputs) "
+"converters gained equivalent clear-error guards (#452)."
+msgstr ""
+"**interop/obspy**: `obspy.Stream` を渡したとき、`TimeSeries.from_obspy` が不透明な `AttributeError` "
+"でクラッシュしなくなりました。単一トレースの Stream は直接変換され、複数トレースの Stream では、新しい `TimeSeriesDict.from_obspy` / "
+"`to_obspy` メソッドを案内する明確な `TypeError` が送出されます。`from_neo`（Block/Segment）、`from_torch`（1 "
+"次元でないテンソル）、`from_root`（コンテナ入力）の各コンバーターにも同等の明確なエラーガードが追加されました (#452)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:130 8c616aae473741c98e7e8a2833a7e300
+msgid ""
+"`SeriesMatrix` metadata aliasing is now fully closed out: `rows`/`cols`/ `meta`/`attrs` are deep-"
+"copied in `_get_meta_for_constructor` (used by `crop`/`append`/`diff`/`pad`/`interpolate`), in "
+"the matrix math ops (`trace`, `matmul`, `schur`, `abs`, …) and in `__array_ufunc__`, so mutating "
+"a derived object's metadata no longer corrupts the source. This extends the "
+"`astype`/`real`/`imag` fix shipped in 0.1.6 (#442) to the remaining construction paths."
+msgstr ""
+"`SeriesMatrix` のメタデータ・エイリアシングが完全に解消されました。`rows`/`cols`/ `meta`/`attrs` は "
+"`_get_meta_for_constructor`（`crop`/`append`/`diff`/`pad`/`interpolate` "
+"が使用）内、行列の数学演算（`trace`、`matmul`、`schur`、`abs`、…）内、および `__array_ufunc__` "
+"内でディープコピーされるため、派生オブジェクトのメタデータを変更しても元のオブジェクトが破損しなくなりました。これは 0.1.6 で提供された `astype`/`real`/`imag` "
+"の修正 (#442) を、残りの構築パスにも拡張するものです。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:137 8692b5bba82244d08221784e8150bf4f
+msgid ""
+"**io/hdf5**: `SeriesMatrix` row/column keys are now JSON-encoded on write (`key_format=\"json\"`,"
+" mirroring the NetCDF4/Zarr encoders), so tuple and numeric keys survive HDF5 round-trips instead"
+" of collapsing to strings. Legacy string-keyed files remain readable."
+msgstr ""
+"**io/hdf5**: `SeriesMatrix` の行・列キーは書き込み時に JSON エンコードされるようになりました（NetCDF4/Zarr のエンコーダーに合わせて "
+"`key_format=\"json\"`）。そのため、タプルキーや数値キーが文字列に変わらず HDF5 "
+"のラウンドトリップ後も保持されます。従来の文字列キー形式のファイルも引き続き読み取り可能です。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:141 3a4a09d6693949ecaffe50423ed87bd8
+msgid ""
+"**io/dttxml**: JSON key decoding now recursively converts nested lists to tuples (matching the "
+"Zarr decoder) so round-trips preserve tuple keys and hashability."
+msgstr ""
+"**io/dttxml**: JSON キーのデコードで、ネストされたリストを再帰的にタプルへ変換するようになりました（Zarr "
+"デコーダーと同じ動作）。これにより、ラウンドトリップ後もタプルキーとハッシュ可能性が保持されます。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:144 12c9b040be96401bb8f5644a9913c152
+msgid ""
+"**interop**: `to_xarray()` (and `to_xarray_frequencyseries()`) no longer persist an unset "
+"`channel`/`name` as the literal string `\"None\"`, which previously round-tripped back into a "
+"bogus `Channel(\"None\")`. The `channel` metadata now survives `to_dict`/`from_dict`, "
+"`to_xarray`/`from_xarray` and `to_hdf5`/`from_hdf5` round-trips."
+msgstr ""
+"**interop**：`to_xarray()`（および `to_xarray_frequencyseries()`）は、未設定の `channel`/`name` をリテラル文字列 "
+"`\"None\"` として永続化しなくなりました。従来は、これが不正な `Channel(\"None\")` として往復変換されていました。`channel` "
+"メタデータは、`to_dict`/`from_dict`、`to_xarray`/`from_xarray`、`to_hdf5`/`from_hdf5` の往復変換で保持されます。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:150 09a4b638136f4764aa4a05e314ca3349
+msgid "Behaviour changes"
+msgstr "動作の変更"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:152 1373bcdf062245f69f4f540e192d5701
+msgid ""
+"**interop**: `TimeSeries.from_dict`/`from_json`/`from_xarray`/`from_pandas`/ "
+"`from_hdf5_dataset`/`from_netcdf4`/`from_polars` (and the underlying interop helpers) now accept "
+"explicit `channel`/`unit`/`name`/`t0`/`dt` keyword arguments to supply metadata the source object"
+" cannot carry; an explicit argument always takes priority over a stored value (`user > source`)."
+msgstr ""
+"**interop**: `TimeSeries.from_dict`/`from_json`/`from_xarray`/`from_pandas`/ "
+"`from_hdf5_dataset`/`from_netcdf4`/`from_polars`（および基盤となる interop "
+"ヘルパー）は、ソースオブジェクトが保持できないメタデータを補うため、`channel`/`unit`/`name`/`t0`/`dt` "
+"のキーワード引数を明示的に受け付けるようになりました。明示的な引数は常に保存値より優先されます（`user > source`）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:157 d831a309712545d4831a534d52c7f129
+msgid ""
+"**interop**: when `t0`/`dt` cannot be recovered or inferred, the converters (`from_dict`, "
+"`from_pandas`, `from_hdf5`, `from_netcdf4`, `from_polars`) now fall back to `t0=0`/`dt=1` with a "
+"`UserWarning` instead of silently, matching the Zarr reader. The fallback values are unchanged, "
+"so this is a backward- compatible (SemVer MINOR) addition; pass `t0=`/`dt=` explicitly to silence"
+" it."
+msgstr ""
+"**interop**: `t0`/`dt` "
+"を復元または推定できない場合、コンバーター（`from_dict`、`from_pandas`、`from_hdf5`、`from_netcdf4`、`from_polars`）は黙って処理する代わりに"
+" `UserWarning` とともに `t0=0`/`dt=1` へフォールバックするようになりました。Zarr "
+"リーダーと同じ動作です。フォールバック値は変更されていないため、これは後方互換な（SemVer MINOR）追加です。警告を抑制するには `t0=`/`dt=` を明示的に渡してください。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:163 6891b40f8988488fac86b58a4165bf35
+msgid "Dependencies"
+msgstr "依存関係"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:165 3f54d71bad044bbbb015e0410a2ec6c8
+msgid ""
+"Added upper version bounds to I/O backends to guard against major-version API breaks: "
+"`h5py>=3.0,<4` (core), `obspy<2`, `nptdms<2`, `netCDF4<2`, `zarr>=2,<4` (extras). These caps stay"
+" within the currently tested major series but can affect dependency resolution in environments "
+"that already pin newer majors (#450, D1)."
+msgstr ""
+"メジャーバージョンによる API 破壊から保護するため、I/O "
+"バックエンドに上限バージョンを追加しました。`h5py>=3.0,<4`（core）、`obspy<2`、`nptdms<2`、`netCDF4<2`、`zarr>=2,<4`（extras）が対象です。これらの上限は現在テスト済みのメジャー系列内に収まりますが、すでに新しいメジャーバージョンを固定している環境では依存関係の解決に影響する可能性があります"
+" (#450, D1)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:171 ../gwexpy-pr487-docs-update/CHANGELOG.md:216
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:278 ../gwexpy-pr487-docs-update/CHANGELOG.md:306
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:351 54971eca99f5483d8de3301f6aff590e
+#: 56a60578191343c78e72ebbf07169a1b 87789e497c4345e6b2490d6cf8630751 9b6b894713ef4efa94865fa49fc02f28
+#: a58ebea79b8648a084c04520c00a2e58
+msgid "Tests"
+msgstr "テスト"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:173 8be7be3ea6f142e092950d8d69bf0809
+msgid ""
+"**interop**: Added regression tests for the `resolve_timing`/`resolve_meta` helpers, `channel` "
+"round-trips across dict/json/xarray/hdf5/netcdf4, the `\"None\"`-string guard, falsy-zero "
+"`t0=0.0` handling, user-supplied metadata overrides, and the new missing-timing `UserWarning` for"
+" each converter."
+msgstr ""
+"**interop**：`resolve_timing`/`resolve_meta` ヘルパー、dict/json/xarray/hdf5/netcdf4 間の `channel` "
+"往復変換、`\"None\"` 文字列の防止、偽値となるゼロの `t0=0.0` の扱い、ユーザー指定メタデータによる上書き、各変換器の新しいタイミング情報欠落時 `UserWarning` "
+"に対する回帰テストを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:177 563009308f714d1898133479e7e6d2ee
+msgid ""
+"Added matrix key round-trip contracts across HDF5/NetCDF4/Zarr, multi-source reader and gap-"
+"padding coverage, SDB/Zarr reader warning tests, and io-conformance generators/validators for the"
+" SDB and Zarr backends."
+msgstr ""
+"HDF5/NetCDF4/Zarr 間の行列キーのラウンドトリップ契約、複数ソースリーダーとギャップパディングのカバレッジ、SDB/Zarr リーダーの警告テスト、および SDB と Zarr "
+"バックエンド用の I/O 適合性ジェネレーターとバリデーターを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:181 c12a93ccd7bd4fd5806d82e4f7bab976
+msgid "Known limitations"
+msgstr "既知の制限事項"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:183 98ba2650002345348d4a65c7248a315c
+msgid ""
+"GWF-specific read padding still follows its existing zero-padding path "
+"(`gwexpy/timeseries/_gwf_io.py`); harmonizing GWF padding with the matrix/core NaN convention is "
+"deferred to a follow-up issue."
+msgstr ""
+"GWF 固有の読み込みパディングは、引き続き既存のゼロパディング経路（`gwexpy/timeseries/_gwf_io.py`）に従います。GWF のパディングを行列およびコアの NaN "
+"規約に統一する作業は、後続の issue に持ち越します。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:187 091b1bd4970348838c4b906d4b875760
+msgid "[0.1.7] - 2026-06-27"
+msgstr "[0.1.7] - 2026-06-27"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:189 73705f483dc44522b2d7c215258ac678
+msgid ""
+"This is a numerical-robustness hardening release. A Phase 1 audit across the statistics, fitting,"
+" and spectral modules surfaced a set of silent-failure and degenerate-input bugs; this release "
+"adds explicit input-contract guards and a matching suite of regression tests so that invalid "
+"inputs raise clear errors instead of producing Inf/NaN or silently wrong results."
+msgstr ""
+"数値ロバスト性を強化するリリースです。statistics、fitting、spectral "
+"モジュールを対象としたフェーズ1の監査により、サイレントな失敗や退化入力に関する一連のバグが明らかになりました。本リリースでは、明示的な入力契約ガードと対応する回帰テスト一式を追加し、不正な入力が"
+" Inf/NaN や誤った結果を黙って生成するのではなく、明確なエラーを発生させるようにしました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:197 69f234bec6714831b4dbe10ee57149f3
+msgid ""
+"**fitting/core**: LSQ cost classes now validate `dy` — zero, negative, non-finite, or complex "
+"elements raise `ValueError` instead of causing silent fit failures or Inf/NaN results (#469)."
+msgstr ""
+"**fitting/core**: LSQ コストクラスが `dy` を検証するようになりました。ゼロ、負値、有限でない値、または複素数の要素に対して、フィッティングが黙って失敗したり "
+"Inf/NaN の結果を生じたりする代わりに `ValueError` を発生させます (#469)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:200 28082e8c221947af9e4c0a476bbda29c
+msgid ""
+"**fitting/gls**: GLS classes gained covariance / inverse-covariance conditioning guards and PSD "
+"checks (#457 via #472)."
+msgstr "**fitting/gls**: GLS クラスに共分散／逆共分散の条件数ガードと PSD チェックを追加しました (#457 via #472)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:202 21d247d28b6a4c6c87d4c62f358e566d
+msgid "**fitting/models**: Added degenerate-parameter guards to model shape functions (#455 via #471)."
+msgstr "**fitting/models**: モデル形状関数に退化パラメータのガードを追加しました (#455 via #471)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:204 666b2be94f1b469d9f48100826a4abca
+msgid ""
+"**statistics**: Guarded degenerate and non-finite inputs across `rayleigh_test`, `gauch`, "
+"`dq_flag`, and `student_t_indicator` — all-NaN inputs, `p=0` false vetoes, Inf-corrupted "
+"distributions, an `IndexError`, and mis-sized segments are now handled explicitly (#459 via "
+"#470)."
+msgstr ""
+"**statistics**: `rayleigh_test`、`gauch`、`dq_flag`、`student_t_indicator` "
+"全体で、退化入力および有限でない入力をガードするようにしました。全要素が NaN の入力、`p=0` による誤った veto、Inf "
+"によって破損した分布、`IndexError`、サイズの不正なセグメントを明示的に処理します (#459 via #470)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:208 6ccd52708dab42b4a0c89d3faea2b80a
+#, python-brace-format
+msgid ""
+"**statistics/roc**: `calculate_roc` and `evaluate_detection_performance` enforce their input "
+"contract — empty classes, shape mismatch, non-finite scores, and tied-FPR bias now raise "
+"`ValueError`, and sklearn-style `{-1, +1}` labels are handled correctly (#468)."
+msgstr ""
+"**statistics/roc**: `calculate_roc` と `evaluate_detection_performance` "
+"が入力契約を適用するようになりました。空のクラス、形状の不一致、有限でないスコア、同率 FPR によるバイアスでは `ValueError` を発生させ、sklearn 形式の `{-1, "
+"+1}` ラベルを正しく処理します (#468)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:212 d6d719f67353478bafb0f1e03faa9c01
+msgid ""
+"**spectral**: Guarded `bootstrap_spectrogram` edge cases — float truncation, NaN/Inf energy, "
+"`rebin_width` validation, covariance mean-imputation, and zero-width confidence-interval warnings"
+" (#460 via #473)."
+msgstr ""
+"**spectral**: `bootstrap_spectrogram` のエッジケースをガードするようにしました。浮動小数点値の切り捨て、NaN/Inf "
+"のエネルギー、`rebin_width` の検証、共分散の平均値補完、幅ゼロの信頼区間に関する警告に対応しています (#460 via #473)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:218 540a0361b6c14a9db344620baeb53eeb
+msgid ""
+"Added input-contract regression suites covering the fixes above: "
+"`tests/fitting/test_lsq_cost_dy_contract.py`, `tests/fitting/test_gls_contracts.py`, "
+"`tests/fitting/test_models_domain_contract.py`, "
+"`tests/statistics/test_degenerate_input_contract.py`, "
+"`tests/statistics/test_roc_input_contract.py`, "
+"`tests/spectral/test_bootstrap_spectrogram_contract.py`."
+msgstr ""
+"上記の修正を対象とする入力契約の回帰テスト一式を追加しました: "
+"`tests/fitting/test_lsq_cost_dy_contract.py`、`tests/fitting/test_gls_contracts.py`、`tests/fitting/test_models_domain_contract.py`、`tests/statistics/test_degenerate_input_contract.py`、`tests/statistics/test_roc_input_contract.py`、`tests/spectral/test_bootstrap_spectrogram_contract.py`。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:226 ../gwexpy-pr487-docs-update/CHANGELOG.md:273
+#: 0637e1bec76e4bebbde7335b58fe01a4 6971b342550b49aaa7999f08c87eee84
+msgid "Maintenance"
+msgstr "メンテナンス"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:228 b8313dce24bc462db458368f9f0be373
+msgid ""
+"Centralized gwexpy provisioning across CI workflows and fixed nightly drift via a shared `setup-"
+"gwexpy` composite action (#454)."
+msgstr "CI ワークフロー全体の gwexpy セットアップを一元化し、共有 `setup-gwexpy` コンポジットアクションによって nightly のずれを修正しました (#454)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:230 1aadb3f6d1a54c1e998609fe56352a9d
+msgid ""
+"Added release-note tooling (`tools/gen_release_notes.py`, `tools/publish_releases.sh`) that "
+"generates standardized GitHub Release notes from `CHANGELOG.md`."
+msgstr ""
+"`CHANGELOG.md` から標準化された GitHub Release "
+"ノートを生成するリリースノート用ツール（`tools/gen_release_notes.py`、`tools/publish_releases.sh`）を追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:234 ../gwexpy-pr487-docs-update/CHANGELOG.md:313
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:344 ../gwexpy-pr487-docs-update/CHANGELOG.md:426
+#: 42a74776154c4e2c854fbe9f954b5c7e 51d103bbf084464b885ca24bd106d26d 7fad9c0cdf2045acae4c53e81ab55f72
+#: befcf5f462054f4eb99f8814e44e4e0d
+msgid "Documentation"
+msgstr "ドキュメント"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:236 6480d681d1d849b79608a7fc7f320ad6
+msgid "Added the Phase 1 numerical-robustness sweep and supplement reports under `tech_notes/` (#462)."
+msgstr "`tech_notes/` にフェーズ1の数値ロバスト性調査および補足レポートを追加しました (#462)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:239 62f74a617ae34260a2eb5b3902a3e060
+msgid "[0.1.6] - 2026-06-11"
+msgstr "[0.1.6] - 2026-06-11"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:241 02295d3e435647feb555f06bcb9ba532
+msgid ""
+"This is a bugfix and maintenance release: plotting/I/O follow-up fixes (#440, #441, #442 via "
+"#443), a development dependency sweep (#431), and FrequencySeries collection registry audit tests"
+" (#438)."
+msgstr ""
+"プロット／I/O のフォローアップ修正 (#440、#441、#442 via #443)、開発依存関係の一斉更新 (#431)、FrequencySeries "
+"コレクションのレジストリ監査テスト (#438) を含む、バグ修正およびメンテナンスリリースです。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:247 f1571838016f4145b6f05293ab753179
+msgid ""
+"Fixed subplot geometry calculation in `Plot` so the expansion count always matches "
+"`_expand_args`: all arguments are now counted regardless of order (a leading Spectrogram or "
+"matrix no longer hides later containers), the duplicated counting loops were unified into a "
+"single helper, and a leading matrix keeps its grid geometry only when it is the sole argument "
+"(#440)."
+msgstr ""
+"`Plot` のサブプロット形状計算を修正し、展開数が常に `_expand_args` と一致するようにしました。引数の順序にかかわらずすべての引数を数えるため、先頭の Spectrogram"
+" や行列が後続のコンテナを隠すことはなくなりました。重複していたカウントループは単一のヘルパーに統合し、先頭の行列は唯一の引数である場合に限ってグリッド形状を維持します (#440)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:252 388363b131a44b6ab8715280e64b0c6d
+msgid ""
+"All TimeSeries readers now handle a list or tuple of paths: formats with well-defined merge "
+"semantics (tdms, ats, csv, netcdf4, gbd, ndscope HDF5, zarr, sdb, win, dttxml) concatenate "
+"channels along time with NaN gap padding via a shared multi-source helper, while self-contained "
+"formats (wav, audio) raise a clear `ValueError` instead of an opaque backend `TypeError` (#441)."
+msgstr ""
+"すべての TimeSeries リーダーがパスのリストまたはタプルを処理するようになりました。マージの意味が明確な形式（tdms、ats、csv、netcdf4、gbd、ndscope "
+"HDF5、zarr、sdb、win、dttxml）では、共有マルチソースヘルパーを介して時間方向にチャンネルを連結し、空白を NaN "
+"でパディングします。一方、自己完結型の形式（wav、audio）では、判別しにくいバックエンドの `TypeError` ではなく明確な `ValueError` を発生させます (#441)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:258 5e83a691538c4f109021169141af6119
+msgid ""
+"GWF alias registration no longer swallows unexpected errors silently: expected missing-backend "
+"lookups return `None` as before, anything else emits a warning (#442)."
+msgstr "GWF エイリアス登録が予期しないエラーを黙って飲み込まなくなりました。想定されたバックエンド不在の検索では従来どおり `None` を返し、それ以外の場合は警告を発します (#442)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:261 bae89a62226a4d27bc3481f7f29636b4
+msgid ""
+"Pickling a `SeriesMatrix` now emits a warning listing any attrs entries that had to be dropped "
+"because they cannot be pickled, instead of dropping them silently (#442)."
+msgstr ""
+"`SeriesMatrix` の pickle 化時に、pickle 化できないため削除された attrs のエントリを一覧する警告を発するようにしました。これらを黙って削除することはありません"
+" (#442)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:264 f793bda07a7f4926aec108c5b9553d42
+msgid ""
+"`SeriesMatrix.astype()`, `.real`, `.imag`, `.conj()`, `.transpose()`/`.T` and `.reshape()` now "
+"deep-copy `attrs` like `.copy()` does, so mutating the result's attrs no longer leaks into the "
+"source matrix (#442)."
+msgstr ""
+"`SeriesMatrix.astype()`、`.real`、`.imag`、`.conj()`、`.transpose()`/`.T`、`.reshape()` が `.copy()` "
+"と同様に `attrs` をディープコピーするようになりました。そのため、結果の attrs を変更しても元の行列に影響しません (#442)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:267 36871085d17742248bfff53fe1904a47
+msgid ""
+"Multi-file NetCDF4/Zarr reads into `TimeSeriesMatrix` now preserve the matrix row/column keys "
+"instead of collapsing them through the dict-reader shortcut, and NetCDF4 gained a dedicated "
+"matrix writer."
+msgstr ""
+"複数ファイルの NetCDF4/Zarr を `TimeSeriesMatrix` に読み込む際、dict "
+"リーダーのショートカットによって行列の行／列キーを失うことなく保持するようになりました。また、NetCDF4 に専用の行列ライターを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:270 8badc56352204dea9875c7db0abb72c6
+msgid ""
+"Multi-file matrix segment merging now passes `pad=np.nan`, so gaps between files are NaN-padded "
+"instead of raising."
+msgstr "複数ファイルの行列セグメントのマージで `pad=np.nan` を渡すようになり、ファイル間の空白はエラーを発生させず NaN でパディングされます。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:275 0b9479850b004b50a380c208fcd1413a
+msgid "Updated the development dependency group (24 packages) in `requirements-dev.txt` (#431)."
+msgstr "`requirements-dev.txt` の開発依存関係グループ（24 パッケージ）を更新しました (#431)。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:280 c570302b1a8a40779a79adefc535b6be
+msgid ""
+"Added plot geometry tests for mixed-container argument orders, single 2D/3D/4D matrices, and "
+"parity with `_expand_args` expansion counts."
+msgstr "コンテナが混在する引数順、単一の 2D/3D/4D 行列、および `_expand_args` の展開数との一致を対象とするプロット形状テストを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:282 b7eda077288a4d79933a1453eee73497
+msgid ""
+"Added multi-source reader tests covering merge, gap padding, overlap errors, empty-list "
+"rejection, and clear single-file-only errors."
+msgstr "マージ、空白のパディング、重複エラー、空リストの拒否、単一ファイル専用であることを示す明確なエラーを対象とするマルチソースリーダーのテストを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:284 fae0536a37e64ff4ba23c8c7b7e51c6c
+msgid "Added regression tests for pickle attrs warnings and attrs independence of derived matrices."
+msgstr "pickle 化時の attrs 警告と、派生行列における attrs の独立性を対象とする回帰テストを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:286 fbd23aa6572745e696591a15b2fcd1ad
+msgid ""
+"**frequencyseries/io**: Added registry-backend audit tests and a developer note for "
+"FrequencySeries collection read/write fallback (#438). No behaviour change."
+msgstr ""
+"**frequencyseries/io**: レジストリバックエンドの監査テストと、FrequencySeries コレクションの読み書きフォールバックに関する開発者向け注記を追加しました "
+"(#438)。動作の変更はありません。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:290 a9e4d8516c734e2aa412ff2aa18bff84
 msgid "[0.1.5] - 2026-06-10"
 msgstr "[0.1.5] - 2026-06-10"
 
-#: ../../about/changelog.md:7 74387b85e1444b9080c6260bfd9928f8
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:292 13313f9011f74b11ab6f0693afb0b343
 msgid "This is a patch release focused on plotting and I/O hotfixes."
-msgstr "プロットと I/O の修正を中心としたパッチリリースです。"
+msgstr "プロットおよび I/O の緊急修正に焦点を当てたパッチリリースです。"
 
-#: ../../about/changelog.md:9 ../../about/changelog.md:43
-#: ../../about/changelog.md:87 1d6ee647fc23439aa231a2fe4b2b75e1
-#: 54e4ecfa05024c10934fbbf5e580fbbb 5765ba02f0384e0c853cd0ed6a5cf5cf
-msgid "Fixed"
-msgstr "修正 (Fixed)"
-
-#: ../../about/changelog.md:10 563030f567334bccaa7250e76341e865
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:296 4bc841c7950a4ae8bd9818c8c8c6c71d
 msgid ""
-"Fixed `TimeSeriesDict.plot()` so multi-channel dictionaries are expanded "
-"into separate subplots instead of producing a blank or invalid figure "
-"([#432](https://github.com/tatsuki-washimi/gwexpy/issues/432))."
+"Fixed `TimeSeriesDict.plot()` so multi-channel dictionaries are expanded into separate subplots "
+"instead of producing a blank or invalid figure (#432)."
+msgstr "`TimeSeriesDict.plot()` を修正し、複数チャンネルの辞書を空白または無効な図にするのではなく、個別のサブプロットに展開するようにしました（#432）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:298 e9805a193fc54c3497cbb87b14691c30
+msgid ""
+"Fixed ObsPy-backed seismic readers so `TimeSeriesDict` keys are stable string trace names (e.g. "
+"`\"IU.ANMO.00.BHZ\"`), enabling reliable string-based lookup (#435)."
 msgstr ""
-"`TimeSeriesDict.plot()` "
-"を修正し、複数チャンネルの辞書が空白または不正な図になる問題を解消して、チャンネルごとのサブプロットに展開されるようにしました（[#432](https://github.com"
-"/tatsuki-washimi/gwexpy/issues/432)）。"
+"ObsPy をバックエンドとする地震データリーダーを修正し、`TimeSeriesDict` "
+"のキーを安定した文字列トレース名（例：`\"IU.ANMO.00.BHZ\"`）にしました。これにより、文字列による確実な検索が可能になります（#435）。"
 
-#: ../../about/changelog.md:12 88cf725709d54a919f952948cb73cbd8
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:301 e96fc1a188da435eb2d942e01599ca1d
 msgid ""
-"Fixed ObsPy-backed seismic readers so `TimeSeriesDict` keys are stable "
-"string trace names (e.g. `\"IU.ANMO.00.BHZ\"`), enabling reliable string-"
-"based lookup ([#435](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/435))."
+"Added support for passing a list or tuple of miniSEED paths to `TimeSeriesDict.read(..., "
+"format=\"mseed\")` (#433)."
+msgstr "`TimeSeriesDict.read(..., format=\"mseed\")` に miniSEED パスのリストまたはタプルを渡せるようにしました（#433）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:303 1dce780680234c1cb7a5906d8c505eb3
+msgid ""
+"Fixed `gwexpy.frequencyseries` import-time I/O registration so FrequencySeries read formats are "
+"visible through the GWpy default I/O registry (#437)."
 msgstr ""
-"ObsPy ベースの地震計データリーダーを修正し、`TimeSeriesDict` のキーが安定した文字列トレース名（例: "
-"`\"IU.ANMO.00.BHZ\"`）となり、文字列での確実な参照ができるようになりました（[#435](https://github.com"
-"/tatsuki-washimi/gwexpy/issues/435)）。"
+"`gwexpy.frequencyseries` のインポート時 I/O 登録を修正し、FrequencySeries の読み込み形式が GWpy のデフォルト I/O "
+"レジストリから認識できるようにしました（#437）。"
 
-#: ../../about/changelog.md:14 e31849ca764d47ddb83871eec0597551
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:308 5f9f0087d5cc4d6cb013031dd3b39234
+msgid "Added regression tests for `TimeSeriesDict.plot()`."
+msgstr "`TimeSeriesDict.plot()` の回帰テストを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:309 de96449a33cf40b4a30dc832c40b041b
+msgid "Added seismic I/O tests for string keys, list-of-path miniSEED input, and empty-list rejection."
+msgstr "文字列キー、パスのリストによる miniSEED 入力、空リストの拒否に対する地震波 I/O テストを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:311 627dfbdc561146a389815232212b67c7
+msgid "Added subprocess-isolated FrequencySeries I/O registration tests."
+msgstr "サブプロセスで分離した FrequencySeries I/O 登録テストを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:315 6da0d3b0fca942589c7d0fa3bf5eba20
 msgid ""
-"Added support for passing a list or tuple of miniSEED paths to "
-"`TimeSeriesDict.read(..., format=\"mseed\")` ([#433](https://github.com"
-"/tatsuki-washimi/gwexpy/issues/433))."
+"Clarified that GWexpy is an independent package built on top of GWpy and is not an official "
+"component of the GWpy project."
+msgstr "GWexpy は GWpy を基盤とする独立したパッケージであり、GWpy プロジェクトの公式コンポーネントではないことを明確化しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:317 31ff5bc6f5bb48839ee9dcd628d24959
+msgid ""
+"Updated the README installation notes to reflect that the conda-forge feedstock is available, "
+"while conda-forge packages may lag the latest PyPI release."
 msgstr ""
-"`TimeSeriesDict.read(..., format=\"mseed\")` に miniSEED "
-"パスのリスト/タプルを渡せるようになりました（[#433](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/433)）。"
+"README のインストール注記を更新し、conda-forge feedstock が利用可能である一方、conda-forge パッケージは最新の PyPI "
+"リリースより遅れる場合があることを反映しました。"
 
-#: ../../about/changelog.md:16 b8338f3f3e0b462e8d7cb46e8f57d5bc
-msgid ""
-"Fixed `gwexpy.frequencyseries` import-time I/O registration so "
-"FrequencySeries read formats are visible through the GWpy default I/O "
-"registry ([#437](https://github.com/tatsuki-washimi/gwexpy/issues/437))."
-msgstr ""
-"`gwexpy.frequencyseries` のインポート時 I/O 登録を修正し、FrequencySeries の読み込みフォーマットが "
-"GWpy 標準の I/O レジストリから見えるようになりました（[#437](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/437)）。"
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:321 0d1d2bcf17104f31aee659d593a3bb77
+msgid "Deferred"
+msgstr "延期"
 
-#: ../../about/changelog.md:19 ../../about/changelog.md:32
-#: 296b505b1d344f2d82f9145f4d4a9ba3 408a6aa841b840b88c660c1558a33a10
-msgid "Documentation"
-msgstr "ドキュメント (Documentation)"
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:323 a8df2906d23f4e0590e8a8eec9fc5334
+msgid "Broad FrequencySeries collection read/write registry-backend migration is deferred to #438."
+msgstr "FrequencySeries コレクションの読み書きに関する広範なレジストリバックエンド移行は #438 に延期しました。"
 
-#: ../../about/changelog.md:20 da58e2f9849c4d2f9c8d4803d46528b9
-msgid ""
-"Clarified that GWexpy is an independent package built on top of GWpy and "
-"is not an official component of the GWpy project."
-msgstr "GWexpy は GWpy の上に構築された独立パッケージであり、GWpy プロジェクトの公式コンポーネントではないことを明確化しました。"
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:325 1bbd9b7726224db99c20131105fe27dc
+msgid "Dependency sweep (#431) is deferred to the v0.2.0-prep lane."
+msgstr "依存関係の一括確認（#431）は v0.2.0-prep レーンに延期しました。"
 
-#: ../../about/changelog.md:22 42f61d01736b449590264a2b012616e7
-msgid ""
-"Updated the README installation notes to reflect that the conda-forge "
-"feedstock is available, while conda-forge packages may lag the latest "
-"PyPI release."
-msgstr ""
-"README のインストール注記を更新し、conda-forge feedstock が利用可能である一方、conda-forge "
-"パッケージは最新の PyPI リリースより遅れる場合があることを反映しました。"
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:327 681aa3f9cbe241d8b84cab2509fe1e4b
+msgid "[0.1.4] - 2026-05-20"
+msgstr "[0.1.4] - 2026-05-20"
 
-#: ../../about/changelog.md:25 0e6dbc46fc474190b55f6dc7fdfe7507
-msgid "[0.1.4] - 2026-05-14"
-msgstr "[0.1.4] - 2026-05-14"
-
-#: ../../about/changelog.md:26 ../../about/changelog.md:67
-#: ../../about/changelog.md:82 283acce38e18409e912d5cdefbfcba7c
-#: 4568affc027048938dd5e5b45f34557c fc4c3aa267bd40aa8baca0b19c85e1d3
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:329 ../gwexpy-pr487-docs-update/CHANGELOG.md:417
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:442 ../gwexpy-pr487-docs-update/CHANGELOG.md:496
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:557 3acfd128726248a78d8c8c7e8fa0962e
+#: 7ac26e7f58304c83890c3af127455cff 7dc37745094c4e3aaa874c432ec838e6 80511f2da95a4d24a35082184926ef57
+#: cc43ec2ebc4243aba3bf6c61124b0cc9
 msgid "Added"
-msgstr "追加 (Added)"
+msgstr "追加"
 
-#: ../../about/changelog.md:27 87459e9e9f5d4cd7b9ace51a2bcb4483
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:331 51cb4e76be98459092c2524a46879355
 msgid ""
-"`to_gps()` now has opt-in `dtype=` output modes. The default remains "
-"GWpy-compatible, while `dtype=float` / `dtype=\"float\"` return plain "
-"numeric seconds and `dtype=\"quantity\"` returns seconds quantities for "
-"direct `.times` comparisons."
+"**io/conformance**: Added the first contract-driven I/O conformance baseline for `gwf`, "
+"`hdf.ndscope`, `hdf5`, `csv`, `txt`, and `wav`."
+msgstr "**io/conformance**: `gwf`、`hdf.ndscope`、`hdf5`、`csv`、`txt`、`wav` を対象とする、契約駆動型 I/O 適合性ベースラインの初版を追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:332 7a1e21186b9d4058b5e33acfcb998b72
+msgid ""
+"**io/contracts**: Added v3 public I/O contract policy fields for fixture generation, coverage "
+"status, CI jobs, and missing optional dependency behavior."
+msgstr "**io/contracts**: フィクスチャ生成、カバレッジ状況、CI ジョブ、オプション依存関係がない場合の挙動に関する v3 公開 I/O 契約ポリシーフィールドを追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:333 58fb30331a3f4f17920d9984e493cc3b
+msgid "**ci/io**: Added the `io-conformance` gate and expanded I/O gate documentation."
+msgstr "**ci/io**: `io-conformance` ゲートを追加し、I/O ゲートのドキュメントを拡充。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:334 a5a9e2d8e8074619b820ddb47060b591
+msgid ""
+"**time**: Added opt-in `dtype=` output modes for `to_gps()`. The default remains GWpy-compatible,"
+" while `dtype=float` / `dtype=\"float\"` return plain float values and `dtype=\"quantity\"` "
+"returns seconds quantities for direct `.times` comparisons."
 msgstr ""
-"`to_gps()` にオプトインの `dtype=` 出力モードを追加しました。既定は GWpy 互換のままで、`dtype=float` / "
-"`dtype=\"float\"` は素の数値秒を返し、`dtype=\"quantity\"` は `.times` と直接比較できる秒の "
-"quantity を返します。"
+"**time**: `to_gps()` にオプトインの `dtype=` 出力モードを追加。デフォルトは引き続き GWpy 互換で、`dtype=float` / "
+"`dtype=\"float\"` は通常の float 値を返し、`dtype=\"quantity\"` は `.times` と直接比較できる秒単位の Quantity を返す。"
 
-#: ../../about/changelog.md:33 ae9825b02e6a41b7808a7ae5b67b2239
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:339 ../gwexpy-pr487-docs-update/CHANGELOG.md:366
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:463 ../gwexpy-pr487-docs-update/CHANGELOG.md:538
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:594 2995f991e75e4d10ae0dec5b0bf35c30
+#: 5f1146293b5448518be1f0c72f5fa632 606f26affddb412d97e2f0c9211fef85 6717d919386d4cfcaf937ab17e1e6dca
+#: c7dfd38d5cef47ccad45189f176183a6
+msgid "Fixed"
+msgstr "修正"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:341 7e7191d9275748dfb0b75ff3aca7ba24
 msgid ""
-"README, docs hub pages, roadmap, troubleshooting pages, and footer links "
-"now point lightweight bug reports and feature requests to the public "
-"feedback form. Security reports remain directed to the repository "
-"security policy."
-msgstr "README、ドキュメントのハブページ、ロードマップ、トラブルシューティングページ、フッターのリンクが、軽微なバグ報告と機能要望を公開フィードバックフォームへ案内するようになりました。セキュリティ報告は引き続きリポジトリのセキュリティポリシーに向けられます。"
-
-#: ../../about/changelog.md:37 d0ca3f0a5b7243a985b14be36ff7e73a
-msgid "Tests"
-msgstr "テスト (Tests)"
-
-#: ../../about/changelog.md:38 9fc7a544e8b1473b8fb2a43784e58b47
-msgid ""
-"Added NetCDF fixture coverage requiring an explicit time coordinate "
-"([#393](https://github.com/tatsuki-washimi/gwexpy/issues/393))."
+"**io/dttxml**: Fixed `load_dttxml_products()` so DTTXML `TS` entries remain raw dict payloads and"
+" do not collide with `TimeSeries.get()`."
 msgstr ""
-"明示的な時間座標を要求する NetCDF フィクスチャのカバレッジを追加しました（[#393](https://github.com"
-"/tatsuki-washimi/gwexpy/issues/393)）。"
+"**io/dttxml**: `load_dttxml_products()` を修正し、DTTXML の `TS` エントリを生の dict ペイロードとして保持して "
+"`TimeSeries.get()` と衝突しないようにした。"
 
-#: ../../about/changelog.md:39 6ebb3c3ac75d40bf8d1761b90746f923
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:342 a2499edf9b66450d879bd581a4feba02
 msgid ""
-"Added GWF regression coverage for multi-channel list-source reads and "
-"padded gap reads with `parallel > 1`."
-msgstr ""
-"マルチチャンネルのリストソース読み込みと、`parallel > 1` でのパディングされたギャップ読み込みについて、GWF "
-"の回帰テストカバレッジを追加しました。"
+"**io/gwf**: Provisioned the GWF backend for the PR fast gate and tolerated backend-specific GWF "
+"channel metadata variance."
+msgstr "**io/gwf**: PR 高速ゲート用に GWF バックエンドを準備し、バックエンド固有の GWF チャネルメタデータの差異を許容。"
 
-#: ../../about/changelog.md:42 f877cd503ce24172946d045d69595efc
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:346 c04e18419d764d689915dd409128904d
+msgid ""
+"**feedback**: Updated the README, docs hub pages, footer links, roadmap, and troubleshooting "
+"pages to point lightweight bug reports and feature requests to the public feedback form. Security"
+" reports remain directed to the repository security policy."
+msgstr ""
+"**feedback**: "
+"README、ドキュメントハブのページ、フッターリンク、ロードマップ、トラブルシューティングページを更新し、軽微なバグ報告や機能リクエストを公開フィードバックフォームへ案内するようにした。セキュリティ報告は引き続きリポジトリのセキュリティポリシーへ案内する。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:353 5a85354d4b154f37aa81b683d844ee55
+msgid ""
+"**io/conformance**: Added deterministic fixture generators and read/write round-trip coverage for"
+" the v0.1.4 blocking format baseline."
+msgstr "**io/conformance**: v0.1.4 のブロッキング対象フォーマットのベースラインについて、決定論的なフィクスチャ生成器と読み書きのラウンドトリップカバレッジを追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:354 3148d2b1de214460a4db3dddf2f97087
+msgid ""
+"**io/dttxml**: Added regression coverage for DTTXML `TS` dict parsing through "
+"`read_timeseriesdict_dttxml()`."
+msgstr "**io/dttxml**: `read_timeseriesdict_dttxml()` による DTTXML `TS` dict 解析の回帰テストを追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:355 5b6eaa21cd024135bfc5a72812b822a5
+msgid ""
+"**netcdf**: Added a fixture-generation contract that requires generated NetCDF fixtures to expose"
+" an explicit time coordinate (#393)."
+msgstr "**netcdf**: 生成された NetCDF フィクスチャが明示的な時間座標を公開することを必須とするフィクスチャ生成契約を追加（#393）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:357 6e29fe0a922c4fe993248bbc9cbef3d5
+msgid ""
+"**timeseries/gwf**: Added regression coverage for multi-channel GWF list-source reads and padded "
+"gap reads with `parallel > 1`."
+msgstr "**timeseries/gwf**: マルチチャネル GWF のリストソース読み込みと、`parallel > 1` でのパディング済みギャップ読み込みの回帰テストを追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:360 ../gwexpy-pr487-docs-update/CHANGELOG.md:381
+#: 3f4af2bed3b14ab389eb3aa7583ecb28 c91560092cba43aeb73ab5a6f879ef66
+msgid "Known Issues"
+msgstr "既知の問題"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:362 bd2c006ce64442dbb4ba70ddc3135eda
+msgid ""
+"**io/zarr**: The optional `io-zarr` gate can hang in environments where Zarr 3.1.5 stalls during "
+"basic `create_array()` fixture generation. Zarr remains outside the v0.1.4 base blocking gate and"
+" is tracked for optional-backend hardening."
+msgstr ""
+"**io/zarr**: 基本的な `create_array()` フィクスチャ生成中に Zarr 3.1.5 が停止する環境では、オプションの `io-zarr` "
+"ゲートがハングすることがある。Zarr は v0.1.4 の基本ブロッキングゲートの対象外とし、オプションバックエンドの堅牢化課題として追跡する。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:364 14fded3de55045b197e87fa0203757c6
 msgid "[0.1.3] - 2026-05-12"
 msgstr "[0.1.3] - 2026-05-12"
 
-#: ../../about/changelog.md:44 22f0627e0ea644bca308a7780ee2fe70
-msgid "Fixed multi-file GWF reads for `TimeSeries` and `TimeSeriesDict` inputs."
-msgstr "`TimeSeries` および `TimeSeriesDict` 入力に対する複数ファイル GWF 読み込みを修正しました。"
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:368 ba5a8af92c1747d794601bb81ee2910a
+msgid "**timeseries/gwf**: Fixed multi-file GWF reads for `TimeSeries` and `TimeSeriesDict` inputs."
+msgstr "**timeseries/gwf**: `TimeSeries` および `TimeSeriesDict` 入力での複数ファイル GWF 読み込みを修正。"
 
-#: ../../about/changelog.md:45 e5f21b76f7844e57bea5ff90414feb39
-msgid "Fixed ndscope HDF5 auto-detection for `TimeSeriesMatrix.read()`."
-msgstr "`TimeSeriesMatrix.read()` における ndscope HDF5 の自動検出を修正しました。"
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:370 a72676454aa647cd8ea57cc52bfcf36c
+msgid "**timeseries/matrix**: Fixed ndscope HDF5 auto-detection for `TimeSeriesMatrix.read()`."
+msgstr "**timeseries/matrix**: `TimeSeriesMatrix.read()` における ndscope HDF5 の自動検出を修正。"
 
-#: ../../about/changelog.md:46 ba46e40b131e4fd8a458319245fbba67
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:372 09d3e3f03f02411c9f5fe32e367daaab
 msgid ""
-"Aligned public I/O docs and contract metadata with current autodetection "
+"**io/contracts**: Aligned public I/O docs and contract metadata with current autodetection "
 "behavior."
-msgstr "公開 I/O ドキュメントと契約メタデータを、現在の自動検出の挙動に合わせました。"
+msgstr "**io/contracts**: 公開 I/O ドキュメントと契約メタデータを現在の自動検出動作に合わせて整合。"
 
-#: ../../about/changelog.md:48 866489df9b4146e8bb40fc4ae2e49376
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:374 9b5317c9a0d54ec0a333858886de6ed3
 msgid ""
-"Preserved original frequency column values in the FrequencySeries CSV "
-"fast path."
-msgstr "FrequencySeries の CSV 高速パスで、元の周波数列の値を保持するようにしました。"
+"**frequencyseries/csv**: Added a dedicated CSV fast path that preserves the original frequency "
+"column values."
+msgstr "**frequencyseries/csv**: 元の周波数列の値を保持する専用 CSV 高速パスを追加。"
 
-#: ../../about/changelog.md:50 7a7cbb4a924b43f4aec4e5a604653d8b
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:376 4b81a4595883426382f5fabad36b0ee0
 msgid ""
-"Improved zarr 3 matrix round-trip coverage and removed timeout-prone "
+"**timeseries/zarr**: Fixed matrix round-trip coverage under zarr 3 and removed timeout-prone "
 "fixture behavior."
-msgstr "zarr 3 の行列往復変換カバレッジを改善し、タイムアウトしやすいフィクスチャの挙動を除去しました。"
+msgstr "**timeseries/zarr**: zarr 3 での行列ラウンドトリップカバレッジを修正し、タイムアウトしやすいフィクスチャ動作を削除。"
 
-#: ../../about/changelog.md:52 2643327b923247aa9b701d2046291f8a
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:378 ac8c634233614a6f8a911665ee444160
 msgid ""
-"Treated PyGMT installations without a loadable GMT shared library as an "
+"**plot/geomap**: Treat PyGMT installations without a loadable GMT shared library as an "
 "unavailable optional backend instead of failing at import time."
-msgstr ""
-"読み込み可能な GMT 共有ライブラリを持たない PyGMT "
-"インストールを、インポート時に失敗させるのではなく、利用不可のオプションバックエンドとして扱うようにしました。"
+msgstr "**plot/geomap**: 読み込み可能な GMT 共有ライブラリがない PyGMT インストールを、インポート時に失敗させず利用不能なオプションバックエンドとして扱う。"
 
-#: ../../about/changelog.md:55 12b0997fe3c84f6084be19756bdfa497
-msgid "Known Issues"
-msgstr "既知の問題 (Known Issues)"
-
-#: ../../about/changelog.md:56 da2308de9955476b90474a27bf528c1f
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:383 89a07b19b5814e3ba483b8c049dd1dea
 msgid ""
-"Some bundled NetCDF fixture paths can fail the TimeSeries reader time-"
-"coordinate contract ([#393](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/393)). Generated NetCDF round-trip coverage still "
-"passes; files should expose an explicit time coordinate."
+"**netcdf**: The bundled NetCDF fixture can fail the TimeSeries reader time-coordinate contract in"
+" some cases (#393). Generated NetCDF round-trip coverage still passes; users relying on NetCDF "
+"fixtures should verify that their files expose an explicit time coordinate."
 msgstr ""
-"同梱の一部 NetCDF フィクスチャパスは、TimeSeries "
-"リーダーの時間座標契約に失敗することがあります（[#393](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/393)）。生成された NetCDF "
-"往復変換カバレッジは引き続き通過します。ファイルは明示的な時間座標を公開すべきです。"
+"**netcdf**: 同梱の NetCDF フィクスチャは、場合によっては TimeSeries リーダーの時間座標契約に失敗することがある（#393）。生成された NetCDF "
+"のラウンドトリップカバレッジは引き続き成功する。NetCDF フィクスチャに依存するユーザーは、ファイルが明示的な時間座標を公開していることを確認すること。"
 
-#: ../../about/changelog.md:60 3af80e82bdc64a3298351adfb51716c4
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:388 fce427d17e61440c9d02bdd790f13423
 msgid "[0.1.2] - 2026-05-08"
 msgstr "[0.1.2] - 2026-05-08"
 
-#: ../../about/changelog.md:61 7668b0df21db4fb197ba892e82ffb73d
-msgid "Targeted Narrow Hotfix Scope"
-msgstr "対象を絞った hotfix 範囲"
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:390 eac8eb2358334a4faacd3604d0f3a4f8
+msgid "Narrow v0.1.2 hotfix scope"
+msgstr "v0.1.2 ホットフィックスの限定スコープ"
 
-#: ../../about/changelog.md:62 1bdd12797d8c42739d78fabf684caf12
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:392 a817c58137964fa59e2ec1a6272e6edd
 msgid ""
-"Narrow compatibility fixes for GWpy4 public I/O proxy imports and GWF "
-"list/dict read behavior."
-msgstr "GWpy4 向け公開 I/O proxy import と GWF list/dict read 挙動の互換性修正。"
+"**io/gwpy4**: Narrow compatibility hotfixes for public I/O proxy imports and GWF list/dict read "
+"paths."
+msgstr "**io/gwpy4**: 公開 I/O プロキシのインポートと GWF のリスト／dict 読み込み経路に対する限定的な互換性ホットフィックス。"
 
-#: ../../about/changelog.md:63 edf4df053f7f493fa49aec76cf15aeff
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:393 b87c4c1536174b198000ecf134a7e31d
 msgid ""
-"Targeted auto-identify/read-path fixes for histogram HDF5, ATS/MTH5, "
-"audio, seismic, SegmentTable span CSV, and FrequencySeries DTT XML flows."
+"**io/formats**: Targeted reader auto-identify and compatibility fixes for histogram HDF5, "
+"ATS/MTH5, audio, seismic, SegmentTable span CSV, and FrequencySeries DTT XML flows."
 msgstr ""
-"histogram HDF5、ATS/MTH5、audio、seismic、SegmentTable span "
-"CSV、FrequencySeries DTT XML の auto-identify/read-path 修正。"
+"**io/formats**: ヒストグラム HDF5、ATS/MTH5、音声、地震、SegmentTable span CSV、FrequencySeries DTT XML "
+"の各フローについて、リーダーの自動識別と互換性を対象とした修正。"
 
-#: ../../about/changelog.md:64 7697904e7fc940128f191b7afd5ef720
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:394 52e2e8a328c24e43b3b17704ce68ac07
 msgid ""
-"Includes only a minimal [#369](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/369) landing/demo import hunk for this integration "
-"track."
-msgstr ""
-"この統合トラックでは [#369](https://github.com/tatsuki-washimi/gwexpy/issues/369) "
-"の最小 landing/demo import hunk のみを含みます。"
+"**integration**: Narrow landing updates include only the minimal #369 landing/demo import hunk "
+"required for this track."
+msgstr "**integration**: 限定的な取り込み更新には、このトラックに必要な最小限の #369 landing/demo インポート部分のみを含める。"
 
-#: ../../about/changelog.md:66 d5cb86e7f5314e9182d08c23bfdb246c
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:395 64c2a88a37b344eb9076c36759dc43f6
+msgid ""
+"**release status**: Version metadata and release notes are finalized for `v0.1.2`, but tag "
+"creation, PyPI publication, Zenodo publication, fresh release smoke reruns, and conda-forge "
+"refresh are still pending."
+msgstr ""
+"**release status**: `v0.1.2` のバージョンメタデータとリリースノートは確定しているが、タグ作成、PyPI 公開、Zenodo 公開、新規リリーススモークテストの再実行"
+"、conda-forge の更新はまだ保留中。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:397 03d8c8e11f3a4b36b1c11f8ca4a05e1a
+msgid "Packaging & Optional Dependencies (issue #251)"
+msgstr "パッケージングとオプション依存関係（issue #251）"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:399 0b5d6480f1f849288c4fc014a704842b
+msgid ""
+"**packaging**: Added `netcdf4` extra (`netCDF4`, `xarray`) and `zarr` extra (`zarr`) to "
+"`pyproject.toml`; both are now included in the `all` convenience extra."
+msgstr ""
+"**packaging**: `pyproject.toml` に `netcdf4` extra（`netCDF4`、`xarray`）と `zarr` "
+"extra（`zarr`）を追加し、両方を `all` 便利 extra に含めた。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:400 70eaf209749e4b1489b6a2a5f07c97c8
+msgid ""
+"**packaging**: Removed the experimental `gwexpy.gui` package, console script, and `gui` extra "
+"from the first PyPI distribution; GUI work remains source/development-only until the post-release"
+" stabilization track is complete."
+msgstr ""
+"**packaging**: 初回 PyPI 配布物から実験的な `gwexpy.gui` パッケージ、コンソールスクリプト、`gui` extra を削除。GUI "
+"作業はリリース後の安定化トラックが完了するまでソース／開発専用とする。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:401 09fd6951524e4118aa89a72978eb43e8
+msgid ""
+"**packaging**: Tightened first-release artifact hygiene by excluding top-level tests, docs sample"
+" data, and package-internal Sphinx helper shims from built distributions."
+msgstr ""
+"**packaging**: トップレベルのテスト、ドキュメントのサンプルデータ、パッケージ内部の Sphinx ヘルパー shim "
+"をビルド済み配布物から除外し、初回リリース成果物の衛生管理を強化。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:402 349bf393ebfe4d5ebebd5479256d207a
+msgid ""
+"**packaging**: Removed hand-edited tail from `requirements-dev.txt`; `analysis` extras are now "
+"managed exclusively through `pyproject.toml`."
+msgstr ""
+"**packaging**: `requirements-dev.txt` の手編集された末尾を削除し、`analysis` extras を `pyproject.toml` "
+"のみで管理するようにした。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:403 e98a34980f0443bf82ad42b989dcfd90
+msgid ""
+"**interop**: Fixed `_optional.py` `_EXTRA_MAP` — phantom extras (`interop`, `bio`, `stats`, "
+"`eda`) replaced with `None` entries that fall back to bare `pip install <package>`; "
+"`netCDF4`/`xarray` now point to `netcdf4` extra; `zarr` points to `zarr` extra."
+msgstr ""
+"**interop**: `_optional.py` の `_EXTRA_MAP` を修正。存在しない extras（`interop`、`bio`、`stats`、`eda`）を、素の "
+"`pip install <package>` にフォールバックする `None` エントリに置き換え、`netCDF4`／`xarray` は `netcdf4` extra、`zarr` は"
+" `zarr` extra を指すようにした。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:404 ea67d185ee0c459680cb3ccbd375c9b4
+msgid ""
+"**io**: `ensure_dependency()` error hint corrected to `pip install 'gwexpy[<extra>]'` instead of "
+"`pip install <pkg>[<extra>]`."
+msgstr ""
+"**io**: `ensure_dependency()` のエラーヒントを `pip install <pkg>[<extra>]` から `pip install "
+"'gwexpy[<extra>]'` に修正。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:405 86a9d89aedf3424d8ccd3db1169bfb75
+msgid ""
+"**io**: `_import_pydub`, `_import_obspy`, `_import_nptdms`, `_import_zarr`, `_import_xarray` "
+"error messages now include `pip install 'gwexpy[<extra>]'` hints."
+msgstr ""
+"**io**: `_import_pydub`、`_import_obspy`、`_import_nptdms`、`_import_zarr`、`_import_xarray` "
+"のエラーメッセージに `pip install 'gwexpy[<extra>]'` のヒントを追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:406 9e1bd29600b2403282606f58803f2503
+msgid ""
+"**fitting**: `gwexpy.fitting.__getattr__` error messages now suggest `pip install "
+"'gwexpy[fitting]'`."
+msgstr "**fitting**: `gwexpy.fitting.__getattr__` のエラーメッセージで `pip install 'gwexpy[fitting]'` を提案するようにした。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:407 d047d477d65a43a191458a0b4a7f1a1e
+msgid ""
+"**ci**: `io-optional` gate extended with `test_seismic_public_io.py`; `test_optional_deps.py` "
+"augmented with `gwexpy[extra]` hint assertions and `TestSeismicImportGuard`."
+msgstr ""
+"**ci**: `io-optional` ゲートを `test_seismic_public_io.py` まで拡張し、`test_optional_deps.py` に "
+"`gwexpy[extra]` ヒントのアサーションと `TestSeismicImportGuard` を追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:408 3d1b6eca05864fa7b24a4d5756e20536
+msgid ""
+"**docs**: Installation guide updated with `netcdf4`, `zarr` extras and clarified `gui` is not in "
+"`all`."
+msgstr "**docs**: インストールガイドを更新し、`netcdf4`、`zarr` extras を追加するとともに、`gui` が `all` に含まれないことを明記。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:410 9483bdc9c5b141f5897d54716f94f1de
+msgid "Infrastructure & CI"
+msgstr "インフラストラクチャと CI"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:412 0d008e1f31a14a7c86dc34d2c74b3a32
+msgid ""
+"**ci**: Comprehensive stabilization of the CI pipeline, resolving all `ModuleNotFoundError` and "
+"`SyntaxError` regressions."
+msgstr "**ci**: CI パイプラインを包括的に安定化し、すべての `ModuleNotFoundError` と `SyntaxError` のリグレッションを解消。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:413 72e8043ca1094d44809a9ceeef97c767
+msgid ""
+"**ci**: Added mandatory **Notebook syntax validation** to the primary test workflow to "
+"proactively catch corrupted `.ipynb` files."
+msgstr "**ci**: 破損した `.ipynb` ファイルを早期検出するため、主要なテストワークフローに必須の **Notebook 構文検証** を追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:414 ca4ca2c9757f49a28f3a4bdf98d35374
+msgid ""
+"**ci**: Restored and standardized scientific dependencies (`control`, `statsmodels`, `scikit-"
+"learn`, etc.) across all GitHub Actions environments."
+msgstr "**ci**: すべての GitHub Actions 環境で科学計算依存関係（`control`、`statsmodels`、`scikit-learn` など）を復元・標準化。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:415 c527359ea1df4c29a9c9cb0d76963e78
+msgid ""
+"**docs**: Performed a global \"reset-and-rewrap\" of tutorial notebooks to fix indentation errors"
+" in `warnings.catch_warnings()` blocks."
+msgstr "**docs**: チュートリアルノートブック全体を「リセットして再折り返し」し、`warnings.catch_warnings()` ブロックのインデントエラーを修正。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:419 cab9a0f616b44339adcf0dbebf0dd77c
+msgid ""
+"**fields**: `VectorField` and `TensorField` now support initialization directly from NumPy "
+"ndarrays (5D for VectorField, 6D for TensorField), automatically creating the component "
+"`ScalarField`s without breaking backward-compatible dictionary initialization."
+msgstr ""
+"**fields**: `VectorField` と `TensorField` が NumPy ndarray から直接初期化できるようになった（`VectorField` は "
+"5D、`TensorField` は 6D）。後方互換性のある辞書初期化を壊さず、コンポーネント `ScalarField` を自動生成する。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:421 ../gwexpy-pr487-docs-update/CHANGELOG.md:458
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:484 ../gwexpy-pr487-docs-update/CHANGELOG.md:514
+#: 2f89f62379e9494ea13724d0b98b006e 794096f980d74b5ea8d4c3c9bc089b6e 7e57c8796df64546b1882d7f4f5d260a
+#: b501a595073144c59668474c331ede54
+msgid "Changed"
+msgstr "変更"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:423 31b9ac35f6434247b5c1d52243384787
+msgid ""
+"**fields**: `ScalarField` binary arithmetic now fails fast with `ValueError` when operands have "
+"mismatched time/frequency domains, spatial domains, or coordinate grids. Align fields explicitly "
+"before arithmetic; future regridding/interpolation APIs will track explicit grid-alignment "
+"workflows."
+msgstr ""
+"**fields**: `ScalarField` の二項算術は、オペランドの時間／周波数領域、空間領域、または座標グリッドが一致しない場合に `ValueError` "
+"で即時失敗するようになった。算術演算の前にフィールドを明示的に整列すること。将来の再グリッド／補間 API では、明示的なグリッド整列ワークフローを追跡する。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:424 2e254f2aabc544dc901c54edfa50178e
+msgid ""
+"**plot**: `FieldPlot` labels now avoid empty unit brackets for unitless metadata and expose the "
+"latest scalar colorbar via the public `last_field_colorbar` attribute. Explicit `label=\"\"` "
+"colorbar labels remain supported."
+msgstr ""
+"**plot**: `FieldPlot` のラベルで、単位のないメタデータに空の単位括弧を表示しないようにし、最新のスカラー・カラーバーを公開属性 `last_field_colorbar` "
+"で参照できるようにした。明示的な `label=\"\"` カラーバーラベルは引き続きサポートする。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:428 0d50f62c9d27488c8fa47ebe0f7b51b8
+msgid ""
+"**docs**: Unified the Class Index into five major categories (Core, Field, Signal, Analysis, "
+"Utilities) with standardized Japanese translations (e.g., \"時系列行列\" for `TimeSeriesMatrix`)."
+msgstr ""
+"**docs**: Class Index を 5 "
+"つの主要カテゴリ（Core、Field、Signal、Analysis、Utilities）に統合し、日本語訳を標準化（例：`TimeSeriesMatrix` は「時系列行列」）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:429 b7eaf5a15fdc4d1ea5a8067d260e9696
+msgid ""
+"**docs**: Redesigned major guidance pages (`io_formats`, `numerical_stability`, `time_utilities`,"
+" `architecture`) using judgment tables and decision-driven structures."
+msgstr ""
+"**docs**: "
+"主要なガイダンスページ（`io_formats`、`numerical_stability`、`time_utilities`、`architecture`）を、判断表と意思決定中心の構成で再設計。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:430 1430daa754834fea9ff74c2a92db26a4
+msgid ""
+"**docs**: Refined visual aesthetics with custom CSS for modern typography, responsive tables, and"
+" card-based navigation in the Sphinx RTD theme."
+msgstr "**docs**: Sphinx RTD テーマにカスタム CSS を適用し、現代的なタイポグラフィ、レスポンシブテーブル、カード型ナビゲーションによって視覚デザインを洗練。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:431 09ffaaf0c1f3420e8721a175315697fb
+msgid "**docs**: Integrated SEO/OGP metadata, sitemaps, and automated \"Last updated\" timestamps."
+msgstr "**docs**: SEO／OGP メタデータ、サイトマップ、自動更新の「Last updated」タイムスタンプを統合。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:433 5e1aa68786af49a9a24b241bda150dfd
+msgid "Infrastructure"
+msgstr "インフラストラクチャ"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:435 c249f8c3ceb0422896c2247d7b1257ab
+msgid ""
+"**ci**: Implemented a weekly documentation health check (`docs-weekly-health.yml`) to monitor "
+"broken links, terminology consistency, and JA/EN synchronization."
+msgstr "**ci**: リンク切れ、用語の一貫性、JA／EN の同期を監視する週次ドキュメント健全性チェック（`docs-weekly-health.yml`）を実装。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:436 27e91b444a5c4ca89bbd79f56461c407
+msgid ""
+"**ci**: Standardized notebook testing pipeline with `papermill` for full execution (Light) and "
+"`nbval` for syntax validation (Heavy)."
+msgstr "**ci**: 完全実行（Light）には `papermill`、構文検証（Heavy）には `nbval` を使うノートブックテストパイプラインを標準化。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:437 e1a66383cbed401fa32d264fa7325736
+msgid "**ci**: Integrated `nbstripout` into pre-commit hooks to manage repository size and diff clarity."
+msgstr "**ci**: リポジトリサイズと差分の明瞭性を管理するため、`nbstripout` を pre-commit フックに統合。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:438 db4c7d2d4d794b77999b1251bb4da446
+msgid "**pre-commit**: Added a GitHub Actions PR template with automated quality gate checklist."
+msgstr "**pre-commit**: 自動品質ゲートチェックリスト付きの GitHub Actions PR テンプレートを追加。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:440 08f2757fdde0466bb5bdcbe34d9cb753
 msgid "[0.1.1] - 2026-04-28"
 msgstr "[0.1.1] - 2026-04-28"
 
-#: ../../about/changelog.md:68 b6996c41a0f94e62a5dd8b62c8ed987b
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:444 5b8069fdcfe34544893d0004e0834c86
 msgid ""
-"Added public contract baselines for `SegmentTable`, histogram/segments "
-"helpers, detector/time conversion surfaces, CLI behavior, and plot-helper"
-" documentation/tests."
+"**SegmentTable**: New factory methods `read()` and `read_csv()` for initializing from external "
+"files."
+msgstr "**SegmentTable**：外部ファイルから初期化するためのファクトリーメソッド `read()` と `read_csv()` を追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:445 458ce4d057094f5b91aca3c304b33397
+msgid ""
+"**SegmentTable**: Support for the iterable protocol (`__iter__`) and `RowProxy` for direct row-"
+"wise processing."
+msgstr "**SegmentTable**：反復可能プロトコル（`__iter__`）と、行単位で直接処理するための `RowProxy` に対応しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:446 f1eaf95a4fdc4508a29e9902c6e10343
+msgid ""
+"**Tutorials**: Comprehensive new notebooks for `SegmentTable`, `Noise Generation`, and `Spectral "
+"Fitting`."
+msgstr "**チュートリアル**：`SegmentTable`、`Noise Generation`、`Spectral Fitting` の包括的な新規ノートブックを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:447 1b69724baa674eeb81d9ad38ed52bd2d
+msgid "**Infrastructure**: Automated tutorial execution testing via `pytest --nbmake` and GitHub Actions."
+msgstr "**インフラストラクチャ**：`pytest --nbmake` と GitHub Actions によるチュートリアル実行の自動テストを導入しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:448 8f41f582534f402aa1748527e08d1a2a
+msgid ""
+"**analysis/coupling**: `CouplingFunctionAnalysis` — `from_time_windows()`, "
+"`from_time_windows_batch()`, `bkg_window` パラメータ追加 (Phase 1)."
 msgstr ""
-"`SegmentTable`、histogram/segments 補助機能、detector/time 変換、CLI、plot helper "
-"に関する公開契約の基準化ドキュメントとテストを追加。"
+"**analysis/coupling**：`CouplingFunctionAnalysis` に "
+"`from_time_windows()`、`from_time_windows_batch()`、`bkg_window` パラメータを追加しました（Phase 1）。"
 
-#: ../../about/changelog.md:69 3c0b6ebd85db466188e7d7b7d44c335d
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:449 39375f09f3f746d1bc81be143768fcb9
 msgid ""
-"Added release-gate checks for metadata consistency, artifact hygiene, and"
-" fresh-environment wheel smoke before PyPI publication."
+"**analysis/coupling_result**: `CouplingResult` — `to_csv()`, `from_csv()`, `to_txt()`, "
+"`from_txt()`, `to_summary_csv()` によるファイルエクスポート (Phase 2)."
 msgstr ""
-"PyPI 公開前の release gate として、メタデータ整合性、配布物の健全性、fresh environment での wheel "
-"smoke を確認する仕組みを追加。"
+"**analysis/coupling_result**：`CouplingResult` に "
+"`to_csv()`、`from_csv()`、`to_txt()`、`from_txt()`、`to_summary_csv()` によるファイルエクスポートを追加しました（Phase 2）。"
 
-#: ../../about/changelog.md:71 0a5f57b3f36141c5a107f2e39f2266f1
-msgid "Changed"
-msgstr "変更 (Changed)"
-
-#: ../../about/changelog.md:72 67ac7ea4685d415fa5743111f5a5f715
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:450 b67bb31ed68f4a49901e156a3f3dd976
 msgid ""
-"Clarified installation guidance around optional extras, source installs, "
-"and future release-channel transitions."
-msgstr "optional extras、ソースインストール、将来の配布チャネル切り替えに関する案内を整理。"
-
-#: ../../about/changelog.md:74 adb030853a1b440bb1b380ad3abeab15
-msgid "Known Limitations And Follow-Ups"
-msgstr "既知の制限とフォローアップ (Known Limitations And Follow-Ups)"
-
-#: ../../about/changelog.md:75 ab13f3fdf3204cd0b06c31eedc956ee7
-msgid ""
-"PyPI publication is still a human-controlled final step for issue "
-"[#293](https://github.com/tatsuki-washimi/gwexpy/issues/293). Public "
-"install docs intentionally remain GitHub/source-based until the first "
-"PyPI release is actually published; switch them to `pip install gwexpy` "
-"only after publication and post-publish smoke succeed."
+"**analysis/coupling_result**: `CouplingResult` — `plot_significance()`, `plot_asdgram()`, "
+"`plot_snrgram()` 可視化メソッド追加 (Phase 3)."
 msgstr ""
-"[#293](https://github.com/tatsuki-washimi/gwexpy/issues/293) の最終段階である "
-"PyPI 公開はまだ人手実行のままです。公開インストール手順は、最初の PyPI リリースと post-publish smoke が成功するまで"
-" GitHub / ソース導入のままにします。`pip install gwexpy` への切り替えは公開後に行います。"
+"**analysis/coupling_result**：`CouplingResult` に "
+"`plot_significance()`、`plot_asdgram()`、`plot_snrgram()` の可視化メソッドを追加しました（Phase 3）。"
 
-#: ../../about/changelog.md:76 789f300f9ac448c598a1b0edf2bba3ba
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:451 de4d0006dd424d51bbaf1b8320afd5c0
+msgid "**analysis/coupling_result**: `CouplingResultCollection` — 複数結果の集約コンテナ (Phase 2)."
+msgstr "**analysis/coupling_result**：複数の結果を集約するコンテナ `CouplingResultCollection` を追加しました（Phase 2）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:452 0cc26253646b426682fa640f7a6b7a39
+msgid "**analysis/stats**: `SpectralStats` — スペクトル統計コンテナ（`spectral_stats()` より取得） (Phase 2)."
+msgstr "**analysis/stats**：`spectral_stats()` から取得するスペクトル統計コンテナ `SpectralStats` を追加しました（Phase 2）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:453 19bc222354794cf188646a77dd647eb0
 msgid ""
-"`conda-forge` packaging is not published yet. Issue "
-"[#294](https://github.com/tatsuki-washimi/gwexpy/issues/294) remains the "
-"follow-up for the staged-recipes submission and fresh conda-environment "
-"smoke tests."
+"**analysis/response**: `ResponseFunctionResult` — `plot_projection_summary()`, "
+"`plot_response_matrix()` 可視化メソッド追加 (Phase 3)."
 msgstr ""
-"`conda-forge` パッケージはまだ公開されていません。[#294](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/294) では staged-recipes 提出と fresh conda 環境での smoke "
-"test を継続します。"
+"**analysis/response**：`ResponseFunctionResult` に `plot_projection_summary()` と "
+"`plot_response_matrix()` の可視化メソッドを追加しました（Phase 3）。"
 
-#: ../../about/changelog.md:77 03e8e5e3663642119ef50201c574ece7
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:454 9ca35098855049bc9c2da8fa8f40412b
 msgid ""
-"Open numerical and analysis audit follow-ups remain for noise contracts "
-"([#278](https://github.com/tatsuki-washimi/gwexpy/issues/278)), astro "
-"range assumptions and unit handling ([#282](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/282)), Bruco/coupling/response workflow semantics "
-"([#284](https://github.com/tatsuki-washimi/gwexpy/issues/284)), and "
-"preprocessing/decomposition/forecasting contracts "
-"([#288](https://github.com/tatsuki-washimi/gwexpy/issues/288)). Current "
-"docs/test baselines record present behavior, but these surfaces still "
-"have deferred policy decisions."
+"**analysis**: `ResponseFunctionResult`, `ResponseFunctionAnalysis`, `estimate_response_function`,"
+" `detect_step_segments` を `gwexpy.analysis` から公開 (Phase 4)."
 msgstr ""
-"ノイズ契約（[#278](https://github.com/tatsuki-washimi/gwexpy/issues/278)）、astro"
-" range の単位と前提（[#282](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/282)）、BruCo/coupling/response "
-"ワークフロー（[#284](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/284)）、preprocessing / decomposition / forecasting "
-"契約（[#288](https://github.com/tatsuki-washimi/gwexpy/issues/288)）は、現状挙動の "
-"docs/test baseline は入ったものの、方針決定が残っています。"
+"**analysis**：`ResponseFunctionResult`、`ResponseFunctionAnalysis`、`estimate_response_function`、`detect_step_segments`"
+" を `gwexpy.analysis` から公開しました（Phase 4）。"
 
-#: ../../about/changelog.md:78 405fc03cd97f4dd8b50105ed06fff5f2
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:455 ac61f57a1295409095da84812d0e1820
 msgid ""
-"GUI and visual-surface follow-ups remain open for payload metadata, "
-"labels, colorbars, plot-helper semantics, and residual public-doc drift "
-"([#274](https://github.com/tatsuki-washimi/gwexpy/issues/274), "
-"[#275](https://github.com/tatsuki-washimi/gwexpy/issues/275), "
-"[#283](https://github.com/tatsuki-washimi/gwexpy/issues/283)). The GUI "
-"should still be treated as experimental."
+"**docs**: Sphinx API リファレンスに `coupling_result`, `response`, `threshold`, `stats` モジュール追加 (Phase "
+"4)."
 msgstr ""
-"GUI と可視化まわりでは、payload metadata、ラベル、colorbar、plot helper の意味論、公開ドキュメントの残差 "
-"drift が継続課題です（[#274](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/274)、[#275](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/275)、[#283](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/283)）。GUI は引き続き安定性ラベル上の実験的機能です。"
+"**docs**：Sphinx API リファレンスに `coupling_result`、`response`、`threshold`、`stats` モジュールを追加しました（Phase "
+"4）。"
 
-#: ../../about/changelog.md:79 a28a467e8f644e09967154a103411d4c
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:456 cd8878dd419b46948dfed322fdb44592
 msgid ""
-"Local validation follow-up [#335](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/335) tracks an intermittent one-process `pytest "
-"tests/ -q` exit 139. Split-suite validation passed and remains the "
-"current evidence base, but the single-process crash is not yet explained."
+"**tutorials**: `case_coupling_analysis.ipynb` / `case_response_analysis.ipynb` に Phase 1–3 "
+"の利用例を追補 (Phase 4)."
 msgstr ""
-"ローカル検証のフォローアップ [#335](https://github.com/tatsuki-"
-"washimi/gwexpy/issues/335) では、`pytest tests/ -q` を 1 プロセスで通したときに exit 139"
-" が断続的に発生します。分割スイートでは通過していますが、単一プロセス異常終了の原因は未解明です。"
+"**チュートリアル**：`case_coupling_analysis.ipynb` / `case_response_analysis.ipynb` に Phase 1–3 "
+"の利用例を追補しました（Phase 4）。"
 
-#: ../../about/changelog.md:81 b0b2c1d3ce1a4d19b1e6fccbdfb50bf0
-msgid "[0.1.0] - 2026-04-08"
-msgstr "[0.1.0] - 2026-04-08"
-
-#: ../../about/changelog.md:83 57b377d802b3442b9537d575540efd75
-msgid "Redesigned documentation site (Task 1 & 2)."
-msgstr "ドキュメントデザインの刷新 (Task 1 & 2)。"
-
-#: ../../about/changelog.md:84 4cc2d6808faa4207b641b3e99fdf3bfd
-msgid "Stabilized `SeriesMatrix` classes."
-msgstr "`SeriesMatrix` 系クラスの安定化。"
-
-#: ../../about/changelog.md:85 4eb52a320dd44389b7f10d5a3b47e3e1
-msgid "Enhanced multi-dimensional data support via `ScalarField`."
-msgstr "`ScalarField` による多次元データサポートの強化。"
-
-#: ../../about/changelog.md:88 7387c87bdb8a4cc8b5ad5bfd295f2c85
-msgid "Added `CITATION.cff` for easier citation."
-msgstr "`CITATION.cff` の追加による引用の容易化。"
-
-#: ../../about/changelog.md:89 7b45b37861324a939f3dbdf8a6674b61
-msgid "Reorganized dependencies and improved OS-specific installation guides."
-msgstr "依存関係の整理とOS別インストールガイドの充実。"
-
-#: ../../about/changelog.md:91 d54591803b2c490fb08b7d7bfbf5a215
-msgid "Past Versions"
-msgstr "過去の履歴"
-
-#: ../../about/changelog.md:93 195fd13811e74a3aa9c2c7a5b16ac9b6
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:460 8e2481d4ba784512ab033430301cdb68
 msgid ""
-"For more details, please visit [GitHub Releases](https://github.com"
-"/tatsuki-washimi/gwexpy/releases)."
+"**SegmentTable**: `add_series_column()` now accepts a simple `loader(segment)` callable for "
+"intuitive lazy loading."
 msgstr ""
-"詳細は [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)"
-" を参照してください。"
+"**SegmentTable**：`add_series_column()` が、直感的な遅延読み込みのための単純な `loader(segment)` callable "
+"を受け付けるようになりました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:461 b683cdcfc6d24da99b9f8265910915e2
+msgid ""
+"**noise/peaks**: Renamed `lorentzian_line()` parameter `fwhm` to `gamma` for consistency with "
+"implementation."
+msgstr "**noise/peaks**：実装との一貫性を保つため、`lorentzian_line()` のパラメータ名を `fwhm` から `gamma` に変更しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:465 de2b8f0807614575b4a84b6c85610202
+msgid ""
+"**fitting/highlevel**: Resolved frequency bin alignment between PSD and covariance matrix in "
+"`fit_bootstrap_spectrum`."
+msgstr "**fitting/highlevel**：`fit_bootstrap_spectrum` における PSD と共分散行列の周波数ビンの位置合わせを修正しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:466 370fae774ec7474ba821a41ae2185bb4
+msgid "**fitting/highlevel**: Removed unsupported `stride` parameter from `fit_bootstrap_spectrum`."
+msgstr "**fitting/highlevel**：`fit_bootstrap_spectrum` から未対応の `stride` パラメータを削除しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:467 edd04e3e0380484585061882e78825da
+msgid ""
+"**table/segment_plot**: Fixed `TypeError` when an existing `Axes` object is provided to "
+"`segments()`."
+msgstr "**table/segment_plot**：既存の `Axes` オブジェクトを `segments()` に渡したときに発生する `TypeError` を修正しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:469 2ea70055ed73400eb32d53b6f2b6e237
+msgid "Previously Unreleased (merged into 0.1.1)"
+msgstr "以前の未リリース項目（0.1.1 に統合）"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:471 ccfdbbb79d0541d0a4b36ac7d57c49f5
+msgid ""
+"**interop/multitaper**: `from_mtspec` / `from_mtspec_array` が `cls` パラメータを 無視して CI 付き入力でも常に "
+"`FrequencySeriesDict` を返していた問題を修正。"
+msgstr ""
+"**interop/multitaper**：`from_mtspec` / `from_mtspec_array` が `cls` パラメータを無視し、CI 付き入力でも常に "
+"`FrequencySeriesDict` を返していた問題を修正しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:473 4a915b4916c446a7963e16cb41d10a9e
+msgid ""
+"**interop/meshio**: `cell_data` のみを持つ `meshio.Mesh` を `from_meshio` に渡した場合の 誤った補間経路を廃止し、明確な "
+"`ValueError` を送出。"
+msgstr ""
+"**interop/meshio**：`cell_data` のみを持つ `meshio.Mesh` を `from_meshio` に渡した場合の誤った補間経路を廃止し、明確な "
+"`ValueError` を送出するようにしました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:475 078fd3a711f64853a2e9085261ee2cad
+msgid "**interop/pyroomacoustics**: `room.rir` のインデックス順序（マイク ↔ ソース）を修正。"
+msgstr "**interop/pyroomacoustics**：`room.rir` のインデックス順序（マイク ↔ ソース）を修正しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:476 fdd52fefb1d34c5d9198442bf43bc447
+msgid "**interop/openems**: HDF5 データセットの `\"Time\"` / `\"frequency\"` 属性の優先使用を修正。"
+msgstr "**interop/openems**：HDF5 データセットの `\"Time\"` / `\"frequency\"` 属性を優先して使用する処理を修正しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:478 f55204fa0a0d46678f30d6f0fe8d1ebb
+msgid "[0.1.0] - 2026-03-15"
+msgstr "[0.1.0] - 2026-03-15"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:480 28bfdb9a6ccc40e5b6930c2f9fe36fd4
+msgid "Release Summary"
+msgstr "リリース概要"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:482 ed98a662cebd4184bcd2639b504e0edb
+msgid ""
+"First stable release of GWexpy for SoftwareX publication. This release focuses on API stability, "
+"GWpy compatibility, and reproducible commissioning workflows."
+msgstr "SoftwareX 掲載に向けた GWexpy 初の安定版リリースです。このリリースでは、API の安定性、GWpy 互換性、再現可能なコミッショニングワークフローに重点を置いています。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:486 82d43a0d4c0541a8b5ca0b3f3a544ff7
+msgid "**Version**: Updated from `0.1.0b2` to `0.1.0` (stable release)"
+msgstr "**バージョン**：`0.1.0b2` から `0.1.0` に更新しました（安定版リリース）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:487 e06d80cfc1124557a8246d45959fee74
+msgid ""
+"**GWpy API UX Compatibility**: Aligned key spectral API call conventions with GWpy 4.x usage "
+"patterns."
+msgstr "**GWpy API UX 互換性**：主要なスペクトル API の呼び出し規約を GWpy 4.x の使用パターンに合わせました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:488 dfe3af98bb2e46a497f0be4084ea591d
+msgid "`TimeSeries.transfer_function` now accepts GWpy-style positional calls:"
+msgstr "`TimeSeries.transfer_function` が GWpy 形式の位置引数による呼び出しを受け付けるようになりました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:489 66af9d05d333481f9acbb455b656ad26
+msgid "`transfer_function(other, fftlength, overlap, window, average, ...)`"
+msgstr "`transfer_function(other, fftlength, overlap, window, average, ...)`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:490 cbcf5deb2efa4da38ae76df40022b705
+msgid "`TimeSeriesDict` / `TimeSeriesList` now accept positional spectral args for:"
+msgstr "`TimeSeriesDict` / `TimeSeriesList` が次のスペクトル解析引数を位置引数で受け付けるようになりました："
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:491 4dcb4b4ab7b74e5f9fa4ac2bc8213eb7
+msgid "`csd`, `coherence`, `csd_matrix`, `coherence_matrix`"
+msgstr "`csd`、`coherence`、`csd_matrix`、`coherence_matrix`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:492 fd5062885df74f78b95cd0751f89aabb
+msgid "positional `(fftlength, overlap)` is supported in addition to keyword usage"
+msgstr "キーワード引数に加えて、位置引数 `(fftlength, overlap)` にも対応しました"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:493 9cb4f1f006744f30b33a4a14c2f8eab4
+msgid "Mixed positional+keyword specification of `fftlength`/`overlap` now raises clear `TypeError`."
+msgstr "`fftlength`/`overlap` を位置引数とキーワード引数で混在指定すると、内容が明確な `TypeError` が発生するようになりました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:494 3ce36923ccd546378429c1cb8aee151b
+msgid ""
+"**Authors**: Removed email from `pyproject.toml` to prevent spam (contact via GitHub Issues or "
+"paper)"
+msgstr "**Authors**: スパム防止のため `pyproject.toml` からメールアドレスを削除しました（連絡は GitHub Issues または論文経由でお願いします）"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:498 fa759289f7e4435b8f60d104aa83fdf9
+msgid "**Compatibility policy doc**:"
+msgstr "**互換性ポリシー文書**："
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:499 ebdcfea8ccb049fdb49f80768db5dc65
+msgid "`docs/developers/compatibility/gwpy/API_UX_POLICY_20260303.md`"
+msgstr "`docs/developers/compatibility/gwpy/API_UX_POLICY_20260303.md`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:500 d24a621372e64718bd1f818abcf3291d
+msgid "**GWpy compatibility tests**:"
+msgstr "**GWpy 互換性テスト**："
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:501 18978b78fc8d41208e52f302a05736a1
+msgid "`tests/timeseries/test_transfer_function_compat.py`"
+msgstr "`tests/timeseries/test_transfer_function_compat.py`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:502 7269903980fa4a1c83d8f051a5014f93
+msgid "`tests/timeseries/test_collections_spectral_compat.py`"
+msgstr "`tests/timeseries/test_collections_spectral_compat.py`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:503 0afe609db36a482398b9b6a8c1552334
+msgid "`tests/timeseries/test_fft_param_compat.py`"
+msgstr "`tests/timeseries/test_fft_param_compat.py`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:504 ce7e1b028f29432883bd6e680ae7fdc8
+msgid ""
+"Includes edge-case checks for positional/keyword conflicts and invalid numeric `other` in "
+"collection APIs."
+msgstr "コレクション API における位置引数とキーワード引数の競合、および数値として無効な `other` のエッジケースを確認します。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:505 910f5affd30b4c649778d25be1b8e2ff
+msgid "**CI workflow for compatibility gate**:"
+msgstr "**互換性ゲート用 CI ワークフロー**："
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:506 c211f4373e464605b2c7ace3d7a1ba31
+msgid "`.github/workflows/test-compat-gwpy.yml`"
+msgstr "`.github/workflows/test-compat-gwpy.yml`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:507 6f257a30d3644c28a2863c8823cab609
+msgid "Runs focused GWpy-compat tests plus `tests/timeseries`, with pinned `numpy<2.0` and `astropy<7.0`."
+msgstr "対象を絞った GWpy 互換性テストと `tests/timeseries` を、バージョンを固定した `numpy<2.0` および `astropy<7.0` で実行します。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:508 e0a85cb4236244f4a105251494b4f811
+msgid "**Publication materials**:"
+msgstr "**出版用資料**："
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:509 ae8679699e9a432ea0e316ec54fe59e5
+msgid "Paper source: `docs/gwexpy-paper/main.tex`"
+msgstr "論文ソース：`docs/gwexpy-paper/main.tex`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:510 dfc6f705c1604aaabe6e1227437f3cd3
+msgid "Publication preparation plan: `docs/developers/plans/for_paper_publication.md`"
+msgstr "出版準備計画：`docs/developers/plans/for_paper_publication.md`"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:512 d10c36d74c6f4d0ea18dc12e0d958436
+msgid "[0.1.0b2] - 2026-02-23"
+msgstr "[0.1.0b2] - 2026-02-23"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:516 324cb06da0434c6695ac7e3b39c24ffb
+msgid ""
+"**API Unification**: Standardized all spectral analysis function signatures to use time-based "
+"parameters (`fftlength`/`overlap` in seconds) instead of sample-count-based parameters "
+"(`nperseg`/`noverlap`). This aligns gwexpy with GWpy conventions and improves user experience."
+msgstr ""
+"**API の統一**：すべてのスペクトル解析関数のシグネチャを、サンプル数ベースのパラメーター（`nperseg`/`noverlap`）ではなく、時間ベースのパラメーター（秒単位の "
+"`fftlength`/`overlap`）を使うよう標準化しました。これにより gwexpy が GWpy の規約にそろい、ユーザー体験が向上します。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:517 2958b5a113bc4eba96700fc7d946af12
+msgid "**Affected Functions**:"
+msgstr "**対象となる関数**："
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:518 8a4292856a264c9384fe4b072048cdb9
+msgid "`gwexpy.spectral.bootstrap_spectrogram()` - now accepts `fftlength` and `overlap` (seconds)"
+msgstr "`gwexpy.spectral.bootstrap_spectrogram()` - `fftlength` と `overlap`（秒）を受け付けるようになりました"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:519 39b5310391c24ab2a0649d58b428341f
+msgid "`gwexpy.fitting.fit_bootstrap_spectrum()` - now accepts `fftlength` and `overlap` (seconds)"
+msgstr "`gwexpy.fitting.fit_bootstrap_spectrum()` - `fftlength` と `overlap`（秒）を受け付けるようになりました"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:520 1099e9bc5ab949aa91cdf1dc46e14a46
+msgid ""
+"`gwexpy.spectrogram.Spectrogram.bootstrap()` and `.bootstrap_asd()` - now accept `fftlength` and "
+"`overlap` (seconds)"
+msgstr ""
+"`gwexpy.spectrogram.Spectrogram.bootstrap()` と `.bootstrap_asd()` - `fftlength` と "
+"`overlap`（秒）を受け付けるようになりました"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:521 916ac46571924090a27c78d6125f34df
+msgid ""
+"`gwexpy.fields.signal.*` spectral functions (spectral_density, compute_psd, freq_space_map, "
+"coherence_map) - now accept `fftlength` and `overlap` (seconds)"
+msgstr ""
+"`gwexpy.fields.signal.*` のスペクトル関数（spectral_density、compute_psd、freq_space_map、coherence_map） - "
+"`fftlength` と `overlap`（秒）を受け付けるようになりました"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:522 0d748166b35d4876938b4cfd9fe574c5
+msgid ""
+"`gwexpy.timeseries.TimeSeriesMatrix` spectral methods (\\_vectorized_psd, \\_vectorized_csd, "
+"\\_vectorized_coherence) - now accept `fftlength` and `overlap` (seconds)"
+msgstr ""
+"`gwexpy.timeseries.TimeSeriesMatrix` "
+"のスペクトルメソッド（\\_vectorized_psd、\\_vectorized_csd、\\_vectorized_coherence） - `fftlength` と "
+"`overlap`（秒）を受け付けるようになりました"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:523 703316cfced54a08a9dc55224e9906ae
+msgid ""
+"**Migration Note**: Using deprecated `nperseg` or `noverlap` parameters will raise `TypeError` "
+"with guidance to use `fftlength` and `overlap` instead. No deprecation period - breaking change "
+"applies immediately."
+msgstr ""
+"**移行に関する注意**：非推奨の `nperseg` または `noverlap` パラメーターを使うと、代わりに `fftlength` と `overlap` を使うよう案内する "
+"`TypeError` が発生します。非推奨期間は設けず、破壊的変更を直ちに適用します。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:524 5056a2a5a37f483caa329d488ecc087d
+msgid ""
+"**New Module**: `gwexpy.utils.fft_args` provides helper functions for parameter validation and "
+"conversion:"
+msgstr "**新しいモジュール**：`gwexpy.utils.fft_args` がパラメーターの検証と変換用のヘルパー関数を提供します："
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:525 d297a8a926214e889d5f940b73e976c5
+msgid ""
+"`parse_fftlength_or_overlap()` - converts time values (float, int, Quantity) to seconds and "
+"samples"
+msgstr "`parse_fftlength_or_overlap()` - 時間の値（float、int、Quantity）を秒とサンプル数に変換します"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:526 8e5177d95a7b4370a6f7a2d3ba1c5048
+msgid "`check_deprecated_kwargs()` - detects and rejects deprecated parameters"
+msgstr "`check_deprecated_kwargs()` - 非推奨パラメーターを検出して拒否します"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:527 b0123e394d914edab0c7930e39fe76cb
+msgid "`get_default_overlap()` - returns window-appropriate default overlap values (GWpy-compatible)"
+msgstr "`get_default_overlap()` - 窓関数に適したデフォルトのオーバーラップ値を返します（GWpy 互換）"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:528 053a5cecbf494185bf70c202e24cfa49
+msgid ""
+"**GWpy Compatibility**: All functions now follow GWpy conventions for time-based FFT parameters, "
+"improving interoperability and reducing API confusion."
+msgstr "**GWpy 互換性**：すべての関数が時間ベースの FFT パラメーターについて GWpy の規約に従うようになり、相互運用性が向上し、API の混乱が減少します。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:530 ../gwexpy-pr487-docs-update/CHANGELOG.md:580
+#: 692ea87d71564df29eb0d876779bd716 ef3cacbf5cbe472cbfc35353c92979ca
+msgid "Improved"
+msgstr "改善"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:532 5e72d3bb07a44a149d168623ee3ce5d5
+msgid ""
+"**Numerical Stability**: Implemented a comprehensive numerical hardening strategy for low-"
+"amplitude gravitational-wave data (O(1e-21))."
+msgstr "**数値安定性**：低振幅の重力波データ（O(1e-21)）に対する包括的な数値堅牢化戦略を実装しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:533 64b1aa27e9bd47e18c9ac65340c12ea8
+msgid ""
+"**Adaptive Whitening**: `whiten()` now uses an adaptive `eps` relative to input variance, "
+"preventing signal destruction in quiet channels."
+msgstr "**適応的ホワイトニング**：`whiten()` が入力分散に応じた適応的な `eps` を使うようになり、静かなチャンネルでの信号消失を防ぎます。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:534 e661bece2b4e40ef898ce0f3da09597f
+msgid ""
+"**Robust ICA**: `ica_fit()` includes internal standardization and relative tolerances to handle "
+"high-dynamic-range data."
+msgstr "**堅牢な ICA**：`ica_fit()` に内部標準化と相対許容誤差を組み込み、ダイナミックレンジの大きいデータを扱えるようにしました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:535 86c00ff766f84f6cb03f469ef46f92b2
+msgid ""
+"**Safe Logging**: Visualization tools now use dynamic floor calculation to prevent `-inf` or "
+"clipped values in dB plots."
+msgstr "**安全な対数表示**：可視化ツールが動的な下限値計算を使うようになり、dB プロットでの `-inf` やクリップされた値を防ぎます。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:536 c8416b68cd2a453b8f60f6444e3a79e8
+msgid "**Machine Precision**: Numerical constants now adapt to float32/float64 machine precision."
+msgstr "**機械精度**：数値定数が float32/float64 の機械精度に適応するようになりました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:540 097a7f7059884dff9a5ae45e609c68c1
+msgid ""
+"**GBD**: Apply amplifier range scaling when reading Graphtec `.gbd` so analog channels are "
+"correctly converted from raw counts to volts, and treat `Alarm`/`AlarmOut`/`Pulse*`/`Logic*` as "
+"digital status channels (0/1, dimensionless). Digital channel mapping can be overridden via "
+"`digital_channels=...`."
+msgstr ""
+"**GBD**：Graphtec の `.gbd` "
+"を読み込む際にアンプのレンジスケーリングを適用し、アナログチャンネルを生カウントからボルトへ正しく変換します。また、`Alarm`/`AlarmOut`/`Pulse*`/`Logic*` "
+"をデジタル状態チャンネル（0/1、無次元）として扱います。デジタルチャンネルのマッピングは `digital_channels=...` で上書きできます。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:542 d4f35d38fa8e4f1abe46d5df664b637e
+msgid "[0.1.0b1] - 2026-02-01"
+msgstr "[0.1.0b1] - 2026-02-01"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:544 5981c28518694b878fbd6b79b6673ea7
+msgid "Initial Public Release"
+msgstr "初回公開リリース"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:546 2e54da12002f4d6ebe68dae090e523cd
+msgid ""
+"This is the first public beta release of `gwexpy`. All previous development history (up to "
+"internal version 0.4.0) is consolidated here."
+msgstr "これは `gwexpy` の初回公開ベータリリースです。これまでの開発履歴（内部バージョン 0.4.0 まで）をここに統合しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:548 6b8c6bd7a8974a49b1542cf20220c52f
+msgid "Important Notes"
+msgstr "重要な注意事項"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:550 cacf4f16a4a342328b295ac7f3a729b9
+msgid ""
+"**gwpy Compatibility**: This release is compatible with `gwpy>=3.0.0,<4.0.0`. gwpy 4.0.0 "
+"introduced breaking API changes that are not yet supported. Users should ensure they have gwpy "
+"3.x installed."
+msgstr ""
+"**gwpy 互換性**: このリリースは `gwpy>=3.0.0,<4.0.0` と互換性があります。gwpy 4.0.0 では破壊的な API "
+"変更が導入されましたが、まだサポートされていません。ユーザーは gwpy 3.x がインストールされていることを確認してください。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:552 ee6d804dccfb4081921c7e05e263c986
+msgid "Refactored"
+msgstr "リファクタリング"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:554 d2b2dc54d2844169b238f444e3449112
+msgid ""
+"**Exception Handling**: Eliminated broad `except Exception` patterns in NDS, GUI, and IO modules."
+" Replaced with specific exception types (`OSError`, `ValueError`, `KeyError`, etc.) for more "
+"predictable error handling and better debugging."
+msgstr ""
+"**例外処理**: NDS、GUI、IO モジュールにおける広範な `except Exception` "
+"パターンを排除しました。より予測しやすいエラー処理とデバッグ性の向上のため、特定の例外型（`OSError`、`ValueError`、`KeyError` など）に置き換えました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:555 a75fa5967b56493ab09ab60d906d8d6f
+msgid ""
+"**GUI Architecture**: Improved separation of concerns between UI and core logic layers in GUI "
+"components."
+msgstr "**GUI アーキテクチャ**: GUI コンポーネントにおける UI 層とコアロジック層の関心の分離を改善しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:559 9c6cd026644c4127b17af7a3059c248c
+msgid "**Core Data Structures**:"
+msgstr "**コアデータ構造**:"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:560 4fdba0dab6074967958989aae3c4de25
+msgid "`TimeSeries`, `FrequencySeries`, `Spectrogram` classes with metadata management."
+msgstr "メタデータ管理機能を備えた `TimeSeries`、`FrequencySeries`、`Spectrogram` クラス。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:561 32e42225fb764184bdb3afb026a0a8b3
+msgid "`TimeSeriesMatrix`, `FrequencySeriesMatrix`, `SpectrogramMatrix` for multi-channel data handling."
+msgstr "マルチチャンネルデータを扱う `TimeSeriesMatrix`、`FrequencySeriesMatrix`、`SpectrogramMatrix`。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:562 aea97fb8257f45c1acceb20871a73f19
+msgid "`ScalarField`, `VectorField`, `TensorField` for 4D experimental domain semantics."
+msgstr "4D 実験領域のセマンティクスに対応する `ScalarField`、`VectorField`、`TensorField`。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:563 1c670d61348c4e02ba6bd53452f61d77
+msgid "**Numerical Semantics**:"
+msgstr "**数値セマンティクス**:"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:564 4b030f38a9be44779546e83b39da21f1
+msgid "Strict unit propagation for calculus methods."
+msgstr "微積分メソッドにおける単位の厳密な伝播。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:565 7d151c69f0604dadad898ed364663e98
+msgid "Fixed DC component handling in integration to prevent singularities."
+msgstr "特異点を防ぐため、積分における DC 成分の扱いを修正しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:566 567dabaff6384aaf938020f1cc92e321
+msgid "**Advanced Signal Processing**:"
+msgstr "**高度な信号処理**:"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:567 30f90414c014401b827042f723e8c44a
+msgid "functional Short-Time Laplace Transform (`stlt`)."
+msgstr "機能的な Short-Time Laplace Transform（`stlt`）。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:568 b5c148d29b154135927499da044ce648
+msgid "High-performance resampling with various aggregation methods."
+msgstr "さまざまな集約手法に対応した高性能なリサンプリング。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:569 d0524da74c4a4694bdd9f3b1c814296d
+msgid "Whitening and standardization models."
+msgstr "ホワイトニングおよび標準化モデル。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:570 3d8989d6a14e477794da956e631927f8
+msgid "**Interoperability**:"
+msgstr "**相互運用性**:"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:571 7325cd7ec78f4f9e80e83702617802ce
+msgid "Support for various file formats: TDMS, GBD, WIN, ATS, SDB/SQLite, WAV."
+msgstr "各種ファイル形式に対応: TDMS、GBD、WIN、ATS、SDB/SQLite、WAV。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:572 1c93aaadc8d34334b274523f71f1057c
+msgid "Integration with ML frameworks (Torch/TensorFlow) and ROOT (CERN)."
+msgstr "ML フレームワーク（Torch/TensorFlow）および ROOT（CERN）との統合。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:573 9d099917057e4779926cfdbbb8fbdea3
+msgid "MTH5 support for magnetotelluric data."
+msgstr "地磁気地電流データ向け MTH5 に対応。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:574 1e0657300d684e5796aee9c7df1ffb3c
+msgid "**Fitting & Statistics**:"
+msgstr "**フィッティングと統計**:"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:575 93b90f515ca44f38b440767b1ec79799
+msgid "Comprehensive `fitting` module with `iminuit` and `emcee` (MCMC) support."
+msgstr "`iminuit` および `emcee`（MCMC）に対応した包括的な `fitting` モジュール。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:576 8c881c246d414db6bd263214d7d3e130
+msgid "Statistical aggregation and interpolation for matrix structures."
+msgstr "行列構造向けの統計的集約および補間。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:577 590f8763dfda4541913679e29c1c079f
+msgid "**GUI**:"
+msgstr "**GUI**："
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:578 ad0acb5fbf474e378ccc51a0ed94c7f4
+msgid "Interactive GUI for real-time streaming data visualization and analysis."
+msgstr "リアルタイムストリーミングデータの可視化と解析を行うインタラクティブ GUI。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:582 aa6b220ab5ba45c89affa9ca699a50c7
+msgid "**Type Safety**: Comprehensive type annotation expansion across the codebase:"
+msgstr "**型安全性**: コードベース全体で型アノテーションを大幅に拡充しました:"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:583 54c387460e714dadb276bae7cfd40661
+msgid "Added strict type hints to GUI (UI layer, NDS modules, streaming, engine)."
+msgstr "GUI（UI 層、NDS モジュール、ストリーミング、エンジン）に厳密な型ヒントを追加しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:584 6e29a9ffdc1140588791c6639035199e
+msgid "Enhanced `TimeSeriesMatrix` mixin with Protocol-based type-safe `super()` calls."
+msgstr "Protocol ベースの型安全な `super()` 呼び出しにより `TimeSeriesMatrix` ミックスインを強化しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:585 e745175b04a54a6f8f5ae4d728b302d5
+msgid "Introduced `TypedDict` definitions for structured data in IO and GUI modules."
+msgstr "IO および GUI モジュールの構造化データ向けに `TypedDict` 定義を導入しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:586 1999b2e01c904709899611654568038a
+msgid "Expanded MyPy coverage to include `gui/nds/` and `gui/ui/` directories."
+msgstr "MyPy の対象範囲を `gui/nds/` および `gui/ui/` ディレクトリまで拡大しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:587 3b8efaa6e0b04bbcb7fd3ccbc06cb7bc
+msgid "**CI Stability**:"
+msgstr "**CI の安定性**:"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:588 de0a64c3149645f4a4f5eb6a86e8a1e9
+msgid "Replaced deprecated `qtbot.waitForWindowShown()` with `qtbot.waitExposed()` in GUI tests."
+msgstr "GUI テストで非推奨の `qtbot.waitForWindowShown()` を `qtbot.waitExposed()` に置き換えました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:589 11a43c6c56344e219eba96c179db7b8b
+msgid ""
+"Added warning filters to suppress third-party deprecation warnings (NumPy, pandas) in test "
+"configuration."
+msgstr "テスト設定に警告フィルターを追加し、サードパーティ（NumPy、pandas）の非推奨警告を抑制しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:590 76cd6db5d46c4aafa6693cdb26516f3c
+msgid "Refined MyPy exclude patterns for better coverage-exclusion balance."
+msgstr "カバレッジと除外のバランスを改善するため、MyPy の除外パターンを調整しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:591 355d373c37fa4d25b3c2179278c71d82
+msgid "Optimized ROOT/NumPy vectorization."
+msgstr "ROOT/NumPy のベクトル化を最適化しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:592 6cbf3a2080e1491ab2976853124558a4
+msgid "Refactored `noise` module for better maintenance."
+msgstr "保守性向上のため `noise` モジュールをリファクタリングしました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:596 6c7739cd2d1d499788161d7f165b593c
+msgid "**GUI Tests**: Resolved flaky test issues related to window visibility timing."
+msgstr "**GUI テスト**: ウィンドウの表示タイミングに関連する不安定なテスト問題を解消しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:597 0b30bfc569eb4bedacddf297d91b39e2
+msgid ""
+"**Type Errors**: Fixed various MyPy errors including uninitialized attributes and missing return "
+"type annotations."
+msgstr "**型エラー**：初期化されていない属性や戻り値型アノテーションの欠落など、さまざまな MyPy エラーを修正しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:598 9fba223f77ff486d820288d5edf4d0dd
+msgid "Fixed unit propagation in complex matrix operations."
+msgstr "複素行列演算における単位の伝播を修正しました。"
+
+#: ../gwexpy-pr487-docs-update/CHANGELOG.md:599 c0044ec8acb8466592c86d0f96f47b44
+msgid "Corrected IFFT amplitude scaling for one-sided spectra."
+msgstr "片側スペクトルにおける IFFT の振幅スケーリングを修正しました。"

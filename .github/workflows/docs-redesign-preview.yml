@@ -4,6 +4,7 @@ on:
   push:
     branches: [claude/docs-redesign-pydata]
     paths:
+      - "CHANGELOG.md"
       - "docs_redesign/**"
       - ".github/workflows/docs-redesign-preview.yml"
   workflow_dispatch:
@@ -78,8 +79,11 @@ jobs:
       - name: Prepare isolated docs_redesign source
         id: prepare_docs_redesign
         run: |
-          docs_src="${RUNNER_TEMP}/gwexpy-docs-redesign-preview"
+          docs_root="${RUNNER_TEMP}/gwexpy-docs-redesign-preview"
+          docs_src="${docs_root}/docs_redesign"
+          mkdir -p "${docs_root}"
           rsync -a --delete --exclude "_build/" docs_redesign/ "${docs_src}/"
+          cp CHANGELOG.md "${docs_root}/CHANGELOG.md"
           echo "docs_src=${docs_src}" >> "${GITHUB_OUTPUT}"
 
       - name: Build EN HTML

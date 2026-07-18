@@ -8,7 +8,7 @@ scope:
   summary: "Merge the released main branch, align redesign content with v0.1.10, audit the resulting website source, and render notebook outputs without committing them."
   included:
     - "Merge origin/main containing tag v0.1.10 into the redesign branch without rebasing or force-pushing."
-    - "Synchronize release facts, installation guidance, CLI examples, citation metadata, EN/JA translations, and changelog content."
+    - "Synchronize release facts, installation guidance, CLI examples, citation metadata, EN/JA translations, and the complete canonical changelog."
     - "Verify redirect destinations, public API references, representative quickstart code, EN/JA builds, and external links."
     - "Execute redesign notebooks in an isolated build tree and render their output in the published EN/JA HTML."
   excluded:
@@ -17,26 +17,40 @@ scope:
 changed_files:
   - path: docs_redesign/
     change: "Aligned release facts with v0.1.10 and repaired verified external documentation links."
+  - path: docs_redesign/about/changelog.md
+    change: "Include the root CHANGELOG.md as the single English source for every released version and item."
+  - path: docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po
+    change: "Provide a complete Japanese gettext translation for the canonical changelog without fuzzy or English-body fallback entries."
   - path: scripts/generate_docs_redirect_stubs.py
     change: "Fail redirect-stub generation when a configured publish target is absent."
   - path: tests/test_generate_docs_redirect_stubs.py
     change: "Added missing-target redirect regression coverage."
   - path: tests/docs/test_docs_redesign_release_facts.py
-    change: "Added release-fact and verified-link regression coverage."
+    change: "Added canonical-release and complete-Japanese-catalog regression coverage."
   - path: docs/developers/plans/manifests/audit-manifest-487-web-docs-rollout.yaml
     change: "Recorded scope, findings, validation evidence, and remaining rollout limits."
   - path: .github/workflows/docs-redesign-preview.yml
-    change: "Build the redesign site from an isolated notebook-execution tree before publishing the preview."
+    change: "Build the redesign site from an isolated notebook-execution tree before publishing the preview, and trigger it for canonical changelog changes."
   - path: .github/workflows/docs-pages.yml
-    change: "Build the production site from an isolated notebook-execution tree before deployment."
+    change: "Build the production site from an isolated notebook-execution tree before deployment, and trigger it for canonical changelog changes."
   - path: .github/workflows/docs-pr.yml
-    change: "Exercise the same isolated notebook-output build on pull requests."
+    change: "Exercise the same isolated notebook-output build on pull requests and rebuild when the canonical changelog changes."
   - path: .github/workflows/docs-redesign-preview.yml
     change: "Provision the all extra so optional notebook integrations can render their outputs."
   - path: scripts/check_repo_hygiene.py
     change: "Enforce clean-source notebook hygiene for docs_redesign notebooks."
 validation:
   completed:
+    - cmd: "rtk sphinx-build -b gettext -D nb_execution_mode=off docs_redesign <temporary-gettext-dir>"
+      result: "Confirmed that the MyST include extracts the complete root CHANGELOG.md into the redesign gettext template."
+    - cmd: "rtk msgfmt --check --output-file <temporary-mo> docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+      result: "The 254-entry Japanese changelog catalog compiles with no empty or fuzzy body translations."
+    - cmd: "rtk pytest -q tests/docs/test_docs_redesign_release_facts.py tests/docs/test_docs_conf_runtime.py -p no:cacheprovider"
+      result: "14 passed, including complete-release, complete-Japanese-catalog, and canonical-changelog workflow-trigger/staging checks."
+    - cmd: "rtk ruff check tests/docs/test_docs_redesign_release_facts.py tests/docs/test_docs_conf_runtime.py"
+      result: "Passed."
+    - cmd: "rtk env MPLCONFIGDIR=/tmp/matplotlib sphinx-build -q -E -b html -D language=ja -D nb_execution_mode=off <staged-docs-src> <staged-ja-html>"
+      result: "Japanese build succeeded; the rendered changelog contains v0.1.10 through v0.1.0b1 and Japanese v0.1.10 release text. Existing offline intersphinx and gui-autodoc warnings remain."
     - cmd: "rtk pytest -q tests/docs/test_docs_redesign_release_facts.py tests/test_generate_docs_redirect_stubs.py tests/docs/test_docs_conf_runtime.py tests/test_check_changed_notebooks_script.py tests/docs/test_check_terms.py -p no:cacheprovider"
       result: "16 passed after the release-fact and external-link corrections."
     - cmd: "rtk sphinx-build -b html docs_redesign docs_redesign/_build/html"
@@ -52,6 +66,7 @@ findings:
     - "None found after the merged-main alignment; stale v0.1.5 release claims and the pygwinc package spelling were corrected."
   corrected_before_publish:
     - "Updated the obsolete GWpy CLI, LALSuite LIGOTimeGPS, DTT, and openEMS documentation targets discovered by linkcheck."
+    - "Replaced the abbreviated redesign changelog with the canonical complete history and a fully translated Japanese catalog."
   known_limitations:
     - "The redirect map intentionally preserves only 29 legacy paths; other historical per-tutorial and API URLs can still return 404 after rsync --delete."
     - "Japanese API source pages retain English fallback where no Japanese catalog exists."
