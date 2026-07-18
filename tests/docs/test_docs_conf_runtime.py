@@ -123,10 +123,12 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
 
     steps_by_name = {step["name"]: step for step in job["steps"] if "name" in step}
     prepare = steps_by_name["Prepare isolated docs_redesign source"]
+    provision = steps_by_name["Provision docs_redesign build environment"]
     en_build = steps_by_name["Build EN HTML"]
     ja_build = steps_by_name["Build JA HTML"]
 
     assert "rsync -a --delete --exclude \"_build/\" docs_redesign/" in prepare["run"]
+    assert 'python -m pip install -e ".[all]"' in provision["run"]
     assert "prepare_docs_redesign.outputs.docs_src" in en_build["run"]
     assert "prepare_docs_redesign.outputs.docs_src" in ja_build["run"]
     assert "nbsphinx" not in en_build["run"]

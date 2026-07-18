@@ -31,6 +31,8 @@ changed_files:
     change: "Build the production site from an isolated notebook-execution tree before deployment."
   - path: .github/workflows/docs-pr.yml
     change: "Exercise the same isolated notebook-output build on pull requests."
+  - path: .github/workflows/docs-redesign-preview.yml
+    change: "Provision the all extra so optional notebook integrations can render their outputs."
   - path: scripts/check_repo_hygiene.py
     change: "Enforce clean-source notebook hygiene for docs_redesign notebooks."
 validation:

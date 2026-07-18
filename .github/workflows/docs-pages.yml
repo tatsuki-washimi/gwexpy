@@ -65,7 +65,9 @@ jobs:
       - name: Provision docs_redesign build environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . --no-deps
+          # Public notebook pages exercise optional integrations; install the
+          # full runtime set before executing them into the HTML build cache.
+          python -m pip install -e ".[all]"
           python -m pip install -r docs_redesign/requirements.txt
 
       # Keep executed notebooks and MyST-NB's cache outside the checkout.

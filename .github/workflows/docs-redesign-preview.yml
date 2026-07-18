@@ -66,7 +66,10 @@ jobs:
       - name: Provision docs_redesign build environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . --no-deps
+          # The public notebook pages exercise optional analysis, control, and
+          # I/O integrations, so their rendered outputs need the full runtime
+          # dependency set rather than the package's core-only install.
+          python -m pip install -e ".[all]"
           python -m pip install -r docs_redesign/requirements.txt
 
       # Execute notebooks only in a disposable copy.  MyST-NB stores their
