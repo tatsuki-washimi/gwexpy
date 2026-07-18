@@ -49,8 +49,6 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'explanation/numerical_stability';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/explanation/numerical_stability.html" />
@@ -462,14 +460,14 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Who should read this page?</strong>
-Standard analysis in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> works out-of-the-box with high stability. Refer to this detailed guide only if:</p>
+Refer to this detailed guide when:</p>
 <ul class="simple">
 <li><p>You see “holes” or “unusual colors” in your plots caused by <code class="docutils literal notranslate"><span class="pre">NaN</span></code> or <code class="docutils literal notranslate"><span class="pre">Inf</span></code>.</p></li>
-<li><p>You are working with extremely small signals (below <span class="math notranslate nohighlight">\(10^{-23}\)</span>) or huge signals (above 1) simultaneously.</p></li>
+<li><p>You are working with a dynamic range that makes a numerical parameter or plotted scale hard to choose.</p></li>
 <li><p>You want to deeply understand the numerical behavior of algorithms and tune parameters like <code class="docutils literal notranslate"><span class="pre">eps</span></code> or <code class="docutils literal notranslate"><span class="pre">tol</span></code>.</p></li>
 </ul>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> is designed to handle data with an extremely wide dynamic range without numerical breakdown.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides selected stabilization utilities for operations such as whitening and logarithmic conversion. Their behavior and limits depend on the API used.</p>
 <section id="tl-dr">
 <span id="numerical-stability-en-tldr"></span><h2>TL;DR<a class="headerlink" href="#tl-dr" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -491,16 +489,16 @@ Standard analysis in <code class="docutils literal notranslate"><span class="pre
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-left"><p><strong>Zero Values</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">log10(0)</span></code> produces <code class="docutils literal notranslate"><span class="pre">-inf</span></code>, causing blank holes in plots</p></td>
-<td class="text-left"><p><strong>Safe Log</strong> automatically sets an optimal floor based on the max value</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">log10(0)</span></code> produces <code class="docutils literal notranslate"><span class="pre">-inf</span></code>, which a caller must handle</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> applies a data-dependent floor before converting to dB</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><strong>Micro-signals</strong></p></td>
-<td class="text-left"><p>Rounded to zero by fixed <code class="docutils literal notranslate"><span class="pre">eps=1e-12</span></code>, causing signal loss</p></td>
-<td class="text-left"><p><strong>Adaptive Whitening</strong> (<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code>) maintains signal sensitivity</p></td>
+<tr class="row-odd"><td class="text-left"><p><strong>Small denominators</strong></p></td>
+<td class="text-left"><p>A fixed <code class="docutils literal notranslate"><span class="pre">eps</span></code> can be unsuitable for the data scale</p></td>
+<td class="text-left"><p>The documented whitening entry points accept <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code></p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><strong>Failures</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">NaN</span></code> propagates, making the entire dataset uncomputable</p></td>
-<td class="text-left"><p>Pre/Post-computation validation protects data integrity</p></td>
+<tr class="row-even"><td class="text-left"><p><strong>Non-finite input</strong></p></td>
+<td class="text-left"><p>A numerical operation can be undefined</p></td>
+<td class="text-left"><p>Individual APIs validate or reject input according to their documented contract</p></td>
 </tr>
 </tbody>
 </table>
@@ -519,24 +517,19 @@ Standard analysis in <code class="docutils literal notranslate"><span class="pre
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-left"><p><strong>Adaptive Whitening</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">.whiten()</span></code></p></td>
-<td class="text-left"><p>Zero-division / Signal loss</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> is recommended</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.whiten_channels()</span></code>, <code class="docutils literal notranslate"><span class="pre">whiten_matrix()</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.signal.preprocessing.whiten()</span></code></p></td>
+<td class="text-left"><p>Small denominators</p></td>
+<td class="text-left"><p>Use <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> where that parameter is supported</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><strong>Safe Log</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">.plot()</span></code>, <code class="docutils literal notranslate"><span class="pre">.spectrogram()</span></code></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">-inf</span></code> holes in plots</p></td>
-<td class="text-left"><p>Adjustable via <code class="docutils literal notranslate"><span class="pre">dynamic_range</span></code></p></td>
+<tr class="row-odd"><td class="text-left"><p><strong>Safe Log Conversion</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gwexpy.numerics.safe_log_scale()</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">-inf</span></code> from zero values during dB conversion</p></td>
+<td class="text-left"><p>Set <code class="docutils literal notranslate"><span class="pre">dynamic_range_db</span></code> for the intended display range</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><strong>Internal Standardization</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ica_fit()</span></code></p></td>
-<td class="text-left"><p>Non-convergence</p></td>
-<td class="text-left"><p>Works regardless of input amplitude</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p><strong>Relative Tolerance</strong></p></td>
-<td class="text-left"><p>Various</p></td>
-<td class="text-left"><p>Early termination</p></td>
-<td class="text-left"><p>Auto-scales <code class="docutils literal notranslate"><span class="pre">tol</span></code> based on variance</p></td>
+<tr class="row-even"><td class="text-left"><p><strong>Data-scaled epsilon</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gwexpy.numerics.safe_epsilon()</span></code></p></td>
+<td class="text-left"><p>Selecting an epsilon from the data scale</p></td>
+<td class="text-left"><p>Specify <code class="docutils literal notranslate"><span class="pre">rel_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">abs_tol</span></code> when the defaults do not match the operation</p></td>
 </tr>
 </tbody>
 </table>
@@ -582,11 +575,12 @@ Standard analysis in <code class="docutils literal notranslate"><span class="pre
 </pre></div>
 </div>
 </section>
-<section id="good-example-automatic-dynamic-floor">
-<h4>✅ Good Example: Automatic dynamic floor<a class="headerlink" href="#good-example-automatic-dynamic-floor" title="Link to this heading">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> calculates a safe floor based on the maximum value in the data.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
-<span class="n">plot</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Safe Log is applied internally for a clean visualization</span>
+<section id="good-example-explicit-safe-log-conversion">
+<h4>✅ Good Example: Explicit safe-log conversion<a class="headerlink" href="#good-example-explicit-safe-log-conversion" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> calculates a floor from the finite data maximum and the requested dynamic range, then returns decibels.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.numerics</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_log_scale</span>
+
+<span class="n">asd_db</span> <span class="o">=</span> <span class="n">safe_log_scale</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">dynamic_range_db</span><span class="o">=</span><span class="mf">120.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -596,9 +590,9 @@ Standard analysis in <code class="docutils literal notranslate"><span class="pre
 <section id="recommendations-for-users">
 <span id="numerical-stability-en-recommendations"></span><h2>Recommendations for Users<a class="headerlink" href="#recommendations-for-users" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>Avoid Manual Offsets</strong>: Do not add arbitrary small values like <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">+</span> <span class="pre">1e-20</span></code> before plotting. <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> handles this internally.</p></li>
-<li><p><strong>Trust the Defaults</strong>: Default parameters for <code class="docutils literal notranslate"><span class="pre">whiten()</span></code> and <code class="docutils literal notranslate"><span class="pre">ica_fit()</span></code> are tuned for numerical safety.</p></li>
-<li><p><strong>Check Warnings</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> issues informative warnings with suggested fixes for truly unstable operations.</p></li>
+<li><p><strong>Use an explicit floor for dB conversion</strong>: Call <code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> when converting data that may contain zeros or quiet regions.</p></li>
+<li><p><strong>Choose whitening parameters at the API boundary</strong>: Use <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> only on the whitening entry points that document it, then inspect the result for the scientific application.</p></li>
+<li><p><strong>Check the API contract</strong>: Validation, finite-value handling, and tolerances are implemented per operation rather than by a single global policy.</p></li>
 </ul>
 </section>
 <section id="next-to-read">
@@ -670,7 +664,7 @@ Standard analysis in <code class="docutils literal notranslate"><span class="pre
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#safe-logarithmic-scaling-safe-log">2. Safe Logarithmic Scaling (Safe Log)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bad-example-numerical-errors-via-manual-conversion">❌ Bad Example: Numerical errors via manual conversion</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#good-example-automatic-dynamic-floor">✅ Good Example: Automatic dynamic floor</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#good-example-explicit-safe-log-conversion">✅ Good Example: Explicit safe-log conversion</a></li>
 </ul>
 </li>
 </ul>

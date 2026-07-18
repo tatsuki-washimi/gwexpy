@@ -26,7 +26,7 @@ file located in the root directory of the repository.
 
 ## Related Works
 
-GWexpy is built upon the following software. We highly recommend citing them as well:
+GWexpy builds on the following software. Cite the specific versions used in your work according to their own guidance:
 
-* **GWpy**: `Duncan Macleod et al., gwpy/gwpy: ...`
-* **Astropy**: `Astropy Collaboration et al., ...`
+* **GWpy**: use the [GWpy citation guide](https://gwpy.github.io/docs/stable/citing.html) to select the DOI for the version used.
+* **Astropy**: follow [Astropy's acknowledgment and citation guidance](https://www.astropy.org/acknowledging.html), which lists the project papers and version-specific BibTeX metadata.

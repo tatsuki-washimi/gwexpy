@@ -39,7 +39,7 @@ conda update -c conda-forge --all
 `pip install minepy` may fail due to C extension compilation issues.
 
 **Solution:**
-Run the automated build script included in the repository.
+The automated build script is available only from a source checkout of the GWexpy repository. Clone the repository first, then run:
 ```bash
 python scripts/dev_tools/install_minepy.py
 ```
@@ -78,7 +78,7 @@ For lightweight bug reports and feature requests, use the
 technical issues that need public tracking, please report the issue with the
 error logs on the GitHub [Issues](https://github.com/tatsuki-washimi/gwexpy/issues)
 page. Do not include private data, credentials, or security vulnerability
-details in the form or public issues; follow the repository security policy.
+details in the form or public issues; follow the repository [Security Policy](https://github.com/tatsuki-washimi/gwexpy/security/policy).
 Including the following information will help us assist you faster:
 * OS Version
 * Python Version

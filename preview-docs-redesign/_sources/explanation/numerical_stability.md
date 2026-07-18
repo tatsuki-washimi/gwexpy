@@ -8,13 +8,13 @@ myst:
 
 :::{note}
 **Who should read this page?**
-Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to this detailed guide only if:
+Refer to this detailed guide when:
 - You see "holes" or "unusual colors" in your plots caused by `NaN` or `Inf`.
-- You are working with extremely small signals (below $10^{-23}$) or huge signals (above 1) simultaneously.
+- You are working with a dynamic range that makes a numerical parameter or plotted scale hard to choose.
 - You want to deeply understand the numerical behavior of algorithms and tune parameters like `eps` or `tol`.
 :::
 
-`gwexpy` is designed to handle data with an extremely wide dynamic range without numerical breakdown.
+`gwexpy` provides selected stabilization utilities for operations such as whitening and logarithmic conversion. Their behavior and limits depend on the API used.
 
 (numerical-stability-en-tldr)=
 ## TL;DR
@@ -32,9 +32,9 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 
 | Item | Standard path | GWexpy path |
 | :--- | :--- | :--- |
-| **Zero Values** | `log10(0)` produces `-inf`, causing blank holes in plots | **Safe Log** automatically sets an optimal floor based on the max value |
-| **Micro-signals** | Rounded to zero by fixed `eps=1e-12`, causing signal loss | **Adaptive Whitening** (`eps="auto"`) maintains signal sensitivity |
-| **Failures** | `NaN` propagates, making the entire dataset uncomputable | Pre/Post-computation validation protects data integrity |
+| **Zero Values** | `log10(0)` produces `-inf`, which a caller must handle | `safe_log_scale()` applies a data-dependent floor before converting to dB |
+| **Small denominators** | A fixed `eps` can be unsuitable for the data scale | The documented whitening entry points accept `eps="auto"` |
+| **Non-finite input** | A numerical operation can be undefined | Individual APIs validate or reject input according to their documented contract |
 
 ---
 
@@ -43,10 +43,9 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 
 | Method | Target API | Issues Resolved | Configuration Hint |
 | :--- | :--- | :--- | :--- |
-| **Adaptive Whitening** | `.whiten()` | Zero-division / Signal loss | `eps="auto"` is recommended |
-| **Safe Log** | `.plot()`, `.spectrogram()` | `-inf` holes in plots | Adjustable via `dynamic_range` |
-| **Internal Standardization** | `ica_fit()` | Non-convergence | Works regardless of input amplitude |
-| **Relative Tolerance** | Various | Early termination | Auto-scales `tol` based on variance |
+| **Adaptive Whitening** | `TimeSeriesMatrix.whiten_channels()`, `whiten_matrix()`, `gwexpy.signal.preprocessing.whiten()` | Small denominators | Use `eps="auto"` where that parameter is supported |
+| **Safe Log Conversion** | `gwexpy.numerics.safe_log_scale()` | `-inf` from zero values during dB conversion | Set `dynamic_range_db` for the intended display range |
+| **Data-scaled epsilon** | `gwexpy.numerics.safe_epsilon()` | Selecting an epsilon from the data scale | Specify `rel_tol` and `abs_tol` when the defaults do not match the operation |
 
 ---
 
@@ -91,12 +90,13 @@ Prevents `-inf` values when visualizing spectrograms or PSDs containing zeros or
 asd_db = 10 * np.log10(asd)  # Zeros become -inf, breaking the plot
 ```
 
-#### ✅ Good Example: Automatic dynamic floor
-`gwexpy` calculates a safe floor based on the maximum value in the data.
+#### ✅ Good Example: Explicit safe-log conversion
+`safe_log_scale()` calculates a floor from the finite data maximum and the requested dynamic range, then returns decibels.
 
 ```python
-asd = data.asd()
-plot = asd.plot()  # Safe Log is applied internally for a clean visualization
+from gwexpy.numerics import safe_log_scale
+
+asd_db = safe_log_scale(asd.value, dynamic_range_db=120.0)
 ```
 
 ---
@@ -104,9 +104,9 @@ plot = asd.plot()  # Safe Log is applied internally for a clean visualization
 (numerical-stability-en-recommendations)=
 ## Recommendations for Users
 
-- **Avoid Manual Offsets**: Do not add arbitrary small values like `data + 1e-20` before plotting. `gwexpy` handles this internally.
-- **Trust the Defaults**: Default parameters for `whiten()` and `ica_fit()` are tuned for numerical safety.
-- **Check Warnings**: `gwexpy` issues informative warnings with suggested fixes for truly unstable operations.
+- **Use an explicit floor for dB conversion**: Call `safe_log_scale()` when converting data that may contain zeros or quiet regions.
+- **Choose whitening parameters at the API boundary**: Use `eps="auto"` only on the whitening entry points that document it, then inspect the result for the scientific application.
+- **Check the API contract**: Validation, finite-value handling, and tolerances are implemented per operation rather than by a single global policy.
 
 ## Next to Read
 

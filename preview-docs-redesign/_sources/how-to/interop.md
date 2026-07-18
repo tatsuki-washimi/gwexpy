@@ -41,11 +41,11 @@ Legacy aliases remain supported during the transition, but new examples should p
 
 - [How to Read This Page](#interop-en-how-to-read)
 - [Status Labels](#interop-en-status-labels)
+- [S. Foundation Layer](#interop-en-foundation-layer)
 - [A. Storage Formats and Container Conversion](#interop-en-storage-conversion)
 - [B. Analysis Library and Object Conversion](#interop-en-analysis-conversion)
-- [C. Machine Learning, Acceleration, and Array Backends](#interop-en-ml-conversion)
+- [C. Scientific Computing, Machine Learning, and Array Backends](#interop-en-ml-conversion)
 - [D. Physics and Domain-Specific Libraries](#interop-en-domain-conversion)
-- [What to Prioritize First](#interop-en-priorities)
 
 (interop-en-how-to-read)=
 ## How to Read This Page
@@ -55,6 +55,18 @@ Legacy aliases remain supported during the transition, but new examples should p
 - If you want to hand data to **PyTorch, TensorFlow, JAX, or CuPy**, start with C.
 - If you want to connect to **ROOT, ObsPy, LAL, PyCBC**, or other domain-specific libraries, start with D.
 - If you want to move **Field** objects into xarray, NetCDF4, or Zarr workflows via `to_*()` / `from_*()`, treat that as interop, not as direct I/O.
+
+(interop-en-foundation-layer)=
+## S. Foundation Layer
+
+This layer names the libraries that provide the numerical and gravitational-wave context for the rest of the page. It is not a ranking by usage statistics.
+
+| Library | Role in the GWexpy ecosystem | Interop note |
+| --- | --- | --- |
+| [GWpy](https://gwpy.github.io/) | Base time-series and frequency-series ecosystem | GWexpy extends its object model rather than treating it as an optional conversion target. |
+| [NumPy](https://numpy.org/) / [SciPy](https://scipy.org/) | Array representation and numerical routines | Foundation for many public APIs; no dedicated round-trip row is implied. |
+| [Astropy](https://www.astropy.org/) | Units, time, and astronomy-oriented object conventions | The explicit `to_astropy_timeseries()` and `from_astropy_timeseries()` bridge is listed in B. |
+| [LALSuite](https://lscsoft.docs.ligo.org/lalsuite/) | Gravitational-wave time and frequency series conventions | The explicit LAL conversion APIs are listed in D. |
 
 (interop-en-status-labels)=
 ## Status Labels
@@ -139,7 +151,7 @@ Use it when the question is “which analysis-library object do I bridge to?”
 | [dask](https://www.dask.org/) | `to_dask()`, `from_dask()` | Public | dask array bridge | [API](../reference/api/gwexpy.interop.dask_) |
 
 (interop-en-ml-conversion)=
-## C. Machine Learning, Acceleration, and Array Backends
+## C. Scientific Computing, Machine Learning, and Array Backends
 
 This section is for accelerated computing and ML-oriented bridges.  
 Check whether only the array payload moves, or whether metadata can also be reconstructed.
@@ -155,12 +167,14 @@ Check whether only the array payload moves, or whether metadata can also be reco
 | [TensorFlow](https://www.tensorflow.org/) | `to_tf()`, `from_tf()` | Public | tensor conversion | [API](../reference/api/gwexpy.interop.tensorflow_) |
 | [JAX](https://jax.readthedocs.io/en/latest/) | `to_jax()`, `from_jax()` | Public | JAX array conversion | [API](../reference/api/gwexpy.interop.jax_) |
 | [CuPy](https://cupy.dev/) | `to_cupy()`, `from_cupy()`, `is_cupy_available()` | Public | GPU array conversion | [API](../reference/api/gwexpy.interop.cupy_) |
+| [librosa](https://librosa.org/doc/latest/index.html) | `to_librosa()` | Public | audio-feature export; it sits between analysis objects and ML workflows, and is grouped here primarily for the latter | [API](../reference/api/gwexpy.interop.pydub_) |
+| [pyroomacoustics](https://pyroomacoustics.readthedocs.io/en/stable/) | `to_pyroomacoustics_source()`, `to_pyroomacoustics_stft()`, `from_pyroomacoustics_rir()`, `from_pyroomacoustics_mic_signals()`, `from_pyroomacoustics_source()`, `from_pyroomacoustics_stft()`, `from_pyroomacoustics_field()` | Public | room-acoustics simulation and array-processing workflows | [API](../reference/api/gwexpy.interop.pyroomacoustics_) |
 
 (interop-en-domain-conversion)=
 ## D. Physics and Domain-Specific Libraries
 
 This section is for domain-specific libraries and specialized objects.  
-Read the status carefully: some targets are full round-trips, some are mainly import paths, and some are still being organized publicly.
+Read the status carefully: some targets are full round-trips, some are mainly import paths, and some are still being organized publicly. The material-science and life-science entries are not lower-value domains: they provide routes for future method transfer and for research such as material thermal-noise studies.
 
 - Purpose: find bridges into domain-specific tools without confusing them with direct file I/O
 - Input: a `gwexpy` object or a domain-library object such as ObsPy, ROOT, LAL, or PyCBC
@@ -182,9 +196,7 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 | [Neo](https://neo.readthedocs.io/en/latest/) | `to_neo()`, `from_neo()` | Public | electrophysiology | [API](../reference/api/gwexpy.interop.neo_) |
 | Elephant | dedicated `to_*()` / `from_*()` API still in progress | In progress | organization with `Neo` and `quantities` is incomplete | — |
 | [quantities](https://python-quantities.readthedocs.io/en/latest/) | `to_quantity()`, `from_quantity()` | Public | quantity bridge | [API](../reference/api/gwexpy.interop.quantities_) |
-| [pyroomacoustics](https://pyroomacoustics.readthedocs.io/en/stable/) | `to_pyroomacoustics_source()`, `to_pyroomacoustics_stft()`, `from_pyroomacoustics_rir()`, `from_pyroomacoustics_mic_signals()`, `from_pyroomacoustics_source()`, `from_pyroomacoustics_stft()`, `from_pyroomacoustics_field()` | Public | room acoustics | [API](../reference/api/gwexpy.interop.pyroomacoustics_) |
 | [pydub](https://www.pydub.com/) | `to_pydub()`, `from_pydub()` | Public | audio object bridge | [API](../reference/api/gwexpy.interop.pydub_) |
-| [librosa](https://librosa.org/doc/latest/index.html) | `to_librosa()` | Public | mainly export | [API](../reference/api/gwexpy.interop.pydub_) |
 | [specutils](https://specutils.readthedocs.io/en/stable/) | `to_specutils()`, `from_specutils()` | Public | astronomy spectra | [API](../reference/api/gwexpy.interop.specutils_) |
 | [pyspeckit](https://pyspeckit.readthedocs.io/en/latest/) | `to_pyspeckit()`, `from_pyspeckit()` | Public | spectral analysis | [API](../reference/api/gwexpy.interop.pyspeckit_) |
 | PySpice | `from_pyspice_transient()`, `from_pyspice_ac()`, `from_pyspice_noise()`, `from_pyspice_distortion()` | Public | mainly import | [API](../reference/api/gwexpy.interop.pyspice_) |
@@ -203,18 +215,6 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 | Harmonica | `from_harmonica_grid()` | Public | mainly import | [API](../reference/api/gwexpy.interop.harmonica_) |
 | Exudyn | `from_exudyn_sensor()` | Public | mainly import | [API](../reference/api/gwexpy.interop.exudyn_) |
 | OpenSees | `from_opensees_recorder()` | Public | mainly import | [API](../reference/api/gwexpy.interop.opensees_) |
-
-(interop-en-priorities)=
-## What to Prioritize First
-
-The following targets are especially important because they sit close to the direct-I/O boundary or because they are high-value public entry points:
-
-- **ROOT**: `io_formats` keeps only EventTable direct I/O; ROOT object conversion belongs here
-- **xarray / Field**: the main route for ScalarField / VectorField bridges
-- **Zarr**: easy to confuse with direct I/O, so the boundary matters
-- **NetCDF4**: needs a clean line between direct I/O and xarray-backed workflows
-- **ObsPy**: common and easy-to-understand round-trip examples
-- **pandas / polars / astropy**: frequent analysis entry points
 
 ## Related Pages
 

@@ -50,8 +50,6 @@
     <script src="../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../_static/translations.js?v=4755f45a"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'explanation/numerical_stability';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/preview-docs-redesign/ja/explanation/numerical_stability.html" />
@@ -462,14 +460,14 @@
 <h1>数値的安定性と精度<a class="headerlink" href="#numerical-stability-and-precision" title="Link to this heading">#</a></h1>
 <div class="admonition note">
 <p class="admonition-title">注釈</p>
-<p><strong>このページを読むべき方</strong>: 通常の解析では <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> のデフォルト設定で十分な安定性が確保されています。以下の状況に該当する場合のみ、この詳細ガイドを参照してください：</p>
+<p><strong>このページを読むべき方</strong>：次の場合に、この詳細ガイドを参照してください。</p>
 <ul class="simple">
 <li><p>プロット結果に <code class="docutils literal notranslate"><span class="pre">NaN</span></code> や <code class="docutils literal notranslate"><span class="pre">Inf</span></code> による「穴」や「異常な色」が現れた場合</p></li>
-<li><p>非常に微小な信号（<span class="math notranslate nohighlight">\(10^{-23}\)</span>以下）や、逆に 1 を超える巨大な信号を同時に扱う場合</p></li>
+<li><p>数値パラメータや描画スケールを選びにくいダイナミックレンジのデータを扱っている。</p></li>
 <li><p>解析アルゴリズムの数値的な挙動を深く理解し、詳細パラメータ（<code class="docutils literal notranslate"><span class="pre">eps</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code>）を調整したい場合</p></li>
 </ul>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、重力波データ解析で頻繁に扱われる極めて広いダイナミックレンジを持つデータを、数値的な破綻なく処理できるように設計されています。</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、whitening や対数変換などの操作向けに、限定された安定化ユーティリティを提供します。動作と限界は使用する API に依存します。</p>
 <section id="tl-dr">
 <span id="numerical-stability-en-tldr"></span><h2>まず結論だけ知りたい方へ<a class="headerlink" href="#tl-dr" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -491,16 +489,16 @@
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-left"><p><strong>ゼロ値の扱い</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">log10(0)</span></code> により <code class="docutils literal notranslate"><span class="pre">-inf</span></code> が発生し、図が白く抜ける</p></td>
-<td class="text-left"><p><strong>Safe Log</strong> により最大値から適切なフロアを自動設定</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">log10(0)</span></code> は <code class="docutils literal notranslate"><span class="pre">-inf</span></code> を生成するため、呼び出し側で扱う必要があります</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> は、dB へ変換する前にデータ依存の下限を適用します</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><strong>微小信号</strong></p></td>
-<td class="text-left"><p>固定 <code class="docutils literal notranslate"><span class="pre">eps=1e-12</span></code> 等で丸められ、信号消失</p></td>
-<td class="text-left"><p><strong>適応ホワイトニング</strong> (<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code>) で信号感度を維持</p></td>
+<tr class="row-odd"><td class="text-left"><p><strong>小さい分母</strong></p></td>
+<td class="text-left"><p>固定の <code class="docutils literal notranslate"><span class="pre">eps</span></code> はデータスケールに適さない場合があります</p></td>
+<td class="text-left"><p>ドキュメントに記載した whitening エントリポイントは <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> を受け付けます</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><strong>計算不能点</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">NaN</span></code> が伝播し、全領域が計算不能になる</p></td>
-<td class="text-left"><p>演算前後のバリデーションにより属性を保護</p></td>
+<tr class="row-even"><td class="text-left"><p><strong>非有限の入力</strong></p></td>
+<td class="text-left"><p>数値演算が未定義になる場合があります</p></td>
+<td class="text-left"><p>各 API は、文書化された契約に従って入力を検証または拒否します</p></td>
 </tr>
 </tbody>
 </table>
@@ -519,24 +517,19 @@
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-left"><p><strong>適応ホワイトニング</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">.whiten()</span></code></p></td>
-<td class="text-left"><p>ゼロ除算・信号埋没</p></td>
-<td class="text-left"><p>デフォルトの <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> を推奨</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.whiten_channels()</span></code>、<code class="docutils literal notranslate"><span class="pre">whiten_matrix()</span></code>、<code class="docutils literal notranslate"><span class="pre">gwexpy.signal.preprocessing.whiten()</span></code></p></td>
+<td class="text-left"><p>小さい分母</p></td>
+<td class="text-left"><p>このパラメータをサポートする API では <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> を使用します</p></td>
 </tr>
-<tr class="row-odd"><td class="text-left"><p><strong>Safe Log（安全対数）</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">.plot()</span></code>, <code class="docutils literal notranslate"><span class="pre">.spectrogram()</span></code></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">-inf</span></code> によるプロットの穴</p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">dynamic_range=200</span></code> 等で調整可能</p></td>
+<tr class="row-odd"><td class="text-left"><p><strong>安全な対数変換</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gwexpy.numerics.safe_log_scale()</span></code></p></td>
+<td class="text-left"><p>dB 変換でゼロ値から生じる <code class="docutils literal notranslate"><span class="pre">-inf</span></code></p></td>
+<td class="text-left"><p>目的の表示範囲に合わせて <code class="docutils literal notranslate"><span class="pre">dynamic_range_db</span></code> を設定します</p></td>
 </tr>
-<tr class="row-even"><td class="text-left"><p><strong>内部標準化 (ICA)</strong></p></td>
-<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ica_fit()</span></code></p></td>
-<td class="text-left"><p>振幅依存による不収束</p></td>
-<td class="text-left"><p>入力振幅を気にせず実行可能</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p><strong>相対許容誤差</strong></p></td>
-<td class="text-left"><p>各種数値計算</p></td>
-<td class="text-left"><p>スケール違いによる早期終了</p></td>
-<td class="text-left"><p>データの分散に基づき <code class="docutils literal notranslate"><span class="pre">tol</span></code> を自動計算</p></td>
+<tr class="row-even"><td class="text-left"><p><strong>データスケールに応じた epsilon</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gwexpy.numerics.safe_epsilon()</span></code></p></td>
+<td class="text-left"><p>データスケールから epsilon を選択する</p></td>
+<td class="text-left"><p>既定値が操作に合わない場合は <code class="docutils literal notranslate"><span class="pre">rel_tol</span></code> と <code class="docutils literal notranslate"><span class="pre">abs_tol</span></code> を指定します</p></td>
 </tr>
 </tbody>
 </table>
@@ -578,11 +571,12 @@
 </pre></div>
 </div>
 </section>
-<section id="good-example-automatic-dynamic-floor">
-<h4>✅ 良い例: 自動的な動的フロア適用<a class="headerlink" href="#good-example-automatic-dynamic-floor" title="Link to this heading">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> では、データの最大値から逆算した安全なフロアを自動適用します。</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
-<span class="n">plot</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Safe Log is applied internally for a clean visualization</span>
+<section id="good-example-explicit-safe-log-conversion">
+<h4>✅ 良い例：明示的な安全対数変換<a class="headerlink" href="#good-example-explicit-safe-log-conversion" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> は、有限なデータ最大値と指定したダイナミックレンジから下限を計算し、デシベル値を返します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.numerics</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_log_scale</span>
+
+<span class="n">asd_db</span> <span class="o">=</span> <span class="n">safe_log_scale</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">dynamic_range_db</span><span class="o">=</span><span class="mf">120.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <hr class="docutils" />
@@ -592,9 +586,9 @@
 <section id="recommendations-for-users">
 <span id="numerical-stability-en-recommendations"></span><h2>ユーザーへの推奨事項<a class="headerlink" href="#recommendations-for-users" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><strong>手動オフセットの回避</strong>: プロットの前に <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">+</span> <span class="pre">1e-20</span></code> のような恣意的な値を足す必要はありません。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> が内部で適切に処理します。</p></li>
-<li><p><strong>デフォルトを信頼する</strong>: <code class="docutils literal notranslate"><span class="pre">whiten()</span></code> や <code class="docutils literal notranslate"><span class="pre">ica_fit()</span></code> のデフォルト値は、数値的な安全性を最優先に調整されています。</p></li>
-<li><p><strong>警告を確認する</strong>: 真に不安定な操作（全区間ゼロのデータのホワイトニング等）に対しては、解決策を含む警告が出力されます。</p></li>
+<li><p><strong>dB 変換では明示的な下限を使う</strong>：ゼロ値や静かな領域を含み得るデータを変換するときは、<code class="docutils literal notranslate"><span class="pre">safe_log_scale()</span></code> を呼び出します。</p></li>
+<li><p><strong>whitening パラメータは API 境界で選ぶ</strong>：<code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> は、これを文書化した whitening エントリポイントだけで使用し、科学的用途に照らして結果を確認します。</p></li>
+<li><p><strong>API 契約を確認する</strong>：検証、有限値の扱い、許容誤差は、単一の全体方針ではなく操作ごとに実装されています。</p></li>
 </ul>
 </section>
 <section id="next-to-read">
@@ -666,7 +660,7 @@
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#safe-logarithmic-scaling-safe-log">2. Safe Logarithmic Scaling (Safe Log)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bad-example-numerical-errors-via-manual-conversion">❌ 悪い例: 手動変換による数値エラー</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#good-example-automatic-dynamic-floor">✅ 良い例: 自動的な動的フロア適用</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#good-example-explicit-safe-log-conversion">✅ 良い例：明示的な安全対数変換</a></li>
 </ul>
 </li>
 </ul>

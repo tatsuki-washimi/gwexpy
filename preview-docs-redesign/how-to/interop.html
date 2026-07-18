@@ -600,11 +600,11 @@ Legacy aliases remain supported during the transition, but new examples should p
 <ul class="simple">
 <li><p><a class="reference internal" href="#interop-en-how-to-read">How to Read This Page</a></p></li>
 <li><p><a class="reference internal" href="#interop-en-status-labels">Status Labels</a></p></li>
+<li><p><a class="reference internal" href="#interop-en-foundation-layer">S. Foundation Layer</a></p></li>
 <li><p><a class="reference internal" href="#interop-en-storage-conversion">A. Storage Formats and Container Conversion</a></p></li>
 <li><p><a class="reference internal" href="#interop-en-analysis-conversion">B. Analysis Library and Object Conversion</a></p></li>
-<li><p><a class="reference internal" href="#interop-en-ml-conversion">C. Machine Learning, Acceleration, and Array Backends</a></p></li>
+<li><p><a class="reference internal" href="#interop-en-ml-conversion">C. Scientific Computing, Machine Learning, and Array Backends</a></p></li>
 <li><p><a class="reference internal" href="#interop-en-domain-conversion">D. Physics and Domain-Specific Libraries</a></p></li>
-<li><p><a class="reference internal" href="#interop-en-priorities">What to Prioritize First</a></p></li>
 </ul>
 </section>
 <section id="how-to-read-this-page">
@@ -616,6 +616,37 @@ Legacy aliases remain supported during the transition, but new examples should p
 <li><p>If you want to connect to <strong>ROOT, ObsPy, LAL, PyCBC</strong>, or other domain-specific libraries, start with D.</p></li>
 <li><p>If you want to move <strong>Field</strong> objects into xarray, NetCDF4, or Zarr workflows via <code class="docutils literal notranslate"><span class="pre">to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">from_*()</span></code>, treat that as interop, not as direct I/O.</p></li>
 </ul>
+</section>
+<section id="s-foundation-layer">
+<span id="interop-en-foundation-layer"></span><h2>S. Foundation Layer<a class="headerlink" href="#s-foundation-layer" title="Link to this heading">#</a></h2>
+<p>This layer names the libraries that provide the numerical and gravitational-wave context for the rest of the page. It is not a ranking by usage statistics.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Library</p></th>
+<th class="head"><p>Role in the GWexpy ecosystem</p></th>
+<th class="head"><p>Interop note</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://gwpy.github.io/">GWpy</a></p></td>
+<td><p>Base time-series and frequency-series ecosystem</p></td>
+<td><p>GWexpy extends its object model rather than treating it as an optional conversion target.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/">NumPy</a> / <a class="reference external" href="https://scipy.org/">SciPy</a></p></td>
+<td><p>Array representation and numerical routines</p></td>
+<td><p>Foundation for many public APIs; no dedicated round-trip row is implied.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.astropy.org/">Astropy</a></p></td>
+<td><p>Units, time, and astronomy-oriented object conventions</p></td>
+<td><p>The explicit <code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries()</span></code> and <code class="docutils literal notranslate"><span class="pre">from_astropy_timeseries()</span></code> bridge is listed in B.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/">LALSuite</a></p></td>
+<td><p>Gravitational-wave time and frequency series conventions</p></td>
+<td><p>The explicit LAL conversion APIs are listed in D.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="status-labels">
 <span id="interop-en-status-labels"></span><h2>Status Labels<a class="headerlink" href="#status-labels" title="Link to this heading">#</a></h2>
@@ -811,8 +842,8 @@ Use it when the question is “which analysis-library object do I bridge to?”<
 </table>
 </div>
 </section>
-<section id="c-machine-learning-acceleration-and-array-backends">
-<span id="interop-en-ml-conversion"></span><h2>C. Machine Learning, Acceleration, and Array Backends<a class="headerlink" href="#c-machine-learning-acceleration-and-array-backends" title="Link to this heading">#</a></h2>
+<section id="c-scientific-computing-machine-learning-and-array-backends">
+<span id="interop-en-ml-conversion"></span><h2>C. Scientific Computing, Machine Learning, and Array Backends<a class="headerlink" href="#c-scientific-computing-machine-learning-and-array-backends" title="Link to this heading">#</a></h2>
 <p>This section is for accelerated computing and ML-oriented bridges.<br />
 Check whether only the array payload moves, or whether metadata can also be reconstructed.</p>
 <ul class="simple">
@@ -860,6 +891,18 @@ Check whether only the array payload moves, or whether metadata can also be reco
 <td><p>GPU array conversion</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.cupy_.html"><span class="doc std std-doc">API</span></a></p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://librosa.org/doc/latest/index.html">librosa</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_librosa()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>audio-feature export; it sits between analysis objects and ML workflows, and is grouped here primarily for the latter</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.pydub_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://pyroomacoustics.readthedocs.io/en/stable/">pyroomacoustics</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">to_pyroomacoustics_source()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pyroomacoustics_stft()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_rir()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_mic_signals()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_source()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_stft()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_field()</span></code></p></td>
+<td><p>Public</p></td>
+<td><p>room-acoustics simulation and array-processing workflows</p></td>
+<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.pyroomacoustics_.html"><span class="doc std std-doc">API</span></a></p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -867,7 +910,7 @@ Check whether only the array payload moves, or whether metadata can also be reco
 <section id="d-physics-and-domain-specific-libraries">
 <span id="interop-en-domain-conversion"></span><h2>D. Physics and Domain-Specific Libraries<a class="headerlink" href="#d-physics-and-domain-specific-libraries" title="Link to this heading">#</a></h2>
 <p>This section is for domain-specific libraries and specialized objects.<br />
-Read the status carefully: some targets are full round-trips, some are mainly import paths, and some are still being organized publicly.</p>
+Read the status carefully: some targets are full round-trips, some are mainly import paths, and some are still being organized publicly. The material-science and life-science entries are not lower-value domains: they provide routes for future method transfer and for research such as material thermal-noise studies.</p>
 <ul class="simple">
 <li><p>Purpose: find bridges into domain-specific tools without confusing them with direct file I/O</p></li>
 <li><p>Input: a <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> object or a domain-library object such as ObsPy, ROOT, LAL, or PyCBC</p></li>
@@ -967,22 +1010,10 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 <td><p>quantity bridge</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.quantities_.html"><span class="doc std std-doc">API</span></a></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://pyroomacoustics.readthedocs.io/en/stable/">pyroomacoustics</a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">to_pyroomacoustics_source()</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pyroomacoustics_stft()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_rir()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_mic_signals()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_source()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_stft()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pyroomacoustics_field()</span></code></p></td>
-<td><p>Public</p></td>
-<td><p>room acoustics</p></td>
-<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.pyroomacoustics_.html"><span class="doc std std-doc">API</span></a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://www.pydub.com/">pydub</a></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.pydub.com/">pydub</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">to_pydub()</span></code>, <code class="docutils literal notranslate"><span class="pre">from_pydub()</span></code></p></td>
 <td><p>Public</p></td>
 <td><p>audio object bridge</p></td>
-<td><p><a class="reference internal" href="../reference/api/gwexpy.interop.pydub_.html"><span class="doc std std-doc">API</span></a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://librosa.org/doc/latest/index.html">librosa</a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">to_librosa()</span></code></p></td>
-<td><p>Public</p></td>
-<td><p>mainly export</p></td>
 <td><p><a class="reference internal" href="../reference/api/gwexpy.interop.pydub_.html"><span class="doc std std-doc">API</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://specutils.readthedocs.io/en/stable/">specutils</a></p></td>
@@ -1097,18 +1128,6 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 </table>
 </div>
 </section>
-<section id="what-to-prioritize-first">
-<span id="interop-en-priorities"></span><h2>What to Prioritize First<a class="headerlink" href="#what-to-prioritize-first" title="Link to this heading">#</a></h2>
-<p>The following targets are especially important because they sit close to the direct-I/O boundary or because they are high-value public entry points:</p>
-<ul class="simple">
-<li><p><strong>ROOT</strong>: <code class="docutils literal notranslate"><span class="pre">io_formats</span></code> keeps only EventTable direct I/O; ROOT object conversion belongs here</p></li>
-<li><p><strong>xarray / Field</strong>: the main route for ScalarField / VectorField bridges</p></li>
-<li><p><strong>Zarr</strong>: easy to confuse with direct I/O, so the boundary matters</p></li>
-<li><p><strong>NetCDF4</strong>: needs a clean line between direct I/O and xarray-backed workflows</p></li>
-<li><p><strong>ObsPy</strong>: common and easy-to-understand round-trip examples</p></li>
-<li><p><strong>pandas / polars / astropy</strong>: frequent analysis entry points</p></li>
-</ul>
-</section>
 <section id="related-pages">
 <h2>Related Pages<a class="headerlink" href="#related-pages" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -1179,13 +1198,13 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-i-o-names">Direct I/O Names</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jump-links">Jump Links</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-read-this-page">How to Read This Page</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#s-foundation-layer">S. Foundation Layer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#status-labels">Status Labels</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependency-policy">Optional Dependency Policy</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-storage-formats-and-container-conversion">A. Storage Formats and Container Conversion</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b-analysis-library-and-object-conversion">B. Analysis Library and Object Conversion</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-machine-learning-acceleration-and-array-backends">C. Machine Learning, Acceleration, and Array Backends</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-scientific-computing-machine-learning-and-array-backends">C. Scientific Computing, Machine Learning, and Array Backends</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-physics-and-domain-specific-libraries">D. Physics and Domain-Specific Libraries</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-prioritize-first">What to Prioritize First</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#related-pages">Related Pages</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-to-read">Next to Read</a></li>
 </ul>

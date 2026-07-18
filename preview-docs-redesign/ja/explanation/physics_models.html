@@ -533,7 +533,7 @@
 <h2>高度な解析エンジンとアルゴリズム<a class="headerlink" href="#advanced-analysis-engines-and-algorithms" title="Link to this heading">#</a></h2>
 <section id="independent-and-principal-component-analysis-ica-pca">
 <h3>1. Independent and Principal Component Analysis (ICA/PCA)<a class="headerlink" href="#independent-and-principal-component-analysis-ica-pca" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の ICA/PCA 実装は、物理データの特性に合わせて以下の最適化を行っています。</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の ICA/PCA 実装は、物理データのワークフローを想定した前処理とメタデータの扱いを提供します。</p>
 <ul class="simple">
 <li><p><strong>単位分散標準化</strong>: アルゴリズムの収束性を高めるため、内部でデータを単位分散に標準化し、演算後に元の物理スケールを復元（再スケーリング）します。</p></li>
 <li><p><strong>時空メタデータの継承</strong>: 統計的に抽出された各成分に対し、入力データが保持していた GPS 時刻規約を自動的に継承させます。</p></li>
@@ -542,7 +542,7 @@
 </section>
 <section id="fast-correlation-engine-term-bruco">
 <h3>2. Fast Correlation Engine (:term:<code class="docutils literal notranslate"><span class="pre">Bruco</span></code>)<a class="headerlink" href="#fast-correlation-engine-term-bruco" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code> は、数千の補助チャネルからターゲット信号への寄与を高速にスキャンするために設計されています。</p>
+<p><code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code> は、ターゲット信号に対する補助チャネルのコヒーレンスをバッチで走査できます。</p>
 <ul class="simple">
 <li><p><strong>FFT キャッシング</strong>: 共通のターゲット信号に対する FFT 計算結果をメモリ内で再利用。</p></li>
 <li><p><strong>疎行列演算</strong>: 相関のないチャネルを早期にスキップし、計算リソースを重要チャネルに集中させます。</p></li>

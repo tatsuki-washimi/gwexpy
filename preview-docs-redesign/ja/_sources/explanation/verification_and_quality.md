@@ -30,14 +30,18 @@ Different parts of the project are verified in different ways. The extended veri
 
 The public notebook policy is defined in the repository's [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md).
 
+The legacy notebook policy and the redesigned website have separate build paths.
+
+- The legacy documentation tree follows the repository Notebook Policy: its `Light`, `Heavy`, and `Display-only` classes describe the older notebook-validation regime, including its Papermill and nbval checks.
+- The redesigned website builds EN and JA HTML from an isolated temporary copy. MyST-NB executes clean notebook sources through its build cache when an execution result is needed; the cache and rendered outputs are publish artifacts, not changes to tracked `.ipynb` files.
+- The redesigned-site PR, preview, and production workflows use that same isolated build path. They are distinct from the legacy-docs checks in the general Docs PR workflow.
+
 The current public model is:
 
 - The public [extended verification workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml) runs cross-platform import smoke tests and the `io-network-backend`, `docs-notebook`, and `io-zarr` gates; it is intentionally scoped to these checks and does not run docstring doctests.
-- **Light** notebooks are classified for full execution and validation in CI through `papermill`.
-- **Heavy** notebooks are kept in CI, but the policy describes them as `nbval --nbval-lax` checks rather than guaranteed full execution.
-- **Display-only** notebooks prioritize curated outputs and are outside normal execution validation, or limited to load-style checks.
-- The public [docs PR workflow](https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml) also executes changed notebooks with `papermill` before building Sphinx HTML.
-- Public tutorial notebooks under `docs/web/{en,ja}/user_guide/tutorials/` are treated as the authoritative published copies.
+- **Light**, **Heavy**, and **Display-only** describe the legacy policy. Consult that policy before inferring the execution status of a legacy notebook.
+- The redesigned website is validated by its EN and JA Sphinx builds from an isolated temporary copy. Its rendered notebook outputs are produced by the MyST-NB cache and are not committed to Git.
+- The on-demand extended verification workflow remains a separate, targeted check; it does not make every documentation example a release gate.
 
 This is why a notebook or docstring example being present in the docs is a useful signal, but not enough on its own to infer that every published sample is executed in every PR, nightly, and release path.
 
@@ -47,11 +51,11 @@ The current public evidence supports a narrower statement than "all sample code 
 
 - The extended verification workflow shows that `gwexpy` runs automated import smoke tests on three platforms plus targeted I/O and docs-notebook gates when the workflow is triggered.
 - The [Notebook Policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md) shows that notebook handling is class-dependent: `Light` notebooks are executed with `papermill`, while `Heavy` notebooks are checked with `nbval --nbval-lax`.
-- The docs PR workflow shows that notebooks changed in docs pull requests are executed with `papermill` before the docs build.
+- The redesigned-site build executes notebook sources only in its isolated temporary copy and retains the results in the MyST-NB cache.
 
 Read those signals carefully:
 
-- They show that public examples are not unmanaged; some are exercised automatically in CI today.
+- They show that public examples are not unmanaged; the redesigned-site build and the legacy notebook policy exercise different scopes.
 - They do **not** mean every published code block is executed in every workflow.
 - They do **not** mean Doctest or notebook coverage is a single release-blocking gate for the whole documentation set.
 - They do **not** remove the need to check notebook class, optional dependencies, and workflow scope before treating an example as strongly guaranteed.

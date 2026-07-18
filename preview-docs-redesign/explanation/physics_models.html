@@ -532,7 +532,7 @@
 <h2>Advanced Analysis Engines and Algorithms<a class="headerlink" href="#advanced-analysis-engines-and-algorithms" title="Link to this heading">#</a></h2>
 <section id="independent-and-principal-component-analysis-ica-pca">
 <h3>1. Independent and Principal Component Analysis (ICA/PCA)<a class="headerlink" href="#independent-and-principal-component-analysis-ica-pca" title="Link to this heading">#</a></h3>
-<p>The ICA/PCA implementation in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> is optimized for physical data characteristics:</p>
+<p>The ICA/PCA implementation in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides preprocessing and metadata behavior intended for physical-data workflows:</p>
 <ul class="simple">
 <li><p><strong>Unit Variance Standardization</strong>: Standardizes data to unit variance internally to improve convergence, then restores (re-scales) the original physical scale after computation.</p></li>
 <li><p><strong>Spatio-temporal Metadata Inheritance</strong>: Automatically inherits the GPS time conventions from the input data for each statistically extracted component.</p></li>
@@ -541,7 +541,7 @@
 </section>
 <section id="fast-correlation-engine-term-bruco">
 <h3>2. Fast Correlation Engine (:term:<code class="docutils literal notranslate"><span class="pre">Bruco</span></code>)<a class="headerlink" href="#fast-correlation-engine-term-bruco" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code> scans thousands of auxiliary channels for contributions to a target signal with extreme speed.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code> supports batch coherence scans over auxiliary channels for a target signal.</p>
 <ul class="simple">
 <li><p><strong>FFT Caching</strong>: Reuses FFT results for a common target signal in memory.</p></li>
 <li><p><strong>Sparse-like Computation</strong>: Skips non-correlated channels early to focus resources on significant contributors.</p></li>

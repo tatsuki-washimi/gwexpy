@@ -50,7 +50,7 @@ Generates peak shapes found in atomic physics or high-Q mechanical resonances, w
 
 ### 1. Independent and Principal Component Analysis (ICA/PCA)
 
-The ICA/PCA implementation in `gwexpy` is optimized for physical data characteristics:
+The ICA/PCA implementation in `gwexpy` provides preprocessing and metadata behavior intended for physical-data workflows:
 
 - **Unit Variance Standardization**: Standardizes data to unit variance internally to improve convergence, then restores (re-scales) the original physical scale after computation.
 - **Spatio-temporal Metadata Inheritance**: Automatically inherits the GPS time conventions from the input data for each statistically extracted component.
@@ -59,7 +59,7 @@ The ICA/PCA implementation in `gwexpy` is optimized for physical data characteri
 
 ### 2. Fast Correlation Engine (:term:`Bruco`)
 
-The `FastCoherenceEngine` scans thousands of auxiliary channels for contributions to a target signal with extreme speed.
+The `FastCoherenceEngine` supports batch coherence scans over auxiliary channels for a target signal.
 
 - **FFT Caching**: Reuses FFT results for a common target signal in memory.
 - **Sparse-like Computation**: Skips non-correlated channels early to focus resources on significant contributors.

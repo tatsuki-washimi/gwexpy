@@ -35,7 +35,7 @@ API entry: [matrix API](../reference/api/matrix), [timeseries API](../reference/
 **Output:** A field object whose grid and axis metadata remain synchronized after selection operations.
 
 `ScalarField` adopts a 4D structure as its base unit: axis 0 is the **time axis** (or the **frequency axis** after `fft_time()`), and axes 1–3 are the **spatial axes** `x, y, z` (mapped to wavenumbers `kx, ky, kz` by `fft_space()`) — for example `(t, x, y, z)`, `(f, x, y, z)`, or `(f, kx, ky, kz)`.
-By **maintaining all 4 dimensions** during indexing operations, the package ensures that grid information and axis metadata remain perfectly synchronized with the data.
+By maintaining all 4 dimensions during indexing operations, the Field APIs are designed to preserve grid information and axis metadata with the data.
 
 API entry: [fields API](../reference/api/fields), [Scalar Field Slicing Guide](../how-to/containers/scalarfield_slicing.md)
 

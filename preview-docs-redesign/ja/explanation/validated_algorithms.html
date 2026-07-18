@@ -474,13 +474,13 @@
 <p><strong>高度な検証・理論ページです</strong></p>
 <p>このページは、機能ドキュメントから辿れるようあえてユーザーガイド配下に置いていますが、オンボーディング用のページではありません。API リファレンス・理論ノート・個別チュートリアルを横断して監査目的で読むための、上級者・理論向けの入口として扱ってください。初めて使う際の案内は、<a class="reference internal" href="../tutorials/getting_started.html"><span class="std std-doc">はじめに</span></a>、<a class="reference internal" href="prerequisites_and_conventions.html"><span class="std std-doc">前提条件と規約</span></a>、または各手法のチュートリアルから始めてください。</p>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> で使用されている主要な数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。</p>
+<p>このページで扱うアルゴリズムには、公開された実装テスト、理論参照、または監査記録があります。これらの根拠は別種であり、対象範囲は以下の各アルゴリズムで示します。</p>
 <section id="validation-criteria-and-numerical-precision">
 <span id="validated-algorithms-validation-criteria"></span><h2>検証の基準と計算精度 (Validation &amp; Precision)<a class="headerlink" href="#validation-criteria-and-numerical-precision" title="Link to this heading">#</a></h2>
-<p>「検証済み」と表記されるアルゴリズムは、以下の基準に基づき、指定の精度（Tolerance）を達成しています。</p>
+<p>このページで扱うアルゴリズムは、それぞれの節に記録した根拠に対して評価されます。</p>
 <ul class="simple">
-<li><p><strong>一致率 (Tolerance)</strong>: <span class="math notranslate nohighlight">\(10^{-12}\)</span> (相対誤差) を原則的なパス基準としています。これは倍精度浮動小数点演算において、丸め誤差以外の有意なロジック差異がないことを示します。</p></li>
-<li><p><strong>物理的不変性 (Invariance)</strong>: スケール変換（データの 1000 倍など）をしても結果が整合する「Scale Invariance」を全アルゴリズムで検証しています。</p></li>
+<li><p><strong>許容誤差</strong>：数値許容誤差はアルゴリズムとテストごとに異なります。利用可能な場合、該当するテストまたは監査項目に比較内容と合格条件を示します。</p></li>
+<li><p><strong>不変性</strong>：スケール不変性の確認は、その確認を根拠として明示したアルゴリズムだけに適用されます。パッケージ全体の保証ではありません。</p></li>
 </ul>
 </section>
 <section id="objective-evidence">

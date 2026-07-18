@@ -502,14 +502,18 @@
 <section id="notebook-validation-policy">
 <h2>Notebook の検証方針<a class="headerlink" href="#notebook-validation-policy" title="Link to this heading">#</a></h2>
 <p>公開 notebook の扱いは、リポジトリ内の <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md">Notebook Policy</a> に基づきます。</p>
+<p>旧ドキュメントの Notebook 方針と、刷新後 Web サイトのビルド経路は分かれています。</p>
+<ul class="simple">
+<li><p>旧ドキュメントツリーはリポジトリの Notebook Policy に従います。<code class="docutils literal notranslate"><span class="pre">Light</span></code>、<code class="docutils literal notranslate"><span class="pre">Heavy</span></code>、<code class="docutils literal notranslate"><span class="pre">Display-only</span></code> の分類は、Papermill と nbval の確認を含む従来の Notebook 検証制度を示します。</p></li>
+<li><p>刷新後 Web サイトは、隔離した一時コピーから EN と JA の HTML をビルドします。実行結果が必要な場合、MyST-NB はクリーンな Notebook ソースをビルドキャッシュで実行します。キャッシュとレンダリング済み出力は公開用アーティファクトであり、追跡対象の <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> ファイルを変更しません。</p></li>
+<li><p>刷新後サイトの PR、プレビュー、production のワークフローは、同じ隔離ビルド経路を使用します。これらは一般の Docs PR ワークフローにある旧ドキュメントの検査とは別です。</p></li>
+</ul>
 <p>現時点の公開方針は次のとおりです。</p>
 <ul class="simple">
 <li><p>公開されている <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml">extended verification workflow</a> は、クロスプラットフォームのインポートスモークテストと <code class="docutils literal notranslate"><span class="pre">io-network-backend</span></code>・<code class="docutils literal notranslate"><span class="pre">docs-notebook</span></code>・<code class="docutils literal notranslate"><span class="pre">io-zarr</span></code> ゲートを実行します。意図的にこれらのチェックへ範囲を絞っており、docstring の doctest は実行しません。</p></li>
-<li><p><strong>Light</strong> notebook は、Notebook Policy 上では CI で <code class="docutils literal notranslate"><span class="pre">papermill</span></code> により全実行される想定です。</p></li>
-<li><p><strong>Heavy</strong> notebook は CI 対象ではありますが、全セル実行を常に保証するものではなく、<code class="docutils literal notranslate"><span class="pre">nbval</span> <span class="pre">--nbval-lax</span></code> による確認に寄せて扱われます。</p></li>
-<li><p><strong>Display-only</strong> notebook は整えた出力の保持を重視しており、「CI で毎回全実行される notebook」と同義ではありません。</p></li>
-<li><p>公開されている <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml">docs PR workflow</a> では、docs Pull Request で変更された notebook に対して <code class="docutils literal notranslate"><span class="pre">papermill</span></code> が実行されます。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">docs/web/{en,ja}/user_guide/tutorials/</span></code> 配下の公開チュートリアル notebook が、正式な公開版として扱われます。</p></li>
+<li><p><strong>Light</strong>、<strong>Heavy</strong>、<strong>Display-only</strong> は旧方針の分類です。旧 Notebook の実行状況を判断する前に、その方針を確認してください。</p></li>
+<li><p>刷新後 Web サイトは、隔離した一時コピーから行う EN と JA の Sphinx ビルドで検証されます。レンダリング済み Notebook 出力は MyST-NB キャッシュで生成され、Git にはコミットされません。</p></li>
+<li><p>手動実行の extended verification ワークフローは、対象を絞った独立の検査です。すべてのドキュメント例をリリースゲートにするものではありません。</p></li>
 </ul>
 <p>したがって、「公開 docs に notebook や例がある」こと自体は有益なシグナルですが、それだけで「あらゆる PR / Nightly / release 経路で毎回一律に実行・保証される」とまでは読まない方が安全です。</p>
 </section>
@@ -519,11 +523,11 @@
 <ul class="simple">
 <li><p>extended verification workflow が示すように、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> はワークフロー実行時に、3 つのプラットフォームでのインポートスモークテストに加え、I/O と docs ノートブックのゲートを自動実行します。</p></li>
 <li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md">Notebook Policy</a> が示すように、notebook の扱いは分類依存で、<code class="docutils literal notranslate"><span class="pre">Light</span></code> は <code class="docutils literal notranslate"><span class="pre">papermill</span></code> で実行、<code class="docutils literal notranslate"><span class="pre">Heavy</span></code> は <code class="docutils literal notranslate"><span class="pre">nbval</span> <span class="pre">--nbval-lax</span></code> で確認されます。</p></li>
-<li><p>docs PR workflow では、docs PR で変更された notebook に対して <code class="docutils literal notranslate"><span class="pre">papermill</span></code> が実行されます。</p></li>
+<li><p>刷新後サイトのビルドは、隔離した一時コピー内でのみ Notebook ソースを実行し、結果を MyST-NB キャッシュに保持します。</p></li>
 </ul>
 <p>このシグナルは次のように読んでください。</p>
 <ul class="simple">
-<li><p>公開例が完全に放置されているわけではなく、現在も自動検証の経路があります。</p></li>
+<li><p>公開例が管理されていないわけではありません。刷新後サイトのビルドと旧 Notebook 方針は、異なる範囲を検証します。</p></li>
 <li><p>ただし、すべての公開コード片が、すべての workflow で毎回実行されることを意味しません。</p></li>
 <li><p>Doctest や notebook 検証が、ドキュメント全体に対する単一の release-blocking gate だという意味でもありません。</p></li>
 <li><p>強い保証として読む前に、notebook の分類、optional dependency、どの workflow がその対象を見ているかを確認する必要があります。</p></li>

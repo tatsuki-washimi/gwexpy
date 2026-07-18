@@ -501,14 +501,18 @@
 <section id="notebook-validation-policy">
 <h2>Notebook Validation Policy<a class="headerlink" href="#notebook-validation-policy" title="Link to this heading">#</a></h2>
 <p>The public notebook policy is defined in the repository’s <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md">Notebook Policy</a>.</p>
+<p>The legacy notebook policy and the redesigned website have separate build paths.</p>
+<ul class="simple">
+<li><p>The legacy documentation tree follows the repository Notebook Policy: its <code class="docutils literal notranslate"><span class="pre">Light</span></code>, <code class="docutils literal notranslate"><span class="pre">Heavy</span></code>, and <code class="docutils literal notranslate"><span class="pre">Display-only</span></code> classes describe the older notebook-validation regime, including its Papermill and nbval checks.</p></li>
+<li><p>The redesigned website builds EN and JA HTML from an isolated temporary copy. MyST-NB executes clean notebook sources through its build cache when an execution result is needed; the cache and rendered outputs are publish artifacts, not changes to tracked <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> files.</p></li>
+<li><p>The redesigned-site PR, preview, and production workflows use that same isolated build path. They are distinct from the legacy-docs checks in the general Docs PR workflow.</p></li>
+</ul>
 <p>The current public model is:</p>
 <ul class="simple">
 <li><p>The public <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/extended-verification.yml">extended verification workflow</a> runs cross-platform import smoke tests and the <code class="docutils literal notranslate"><span class="pre">io-network-backend</span></code>, <code class="docutils literal notranslate"><span class="pre">docs-notebook</span></code>, and <code class="docutils literal notranslate"><span class="pre">io-zarr</span></code> gates; it is intentionally scoped to these checks and does not run docstring doctests.</p></li>
-<li><p><strong>Light</strong> notebooks are classified for full execution and validation in CI through <code class="docutils literal notranslate"><span class="pre">papermill</span></code>.</p></li>
-<li><p><strong>Heavy</strong> notebooks are kept in CI, but the policy describes them as <code class="docutils literal notranslate"><span class="pre">nbval</span> <span class="pre">--nbval-lax</span></code> checks rather than guaranteed full execution.</p></li>
-<li><p><strong>Display-only</strong> notebooks prioritize curated outputs and are outside normal execution validation, or limited to load-style checks.</p></li>
-<li><p>The public <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/.github/workflows/docs-pr.yml">docs PR workflow</a> also executes changed notebooks with <code class="docutils literal notranslate"><span class="pre">papermill</span></code> before building Sphinx HTML.</p></li>
-<li><p>Public tutorial notebooks under <code class="docutils literal notranslate"><span class="pre">docs/web/{en,ja}/user_guide/tutorials/</span></code> are treated as the authoritative published copies.</p></li>
+<li><p><strong>Light</strong>, <strong>Heavy</strong>, and <strong>Display-only</strong> describe the legacy policy. Consult that policy before inferring the execution status of a legacy notebook.</p></li>
+<li><p>The redesigned website is validated by its EN and JA Sphinx builds from an isolated temporary copy. Its rendered notebook outputs are produced by the MyST-NB cache and are not committed to Git.</p></li>
+<li><p>The on-demand extended verification workflow remains a separate, targeted check; it does not make every documentation example a release gate.</p></li>
 </ul>
 <p>This is why a notebook or docstring example being present in the docs is a useful signal, but not enough on its own to infer that every published sample is executed in every PR, nightly, and release path.</p>
 </section>
@@ -518,11 +522,11 @@
 <ul class="simple">
 <li><p>The extended verification workflow shows that <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> runs automated import smoke tests on three platforms plus targeted I/O and docs-notebook gates when the workflow is triggered.</p></li>
 <li><p>The <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/NOTEBOOK_POLICY.md">Notebook Policy</a> shows that notebook handling is class-dependent: <code class="docutils literal notranslate"><span class="pre">Light</span></code> notebooks are executed with <code class="docutils literal notranslate"><span class="pre">papermill</span></code>, while <code class="docutils literal notranslate"><span class="pre">Heavy</span></code> notebooks are checked with <code class="docutils literal notranslate"><span class="pre">nbval</span> <span class="pre">--nbval-lax</span></code>.</p></li>
-<li><p>The docs PR workflow shows that notebooks changed in docs pull requests are executed with <code class="docutils literal notranslate"><span class="pre">papermill</span></code> before the docs build.</p></li>
+<li><p>The redesigned-site build executes notebook sources only in its isolated temporary copy and retains the results in the MyST-NB cache.</p></li>
 </ul>
 <p>Read those signals carefully:</p>
 <ul class="simple">
-<li><p>They show that public examples are not unmanaged; some are exercised automatically in CI today.</p></li>
+<li><p>They show that public examples are not unmanaged; the redesigned-site build and the legacy notebook policy exercise different scopes.</p></li>
 <li><p>They do <strong>not</strong> mean every published code block is executed in every workflow.</p></li>
 <li><p>They do <strong>not</strong> mean Doctest or notebook coverage is a single release-blocking gate for the whole documentation set.</p></li>
 <li><p>They do <strong>not</strong> remove the need to check notebook class, optional dependencies, and workflow scope before treating an example as strongly guaranteed.</p></li>
