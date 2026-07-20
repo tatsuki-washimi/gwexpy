@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Behaviour-visible bug fixes
+
+- **statistics**: `compute_student_t_nu()` / `TimeSeries.student_t_spectrogram()`
+  now return a GPS time axis (the input `TimeSeries`'s `t0` plus the STFT
+  relative time) instead of relative-to-start seconds. `fftlength`, `stride`
+  (and `overlap`), `sample_rate`, `window`, and `frange` are now validated:
+  non-finite/non-positive values raise `ValueError` instead of an opaque
+  downstream failure, and `stride > fftlength` now raises `ValueError`
+  explicitly rather than silently running a gapped analysis that skips
+  samples between segments (`scipy.signal.stft` accepts a negative
+  `noverlap` without erroring). The underlying `scipy.signal.stft` call now
+  passes `window="hann", detrend=False, boundary="zeros", padded=True`
+  explicitly instead of relying on scipy's defaults. Partially addresses
+  #465 (DC/Nyquist bin bias is tracked separately).
+
 ## [0.1.10] - 2026-07-18
 
 This is a bugfix release covering numerical regularization, axis regularity,
