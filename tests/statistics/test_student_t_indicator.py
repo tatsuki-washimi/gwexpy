@@ -1,11 +1,14 @@
-"""Tests for gwexpy.statistics.student_t_indicator (#465 part 1: GPS time
-axis reconstruction and input validation).
+"""Tests for gwexpy.statistics.student_t_indicator (#465: GPS time axis
+reconstruction, input validation, and DC/Nyquist bin fit bias).
 """
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import numpy as np
 import pytest
+from scipy import stats
 
 from gwexpy.statistics.student_t_indicator import compute_student_t_nu
 from gwexpy.timeseries import TimeSeries
@@ -116,3 +119,120 @@ class TestInputValidation:
             overlap=None, frange=(1.0, 10.0),
         )
         assert res.value.size > 0
+
+    def test_complex_input_raises(self):
+        ts = TimeSeries(
+            np.random.default_rng(0).standard_normal(512).astype(complex),
+            sample_rate=32, t0=0,
+        )
+        with pytest.raises(ValueError, match="real-valued"):
+            compute_student_t_nu(ts, fftlength=_FFTLENGTH, window=_WINDOW)
+
+
+class TestDcNyquistRealOnlyFit:
+    """#465: DC/Nyquist bins of a real input are purely real, so their fit
+    must use only ``window`` real samples, not ``2 * window`` re+im
+    samples -- identified by frequency value, not bin index.
+    """
+
+    def _fit_sample_lengths(self, ts, **kwargs):
+        """Run compute_student_t_nu with stats.t.fit patched to record the
+        length of the samples array passed for each (i, j) call, in the
+        deterministic i-then-j iteration order used by the implementation.
+        """
+        lengths = []
+        orig_fit = stats.t.fit
+
+        def fake_fit(samples):
+            lengths.append(len(samples))
+            return orig_fit(samples)
+
+        with patch.object(stats.t, "fit", side_effect=fake_fit):
+            res = compute_student_t_nu(ts, **kwargs)
+        return res, lengths
+
+    def test_even_nfft_dc_and_nyquist_use_window_samples(self):
+        # fs=16, fftlength=0.5 -> nfft=8 (even) -> f = [0, 2, 4, 6, 8] Hz;
+        # Nyquist (8 Hz) is an exact bin. window=9 -> n_times=9 -> n_out=1,
+        # so the 5 stats.t.fit calls correspond 1:1 to f[0..4] in order.
+        ts = TimeSeries(
+            np.random.default_rng(0).standard_normal(64), sample_rate=16, t0=0
+        )
+        res, lengths = self._fit_sample_lengths(ts, fftlength=0.5, window=9)
+        np.testing.assert_allclose(res.frequencies.value, [0, 2, 4, 6, 8])
+        assert lengths == [9, 18, 18, 18, 9]
+
+    def test_odd_nfft_top_bin_is_not_nyquist_and_stays_two_sided(self):
+        # fs=16, fftlength=7/16 -> nfft=7 (odd) -> no exact Nyquist bin;
+        # f = [0, 2.286, 4.571, 6.857] Hz, none equal to fs/2=8. window=10
+        # -> n_times=10 -> n_out=1, so the 4 calls map 1:1 to f[0..3].
+        ts = TimeSeries(
+            np.random.default_rng(0).standard_normal(64), sample_rate=16, t0=0
+        )
+        res, lengths = self._fit_sample_lengths(ts, fftlength=7 / 16, window=10)
+        assert len(res.frequencies.value) == 4
+        assert not np.isclose(res.frequencies.value[-1], 8.0)
+        # DC (index 0) is real-only; the rest (including the odd-nfft top
+        # bin, which is not Nyquist) stay two-sided.
+        assert lengths == [10, 20, 20, 20]
+
+    def test_frange_excluding_dc_and_nyquist_keeps_bins_two_sided(self):
+        # Same even-nfft setup as above, but frange excludes both f=0 and
+        # f=8 -- the remaining bins must not be real-only-fitted.
+        ts = TimeSeries(
+            np.random.default_rng(0).standard_normal(64), sample_rate=16, t0=0
+        )
+        res, lengths = self._fit_sample_lengths(
+            ts, fftlength=0.5, window=9, frange=(1.0, 7.0)
+        )
+        np.testing.assert_allclose(res.frequencies.value, [2, 4, 6])
+        assert lengths == [18, 18, 18]
+
+
+class TestDcNyquistNumericRegression:
+    """#465: numeric regression pinning the DC-bin fix.
+
+    Provenance (recorded per the v0.1.11 plan's review-before-merge gate):
+    seed=12345, scipy==1.17.1, sample_rate=64 Hz, fftlength=0.25s, window=30,
+    non-overlapping stride (stride=fftlength), signal length=5314 samples,
+    bins evaluated: DC (f=0 Hz) vs one AC bin (f=4 Hz), over ~305 independent
+    fit windows (frange=(0, 5) keeps the loop to 2 frequency bins).
+
+    Before the DC real-only fix (re+im concatenated at DC too):
+      median(nu_dc)=0.308, frac(nu_dc<10)=1.000 vs median(nu_ac)=4.47e8,
+      frac(nu_ac<10)=0.075 -> log10 diff=9.16, frac diff=0.925 (both fail).
+    After the fix: median(nu_dc)=3.02e9, frac(nu_dc<10)=0.157 vs
+      median(nu_ac)=4.47e8, frac(nu_ac<10)=0.075 -> log10 diff=0.83,
+      frac diff=0.082 (both comfortably pass the thresholds below).
+
+    Contrast-based, not per-bin absolute pins, since stats.t.fit's nu is
+    itself heavy-tailed even for pure Gaussian input (see #465 plan notes).
+    """
+
+    def test_dc_bin_matches_ac_bin_order_of_magnitude(self):
+        fs = 64.0
+        fftlength = 0.25
+        window = 30
+        nstep = int(fftlength * fs)
+        n_out_target = 300
+        n_times_needed = n_out_target + window - 1
+        n_samples = int(fftlength * fs) + (n_times_needed - 1) * nstep + 50
+
+        ts = TimeSeries(
+            np.random.default_rng(12345).standard_normal(n_samples),
+            sample_rate=fs, t0=0,
+        )
+        res = compute_student_t_nu(ts, fftlength=fftlength, window=window, frange=(0, 5))
+        np.testing.assert_allclose(res.frequencies.value, [0, 4])
+
+        dc = res.value[:, 0]
+        ac = res.value[:, 1]
+        dc = dc[np.isfinite(dc)]
+        ac = ac[np.isfinite(ac)]
+        assert len(dc) > 100 and len(ac) > 100
+
+        log10_diff = abs(np.log10(np.median(dc)) - np.log10(np.median(ac)))
+        frac_diff = abs(np.mean(dc < 10) - np.mean(ac < 10))
+
+        assert log10_diff <= 1.5, f"DC/AC median nu differ by {log10_diff} decades"
+        assert frac_diff <= 0.20, f"DC/AC frac(nu<10) differ by {frac_diff}"

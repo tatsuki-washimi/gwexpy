@@ -60,6 +60,16 @@ def compute_student_t_nu(
 
     Notes
     -----
+    Re/im independence is assumed for ``0 < f < Nyquist``. At DC and (when
+    the segment length is even) Nyquist, a real-valued input's FFT
+    coefficient is purely real, so only the real part is used for those
+    bins -- their fit uses ``window`` samples instead of ``2 * window``,
+    so their ``nu`` estimate has higher variance. ``ts`` must be
+    real-valued: `scipy.signal.stft` silently ignores
+    ``return_onesided=True`` for complex input (switching to two-sided
+    output), which breaks both the DC/Nyquist real-FFT assumption above
+    and the frequency-bin count/`frange` handling below.
+
     The underlying `scipy.signal.stft` call is made with explicit
     ``window="hann"``, ``detrend=False``, ``boundary="zeros"`` and
     ``padded=True``. ``boundary="zeros"`` is what makes ``stft``'s
@@ -67,8 +77,19 @@ def compute_student_t_nu(
     ``ts``, which is the assumption the GPS time axis reconstruction below
     depends on. Segment center times carry the usual STFT systematic
     offset of about half a ``stride`` relative to each segment's start.
+    Specifying ``overlap`` correlates adjacent STFT columns, reducing the
+    effective number of independent samples per fit window below
+    ``window`` (or ``2 * window``).
 
     """
+    if not np.isrealobj(ts.value):
+        raise ValueError(
+            "compute_student_t_nu requires a real-valued TimeSeries; complex "
+            "input breaks the real-FFT symmetry that DC/Nyquist bin handling "
+            "relies on, and scipy.signal.stft silently switches to two-sided "
+            "output (ignoring return_onesided=True) for complex input"
+        )
+
     _require_finite_positive("fftlength", fftlength)
 
     if stride is None:
@@ -145,6 +166,18 @@ def compute_student_t_nu(
     if n_times < window:
         raise ValueError(f"Too few segments ({n_times}) for window size {window}.")
 
+    # DC (f=0) and, when nfft is even, Nyquist (f=fs/2) bins of a real-input
+    # FFT are purely real -- identified by frequency value (not bin index),
+    # so an odd-nfft top bin (which is not the Nyquist frequency and stays
+    # complex) or an frange that excludes DC/Nyquist are handled correctly
+    # (#465).
+    is_dc = np.isclose(f, 0.0)
+    if nfft % 2 == 0:
+        is_nyquist = np.isclose(f, fs / 2.0)
+    else:
+        is_nyquist = np.zeros_like(f, dtype=bool)
+    is_real_only_bin = is_dc | is_nyquist
+
     n_out = n_times - window + 1
     nu_map = np.zeros((n_out, n_freqs))
     n_fit_failures = 0
@@ -155,8 +188,12 @@ def compute_student_t_nu(
             # Zxx is (freq, time)
             segments = Zxx[j, i : i + window]
 
-            # Use real and imaginary parts as independent samples
-            samples = np.concatenate([np.real(segments), np.imag(segments)])
+            if is_real_only_bin[j]:
+                # DC/Nyquist: real part alone (see Notes above).
+                samples = np.real(segments)
+            else:
+                # Use real and imaginary parts as independent samples
+                samples = np.concatenate([np.real(segments), np.imag(segments)])
 
             # Fit Student-t distribution
             # scipy.stats.t.fit(data) returns (nu, loc, scale)
