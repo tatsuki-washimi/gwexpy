@@ -248,6 +248,10 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     def gauch(self, fftlength, window=40, stride=None, overlap=None, **kwargs):
         """Compute GauCh (Modified KS test) for non-Gaussianity detection.
 
+        Accepts `rng=` / `seed=` (forwarded to
+        `gwexpy.statistics.gauch.compute_gauch`) for a reproducible Monte
+        Carlo null distribution.
+
         Returns
         -------
         GauChResult
@@ -266,6 +270,10 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
     def rayleigh_test(self, fftlength, stride, n_samples=39, **kwargs):
         """Compute Rayleigh statistic p-value spectrogram.
+
+        Accepts `rng=` / `seed=` (forwarded to
+        `gwexpy.statistics.rayleigh_test.rayleigh_pvalue`) for a
+        reproducible Monte Carlo null distribution.
 
         Returns
         -------

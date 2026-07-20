@@ -81,8 +81,14 @@ def test_rayleigh_pvalue_nan_statistic_becomes_nan_not_zero():
 
 
 def test_null_distribution_floors_uniform_draw():
-    with patch("numpy.random.rand", return_value=np.zeros(10)):
-        dist = _get_rayleigh_stat_null_distribution(10, 5)
+    # Stub Generator (#464: the default path now draws via
+    # np.random.default_rng(), not the legacy numpy.random.rand global
+    # state, so exercise the floor by injecting rng= directly).
+    class ZeroGenerator:
+        def random(self, size):
+            return np.zeros(size)
+
+    dist = _get_rayleigh_stat_null_distribution(10, 5, rng=ZeroGenerator())
     assert np.all(np.isfinite(dist))
 
 

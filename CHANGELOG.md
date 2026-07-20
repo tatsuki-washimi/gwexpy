@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+### Behaviour-visible bug fixes
+
+- **statistics**: `compute_gauch()` / `TimeSeries.gauch()` and
+  `rayleigh_pvalue()` / `TimeSeries.rayleigh_test()` now accept `rng=`
+  (a `numpy.random.Generator`) or `seed=` for a reproducible Monte Carlo
+  null distribution, instead of always drawing from the unseedable legacy
+  global `numpy.random.rand` state. Passing either bypasses the shared,
+  process-global null-distribution cache (previously keyed only by
+  `(n, n_trials)`, with no way to request a specific draw). The default
+  (no `rng`/`seed`) path remains non-deterministic and cached as before,
+  and its cache population is now serialized with a lock, fixing a
+  pre-existing race where concurrent callers on the same `(n, n_trials)`
+  key could interleave writes to the shared distribution array.
+  `compute_gauch()`'s result now records `n_monte_carlo` and, when given,
+  `seed` (or `rng_provided`/`seed_unused`) in its `.metadata`; the
+  `Spectrogram` returned by `rayleigh_pvalue()` records the same as
+  instance attributes that do not survive `.copy()`/slicing/serialization
+  (#464).
+
 ## [0.1.10] - 2026-07-18
 
 This is a bugfix release covering numerical regularization, axis regularity,
