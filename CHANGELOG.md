@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+### Behaviour-visible bug fixes
+
+- **interop**: `to_mne_rawarray()` now sets `info["meas_date"]` from the
+  input epoch (`t0`) when not already present, and validates it against an
+  existing `info["meas_date"]` (within ~1us) rather than silently ignoring
+  it; a mismatch now raises `ValueError` instead of producing an `mne.io.Raw`
+  with an incorrect or missing epoch. Multi-channel conversion now requires
+  all stacked channels to share an *exactly* matching epoch (previously
+  unchecked), raising `ValueError` on mismatch rather than silently
+  interleaving samples from different acquisition times. `t0` values that
+  fall on a leap second continue to raise `LeapSecondConversionError`.
+  `from_mne_raw()` now accounts for `raw.first_samp` when reconstructing the
+  GPS epoch (previously ignored, undercounting the epoch for cropped/resumed
+  `Raw` objects) and applies `unit_map` to set channel units, including
+  fixing an `AttributeError` when `unit_map` was omitted (#493).
+
 ## [0.1.10] - 2026-07-18
 
 This is a bugfix release covering numerical regularization, axis regularity,
