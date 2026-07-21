@@ -463,6 +463,18 @@ fall on a leap second continue to raise <code class="docutils literal notranslat
 GPS epoch (previously ignored, undercounting the epoch for cropped/resumed
 <code class="docutils literal notranslate"><span class="pre">Raw</span></code> objects) and applies <code class="docutils literal notranslate"><span class="pre">unit_map</span></code> to set channel units, including
 fixing an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> when <code class="docutils literal notranslate"><span class="pre">unit_map</span></code> was omitted (#493).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.student_t_spectrogram()</span></code>
+now return a GPS time axis (the input <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>’s <code class="docutils literal notranslate"><span class="pre">t0</span></code> plus the STFT
+relative time) instead of relative-to-start seconds. <code class="docutils literal notranslate"><span class="pre">fftlength</span></code>, <code class="docutils literal notranslate"><span class="pre">stride</span></code>
+(and <code class="docutils literal notranslate"><span class="pre">overlap</span></code>), <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">window</span></code>, and <code class="docutils literal notranslate"><span class="pre">frange</span></code> are now validated:
+non-finite/non-positive values raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of an opaque
+downstream failure, and <code class="docutils literal notranslate"><span class="pre">stride</span> <span class="pre">&gt;</span> <span class="pre">fftlength</span></code> now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+explicitly rather than silently running a gapped analysis that skips
+samples between segments (<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> accepts a negative
+<code class="docutils literal notranslate"><span class="pre">noverlap</span></code> without erroring). The underlying <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> call now
+passes <code class="docutils literal notranslate"><span class="pre">window=&quot;hann&quot;,</span> <span class="pre">detrend=False,</span> <span class="pre">boundary=&quot;zeros&quot;,</span> <span class="pre">padded=True</span></code>
+explicitly instead of relying on scipy’s defaults. Partially addresses
+#465 (DC/Nyquist bin bias is tracked separately).</p></li>
 </ul>
 </section>
 </section>
