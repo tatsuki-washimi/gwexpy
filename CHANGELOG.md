@@ -14,12 +14,17 @@
   (no `rng`/`seed`) path remains non-deterministic and cached as before,
   and its cache population is now serialized with a lock, fixing a
   pre-existing race where concurrent callers on the same `(n, n_trials)`
-  key could interleave writes to the shared distribution array.
+  key could each redundantly recompute and overwrite the cached
+  distribution. `rayleigh_pvalue()`'s p-values are now floored at
+  `2/n_monte_carlo` instead of allowing an exact `0.0`, matching the
+  floor `compute_gauch()` already applied (a Monte-Carlo p-value of
+  exactly 0 is invalid and turns `-log10(p)` into `Inf` downstream).
   `compute_gauch()`'s result now records `n_monte_carlo` and, when given,
   `seed` (or `rng_provided`/`seed_unused`) in its `.metadata`; the
   `Spectrogram` returned by `rayleigh_pvalue()` records the same as
-  instance attributes that do not survive `.copy()`/slicing/serialization
-  (#464).
+  instance attributes that do not survive `.copy()`/slicing/serialization.
+  Passing both `rng` and `seed` now emits a `RuntimeWarning` noting that
+  `seed` is ignored (#464).
 
 ## [0.1.10] - 2026-07-18
 

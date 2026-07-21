@@ -126,10 +126,11 @@ class TestRayleighPvalueReproducibility:
         assert rng_result.rng_provided is True
         assert not hasattr(rng_result, "seed")
 
-        both_result = rayleigh_pvalue(
-            spec, n_samples=10, n_monte_carlo=30,
-            rng=np.random.default_rng(7), seed=999,
-        )
+        with pytest.warns(RuntimeWarning, match="seed is ignored"):
+            both_result = rayleigh_pvalue(
+                spec, n_samples=10, n_monte_carlo=30,
+                rng=np.random.default_rng(7), seed=999,
+            )
         assert both_result.rng_provided is True
         assert both_result.seed_unused is True
 
@@ -186,10 +187,11 @@ class TestComputeGauchRng:
         )
         assert seeded_res.metadata["seed"] == 7
 
-        both_res = compute_gauch(
-            ts, fftlength=0.25, window=10, n_monte_carlo=50,
-            rng=np.random.default_rng(7), seed=999,
-        )
+        with pytest.warns(RuntimeWarning, match="seed is ignored"):
+            both_res = compute_gauch(
+                ts, fftlength=0.25, window=10, n_monte_carlo=50,
+                rng=np.random.default_rng(7), seed=999,
+            )
         assert both_res.metadata["rng_provided"] is True
         assert both_res.metadata["seed_unused"] is True
 

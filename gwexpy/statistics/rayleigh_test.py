@@ -77,8 +77,11 @@ def rayleigh_pvalue(
 
     p_vals = 2.0 * np.minimum(upper_counts, lower_counts) / len(dist)
 
-    # Clip p-values to [0, 1]
-    p_vals = np.clip(p_vals, 0.0, 1.0).astype(float)
+    # Floor at 2/len(dist): a Monte-Carlo p-value of exactly 0 is invalid
+    # (it only means "at least as extreme as every trial on one side") and
+    # makes -log10(p)=Inf downstream, mirroring the floor compute_gauch()
+    # applies to its (one-sided) p-value for the same reason (issue #459).
+    p_vals = np.clip(p_vals, 2.0 / len(dist), 1.0).astype(float)
 
     # A non-finite Rayleigh statistic sorts to the end of `dist`, so
     # searchsorted would make min(upper, lower)=0 -> p=0.0, i.e. a false
@@ -107,6 +110,12 @@ def rayleigh_pvalue(
         result.rng_provided = True
         if seed is not None:
             result.seed_unused = True
+            warnings.warn(
+                "rayleigh_pvalue: both rng and seed were given; seed is "
+                "ignored because rng takes priority",
+                RuntimeWarning,
+                stacklevel=2,
+            )
     elif seed is not None:
         result.seed = seed
     return result

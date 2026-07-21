@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import threading
+import warnings
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -154,6 +155,12 @@ def compute_gauch(
         metadata["rng_provided"] = True
         if seed is not None:
             metadata["seed_unused"] = True
+            warnings.warn(
+                "compute_gauch: both rng and seed were given; seed is "
+                "ignored because rng takes priority",
+                RuntimeWarning,
+                stacklevel=2,
+            )
     elif seed is not None:
         metadata["seed"] = seed
 
