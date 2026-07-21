@@ -139,3 +139,30 @@ jobs:
 
       - name: Run interop contract tests
         run: python scripts/ci/run_gate.py interop-contract
+
+  interop-mne-gate:
+    name: Interop MNE gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
+        with:
+          # Pinned to a known-good major range (see #493) so an unannounced
+          # mne major bump can't silently change epoch/meas_date behavior.
+          # Quoted: unquoted "mne<2" is parsed by the run step's shell as
+          # stdin redirection ("pip install mne <2"), not a version pin.
+          extras: "'mne<2'"
+
+      - name: Run MNE interop tests
+        run: python scripts/ci/run_gate.py interop-mne
