@@ -168,20 +168,30 @@ def compute_student_t_nu(
 
     n_freqs, n_times = Zxx.shape
 
-    # DC (index 0, exactly f=0) and, when nfft is even, Nyquist (the last
-    # one-sided bin, exactly f=fs/2) bins of a real-input FFT are purely
-    # real. Identified structurally on the *full* one-sided output -- index
-    # 0 is always DC and, for even nperseg, scipy's one-sided output always
-    # ends exactly at the Nyquist bin -- rather than via a floating-point
+    # scipy.signal.stft silently shrinks nperseg to len(ts) when the
+    # requested nfft exceeds it (with a UserWarning), so the *effective*
+    # segment length -- and therefore its parity -- can differ from the
+    # requested nfft. Using the requested nfft's parity here would get the
+    # Nyquist classification backwards for exactly the inputs short enough
+    # to trigger that shrink.
+    effective_nfft = min(nfft, len(ts.value))
+
+    # DC (index 0, exactly f=0) and, when the effective segment length is
+    # even, Nyquist (the last one-sided bin, exactly f=fs/2) bins of a
+    # real-input FFT are purely real. Identified structurally on the
+    # *full* one-sided output -- index 0 is always DC and, for an even
+    # effective segment length, scipy's one-sided output always ends
+    # exactly at the Nyquist bin -- rather than via a floating-point
     # frequency comparison (e.g. np.isclose(f, fs/2)), which has no natural
     # tolerance scale and, at very fine frequency resolution (nfft large,
     # fs small), risks matching several near-DC bins as if they were all
-    # DC. An odd nfft (no exact Nyquist bin) or an frange that excludes
-    # DC/Nyquist are both still handled correctly since this mask is
-    # carried through the same frange filter as `f`/`Zxx` below (#465).
+    # DC. An odd effective segment length (no exact Nyquist bin) or an
+    # frange that excludes DC/Nyquist are both still handled correctly
+    # since this mask is carried through the same frange filter as
+    # `f`/`Zxx` below (#465).
     is_real_only_bin_full = np.zeros(n_freqs, dtype=bool)
     is_real_only_bin_full[0] = True
-    if nfft % 2 == 0:
+    if effective_nfft % 2 == 0:
         is_real_only_bin_full[-1] = True
 
     # Apply frequency range restriction to limit computation

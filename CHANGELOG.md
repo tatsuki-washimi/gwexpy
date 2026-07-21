@@ -29,7 +29,10 @@
   correctness fix, not a GWpy compatibility change (GWpy has no
   equivalent Student-t fit API); DC/Nyquist are identified structurally
   (index 0 / the last one-sided bin), not via a floating-point frequency
-  comparison. `compute_student_t_nu()` now also rejects complex-valued
+  comparison, computed from the *effective* segment length (`scipy.signal.stft`
+  silently shrinks `nperseg` to `len(ts)` when the requested value exceeds
+  it, which can flip its parity relative to the requested `fftlength *
+  sample_rate`). `compute_student_t_nu()` now also rejects complex-valued
   input with `ValueError` (previously silent, and `scipy.signal.stft`
   ignores `return_onesided=True` for complex input, which would have
   broken this bin classification). Completes #465.

@@ -210,6 +210,38 @@ class TestDcNyquistRealOnlyFit:
         assert lengths[1:-1] == [6] * 15  # all other bins two-sided
         assert lengths[-1] == 3  # Nyquist
 
+    def test_requested_even_nfft_shrunk_to_odd_by_short_input(self):
+        # scipy.signal.stft silently shrinks nperseg to len(ts) when nfft
+        # exceeds it. Requested nfft=32 (even) but input length=31 ->
+        # effective segment length is 31 (odd), so the last bin must NOT
+        # be treated as Nyquist even though the *requested* nfft is even.
+        fs = 16.0
+        ts = TimeSeries(
+            np.random.default_rng(0).standard_normal(31), sample_rate=fs, t0=0
+        )
+        with pytest.warns(UserWarning, match="nperseg"):
+            res, lengths = self._fit_sample_lengths(ts, fftlength=32 / fs, window=2)
+        assert len(res.frequencies.value) == 16  # (effective 31 // 2) + 1
+        assert not np.isclose(res.frequencies.value[-1], fs / 2)
+        assert lengths[0] == 2  # DC
+        assert lengths[1:] == [4] * 15  # no Nyquist bin; all stay two-sided
+
+    def test_requested_odd_nfft_shrunk_to_even_by_short_input(self):
+        # Mirror case: requested nfft=31 (odd) but input length=30 ->
+        # effective segment length is 30 (even), so the last bin IS the
+        # exact Nyquist bin even though the *requested* nfft is odd.
+        fs = 16.0
+        ts = TimeSeries(
+            np.random.default_rng(0).standard_normal(30), sample_rate=fs, t0=0
+        )
+        with pytest.warns(UserWarning, match="nperseg"):
+            res, lengths = self._fit_sample_lengths(ts, fftlength=31 / fs, window=2)
+        assert len(res.frequencies.value) == 16  # (effective 30 // 2) + 1
+        np.testing.assert_allclose(res.frequencies.value[-1], fs / 2)
+        assert lengths[0] == 2  # DC
+        assert lengths[1:-1] == [4] * 14  # two-sided
+        assert lengths[-1] == 2  # Nyquist
+
 
 class TestDcNyquistNumericRegression:
     """#465: numeric regression pinning the DC-bin fix.
