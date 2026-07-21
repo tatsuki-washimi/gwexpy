@@ -176,6 +176,23 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     picks
         Optional channel selection (names or indices). Only supported for mapping inputs.
 
+    Returns
+    -------
+    mne.io.RawArray
+        The converted MNE Raw object.
+
+    Raises
+    ------
+    TypeError
+        If ``picks`` is given for a single-channel input.
+    ValueError
+        If ``info``'s channel count does not match the input; if mapping
+        channels have mismatched sampling frequency, length, or (for
+        same-length channels) epoch; or if ``t0`` conflicts with an
+        existing ``info["meas_date"]``.
+    LeapSecondConversionError
+        If ``t0`` falls on a leap second.
+
     Notes
     -----
     The input epoch (``t0``) is reconciled with ``info["meas_date"]``: if
@@ -186,11 +203,15 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     overwriting or ignoring it. A ``t0`` that falls on a leap second raises
     ``LeapSecondConversionError``.
 
-    For a mapping input, same-length channels are stacked without
-    resampling/alignment and therefore must share an *exactly* matching
-    epoch; a mismatch raises ``ValueError`` (previously stacked silently).
-    Differently-timed or differently-sampled channels can still be aligned
-    via a ``TimeSeriesDict`` with ``to_matrix()``.
+    For a mapping input, all channels must share the same sampling
+    frequency; a mismatch always raises ``ValueError`` (previously stacked
+    silently), even when channel lengths differ. Same-length channels are
+    then stacked without resampling/alignment and must also share an
+    *exactly* matching epoch; a mismatch raises ``ValueError`` (previously
+    stacked silently). Only channels of *differing length* (with matching
+    sampling frequency) are automatically aligned, via ``to_matrix()`` on a
+    ``TimeSeriesDict`` input -- sampling-frequency or epoch mismatches are
+    never auto-aligned and must be resolved by the caller beforehand.
 
     """
     mne = require_optional("mne")
@@ -295,6 +316,11 @@ def from_mne_raw(cls, raw, unit_map=None):
         Optional mapping from channel name to unit, applied to the
         resulting `TimeSeries` entries. Channels absent from the mapping
         (or when ``unit_map`` is omitted) get ``unit=None``.
+
+    Returns
+    -------
+    TimeSeriesDict
+        A `cls` instance populated with one `TimeSeries` per channel.
 
     Notes
     -----

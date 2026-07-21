@@ -180,9 +180,13 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
     if gate == "interop-mne":
         # tests/interop/test_interop_mne.py uses `pytest.importorskip("mne")`,
         # so if mne fails to import the whole file silently skips instead of
-        # failing. Assert on the JUnit skipped count so that regression goes
-        # unnoticed (#493: this gate exists specifically to keep mne coverage
-        # off the "runs locally only" list).
+        # failing. Assert on the JUnit skipped count so that regression does
+        # NOT go unnoticed (#493: this gate exists specifically to keep mne
+        # coverage off the "runs locally only" list).
+        #
+        # Known gap (#511): this only checks skipped/errors == 0, not
+        # tests > 0, so a JUnit report with zero <testcase> elements (e.g.
+        # pytest collecting nothing at all) would still pass silently.
         junit_path = Path("interop-mne-results.xml")
         run_cmd(
             [
