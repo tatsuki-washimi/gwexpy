@@ -19,6 +19,11 @@ if TYPE_CHECKING:
     from ..timeseries import TimeSeries
 
 
+def _require_finite_positive(name: str, value: float) -> None:
+    if not np.isfinite(value) or value <= 0:
+        raise ValueError(f"{name} must be finite and positive, got {value!r}")
+
+
 def compute_student_t_nu(
     ts: TimeSeries,
     fftlength: float,
@@ -49,14 +54,50 @@ def compute_student_t_nu(
     Returns
     -------
     Spectrogram
-        Spectrogram of estimated Student-t ``nu`` values.
+        Spectrogram of estimated Student-t ``nu`` values. ``times`` are GPS
+        (``ts.t0`` plus the underlying `scipy.signal.stft` relative time),
+        not relative-to-start seconds.
+
+    Notes
+    -----
+    The underlying `scipy.signal.stft` call is made with explicit
+    ``window="hann"``, ``detrend=False``, ``boundary="zeros"`` and
+    ``padded=True``. ``boundary="zeros"`` is what makes ``stft``'s
+    relative time origin (``t[0] == 0``) coincide with the first sample of
+    ``ts``, which is the assumption the GPS time axis reconstruction below
+    depends on. Segment center times carry the usual STFT systematic
+    offset of about half a ``stride`` relative to each segment's start.
 
     """
+    _require_finite_positive("fftlength", fftlength)
+
     if stride is None:
         if overlap is None:
             stride = fftlength
         else:
+            if not np.isfinite(overlap) or overlap < 0:
+                raise ValueError(
+                    f"overlap must be finite and non-negative, got {overlap!r}"
+                )
             stride = fftlength - overlap
+    _require_finite_positive("stride", stride)
+
+    if stride > fftlength:
+        raise ValueError(
+            f"stride ({stride}) must not exceed fftlength ({fftlength}); "
+            "scipy.signal.stft would otherwise silently skip samples "
+            "between segments (a gapped analysis), not raise an error"
+        )
+
+    if not isinstance(window, (int, np.integer)) or window <= 0:
+        raise ValueError(f"window must be a positive integer, got {window!r}")
+
+    if frange is not None:
+        flo, fhi = frange
+        if not np.isfinite(flo) or not np.isfinite(fhi):
+            raise ValueError(f"frange must be finite, got {frange!r}")
+        if flo > fhi:
+            raise ValueError(f"frange low ({flo}) must be <= high ({fhi})")
 
     # 1. Compute FFT segments
     # Actually, we can use ts.spectrogram with 'complex' return if possible,
@@ -64,8 +105,16 @@ def compute_student_t_nu(
     # We need the complex FFT coefficients.
 
     fs = ts.sample_rate.value
+    _require_finite_positive("sample_rate", fs)
     nfft = int(fftlength * fs)
     nstep = int(stride * fs)
+    if nfft < 1:
+        raise ValueError(f"fftlength * sample_rate must be >= 1, got {nfft}")
+    if nstep < 1:
+        raise ValueError(
+            f"stride * sample_rate must be >= 1 (got {nstep}); a too-small "
+            "stride would silently collapse to nstep=0 (100% overlap)"
+        )
 
     # Simple STFT to get complex values
     # shape (n_freqs, n_times)
@@ -75,6 +124,10 @@ def compute_student_t_nu(
         fs=fs,
         nperseg=nfft,
         noverlap=nfft - nstep,
+        window="hann",
+        detrend=False,
+        boundary="zeros",
+        padded=True,
         return_onesided=True,
     )
     # Zxx shape: (n_freqs, n_times)
@@ -126,8 +179,9 @@ def compute_student_t_nu(
             stacklevel=2,
         )
 
-    # Center times
-    out_times = t[window // 2 : window // 2 + n_out]
+    # Center times, shifted onto the GPS axis (relies on boundary="zeros"
+    # above so t[0] == 0 corresponds to ts's first sample; see #465).
+    out_times = t[window // 2 : window // 2 + n_out] + float(ts.t0.value)
 
     return Spectrogram(
         nu_map,

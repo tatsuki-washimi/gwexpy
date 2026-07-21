@@ -282,6 +282,10 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     def student_t_spectrogram(self, fftlength, stride=None, window=40, overlap=None, frange=None):
         """Compute Student-t degree of freedom (nu) spectrogram.
 
+        See `gwexpy.statistics.student_t_indicator.compute_student_t_nu` for
+        the input validation contract and the resulting GPS (not
+        relative-to-start) time axis.
+
         Returns
         -------
         Spectrogram
