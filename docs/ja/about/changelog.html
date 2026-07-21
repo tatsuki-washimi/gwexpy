@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=bf418079"></script>
+    <script src="../_static/documentation_options.js?v=04bd0264"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -448,6 +448,14 @@
 <h1>更新履歴<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h1>
 <section id="unreleased">
 <h2>未リリース<a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
+</section>
+<section id="id1">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.10...v0.1.11">0.1.11</a> - 2026-07-25<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>This is a time/metadata-integrity and statistics-robustness patch release.
+It fixes <code class="docutils literal notranslate"><span class="pre">MNE</span></code> interop epoch/metadata handling (#493), restores a
+GPS-absolute time axis and DC/Nyquist fit correctness for the Student-t
+non-Gaussianity indicator (#465), and adds Monte Carlo <code class="docutils literal notranslate"><span class="pre">rng=</span></code>/<code class="docutils literal notranslate"><span class="pre">seed=</span></code>
+reproducibility for the Rayleigh and GauCh statistical tests (#464).</p>
 <section id="behaviour-visible-bug-fixes">
 <h3>動作に影響するバグ修正<a class="headerlink" href="#behaviour-visible-bug-fixes" title="Link to this heading">#</a></h3>
 <p><em>Reproducibility note</em>: the two <code class="docutils literal notranslate"><span class="pre">statistics</span></code> entries below (GPS time axis
@@ -528,12 +536,19 @@ survive <code class="docutils literal notranslate"><span class="pre">.copy()</sp
 now emits a <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> noting that <code class="docutils literal notranslate"><span class="pre">seed</span></code> is ignored (#464).</p></li>
 </ul>
 </section>
+<section id="dependencies">
+<h3>依存関係<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">inspiral-range</span></code> to the <code class="docutils literal notranslate"><span class="pre">gw</span></code> and <code class="docutils literal notranslate"><span class="pre">all</span></code> optional-dependency extras
+(no change to core/required dependencies) (#487).</p></li>
+</ul>
 </section>
-<section id="id1">
-<h2>[0.1.10] - 2026-07-18<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
-<p>数値正則化、軸の規則性、ヒストグラムの重み、TimeSeries のリサンプリングにおける dtype と境界の契約を対象としたバグ修正リリースです。</p>
+</section>
 <section id="id2">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<h2>[0.1.10] - 2026-07-18<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>数値正則化、軸の規則性、ヒストグラムの重み、TimeSeries のリサンプリングにおける dtype と境界の契約を対象としたバグ修正リリースです。</p>
+<section id="id3">
+<h3>動作に影響するバグ修正<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>numerics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.partial_correlation_matrix()</span></code> のデフォルトが <code class="docutils literal notranslate"><span class="pre">1e-8</span></code> から <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> に変更され、<code class="docutils literal notranslate"><span class="pre">WhitenTransform</span></code> のデフォルトも <code class="docutils literal notranslate"><span class="pre">1e-12</span></code> から <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> に変更されました。<code class="docutils literal notranslate"><span class="pre">LaplaceGram.normalize_per_sigma()</span></code> のデフォルトも <code class="docutils literal notranslate"><span class="pre">1e-30</span></code> から <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> に変更されました。これらのデフォルトでは入力に応じて正則化の大きさが調整されるため、strain スケールの偏相関とホワイトニングがゼロ近傍に潰れなくなります。以前の動作を維持するには、従来の値を明示的に渡してください。互換性のため、<code class="docutils literal notranslate"><span class="pre">partial_correlation_matrix(eps=None)</span></code> は追加のリッジを無効にする動作を引き続き維持します。3 つの API はすべて、非有限入力と無効な epsilon 値を <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> として拒否するようになりました (#482)。</p></li>
 <li><p><strong>types</strong>: <code class="docutils literal notranslate"><span class="pre">AxisDescriptor.regular</span></code> は、表現された隣接区間を狭く制限された区間スケール許容誤差で比較するようになりました。通常の浮動小数点の規則格子は受け入れつつ、誤った <code class="docutils literal notranslate"><span class="pre">delta</span></code> を生じる可能性がある、大きなオフセットを持ち実質的に等しくない float32 区間は拒否します (#492)。</p></li>
@@ -543,11 +558,11 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id3">
-<h2>[0.1.9] - 2026-07-11<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
-<p>バグ修正リリースです。0.1.8 から延期されていた GWF 読み取りパスの NaN パディング統一を完了し (#481)、#461 のフォローアップ監査で明らかになった 2 つのフィッティングバグを修正しました。具体的には、<code class="docutils literal notranslate"><span class="pre">x_range</span></code> の境界が正確に一致する場合の <code class="docutils literal notranslate"><span class="pre">fit_series</span></code> における <code class="docutils literal notranslate"><span class="pre">sigma</span></code> の切り出しの off-by-one と、検証されていない <code class="docutils literal notranslate"><span class="pre">run_mcmc(n_walkers=...)</span></code> によって emcee 内部のエラーがそのまま表面化する問題です (#466)。</p>
 <section id="id4">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<h2>[0.1.9] - 2026-07-11<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<p>バグ修正リリースです。0.1.8 から延期されていた GWF 読み取りパスの NaN パディング統一を完了し (#481)、#461 のフォローアップ監査で明らかになった 2 つのフィッティングバグを修正しました。具体的には、<code class="docutils literal notranslate"><span class="pre">x_range</span></code> の境界が正確に一致する場合の <code class="docutils literal notranslate"><span class="pre">fit_series</span></code> における <code class="docutils literal notranslate"><span class="pre">sigma</span></code> の切り出しの off-by-one と、検証されていない <code class="docutils literal notranslate"><span class="pre">run_mcmc(n_walkers=...)</span></code> によって emcee 内部のエラーがそのまま表面化する問題です (#466)。</p>
+<section id="id5">
+<h3>動作に影響するバグ修正<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>GWF 固有の読み取り（<code class="docutils literal notranslate"><span class="pre">format=&quot;gwf&quot;</span></code> を指定した <code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code>/<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code>/<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read</span></code>）では、<code class="docutils literal notranslate"><span class="pre">gap=&quot;pad&quot;</span></code> のデフォルトが <code class="docutils literal notranslate"><span class="pre">0.0</span></code> ではなく <code class="docutils literal notranslate"><span class="pre">NaN</span></code> パディングになり、0.1.8 で導入された <code class="docutils literal notranslate"><span class="pre">SeriesMatrix.append</span></code> の NaN デフォルトとの統一が完了しました。GWF のギャップがゼロで埋まることに依存していたコードでは、明示的な <code class="docutils literal notranslate"><span class="pre">pad=</span></code> 値を渡してください。欠損領域（ファイル間のギャップ、または利用可能なデータを超えて延長された要求区間）を、浮動小数点でない GWF チャネル dtype に対して <code class="docutils literal notranslate"><span class="pre">NaN</span></code> でパディングすると、範囲外の整数 fill 値によるデータの暗黙の破損や、NumPy の不透明な <code class="docutils literal notranslate"><span class="pre">cannot</span> <span class="pre">convert</span> <span class="pre">float</span> <span class="pre">NaN</span> <span class="pre">to</span> <span class="pre">integer</span></code> エラーの漏出ではなく、明確な <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が送出されるようになりました (#481)。</p></li>
 </ul>
@@ -566,11 +581,11 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id5">
-<h2>[0.1.8] - 2026-07-04<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
-<p>バグ修正および I/O 堅牢化リリースです。<code class="docutils literal notranslate"><span class="pre">obspy.Stream</span></code> 入力時の <code class="docutils literal notranslate"><span class="pre">from_obspy</span></code> のクラッシュを修正し (#452)、SeriesMatrix / I/O 層を堅牢化しました。#443 のフォローアップ監査で明らかになったギャップ処理、メタデータのエイリアシング、キーのラウンドトリップ、リーダーの失敗モードを、明示的な契約と回帰テストによって修正しています (#450)。</p>
 <section id="id6">
-<h3>動作に影響するバグ修正<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<h2>[0.1.8] - 2026-07-04<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<p>バグ修正および I/O 堅牢化リリースです。<code class="docutils literal notranslate"><span class="pre">obspy.Stream</span></code> 入力時の <code class="docutils literal notranslate"><span class="pre">from_obspy</span></code> のクラッシュを修正し (#452)、SeriesMatrix / I/O 層を堅牢化しました。#443 のフォローアップ監査で明らかになったギャップ処理、メタデータのエイリアシング、キーのラウンドトリップ、リーダーの失敗モードを、明示的な契約と回帰テストによって修正しています (#450)。</p>
+<section id="id7">
+<h3>動作に影響するバグ修正<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">SeriesMatrix.append(gap=&quot;pad&quot;)</span></code>（およびこれを基盤とする行列のマルチソース統合パス）は、デフォルトでギャップを <code class="docutils literal notranslate"><span class="pre">0.0</span></code> ではなく <code class="docutils literal notranslate"><span class="pre">NaN</span></code> でパディングするようになり、マルチソース・リーダーですでに使用されている欠損データの規約に一致しました。ギャップがゼロで埋まることに依存していたコードでは、明示的な <code class="docutils literal notranslate"><span class="pre">pad=</span></code> 値を渡すか、削減・FFT・フィルタリングの前に NaN を処理してください。浮動小数点でない行列 dtype のギャップを <code class="docutils literal notranslate"><span class="pre">NaN</span></code> でパディングすると、無効な fill 値を暗黙に挿入する代わりに <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が送出されます。</p></li>
 <li><p><strong>io/netcdf4</strong>: チャネルごとの Series 構築に失敗しても、単純な dict に劣化しなくなりました（これまでは下流で不透明な <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> が遅れて発生していました）。リーダーは発生源で明確な <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を送出します。</p></li>
@@ -579,8 +594,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>io/sdb</strong>: 数値への強制変換で破棄された非数値は、黙って失われなくなりました。リーダーは影響を受けた列と件数を含む警告を出します。</p></li>
 </ul>
 </section>
-<section id="id7">
-<h3>バグ修正<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<section id="id8">
+<h3>バグ修正<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>interop/obspy</strong>: <code class="docutils literal notranslate"><span class="pre">obspy.Stream</span></code> を渡したとき、<code class="docutils literal notranslate"><span class="pre">TimeSeries.from_obspy</span></code> が不透明な <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> でクラッシュしなくなりました。単一トレースの Stream は直接変換され、複数トレースの Stream では、新しい <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.from_obspy</span></code> / <code class="docutils literal notranslate"><span class="pre">to_obspy</span></code> メソッドを案内する明確な <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> が送出されます。<code class="docutils literal notranslate"><span class="pre">from_neo</span></code>（Block/Segment）、<code class="docutils literal notranslate"><span class="pre">from_torch</span></code>（1 次元でないテンソル）、<code class="docutils literal notranslate"><span class="pre">from_root</span></code>（コンテナ入力）の各コンバーターにも同等の明確なエラーガードが追加されました (#452)。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> のメタデータ・エイリアシングが完全に解消されました。<code class="docutils literal notranslate"><span class="pre">rows</span></code>/<code class="docutils literal notranslate"><span class="pre">cols</span></code>/ <code class="docutils literal notranslate"><span class="pre">meta</span></code>/<code class="docutils literal notranslate"><span class="pre">attrs</span></code> は <code class="docutils literal notranslate"><span class="pre">_get_meta_for_constructor</span></code>（<code class="docutils literal notranslate"><span class="pre">crop</span></code>/<code class="docutils literal notranslate"><span class="pre">append</span></code>/<code class="docutils literal notranslate"><span class="pre">diff</span></code>/<code class="docutils literal notranslate"><span class="pre">pad</span></code>/<code class="docutils literal notranslate"><span class="pre">interpolate</span></code> が使用）内、行列の数学演算（<code class="docutils literal notranslate"><span class="pre">trace</span></code>、<code class="docutils literal notranslate"><span class="pre">matmul</span></code>、<code class="docutils literal notranslate"><span class="pre">schur</span></code>、<code class="docutils literal notranslate"><span class="pre">abs</span></code>、…）内、および <code class="docutils literal notranslate"><span class="pre">__array_ufunc__</span></code> 内でディープコピーされるため、派生オブジェクトのメタデータを変更しても元のオブジェクトが破損しなくなりました。これは 0.1.6 で提供された <code class="docutils literal notranslate"><span class="pre">astype</span></code>/<code class="docutils literal notranslate"><span class="pre">real</span></code>/<code class="docutils literal notranslate"><span class="pre">imag</span></code> の修正 (#442) を、残りの構築パスにも拡張するものです。</p></li>
@@ -596,8 +611,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>interop</strong>: <code class="docutils literal notranslate"><span class="pre">t0</span></code>/<code class="docutils literal notranslate"><span class="pre">dt</span></code> を復元または推定できない場合、コンバーター（<code class="docutils literal notranslate"><span class="pre">from_dict</span></code>、<code class="docutils literal notranslate"><span class="pre">from_pandas</span></code>、<code class="docutils literal notranslate"><span class="pre">from_hdf5</span></code>、<code class="docutils literal notranslate"><span class="pre">from_netcdf4</span></code>、<code class="docutils literal notranslate"><span class="pre">from_polars</span></code>）は黙って処理する代わりに <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> とともに <code class="docutils literal notranslate"><span class="pre">t0=0</span></code>/<code class="docutils literal notranslate"><span class="pre">dt=1</span></code> へフォールバックするようになりました。Zarr リーダーと同じ動作です。フォールバック値は変更されていないため、これは後方互換な（SemVer MINOR）追加です。警告を抑制するには <code class="docutils literal notranslate"><span class="pre">t0=</span></code>/<code class="docutils literal notranslate"><span class="pre">dt=</span></code> を明示的に渡してください。</p></li>
 </ul>
 </section>
-<section id="dependencies">
-<h3>依存関係<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h3>
+<section id="id9">
+<h3>依存関係<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>メジャーバージョンによる API 破壊から保護するため、I/O バックエンドに上限バージョンを追加しました。<code class="docutils literal notranslate"><span class="pre">h5py&gt;=3.0,&lt;4</span></code>（core）、<code class="docutils literal notranslate"><span class="pre">obspy&lt;2</span></code>、<code class="docutils literal notranslate"><span class="pre">nptdms&lt;2</span></code>、<code class="docutils literal notranslate"><span class="pre">netCDF4&lt;2</span></code>、<code class="docutils literal notranslate"><span class="pre">zarr&gt;=2,&lt;4</span></code>（extras）が対象です。これらの上限は現在テスト済みのメジャー系列内に収まりますが、すでに新しいメジャーバージョンを固定している環境では依存関係の解決に影響する可能性があります (#450, D1)。</p></li>
 </ul>
@@ -616,11 +631,11 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id8">
-<h2>[0.1.7] - 2026-06-27<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2>[0.1.7] - 2026-06-27<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p>数値ロバスト性を強化するリリースです。statistics、fitting、spectral モジュールを対象としたフェーズ1の監査により、サイレントな失敗や退化入力に関する一連のバグが明らかになりました。本リリースでは、明示的な入力契約ガードと対応する回帰テスト一式を追加し、不正な入力が Inf/NaN や誤った結果を黙って生成するのではなく、明確なエラーを発生させるようにしました。</p>
-<section id="id9">
-<h3>バグ修正<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<section id="id11">
+<h3>バグ修正<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>fitting/core</strong>: LSQ コストクラスが <code class="docutils literal notranslate"><span class="pre">dy</span></code> を検証するようになりました。ゼロ、負値、有限でない値、または複素数の要素に対して、フィッティングが黙って失敗したり Inf/NaN の結果を生じたりする代わりに <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させます (#469)。</p></li>
 <li><p><strong>fitting/gls</strong>: GLS クラスに共分散／逆共分散の条件数ガードと PSD チェックを追加しました (#457 via #472)。</p></li>
@@ -630,8 +645,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>spectral</strong>: <code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code> のエッジケースをガードするようにしました。浮動小数点値の切り捨て、NaN/Inf のエネルギー、<code class="docutils literal notranslate"><span class="pre">rebin_width</span></code> の検証、共分散の平均値補完、幅ゼロの信頼区間に関する警告に対応しています (#460 via #473)。</p></li>
 </ul>
 </section>
-<section id="id10">
-<h3>テスト<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<section id="id12">
+<h3>テスト<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>上記の修正を対象とする入力契約の回帰テスト一式を追加しました: <code class="docutils literal notranslate"><span class="pre">tests/fitting/test_lsq_cost_dy_contract.py</span></code>、<code class="docutils literal notranslate"><span class="pre">tests/fitting/test_gls_contracts.py</span></code>、<code class="docutils literal notranslate"><span class="pre">tests/fitting/test_models_domain_contract.py</span></code>、<code class="docutils literal notranslate"><span class="pre">tests/statistics/test_degenerate_input_contract.py</span></code>、<code class="docutils literal notranslate"><span class="pre">tests/statistics/test_roc_input_contract.py</span></code>、<code class="docutils literal notranslate"><span class="pre">tests/spectral/test_bootstrap_spectrogram_contract.py</span></code>。</p></li>
 </ul>
@@ -650,11 +665,11 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id11">
-<h2>[0.1.6] - 2026-06-11<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h2>[0.1.6] - 2026-06-11<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>プロット／I/O のフォローアップ修正 (#440、#441、#442 via #443)、開発依存関係の一斉更新 (#431)、FrequencySeries コレクションのレジストリ監査テスト (#438) を含む、バグ修正およびメンテナンスリリースです。</p>
-<section id="id12">
-<h3>バグ修正<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<section id="id14">
+<h3>バグ修正<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Plot</span></code> のサブプロット形状計算を修正し、展開数が常に <code class="docutils literal notranslate"><span class="pre">_expand_args</span></code> と一致するようにしました。引数の順序にかかわらずすべての引数を数えるため、先頭の Spectrogram や行列が後続のコンテナを隠すことはなくなりました。重複していたカウントループは単一のヘルパーに統合し、先頭の行列は唯一の引数である場合に限ってグリッド形状を維持します (#440)。</p></li>
 <li><p>すべての TimeSeries リーダーがパスのリストまたはタプルを処理するようになりました。マージの意味が明確な形式（tdms、ats、csv、netcdf4、gbd、ndscope HDF5、zarr、sdb、win、dttxml）では、共有マルチソースヘルパーを介して時間方向にチャンネルを連結し、空白を NaN でパディングします。一方、自己完結型の形式（wav、audio）では、判別しにくいバックエンドの <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> ではなく明確な <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> を発生させます (#441)。</p></li>
@@ -665,14 +680,14 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p>複数ファイルの行列セグメントのマージで <code class="docutils literal notranslate"><span class="pre">pad=np.nan</span></code> を渡すようになり、ファイル間の空白はエラーを発生させず NaN でパディングされます。</p></li>
 </ul>
 </section>
-<section id="id13">
-<h3>メンテナンス<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<section id="id15">
+<h3>メンテナンス<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">requirements-dev.txt</span></code> の開発依存関係グループ（24 パッケージ）を更新しました (#431)。</p></li>
 </ul>
 </section>
-<section id="id14">
-<h3>テスト<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<section id="id16">
+<h3>テスト<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>コンテナが混在する引数順、単一の 2D/3D/4D 行列、および <code class="docutils literal notranslate"><span class="pre">_expand_args</span></code> の展開数との一致を対象とするプロット形状テストを追加しました。</p></li>
 <li><p>マージ、空白のパディング、重複エラー、空リストの拒否、単一ファイル専用であることを示す明確なエラーを対象とするマルチソースリーダーのテストを追加しました。</p></li>
@@ -681,11 +696,11 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id15">
-<h2>[0.1.5] - 2026-06-10<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<section id="id17">
+<h2>[0.1.5] - 2026-06-10<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
 <p>プロットおよび I/O の緊急修正に焦点を当てたパッチリリースです。</p>
-<section id="id16">
-<h3>バグ修正<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<section id="id18">
+<h3>バグ修正<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.plot()</span></code> を修正し、複数チャンネルの辞書を空白または無効な図にするのではなく、個別のサブプロットに展開するようにしました（#432）。</p></li>
 <li><p>ObsPy をバックエンドとする地震データリーダーを修正し、<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> のキーを安定した文字列トレース名（例：<code class="docutils literal notranslate"><span class="pre">&quot;IU.ANMO.00.BHZ&quot;</span></code>）にしました。これにより、文字列による確実な検索が可能になります（#435）。</p></li>
@@ -693,16 +708,16 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.frequencyseries</span></code> のインポート時 I/O 登録を修正し、FrequencySeries の読み込み形式が GWpy のデフォルト I/O レジストリから認識できるようにしました（#437）。</p></li>
 </ul>
 </section>
-<section id="id17">
-<h3>テスト<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<section id="id19">
+<h3>テスト<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.plot()</span></code> の回帰テストを追加しました。</p></li>
 <li><p>文字列キー、パスのリストによる miniSEED 入力、空リストの拒否に対する地震波 I/O テストを追加しました。</p></li>
 <li><p>サブプロセスで分離した FrequencySeries I/O 登録テストを追加しました。</p></li>
 </ul>
 </section>
-<section id="id18">
-<h3>ドキュメント<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<section id="id20">
+<h3>ドキュメント<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>GWexpy は GWpy を基盤とする独立したパッケージであり、GWpy プロジェクトの公式コンポーネントではないことを明確化しました。</p></li>
 <li><p>README のインストール注記を更新し、conda-forge feedstock が利用可能である一方、conda-forge パッケージは最新の PyPI リリースより遅れる場合があることを反映しました。</p></li>
@@ -716,8 +731,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id19">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4">0.1.4</a> - 2026-05-20<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
+<section id="id21">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4">0.1.4</a> - 2026-05-20<a class="headerlink" href="#id21" title="Link to this heading">#</a></h2>
 <section id="added">
 <h3>追加<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -734,14 +749,14 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>io/gwf</strong>: PR 高速ゲート用に GWF バックエンドを準備し、バックエンド固有の GWF チャネルメタデータの差異を許容。</p></li>
 </ul>
 </section>
-<section id="id20">
-<h3>ドキュメント<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<section id="id22">
+<h3>ドキュメント<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>feedback</strong>: README、ドキュメントハブのページ、フッターリンク、ロードマップ、トラブルシューティングページを更新し、軽微なバグ報告や機能リクエストを公開フィードバックフォームへ案内するようにした。セキュリティ報告は引き続きリポジトリのセキュリティポリシーへ案内する。</p></li>
 </ul>
 </section>
-<section id="id21">
-<h3>テスト<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<section id="id23">
+<h3>テスト<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>io/conformance</strong>: v0.1.4 のブロッキング対象フォーマットのベースラインについて、決定論的なフィクスチャ生成器と読み書きのラウンドトリップカバレッジを追加。</p></li>
 <li><p><strong>io/dttxml</strong>: <code class="docutils literal notranslate"><span class="pre">read_timeseriesdict_dttxml()</span></code> による DTTXML <code class="docutils literal notranslate"><span class="pre">TS</span></code> dict 解析の回帰テストを追加。</p></li>
@@ -756,10 +771,10 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id22">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3">0.1.3</a> - 2026-05-12<a class="headerlink" href="#id22" title="Link to this heading">#</a></h2>
-<section id="id23">
-<h3>修正<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
+<section id="id24">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3">0.1.3</a> - 2026-05-12<a class="headerlink" href="#id24" title="Link to this heading">#</a></h2>
+<section id="id25">
+<h3>修正<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>timeseries/gwf</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> および <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> 入力での複数ファイル GWF 読み込みを修正。</p></li>
 <li><p><strong>timeseries/matrix</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read()</span></code> における ndscope HDF5 の自動検出を修正。</p></li>
@@ -769,15 +784,15 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>plot/geomap</strong>: 読み込み可能な GMT 共有ライブラリがない PyGMT インストールを、インポート時に失敗させず利用不能なオプションバックエンドとして扱う。</p></li>
 </ul>
 </section>
-<section id="id24">
-<h3>既知の問題<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<section id="id26">
+<h3>既知の問題<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>netcdf</strong>: 同梱の NetCDF フィクスチャは、場合によっては TimeSeries リーダーの時間座標契約に失敗することがある（#393）。生成された NetCDF のラウンドトリップカバレッジは引き続き成功する。NetCDF フィクスチャに依存するユーザーは、ファイルが明示的な時間座標を公開していることを確認すること。</p></li>
 </ul>
 </section>
 </section>
-<section id="id25">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.1...v0.1.2">0.1.2</a> - 2026-05-08<a class="headerlink" href="#id25" title="Link to this heading">#</a></h2>
+<section id="id27">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.1...v0.1.2">0.1.2</a> - 2026-05-08<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
 <section id="narrow-v0-1-2-hotfix-scope">
 <h3>v0.1.2 ホットフィックスの限定スコープ<a class="headerlink" href="#narrow-v0-1-2-hotfix-scope" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -811,8 +826,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>docs</strong>: チュートリアルノートブック全体を「リセットして再折り返し」し、<code class="docutils literal notranslate"><span class="pre">warnings.catch_warnings()</span></code> ブロックのインデントエラーを修正。</p></li>
 </ul>
 </section>
-<section id="id26">
-<h3>追加<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<section id="id28">
+<h3>追加<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>fields</strong>: <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> と <code class="docutils literal notranslate"><span class="pre">TensorField</span></code> が NumPy ndarray から直接初期化できるようになった（<code class="docutils literal notranslate"><span class="pre">VectorField</span></code> は 5D、<code class="docutils literal notranslate"><span class="pre">TensorField</span></code> は 6D）。後方互換性のある辞書初期化を壊さず、コンポーネント <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> を自動生成する。</p></li>
 </ul>
@@ -824,8 +839,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>plot</strong>: <code class="docutils literal notranslate"><span class="pre">FieldPlot</span></code> のラベルで、単位のないメタデータに空の単位括弧を表示しないようにし、最新のスカラー・カラーバーを公開属性 <code class="docutils literal notranslate"><span class="pre">last_field_colorbar</span></code> で参照できるようにした。明示的な <code class="docutils literal notranslate"><span class="pre">label=&quot;&quot;</span></code> カラーバーラベルは引き続きサポートする。</p></li>
 </ul>
 </section>
-<section id="id27">
-<h3>ドキュメント<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<section id="id29">
+<h3>ドキュメント<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>docs</strong>: Class Index を 5 つの主要カテゴリ（Core、Field、Signal、Analysis、Utilities）に統合し、日本語訳を標準化（例：<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> は「時系列行列」）。</p></li>
 <li><p><strong>docs</strong>: 主要なガイダンスページ（<code class="docutils literal notranslate"><span class="pre">io_formats</span></code>、<code class="docutils literal notranslate"><span class="pre">numerical_stability</span></code>、<code class="docutils literal notranslate"><span class="pre">time_utilities</span></code>、<code class="docutils literal notranslate"><span class="pre">architecture</span></code>）を、判断表と意思決定中心の構成で再設計。</p></li>
@@ -843,10 +858,10 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id28">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0...v0.1.1">0.1.1</a> - 2026-04-28<a class="headerlink" href="#id28" title="Link to this heading">#</a></h2>
-<section id="id29">
-<h3>追加<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<section id="id30">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0...v0.1.1">0.1.1</a> - 2026-04-28<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
+<section id="id31">
+<h3>追加<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>SegmentTable</strong>：外部ファイルから初期化するためのファクトリーメソッド <code class="docutils literal notranslate"><span class="pre">read()</span></code> と <code class="docutils literal notranslate"><span class="pre">read_csv()</span></code> を追加しました。</p></li>
 <li><p><strong>SegmentTable</strong>：反復可能プロトコル（<code class="docutils literal notranslate"><span class="pre">__iter__</span></code>）と、行単位で直接処理するための <code class="docutils literal notranslate"><span class="pre">RowProxy</span></code> に対応しました。</p></li>
@@ -863,15 +878,15 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>チュートリアル</strong>：<code class="docutils literal notranslate"><span class="pre">case_coupling_analysis.ipynb</span></code> / <code class="docutils literal notranslate"><span class="pre">case_response_analysis.ipynb</span></code> に Phase 1–3 の利用例を追補しました（Phase 4）。</p></li>
 </ul>
 </section>
-<section id="id30">
-<h3>変更<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<section id="id32">
+<h3>変更<a class="headerlink" href="#id32" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>SegmentTable</strong>：<code class="docutils literal notranslate"><span class="pre">add_series_column()</span></code> が、直感的な遅延読み込みのための単純な <code class="docutils literal notranslate"><span class="pre">loader(segment)</span></code> callable を受け付けるようになりました。</p></li>
 <li><p><strong>noise/peaks</strong>：実装との一貫性を保つため、<code class="docutils literal notranslate"><span class="pre">lorentzian_line()</span></code> のパラメータ名を <code class="docutils literal notranslate"><span class="pre">fwhm</span></code> から <code class="docutils literal notranslate"><span class="pre">gamma</span></code> に変更しました。</p></li>
 </ul>
 </section>
-<section id="id31">
-<h3>修正<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
+<section id="id33">
+<h3>修正<a class="headerlink" href="#id33" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>fitting/highlevel</strong>：<code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum</span></code> における PSD と共分散行列の周波数ビンの位置合わせを修正しました。</p></li>
 <li><p><strong>fitting/highlevel</strong>：<code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum</span></code> から未対応の <code class="docutils literal notranslate"><span class="pre">stride</span></code> パラメータを削除しました。</p></li>
@@ -888,14 +903,14 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </ul>
 </section>
 </section>
-<section id="id32">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...v0.1.0">0.1.0</a> - 2026-03-15<a class="headerlink" href="#id32" title="Link to this heading">#</a></h2>
+<section id="id34">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...v0.1.0">0.1.0</a> - 2026-03-15<a class="headerlink" href="#id34" title="Link to this heading">#</a></h2>
 <section id="release-summary">
 <h3>リリース概要<a class="headerlink" href="#release-summary" title="Link to this heading">#</a></h3>
 <p>SoftwareX 掲載に向けた GWexpy 初の安定版リリースです。このリリースでは、API の安定性、GWpy 互換性、再現可能なコミッショニングワークフローに重点を置いています。</p>
 </section>
-<section id="id33">
-<h3>変更<a class="headerlink" href="#id33" title="Link to this heading">#</a></h3>
+<section id="id35">
+<h3>変更<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>バージョン</strong>：<code class="docutils literal notranslate"><span class="pre">0.1.0b2</span></code> から <code class="docutils literal notranslate"><span class="pre">0.1.0</span></code> に更新しました（安定版リリース）。</p></li>
 <li><p><strong>GWpy API UX 互換性</strong>：主要なスペクトル API の呼び出し規約を GWpy 4.x の使用パターンに合わせました。</p>
@@ -917,8 +932,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>Authors</strong>: スパム防止のため <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> からメールアドレスを削除しました（連絡は GitHub Issues または論文経由でお願いします）</p></li>
 </ul>
 </section>
-<section id="id34">
-<h3>追加<a class="headerlink" href="#id34" title="Link to this heading">#</a></h3>
+<section id="id36">
+<h3>追加<a class="headerlink" href="#id36" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>互換性ポリシー文書</strong>：</p>
 <ul>
@@ -950,8 +965,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </section>
 <section id="b2-2026-02-23">
 <h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b1...v0.1.0b2">0.1.0b2</a> - 2026-02-23<a class="headerlink" href="#b2-2026-02-23" title="Link to this heading">#</a></h2>
-<section id="id35">
-<h3>変更<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
+<section id="id37">
+<h3>変更<a class="headerlink" href="#id37" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>API の統一</strong>：すべてのスペクトル解析関数のシグネチャを、サンプル数ベースのパラメーター（<code class="docutils literal notranslate"><span class="pre">nperseg</span></code>/<code class="docutils literal notranslate"><span class="pre">noverlap</span></code>）ではなく、時間ベースのパラメーター（秒単位の <code class="docutils literal notranslate"><span class="pre">fftlength</span></code>/<code class="docutils literal notranslate"><span class="pre">overlap</span></code>）を使うよう標準化しました。これにより gwexpy が GWpy の規約にそろい、ユーザー体験が向上します。</p>
 <ul>
@@ -990,8 +1005,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </li>
 </ul>
 </section>
-<section id="id36">
-<h3>修正<a class="headerlink" href="#id36" title="Link to this heading">#</a></h3>
+<section id="id38">
+<h3>修正<a class="headerlink" href="#id38" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>GBD</strong>：Graphtec の <code class="docutils literal notranslate"><span class="pre">.gbd</span></code> を読み込む際にアンプのレンジスケーリングを適用し、アナログチャンネルを生カウントからボルトへ正しく変換します。また、<code class="docutils literal notranslate"><span class="pre">Alarm</span></code>/<code class="docutils literal notranslate"><span class="pre">AlarmOut</span></code>/<code class="docutils literal notranslate"><span class="pre">Pulse*</span></code>/<code class="docutils literal notranslate"><span class="pre">Logic*</span></code> をデジタル状態チャンネル（0/1、無次元）として扱います。デジタルチャンネルのマッピングは <code class="docutils literal notranslate"><span class="pre">digital_channels=...</span></code> で上書きできます。</p></li>
 </ul>
@@ -1018,8 +1033,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p><strong>GUI アーキテクチャ</strong>: GUI コンポーネントにおける UI 層とコアロジック層の関心の分離を改善しました。</p></li>
 </ul>
 </section>
-<section id="id37">
-<h3>追加<a class="headerlink" href="#id37" title="Link to this heading">#</a></h3>
+<section id="id39">
+<h3>追加<a class="headerlink" href="#id39" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>コアデータ構造</strong>:</p>
 <ul>
@@ -1061,8 +1076,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 </li>
 </ul>
 </section>
-<section id="id38">
-<h3>改善<a class="headerlink" href="#id38" title="Link to this heading">#</a></h3>
+<section id="id40">
+<h3>改善<a class="headerlink" href="#id40" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>型安全性</strong>: コードベース全体で型アノテーションを大幅に拡充しました:</p>
 <ul>
@@ -1083,8 +1098,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 <li><p>保守性向上のため <code class="docutils literal notranslate"><span class="pre">noise</span></code> モジュールをリファクタリングしました。</p></li>
 </ul>
 </section>
-<section id="id39">
-<h3>修正<a class="headerlink" href="#id39" title="Link to this heading">#</a></h3>
+<section id="id41">
+<h3>修正<a class="headerlink" href="#id41" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>GUI テスト</strong>: ウィンドウの表示タイミングに関連する不安定なテスト問題を解消しました。</p></li>
 <li><p><strong>型エラー</strong>：初期化されていない属性や戻り値型アノテーションの欠落など、さまざまな MyPy エラーを修正しました。</p></li>
@@ -1133,98 +1148,100 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">未リリース</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">未リリース</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">0.1.11 - 2026-07-25</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-visible-bug-fixes">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">依存関係</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">[0.1.10] - 2026-07-18</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">動作に影響するバグ修正</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">[0.1.10] - 2026-07-18</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">動作に影響するバグ修正</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">[0.1.9] - 2026-07-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">動作に影響するバグ修正</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">[0.1.9] - 2026-07-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">動作に影響するバグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bug-fixes">バグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development">開発</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">[0.1.8] - 2026-07-04</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">動作に影響するバグ修正</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">バグ修正</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">[0.1.8] - 2026-07-04</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">バグ修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-changes">動作の変更</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">依存関係</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">依存関係</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests">テスト</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-limitations">既知の制限事項</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">[0.1.7] - 2026-06-27</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">バグ修正</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">テスト</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">[0.1.7] - 2026-06-27</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">バグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">テスト</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maintenance">メンテナンス</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">ドキュメント</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">[0.1.6] - 2026-06-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">バグ修正</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">メンテナンス</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">テスト</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">[0.1.6] - 2026-06-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">バグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">メンテナンス</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">テスト</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">[0.1.5] - 2026-06-10</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">バグ修正</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">テスト</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">ドキュメント</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">[0.1.5] - 2026-06-10</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">バグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">テスト</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">ドキュメント</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deferred">延期</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">0.1.4 - 2026-05-20</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">0.1.4 - 2026-05-20</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">追加</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">修正</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">ドキュメント</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">テスト</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">ドキュメント</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">テスト</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-issues">既知の問題</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">0.1.3 - 2026-05-12</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">修正</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">既知の問題</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">0.1.3 - 2026-05-12</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">既知の問題</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">0.1.2 - 2026-05-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">0.1.2 - 2026-05-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#narrow-v0-1-2-hotfix-scope">v0.1.2 ホットフィックスの限定スコープ</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#packaging-optional-dependencies-issue-251">パッケージングとオプション依存関係（issue #251）</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#infrastructure-ci">インフラストラクチャと CI</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">追加</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">追加</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">変更</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">ドキュメント</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">ドキュメント</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#infrastructure">インフラストラクチャ</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">0.1.1 - 2026-04-28</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">追加</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">変更</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">修正</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">0.1.1 - 2026-04-28</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">追加</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">変更</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">修正</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#previously-unreleased-merged-into-0-1-1">以前の未リリース項目（0.1.1 に統合）</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">0.1.0 - 2026-03-15</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">0.1.0 - 2026-03-15</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#release-summary">リリース概要</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">変更</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">追加</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">変更</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">追加</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b2-2026-02-23">0.1.0b2 - 2026-02-23</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">変更</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">変更</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improved">改善</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">修正</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b1-2026-02-01">0.1.0b1 - 2026-02-01</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-public-release">初回公開リリース</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#important-notes">重要な注意事項</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#refactored">リファクタリング</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">追加</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">改善</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">追加</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id40">改善</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">修正</a></li>
 </ul>
 </li>
 </ul>
