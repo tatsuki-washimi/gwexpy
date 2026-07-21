@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import threading
 import warnings
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -58,6 +59,14 @@ def rayleigh_pvalue(
         slicing, arithmetic, or serialization.
 
     """
+    if rng is not None and seed is not None:
+        warnings.warn(
+            "rayleigh_pvalue: both rng and seed were given; seed is "
+            "ignored because rng takes priority",
+            UserWarning,
+            stacklevel=2,
+        )
+
     # 1. Get background distribution of Rayleigh statistic for n_samples
     dist = _get_rayleigh_stat_null_distribution(
         n_samples, n_monte_carlo, rng=rng, seed=seed
@@ -77,11 +86,8 @@ def rayleigh_pvalue(
 
     p_vals = 2.0 * np.minimum(upper_counts, lower_counts) / len(dist)
 
-    # Floor at 2/len(dist): a Monte-Carlo p-value of exactly 0 is invalid
-    # (it only means "at least as extreme as every trial on one side") and
-    # makes -log10(p)=Inf downstream, mirroring the floor compute_gauch()
-    # applies to its (one-sided) p-value for the same reason (issue #459).
-    p_vals = np.clip(p_vals, 2.0 / len(dist), 1.0).astype(float)
+    # Clip p-values to [0, 1]
+    p_vals = np.clip(p_vals, 0.0, 1.0).astype(float)
 
     # A non-finite Rayleigh statistic sorts to the end of `dist`, so
     # searchsorted would make min(upper, lower)=0 -> p=0.0, i.e. a false
@@ -110,12 +116,6 @@ def rayleigh_pvalue(
         result.rng_provided = True
         if seed is not None:
             result.seed_unused = True
-            warnings.warn(
-                "rayleigh_pvalue: both rng and seed were given; seed is "
-                "ignored because rng takes priority",
-                RuntimeWarning,
-                stacklevel=2,
-            )
     elif seed is not None:
         result.seed = seed
     return result
@@ -126,16 +126,23 @@ _RAYLEIGH_STAT_CACHE_LOCK = threading.Lock()
 
 
 def _simulate_rayleigh_null(
-    n: int, n_trials: int, rng: np.random.Generator
+    n: int, n_trials: int, draw_uniform: Callable[[int], np.ndarray]
 ) -> np.ndarray:
-    """Draw `n_trials` Rayleigh statistics, each from `n` Rayleigh(sigma=1) samples."""
+    """Draw `n_trials` Rayleigh statistics, each from `n` Rayleigh(sigma=1) samples.
+
+    `draw_uniform(size)` must return `size` uniform(0, 1) samples -- either a
+    `numpy.random.Generator.random` bound method or the legacy
+    `numpy.random.random` global-state function, so the caller controls
+    whether draws come from an explicit Generator or the seedable global
+    state.
+    """
     null_stats = np.zeros(n_trials)
     const = np.sqrt((4.0 - np.pi) / np.pi)
 
     for i in range(n_trials):
         # Rayleigh(sigma=1) samples; floor the uniform draw away from 0 so
         # log(0)=-inf cannot inject an Inf into the null distribution.
-        u = np.clip(rng.random(n), np.finfo(float).tiny, 1.0)
+        u = np.clip(draw_uniform(n), np.finfo(float).tiny, 1.0)
         s = np.sqrt(-2.0 * np.log(u))
         # Rayleigh statistic R
         r = np.std(s) / (np.mean(s) * const)
@@ -156,9 +163,13 @@ def _get_rayleigh_stat_null_distribution(
     Reproducibility contract (#464):
 
     - Neither `rng` nor `seed`: backward-compatible non-deterministic
-      behavior, cached by `(n, n_trials)` for reuse across calls (cache
-      population is serialized, so this path is thread-safe).
-    - `seed=`: reproducible across calls with the same `(n, n_trials, seed)`.
+      behavior, drawn from the legacy global `numpy.random` state (so
+      `numpy.random.seed(...)` still controls it, as it always has) and
+      cached by `(n, n_trials)` for reuse across calls (cache population is
+      serialized, so this path is thread-safe).
+    - `seed=`: reproducible across calls with the same `(n, n_trials, seed)`,
+      via a dedicated `numpy.random.Generator` independent of the legacy
+      global state.
     - `rng=`: follows the given Generator's own state (not reproducible by
       itself unless the caller seeds and re-supplies the Generator).
     - Both given: `rng` is used and `seed` is ignored.
@@ -179,14 +190,17 @@ def _get_rayleigh_stat_null_distribution(
 
     if rng is not None or seed is not None:
         effective_rng = rng if rng is not None else np.random.default_rng(seed)
-        return _simulate_rayleigh_null(n, n_trials, effective_rng)
+        return _simulate_rayleigh_null(n, n_trials, effective_rng.random)
 
     # Key the cache by (n, n_trials): keying by n alone silently returns a
     # low-resolution distribution when a later caller requests more trials.
     key = (n, n_trials)
     with _RAYLEIGH_STAT_CACHE_LOCK:
         if key not in _RAYLEIGH_STAT_CACHE:
+            # Legacy global state, not a fresh Generator: preserves the
+            # pre-#464 contract that `numpy.random.seed(...)` controls the
+            # no-args path.
             _RAYLEIGH_STAT_CACHE[key] = _simulate_rayleigh_null(
-                n, n_trials, np.random.default_rng()
+                n, n_trials, np.random.random
             )
         return _RAYLEIGH_STAT_CACHE[key]

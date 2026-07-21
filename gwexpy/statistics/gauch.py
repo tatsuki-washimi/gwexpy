@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import threading
 import warnings
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -72,6 +73,14 @@ def compute_gauch(
     GauChResult
 
     """
+    if rng is not None and seed is not None:
+        warnings.warn(
+            "compute_gauch: both rng and seed were given; seed is "
+            "ignored because rng takes priority",
+            UserWarning,
+            stacklevel=2,
+        )
+
     if stride is None:
         if overlap is None:
             stride = fftlength
@@ -155,12 +164,6 @@ def compute_gauch(
         metadata["rng_provided"] = True
         if seed is not None:
             metadata["seed_unused"] = True
-            warnings.warn(
-                "compute_gauch: both rng and seed were given; seed is "
-                "ignored because rng takes priority",
-                RuntimeWarning,
-                stacklevel=2,
-            )
     elif seed is not None:
         metadata["seed"] = seed
 
@@ -179,14 +182,19 @@ _LILLIEFORS_CACHE_LOCK = threading.Lock()
 
 
 def _simulate_lilliefors_null(
-    n: int, n_trials: int, rng: np.random.Generator
+    n: int, n_trials: int, draw_uniform: Callable[[int], np.ndarray]
 ) -> np.ndarray:
-    """Draw `n_trials` Lilliefors Dn statistics under H0, each from `n` samples."""
+    """Draw `n_trials` Lilliefors Dn statistics under H0, each from `n` samples.
+
+    `draw_uniform(size)` must return `size` uniform(0, 1) samples -- either a
+    `numpy.random.Generator.random` bound method or the legacy
+    `numpy.random.random` global-state function.
+    """
     null_dns = np.zeros(n_trials)
     for i in range(n_trials):
         # Floor the uniform draw away from 0 so log(0)=-inf cannot inject
         # an Inf that permanently corrupts the cached null distribution.
-        u = np.clip(rng.random(n), np.finfo(float).tiny, 1.0)
+        u = np.clip(draw_uniform(n), np.finfo(float).tiny, 1.0)
         null_sample = np.sqrt(-2.0 * np.log(u))
         s2_est = np.mean(null_sample**2) / 2.0
         sorted_null = np.sort(null_sample)
@@ -209,9 +217,13 @@ def _get_lilliefors_null_distribution(
     `gwexpy.statistics.rayleigh_test._get_rayleigh_stat_null_distribution`:
 
     - Neither `rng` nor `seed`: backward-compatible non-deterministic
-      behavior, cached by `(n, n_trials)` for reuse across calls (cache
-      population is serialized, so this path is thread-safe).
-    - `seed=`: reproducible across calls with the same `(n, n_trials, seed)`.
+      behavior, drawn from the legacy global `numpy.random` state (so
+      `numpy.random.seed(...)` still controls it, as it always has) and
+      cached by `(n, n_trials)` for reuse across calls (cache population is
+      serialized, so this path is thread-safe).
+    - `seed=`: reproducible across calls with the same `(n, n_trials, seed)`,
+      via a dedicated `numpy.random.Generator` independent of the legacy
+      global state.
     - `rng=`: follows the given Generator's own state.
     - Both given: `rng` is used and `seed` is ignored.
 
@@ -227,7 +239,7 @@ def _get_lilliefors_null_distribution(
 
     if rng is not None or seed is not None:
         effective_rng = rng if rng is not None else np.random.default_rng(seed)
-        return _simulate_lilliefors_null(n, n_trials, effective_rng)
+        return _simulate_lilliefors_null(n, n_trials, effective_rng.random)
 
     # Key the cache by (n, n_trials): keying by n alone silently returns a
     # low-resolution distribution when a later caller requests more trials,
@@ -235,8 +247,11 @@ def _get_lilliefors_null_distribution(
     key = (n, n_trials)
     with _LILLIEFORS_CACHE_LOCK:
         if key not in _LILLIEFORS_CACHE:
+            # Legacy global state, not a fresh Generator: preserves the
+            # pre-#464 contract that `numpy.random.seed(...)` controls the
+            # no-args path.
             _LILLIEFORS_CACHE[key] = _simulate_lilliefors_null(
-                n, n_trials, np.random.default_rng()
+                n, n_trials, np.random.random
             )
         return _LILLIEFORS_CACHE[key]
 

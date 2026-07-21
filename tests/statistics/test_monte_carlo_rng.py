@@ -74,6 +74,21 @@ class TestRayleighNullDistributionReproducibility:
         _get_rayleigh_stat_null_distribution(22, 52)
         assert (22, 52) in rayleigh_module._RAYLEIGH_STAT_CACHE
 
+    def test_no_args_path_still_controlled_by_legacy_global_seed(self):
+        """#464 review: the no-args path must keep drawing from the legacy
+        global numpy.random state (not a fresh, unseeded default_rng()) so
+        that a pre-existing numpy.random.seed(...) call still determines
+        the result, exactly as it did before rng=/seed= were added."""
+        rayleigh_module._RAYLEIGH_STAT_CACHE.clear()
+        np.random.seed(123)
+        d1 = _get_rayleigh_stat_null_distribution(23, 53)
+
+        rayleigh_module._RAYLEIGH_STAT_CACHE.clear()
+        np.random.seed(123)
+        d2 = _get_rayleigh_stat_null_distribution(23, 53)
+
+        np.testing.assert_array_equal(d1, d2)
+
     def test_default_path_is_thread_safe(self):
         """#464: concurrent callers on the same (n, n_trials) key must all
         observe one consistently-populated cache entry, not a race that
@@ -126,7 +141,7 @@ class TestRayleighPvalueReproducibility:
         assert rng_result.rng_provided is True
         assert not hasattr(rng_result, "seed")
 
-        with pytest.warns(RuntimeWarning, match="seed is ignored"):
+        with pytest.warns(UserWarning, match="seed is ignored"):
             both_result = rayleigh_pvalue(
                 spec, n_samples=10, n_monte_carlo=30,
                 rng=np.random.default_rng(7), seed=999,
@@ -150,6 +165,19 @@ class TestLilliefersNullDistributionReproducibility:
         p1 = _get_rayleigh_lilliefors_pvalue(0.3, n=17, n_trials=42, seed=1)
         p2 = _get_rayleigh_lilliefors_pvalue(0.3, n=17, n_trials=42, seed=1)
         assert p1 == p2
+
+    def test_no_args_path_still_controlled_by_legacy_global_seed(self):
+        """#464 review: mirrors the rayleigh_test analogue -- the no-args
+        path must stay on the legacy global numpy.random state."""
+        gauch_module._LILLIEFORS_CACHE.clear()
+        np.random.seed(123)
+        d1 = _get_lilliefors_null_distribution(18, 43)
+
+        gauch_module._LILLIEFORS_CACHE.clear()
+        np.random.seed(123)
+        d2 = _get_lilliefors_null_distribution(18, 43)
+
+        np.testing.assert_array_equal(d1, d2)
 
 
 class TestComputeGauchRng:
@@ -187,7 +215,7 @@ class TestComputeGauchRng:
         )
         assert seeded_res.metadata["seed"] == 7
 
-        with pytest.warns(RuntimeWarning, match="seed is ignored"):
+        with pytest.warns(UserWarning, match="seed is ignored"):
             both_res = compute_gauch(
                 ts, fftlength=0.25, window=10, n_monte_carlo=50,
                 rng=np.random.default_rng(7), seed=999,

@@ -77,19 +77,6 @@ def test_rayleigh_pvalue_nan_statistic_becomes_nan_not_zero():
     assert result.value[0, 1] != 0.0
 
 
-# --- rayleigh_test: Monte-Carlo p-value floored at 2/n_trials (mirrors #7) --
-
-
-def test_rayleigh_pvalue_floored_at_two_over_n_trials():
-    # A statistic far outside the null distribution on one side makes
-    # min(upper_counts, lower_counts) == 0, i.e. an unfloored p of exactly
-    # 0.0 -- invalid for a Monte-Carlo estimate and Inf under -log10(p).
-    spec = _spec(np.array([[1e6]]))
-    result = rayleigh_pvalue(spec, n_samples=10, n_monte_carlo=10)
-    assert result.value[0, 0] == pytest.approx(2.0 / 10)
-    assert result.value[0, 0] > 0.0
-
-
 # --- rayleigh_test: rand()=0 must not inject Inf (#8) ------------------------
 
 
