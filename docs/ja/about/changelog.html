@@ -476,6 +476,24 @@ samples between segments (<code class="docutils literal notranslate"><span class
 passes <code class="docutils literal notranslate"><span class="pre">window=&quot;hann&quot;,</span> <span class="pre">detrend=False,</span> <span class="pre">boundary=&quot;zeros&quot;,</span> <span class="pre">padded=True</span></code>
 explicitly instead of relying on scipy's defaults. Partially addresses
 #465 (DC/Nyquist bin bias is tracked separately).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> now fits the DC (index 0) and,
+when the segment length is even, Nyquist (the last one-sided bin)
+frequency bins using only their real FFT coefficient, instead of
+concatenating real and imaginary parts as if they were independent for
+those bins too. A real-valued signal's DC/Nyquist FFT coefficients are
+purely real, so the previous re+im concatenation fed a constant-zero
+imaginary half into the fit, collapsing the estimated Student-t <code class="docutils literal notranslate"><span class="pre">nu</span></code>
+toward 0 and producing a systematic false non-Gaussianity detection at
+DC regardless of the actual input. This is a GWexpy-specific
+correctness fix, not a GWpy compatibility change (GWpy has no
+equivalent Student-t fit API); DC/Nyquist are identified structurally
+(index 0 / the last one-sided bin), not via a floating-point frequency
+comparison, computed from the <em>effective</em> segment length (<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code>
+silently shrinks <code class="docutils literal notranslate"><span class="pre">nperseg</span></code> to <code class="docutils literal notranslate"><span class="pre">len(ts)</span></code> when the requested value exceeds
+it, which can flip its parity relative to the requested <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">*</span> <span class="pre">sample_rate</span></code>). <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> now also rejects complex-valued
+input with <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (previously silent, and <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code>
+ignores <code class="docutils literal notranslate"><span class="pre">return_onesided=True</span></code> for complex input, which would have
+broken this bin classification). Completes #465.</p></li>
 </ul>
 </section>
 </section>
