@@ -177,6 +177,35 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         )
         return
 
+    if gate == "interop-mne":
+        # tests/interop/test_interop_mne.py uses `pytest.importorskip("mne")`,
+        # so if mne fails to import the whole file silently skips instead of
+        # failing. Assert on the JUnit skipped count so that regression goes
+        # unnoticed (#493: this gate exists specifically to keep mne coverage
+        # off the "runs locally only" list).
+        junit_path = Path("interop-mne-results.xml")
+        run_cmd(
+            [
+                "pytest",
+                "-v",
+                f"--junit-xml={junit_path}",
+                "tests/interop/test_interop_mne.py",
+            ]
+        )
+
+        import xml.etree.ElementTree as ET
+
+        root = ET.parse(junit_path).getroot()
+        suite = root if root.tag == "testsuite" else root.find("testsuite")
+        skipped = int(suite.attrib.get("skipped", 0))
+        errors = int(suite.attrib.get("errors", 0))
+        if skipped or errors:
+            raise SystemExit(
+                f"interop-mne gate: skipped={skipped} errors={errors} -- "
+                "expected 0 of each (mne may have failed to import)"
+            )
+        return
+
     raise SystemExit(f"Unknown gate: {gate}")
 
 
@@ -193,6 +222,7 @@ def main(argv: list[str] | None = None) -> int:
             "docs-notebook",
             "io-zarr",
             "interop-contract",
+            "interop-mne",
         ],
     )
     parser.add_argument(
