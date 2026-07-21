@@ -132,7 +132,8 @@ class TestInputValidation:
 class TestDcNyquistRealOnlyFit:
     """#465: DC/Nyquist bins of a real input are purely real, so their fit
     must use only ``window`` real samples, not ``2 * window`` re+im
-    samples -- identified by frequency value, not bin index.
+    samples -- identified structurally (index 0 / the last one-sided bin
+    for even nfft), not via a floating-point frequency comparison.
     """
 
     def _fit_sample_lengths(self, ts, **kwargs):
@@ -187,6 +188,27 @@ class TestDcNyquistRealOnlyFit:
         )
         np.testing.assert_allclose(res.frequencies.value, [2, 4, 6])
         assert lengths == [18, 18, 18]
+
+    def test_fine_frequency_resolution_does_not_over_match_dc(self):
+        # Regression: a floating-point np.isclose(f, 0.0) comparison (the
+        # original approach) misclassifies several near-DC bins as DC once
+        # the bin spacing (fs/nfft) drops below its default atol=1e-8 --
+        # e.g. fs=1e-7, nfft=32 gives df=3.125e-9 and 4 bins (indices 0-3)
+        # all satisfy np.isclose(f, 0.0). The structural (index-based) fix
+        # must mark only index 0 as DC regardless of frequency resolution.
+        fs = 1e-7
+        nfft = 32
+        assert fs / nfft < 1e-8  # sanity: finer than the old atol
+        ts = TimeSeries(
+            np.random.default_rng(0).standard_normal(64), sample_rate=fs, t0=0
+        )
+        res, lengths = self._fit_sample_lengths(ts, fftlength=nfft / fs, window=3)
+        # n_freqs = nfft//2 + 1 = 17; nfft even -> index 0 (DC) and index
+        # -1 (Nyquist) are real-only, everything else stays two-sided.
+        assert len(res.frequencies.value) == 17
+        assert lengths[0] == 3  # DC
+        assert lengths[1:-1] == [6] * 15  # all other bins two-sided
+        assert lengths[-1] == 3  # Nyquist
 
 
 class TestDcNyquistNumericRegression:

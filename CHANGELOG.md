@@ -17,15 +17,19 @@
   explicitly instead of relying on scipy's defaults. Partially addresses
   #465 (DC/Nyquist bin bias is tracked separately).
 
-- **statistics**: `compute_student_t_nu()` now fits the DC (f=0) and, when
-  the segment length is even, Nyquist (f=sample_rate/2) frequency bins
-  using only their real FFT coefficient, instead of concatenating real and
-  imaginary parts as if they were independent for those bins too. A
-  real-valued signal's DC/Nyquist FFT coefficients are purely real, so the
-  previous re+im concatenation fed a constant-zero imaginary half into the
-  fit, collapsing the estimated Student-t `nu` toward 0 and producing a
-  systematic false non-Gaussianity detection at DC regardless of the
-  actual input. `compute_student_t_nu()` now also rejects complex-valued
+- **statistics**: `compute_student_t_nu()` now fits the DC (index 0) and,
+  when the segment length is even, Nyquist (the last one-sided bin)
+  frequency bins using only their real FFT coefficient, instead of
+  concatenating real and imaginary parts as if they were independent for
+  those bins too. A real-valued signal's DC/Nyquist FFT coefficients are
+  purely real, so the previous re+im concatenation fed a constant-zero
+  imaginary half into the fit, collapsing the estimated Student-t `nu`
+  toward 0 and producing a systematic false non-Gaussianity detection at
+  DC regardless of the actual input. This is a GWexpy-specific
+  correctness fix, not a GWpy compatibility change (GWpy has no
+  equivalent Student-t fit API); DC/Nyquist are identified structurally
+  (index 0 / the last one-sided bin), not via a floating-point frequency
+  comparison. `compute_student_t_nu()` now also rejects complex-valued
   input with `ValueError` (previously silent, and `scipy.signal.stft`
   ignores `return_onesided=True` for complex input, which would have
   broken this bin classification). Completes #465.

@@ -60,15 +60,28 @@ def compute_student_t_nu(
 
     Notes
     -----
-    Re/im independence is assumed for ``0 < f < Nyquist``. At DC and (when
-    the segment length is even) Nyquist, a real-valued input's FFT
-    coefficient is purely real, so only the real part is used for those
-    bins -- their fit uses ``window`` samples instead of ``2 * window``,
-    so their ``nu`` estimate has higher variance. ``ts`` must be
-    real-valued: `scipy.signal.stft` silently ignores
+    This Student-t non-Gaussianity indicator is a GWexpy-specific
+    extension with no equivalent in GWpy (which does not expose a
+    Student-t fit API); "DC/Nyquist real-only fit" is not a GWpy
+    compatibility behavior to match, it is this indicator's own
+    correctness fix. The reasoning follows the same real-input one-sided
+    FFT convention SciPy (and GWpy's periodogram-based spectral estimates)
+    already rely on elsewhere: a real signal's DC and (for even segment
+    length) Nyquist bins have no distinct negative-frequency counterpart
+    to fold in, so they carry half the effective degrees of freedom of an
+    ordinary bin.
+
+    Concretely: re/im independence is assumed for ``0 < f < Nyquist``. At
+    DC and (when the segment length is even) Nyquist, a real-valued
+    input's FFT coefficient is purely real, so only the real part is used
+    for those bins -- their fit uses ``window`` samples instead of
+    ``2 * window``, so their ``nu`` estimate has higher variance. ``ts``
+    must be real-valued: `scipy.signal.stft` silently ignores
     ``return_onesided=True`` for complex input (switching to two-sided
     output), which breaks both the DC/Nyquist real-FFT assumption above
-    and the frequency-bin count/`frange` handling below.
+    and the frequency-bin count/`frange` handling below. There is
+    currently no option to opt back into the old (re+im at DC/Nyquist)
+    behavior.
 
     The underlying `scipy.signal.stft` call is made with explicit
     ``window="hann"``, ``detrend=False``, ``boundary="zeros"`` and
@@ -155,6 +168,22 @@ def compute_student_t_nu(
 
     n_freqs, n_times = Zxx.shape
 
+    # DC (index 0, exactly f=0) and, when nfft is even, Nyquist (the last
+    # one-sided bin, exactly f=fs/2) bins of a real-input FFT are purely
+    # real. Identified structurally on the *full* one-sided output -- index
+    # 0 is always DC and, for even nperseg, scipy's one-sided output always
+    # ends exactly at the Nyquist bin -- rather than via a floating-point
+    # frequency comparison (e.g. np.isclose(f, fs/2)), which has no natural
+    # tolerance scale and, at very fine frequency resolution (nfft large,
+    # fs small), risks matching several near-DC bins as if they were all
+    # DC. An odd nfft (no exact Nyquist bin) or an frange that excludes
+    # DC/Nyquist are both still handled correctly since this mask is
+    # carried through the same frange filter as `f`/`Zxx` below (#465).
+    is_real_only_bin_full = np.zeros(n_freqs, dtype=bool)
+    is_real_only_bin_full[0] = True
+    if nfft % 2 == 0:
+        is_real_only_bin_full[-1] = True
+
     # Apply frequency range restriction to limit computation
     if frange is not None:
         flo, fhi = frange
@@ -162,21 +191,12 @@ def compute_student_t_nu(
         f = f[freq_mask]
         Zxx = Zxx[freq_mask, :]
         n_freqs = f.size
+        is_real_only_bin = is_real_only_bin_full[freq_mask]
+    else:
+        is_real_only_bin = is_real_only_bin_full
 
     if n_times < window:
         raise ValueError(f"Too few segments ({n_times}) for window size {window}.")
-
-    # DC (f=0) and, when nfft is even, Nyquist (f=fs/2) bins of a real-input
-    # FFT are purely real -- identified by frequency value (not bin index),
-    # so an odd-nfft top bin (which is not the Nyquist frequency and stays
-    # complex) or an frange that excludes DC/Nyquist are handled correctly
-    # (#465).
-    is_dc = np.isclose(f, 0.0)
-    if nfft % 2 == 0:
-        is_nyquist = np.isclose(f, fs / 2.0)
-    else:
-        is_nyquist = np.zeros_like(f, dtype=bool)
-    is_real_only_bin = is_dc | is_nyquist
 
     n_out = n_times - window + 1
     nu_map = np.zeros((n_out, n_freqs))
