@@ -1749,12 +1749,46 @@ time resolution and frequency resolution.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>The input epoch (<code class="docutils literal notranslate"><span class="pre">t0</span></code>) is reconciled with <code class="docutils literal notranslate"><span class="pre">info[&quot;meas_date&quot;]</span></code>: if
+<code class="docutils literal notranslate"><span class="pre">info</span></code> has no <code class="docutils literal notranslate"><span class="pre">meas_date</span></code> yet, it is set from <code class="docutils literal notranslate"><span class="pre">t0</span></code> (unless
+<code class="docutils literal notranslate"><span class="pre">t0</span> <span class="pre">==</span> <span class="pre">0</span></code>, which leaves it unset); if <code class="docutils literal notranslate"><span class="pre">info</span></code> already has a
+<code class="docutils literal notranslate"><span class="pre">meas_date</span></code>, <code class="docutils literal notranslate"><span class="pre">t0</span></code> – including <code class="docutils literal notranslate"><span class="pre">0</span></code> – is always compared against
+it, and a mismatch beyond ~1us raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of silently
+overwriting or ignoring it. A <code class="docutils literal notranslate"><span class="pre">t0</span></code> that falls on a leap second raises
+<code class="docutils literal notranslate"><span class="pre">LeapSecondConversionError</span></code>.</p>
+<p>For a mapping input, same-length channels are stacked without
+resampling/alignment and therefore must share an <em>exactly</em> matching
+epoch; a mismatch raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (previously stacked silently).
+Differently-timed or differently-sampled channels can still be aligned
+via a <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> with <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code>.</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">gwexpy.interop.</span></span><span class="sig-name descname"><span class="pre">from_mne_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Create a <cite>TimeSeriesDict</cite> from <cite>mne.io.Raw</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> – The <cite>TimeSeriesDict</cite>-like class to construct and populate.</p></li>
+<li><p><strong>raw</strong> (<em>mne.io.Raw</em>) – The MNE <cite>Raw</cite> object to convert.</p></li>
+<li><p><strong>unit_map</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Optional mapping from channel name to unit, applied to the
+resulting <cite>TimeSeries</cite> entries. Channels absent from the mapping
+(or when <code class="docutils literal notranslate"><span class="pre">unit_map</span></code> is omitted) get <code class="docutils literal notranslate"><span class="pre">unit=None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>The GPS epoch is reconstructed as
+<code class="docutils literal notranslate"><span class="pre">datetime_utc_to_gps(raw.info[&quot;meas_date&quot;])</span> <span class="pre">+</span> <span class="pre">raw.first_samp</span> <span class="pre">/</span> <span class="pre">sfreq</span></code>
+(or just the <code class="docutils literal notranslate"><span class="pre">first_samp</span></code> offset if <code class="docutils literal notranslate"><span class="pre">meas_date</span></code> is unset), so
+cropped or resumed <cite>Raw</cite> objects (<code class="docutils literal notranslate"><span class="pre">first_samp</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>) get the correct
+absolute epoch instead of always starting at <code class="docutils literal notranslate"><span class="pre">meas_date</span></code> (or <code class="docutils literal notranslate"><span class="pre">0</span></code>).</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
