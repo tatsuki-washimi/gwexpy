@@ -493,6 +493,67 @@ it, which can flip its parity relative to the requested <code class="docutils li
 input with <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (previously silent, and <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code>
 ignores <code class="docutils literal notranslate"><span class="pre">return_onesided=True</span></code> for complex input, which would have
 broken this bin classification). Completes #465.</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.gauch()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now accept <code class="docutils literal notranslate"><span class="pre">rng=</span></code>
+(a <code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code>) or <code class="docutils literal notranslate"><span class="pre">seed=</span></code> for a reproducible Monte Carlo
+null distribution. The default (no <code class="docutils literal notranslate"><span class="pre">rng</span></code>/<code class="docutils literal notranslate"><span class="pre">seed</span></code>) path is unchanged: it
+still draws from the legacy global <code class="docutils literal notranslate"><span class="pre">numpy.random</span></code> state, so an existing
+<code class="docutils literal notranslate"><span class="pre">numpy.random.seed(...)</span></code> call continues to control it exactly as before.
+Passing <code class="docutils literal notranslate"><span class="pre">rng=</span></code>/<code class="docutils literal notranslate"><span class="pre">seed=</span></code> uses a dedicated <code class="docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code> instead
+and bypasses the shared, process-global null-distribution cache
+(previously keyed only by <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_trials)</span></code>, with no way to request a
+specific draw). The default path’s cache population is now serialized
+with a lock, fixing a pre-existing race where concurrent callers on the
+same <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_trials)</span></code> key could each redundantly recompute and overwrite
+the cached distribution. <code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code>’s result now records
+<code class="docutils literal notranslate"><span class="pre">n_monte_carlo</span></code> and, when given, <code class="docutils literal notranslate"><span class="pre">seed</span></code> (or <code class="docutils literal notranslate"><span class="pre">rng_provided</span></code>/
+<code class="docutils literal notranslate"><span class="pre">seed_unused</span></code>) in its <code class="docutils literal notranslate"><span class="pre">.metadata</span></code>; the <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> returned by
+<code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> records the same as instance attributes that do not
+survive <code class="docutils literal notranslate"><span class="pre">.copy()</span></code>/slicing/serialization. Passing both <code class="docutils literal notranslate"><span class="pre">rng</span></code> and <code class="docutils literal notranslate"><span class="pre">seed</span></code>
+now emits a <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> noting that <code class="docutils literal notranslate"><span class="pre">seed</span></code> is ignored (#464).</p></li>
+<li><p><strong>interop</strong>: <code class="docutils literal notranslate"><span class="pre">to_mne_rawarray()</span></code> now sets <code class="docutils literal notranslate"><span class="pre">info[&quot;meas_date&quot;]</span></code> from the
+input epoch (<code class="docutils literal notranslate"><span class="pre">t0</span></code>) when not already present, and validates it against an
+existing <code class="docutils literal notranslate"><span class="pre">info[&quot;meas_date&quot;]</span></code> (within ~1us) rather than silently ignoring
+it; a mismatch now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of producing an <code class="docutils literal notranslate"><span class="pre">mne.io.Raw</span></code>
+with an incorrect or missing epoch. Multi-channel conversion now requires
+all stacked channels to share an <em>exactly</em> matching epoch (previously
+unchecked), raising <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> on mismatch rather than silently
+interleaving samples from different acquisition times. <code class="docutils literal notranslate"><span class="pre">t0</span></code> values that
+fall on a leap second continue to raise <code class="docutils literal notranslate"><span class="pre">LeapSecondConversionError</span></code>.
+<code class="docutils literal notranslate"><span class="pre">from_mne_raw()</span></code> now accounts for <code class="docutils literal notranslate"><span class="pre">raw.first_samp</span></code> when reconstructing the
+GPS epoch (previously ignored, undercounting the epoch for cropped/resumed
+<code class="docutils literal notranslate"><span class="pre">Raw</span></code> objects) and applies <code class="docutils literal notranslate"><span class="pre">unit_map</span></code> to set channel units, including
+fixing an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> when <code class="docutils literal notranslate"><span class="pre">unit_map</span></code> was omitted (#493).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.student_t_spectrogram()</span></code>
+now return a GPS time axis (the input <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>’s <code class="docutils literal notranslate"><span class="pre">t0</span></code> plus the STFT
+relative time) instead of relative-to-start seconds. <code class="docutils literal notranslate"><span class="pre">fftlength</span></code>, <code class="docutils literal notranslate"><span class="pre">stride</span></code>
+(and <code class="docutils literal notranslate"><span class="pre">overlap</span></code>), <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">window</span></code>, and <code class="docutils literal notranslate"><span class="pre">frange</span></code> are now validated:
+non-finite/non-positive values raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of an opaque
+downstream failure, and <code class="docutils literal notranslate"><span class="pre">stride</span> <span class="pre">&gt;</span> <span class="pre">fftlength</span></code> now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+explicitly rather than silently running a gapped analysis that skips
+samples between segments (<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> accepts a negative
+<code class="docutils literal notranslate"><span class="pre">noverlap</span></code> without erroring). The underlying <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code> call now
+passes <code class="docutils literal notranslate"><span class="pre">window=&quot;hann&quot;,</span> <span class="pre">detrend=False,</span> <span class="pre">boundary=&quot;zeros&quot;,</span> <span class="pre">padded=True</span></code>
+explicitly instead of relying on scipy’s defaults. Partially addresses
+#465 (DC/Nyquist bin bias is tracked separately).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> now fits the DC (index 0) and,
+when the segment length is even, Nyquist (the last one-sided bin)
+frequency bins using only their real FFT coefficient, instead of
+concatenating real and imaginary parts as if they were independent for
+those bins too. A real-valued signal’s DC/Nyquist FFT coefficients are
+purely real, so the previous re+im concatenation fed a constant-zero
+imaginary half into the fit, collapsing the estimated Student-t <code class="docutils literal notranslate"><span class="pre">nu</span></code>
+toward 0 and producing a systematic false non-Gaussianity detection at
+DC regardless of the actual input. This is a GWexpy-specific
+correctness fix, not a GWpy compatibility change (GWpy has no
+equivalent Student-t fit API); DC/Nyquist are identified structurally
+(index 0 / the last one-sided bin), not via a floating-point frequency
+comparison, computed from the <em>effective</em> segment length (<code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code>
+silently shrinks <code class="docutils literal notranslate"><span class="pre">nperseg</span></code> to <code class="docutils literal notranslate"><span class="pre">len(ts)</span></code> when the requested value exceeds
+it, which can flip its parity relative to the requested <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">*</span> <span class="pre">sample_rate</span></code>). <code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> now also rejects complex-valued
+input with <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (previously silent, and <code class="docutils literal notranslate"><span class="pre">scipy.signal.stft</span></code>
+ignores <code class="docutils literal notranslate"><span class="pre">return_onesided=True</span></code> for complex input, which would have
+broken this bin classification). Completes #465.</p></li>
 </ul>
 </section>
 </section>

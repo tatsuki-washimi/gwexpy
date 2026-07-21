@@ -3941,6 +3941,9 @@ visualization purposes</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">gauch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftlength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Compute GauCh (Modified KS test) for non-Gaussianity detection.</p>
+<p>Accepts <cite>rng=</cite> / <cite>seed=</cite> (forwarded to
+<cite>gwexpy.statistics.gauch.compute_gauch</cite>) for a reproducible Monte
+Carlo null distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-odd"><p>GauChResult</p>
@@ -5650,6 +5653,9 @@ formats.</p></li>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">rayleigh_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftlength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">39</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Compute Rayleigh statistic p-value spectrogram.</p>
+<p>Accepts <cite>rng=</cite> / <cite>seed=</cite> (forwarded to
+<cite>gwexpy.statistics.rayleigh_test.rayleigh_pvalue</cite>) for a
+reproducible Monte Carlo null distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram">Spectrogram</a></p>
