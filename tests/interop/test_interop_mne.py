@@ -8,6 +8,7 @@ import pytest
 mne = pytest.importorskip("mne")
 
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+from gwexpy.interop._time import LeapSecondConversionError, datetime_utc_to_gps
 from gwexpy.interop.mne_ import (
     _default_ch_name,
     _fs_to_mne_spectrum,
@@ -120,6 +121,130 @@ class TestFromMneRaw:
         raw.set_meas_date(dt_utc)
         tsd = from_mne_raw(TimeSeriesDict, raw)
         assert tsd["ch0"].t0.value != 0
+
+    def test_first_samp_offset_added(self):
+        """first_samp (e.g. after crop()) contributes to the recovered GPS t0."""
+        raw = mne.io.RawArray(
+            np.arange(1000, dtype=float)[None, :],
+            mne.create_info(["ch0"], 100.0, ["misc"]),
+        )
+        dt_utc = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
+        raw.set_meas_date(dt_utc)
+        raw.crop(tmin=2.0, tmax=5.0)
+        assert raw.first_samp == 200
+
+        tsd = from_mne_raw(TimeSeriesDict, raw)
+        expected_t0 = float(datetime_utc_to_gps(dt_utc)) + raw.first_samp / raw.info["sfreq"]
+        assert tsd["ch0"].t0.value == pytest.approx(expected_t0)
+        # cropped data itself is unaffected by the offset accounting
+        np.testing.assert_allclose(tsd["ch0"].value, np.arange(200, 501, dtype=float))
+
+    def test_unit_map_applied(self):
+        tsd_in = TimeSeriesDict({
+            "ch1": TimeSeries(np.ones(20), t0=0, dt=0.1, name="ch1"),
+        })
+        raw = to_mne_rawarray(tsd_in)
+        tsd = from_mne_raw(TimeSeriesDict, raw, unit_map={"ch1": "V"})
+        assert str(tsd["ch1"].unit) == "V"
+
+    def test_unit_map_none_does_not_raise(self):
+        """Regression: unit_map=None must not AttributeError on None.get()."""
+        tsd_in = TimeSeriesDict({
+            "ch1": TimeSeries(np.ones(20), t0=0, dt=0.1, name="ch1"),
+        })
+        raw = to_mne_rawarray(tsd_in)
+        tsd = from_mne_raw(TimeSeriesDict, raw, unit_map=None)
+        assert "ch1" in tsd
+
+
+class TestMeasDateContract:
+    """#493: to_mne_rawarray's t0 <-> info['meas_date'] contract."""
+
+    def test_t0_nonzero_sets_meas_date_when_absent(self):
+        ts = TimeSeries(np.ones(50), t0=1_000_000_000, dt=0.01, name="ch0")
+        raw = to_mne_rawarray(ts)
+        assert raw.info["meas_date"] is not None
+        got_gps = float(datetime_utc_to_gps(raw.info["meas_date"]))
+        assert got_gps == pytest.approx(1_000_000_000, abs=1e-6)
+
+    def test_t0_zero_leaves_meas_date_none_when_absent(self):
+        ts = _make_ts()  # t0=0
+        raw = to_mne_rawarray(ts)
+        assert raw.info["meas_date"] is None
+
+    def test_roundtrip_recovers_gps_t0(self):
+        ts = TimeSeries(
+            np.random.default_rng(0).standard_normal(100),
+            t0=1_234_567_890, dt=0.01, name="ch0",
+        )
+        raw = to_mne_rawarray(ts)
+        tsd = from_mne_raw(TimeSeriesDict, raw)
+        assert tsd["ch0"].t0.value == pytest.approx(1_234_567_890, abs=1e-6)
+
+    def test_existing_info_meas_date_matching_t0_is_kept(self):
+        t0 = 1_100_000_000.0
+        info = mne.create_info(["ch0"], sfreq=100.0, ch_types=["misc"])
+        from gwexpy.interop._time import gps_to_datetime_utc
+
+        expected_dt = gps_to_datetime_utc(t0)
+        info.set_meas_date(expected_dt)
+        ts = TimeSeries(np.ones(50), t0=t0, dt=0.01, name="ch0")
+        raw = to_mne_rawarray(ts, info=info)
+        assert raw.info["meas_date"] == expected_dt
+
+    def test_existing_info_meas_date_mismatch_raises(self):
+        info = mne.create_info(["ch0"], sfreq=100.0, ch_types=["misc"])
+        info.set_meas_date(datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC))
+        ts = TimeSeries(np.ones(50), t0=1_100_000_000, dt=0.01, name="ch0")
+        with pytest.raises(ValueError, match="does not match"):
+            to_mne_rawarray(ts, info=info)
+
+    def test_t0_zero_not_special_cased_against_existing_meas_date(self):
+        """t0=0 must still be compared against a pre-existing meas_date (#493
+        second review): it is not silently exempted from validation."""
+        info = mne.create_info(["ch0"], sfreq=100.0, ch_types=["misc"])
+        info.set_meas_date(datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC))
+        ts = _make_ts()  # t0=0
+        with pytest.raises(ValueError, match="does not match"):
+            to_mne_rawarray(ts, info=info)
+
+    def test_t0_zero_with_no_meas_date_passes_through_unchanged(self):
+        """t0=0 and info.meas_date=None: legacy behavior, no error, still unset."""
+        info = mne.create_info(["ch0"], sfreq=100.0, ch_types=["misc"])
+        ts = _make_ts()  # t0=0
+        raw = to_mne_rawarray(ts, info=info)
+        assert raw.info["meas_date"] is None
+
+    def test_multi_channel_matching_t0_roundtrip(self):
+        tsd = TimeSeriesDict({
+            "ch1": TimeSeries(np.ones(50), t0=1_200_000_000, dt=0.01, name="ch1"),
+            "ch2": TimeSeries(np.zeros(50), t0=1_200_000_000, dt=0.01, name="ch2"),
+        })
+        raw = to_mne_rawarray(tsd)
+        assert raw.info["meas_date"] is not None
+        out = from_mne_raw(TimeSeriesDict, raw)
+        assert out["ch1"].t0.value == pytest.approx(1_200_000_000, abs=1e-6)
+        assert out["ch2"].t0.value == pytest.approx(1_200_000_000, abs=1e-6)
+
+    def test_multi_channel_sub_dt_half_mismatch_raises(self):
+        """A 0.49*dt epoch mismatch must be rejected (exact ns comparison,
+        not a dt-scaled tolerance) -- see #493."""
+        dt = 0.01
+        tsd = TimeSeriesDict({
+            "ch1": TimeSeries(np.ones(50), t0=1_200_000_000.0, dt=dt, name="ch1"),
+            "ch2": TimeSeries(np.zeros(50), t0=1_200_000_000.0 + 0.49 * dt, dt=dt, name="ch2"),
+        })
+        with pytest.raises(ValueError, match="mismatched epoch"):
+            to_mne_rawarray(tsd)
+
+    def test_leap_second_t0_raises(self):
+        """A t0 landing exactly on the 2016-12-31 leap second is rejected
+        (leap='raise' is kept; #493 rejected the 'floor' policy since it
+        can silently shift the epoch by up to ~1s)."""
+        leap_gps = 1167264017  # 2016-12-31T23:59:60 UTC
+        ts = TimeSeries(np.ones(10), t0=leap_gps, dt=0.01, name="ch0")
+        with pytest.raises(LeapSecondConversionError):
+            to_mne_rawarray(ts)
 
 
 # ---------------------------------------------------------------------------

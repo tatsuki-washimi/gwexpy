@@ -4,10 +4,12 @@ from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import numpy as np
+from gwpy.time import LIGOTimeGPS
 
 from gwexpy.interop._registry import ConverterRegistry
 
 from ._optional import require_optional
+from ._time import datetime_utc_to_gps, gps_to_datetime_utc
 
 __all__ = [
     "to_mne_rawarray",
@@ -15,6 +17,10 @@ __all__ = [
     "to_mne",
     "from_mne",
 ]
+
+# meas_date is a Python datetime (microsecond resolution); allow ~1us of
+# round-trip slack when comparing it against a TimeSeries epoch (GPS seconds).
+_MEAS_DATE_TOLERANCE_S = 1e-6
 
 if TYPE_CHECKING:
 
@@ -88,6 +94,56 @@ def _default_ch_name(ts: Any, *, fallback: str) -> str:
     return fallback
 
 
+def _t0_seconds(ts: Any) -> float:
+    """Return a TimeSeries-like object's epoch as GPS seconds (float), or 0.0."""
+    t0 = getattr(ts, "t0", None)
+    if t0 is None:
+        return 0.0
+    value = t0.value if hasattr(t0, "value") else t0
+    return float(value)
+
+
+def _t0_ns(ts: Any) -> int:
+    """Exact-comparison representation of ``ts.t0``, as integer nanoseconds.
+
+    Used for channel-to-channel epoch comparisons: converting through
+    ``LIGOTimeGPS`` and comparing integer nanoseconds avoids any tolerance
+    proportional to ``dt`` (see #493 -- a ``dt``-scaled tolerance let
+    differently-timed channels silently stack together).
+    """
+    return LIGOTimeGPS(_t0_seconds(ts)).ns()
+
+
+def _apply_meas_date_contract(info: Any, t0_seconds: float) -> Any:
+    """Reconcile an input epoch (GPS seconds) with ``info["meas_date"]``.
+
+    Contract (#493): ``t0`` is authoritative when ``info`` has no
+    ``meas_date`` yet (``t0 == 0`` leaves it unset, preserving the legacy
+    default). Once ``info["meas_date"]`` is set, ``t0`` -- including ``0``,
+    which is not treated as a special case -- is always compared against it;
+    a match within ``_MEAS_DATE_TOLERANCE_S`` keeps the existing value, and a
+    mismatch raises ``ValueError`` rather than silently overwriting it.
+
+    Returns the ``info`` to use (a copy if a new ``meas_date`` was set, so
+    the caller's original ``info`` object is never mutated).
+    """
+    existing = info.get("meas_date")
+    if existing is None:
+        if t0_seconds != 0.0:
+            info = info.copy()
+            info.set_meas_date(gps_to_datetime_utc(t0_seconds))
+        return info
+
+    existing_gps = float(datetime_utc_to_gps(existing))
+    if abs(existing_gps - t0_seconds) > _MEAS_DATE_TOLERANCE_S:
+        raise ValueError(
+            f"info['meas_date'] ({existing!r}, GPS {existing_gps}) does not "
+            f"match the input epoch (GPS {t0_seconds}); pass an info whose "
+            "meas_date agrees with the data's t0, or omit meas_date"
+        )
+    return info
+
+
 def _select_items(
     items: list[tuple[Any, Any]], picks: Any | None
 ) -> list[tuple[Any, Any]]:
@@ -142,6 +198,8 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         elif int(info["nchan"]) != 1:
             raise ValueError(f"info expects nchan=1, got {info['nchan']}")
 
+        info = _apply_meas_date_contract(info, _t0_seconds(tsd))
+
         return mne.io.RawArray(data_1d[None, :], info)
 
     # Multi-channel mapping input
@@ -160,6 +218,18 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     lengths = {len(ts) for ts in series}
     if len(lengths) == 1:
         data = np.stack([np.asarray(ts.value) for ts in series], axis=0)
+        # Same-length channels are stacked as-is (no alignment), so their
+        # epochs must match exactly -- an exact ns comparison (not a
+        # dt-scaled tolerance) so genuinely different acquisition times are
+        # never silently stacked together (#493).
+        t0_ns_values = {_t0_ns(ts) for ts in series}
+        if len(t0_ns_values) > 1:
+            raise ValueError(
+                "All channels must share the same epoch (t0); found mismatched "
+                "epochs across channels and no alignment was requested (use a "
+                "TimeSeriesDict with to_matrix() for alignment instead)"
+            )
+        common_t0 = _t0_seconds(series[0])
     elif hasattr(tsd, "to_matrix"):
         try:
             tsd_sel = cast("_TimeSeriesDictLike", tsd.__class__())
@@ -174,6 +244,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
             if data.shape[0] != len(ch_names):
                 raise ValueError("Unexpected channel dimension after alignment")
             ch_names = list(getattr(mat, "channel_names", ch_names))
+            common_t0 = _t0_seconds(mat)
         except (ValueError, TypeError, AttributeError, IndexError, KeyError) as e:
             raise ValueError(
                 "Channels have mismatched lengths and could not be aligned via to_matrix()"
@@ -190,6 +261,8 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     elif int(info["nchan"]) != len(ch_names):
         raise ValueError(f"info expects nchan={len(ch_names)}, got {info['nchan']}")
 
+    info = _apply_meas_date_contract(info, common_t0)
+
     return mne.io.RawArray(data, info)
 
 
@@ -197,24 +270,24 @@ def from_mne_raw(cls, raw, unit_map=None):
     """Create a `TimeSeriesDict` from `mne.io.Raw`."""
     data, times = raw.get_data(return_times=True)
     # data: (n_ch, n_times)
-    # times: (n_times,) relative to first sample usually 0
+    # times: (n_times,) relative to the *returned* data, always starting at 0
+    # -- it does NOT include raw.first_samp (verified against mne 1.12), so
+    # the first_samp offset below is not double-counted.
 
     ch_names = raw.ch_names
     sfreq = raw.info["sfreq"]
     dt = 1.0 / sfreq
 
-    # meas_date check for t0?
-    t0 = 0
+    t0 = 0.0
     if raw.info["meas_date"]:
-        # datetime to gps
-        from ._time import datetime_utc_to_gps
-
-        # meas_date is datetime (aware UTC usually)
-        t0 = datetime_utc_to_gps(raw.info["meas_date"])
+        # meas_date is an aware-UTC datetime.
+        t0 = float(datetime_utc_to_gps(raw.info["meas_date"]))
+    t0 = t0 + raw.first_samp / sfreq
 
     tsd = cls()
     for i, name in enumerate(ch_names):
-        tsd[name] = tsd.EntryClass(data[i], t0=t0, dt=dt, name=name)
+        unit = unit_map.get(name) if unit_map else None
+        tsd[name] = tsd.EntryClass(data[i], t0=t0, dt=dt, name=name, unit=unit)
 
     return tsd
 
