@@ -51,6 +51,71 @@
   ignores `return_onesided=True` for complex input, which would have
   broken this bin classification). Completes #465.
 
+- **statistics**: `compute_gauch()` / `TimeSeries.gauch()` and
+  `rayleigh_pvalue()` / `TimeSeries.rayleigh_test()` now accept `rng=`
+  (a `numpy.random.Generator`) or `seed=` for a reproducible Monte Carlo
+  null distribution. The default (no `rng`/`seed`) path is unchanged: it
+  still draws from the legacy global `numpy.random` state, so an existing
+  `numpy.random.seed(...)` call continues to control it exactly as before.
+  Passing `rng=`/`seed=` uses a dedicated `numpy.random.Generator` instead
+  and bypasses the shared, process-global null-distribution cache
+  (previously keyed only by `(n, n_trials)`, with no way to request a
+  specific draw). The default path's cache population is now serialized
+  with a lock, fixing a pre-existing race where concurrent callers on the
+  same `(n, n_trials)` key could each redundantly recompute and overwrite
+  the cached distribution. `compute_gauch()`'s result now records
+  `n_monte_carlo` and, when given, `seed` (or `rng_provided`/
+  `seed_unused`) in its `.metadata`; the `Spectrogram` returned by
+  `rayleigh_pvalue()` records the same as instance attributes that do not
+  survive `.copy()`/slicing/serialization. Passing both `rng` and `seed`
+  now emits a `UserWarning` noting that `seed` is ignored (#464).
+- **interop**: `to_mne_rawarray()` now sets `info["meas_date"]` from the
+  input epoch (`t0`) when not already present, and validates it against an
+  existing `info["meas_date"]` (within ~1us) rather than silently ignoring
+  it; a mismatch now raises `ValueError` instead of producing an `mne.io.Raw`
+  with an incorrect or missing epoch. Multi-channel conversion now requires
+  all stacked channels to share an *exactly* matching epoch (previously
+  unchecked), raising `ValueError` on mismatch rather than silently
+  interleaving samples from different acquisition times. `t0` values that
+  fall on a leap second continue to raise `LeapSecondConversionError`.
+  `from_mne_raw()` now accounts for `raw.first_samp` when reconstructing the
+  GPS epoch (previously ignored, undercounting the epoch for cropped/resumed
+  `Raw` objects) and applies `unit_map` to set channel units, including
+  fixing an `AttributeError` when `unit_map` was omitted (#493).
+
+- **statistics**: `compute_student_t_nu()` / `TimeSeries.student_t_spectrogram()`
+  now return a GPS time axis (the input `TimeSeries`'s `t0` plus the STFT
+  relative time) instead of relative-to-start seconds. `fftlength`, `stride`
+  (and `overlap`), `sample_rate`, `window`, and `frange` are now validated:
+  non-finite/non-positive values raise `ValueError` instead of an opaque
+  downstream failure, and `stride > fftlength` now raises `ValueError`
+  explicitly rather than silently running a gapped analysis that skips
+  samples between segments (`scipy.signal.stft` accepts a negative
+  `noverlap` without erroring). The underlying `scipy.signal.stft` call now
+  passes `window="hann", detrend=False, boundary="zeros", padded=True`
+  explicitly instead of relying on scipy's defaults. Partially addresses
+  #465 (DC/Nyquist bin bias is tracked separately).
+
+- **statistics**: `compute_student_t_nu()` now fits the DC (index 0) and,
+  when the segment length is even, Nyquist (the last one-sided bin)
+  frequency bins using only their real FFT coefficient, instead of
+  concatenating real and imaginary parts as if they were independent for
+  those bins too. A real-valued signal's DC/Nyquist FFT coefficients are
+  purely real, so the previous re+im concatenation fed a constant-zero
+  imaginary half into the fit, collapsing the estimated Student-t `nu`
+  toward 0 and producing a systematic false non-Gaussianity detection at
+  DC regardless of the actual input. This is a GWexpy-specific
+  correctness fix, not a GWpy compatibility change (GWpy has no
+  equivalent Student-t fit API); DC/Nyquist are identified structurally
+  (index 0 / the last one-sided bin), not via a floating-point frequency
+  comparison, computed from the *effective* segment length (`scipy.signal.stft`
+  silently shrinks `nperseg` to `len(ts)` when the requested value exceeds
+  it, which can flip its parity relative to the requested `fftlength *
+  sample_rate`). `compute_student_t_nu()` now also rejects complex-valued
+  input with `ValueError` (previously silent, and `scipy.signal.stft`
+  ignores `return_onesided=True` for complex input, which would have
+  broken this bin classification). Completes #465.
+
 ## [0.1.10] - 2026-07-18
 
 This is a bugfix release covering numerical regularization, axis regularity,
