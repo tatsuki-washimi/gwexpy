@@ -176,6 +176,22 @@ def to_mne_rawarray(tsd, info=None, picks=None):
     picks
         Optional channel selection (names or indices). Only supported for mapping inputs.
 
+    Notes
+    -----
+    The input epoch (``t0``) is reconciled with ``info["meas_date"]``: if
+    ``info`` has no ``meas_date`` yet, it is set from ``t0`` (unless
+    ``t0 == 0``, which leaves it unset); if ``info`` already has a
+    ``meas_date``, ``t0`` -- including ``0`` -- is always compared against
+    it, and a mismatch beyond ~1us raises ``ValueError`` instead of silently
+    overwriting or ignoring it. A ``t0`` that falls on a leap second raises
+    ``LeapSecondConversionError``.
+
+    For a mapping input, same-length channels are stacked without
+    resampling/alignment and therefore must share an *exactly* matching
+    epoch; a mismatch raises ``ValueError`` (previously stacked silently).
+    Differently-timed or differently-sampled channels can still be aligned
+    via a ``TimeSeriesDict`` with ``to_matrix()``.
+
     """
     mne = require_optional("mne")
 
@@ -267,7 +283,28 @@ def to_mne_rawarray(tsd, info=None, picks=None):
 
 
 def from_mne_raw(cls, raw, unit_map=None):
-    """Create a `TimeSeriesDict` from `mne.io.Raw`."""
+    """Create a `TimeSeriesDict` from `mne.io.Raw`.
+
+    Parameters
+    ----------
+    cls
+        The `TimeSeriesDict`-like class to construct and populate.
+    raw : mne.io.Raw
+        The MNE `Raw` object to convert.
+    unit_map : dict, optional
+        Optional mapping from channel name to unit, applied to the
+        resulting `TimeSeries` entries. Channels absent from the mapping
+        (or when ``unit_map`` is omitted) get ``unit=None``.
+
+    Notes
+    -----
+    The GPS epoch is reconstructed as
+    ``datetime_utc_to_gps(raw.info["meas_date"]) + raw.first_samp / sfreq``
+    (or just the ``first_samp`` offset if ``meas_date`` is unset), so
+    cropped or resumed `Raw` objects (``first_samp > 0``) get the correct
+    absolute epoch instead of always starting at ``meas_date`` (or ``0``).
+
+    """
     data, times = raw.get_data(return_times=True)
     # data: (n_ch, n_times)
     # times: (n_times,) relative to the *returned* data, always starting at 0
