@@ -4,6 +4,13 @@
 
 ### Behaviour-visible bug fixes
 
+*Reproducibility note*: the two `statistics` entries below (GPS time axis
+and DC/Nyquist `nu` fit) change numeric output relative to `<=v0.1.10`.
+Both are correctness fixes for previously wrong values, not new opt-in
+behavior -- there is no flag to restore the pre-v0.1.11 output. Analyses
+that depend on exact reproduction of results computed with
+`gwexpy<=0.1.10` should pin to that version range.
+
 - **interop**: `to_mne_rawarray()` now sets `info["meas_date"]` from the
   input epoch (`t0`) when not already present, and validates it against an
   existing `info["meas_date"]` (within ~1us) rather than silently ignoring
@@ -32,7 +39,7 @@
   #465 (the DC/Nyquist bin bias half of #465 is fixed by the following
   entry).
 
-  **Migration note**: callers that previously added `ts.t0` (or an
+  **Migration note** (#465, #502): callers that previously added `ts.t0` (or an
   equivalent GPS offset) to the returned `times` themselves should remove
   that step, since the returned times are now already GPS-absolute and
   double-adding the epoch would shift results by `t0` seconds. Code that
