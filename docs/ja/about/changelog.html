@@ -450,6 +450,12 @@
 <h2>未リリース<a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
 <section id="behaviour-visible-bug-fixes">
 <h3>動作に影響するバグ修正<a class="headerlink" href="#behaviour-visible-bug-fixes" title="Link to this heading">#</a></h3>
+<p><em>Reproducibility note</em>: the two <code class="docutils literal notranslate"><span class="pre">statistics</span></code> entries below (GPS time axis
+and DC/Nyquist <code class="docutils literal notranslate"><span class="pre">nu</span></code> fit) change numeric output relative to <code class="docutils literal notranslate"><span class="pre">&lt;=v0.1.10</span></code>.
+Both are correctness fixes for previously wrong values, not new opt-in
+behavior -- there is no flag to restore the pre-v0.1.11 output. Analyses
+that depend on exact reproduction of results computed with
+<code class="docutils literal notranslate"><span class="pre">gwexpy&lt;=0.1.10</span></code> should pin to that version range.</p>
 <ul>
 <li><p><strong>interop</strong>: <code class="docutils literal notranslate"><span class="pre">to_mne_rawarray()</span></code> now sets <code class="docutils literal notranslate"><span class="pre">info[&quot;meas_date&quot;]</span></code> from the
 input epoch (<code class="docutils literal notranslate"><span class="pre">t0</span></code>) when not already present, and validates it against an
@@ -477,7 +483,7 @@ passes <code class="docutils literal notranslate"><span class="pre">window=&quot
 explicitly instead of relying on scipy's defaults. Partially addresses
 #465 (the DC/Nyquist bin bias half of #465 is fixed by the following
 entry).</p>
-<p><strong>Migration note</strong>: callers that previously added <code class="docutils literal notranslate"><span class="pre">ts.t0</span></code> (or an
+<p><strong>Migration note</strong> (#465, #502): callers that previously added <code class="docutils literal notranslate"><span class="pre">ts.t0</span></code> (or an
 equivalent GPS offset) to the returned <code class="docutils literal notranslate"><span class="pre">times</span></code> themselves should remove
 that step, since the returned times are now already GPS-absolute and
 double-adding the epoch would shift results by <code class="docutils literal notranslate"><span class="pre">t0</span></code> seconds. Code that
