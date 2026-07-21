@@ -26,6 +26,7 @@ VERSIONS = (
     "0.1.8",
     "0.1.9",
     "0.1.10",
+    "0.1.11",
 )
 
 SECTION_RE = re.compile(

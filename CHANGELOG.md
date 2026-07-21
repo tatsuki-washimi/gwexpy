@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## [0.1.11] - 2026-07-25
+
+This is a time/metadata-integrity and statistics-robustness patch release.
+It fixes `MNE` interop epoch/metadata handling (#493), restores a
+GPS-absolute time axis and DC/Nyquist fit correctness for the Student-t
+non-Gaussianity indicator (#465), and adds Monte Carlo `rng=`/`seed=`
+reproducibility for the Rayleigh and GauCh statistical tests (#464).
+
 ### Behaviour-visible bug fixes
 
 *Reproducibility note*: the two `statistics` entries below (GPS time axis
@@ -84,6 +92,11 @@ that depend on exact reproduction of results computed with
   `rayleigh_pvalue()` records the same as instance attributes that do not
   survive `.copy()`/slicing/serialization. Passing both `rng` and `seed`
   now emits a `UserWarning` noting that `seed` is ignored (#464).
+
+### Dependencies
+
+- Added `inspiral-range` to the `gw` and `all` optional-dependency extras
+  (no change to core/required dependencies) (#487).
 
 ## [0.1.10] - 2026-07-18
 
@@ -669,7 +682,8 @@ First stable release of GWexpy for SoftwareX publication. This release focuses o
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...HEAD
+[0.1.11]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.10...v0.1.11
 [0.1.4]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.1...v0.1.2

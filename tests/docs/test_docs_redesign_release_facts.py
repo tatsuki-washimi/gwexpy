@@ -17,6 +17,7 @@ def test_redesign_changelog_includes_the_canonical_release_history() -> None:
     assert ':start-after: "# Changelog"' in source
     canonical_releases = re.findall(r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE)
     assert canonical_releases == [
+        "[0.1.11] - 2026-07-25",
         "[0.1.10] - 2026-07-18",
         "[0.1.9] - 2026-07-11",
         "[0.1.8] - 2026-07-04",
