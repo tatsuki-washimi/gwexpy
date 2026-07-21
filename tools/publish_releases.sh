@@ -8,7 +8,7 @@
 #   - gh installed:        https://cli.github.com/
 #   - authenticated:       gh auth status   (needs repo write scope)
 #   - notes generated:     python tools/gen_release_notes.py
-#   - all tags pushed:     git push origin v0.1.10  (push only the release tag; earlier tags must already exist on origin)
+#   - all tags pushed:     git push origin v0.1.11  (push only the release tag; earlier tags must already exist on origin)
 #
 # Behaviour:
 #   - For each version, EDIT the release if it already exists, otherwise CREATE it
@@ -23,8 +23,8 @@
 set -euo pipefail
 
 REPO="tatsuki-washimi/gwexpy"
-LATEST_TAG="v0.1.10"
-VERSIONS=(0.1.0 0.1.1 0.1.2 0.1.3 0.1.4 0.1.5 0.1.6 0.1.7 0.1.8 0.1.9 0.1.10)
+LATEST_TAG="v0.1.11"
+VERSIONS=(0.1.0 0.1.1 0.1.2 0.1.3 0.1.4 0.1.5 0.1.6 0.1.7 0.1.8 0.1.9 0.1.10 0.1.11)
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NOTES_DIR="$ROOT/release_notes"
