@@ -58,6 +58,18 @@ def rayleigh_pvalue(
         instance, not persisted metadata: they do not survive `.copy()`,
         slicing, arithmetic, or serialization.
 
+    Known Limitations
+    ------------------
+    The null distribution simulated here is amplitude-based (Rayleigh),
+    but ``rayleigh_spec`` (from `TimeSeries.rayleigh_spectrogram()`) is a
+    power-based (exponential) statistic. The mismatched distribution shape
+    makes reported p-values systematically too small -- measured
+    false-positive rates are roughly 2-4x the nominal rate -- causing
+    over-detection of non-Gaussianity/spectral lines. This is a
+    pre-existing issue (not introduced by the `rng=`/`seed=` support
+    above); a fix is expected in a future release and will change this
+    function's numeric output (see #506).
+
     """
     if rng is not None and seed is not None:
         warnings.warn(

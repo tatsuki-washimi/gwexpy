@@ -275,6 +275,9 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         `gwexpy.statistics.rayleigh_test.rayleigh_pvalue`) for a
         reproducible Monte Carlo null distribution.
 
+        Known limitation: the reported p-values are systematically too
+        small (over-detection; see `rayleigh_pvalue`'s docstring and #506).
+
         Returns
         -------
         Spectrogram
