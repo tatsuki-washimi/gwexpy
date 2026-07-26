@@ -1,4 +1,5 @@
 """gwexpy.statistics.rayleigh_test - Rayleigh statistic test p-values."""
+
 from __future__ import annotations
 
 import threading
@@ -26,6 +27,7 @@ def rayleigh_pvalue(
     n_samples: int,
     n_monte_carlo: int = 1000,
     *,
+    nfft: int | None = None,
     rng: np.random.Generator | None = None,
     seed: int | None = None,
 ) -> Spectrogram:
@@ -41,6 +43,12 @@ def rayleigh_pvalue(
         Number of segments used to compute the Rayleigh statistic.
     n_monte_carlo : int, default=1000
         Number of trials for background distribution.
+    nfft : int, optional
+        FFT length in samples used to compute ``rayleigh_spec``. Only its
+        parity is used, to decide whether the last frequency bin is the
+        Nyquist bin (see Notes). Assumes ``rayleigh_spec`` spans the full
+        one-sided FFT output; pass ``None`` for a frequency-restricted
+        spectrogram, in which case only the DC bin is masked.
     rng : numpy.random.Generator, optional
         Generator for the Monte Carlo null distribution. See
         `_get_rayleigh_stat_null_distribution` for the reproducibility
@@ -58,18 +66,30 @@ def rayleigh_pvalue(
         instance, not persisted metadata: they do not survive `.copy()`,
         slicing, arithmetic, or serialization.
 
-    Known Limitations
-    ------------------
-    The null distribution simulated here is amplitude-based (Rayleigh),
-    but ``rayleigh_spec`` (from `TimeSeries.rayleigh_spectrogram()`) is a
-    power-based (exponential) statistic. The mismatched distribution shape
-    makes reported p-values systematically miscalibrated. The effect
-    depends on the stride/fftlength ratio -- false-positive rates can be
-    close to nominal for some configurations and elevated for others --
-    causing inconsistent over- or under-detection of non-Gaussianity/
-    spectral lines. This is a pre-existing issue (not introduced by the
-    `rng=`/`seed=` support above); a fix is expected in a future release
-    and will change this function's numeric output (see #506).
+    Notes
+    -----
+    The null distribution is simulated from Exp(1) *power* samples, matching
+    the power-based statistic that `TimeSeries.rayleigh_spectrogram()`
+    reports. Through v0.1.11 it was simulated from Rayleigh *amplitude*
+    samples instead; the mismatched distribution shape made the reported
+    p-values systematically miscalibrated by an amount that depended on the
+    ``stride``/``fftlength`` ratio. Fixed in v0.1.12 (#506); this changed
+    the function's numeric output.
+
+    ``n_samples`` must be the number of periodogram segments GWpy actually
+    averaged per column, which is *not* ``dt * df`` whenever the segments
+    overlap. Prefer `TimeSeries.rayleigh_test()`, which derives it from the
+    `fftlength`/`stride`/`overlap` actually used; a wrong ``n_samples``
+    silently mis-scales every p-value.
+
+    The DC bin and, when ``nfft`` is even, the Nyquist bin are reported as
+    NaN. A real-valued input's DC and Nyquist FFT coefficients are purely
+    real, so their power follows chi2_1 rather than Exp(1) and the null
+    above does not apply to them -- comparing against it anyway fires on
+    pure Gaussian noise about 77% of the time at nominal ``alpha=0.05``
+    (n=64). An odd ``nfft`` has no exact Nyquist bin: its last one-sided bin
+    is an ordinary interior bin and is *not* masked. Recovering detection
+    power at these bins with a chi2_1 null is tracked separately.
 
     """
     if rng is not None and seed is not None:
@@ -93,14 +113,44 @@ def rayleigh_pvalue(
 
     # Vectorized p-value calculation (both-sided)
     # count of dist >= r
-    upper_counts = len(dist) - np.searchsorted(dist, r_vals, side='left')
+    upper_counts = len(dist) - np.searchsorted(dist, r_vals, side="left")
     # count of dist <= r
-    lower_counts = np.searchsorted(dist, r_vals, side='right')
+    lower_counts = np.searchsorted(dist, r_vals, side="right")
 
     p_vals = 2.0 * np.minimum(upper_counts, lower_counts) / len(dist)
 
     # Clip p-values to [0, 1]
     p_vals = np.clip(p_vals, 0.0, 1.0).astype(float)
+
+    # A real-input FFT's DC and (for an even nfft) Nyquist coefficients are
+    # purely real, so their power follows chi2_1, not the Exp(1) the null
+    # above is built from. Report NaN for those bins so they are excluded
+    # from downstream vetoes, following the same convention as the
+    # non-finite handling below (#506). Identified structurally, as in
+    # student_t_indicator (#465): index 0 is DC whenever the spectrogram
+    # starts at f=0, and for an even nfft the one-sided output ends exactly
+    # at the Nyquist bin. An odd nfft has no exact Nyquist bin -- its last
+    # bin is an ordinary interior bin, so masking it would throw away a
+    # valid measurement.
+    real_only = np.zeros(p_vals.shape[1], dtype=bool)
+    has_dc = float(rayleigh_spec.f0.value) == 0.0
+    has_nyquist = nfft is not None and nfft % 2 == 0
+    if has_dc:
+        real_only[0] = True
+    if has_nyquist:
+        real_only[-1] = True
+    if np.any(real_only):
+        which = " and ".join(
+            [n for n, f in (("DC", has_dc), ("Nyquist", has_nyquist)) if f]
+        )
+        warnings.warn(
+            f"rayleigh_pvalue: {which} bin(s) set to NaN p-value (excluded "
+            "from veto) because their power follows chi2_1, not the Exp(1) "
+            "used for the null distribution",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        p_vals[:, real_only] = np.nan
 
     # A non-finite Rayleigh statistic sorts to the end of `dist`, so
     # searchsorted would make min(upper, lower)=0 -> p=0.0, i.e. a false
@@ -141,7 +191,20 @@ _RAYLEIGH_STAT_CACHE_LOCK = threading.Lock()
 def _simulate_rayleigh_null(
     n: int, n_trials: int, draw_uniform: Callable[[int], np.ndarray]
 ) -> np.ndarray:
-    """Draw `n_trials` Rayleigh statistics, each from `n` Rayleigh(sigma=1) samples.
+    """Draw `n_trials` Rayleigh statistics, each from `n` Exp(1) power samples.
+
+    The statistic GWpy's ``rayleigh_spectrogram()`` reports is the sample
+    coefficient of variation ``std(P)/mean(P)`` of `n` single-periodogram
+    *power* estimates (GWpy calls `welch` with ``nperseg == segmentlength``,
+    so each `P` is one periodogram, not a Welch average). Under Gaussian
+    noise an interior one-sided periodogram bin is exponentially
+    distributed, so the null is drawn from Exp(1) by inverse transform.
+
+    Before #506 this drew Rayleigh-distributed *amplitude* samples
+    (``sqrt(-2 log u)``) and divided by ``sqrt((4-pi)/pi)``, the Rayleigh
+    distribution's population CV -- a different distribution shape from the
+    statistic it was compared against. Exp(1) has population CV 1, so no
+    normalizing constant is needed here.
 
     `draw_uniform(size)` must return `size` uniform(0, 1) samples -- either a
     `numpy.random.Generator.random` bound method or the legacy
@@ -150,16 +213,19 @@ def _simulate_rayleigh_null(
     state.
     """
     null_stats = np.zeros(n_trials)
-    const = np.sqrt((4.0 - np.pi) / np.pi)
 
     for i in range(n_trials):
-        # Rayleigh(sigma=1) samples; floor the uniform draw away from 0 so
-        # log(0)=-inf cannot inject an Inf into the null distribution.
+        # Exp(1) samples; floor the uniform draw away from 0 so log(0)=-inf
+        # cannot inject an Inf into the null distribution (#459). The clip's
+        # effect changed magnitude with #506: -log(tiny) ~= 708 is now the
+        # most extreme value it admits, where the previous amplitude form
+        # gave sqrt(2 * 708) ~= 37.6. P(u == 0) = 2**-53 either way, so this
+        # bound is unreachable in practice.
         u = np.clip(draw_uniform(n), np.finfo(float).tiny, 1.0)
-        s = np.sqrt(-2.0 * np.log(u))
-        # Rayleigh statistic R
-        r = np.std(s) / (np.mean(s) * const)
-        null_stats[i] = r
+        x = -np.log(u)
+        # Rayleigh statistic R: sample CV. np.std's ddof=0 matches the
+        # ndarray.std() that GWpy uses to compute the observed statistic.
+        null_stats[i] = np.std(x) / np.mean(x)
 
     return np.sort(null_stats)
 
