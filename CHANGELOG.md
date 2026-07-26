@@ -100,6 +100,11 @@ that depend on exact reproduction of results computed with
 
 ### Known Limitations
 
+*Added 2026-07-26, after the original release. The v0.1.11 GitHub Release
+body and the Zenodo record published on 2026-07-25 do not contain this
+section; the Zenodo snapshot is immutable and therefore remains without it
+(see #506).*
+
 - **statistics**: `rayleigh_pvalue()` / `TimeSeries.rayleigh_test()`
   simulates its null distribution from amplitude (Rayleigh-distributed)
   samples, but the statistic it is compared against
