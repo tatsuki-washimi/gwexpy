@@ -275,6 +275,10 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         `gwexpy.statistics.rayleigh_test.rayleigh_pvalue`) for a
         reproducible Monte Carlo null distribution.
 
+        Known limitation: the reported p-values are systematically
+        miscalibrated in a way that depends on the stride/fftlength ratio
+        (see `rayleigh_pvalue`'s docstring and #506).
+
         Returns
         -------
         Spectrogram
