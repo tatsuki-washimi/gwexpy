@@ -106,9 +106,11 @@ that depend on exact reproduction of results computed with
   (`TimeSeries.rayleigh_spectrogram()`, from GWpy) is computed from power
   (exponentially-distributed) PSD segments. The two distributions have
   different shape even after matching their mean, which makes the reported
-  p-values systematically too small: measured false-positive rates are
-  roughly 2-4x the nominal rate (e.g. nominal `p<0.05` triggers at
-  ~11.7%), causing over-detection of non-Gaussianity/spectral lines. This
+  p-values systematically miscalibrated. The effect depends on the
+  stride/fftlength ratio: false-positive rates can be close to nominal for
+  some configurations (e.g. ~5% when stride/fftlength ~= 2) and elevated
+  for others (e.g. ~11% when stride/fftlength ~= 20), causing inconsistent
+  over- or under-detection of non-Gaussianity/spectral lines. This
   is a pre-existing issue, not introduced by the `rng=`/`seed=`
   reproducibility work in this release; a fix is expected in v0.1.12 and
   will change `rayleigh_pvalue()`'s numeric output (see #506).

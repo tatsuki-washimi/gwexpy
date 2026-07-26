@@ -63,12 +63,13 @@ def rayleigh_pvalue(
     The null distribution simulated here is amplitude-based (Rayleigh),
     but ``rayleigh_spec`` (from `TimeSeries.rayleigh_spectrogram()`) is a
     power-based (exponential) statistic. The mismatched distribution shape
-    makes reported p-values systematically too small -- measured
-    false-positive rates are roughly 2-4x the nominal rate -- causing
-    over-detection of non-Gaussianity/spectral lines. This is a
-    pre-existing issue (not introduced by the `rng=`/`seed=` support
-    above); a fix is expected in a future release and will change this
-    function's numeric output (see #506).
+    makes reported p-values systematically miscalibrated. The effect
+    depends on the stride/fftlength ratio -- false-positive rates can be
+    close to nominal for some configurations and elevated for others --
+    causing inconsistent over- or under-detection of non-Gaussianity/
+    spectral lines. This is a pre-existing issue (not introduced by the
+    `rng=`/`seed=` support above); a fix is expected in a future release
+    and will change this function's numeric output (see #506).
 
     """
     if rng is not None and seed is not None:
