@@ -100,9 +100,8 @@ that depend on exact reproduction of results computed with
 
 ### Known Limitations
 
-*Added 2026-07-26, after the original release. The v0.1.11 GitHub Release
-body and the Zenodo record published on 2026-07-25 do not contain this
-section; the Zenodo snapshot is immutable and therefore remains without it
+*Added 2026-07-26, after the original release. The Zenodo record published
+on 2026-07-25 is an immutable snapshot and does not contain this section
 (see #506).*
 
 - **statistics**: `rayleigh_pvalue()` / `TimeSeries.rayleigh_test()`
