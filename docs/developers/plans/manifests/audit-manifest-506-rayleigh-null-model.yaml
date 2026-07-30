@@ -1,0 +1,30 @@
+---
+issue: 506
+pull_request: 532
+branch: fix/506-rayleigh-null-model
+scope:
+  summary: "Correct Rayleigh segment counting and reject statistically invalid sample counts."
+  included:
+    - "remove unrelated archived plan from the PR diff"
+    - "derive Welch segment count from hop = nfft - noverlap"
+    - "correct GWpy-compatible Rayleigh spectrogram handling for odd FFT lengths"
+    - "reject zero and one complete spectral segment"
+  excluded:
+    - "finite Monte Carlo correction (#507)"
+    - "release workflow hardening"
+physics_review:
+  status: pending_human_signoff
+  required_evidence:
+    - "exact PR head SHA"
+    - "exponential null model"
+    - "hop-based segment count"
+    - "DC/Nyquist handling"
+    - "FPR acceptance band"
+verification:
+  tdd_red: "Six focused failures before implementation: odd-hop mismatch and zero/one-segment cases."
+  focused_tests: "38 passed in tests/statistics/test_rayleigh_null_model.py."
+  parseval: "129-sample rFFT Parseval identity passed at rtol=1e-12."
+  odd_nfft: "129 Hz odd-length Rayleigh output has NaN DC and finite interior bins."
+  lint: "ruff check gwexpy/ tests/ passed."
+  typing: "mypy gwexpy/ passed."
+  ci: pending-push

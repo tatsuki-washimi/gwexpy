@@ -167,18 +167,23 @@ class TestSegmentCountDerivation:
     """``n_samples`` must equal the segments GWpy actually averaged."""
 
     @pytest.mark.parametrize(
-        ("stride", "fftlength", "overlap"),
+        ("stride", "fftlength", "overlap", "sample_rate"),
         [
-            (32, 1.0, 0),
-            (32, 1.0, None),
-            (10, 1.0, None),
-            (16, 0.5, None),
-            (32, 2.0, None),
-            (4, 0.5, 0),
+            (32, 1.0, 0, FS),
+            (32, 1.0, None, FS),
+            (10, 1.0, None, FS),
+            (16, 0.5, None, FS),
+            (32, 2.0, None, FS),
+            (4, 0.5, 0, FS),
+            # For odd FFT lengths GWpy's recommended overlap is 65, so the
+            # 64-sample hop must not be confused with the overlap itself.
+            (2, 1.0, None, 129),
+            # Explicit fftlength / 2 rounds to 64 samples: the hop is 65.
+            (2, 1.0, 0.5, 129),
         ],
     )
     def test_derived_n_samples_matches_welch_call_count(
-        self, stride, fftlength, overlap, monkeypatch
+        self, stride, fftlength, overlap, sample_rate, monkeypatch
     ):
         """Ground truth by counting `welch` calls.
 
@@ -214,7 +219,7 @@ class TestSegmentCountDerivation:
 
         monkeypatch.setattr(rt_module, "rayleigh_pvalue", capturing_pvalue)
 
-        ts = _noise(0, 128)
+        ts = _noise(0, 128, sample_rate=sample_rate)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", RuntimeWarning)
             spec = ts.rayleigh_test(
@@ -230,8 +235,52 @@ class TestSegmentCountDerivation:
         assert calls["n"] == true_n * n_columns, "ragged segment count across columns"
         # Every averaged slice is a full FFT length: GWpy either raises or
         # drops data, it never feeds a short segment through.
-        assert calls["lengths"] == {int(round(fftlength * FS))}
+        assert calls["lengths"] == {int(round(fftlength * sample_rate))}
         assert captured["n_samples"] == true_n
+
+    @pytest.mark.parametrize("overlap", [None, 0])
+    def test_rejects_stride_with_no_complete_fft_segment(self, overlap):
+        ts = _noise(0, 8)
+        with pytest.raises(ValueError, match="not enough samples for one complete FFT"):
+            ts.rayleigh_test(
+                fftlength=1.0,
+                stride=0.25,
+                overlap=overlap,
+                n_monte_carlo=50,
+                seed=1,
+            )
+
+    @pytest.mark.parametrize(
+        ("stride", "overlap"),
+        [(0.5, None), (1.0, 0)],
+    )
+    def test_rejects_single_spectral_segment(self, stride, overlap):
+        ts = _noise(0, 8)
+        with pytest.raises(ValueError, match="requires at least two spectral segments"):
+            ts.rayleigh_test(
+                fftlength=1.0,
+                stride=stride,
+                overlap=overlap,
+                n_monte_carlo=50,
+                seed=1,
+            )
+
+    @pytest.mark.parametrize(
+        ("stride", "overlap"),
+        [(1.0, None), (2.0, 0)],
+    )
+    def test_accepts_exactly_two_spectral_segments(self, stride, overlap):
+        ts = _noise(0, 8)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            result = ts.rayleigh_test(
+                fftlength=1.0,
+                stride=stride,
+                overlap=overlap,
+                n_monte_carlo=50,
+                seed=1,
+            )
+        assert np.isfinite(result.value[:, 1:-1]).all()
 
     def test_default_overlap_is_not_dt_times_df(self):
         """Pin the specific wrong answer #506 shipped.

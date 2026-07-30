@@ -25,6 +25,50 @@ NumberLike: TypeAlias = Union[int, float, np.number]
 WindowLike: TypeAlias = Union[str, tuple[Any, ...], npt.ArrayLike]
 
 
+def _rayleigh_with_hop_count(
+    timeseries: Any,
+    segmentlength: int,
+    noverlap: int = 0,
+    window: WindowLike = "hann",
+) -> Any:
+    """Calculate Rayleigh spectra using the Welch hop for segment count.
+
+    GWpy's Rayleigh implementation advances slices by ``segmentlength -
+    noverlap`` but counts them using ``noverlap``.  Those are equal only for
+    exactly 50% overlap; odd-length recommended Hann overlaps otherwise omit
+    valid segments or request short ones.  Keep the count and slice starts
+    derived from the same hop.
+    """
+    from gwpy.frequencyseries import FrequencySeries
+    from gwpy.signal.spectral._scipy import welch
+
+    if not 0 <= noverlap < segmentlength:
+        raise ValueError("overlap must be non-negative and smaller than fftlength")
+
+    hop = segmentlength - noverlap
+    if timeseries.size < segmentlength:
+        raise ValueError("not enough samples for one complete FFT segment")
+    numsegs = 1 + (timeseries.size - segmentlength) // hop
+    tmpdata = np.empty((numsegs, int(segmentlength // 2 + 1)))
+    for index in range(numsegs):
+        start = index * hop
+        tmpdata[index, :] = welch(
+            timeseries[start : start + segmentlength],
+            segmentlength,
+            window=window,
+        )
+    return FrequencySeries(
+        tmpdata.std(axis=0) / tmpdata.mean(axis=0),
+        unit="",
+        copy=False,
+        f0=0,
+        epoch=timeseries.epoch,
+        df=timeseries.sample_rate.value / segmentlength,
+        channel=timeseries.channel,
+        name=f"Rayleigh spectrum of {timeseries.name}",
+    )
+
+
 def _get_next_fast_len() -> Callable[[int], int]:
     """Return scipy's next_fast_len if available, else identity."""
     try:
@@ -376,7 +420,15 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         res = self._super_ts().spectrogram2(*args, **kwargs)
         return res.view(Spectrogram)
 
-    def rayleigh_spectrogram(self, *args: Any, **kwargs: Any) -> Spectrogram:
+    def rayleigh_spectrogram(
+        self,
+        stride: float,
+        fftlength: float | None = None,
+        overlap: float | None = 0,
+        window: WindowLike = "hann",
+        nproc: int = 1,
+        **kwargs: Any,
+    ) -> Spectrogram:
         """Compute the Rayleigh statistic spectrogram.
 
         This method overrides the base gwpy implementation to return
@@ -390,7 +442,20 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
-        res = self._super_ts().rayleigh_spectrogram(*args, **kwargs)
+        from gwpy.signal.spectral import _ui as spectral_ui
+        from gwpy.timeseries import TimeSeries as BaseTimeSeries
+
+        res = spectral_ui.average_spectrogram(
+            cast(Any, self).view(BaseTimeSeries),
+            _rayleigh_with_hop_count,
+            stride,
+            fftlength=fftlength,
+            overlap=overlap,
+            window=window,
+            nproc=nproc,
+            **kwargs,
+        )
+        res.override_unit("")
         return res.view(Spectrogram)
 
     def dct(

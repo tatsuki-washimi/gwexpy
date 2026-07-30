@@ -353,15 +353,17 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
                 "meaningless -- matching the segment count cannot repair this."
             )
 
-        # Number of segments GWpy actually averages per column. GWpy chunks
-        # the series into nstride + noverlap samples (not nstride), then
-        # divides that chunk by nfft/noverlap, so anything derived from
-        # nstride alone -- or from dt * df -- is off (#506).
+        # Each output column contains nstride + noverlap samples.  Welch
+        # segments start one hop apart, where hop = nfft - noverlap.  The
+        # same hop is used by rayleigh_spectrogram(), so the null sample size
+        # and the actual statistic cannot diverge for odd FFT lengths.
         nchunk = nstride + noverlap
-        if noverlap == 0:
-            derived = nchunk // nfft
-        else:
-            derived = 1 + int((nchunk - nfft) / float(noverlap))
+        if nchunk < nfft:
+            raise ValueError("not enough samples for one complete FFT segment")
+        hop = nfft - noverlap
+        derived = 1 + (nchunk - nfft) // hop
+        if derived < 2:
+            raise ValueError("rayleigh_test requires at least two spectral segments")
 
         if n_samples is None:
             n_samples = derived
