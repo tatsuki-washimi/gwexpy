@@ -20,6 +20,10 @@ physics_review:
     - "hop-based segment count"
     - "DC/Nyquist handling"
     - "FPR acceptance band"
+review_thread:
+  qodo_correctness_thread: "PRRT_kwDOQqG8is6T16Z3"
+  status: "Bot-resolved and outdated after the implementation update."
+  human_gate: "Still pending; bot resolution is not physics approval."
 verification:
   tdd_red: "Six focused failures before implementation: odd-hop mismatch and zero/one-segment cases."
   focused_tests: "38 passed in tests/statistics/test_rayleigh_null_model.py."
