@@ -135,7 +135,7 @@
             },
             "trusted_only": false,
             "metadata_requirements": [
-                "ndscope channel groups must preserve rate_hz and gps_start metadata."
+                "NDScope writers preserve canonical rate_hz and gps_start metadata; readers also accept sample_rate as a compatibility alias for rate_hz."
             ],
             "notes": [
                 "Public direct I/O is collection-first and TimeSeriesDict-only.",

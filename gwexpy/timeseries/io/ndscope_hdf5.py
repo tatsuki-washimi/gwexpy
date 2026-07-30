@@ -17,6 +17,7 @@ read these files, and ``.write(..., format="hdf.ndscope")`` can produce
 ndscope-compatible output. Backward-compatible aliases are also registered
 through the shared registration helper.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -32,6 +33,46 @@ from ._registration import register_timeseries_format
 
 # Dataset names recognised as ndscope data fields.
 _NDSCOPE_DATA_KEYS = frozenset({"raw", "mean", "min", "max"})
+_NDSCOPE_SAMPLE_RATE_KEYS = ("rate_hz", "sample_rate")
+
+
+def _sample_rate_from_attrs(attrs: Any, *, group_name: str) -> float | None:
+    """Return a validated NDScope sampling rate from group attributes.
+
+    ``rate_hz`` is the canonical attribute written by gwexpy.  External
+    NDScope files may instead use ``sample_rate``; accept it for reading while
+    rejecting missing, invalid, or conflicting timing metadata explicitly.
+    """
+    values: dict[str, float] = {}
+    for key in _NDSCOPE_SAMPLE_RATE_KEYS:
+        if key not in attrs:
+            continue
+        try:
+            value = float(attrs[key])
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"NDScope group {group_name!r} has invalid {key}={attrs[key]!r}; "
+                "expected a positive finite sampling rate in Hz"
+            ) from exc
+        if not np.isfinite(value) or value <= 0:
+            raise ValueError(
+                f"NDScope group {group_name!r} has invalid {key}={value!r}; "
+                "expected a positive finite sampling rate in Hz"
+            )
+        values[key] = value
+
+    if not values:
+        return None
+
+    if len(values) == 2 and not np.isclose(
+        values["rate_hz"], values["sample_rate"], rtol=1e-12, atol=0.0
+    ):
+        raise ValueError(
+            f"NDScope group {group_name!r} has conflicting sampling-rate "
+            f"metadata: rate_hz={values['rate_hz']!r}, "
+            f"sample_rate={values['sample_rate']!r}"
+        )
+    return values.get("rate_hz", values.get("sample_rate"))
 
 
 # ---------------------------------------------------------------------------
@@ -49,9 +90,9 @@ def identify_ndscope_hdf5(
     """Identify an ndscope HDF5 file by its internal structure.
 
     Returns ``True`` when *filepath* points to an HDF5 file whose root
-    contains at least one Group with ``rate_hz`` and ``gps_start``
-    attributes and at least one dataset named ``raw``, ``mean``, ``min``,
-    or ``max``.
+    contains at least one Group with ``gps_start`` and either ``rate_hz`` or
+    ``sample_rate`` attributes, plus at least one dataset named ``raw``,
+    ``mean``, ``min``, or ``max``.
     """
     if filepath is None:
         return False
@@ -65,7 +106,9 @@ def identify_ndscope_hdf5(
                 if not isinstance(item, h5py.Group):
                     continue
                 attrs = item.attrs
-                if "rate_hz" not in attrs or "gps_start" not in attrs:
+                if "gps_start" not in attrs or not any(
+                    key in attrs for key in _NDSCOPE_SAMPLE_RATE_KEYS
+                ):
                     continue
                 if any(ds_name in item for ds_name in _NDSCOPE_DATA_KEYS):
                     return True
@@ -144,14 +187,16 @@ def read_timeseriesdict_ndscope_hdf5(
             if not isinstance(item, h5py.Group):
                 continue
             attrs = item.attrs
-            if "rate_hz" not in attrs or "gps_start" not in attrs:
+            if "gps_start" not in attrs:
                 continue
 
             # Skip if not in the requested channel set.
             if wanted is not None and grp_name not in wanted:
                 continue
 
-            sample_rate = float(attrs["rate_hz"])
+            sample_rate = _sample_rate_from_attrs(attrs, group_name=grp_name)
+            if sample_rate is None:
+                continue
             gps_start = float(attrs["gps_start"])
             unit = str(attrs.get("unit", ""))
 

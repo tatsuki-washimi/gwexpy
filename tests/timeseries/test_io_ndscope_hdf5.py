@@ -15,6 +15,9 @@ from gwexpy.timeseries.io.ndscope_hdf5 import (
 )
 
 SAMPLE_HDF5 = Path(__file__).parent.parent / "fixtures" / "data" / "ndscope.h5"
+LOCAL_NDSCOPE_HDF5 = (
+    Path(__file__).parent.parent / "fixtures" / "data" / "test_seis_ndscope.h5"
+)
 _NDSCOPE_ACCEPTED_FORMATS = (
     "hdf.ndscope",
     "ndscope-hdf5",
@@ -38,6 +41,19 @@ def _make_ndscope_raw(path, channels=None):
             grp.attrs["rate_hz"] = 256.0
             grp.attrs["gps_start"] = 1_000_000_000.0
             grp.attrs["unit"] = "m"
+
+
+def _make_ndscope_with_sampling_attrs(path, *, rate_hz=None, sample_rate=None):
+    """Create one raw NDScope channel with the requested rate attributes."""
+    with h5py.File(str(path), "w") as f:
+        grp = f.create_group("K1:TEST-CHANNEL")
+        grp.create_dataset("raw", data=np.arange(256, dtype=np.float64))
+        if rate_hz is not None:
+            grp.attrs["rate_hz"] = rate_hz
+        if sample_rate is not None:
+            grp.attrs["sample_rate"] = sample_rate
+        grp.attrs["gps_start"] = 1_000_000_000.0
+        grp.attrs["unit"] = "m"
 
 
 def _make_ndscope_trend(path):
@@ -86,6 +102,12 @@ class TestIdentify:
         _make_ndscope_raw(p)
         assert identify_ndscope_hdf5(TimeSeriesDict, str(p), None) is True
 
+    def test_identifies_sample_rate_metadata(self, tmp_path):
+        p = tmp_path / "sample_rate.hdf5"
+        _make_ndscope_with_sampling_attrs(p, sample_rate=256.0)
+
+        assert identify_ndscope_hdf5(TimeSeriesDict, str(p), None) is True
+
     def test_rejects_gwpy_hdf5(self, tmp_path):
         p = tmp_path / "gwpy_native.hdf5"
         _make_gwpy_hdf5(p)
@@ -126,6 +148,38 @@ class TestRead:
         np.testing.assert_allclose(ts.value, data)
         assert float(ts.sample_rate.value) == 256.0
         assert float(ts.t0.value) == 1_000_000_000.0
+
+    def test_public_apis_read_sample_rate_metadata(self, tmp_path):
+        p = tmp_path / "sample_rate.hdf5"
+        _make_ndscope_with_sampling_attrs(p, sample_rate=256.0)
+
+        direct = read_timeseriesdict_ndscope_hdf5(p)
+        dict_explicit = TimeSeriesDict.read(p, format="hdf.ndscope")
+        dict_auto = TimeSeriesDict.read(p)
+        matrix_explicit = TimeSeriesMatrix.read(p, format="hdf.ndscope")
+        matrix_auto = TimeSeriesMatrix.read(p)
+
+        for tsd in (direct, dict_explicit, dict_auto):
+            ts = tsd["K1:TEST-CHANNEL"]
+            assert float(ts.sample_rate.value) == pytest.approx(256.0)
+            np.testing.assert_allclose(ts.value, np.arange(256, dtype=np.float64))
+        assert matrix_explicit.shape == matrix_auto.shape == (1, 1, 256)
+        np.testing.assert_allclose(matrix_explicit.value, matrix_auto.value)
+
+    def test_rejects_conflicting_sampling_rate_metadata(self, tmp_path):
+        p = tmp_path / "conflicting_rate.hdf5"
+        _make_ndscope_with_sampling_attrs(p, rate_hz=256.0, sample_rate=128.0)
+
+        with pytest.raises(ValueError, match="conflicting sampling-rate"):
+            read_timeseriesdict_ndscope_hdf5(p)
+
+    @pytest.mark.parametrize("sample_rate", [0.0, -1.0, np.inf, np.nan])
+    def test_rejects_invalid_sampling_rate_metadata(self, tmp_path, sample_rate):
+        p = tmp_path / "invalid_rate.hdf5"
+        _make_ndscope_with_sampling_attrs(p, sample_rate=sample_rate)
+
+        with pytest.raises(ValueError, match="positive finite"):
+            read_timeseriesdict_ndscope_hdf5(p)
 
     def test_read_trend(self, tmp_path):
         p = tmp_path / "trend.hdf5"
@@ -216,9 +270,7 @@ class TestRead:
         matrix_format_none = TimeSeriesMatrix.read(str(p), format=None)
         matrix_explicit = TimeSeriesMatrix.read(str(p), format="hdf.ndscope")
         matrix_positional = TimeSeriesMatrix.read(str(p), "hdf.ndscope")
-        matrix_from_dict = TimeSeriesDict.read(
-            str(p), format="hdf.ndscope"
-        ).to_matrix()
+        matrix_from_dict = TimeSeriesDict.read(str(p), format="hdf.ndscope").to_matrix()
 
         assert matrix_auto.shape == matrix_explicit.shape == (2, 1, 256)
         np.testing.assert_allclose(matrix_auto.value, matrix_explicit.value)
@@ -510,7 +562,9 @@ class TestRealData:
         explicit = TimeSeriesMatrix.read(SAMPLE_HDF5, format="hdf.ndscope")
         from_dict = TimeSeriesDict.read(SAMPLE_HDF5, format="hdf.ndscope").to_matrix()
 
-        assert auto.shape == explicit.shape == from_dict.shape == (3, 1, _REAL_N_SAMPLES)
+        assert (
+            auto.shape == explicit.shape == from_dict.shape == (3, 1, _REAL_N_SAMPLES)
+        )
         assert list(auto.channel_names) == _REAL_CHANNELS
         assert float(auto.sample_rate.value) == pytest.approx(_REAL_RATE_HZ)
         assert float(auto.t0.value) == pytest.approx(_REAL_GPS_START, rel=1e-9)
@@ -548,3 +602,30 @@ class TestRealData:
             ts = tsd[ch]
             assert float(ts.t0.value) == pytest.approx(start)
             assert float(ts.duration.value) == pytest.approx(10.0)
+
+
+_LOCAL_REAL_CHANNELS = [
+    "K1:PEM-SEIS_EYV_GND_X_OUT_DQ",
+    "K1:PEM-SEIS_EYV_GND_Y_OUT_DQ",
+    "K1:PEM-SEIS_EYV_GND_Z_OUT_DQ",
+]
+
+
+@pytest.mark.skipif(
+    not LOCAL_NDSCOPE_HDF5.exists(), reason="local NDScope sample data not found"
+)
+class TestLocalSampleRateData:
+    """Regression coverage for the ignored external NDScope sample file."""
+
+    def test_reads_sample_rate_metadata(self):
+        tsd = TimeSeriesDict.read(LOCAL_NDSCOPE_HDF5)
+        matrix = TimeSeriesMatrix.read(LOCAL_NDSCOPE_HDF5)
+
+        assert list(tsd) == _LOCAL_REAL_CHANNELS
+        assert matrix.shape == (3, 1, 307201)
+        assert list(matrix.channel_names) == _LOCAL_REAL_CHANNELS
+        for channel in _LOCAL_REAL_CHANNELS:
+            ts = tsd[channel]
+            assert float(ts.sample_rate.value) == pytest.approx(512.0)
+            assert float(ts.t0.value) == pytest.approx(1469404818.0)
+            assert str(ts.unit) == "um / s"
