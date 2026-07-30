@@ -74,6 +74,9 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
 
 - Public contract: `TimeSeriesDict` read/write only.
 - Registry surface: adapters for `TimeSeries` and `TimeSeriesMatrix` may exist.
+- Timing metadata: writers emit canonical `rate_hz` and `gps_start` group
+  attributes. Readers also accept external files that use `sample_rate` in
+  place of `rate_hz`; when both are present, their values must agree.
 - Reason: the ndscope schema is collection-oriented, and public docs already
   present it as a `TimeSeriesDict`-first HDF5 family.
 
