@@ -1,0 +1,32 @@
+---
+issue: "v0.1.12 Phase B"
+branch: codex/release-v0112-hardening
+scope:
+  summary: "Fail-closed release validator and immutable publish workflow."
+  included:
+    - "workflow identity rotation from release.yml to publish-release.yml"
+    - "strict annotated-tag and candidate-SHA validation"
+    - "artifact-only publish job with SHA-pinned actions and job-scoped OIDC"
+    - "release operation and ruleset recovery documentation"
+  excluded:
+    - "PyPI Trusted Publisher, GitHub environment, and ruleset mutations pending post-merge"
+    - "release metadata/version update and publication"
+action_pins:
+  checkout_v7: 3d3c42e5aac5ba805825da76410c181273ba90b1
+  setup_python_v6: ece7cb06caefa5fff74198d8649806c4678c61a1
+  upload_artifact_v4: ea165f8d65b6e75b540449e92b4886f43607fa02
+  download_artifact_v4: d3f86a106a0bac45b974a628896c90dbdf5c8093
+  pypi_publish_v1_14_2: a892a5a61159132606e93a2fa6f4358831b04d26
+verification:
+  tdd_red:
+    - "tests/test_validate_release_script.py: validator absent"
+    - "tests/test_publish_release_workflow.py: workflow absent"
+  focused_tests: "38 passed: validator/workflow contracts plus existing release metadata/artifact tests."
+  actionlint: "v1.7.12 verified against official SHA256 checksum and passed."
+  lint: "ruff check passed for owned validator and contract tests."
+  typing: "mypy scripts/validate_release.py passed."
+  gate_0: "v0.1.11 body synchronized with release_notes/v0.1.11.md; non-body metadata, assets, and latest tag unchanged."
+  external_configuration: pending-post-merge
+physics_review:
+  status: not_required
+  rationale: "Release workflow and metadata validation only."
