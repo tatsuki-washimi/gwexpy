@@ -25,6 +25,7 @@ Flags
     Project root directory (default: parent of this script).  Useful for
     testing with a temporary directory.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -162,7 +163,7 @@ def generate_one(version: str, root: Path) -> None:
     output_dir = root / "release_notes"
     output_dir.mkdir(exist_ok=True)
     path = output_dir / f"v{version}.md"
-    path.write_text(build_release_note(version, body), encoding="utf-8")
+    path.write_bytes(build_release_note(version, body).encode("utf-8"))
     print(path.relative_to(root))
 
 
@@ -186,15 +187,14 @@ def _parse_sections_bulk(changelog_text: str) -> dict[str, str]:
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         sections[version] = text[start:end].strip()
 
-    missing = [v for v in _LEGACY_VERSIONS if v not in sections]
-    if missing:
-        raise SystemExit(f"Missing CHANGELOG sections: {', '.join(missing)}")
+    if not sections:
+        raise SystemExit("error: no valid release sections found in CHANGELOG.md")
 
     return sections
 
 
 def generate_all(root: Path) -> None:
-    """Generate release notes for every version in _LEGACY_VERSIONS."""
+    """Generate release notes for every version present in CHANGELOG.md matching _LEGACY_VERSIONS."""
     changelog = root / "CHANGELOG.md"
     if not changelog.exists():
         raise SystemExit(f"error: CHANGELOG.md not found at {changelog}")
@@ -204,9 +204,9 @@ def generate_all(root: Path) -> None:
 
     output_dir = root / "release_notes"
     output_dir.mkdir(exist_ok=True)
-    for version in _LEGACY_VERSIONS:
+    for version, body in sections.items():
         path = output_dir / f"v{version}.md"
-        path.write_text(build_release_note(version, sections[version]), encoding="utf-8")
+        path.write_bytes(build_release_note(version, body).encode("utf-8"))
         print(path.relative_to(root))
 
 

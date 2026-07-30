@@ -15,6 +15,7 @@ Test list
 8. trailing-newline    — output always ends with exactly one LF
 9. idempotent          — running twice produces no diff
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -33,7 +34,9 @@ SCRIPT = TOOLS_DIR / "gen_release_notes.py"
 RELEASE_NOTES_DIR = Path(__file__).resolve().parents[1] / "release_notes"
 
 
-def _run(args: list[str], *, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+def _run(
+    args: list[str], *, cwd: Path | None = None
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(SCRIPT), *args],
         capture_output=True,
@@ -51,7 +54,9 @@ def _load_module():
     return mod
 
 
-def _minimal_changelog(versions: list[tuple[str, str]], *, include_unreleased: bool = False) -> str:
+def _minimal_changelog(
+    versions: list[tuple[str, str]], *, include_unreleased: bool = False
+) -> str:
     """Build a minimal CHANGELOG.md text for testing.
 
     Each entry in *versions* is (version_str, body_text).
@@ -69,6 +74,7 @@ def _minimal_changelog(versions: list[tuple[str, str]], *, include_unreleased: b
 # ---------------------------------------------------------------------------
 # Test 1: v0.1.11 golden — byte-identical with tracked file
 # ---------------------------------------------------------------------------
+
 
 def test_golden_v0_1_11(tmp_path: Path) -> None:
     """--version 0.1.11 must produce a file byte-identical to the tracked golden."""
@@ -100,13 +106,16 @@ def test_golden_v0_1_11(tmp_path: Path) -> None:
 # Test 2: only the target version file is changed; others are untouched
 # ---------------------------------------------------------------------------
 
+
 def test_only_target_version_changed(tmp_path: Path) -> None:
     """Running --version X.Y.Z must not alter any other release_notes/*.md file."""
-    changelog_text = _minimal_changelog([
-        ("0.1.2", "Second release body."),
-        ("0.1.1", "First release body."),
-        ("0.1.0", "Initial release body."),
-    ])
+    changelog_text = _minimal_changelog(
+        [
+            ("0.1.2", "Second release body."),
+            ("0.1.1", "First release body."),
+            ("0.1.0", "Initial release body."),
+        ]
+    )
     (tmp_path / "CHANGELOG.md").write_text(changelog_text, encoding="utf-8")
     out_dir = tmp_path / "release_notes"
     out_dir.mkdir()
@@ -127,6 +136,7 @@ def test_only_target_version_changed(tmp_path: Path) -> None:
 # Test 3: "Unreleased" must be rejected (fail-closed)
 # ---------------------------------------------------------------------------
 
+
 def test_unreleased_rejected(tmp_path: Path) -> None:
     """Specifying 'Unreleased' as the version must exit non-zero."""
     changelog_text = _minimal_changelog(
@@ -144,6 +154,7 @@ def test_unreleased_rejected(tmp_path: Path) -> None:
 # Test 4: non-existent version must be rejected
 # ---------------------------------------------------------------------------
 
+
 def test_missing_version_rejected(tmp_path: Path) -> None:
     """Requesting a version absent from CHANGELOG must exit non-zero."""
     changelog_text = _minimal_changelog([("0.1.0", "Body.")])
@@ -157,6 +168,7 @@ def test_missing_version_rejected(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Test 5: duplicate version heading in CHANGELOG must be rejected
 # ---------------------------------------------------------------------------
+
 
 def test_duplicate_heading_rejected(tmp_path: Path) -> None:
     """A CHANGELOG with two identical version headings must exit non-zero."""
@@ -182,12 +194,15 @@ def test_duplicate_heading_rejected(tmp_path: Path) -> None:
 # Test 6: boundary accuracy — body ends exactly at the next heading
 # ---------------------------------------------------------------------------
 
+
 def test_boundary_accuracy(tmp_path: Path) -> None:
     """The extracted body must not bleed into the next section."""
-    changelog_text = _minimal_changelog([
-        ("0.1.1", "Body for 0.1.1 only."),
-        ("0.1.0", "Body for 0.1.0 only."),
-    ])
+    changelog_text = _minimal_changelog(
+        [
+            ("0.1.1", "Body for 0.1.1 only."),
+            ("0.1.0", "Body for 0.1.0 only."),
+        ]
+    )
     (tmp_path / "CHANGELOG.md").write_text(changelog_text, encoding="utf-8")
     (tmp_path / "release_notes").mkdir()
 
@@ -203,6 +218,7 @@ def test_boundary_accuracy(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Test 7: CRLF input → LF output
 # ---------------------------------------------------------------------------
+
 
 def test_crlf_input_produces_lf_output(tmp_path: Path) -> None:
     """CHANGELOG with CRLF line endings must produce LF-only output."""
@@ -223,6 +239,7 @@ def test_crlf_input_produces_lf_output(tmp_path: Path) -> None:
 # Test 8: trailing newline — exactly one LF at end of file
 # ---------------------------------------------------------------------------
 
+
 def test_exactly_one_trailing_newline(tmp_path: Path) -> None:
     """Output must end with exactly one LF byte regardless of CHANGELOG format."""
     # Build a CHANGELOG whose raw section body has zero trailing newlines
@@ -242,6 +259,7 @@ def test_exactly_one_trailing_newline(tmp_path: Path) -> None:
 # Test 9: idempotent — running twice produces identical bytes
 # ---------------------------------------------------------------------------
 
+
 def test_idempotent(tmp_path: Path) -> None:
     """Running the script twice on the same input must produce identical output."""
     changelog_text = _minimal_changelog([("0.1.0", "Stable body.")])
@@ -256,4 +274,29 @@ def test_idempotent(tmp_path: Path) -> None:
     assert r2.returncode == 0, r2.stderr
     second_run = (tmp_path / "release_notes" / "v0.1.0.md").read_bytes()
 
-    assert first_run == second_run, "Output differs between two consecutive runs (not idempotent)"
+    assert first_run == second_run, (
+        "Output differs between two consecutive runs (not idempotent)"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 10: bulk mode generates present legacy versions without erroring
+# ---------------------------------------------------------------------------
+
+
+def test_bulk_mode_generates_present_versions(tmp_path: Path) -> None:
+    """Bulk mode (no --version) must succeed for present versions even if 0.1.12 is not yet in CHANGELOG."""
+    changelog_text = _minimal_changelog(
+        [
+            ("0.1.11", "v0.1.11 body."),
+            ("0.1.10", "v0.1.10 body."),
+        ]
+    )
+    (tmp_path / "CHANGELOG.md").write_text(changelog_text, encoding="utf-8")
+    (tmp_path / "release_notes").mkdir()
+
+    result = _run(["--root", str(tmp_path)])
+    assert result.returncode == 0, f"Bulk mode failed: {result.stderr}"
+    assert (tmp_path / "release_notes" / "v0.1.11.md").exists()
+    assert (tmp_path / "release_notes" / "v0.1.10.md").exists()
+    assert not (tmp_path / "release_notes" / "v0.1.12.md").exists()
