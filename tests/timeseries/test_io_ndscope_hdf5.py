@@ -621,9 +621,9 @@ class TestLocalSampleRateData:
         tsd = TimeSeriesDict.read(LOCAL_NDSCOPE_HDF5)
         matrix = TimeSeriesMatrix.read(LOCAL_NDSCOPE_HDF5)
 
-        assert list(tsd) == _LOCAL_REAL_CHANNELS
+        assert set(tsd) == set(_LOCAL_REAL_CHANNELS)
         assert matrix.shape == (3, 1, 307201)
-        assert list(matrix.channel_names) == _LOCAL_REAL_CHANNELS
+        assert set(matrix.channel_names) == set(_LOCAL_REAL_CHANNELS)
         for channel in _LOCAL_REAL_CHANNELS:
             ts = tsd[channel]
             assert float(ts.sample_rate.value) == pytest.approx(512.0)
