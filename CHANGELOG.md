@@ -57,6 +57,12 @@ validation, exact-SHA pinning, and a documented trust boundary (#536).
   the listed actors instead of forbidding it: the tag-creation ruleset must
   enumerate the permitted creators, while the tag-integrity ruleset must
   list none (#536).
+- **ci**: the `pypa/gh-action-pypi-publish` pin in `publish-release.yml` used
+  the annotated tag object SHA for `v1.14.2` instead of the commit SHA it
+  points to, so the pinned ref did not resolve to any container image and the
+  `publish` job failed before uploading anything. Repinned to the peeled
+  commit SHA (`dc37677b2e1c63e2034f94d8a5b11f265b73ba33`). No package was
+  published to PyPI by the failed run.
 
 *Reproducibility note*: the `rayleigh_test` entries below change numeric
 output. The affected statistical model was introduced in `70bc11f55`
