@@ -85,17 +85,38 @@ boundary would overstate the guarantee.
 
 ### Readback commands
 
-Record the output of each in the release audit manifest:
+Record the full response of each in the release audit manifest:
 
 ```bash
 gh api repos/:owner/:repo/rulesets
-gh api repos/:owner/:repo/rulesets/<RULESET_ID>   # confirm rules[].type
+gh api repos/:owner/:repo/rulesets/<RULESET_ID>
 gh api repos/:owner/:repo/environments/pypi
 ```
 
 An empty `rulesets` response means no tag protection exists at all; in that
 state every bullet under "Enforced by configuration" that names a ruleset is
 unmet, regardless of what this document says.
+
+`rules[].type` alone is not sufficient evidence.  A ruleset can carry exactly
+the right rules and still constrain nothing, so the detail response must be
+checked on every one of the following before a tag is pushed:
+
+| Field | Required value | Why it matters |
+|---|---|---|
+| `enforcement` | `active` | `evaluate` and `disabled` report violations without blocking them, so the rules never take effect. |
+| `target` | `tag` | A ruleset targeting branches does not constrain tag operations at all. |
+| `conditions.ref_name.include` | `refs/tags/v*` | A different pattern leaves release tags outside the ruleset. |
+| `rules[].type` | `creation`, `update`, `deletion`, `non_fast_forward`, `tag_name_pattern` | Without `update`/`deletion`/`non_fast_forward`, only the tag *name* is constrained, not whether an existing tag can be moved or removed. |
+| `bypass_actors` | empty, or only actors that must not be able to defeat immutability | A bypass entry silently reinstates exactly the operations the rules above forbid, for the actors listed. |
+
+Read `environments/pypi` back for the same reason: confirm the deployment
+branch/tag policy actually restricts to `v*` tags and denies branch
+deployments, rather than assuming it from the environment's existence.
+
+The PyPI Trusted Publisher binding is not readable through the GitHub API.
+Confirm it in the PyPI project's publishing settings: the binding must name
+`publish-release.yml`, and the former `release.yml` binding must be absent.
+Record both observations, including the absence, in the audit manifest.
 
 ## Publisher rotation and protection recovery
 

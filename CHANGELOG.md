@@ -39,7 +39,10 @@
   fail-closed behaviour. `RELEASING.md` documents where the trust boundary
   actually is, separating the controls enforced by repository and PyPI
   configuration from the operational rules that are not mechanically
-  enforced, and records explicitly that the workflow's dual checkout is
+  enforced, records the readback fields an auditor must check before a tag
+  push (`enforcement`, `target`, `conditions`, `rules[].type`,
+  `bypass_actors`, and the Trusted Publisher binding, which has no GitHub
+  API readback), and states explicitly that the workflow's dual checkout is
   *not* itself protection against a modified tag revision (#536).
 
 ## [0.1.11] - 2026-07-25

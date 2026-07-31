@@ -88,6 +88,32 @@ def test_releasing_doc_separates_enforced_controls_from_operational_rules():
     assert "not a guarantee the platform provides" in releasing[operational:]
 
 
+def test_releasing_doc_requires_full_ruleset_readback_fields():
+    """`rules[].type` alone does not prove a ruleset constrains anything.
+
+    An `evaluate` ruleset, one targeting branches, one whose conditions miss
+    `refs/tags/v*`, or one with a bypass actor can carry exactly the right
+    rules and still permit the tag operations they name. The readback
+    checklist must therefore pin every field an auditor has to look at.
+    """
+    releasing = re.sub(
+        r"\s+", " ", (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
+    )
+    readback = releasing[releasing.index("### Readback commands") :]
+    for field in (
+        "`enforcement`",
+        "`active`",
+        "`target`",
+        "`conditions.ref_name.include`",
+        "`refs/tags/v*`",
+        "`bypass_actors`",
+    ):
+        assert field in readback, field
+    # The Trusted Publisher binding has no GitHub API readback, so the doc
+    # must say where to confirm it instead of implying the commands cover it.
+    assert "not readable through the GitHub API" in readback
+
+
 def test_verify_pins_python_before_running_the_validator():
     """The validator needs Python 3.11+ (`datetime.UTC`), so verify pins it.
 
