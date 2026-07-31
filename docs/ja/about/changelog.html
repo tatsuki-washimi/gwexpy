@@ -470,6 +470,36 @@ an unrelated error. This completes the external-metadata compatibility work
 in #534/#535 (#541).</p></li>
 </ul>
 </section>
+<section id="release-tooling">
+<h3>Release tooling<a class="headerlink" href="#release-tooling" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>ci</strong>: the release publication workflow is now a single fail-closed
+<code class="docutils literal notranslate"><span class="pre">publish-release.yml</span></code>, replacing <code class="docutils literal notranslate"><span class="pre">release.yml</span></code>. It resolves the release
+ref to an exact 40-character SHA before <code class="docutils literal notranslate"><span class="pre">build</span></code>, <code class="docutils literal notranslate"><span class="pre">smoke</span></code>, or <code class="docutils literal notranslate"><span class="pre">publish</span></code>
+consume it, checks the validator code out separately from the revision it
+validates, pins every action to a full commit SHA, gates PyPI publication
+behind a tag push and the <code class="docutils literal notranslate"><span class="pre">pypi</span></code> environment, and restricts OIDC
+<code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code> to the publish job alone. Manual dispatches are dry-runs
+and must be launched with <code class="docutils literal notranslate"><span class="pre">--ref</span> <span class="pre">main</span></code>. <code class="docutils literal notranslate"><span class="pre">scripts/validate_release.py</span></code> and
+<code class="docutils literal notranslate"><span class="pre">RELEASING.md</span></code> are added alongside it. The validator rejects duplicate
+release metadata -- two <code class="docutils literal notranslate"><span class="pre">##</span> <span class="pre">[version]</span></code> CHANGELOG headings, or a repeated
+top-level <code class="docutils literal notranslate"><span class="pre">version</span></code>/<code class="docutils literal notranslate"><span class="pre">date-released</span></code> in <code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> -- rather than
+reading the first occurrence, matching the release-note generator's
+fail-closed behaviour. <code class="docutils literal notranslate"><span class="pre">RELEASING.md</span></code> documents where the trust boundary
+actually is, separating the controls enforced by repository and PyPI
+configuration from the operational rules that are not mechanically
+enforced, records the readback fields an auditor must check before a tag
+push (<code class="docutils literal notranslate"><span class="pre">enforcement</span></code>, <code class="docutils literal notranslate"><span class="pre">target</span></code>, <code class="docutils literal notranslate"><span class="pre">conditions</span></code>, <code class="docutils literal notranslate"><span class="pre">rules[].type</span></code>,
+<code class="docutils literal notranslate"><span class="pre">bypass_actors</span></code>, and the Trusted Publisher binding, which has no GitHub
+API readback), and states explicitly that the workflow's dual checkout is
+<em>not</em> itself protection against a modified tag revision. The required
+<code class="docutils literal notranslate"><span class="pre">bypass_actors</span></code> state is given per ruleset rather than once for both,
+because a <code class="docutils literal notranslate"><span class="pre">creation</span></code>/<code class="docutils literal notranslate"><span class="pre">update</span></code>/<code class="docutils literal notranslate"><span class="pre">deletion</span></code> rule restricts its operation to
+the listed actors instead of forbidding it: the tag-creation ruleset must
+enumerate the permitted creators, while the tag-integrity ruleset must
+list none (#536).</p></li>
+</ul>
+</section>
 </section>
 <section id="id1">
 <h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.10...v0.1.11">0.1.11</a> - 2026-07-25<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
@@ -1194,6 +1224,7 @@ will change <code class="docutils literal notranslate"><span class="pre">rayleig
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">未リリース</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-visible-bug-fixes">動作に影響するバグ修正</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#release-tooling">Release tooling</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">0.1.11 - 2026-07-25</a><ul class="pst-show_toc_level nav section-nav flex-column">
