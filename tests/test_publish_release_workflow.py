@@ -43,12 +43,42 @@ def test_all_actions_are_full_sha_pinned_and_publish_job_is_minimal():
     assert workflow.count("id-token: write") == 1
 
 
-def test_verify_pins_control_and_source_revisions_and_publish_requires_tag_push():
+def test_verify_separates_validator_and_source_trees_and_publish_requires_tag_push():
+    """The verify job keeps validator code and validated source apart.
+
+    This asserts separation and SHA pinning only. It deliberately does *not*
+    assert that the `control` checkout is an independent trust boundary: on a
+    tag push `github.workflow_sha` is the revision the tag points at, not a
+    protected `main`, so a tag carrying a rewritten workflow would supply its
+    own validator. The controls that bound that risk are the tag rulesets,
+    the `pypi` environment, and the PyPI Trusted Publisher binding -- all
+    configured outside this repository and documented in RELEASING.md.
+    """
     workflow = read_workflow()
     assert "ref: ${{ github.workflow_sha }}" in workflow
+    assert "path: control" in workflow
+    assert "path: source" in workflow
+    assert "--repo-root source" in workflow
     assert "source_sha" in workflow
     assert "scripts/validate_release.py" in workflow
     assert "github.event_name == 'push'" in workflow
     assert "startsWith(github.ref, 'refs/tags/v')" in workflow
     assert "twine check --strict" in workflow
     assert "sys.prefix" in workflow
+
+
+def test_verify_pins_python_before_running_the_validator():
+    """The validator needs Python 3.11+ (`datetime.UTC`), so verify pins it.
+
+    Without an explicit `setup-python`, the validator would run on whatever
+    interpreter the runner image ships, letting an image update silently
+    break release verification while build/smoke stay pinned.
+    """
+    workflow = read_workflow()
+    verify = workflow.split("\n  verify:\n", maxsplit=1)[1].split("\n  build:\n")[0]
+    setup_python = verify.index("actions/setup-python@")
+    # The invocation path, not the bare script name: the latter also appears
+    # in the explanatory comment above the setup-python step.
+    validator = verify.index("python control/scripts/validate_release.py")
+    assert setup_python < validator
+    assert verify.count('python-version: "3.11"') == 1

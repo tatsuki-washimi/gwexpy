@@ -1,7 +1,7 @@
 # Releasing GWexpy
 
 The only release workflow is `publish-release.yml`.  Manual dispatches are
-dry-runs and must use the trusted control revision on `main`:
+dry-runs and must be launched with `--ref main`, which the workflow enforces:
 
 ```bash
 gh workflow run publish-release.yml --ref main \
@@ -24,6 +24,42 @@ PyPI publisher, environment, and ruleset readbacks are all approved.
 After a tag push, the strict workflow must pass verify, build, smoke, and
 publish.  Confirm the PyPI distribution/version, GitHub Release, Zenodo, and
 conda follow-up state before declaring release acceptance.
+
+## Where the trust boundary actually is
+
+The `verify` job checks out two trees: the workflow revision (`control`) and
+the revision under test (`source`).  That separation keeps the validator from
+grading its own working tree, and it pins the source to an exact SHA that
+`build`, `smoke`, and `publish` all reuse.
+
+**The dual checkout is not, by itself, protection against a modified tag
+revision.**  On a `workflow_dispatch` run the control revision is pinned to
+`main` by the `--ref main` enforcement above.  On a *tag push*,
+`github.workflow_sha` is the revision the tag points at -- it identifies the
+commit containing the workflow file, not an independently protected `main`.
+A tag carrying a rewritten workflow would therefore run its own validator.
+Do not read the two checkouts as a protected-controller architecture.
+
+What actually bounds that risk is configured outside this repository, and
+must be verified by readback before every release:
+
+- **Protected release tag rulesets** — `release-tags-create-admin-only` and
+  `release-tags-integrity` on `refs/tags/v*`, restricting who may create a
+  release tag and enforcing the final-release SemVer pattern.
+- **Tag creation permission** — only admins may create `v*` tags, so an
+  arbitrary contributor cannot start a publishing run at all.
+- **Immutable tag operation** — published release tags are never deleted,
+  moved, or retargeted, so a verified SHA cannot be swapped afterwards.
+- **GitHub Environment protection** — the `pypi` environment permits `v*`
+  tags only, denies branch deployments, and gates the publish job.
+- **PyPI Trusted Publisher binding** — bound to `publish-release.yml`
+  specifically, so no other workflow in this repository can mint a token.
+- **Exact SHA validation** — `validate_release.py` resolves the release ref
+  to a 40-character SHA and rejects branch names, abbreviated SHAs, and
+  arbitrary ref expressions; downstream jobs consume that SHA, not the ref.
+
+A release is only as protected as the weakest of those six.  Treating the
+workflow file as the boundary would overstate the guarantee.
 
 ## Publisher rotation and protection recovery
 

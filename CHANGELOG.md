@@ -22,6 +22,23 @@
   an unrelated error. This completes the external-metadata compatibility work
   in #534/#535 (#541).
 
+### Release tooling
+
+- **ci**: the release publication workflow is now a single fail-closed
+  `publish-release.yml`, replacing `release.yml`. It resolves the release
+  ref to an exact 40-character SHA before doing anything else, checks the
+  validator code out separately from the revision it validates, pins every
+  action to a full commit SHA, gates PyPI publication behind a tag push and
+  the `pypi` environment, and restricts OIDC `id-token: write` to the
+  publish job alone. Manual dispatches are dry-runs and must be launched
+  with `--ref main`. `scripts/validate_release.py` and `RELEASING.md` are
+  added alongside it; `RELEASING.md` documents where the trust boundary
+  actually is -- the tag rulesets, tag-creation permission, immutable tag
+  operation, `pypi` environment protection, Trusted Publisher binding, and
+  exact-SHA validation -- and records explicitly that the workflow's dual
+  checkout is *not* itself protection against a modified tag revision
+  (#536).
+
 ## [0.1.11] - 2026-07-25
 
 This is a time/metadata-integrity and statistics-robustness patch release.
