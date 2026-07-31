@@ -76,8 +76,9 @@ numbers must pin to the version that produced them.
   `39`, which bore no relation to the data. The count is the number of
   periodogram segments GWpy averages per column, which is *not* `dt * df`
   whenever the segments overlap: GWpy chunks the series into
-  `nstride + noverlap` samples, so the default 50%-overlap path produces
-  twice `dt * df`. Fixing only the null distribution above would have left
+  `nstride + noverlap` samples, so `rayleigh_test()`'s default path -- which
+  resolves `overlap=None` to the recommended 50% for the default hann window
+  -- produces twice `dt * df`. Fixing only the null distribution above would have left
   the default path *worse* calibrated than before, because the stale `39`
   happened to compensate for the wrong distribution shape at some
   configurations. `n_samples` may still be passed explicitly for backward
@@ -115,9 +116,11 @@ numbers must pin to the version that produced them.
   ones. The count and the slice starts now come from the same hop. **This
   changes the reported statistic values themselves**, not just the p-values
   derived from them, relative to both `gwpy` and GWexpy `<=v0.1.11`, in
-  exactly those configurations; the default 50%-overlap path is unchanged.
-  `TimeSeries.rayleigh_test()` rejects the divergent overlaps outright, so
-  this affects direct `rayleigh_spectrogram()` callers only (#506).
+  exactly those configurations. The `rayleigh_test()` recommended-overlap
+  path is unchanged; direct `rayleigh_spectrogram()` calls continue to
+  default to `overlap=0`, which is also unchanged. `TimeSeries.rayleigh_test()`
+  rejects the divergent overlaps outright, so this affects direct
+  `rayleigh_spectrogram()` callers passing an explicit overlap only (#506).
 
 - **statistics**: `rayleigh_pvalue()`, `_get_rayleigh_stat_null_distribution()`,
   and `_simulate_rayleigh_null()` now raise `ValueError` when `n_samples < 2`.

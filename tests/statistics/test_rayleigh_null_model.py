@@ -194,6 +194,131 @@ class TestNullDistributionModel:
         np.testing.assert_array_equal(a, b)
 
 
+class TestSegmentLayout:
+    """Pin the Welch segment layout to hand-computed constants.
+
+    `TestSegmentCountDerivation` below compares `rayleigh_test`'s derived
+    ``n_samples`` against the number of `welch` calls -- but both sides come
+    from the same hop expression, so a shared off-by-one would move them
+    together and still pass. These cases fix the expected hop, start offsets,
+    and segment count as literals, independently of how the production code
+    computes them.
+    """
+
+    @pytest.mark.parametrize(
+        ("case", "size", "segmentlength", "noverlap", "hop", "starts"),
+        [
+            # Zero overlap: slices tile the series back to back.
+            ("zero-overlap", 256, 64, 0, 64, [0, 64, 128, 192]),
+            # Even segment length at the recommended Hann overlap (L/2).
+            (
+                "even-recommended",
+                256,
+                64,
+                32,
+                32,
+                [0, 32, 64, 96, 128, 160, 192],
+            ),
+            # Odd segment length: GWpy recommends 65, so the hop is 64 -- the
+            # two differ, which is exactly the case GWpy's own count gets
+            # wrong. 384 // 64 divides evenly, so the last slice ends on the
+            # final sample.
+            (
+                "odd-recommended",
+                513,
+                129,
+                65,
+                64,
+                [0, 64, 128, 192, 256, 320, 384],
+            ),
+            # Odd segment length with an explicit half overlap: 129 // 2 == 64
+            # samples of overlap, giving the complementary hop of 65.
+            (
+                "odd-explicit-half",
+                513,
+                129,
+                64,
+                65,
+                [0, 65, 130, 195, 260, 325],
+            ),
+            # Boundary: 192 samples hold exactly three 64-sample slices.
+            ("exact-fit", 192, 64, 0, 64, [0, 64, 128]),
+            # One sample short of that: the third slice would need 192
+            # samples, so it must be dropped rather than run short.
+            ("one-sample-short", 191, 64, 0, 64, [0, 64]),
+        ],
+    )
+    def test_slice_starts_and_count_match_hand_computed_layout(
+        self, case, size, segmentlength, noverlap, hop, starts, monkeypatch
+    ):
+        import gwpy.signal.spectral._scipy as gwpy_scipy
+
+        from gwexpy.timeseries._spectral_fourier import _rayleigh_with_hop_count
+
+        observed: list[tuple[int, int]] = []
+
+        def recording_welch(timeseries, seglen, **kwargs):
+            # The data is a ramp, so the first sample of each slice *is* its
+            # start offset. Recording it measures where the implementation
+            # actually cut, rather than re-deriving it from the same formula.
+            observed.append((int(timeseries.value[0]), int(timeseries.size)))
+            return np.ones(int(seglen // 2 + 1))
+
+        monkeypatch.setattr(gwpy_scipy, "welch", recording_welch)
+
+        ts = TimeSeries(np.arange(size, dtype=float), sample_rate=FS)
+        _rayleigh_with_hop_count(ts, segmentlength, noverlap)
+
+        assert [start for start, _ in observed] == starts, case
+        assert {length for _, length in observed} == {segmentlength}, case
+        assert len(observed) == len(starts), case
+        # The hop is the literal spacing between consecutive slice starts,
+        # asserted here rather than taken from the implementation.
+        assert all(b - a == hop for a, b in zip(starts, starts[1:])), case
+        # The dropped tail must be shorter than one full segment; otherwise a
+        # complete slice was silently discarded.
+        assert 0 <= size - (starts[-1] + segmentlength) < hop, case
+
+    @pytest.mark.parametrize(
+        ("stride", "overlap", "expected_n_samples"),
+        [
+            # fs=128, fftlength=1.0 -> L=128. Zero overlap gives hop=128 and a
+            # 4096-sample chunk: 1 + (4096 - 128) // 128 == 32.
+            (32, 0, 32),
+            # The recommended Hann overlap is 64, so hop=64 and the chunk
+            # carries the extra overlap: 1 + (4160 - 128) // 64 == 64.
+            (32, None, 64),
+        ],
+    )
+    def test_rayleigh_test_reports_hand_computed_segment_count(
+        self, stride, overlap, expected_n_samples, monkeypatch
+    ):
+        """`n_samples` itself is pinned to a literal, not to a call count."""
+        captured = {}
+        import gwexpy.statistics.rayleigh_test as rt_module
+
+        original_pvalue = rt_module.rayleigh_pvalue
+
+        def capturing_pvalue(rayleigh_spec, n_samples, *args, **kwargs):
+            captured["n_samples"] = n_samples
+            return original_pvalue(rayleigh_spec, n_samples, *args, **kwargs)
+
+        monkeypatch.setattr(rt_module, "rayleigh_pvalue", capturing_pvalue)
+
+        ts = _noise(0, 128)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            ts.rayleigh_test(
+                fftlength=1.0,
+                stride=stride,
+                overlap=overlap,
+                n_monte_carlo=50,
+                seed=1,
+            )
+
+        assert captured["n_samples"] == expected_n_samples
+
+
 class TestSegmentCountDerivation:
     """``n_samples`` must equal the segments GWpy actually averaged."""
 
