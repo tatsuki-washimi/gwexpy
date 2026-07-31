@@ -106,6 +106,29 @@ numbers must pin to the version that produced them.
   `compute_student_t_nu()` in v0.1.11 (#465). Recovering detection power at
   these bins with a chi2_1 null is left for a future release (#506).
 
+- **statistics**: `TimeSeries.rayleigh_spectrogram()` now derives its own
+  per-segment averaging instead of delegating to GWpy's `rayleigh()`, which
+  advances segment starts by `fftlength - overlap` but counts segments using
+  `overlap`. Those agree only at exactly 50% overlap, so for an odd FFT
+  length -- where the recommended Hann overlap is not `nfft // 2` -- or for
+  any other explicit overlap, GWpy omits valid segments or requests short
+  ones. The count and the slice starts now come from the same hop. **This
+  changes the reported statistic values themselves**, not just the p-values
+  derived from them, relative to both `gwpy` and GWexpy `<=v0.1.11`, in
+  exactly those configurations; the default 50%-overlap path is unchanged.
+  `TimeSeries.rayleigh_test()` rejects the divergent overlaps outright, so
+  this affects direct `rayleigh_spectrogram()` callers only (#506).
+
+- **statistics**: `rayleigh_pvalue()`, `_get_rayleigh_stat_null_distribution()`,
+  and `_simulate_rayleigh_null()` now raise `ValueError` when `n_samples < 2`.
+  The statistic is a sample coefficient of variation over `n` segments, so
+  `n == 1` produced an all-zero null against which every observed value
+  scored `p == 0`, and `n <= 0` produced an all-NaN null with the same
+  effect -- both silently. The `n <= 0` case previously raised only at the
+  distribution layer; the bound is now `>= 2` and is enforced at all three
+  entry points, since the distribution layer memoises into a shared cache
+  (#506).
+
 ### Known Limitations
 
 - **statistics**: `to_segments()` still applies no multiple-comparison

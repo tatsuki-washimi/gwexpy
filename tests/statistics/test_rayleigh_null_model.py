@@ -26,6 +26,7 @@ from gwexpy.statistics.dq_flag import to_segments
 from gwexpy.statistics.rayleigh_test import (
     _get_rayleigh_stat_null_distribution,
     _simulate_rayleigh_null,
+    rayleigh_pvalue,
 )
 from gwexpy.timeseries import TimeSeries
 
@@ -88,6 +89,36 @@ def _target_size(alpha, n_monte_carlo):
     """
     k = int(alpha * n_monte_carlo / 2)
     return 2 * (k + 1) / (n_monte_carlo + 1)
+
+
+class TestDegenerateSegmentCountGuard:
+    """``n_samples < 2`` must raise at every entry point, not degrade silently.
+
+    The statistic is ``std(P)/mean(P)`` over ``n`` segments. At ``n == 1``
+    every trial has ``std == 0``, giving an all-zero null against which any
+    observed statistic scores ``p == 0``; at ``n <= 0`` numpy returns NaN,
+    giving an all-NaN null with the same effect. Neither raises on its own,
+    so each of the three entry points is guarded and tested separately --
+    `_get_rayleigh_stat_null_distribution` also memoises into a shared
+    cache, so a guard only at the lowest layer would still let a degenerate
+    entry be stored and handed back.
+    """
+
+    @pytest.mark.parametrize("n_samples", [0, 1])
+    def test_rayleigh_pvalue_rejects(self, n_samples):
+        spec = _noise(1024, 32.0).rayleigh_spectrogram(8.0, 1.0)
+        with pytest.raises(ValueError, match="n_samples must be >= 2"):
+            rayleigh_pvalue(spec, n_samples=n_samples, n_monte_carlo=100)
+
+    @pytest.mark.parametrize("n", [0, 1])
+    def test_null_distribution_rejects(self, n):
+        with pytest.raises(ValueError, match="n_samples must be >= 2"):
+            _get_rayleigh_stat_null_distribution(n, 100, seed=1)
+
+    @pytest.mark.parametrize("n", [0, 1])
+    def test_simulate_null_rejects(self, n):
+        with pytest.raises(ValueError, match="n_samples must be >= 2"):
+            _simulate_rayleigh_null(n, 100, np.random.default_rng(1).random)
 
 
 class TestNullDistributionModel:

@@ -40,7 +40,9 @@ def rayleigh_pvalue(
     rayleigh_spec : Spectrogram
         The output of TimeSeries.rayleigh_spectrogram().
     n_samples : int
-        Number of segments used to compute the Rayleigh statistic.
+        Number of segments used to compute the Rayleigh statistic. Must be
+        at least 2; a smaller value cannot produce a meaningful sample
+        coefficient of variation and raises `ValueError`.
     n_monte_carlo : int, default=1000
         Number of trials for background distribution.
     nfft : int, optional
@@ -92,6 +94,8 @@ def rayleigh_pvalue(
     power at these bins with a chi2_1 null is tracked separately.
 
     """
+    _validate_n_samples(n_samples)
+
     if rng is not None and seed is not None:
         warnings.warn(
             "rayleigh_pvalue: both rng and seed were given; seed is "
@@ -188,6 +192,20 @@ _RAYLEIGH_STAT_CACHE: dict[tuple[int, int], np.ndarray] = {}
 _RAYLEIGH_STAT_CACHE_LOCK = threading.Lock()
 
 
+def _validate_n_samples(n: int) -> None:
+    """Reject segment counts too small for a sample coefficient of variation.
+
+    The Rayleigh statistic is ``std(P)/mean(P)`` over `n` periodogram
+    segments, so it needs at least two: `n == 1` gives ``std == 0`` for every
+    trial, i.e. a degenerate all-zero null against which every observed
+    statistic scores ``p == 0``, and `n <= 0` makes ``np.std``/``np.mean``
+    return NaN, i.e. an all-NaN null with the same effect. Both are silent
+    without this guard (#459, #506).
+    """
+    if n < 2:
+        raise ValueError(f"n_samples must be >= 2 for a Rayleigh statistic, got {n}")
+
+
 def _simulate_rayleigh_null(
     n: int, n_trials: int, draw_uniform: Callable[[int], np.ndarray]
 ) -> np.ndarray:
@@ -212,6 +230,7 @@ def _simulate_rayleigh_null(
     whether draws come from an explicit Generator or the seedable global
     state.
     """
+    _validate_n_samples(n)
     null_stats = np.zeros(n_trials)
 
     for i in range(n_trials):
@@ -258,12 +277,10 @@ def _get_rayleigh_stat_null_distribution(
     distribution drawn under a different (or no) seed than the one just
     requested.
     """
-    # Entry-point guards: an empty sample (n<=0) makes np.std/np.mean return NaN
-    # -> all-NaN distribution -> p=0 for every bin; an empty trial set
-    # (n_trials<=0) makes the later len(dist) division a silent 0/0 -> all-NaN
-    # p-values (issue #459).
-    if n <= 0:
-        raise ValueError(f"n_samples must be >= 1, got {n}")
+    # Entry-point guards: too few segments give a degenerate null (see
+    # _validate_n_samples); an empty trial set (n_trials<=0) makes the later
+    # len(dist) division a silent 0/0 -> all-NaN p-values (issue #459).
+    _validate_n_samples(n)
     if n_trials <= 0:
         raise ValueError(f"n_monte_carlo must be >= 1, got {n_trials}")
 

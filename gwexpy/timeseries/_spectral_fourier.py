@@ -439,6 +439,24 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         Spectrogram
             gwexpy.spectrogram.Spectrogram instance
 
+        Notes
+        -----
+        **Divergence from GWpy** (#506): the per-segment averaging uses
+        `_rayleigh_with_hop_count`, not GWpy's `rayleigh()`. GWpy advances
+        segment starts by ``fftlength - overlap`` but counts segments using
+        ``overlap``; those agree only at exactly 50% overlap, so for an odd
+        FFT length -- where the recommended Hann overlap is not
+        ``nfft // 2`` -- or for any other explicit overlap, GWpy omits valid
+        segments or requests short ones. This method derives both the count
+        and the slice starts from the same hop.
+
+        The reported statistic values therefore differ from
+        `gwpy.timeseries.TimeSeries.rayleigh_spectrogram()` in exactly those
+        configurations, and from GWexpy ``<=v0.1.11``. At the default
+        50%-overlap path the two agree. `TimeSeries.rayleigh_test()` rejects
+        the divergent overlaps outright, so this affects direct
+        `rayleigh_spectrogram()` callers only.
+
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
