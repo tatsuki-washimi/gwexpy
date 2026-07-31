@@ -254,7 +254,7 @@ class TestDegenerateInputGuardsWithRngKwargs:
     """Entry-point guards (#459) must still fire when rng/seed are passed."""
 
     def test_rayleigh_null_distribution_rejects_zero_samples_with_seed(self):
-        with pytest.raises(ValueError, match="n_samples must be >= 1"):
+        with pytest.raises(ValueError, match="n_samples must be >= 2"):
             _get_rayleigh_stat_null_distribution(0, 100, seed=1)
 
     def test_lilliefors_null_distribution_rejects_zero_trials_with_seed(self):

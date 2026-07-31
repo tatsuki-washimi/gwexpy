@@ -44,7 +44,7 @@ def _spec(values):
 
 
 def test_null_distribution_rejects_zero_samples():
-    with pytest.raises(ValueError, match="n_samples must be >= 1"):
+    with pytest.raises(ValueError, match="n_samples must be >= 2"):
         _get_rayleigh_stat_null_distribution(0, 100)
 
 
@@ -61,7 +61,7 @@ def test_rayleigh_pvalue_rejects_zero_monte_carlo():
 
 def test_rayleigh_pvalue_rejects_zero_samples():
     spec = _spec(np.ones((4, 8)))
-    with pytest.raises(ValueError, match="n_samples must be >= 1"):
+    with pytest.raises(ValueError, match="n_samples must be >= 2"):
         rayleigh_pvalue(spec, n_samples=0, n_monte_carlo=100)
 
 

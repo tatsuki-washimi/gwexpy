@@ -3,6 +3,7 @@
 Provides skewed, kurtosis, Granger causality, distance correlation,
 and classic correlations (Pearson, Kendall, MIC).
 """
+
 from __future__ import annotations
 
 import warnings
@@ -268,30 +269,123 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             **kwargs,
         )
 
-    def rayleigh_test(self, fftlength, stride, n_samples=39, **kwargs):
+    def rayleigh_test(self, fftlength, stride, n_samples=None, **kwargs):
         """Compute Rayleigh statistic p-value spectrogram.
 
         Accepts `rng=` / `seed=` (forwarded to
         `gwexpy.statistics.rayleigh_test.rayleigh_pvalue`) for a
         reproducible Monte Carlo null distribution.
 
-        Known limitation: the reported p-values are systematically
-        miscalibrated in a way that depends on the stride/fftlength ratio
-        (see `rayleigh_pvalue`'s docstring and #506).
+        Parameters
+        ----------
+        fftlength : float
+            FFT length in seconds.
+        stride : float
+            Stride in seconds. Each output column aggregates the
+            periodogram segments falling in one stride.
+        n_samples : int, optional
+            Number of periodogram segments per column. Derived from
+            `fftlength`, `stride` and `overlap` when omitted, which is
+            almost always what you want; an explicit value that disagrees
+            with the derived one emits a `UserWarning`. Before v0.1.12 this
+            defaulted to the constant ``39``, unrelated to the data (#506).
+        overlap : float, optional
+            Segment overlap in seconds. Must resolve to either ``0`` or
+            GWpy's recommended overlap for the window (50% for the default
+            hann); see Raises.
+        **kwargs
+            Forwarded to `rayleigh_pvalue` (`n_monte_carlo`, `rng`, `seed`).
 
         Returns
         -------
         Spectrogram
+            The DC bin and, for an even FFT length in samples, the Nyquist
+            bin are NaN -- their power is not exponentially distributed. See
+            `rayleigh_pvalue`.
+
+        Raises
+        ------
+        ValueError
+            If `overlap` resolves to anything other than ``0`` or the
+            recommended overlap. At other fractions the per-segment powers
+            stop being even approximately i.i.d. exponential, so the null
+            distribution no longer describes the statistic; GWpy also either
+            raises (25%) or silently uses a fraction of the data (75%).
 
         """
+        from gwpy.signal.spectral._ui import seconds_to_samples
+        from gwpy.signal.window import recommended_overlap
+
         from ..statistics.rayleigh_test import rayleigh_pvalue
 
         # overlap is used for rayleigh_spectrogram, not rayleigh_pvalue
         overlap = kwargs.pop("overlap", None)
-        rs = self.rayleigh_spectrogram(stride=stride, fftlength=fftlength, overlap=overlap)
-        return rayleigh_pvalue(rs, n_samples=n_samples, **kwargs)
 
-    def student_t_spectrogram(self, fftlength, stride=None, window=40, overlap=None, frange=None):
+        # GWpy's default window for this path. rayleigh_test does not forward
+        # a `window` argument; if it ever does, the allowed-overlap set and
+        # the segment count below must be re-derived for that window.
+        window = "hann"
+        samp = self.sample_rate
+        nfft = seconds_to_samples(fftlength, samp)
+        nstride = seconds_to_samples(stride, samp)
+        # Resolve overlap the same way GWpy does. Do not assume nfft // 2 for
+        # the default: for an odd nfft the recommended overlap differs (e.g.
+        # nfft=129 -> 65, not 64), and an off-by-one here mis-scales the null.
+        recommended = int(recommended_overlap(window, nfft))
+        noverlap = recommended if overlap is None else seconds_to_samples(overlap, samp)
+
+        # Tolerate one sample of slack around the recommended overlap: an
+        # `overlap` given in seconds goes through a truncating conversion, so
+        # for an odd nfft the natural request `fftlength / 2` lands exactly
+        # one sample below `recommended` (nfft=409 -> 204 vs 205). That is a
+        # rounding artefact, not a different overlap fraction. The check
+        # exists to reject fractions where the segment powers stop being
+        # approximately i.i.d. exponential (25%, 75%), which are nowhere near
+        # one sample away.
+        if noverlap != 0 and abs(noverlap - recommended) > 1:
+            raise ValueError(
+                f"overlap must resolve to 0 or ~{recommended / float(samp.value)}s "
+                f"(the recommended overlap for a {window} window), got "
+                f"{noverlap / float(samp.value)}s. At other overlap fractions "
+                "the per-segment powers are not even approximately i.i.d. "
+                "exponential, so the Monte Carlo null distribution does not "
+                "describe the Rayleigh statistic and the p-values are "
+                "meaningless -- matching the segment count cannot repair this."
+            )
+
+        # Each output column contains nstride + noverlap samples.  Welch
+        # segments start one hop apart, where hop = nfft - noverlap.  The
+        # same hop is used by rayleigh_spectrogram(), so the null sample size
+        # and the actual statistic cannot diverge for odd FFT lengths.
+        nchunk = nstride + noverlap
+        if nchunk < nfft:
+            raise ValueError("not enough samples for one complete FFT segment")
+        hop = nfft - noverlap
+        derived = 1 + (nchunk - nfft) // hop
+        if derived < 2:
+            raise ValueError("rayleigh_test requires at least two spectral segments")
+
+        if n_samples is None:
+            n_samples = derived
+        elif n_samples != derived:
+            warnings.warn(
+                f"rayleigh_test: n_samples={n_samples} disagrees with the "
+                f"{derived} segment(s) per column that fftlength={fftlength}, "
+                f"stride={stride} and this overlap actually produce; the null "
+                "distribution will be built for the wrong sample size, "
+                "mis-scaling every p-value. Omit n_samples to derive it.",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        rs = self.rayleigh_spectrogram(
+            stride=stride, fftlength=fftlength, overlap=overlap
+        )
+        return rayleigh_pvalue(rs, n_samples=n_samples, nfft=nfft, **kwargs)
+
+    def student_t_spectrogram(
+        self, fftlength, stride=None, window=40, overlap=None, frange=None
+    ):
         """Compute Student-t degree of freedom (nu) spectrogram.
 
         See `gwexpy.statistics.student_t_indicator.compute_student_t_nu` for

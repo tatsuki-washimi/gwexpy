@@ -50,6 +50,105 @@
   enumerate the permitted creators, while the tag-integrity ruleset must
   list none (#536).
 
+*Reproducibility note*: the `rayleigh_test` entries below change numeric
+output. The affected statistical model was introduced in `70bc11f55`
+(2026-03-28) and shipped unchanged in **every release from v0.1.1 through
+v0.1.11** -- eleven releases, all still on PyPI. p-values produced by those
+versions are not comparable with these and should not be pooled. There is no
+flag to restore the old output; analyses that need to reproduce earlier
+numbers must pin to the version that produced them.
+
+- **statistics**: `rayleigh_pvalue()` / `TimeSeries.rayleigh_test()` now
+  simulate the null distribution from exponentially-distributed *power*
+  samples, matching the power-based statistic that GWpy's
+  `rayleigh_spectrogram()` actually reports. Previously the null was drawn
+  from Rayleigh-distributed *amplitude* samples and rescaled by the Rayleigh
+  distribution's coefficient of variation; matching the mean did not make
+  the distribution shapes agree, so the reported p-values were
+  systematically miscalibrated by an amount that depended on the
+  `stride`/`fftlength` ratio. The corrected null is verified against the
+  exact moment `E[R^2] = (n-1)/(n+1)`, which follows from the sample
+  coefficient of variation of exponential samples reducing to Greenwood's
+  statistic (#506).
+
+- **statistics**: `TimeSeries.rayleigh_test()` now derives `n_samples` from
+  `fftlength`, `stride` and `overlap` instead of defaulting to the constant
+  `39`, which bore no relation to the data. The count is the number of
+  periodogram segments GWpy averages per column, which is *not* `dt * df`
+  whenever the segments overlap: GWpy chunks the series into
+  `nstride + noverlap` samples, so `rayleigh_test()`'s default path -- which
+  resolves `overlap=None` to the recommended 50% for the default hann window
+  -- produces twice `dt * df`. Fixing only the null distribution above would have left
+  the default path *worse* calibrated than before, because the stale `39`
+  happened to compensate for the wrong distribution shape at some
+  configurations. `n_samples` may still be passed explicitly for backward
+  compatibility; a value that disagrees with the derived one now emits a
+  `UserWarning`. Note that the default value changed, so
+  `inspect.signature()` reports a different default (#506).
+
+- **statistics**: `TimeSeries.rayleigh_test()` now raises `ValueError` when
+  `overlap` resolves to anything other than `0` or GWpy's recommended
+  overlap for the window (50% for the default hann), allowing one sample of
+  slack for the truncating seconds-to-samples conversion. At 75% overlap
+  GWpy previously returned without error or warning while using about 36% of
+  the data, *and* the per-segment powers stop being even approximately
+  i.i.d. exponential there, so no segment-count correction can make the null
+  distribution apply (#506).
+
+- **statistics**: `rayleigh_pvalue()` now reports the DC bin and, when the
+  FFT length in samples is even, the Nyquist bin as `NaN`, and accepts an
+  `nfft=` keyword so the Nyquist bin can be identified. A real-valued
+  input's DC and Nyquist FFT coefficients are purely real, so their power
+  follows chi2_1 rather than an exponential; scoring them against the
+  exponential null fired on pure Gaussian noise about 77% of the time at
+  nominal `alpha=0.05`, which alone pinned `to_segments()` near a 100% veto
+  rate. An odd FFT length has no exact Nyquist bin and its last one-sided
+  bin is left scored. This mirrors the DC/Nyquist handling added to
+  `compute_student_t_nu()` in v0.1.11 (#465). Recovering detection power at
+  these bins with a chi2_1 null is left for a future release (#506).
+
+- **statistics**: `TimeSeries.rayleigh_spectrogram()` now derives its own
+  per-segment averaging instead of delegating to GWpy's `rayleigh()`, which
+  advances segment starts by `fftlength - overlap` but counts segments using
+  `overlap`. Those agree only at exactly 50% overlap, so for an odd FFT
+  length -- where the recommended Hann overlap is not `nfft // 2` -- or for
+  any other explicit overlap, GWpy omits valid segments or requests short
+  ones. The count and the slice starts now come from the same hop. **This
+  changes the reported statistic values themselves**, not just the p-values
+  derived from them, relative to both `gwpy` and GWexpy `<=v0.1.11`, in
+  exactly those configurations. The `rayleigh_test()` recommended-overlap
+  path is unchanged; direct `rayleigh_spectrogram()` calls continue to
+  default to `overlap=0`, which is also unchanged. `TimeSeries.rayleigh_test()`
+  rejects the divergent overlaps outright, so this affects direct
+  `rayleigh_spectrogram()` callers passing an explicit overlap only (#506).
+
+- **statistics**: `rayleigh_pvalue()`, `_get_rayleigh_stat_null_distribution()`,
+  and `_simulate_rayleigh_null()` now raise `ValueError` when `n_samples < 2`.
+  The statistic is a sample coefficient of variation over `n` segments, so
+  `n == 1` produced an all-zero null against which every observed value
+  scored `p == 0`, and `n <= 0` produced an all-NaN null with the same
+  effect -- both silently. The `n <= 0` case previously raised only at the
+  distribution layer; the bound is now `>= 2` and is enforced at all three
+  entry points, since the distribution layer memoises into a shared cache
+  (#506).
+
+### Known Limitations
+
+- **statistics**: `to_segments()` still applies no multiple-comparison
+  correction -- it flags a time when *any* frequency bin has `p < alpha`.
+  With correctly calibrated p-values and 63 scored bins this vetoes about
+  96% of times at the default `alpha=0.05`, so the above is a fix to
+  per-bin calibration and **not** a fix to spurious vetoes. Choose `alpha`
+  accordingly, or restrict the frequency range.
+
+- **statistics**: `rayleigh_pvalue()` can still return exactly `p == 0`,
+  whereas `compute_gauch()` floors its p-values at `1/n_monte_carlo`. This
+  asymmetry is unchanged here and tracked in #507.
+
+- **docs**: the Japanese translation catalogue for the Rayleigh/GauCh
+  tutorial does not yet contain the new v0.1.12 note; the notebook carries
+  an explicit Japanese cell in the meantime.
+
 ## [0.1.11] - 2026-07-25
 
 This is a time/metadata-integrity and statistics-robustness patch release.
