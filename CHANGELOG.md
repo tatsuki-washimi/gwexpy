@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## [0.1.12] - 2026-07-31
+
+This is a metadata-integrity, statistics-correctness, and release-tooling
+patch release. It closes a silent NDScope HDF5 channel-drop bug (#541),
+corrects the Rayleigh-statistic null model and several related edge cases
+(#506), and hardens the release-publication workflow with fail-closed
+validation, exact-SHA pinning, and a documented trust boundary (#536).
+
 ### Behaviour-visible bug fixes
 
 - **io**: reading an ndscope HDF5 file now raises `ValueError` naming the
@@ -850,7 +858,8 @@ First stable release of GWexpy for SoftwareX publication. This release focuses o
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
 
-[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...HEAD
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.12...HEAD
+[0.1.12]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.11...v0.1.12
 [0.1.11]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.10...v0.1.11
 [0.1.4]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3
