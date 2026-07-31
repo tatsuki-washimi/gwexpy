@@ -596,17 +596,38 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2dd7210652c90e2a05b1bc11b6ca7e36e0858d20d8d928d8bcefead11ccb903d.png" src="../../_images/2dd7210652c90e2a05b1bc11b6ca7e36e0858d20d8d928d8bcefead11ccb903d.png" />
-<img alt="../../_images/2dd7210652c90e2a05b1bc11b6ca7e36e0858d20d8d928d8bcefead11ccb903d.png" src="../../_images/2dd7210652c90e2a05b1bc11b6ca7e36e0858d20d8d928d8bcefead11ccb903d.png" />
+<img alt="../../_images/dfb4ecf9f5a549c166a14e93a751e66f5677e31689ed82dea30904ee23fc9e1f.png" src="../../_images/dfb4ecf9f5a549c166a14e93a751e66f5677e31689ed82dea30904ee23fc9e1f.png" />
+<img alt="../../_images/dfb4ecf9f5a549c166a14e93a751e66f5677e31689ed82dea30904ee23fc9e1f.png" src="../../_images/dfb4ecf9f5a549c166a14e93a751e66f5677e31689ed82dea30904ee23fc9e1f.png" />
 </div>
 </div>
 </section>
 <section id="rayleigh-spectrogram">
 <h2>2. レイリースペクトログラム<a class="headerlink" href="#rayleigh-spectrogram" title="Link to this heading">#</a></h2>
 <p>レイリー統計量 <span class="math notranslate nohighlight">\(R\)</span> は、ASD 分布がレイリー分布とどれだけ整合するかを測ります。<code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> メソッドを使って p 値マップを取得します。</p>
+<blockquote>
+<div><p><strong>Changed in v0.1.12 (#506).</strong> <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> now simulates its null
+distribution from exponential <em>power</em> samples instead of Rayleigh
+<em>amplitude</em> samples, and derives the number of periodogram segments from
+<code class="docutils literal notranslate"><span class="pre">fftlength</span></code>/<code class="docutils literal notranslate"><span class="pre">stride</span></code>/<code class="docutils literal notranslate"><span class="pre">overlap</span></code> rather than accepting a fixed <code class="docutils literal notranslate"><span class="pre">n_samples</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">fftlength</span></code>/<code class="docutils literal notranslate"><span class="pre">stride</span></code> below were adjusted so that the 20 segments per
+column this cell always claimed are actually produced -- the previous
+settings supplied only 2. The DC and Nyquist bins are reported as <code class="docutils literal notranslate"><span class="pre">NaN</span></code>
+because their power follows chi2_1, not an exponential. p-values from
+earlier versions are not comparable with these.</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>v0.1.12 での変更 (#506)。</strong> <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> の帰無分布は、Rayleigh
+<strong>振幅</strong>標本ではなく指数分布の<strong>パワー</strong>標本から生成されるようになりました。
+ピリオドグラムのセグメント数も、固定の <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> ではなく
+<code class="docutils literal notranslate"><span class="pre">fftlength</span></code>/<code class="docutils literal notranslate"><span class="pre">stride</span></code>/<code class="docutils literal notranslate"><span class="pre">overlap</span></code> から導出されます。
+下のセルが従来主張していた「1 列あたり 20 セグメント」が実際に得られるよう
+<code class="docutils literal notranslate"><span class="pre">fftlength</span></code>/<code class="docutils literal notranslate"><span class="pre">stride</span></code> を調整しました（従来の設定では 2 セグメントしか
+ありませんでした）。DC と Nyquist ビンのパワーは指数分布ではなく chi2_1 に
+従うため <code class="docutils literal notranslate"><span class="pre">NaN</span></code> として報告されます。以前のバージョンの p 値とは比較できません。</p>
+</div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs_p</span> <span class="o">=</span> <span class="n">ts_glitch</span><span class="o">.</span><span class="n">rayleigh_test</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rs_p</span> <span class="o">=</span> <span class="n">ts_glitch</span><span class="o">.</span><span class="n">rayleigh_test</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">rs_p</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">rs_p</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">rs_p</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
@@ -619,7 +640,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b6b3cb3713ffb6bb597e13a582e530de3c243477cf1e3f333c2ff711a0bdf992.png" src="../../_images/b6b3cb3713ffb6bb597e13a582e530de3c243477cf1e3f333c2ff711a0bdf992.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/gwexpy/gwexpy/gwexpy/timeseries/_statistics.py:384: RuntimeWarning: rayleigh_pvalue: DC and Nyquist bin(s) set to NaN p-value (excluded from veto) because their power follows chi2_1, not the Exp(1) used for the null distribution
+  return rayleigh_pvalue(rs, n_samples=n_samples, nfft=nfft, **kwargs)
+</pre></div>
+</div>
+<img alt="../../_images/16f023c524120b7344d3b04a89f0dc6045889303cc15a269db4bde9be12633cd.png" src="../../_images/16f023c524120b7344d3b04a89f0dc6045889303cc15a269db4bde9be12633cd.png" />
 </div>
 </div>
 </section>
@@ -641,7 +666,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/10bf676cd0f2b52b9486733df418b3d2dc48b653384caacd9ba71163aed903e9.png" src="../../_images/10bf676cd0f2b52b9486733df418b3d2dc48b653384caacd9ba71163aed903e9.png" />
+<img alt="../../_images/bdbec02c24bdd4b93ed4b06ee43d53ab6997e0c687fd7ed8ece6de4c5e37409a.png" src="../../_images/bdbec02c24bdd4b93ed4b06ee43d53ab6997e0c687fd7ed8ece6de4c5e37409a.png" />
 </div>
 </div>
 </section>
@@ -663,7 +688,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ec9f9fe5e2b9e7fe01564b9162c218ea6eada27c8b3476c178b361bc235f6b4f.png" src="../../_images/ec9f9fe5e2b9e7fe01564b9162c218ea6eada27c8b3476c178b361bc235f6b4f.png" />
+<img alt="../../_images/88cd4346c1c7224dabc9d7e066936a94fad621698e4082c83325784307288319.png" src="../../_images/88cd4346c1c7224dabc9d7e066936a94fad621698e4082c83325784307288319.png" />
 </div>
 </div>
 </section>
@@ -701,7 +726,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/afba91e67f78a89c958090047978dd6dc3762903c6d58aa52b1625ad08602f79.png" src="../../_images/afba91e67f78a89c958090047978dd6dc3762903c6d58aa52b1625ad08602f79.png" />
+<img alt="../../_images/30461a33d3dee9f8e1b110210a7355aa6220bab27ebe1718f0fccdaee84a07f0.png" src="../../_images/30461a33d3dee9f8e1b110210a7355aa6220bab27ebe1718f0fccdaee84a07f0.png" />
 </div>
 </div>
 </section>

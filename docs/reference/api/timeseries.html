@@ -5607,7 +5607,7 @@ use <code class="xref py py-meth docutils literal notranslate"><span class="pre"
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">rayleigh_spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></span></dt>
+<span class="sig-name descname"><span class="pre">rayleigh_spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftlength</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WindowLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nproc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram"><span class="pre">Spectrogram</span></a></span></span></dt>
 <dd><p>Compute the Rayleigh statistic spectrogram.</p>
 <p>This method overrides the base gwpy implementation to return
 gwexpy.spectrogram.Spectrogram instead of gwpy.spectrogram.Spectrogram.</p>
@@ -5619,6 +5619,23 @@ gwexpy.spectrogram.Spectrogram instead of gwpy.spectrogram.Spectrogram.</p>
 <dd class="field-even"><p><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram">Spectrogram</a></p>
 </dd>
 </dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p><strong>Divergence from GWpy</strong> (#506): the per-segment averaging uses
+<cite>_rayleigh_with_hop_count</cite>, not GWpy’s <cite>rayleigh()</cite>. GWpy advances
+segment starts by <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">-</span> <span class="pre">overlap</span></code> but counts segments using
+<code class="docutils literal notranslate"><span class="pre">overlap</span></code>; those agree only at exactly 50% overlap, so for an odd
+FFT length – where the recommended Hann overlap is not
+<code class="docutils literal notranslate"><span class="pre">nfft</span> <span class="pre">//</span> <span class="pre">2</span></code> – or for any other explicit overlap, GWpy omits valid
+segments or requests short ones. This method derives both the count
+and the slice starts from the same hop.</p>
+<p>The reported statistic values therefore differ from
+<cite>gwpy.timeseries.TimeSeries.rayleigh_spectrogram()</cite> in exactly those
+configurations, and from GWexpy <code class="docutils literal notranslate"><span class="pre">&lt;=v0.1.11</span></code>. At the default
+50%-overlap path the two agree. <cite>TimeSeries.rayleigh_test()</cite> rejects
+the divergent overlaps outright, so this affects direct
+<cite>rayleigh_spectrogram()</cite> callers only.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -5650,17 +5667,42 @@ formats.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">rayleigh_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftlength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">39</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<span class="sig-name descname"><span class="pre">rayleigh_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftlength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Compute Rayleigh statistic p-value spectrogram.</p>
 <p>Accepts <cite>rng=</cite> / <cite>seed=</cite> (forwarded to
 <cite>gwexpy.statistics.rayleigh_test.rayleigh_pvalue</cite>) for a
 reproducible Monte Carlo null distribution.</p>
-<p>Known limitation: the reported p-values are systematically
-miscalibrated in a way that depends on the stride/fftlength ratio
-(see <cite>rayleigh_pvalue</cite>’s docstring and #506).</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fftlength</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – FFT length in seconds.</p></li>
+<li><p><strong>stride</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Stride in seconds. Each output column aggregates the
+periodogram segments falling in one stride.</p></li>
+<li><p><strong>n_samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of periodogram segments per column. Derived from
+<cite>fftlength</cite>, <cite>stride</cite> and <cite>overlap</cite> when omitted, which is
+almost always what you want; an explicit value that disagrees
+with the derived one emits a <cite>UserWarning</cite>. Before v0.1.12 this
+defaulted to the constant <code class="docutils literal notranslate"><span class="pre">39</span></code>, unrelated to the data (#506).</p></li>
+<li><p><strong>overlap</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Segment overlap in seconds. Must resolve to either <code class="docutils literal notranslate"><span class="pre">0</span></code> or
+GWpy’s recommended overlap for the window (50% for the default
+hann); see Raises.</p></li>
+<li><p><strong>**kwargs</strong> – Forwarded to <cite>rayleigh_pvalue</cite> (<cite>n_monte_carlo</cite>, <cite>rng</cite>, <cite>seed</cite>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DC bin and, for an even FFT length in samples, the Nyquist
+bin are NaN – their power is not exponentially distributed. See
+<cite>rayleigh_pvalue</cite>.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="gwexpy.spectrogram.Spectrogram.html#gwexpy.spectrogram.Spectrogram" title="gwexpy.spectrogram.Spectrogram">Spectrogram</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <cite>overlap</cite> resolves to anything other than <code class="docutils literal notranslate"><span class="pre">0</span></code> or the
+    recommended overlap. At other fractions the per-segment powers
+    stop being even approximately i.i.d. exponential, so the null
+    distribution no longer describes the statistic; GWpy also either
+    raises (25%) or silently uses a fraction of the data (75%).</p>
 </dd>
 </dl>
 </dd></dl>

@@ -498,6 +498,100 @@ the listed actors instead of forbidding it: the tag-creation ruleset must
 enumerate the permitted creators, while the tag-integrity ruleset must
 list none (#536).</p></li>
 </ul>
+<p><em>Reproducibility note</em>: the <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> entries below change numeric
+output. The affected statistical model was introduced in <code class="docutils literal notranslate"><span class="pre">70bc11f55</span></code>
+(2026-03-28) and shipped unchanged in <strong>every release from v0.1.1 through
+v0.1.11</strong> – eleven releases, all still on PyPI. p-values produced by those
+versions are not comparable with these and should not be pooled. There is no
+flag to restore the old output; analyses that need to reproduce earlier
+numbers must pin to the version that produced them.</p>
+<ul class="simple">
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now
+simulate the null distribution from exponentially-distributed <em>power</em>
+samples, matching the power-based statistic that GWpy’s
+<code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> actually reports. Previously the null was drawn
+from Rayleigh-distributed <em>amplitude</em> samples and rescaled by the Rayleigh
+distribution’s coefficient of variation; matching the mean did not make
+the distribution shapes agree, so the reported p-values were
+systematically miscalibrated by an amount that depended on the
+<code class="docutils literal notranslate"><span class="pre">stride</span></code>/<code class="docutils literal notranslate"><span class="pre">fftlength</span></code> ratio. The corrected null is verified against the
+exact moment <code class="docutils literal notranslate"><span class="pre">E[R^2]</span> <span class="pre">=</span> <span class="pre">(n-1)/(n+1)</span></code>, which follows from the sample
+coefficient of variation of exponential samples reducing to Greenwood’s
+statistic (#506).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now derives <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> from
+<code class="docutils literal notranslate"><span class="pre">fftlength</span></code>, <code class="docutils literal notranslate"><span class="pre">stride</span></code> and <code class="docutils literal notranslate"><span class="pre">overlap</span></code> instead of defaulting to the constant
+<code class="docutils literal notranslate"><span class="pre">39</span></code>, which bore no relation to the data. The count is the number of
+periodogram segments GWpy averages per column, which is <em>not</em> <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">*</span> <span class="pre">df</span></code>
+whenever the segments overlap: GWpy chunks the series into
+<code class="docutils literal notranslate"><span class="pre">nstride</span> <span class="pre">+</span> <span class="pre">noverlap</span></code> samples, so <code class="docutils literal notranslate"><span class="pre">rayleigh_test()</span></code>’s default path – which
+resolves <code class="docutils literal notranslate"><span class="pre">overlap=None</span></code> to the recommended 50% for the default hann window
+– produces twice <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">*</span> <span class="pre">df</span></code>. Fixing only the null distribution above would have left
+the default path <em>worse</em> calibrated than before, because the stale <code class="docutils literal notranslate"><span class="pre">39</span></code>
+happened to compensate for the wrong distribution shape at some
+configurations. <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> may still be passed explicitly for backward
+compatibility; a value that disagrees with the derived one now emits a
+<code class="docutils literal notranslate"><span class="pre">UserWarning</span></code>. Note that the default value changed, so
+<code class="docutils literal notranslate"><span class="pre">inspect.signature()</span></code> reports a different default (#506).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code> now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when
+<code class="docutils literal notranslate"><span class="pre">overlap</span></code> resolves to anything other than <code class="docutils literal notranslate"><span class="pre">0</span></code> or GWpy’s recommended
+overlap for the window (50% for the default hann), allowing one sample of
+slack for the truncating seconds-to-samples conversion. At 75% overlap
+GWpy previously returned without error or warning while using about 36% of
+the data, <em>and</em> the per-segment powers stop being even approximately
+i.i.d. exponential there, so no segment-count correction can make the null
+distribution apply (#506).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> now reports the DC bin and, when the
+FFT length in samples is even, the Nyquist bin as <code class="docutils literal notranslate"><span class="pre">NaN</span></code>, and accepts an
+<code class="docutils literal notranslate"><span class="pre">nfft=</span></code> keyword so the Nyquist bin can be identified. A real-valued
+input’s DC and Nyquist FFT coefficients are purely real, so their power
+follows chi2_1 rather than an exponential; scoring them against the
+exponential null fired on pure Gaussian noise about 77% of the time at
+nominal <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code>, which alone pinned <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> near a 100% veto
+rate. An odd FFT length has no exact Nyquist bin and its last one-sided
+bin is left scored. This mirrors the DC/Nyquist handling added to
+<code class="docutils literal notranslate"><span class="pre">compute_student_t_nu()</span></code> in v0.1.11 (#465). Recovering detection power at
+these bins with a chi2_1 null is left for a future release (#506).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_spectrogram()</span></code> now derives its own
+per-segment averaging instead of delegating to GWpy’s <code class="docutils literal notranslate"><span class="pre">rayleigh()</span></code>, which
+advances segment starts by <code class="docutils literal notranslate"><span class="pre">fftlength</span> <span class="pre">-</span> <span class="pre">overlap</span></code> but counts segments using
+<code class="docutils literal notranslate"><span class="pre">overlap</span></code>. Those agree only at exactly 50% overlap, so for an odd FFT
+length – where the recommended Hann overlap is not <code class="docutils literal notranslate"><span class="pre">nfft</span> <span class="pre">//</span> <span class="pre">2</span></code> – or for
+any other explicit overlap, GWpy omits valid segments or requests short
+ones. The count and the slice starts now come from the same hop. <strong>This
+changes the reported statistic values themselves</strong>, not just the p-values
+derived from them, relative to both <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> and GWexpy <code class="docutils literal notranslate"><span class="pre">&lt;=v0.1.11</span></code>, in
+exactly those configurations. The <code class="docutils literal notranslate"><span class="pre">rayleigh_test()</span></code> recommended-overlap
+path is unchanged; direct <code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> calls continue to
+default to <code class="docutils literal notranslate"><span class="pre">overlap=0</span></code>, which is also unchanged. <code class="docutils literal notranslate"><span class="pre">TimeSeries.rayleigh_test()</span></code>
+rejects the divergent overlaps outright, so this affects direct
+<code class="docutils literal notranslate"><span class="pre">rayleigh_spectrogram()</span></code> callers passing an explicit overlap only (#506).</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code>, <code class="docutils literal notranslate"><span class="pre">_get_rayleigh_stat_null_distribution()</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">_simulate_rayleigh_null()</span></code> now raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when <code class="docutils literal notranslate"><span class="pre">n_samples</span> <span class="pre">&lt;</span> <span class="pre">2</span></code>.
+The statistic is a sample coefficient of variation over <code class="docutils literal notranslate"><span class="pre">n</span></code> segments, so
+<code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">==</span> <span class="pre">1</span></code> produced an all-zero null against which every observed value
+scored <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">0</span></code>, and <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code> produced an all-NaN null with the same
+effect – both silently. The <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">&lt;=</span> <span class="pre">0</span></code> case previously raised only at the
+distribution layer; the bound is now <code class="docutils literal notranslate"><span class="pre">&gt;=</span> <span class="pre">2</span></code> and is enforced at all three
+entry points, since the distribution layer memoises into a shared cache
+(#506).</p></li>
+</ul>
+</section>
+<section id="known-limitations">
+<h3>Known Limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">to_segments()</span></code> still applies no multiple-comparison
+correction – it flags a time when <em>any</em> frequency bin has <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">&lt;</span> <span class="pre">alpha</span></code>.
+With correctly calibrated p-values and 63 scored bins this vetoes about
+96% of times at the default <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code>, so the above is a fix to
+per-bin calibration and <strong>not</strong> a fix to spurious vetoes. Choose <code class="docutils literal notranslate"><span class="pre">alpha</span></code>
+accordingly, or restrict the frequency range.</p></li>
+<li><p><strong>statistics</strong>: <code class="docutils literal notranslate"><span class="pre">rayleigh_pvalue()</span></code> can still return exactly <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">0</span></code>,
+whereas <code class="docutils literal notranslate"><span class="pre">compute_gauch()</span></code> floors its p-values at <code class="docutils literal notranslate"><span class="pre">1/n_monte_carlo</span></code>. This
+asymmetry is unchanged here and tracked in #507.</p></li>
+<li><p><strong>docs</strong>: the Japanese translation catalogue for the Rayleigh/GauCh
+tutorial does not yet contain the new v0.1.12 note; the notebook carries
+an explicit Japanese cell in the meantime.</p></li>
+</ul>
 </section>
 </section>
 <section id="id1">
@@ -594,8 +688,8 @@ now emits a <code class="docutils literal notranslate"><span class="pre">UserWar
 (no change to core/required dependencies) (#487).</p></li>
 </ul>
 </section>
-<section id="known-limitations">
-<h3>Known Limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h3>
+<section id="id3">
+<h3>Known Limitations<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
 <p><em>Added 2026-07-26, after the original release. The Zenodo record published
 on 2026-07-25 is an immutable snapshot and does not contain this section
 (see #506).</em></p>
@@ -617,12 +711,12 @@ will change <code class="docutils literal notranslate"><span class="pre">rayleig
 </ul>
 </section>
 </section>
-<section id="id3">
-<h2>[0.1.10] - 2026-07-18<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h2>[0.1.10] - 2026-07-18<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p>This is a bugfix release covering numerical regularization, axis regularity,
 histogram weights, and TimeSeries resampling dtype and boundary contracts.</p>
-<section id="id4">
-<h3>Behaviour-visible bug fixes<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<section id="id5">
+<h3>Behaviour-visible bug fixes<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>numerics</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.partial_correlation_matrix()</span></code> now defaults
 to <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">1e-8</span></code>, and <code class="docutils literal notranslate"><span class="pre">WhitenTransform</span></code> now defaults to
@@ -651,16 +745,16 @@ dtype that can represent them (#490).</p></li>
 </ul>
 </section>
 </section>
-<section id="id5">
-<h2>[0.1.9] - 2026-07-11<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>[0.1.9] - 2026-07-11<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <p>This is a bugfix release. It completes the GWF read-path NaN-padding
 harmonization deferred from 0.1.8 (#481) and fixes two fitting bugs
 surfaced by the #461 follow-up audit: an off-by-one in <code class="docutils literal notranslate"><span class="pre">fit_series</span></code>’s
 <code class="docutils literal notranslate"><span class="pre">sigma</span></code> cropping at exact <code class="docutils literal notranslate"><span class="pre">x_range</span></code> boundaries, and an unvalidated
 <code class="docutils literal notranslate"><span class="pre">run_mcmc(n_walkers=...)</span></code> that let emcee’s internal error leak through
 (#466).</p>
-<section id="id6">
-<h3>Behaviour-visible bug fixes<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<section id="id7">
+<h3>Behaviour-visible bug fixes<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>GWF-specific reads (<code class="docutils literal notranslate"><span class="pre">TimeSeries.read</span></code>/<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read</span></code>/<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read</span></code>
 with <code class="docutils literal notranslate"><span class="pre">format=&quot;gwf&quot;</span></code>) now default <code class="docutils literal notranslate"><span class="pre">gap=&quot;pad&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">NaN</span></code> padding instead of <code class="docutils literal notranslate"><span class="pre">0.0</span></code>,
@@ -695,15 +789,15 @@ repository and skip private harness sync tests when the harness is absent
 </ul>
 </section>
 </section>
-<section id="id7">
-<h2>[0.1.8] - 2026-07-04<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>[0.1.8] - 2026-07-04<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p>This is a bugfix and I/O-hardening release. It fixes the <code class="docutils literal notranslate"><span class="pre">from_obspy</span></code>
 crash on <code class="docutils literal notranslate"><span class="pre">obspy.Stream</span></code> input (#452) and hardens the SeriesMatrix / I/O
 layer: gap handling, metadata aliasing, key round-trips, and reader
 failure modes surfaced by the #443 follow-up audit are fixed with explicit
 contracts and regression tests (#450).</p>
-<section id="id8">
-<h3>Behaviour-visible bug fixes<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<section id="id9">
+<h3>Behaviour-visible bug fixes<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">SeriesMatrix.append(gap=&quot;pad&quot;)</span></code> (and the matrix multi-source merge paths
 built on it) now pads gaps with <code class="docutils literal notranslate"><span class="pre">NaN</span></code> instead of <code class="docutils literal notranslate"><span class="pre">0.0</span></code> by default, matching
@@ -726,8 +820,8 @@ choice ambiguous. Pass <code class="docutils literal notranslate"><span class="p
 silently lost; the reader warns with the affected column and count.</p></li>
 </ul>
 </section>
-<section id="id9">
-<h3>Bug fixes<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<section id="id10">
+<h3>Bug fixes<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>interop/obspy</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries.from_obspy</span></code> no longer crashes with an opaque
 <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> when given an <code class="docutils literal notranslate"><span class="pre">obspy.Stream</span></code>: a single-trace Stream is
@@ -772,8 +866,8 @@ the Zarr reader. The fallback values are unchanged, so this is a backward-
 compatible (SemVer MINOR) addition; pass <code class="docutils literal notranslate"><span class="pre">t0=</span></code>/<code class="docutils literal notranslate"><span class="pre">dt=</span></code> explicitly to silence it.</p></li>
 </ul>
 </section>
-<section id="id10">
-<h3>Dependencies<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<section id="id11">
+<h3>Dependencies<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Added upper version bounds to I/O backends to guard against major-version
 API breaks: <code class="docutils literal notranslate"><span class="pre">h5py&gt;=3.0,&lt;4</span></code> (core), <code class="docutils literal notranslate"><span class="pre">obspy&lt;2</span></code>, <code class="docutils literal notranslate"><span class="pre">nptdms&lt;2</span></code>, <code class="docutils literal notranslate"><span class="pre">netCDF4&lt;2</span></code>,
@@ -794,8 +888,8 @@ reader and gap-padding coverage, SDB/Zarr reader warning tests, and
 io-conformance generators/validators for the SDB and Zarr backends.</p></li>
 </ul>
 </section>
-<section id="id11">
-<h3>Known limitations<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<section id="id12">
+<h3>Known limitations<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>GWF-specific read padding still follows its existing zero-padding path
 (<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/_gwf_io.py</span></code>); harmonizing GWF padding with the
@@ -803,15 +897,15 @@ matrix/core NaN convention is deferred to a follow-up issue.</p></li>
 </ul>
 </section>
 </section>
-<section id="id12">
-<h2>[0.1.7] - 2026-06-27<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h2>[0.1.7] - 2026-06-27<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p>This is a numerical-robustness hardening release. A Phase 1 audit across the
 statistics, fitting, and spectral modules surfaced a set of silent-failure and
 degenerate-input bugs; this release adds explicit input-contract guards and a
 matching suite of regression tests so that invalid inputs raise clear errors
 instead of producing Inf/NaN or silently wrong results.</p>
-<section id="id13">
-<h3>Bug fixes<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<section id="id14">
+<h3>Bug fixes<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>fitting/core</strong>: LSQ cost classes now validate <code class="docutils literal notranslate"><span class="pre">dy</span></code> — zero, negative,
 non-finite, or complex elements raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> instead of causing silent
@@ -833,8 +927,8 @@ NaN/Inf energy, <code class="docutils literal notranslate"><span class="pre">reb
 zero-width confidence-interval warnings (#460 via #473).</p></li>
 </ul>
 </section>
-<section id="id14">
-<h3>Tests<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<section id="id15">
+<h3>Tests<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Added input-contract regression suites covering the fixes above:
 <code class="docutils literal notranslate"><span class="pre">tests/fitting/test_lsq_cost_dy_contract.py</span></code>,
@@ -863,13 +957,13 @@ from <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</
 </ul>
 </section>
 </section>
-<section id="id15">
-<h2>[0.1.6] - 2026-06-11<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
+<section id="id16">
+<h2>[0.1.6] - 2026-06-11<a class="headerlink" href="#id16" title="Link to this heading">#</a></h2>
 <p>This is a bugfix and maintenance release: plotting/I/O follow-up fixes
 (#440, #441, #442 via #443), a development dependency sweep (#431), and
 FrequencySeries collection registry audit tests (#438).</p>
-<section id="id16">
-<h3>Bug fixes<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<section id="id17">
+<h3>Bug fixes<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Fixed subplot geometry calculation in <code class="docutils literal notranslate"><span class="pre">Plot</span></code> so the expansion count always
 matches <code class="docutils literal notranslate"><span class="pre">_expand_args</span></code>: all arguments are now counted regardless of order
@@ -898,15 +992,15 @@ shortcut, and NetCDF4 gained a dedicated matrix writer.</p></li>
 files are NaN-padded instead of raising.</p></li>
 </ul>
 </section>
-<section id="id17">
-<h3>Maintenance<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<section id="id18">
+<h3>Maintenance<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Updated the development dependency group (24 packages) in
 <code class="docutils literal notranslate"><span class="pre">requirements-dev.txt</span></code> (#431).</p></li>
 </ul>
 </section>
-<section id="id18">
-<h3>Tests<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<section id="id19">
+<h3>Tests<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Added plot geometry tests for mixed-container argument orders, single
 2D/3D/4D matrices, and parity with <code class="docutils literal notranslate"><span class="pre">_expand_args</span></code> expansion counts.</p></li>
@@ -920,11 +1014,11 @@ behaviour change.</p></li>
 </ul>
 </section>
 </section>
-<section id="id19">
-<h2>[0.1.5] - 2026-06-10<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
-<p>This is a patch release focused on plotting and I/O hotfixes.</p>
 <section id="id20">
-<h3>Bug fixes<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<h2>[0.1.5] - 2026-06-10<a class="headerlink" href="#id20" title="Link to this heading">#</a></h2>
+<p>This is a patch release focused on plotting and I/O hotfixes.</p>
+<section id="id21">
+<h3>Bug fixes<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Fixed <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.plot()</span></code> so multi-channel dictionaries are expanded into
 separate subplots instead of producing a blank or invalid figure (#432).</p></li>
@@ -937,8 +1031,8 @@ trace names (e.g. <code class="docutils literal notranslate"><span class="pre">&
 read formats are visible through the GWpy default I/O registry (#437).</p></li>
 </ul>
 </section>
-<section id="id21">
-<h3>Tests<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<section id="id22">
+<h3>Tests<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Added regression tests for <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.plot()</span></code>.</p></li>
 <li><p>Added seismic I/O tests for string keys, list-of-path miniSEED input, and
@@ -946,8 +1040,8 @@ empty-list rejection.</p></li>
 <li><p>Added subprocess-isolated FrequencySeries I/O registration tests.</p></li>
 </ul>
 </section>
-<section id="id22">
-<h3>Documentation<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<section id="id23">
+<h3>Documentation<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Clarified that GWexpy is an independent package built on top of GWpy and is
 not an official component of the GWpy project.</p></li>
@@ -965,8 +1059,8 @@ deferred to #438.</p></li>
 </ul>
 </section>
 </section>
-<section id="id23">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4">0.1.4</a> - 2026-05-20<a class="headerlink" href="#id23" title="Link to this heading">#</a></h2>
+<section id="id24">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.3...v0.1.4">0.1.4</a> - 2026-05-20<a class="headerlink" href="#id24" title="Link to this heading">#</a></h2>
 <section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -986,8 +1080,8 @@ float values and <code class="docutils literal notranslate"><span class="pre">dt
 <li><p><strong>io/gwf</strong>: Provisioned the GWF backend for the PR fast gate and tolerated backend-specific GWF channel metadata variance.</p></li>
 </ul>
 </section>
-<section id="id24">
-<h3>Documentation<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<section id="id25">
+<h3>Documentation<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>feedback</strong>: Updated the README, docs hub pages, footer links, roadmap, and
 troubleshooting pages to point lightweight bug reports and feature requests
@@ -995,8 +1089,8 @@ to the public feedback form. Security reports remain directed to the
 repository security policy.</p></li>
 </ul>
 </section>
-<section id="id25">
-<h3>Tests<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
+<section id="id26">
+<h3>Tests<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>io/conformance</strong>: Added deterministic fixture generators and read/write round-trip coverage for the v0.1.4 blocking format baseline.</p></li>
 <li><p><strong>io/dttxml</strong>: Added regression coverage for DTTXML <code class="docutils literal notranslate"><span class="pre">TS</span></code> dict parsing through <code class="docutils literal notranslate"><span class="pre">read_timeseriesdict_dttxml()</span></code>.</p></li>
@@ -1013,10 +1107,10 @@ list-source reads and padded gap reads with <code class="docutils literal notran
 </ul>
 </section>
 </section>
-<section id="id26">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3">0.1.3</a> - 2026-05-12<a class="headerlink" href="#id26" title="Link to this heading">#</a></h2>
 <section id="id27">
-<h3>Fixed<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.2...v0.1.3">0.1.3</a> - 2026-05-12<a class="headerlink" href="#id27" title="Link to this heading">#</a></h2>
+<section id="id28">
+<h3>Fixed<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>timeseries/gwf</strong>: Fixed multi-file GWF reads for <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and
 <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> inputs.</p></li>
@@ -1032,8 +1126,8 @@ removed timeout-prone fixture behavior.</p></li>
 library as an unavailable optional backend instead of failing at import time.</p></li>
 </ul>
 </section>
-<section id="id28">
-<h3>Known Issues<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
+<section id="id29">
+<h3>Known Issues<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>netcdf</strong>: The bundled NetCDF fixture can fail the TimeSeries reader
 time-coordinate contract in some cases (#393). Generated NetCDF round-trip
@@ -1042,8 +1136,8 @@ their files expose an explicit time coordinate.</p></li>
 </ul>
 </section>
 </section>
-<section id="id29">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.1...v0.1.2">0.1.2</a> - 2026-05-08<a class="headerlink" href="#id29" title="Link to this heading">#</a></h2>
+<section id="id30">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.1...v0.1.2">0.1.2</a> - 2026-05-08<a class="headerlink" href="#id30" title="Link to this heading">#</a></h2>
 <section id="narrow-v0-1-2-hotfix-scope">
 <h3>Narrow v0.1.2 hotfix scope<a class="headerlink" href="#narrow-v0-1-2-hotfix-scope" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -1077,8 +1171,8 @@ their files expose an explicit time coordinate.</p></li>
 <li><p><strong>docs</strong>: Performed a global “reset-and-rewrap” of tutorial notebooks to fix indentation errors in <code class="docutils literal notranslate"><span class="pre">warnings.catch_warnings()</span></code> blocks.</p></li>
 </ul>
 </section>
-<section id="id30">
-<h3>Added<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<section id="id31">
+<h3>Added<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>fields</strong>: <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> and <code class="docutils literal notranslate"><span class="pre">TensorField</span></code> now support initialization directly from NumPy ndarrays (5D for VectorField, 6D for TensorField), automatically creating the component <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>s without breaking backward-compatible dictionary initialization.</p></li>
 </ul>
@@ -1090,8 +1184,8 @@ their files expose an explicit time coordinate.</p></li>
 <li><p><strong>plot</strong>: <code class="docutils literal notranslate"><span class="pre">FieldPlot</span></code> labels now avoid empty unit brackets for unitless metadata and expose the latest scalar colorbar via the public <code class="docutils literal notranslate"><span class="pre">last_field_colorbar</span></code> attribute. Explicit <code class="docutils literal notranslate"><span class="pre">label=&quot;&quot;</span></code> colorbar labels remain supported.</p></li>
 </ul>
 </section>
-<section id="id31">
-<h3>Documentation<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
+<section id="id32">
+<h3>Documentation<a class="headerlink" href="#id32" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>docs</strong>: Unified the Class Index into five major categories (Core, Field, Signal, Analysis, Utilities) with standardized Japanese translations (e.g., “時系列行列” for <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>).</p></li>
 <li><p><strong>docs</strong>: Redesigned major guidance pages (<code class="docutils literal notranslate"><span class="pre">io_formats</span></code>, <code class="docutils literal notranslate"><span class="pre">numerical_stability</span></code>, <code class="docutils literal notranslate"><span class="pre">time_utilities</span></code>, <code class="docutils literal notranslate"><span class="pre">architecture</span></code>) using judgment tables and decision-driven structures.</p></li>
@@ -1109,10 +1203,10 @@ their files expose an explicit time coordinate.</p></li>
 </ul>
 </section>
 </section>
-<section id="id32">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0...v0.1.1">0.1.1</a> - 2026-04-28<a class="headerlink" href="#id32" title="Link to this heading">#</a></h2>
 <section id="id33">
-<h3>Added<a class="headerlink" href="#id33" title="Link to this heading">#</a></h3>
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0...v0.1.1">0.1.1</a> - 2026-04-28<a class="headerlink" href="#id33" title="Link to this heading">#</a></h2>
+<section id="id34">
+<h3>Added<a class="headerlink" href="#id34" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>SegmentTable</strong>: New factory methods <code class="docutils literal notranslate"><span class="pre">read()</span></code> and <code class="docutils literal notranslate"><span class="pre">read_csv()</span></code> for initializing from external files.</p></li>
 <li><p><strong>SegmentTable</strong>: Support for the iterable protocol (<code class="docutils literal notranslate"><span class="pre">__iter__</span></code>) and <code class="docutils literal notranslate"><span class="pre">RowProxy</span></code> for direct row-wise processing.</p></li>
@@ -1129,15 +1223,15 @@ their files expose an explicit time coordinate.</p></li>
 <li><p><strong>tutorials</strong>: <code class="docutils literal notranslate"><span class="pre">case_coupling_analysis.ipynb</span></code> / <code class="docutils literal notranslate"><span class="pre">case_response_analysis.ipynb</span></code> に Phase 1–3 の利用例を追補 (Phase 4).</p></li>
 </ul>
 </section>
-<section id="id34">
-<h3>Changed<a class="headerlink" href="#id34" title="Link to this heading">#</a></h3>
+<section id="id35">
+<h3>Changed<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>SegmentTable</strong>: <code class="docutils literal notranslate"><span class="pre">add_series_column()</span></code> now accepts a simple <code class="docutils literal notranslate"><span class="pre">loader(segment)</span></code> callable for intuitive lazy loading.</p></li>
 <li><p><strong>noise/peaks</strong>: Renamed <code class="docutils literal notranslate"><span class="pre">lorentzian_line()</span></code> parameter <code class="docutils literal notranslate"><span class="pre">fwhm</span></code> to <code class="docutils literal notranslate"><span class="pre">gamma</span></code> for consistency with implementation.</p></li>
 </ul>
 </section>
-<section id="id35">
-<h3>Fixed<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
+<section id="id36">
+<h3>Fixed<a class="headerlink" href="#id36" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>fitting/highlevel</strong>: Resolved frequency bin alignment between PSD and covariance matrix in <code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum</span></code>.</p></li>
 <li><p><strong>fitting/highlevel</strong>: Removed unsupported <code class="docutils literal notranslate"><span class="pre">stride</span></code> parameter from <code class="docutils literal notranslate"><span class="pre">fit_bootstrap_spectrum</span></code>.</p></li>
@@ -1156,14 +1250,14 @@ their files expose an explicit time coordinate.</p></li>
 </ul>
 </section>
 </section>
-<section id="id36">
-<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...v0.1.0">0.1.0</a> - 2026-03-15<a class="headerlink" href="#id36" title="Link to this heading">#</a></h2>
+<section id="id37">
+<h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...v0.1.0">0.1.0</a> - 2026-03-15<a class="headerlink" href="#id37" title="Link to this heading">#</a></h2>
 <section id="release-summary">
 <h3>Release Summary<a class="headerlink" href="#release-summary" title="Link to this heading">#</a></h3>
 <p>First stable release of GWexpy for SoftwareX publication. This release focuses on API stability, GWpy compatibility, and reproducible commissioning workflows.</p>
 </section>
-<section id="id37">
-<h3>Changed<a class="headerlink" href="#id37" title="Link to this heading">#</a></h3>
+<section id="id38">
+<h3>Changed<a class="headerlink" href="#id38" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Version</strong>: Updated from <code class="docutils literal notranslate"><span class="pre">0.1.0b2</span></code> to <code class="docutils literal notranslate"><span class="pre">0.1.0</span></code> (stable release)</p></li>
 <li><p><strong>GWpy API UX Compatibility</strong>: Aligned key spectral API call conventions with GWpy 4.x usage patterns.</p>
@@ -1185,8 +1279,8 @@ their files expose an explicit time coordinate.</p></li>
 <li><p><strong>Authors</strong>: Removed email from <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> to prevent spam (contact via GitHub Issues or paper)</p></li>
 </ul>
 </section>
-<section id="id38">
-<h3>Added<a class="headerlink" href="#id38" title="Link to this heading">#</a></h3>
+<section id="id39">
+<h3>Added<a class="headerlink" href="#id39" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Compatibility policy doc</strong>:</p>
 <ul>
@@ -1218,8 +1312,8 @@ their files expose an explicit time coordinate.</p></li>
 </section>
 <section id="b2-2026-02-23">
 <h2><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b1...v0.1.0b2">0.1.0b2</a> - 2026-02-23<a class="headerlink" href="#b2-2026-02-23" title="Link to this heading">#</a></h2>
-<section id="id39">
-<h3>Changed<a class="headerlink" href="#id39" title="Link to this heading">#</a></h3>
+<section id="id40">
+<h3>Changed<a class="headerlink" href="#id40" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>API Unification</strong>: Standardized all spectral analysis function signatures to use time-based parameters (<code class="docutils literal notranslate"><span class="pre">fftlength</span></code>/<code class="docutils literal notranslate"><span class="pre">overlap</span></code> in seconds) instead of sample-count-based parameters (<code class="docutils literal notranslate"><span class="pre">nperseg</span></code>/<code class="docutils literal notranslate"><span class="pre">noverlap</span></code>). This aligns gwexpy with GWpy conventions and improves user experience.</p>
 <ul>
@@ -1258,8 +1352,8 @@ their files expose an explicit time coordinate.</p></li>
 </li>
 </ul>
 </section>
-<section id="id40">
-<h3>Fixed<a class="headerlink" href="#id40" title="Link to this heading">#</a></h3>
+<section id="id41">
+<h3>Fixed<a class="headerlink" href="#id41" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>GBD</strong>: Apply amplifier range scaling when reading Graphtec <code class="docutils literal notranslate"><span class="pre">.gbd</span></code> so analog channels are correctly converted from raw counts to volts, and treat <code class="docutils literal notranslate"><span class="pre">Alarm</span></code>/<code class="docutils literal notranslate"><span class="pre">AlarmOut</span></code>/<code class="docutils literal notranslate"><span class="pre">Pulse*</span></code>/<code class="docutils literal notranslate"><span class="pre">Logic*</span></code> as digital status channels (0/1, dimensionless). Digital channel mapping can be overridden via <code class="docutils literal notranslate"><span class="pre">digital_channels=...</span></code>.</p></li>
 </ul>
@@ -1286,8 +1380,8 @@ their files expose an explicit time coordinate.</p></li>
 <li><p><strong>GUI Architecture</strong>: Improved separation of concerns between UI and core logic layers in GUI components.</p></li>
 </ul>
 </section>
-<section id="id41">
-<h3>Added<a class="headerlink" href="#id41" title="Link to this heading">#</a></h3>
+<section id="id42">
+<h3>Added<a class="headerlink" href="#id42" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Core Data Structures</strong>:</p>
 <ul>
@@ -1329,8 +1423,8 @@ their files expose an explicit time coordinate.</p></li>
 </li>
 </ul>
 </section>
-<section id="id42">
-<h3>Improved<a class="headerlink" href="#id42" title="Link to this heading">#</a></h3>
+<section id="id43">
+<h3>Improved<a class="headerlink" href="#id43" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Type Safety</strong>: Comprehensive type annotation expansion across the codebase:</p>
 <ul>
@@ -1351,8 +1445,8 @@ their files expose an explicit time coordinate.</p></li>
 <li><p>Refactored <code class="docutils literal notranslate"><span class="pre">noise</span></code> module for better maintenance.</p></li>
 </ul>
 </section>
-<section id="id43">
-<h3>Fixed<a class="headerlink" href="#id43" title="Link to this heading">#</a></h3>
+<section id="id44">
+<h3>Fixed<a class="headerlink" href="#id44" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>GUI Tests</strong>: Resolved flaky test issues related to window visibility timing.</p></li>
 <li><p><strong>Type Errors</strong>: Fixed various MyPy errors including uninitialized attributes and missing return type annotations.</p></li>
@@ -1404,102 +1498,103 @@ their files expose an explicit time coordinate.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">Unreleased</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-visible-bug-fixes">Behaviour-visible bug fixes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#release-tooling">Release tooling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-limitations">Known Limitations</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">0.1.11 - 2026-07-25</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Behaviour-visible bug fixes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-limitations">Known Limitations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Known Limitations</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">[0.1.10] - 2026-07-18</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Behaviour-visible bug fixes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">[0.1.10] - 2026-07-18</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Behaviour-visible bug fixes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">[0.1.9] - 2026-07-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Behaviour-visible bug fixes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">[0.1.9] - 2026-07-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Behaviour-visible bug fixes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bug-fixes">Bug fixes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development">Development</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">[0.1.8] - 2026-07-04</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Behaviour-visible bug fixes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Bug fixes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">[0.1.8] - 2026-07-04</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Behaviour-visible bug fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Bug fixes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#behaviour-changes">Behaviour changes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Dependencies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Dependencies</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tests">Tests</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Known limitations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Known limitations</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">[0.1.7] - 2026-06-27</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Bug fixes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">[0.1.7] - 2026-06-27</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Bug fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Tests</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maintenance">Maintenance</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">[0.1.6] - 2026-06-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Bug fixes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Maintenance</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">[0.1.6] - 2026-06-11</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Bug fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Maintenance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">Tests</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">[0.1.5] - 2026-06-10</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Bug fixes</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Tests</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">Documentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">[0.1.5] - 2026-06-10</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Bug fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">Tests</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">Documentation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deferred">Deferred</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">0.1.4 - 2026-05-20</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">0.1.4 - 2026-05-20</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Documentation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">Tests</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">Documentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">Tests</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-issues">Known Issues</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">0.1.3 - 2026-05-12</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Fixed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Known Issues</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">0.1.3 - 2026-05-12</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">Known Issues</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">0.1.2 - 2026-05-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">0.1.2 - 2026-05-08</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#narrow-v0-1-2-hotfix-scope">Narrow v0.1.2 hotfix scope</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#packaging-optional-dependencies-issue-251">Packaging &amp; Optional Dependencies (issue #251)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#infrastructure-ci">Infrastructure &amp; CI</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">Documentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">Documentation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#infrastructure">Infrastructure</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">0.1.1 - 2026-04-28</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">Changed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">Fixed</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">0.1.1 - 2026-04-28</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">Fixed</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#previously-unreleased-merged-into-0-1-1">Previously Unreleased (merged into 0.1.1)</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">0.1.0 - 2026-03-15</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">0.1.0 - 2026-03-15</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#release-summary">Release Summary</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">Changed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">Added</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b2-2026-02-23">0.1.0b2 - 2026-02-23</a><ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id40">Changed</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improved">Improved</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id40">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">Fixed</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b1-2026-02-01">0.1.0b1 - 2026-02-01</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-public-release">Initial Public Release</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#important-notes">Important Notes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#refactored">Refactored</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id42">Improved</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id43">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id42">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id43">Improved</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id44">Fixed</a></li>
 </ul>
 </li>
 </ul>
