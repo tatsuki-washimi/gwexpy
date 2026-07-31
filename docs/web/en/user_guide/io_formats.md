@@ -145,7 +145,7 @@ If you are unsure, start with **HDF5**. Use **GWF** when you need external stand
 |---|:---:|---|---|---|
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | Standard LIGO/KAGRA frame exchange | Standard format, via gwpy |
 | **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | `.read(..., format="hdf5")`, `.write(..., format="hdf5")` on major classes | Long-term storage with metadata | Prefer explicit `format="hdf5"` |
-| **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Writers use `rate_hz`; readers also accept external `sample_rate`. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope-compatible HDF5 | `TimeSeriesDict` only. Writers use `rate_hz`; readers also accept external `sample_rate`. A group holding data but neither attribute raises `ValueError` naming the group, rather than being silently skipped. Legacy aliases: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
 | **xml.diaggui** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT outputs | `products` is required; legacy alias: `dttxml` |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | Detector data server access | Network path |
 | **GWOSC** | ○ / × | `TimeSeries.fetch_open_data()` | Open data access | Network path |

@@ -36,12 +36,21 @@ _NDSCOPE_DATA_KEYS = frozenset({"raw", "mean", "min", "max"})
 _NDSCOPE_SAMPLE_RATE_KEYS = ("rate_hz", "sample_rate")
 
 
-def _sample_rate_from_attrs(attrs: Any, *, group_name: str) -> float | None:
+def _sample_rate_from_attrs(attrs: Any, *, group_name: str) -> float:
     """Return a validated NDScope sampling rate from group attributes.
 
     ``rate_hz`` is the canonical attribute written by gwexpy.  External
     NDScope files may instead use ``sample_rate``; accept it for reading while
     rejecting missing, invalid, or conflicting timing metadata explicitly.
+
+    Raises
+    ------
+    ValueError
+        If the group carries neither attribute, or if the value present is
+        not a positive finite rate, or if both are present and disagree.
+        Callers must only invoke this for data-bearing groups: a group with
+        no NDScope dataset legitimately has no sampling rate to report.
+
     """
     values: dict[str, float] = {}
     for key in _NDSCOPE_SAMPLE_RATE_KEYS:
@@ -62,7 +71,11 @@ def _sample_rate_from_attrs(attrs: Any, *, group_name: str) -> float | None:
         values[key] = value
 
     if not values:
-        return None
+        raise ValueError(
+            f"NDScope group {group_name!r} contains data but has no "
+            "sampling-rate metadata; expected one of: "
+            f"{', '.join(_NDSCOPE_SAMPLE_RATE_KEYS)}"
+        )
 
     if len(values) == 2 and not np.isclose(
         values["rate_hz"], values["sample_rate"], rtol=1e-12, atol=0.0
@@ -72,7 +85,8 @@ def _sample_rate_from_attrs(attrs: Any, *, group_name: str) -> float | None:
             f"metadata: rate_hz={values['rate_hz']!r}, "
             f"sample_rate={values['sample_rate']!r}"
         )
-    return values.get("rate_hz", values.get("sample_rate"))
+    # `values` is non-empty here, so one of the two keys is always present.
+    return values["rate_hz"] if "rate_hz" in values else values["sample_rate"]
 
 
 # ---------------------------------------------------------------------------
@@ -90,9 +104,17 @@ def identify_ndscope_hdf5(
     """Identify an ndscope HDF5 file by its internal structure.
 
     Returns ``True`` when *filepath* points to an HDF5 file whose root
-    contains at least one Group with ``gps_start`` and either ``rate_hz`` or
-    ``sample_rate`` attributes, plus at least one dataset named ``raw``,
-    ``mean``, ``min``, or ``max``.
+    contains at least one Group with a ``gps_start`` attribute plus at least
+    one dataset named ``raw``, ``mean``, ``min``, or ``max``.
+
+    Sampling-rate metadata is deliberately *not* part of this test.  An
+    NDScope file whose groups all lack ``rate_hz``/``sample_rate`` is still an
+    NDScope file -- it is a malformed one.  Requiring the rate here would
+    de-select this reader for exactly those files, so ``TimeSeriesDict.read()``
+    would fall through to another format instead of surfacing the reader's
+    explicit error, silently reintroducing the channel loss this identifier
+    is meant to help catch.  Validity of the rate is the reader's contract;
+    see :func:`_sample_rate_from_attrs`.
     """
     if filepath is None:
         return False
@@ -105,10 +127,7 @@ def identify_ndscope_hdf5(
                 item = f[key]
                 if not isinstance(item, h5py.Group):
                     continue
-                attrs = item.attrs
-                if "gps_start" not in attrs or not any(
-                    key in attrs for key in _NDSCOPE_SAMPLE_RATE_KEYS
-                ):
+                if "gps_start" not in item.attrs:
                     continue
                 if any(ds_name in item for ds_name in _NDSCOPE_DATA_KEYS):
                     return True
@@ -194,15 +213,19 @@ def read_timeseriesdict_ndscope_hdf5(
             if wanted is not None and grp_name not in wanted:
                 continue
 
-            sample_rate = _sample_rate_from_attrs(attrs, group_name=grp_name)
-            if sample_rate is None:
-                continue
-            gps_start = float(attrs["gps_start"])
-            unit = str(attrs.get("unit", ""))
-
+            # Establish that the group is data-bearing *before* requiring
+            # timing metadata: a group with no NDScope dataset carries no
+            # samples, so a missing sampling rate on it is not an error.
             ds_names = sorted(set(item.keys()) & _NDSCOPE_DATA_KEYS)
             if not ds_names:
                 continue
+
+            # A data-bearing group with no sampling rate is an error, not a
+            # silent skip: dropping it would return a TimeSeriesDict missing
+            # a channel with no indication anything went wrong.
+            sample_rate = _sample_rate_from_attrs(attrs, group_name=grp_name)
+            gps_start = float(attrs["gps_start"])
+            unit = str(attrs.get("unit", ""))
 
             for ds_name in ds_names:
                 data = np.asarray(item[ds_name])

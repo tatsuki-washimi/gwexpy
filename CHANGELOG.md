@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+### Behaviour-visible bug fixes
+
+- **io**: reading an ndscope HDF5 file now raises `ValueError` naming the
+  offending group when a data-bearing group carries neither a `rate_hz` nor
+  a `sample_rate` attribute, instead of skipping that group. Previously such
+  a group was silently dropped, so a multi-channel file with one
+  metadata-incomplete channel returned a `TimeSeriesDict` missing that
+  channel with no error, warning, or other indication that data had been
+  lost. A group is data-bearing when it carries `gps_start` and at least one
+  of the `raw`/`mean`/`min`/`max` datasets; groups without `gps_start` and
+  groups holding no ndscope dataset are not data-bearing and continue to be
+  skipped, as before. Channels excluded by an explicit `channels=` argument
+  are never read and so are unaffected. Format auto-detection no longer
+  requires a sampling-rate attribute either, so this error is raised through
+  `TimeSeriesDict.read()`/`TimeSeriesMatrix.read()` without an explicit
+  `format=`; previously a file whose groups all lacked the attribute failed
+  identification and fell through to another reader, hiding the loss behind
+  an unrelated error. This completes the external-metadata compatibility work
+  in #534/#535 (#541).
+
 ## [0.1.11] - 2026-07-25
 
 This is a time/metadata-integrity and statistics-robustness patch release.
