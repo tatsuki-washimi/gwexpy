@@ -43,7 +43,12 @@
   push (`enforcement`, `target`, `conditions`, `rules[].type`,
   `bypass_actors`, and the Trusted Publisher binding, which has no GitHub
   API readback), and states explicitly that the workflow's dual checkout is
-  *not* itself protection against a modified tag revision (#536).
+  *not* itself protection against a modified tag revision. The required
+  `bypass_actors` state is given per ruleset rather than once for both,
+  because a `creation`/`update`/`deletion` rule restricts its operation to
+  the listed actors instead of forbidding it: the tag-creation ruleset must
+  enumerate the permitted creators, while the tag-integrity ruleset must
+  list none (#536).
 
 ## [0.1.11] - 2026-07-25
 

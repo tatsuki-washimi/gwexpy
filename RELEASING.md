@@ -53,11 +53,14 @@ recorded.  If a readback does not show it, it is not in effect.
   `release-tags-integrity` on `refs/tags/v*`, restricting who may create a
   release tag and enforcing the final-release SemVer pattern.
 - **Tag creation permission** — only admins may create `v*` tags, so an
-  arbitrary contributor cannot start a publishing run at all.
+  arbitrary contributor cannot start a publishing run at all.  This is the
+  `creation` rule on `release-tags-create-admin-only`, whose `bypass_actors`
+  list *is* the set of permitted creators rather than a set of exceptions.
 - **Tag update and deletion restriction** — the `release-tags-integrity`
   ruleset must include the `update`, `deletion`, and `non_fast_forward`
-  rules.  Only with those does a published tag actually become immutable,
-  so that a verified SHA cannot be swapped after the fact.
+  rules **and carry no bypass actors**.  Only then does a published tag
+  actually become immutable, so that a verified SHA cannot be swapped after
+  the fact.
 - **GitHub Environment protection** — the `pypi` environment permits `v*`
   tags only, denies branch deployments, and gates the publish job.
 - **PyPI Trusted Publisher binding** — bound to `publish-release.yml`
@@ -99,15 +102,39 @@ unmet, regardless of what this document says.
 
 `rules[].type` alone is not sufficient evidence.  A ruleset can carry exactly
 the right rules and still constrain nothing, so the detail response must be
-checked on every one of the following before a tag is pushed:
+checked on every one of the following before a tag is pushed.
+
+These three are required identically on **both** rulesets:
 
 | Field | Required value | Why it matters |
 |---|---|---|
 | `enforcement` | `active` | `evaluate` and `disabled` report violations without blocking them, so the rules never take effect. |
 | `target` | `tag` | A ruleset targeting branches does not constrain tag operations at all. |
 | `conditions.ref_name.include` | `refs/tags/v*` | A different pattern leaves release tags outside the ruleset. |
-| `rules[].type` | `creation`, `update`, `deletion`, `non_fast_forward`, `tag_name_pattern` | Without `update`/`deletion`/`non_fast_forward`, only the tag *name* is constrained, not whether an existing tag can be moved or removed. |
-| `bypass_actors` | empty, or only actors that must not be able to defeat immutability | A bypass entry silently reinstates exactly the operations the rules above forbid, for the actors listed. |
+
+The remaining two fields are **not** shared, and the correct `bypass_actors`
+state is the opposite in each ruleset.  A `creation`, `update`, or `deletion`
+rule does not forbid its operation outright — it restricts that operation to
+the actors listed in `bypass_actors`.  So "a bypass entry is a finding" is
+right for one of these rulesets and wrong for the other, and applying it
+uniformly misreads one of them every time:
+
+| Ruleset | Required `rules[].type` | Required `bypass_actors` |
+|---|---|---|
+| `release-tags-create-admin-only` | `creation` | Exactly the actors permitted to create a release tag, enumerated. An empty list here means *no one* — not even an admin — can create a `v*` tag, so the release cannot be published at all. |
+| `release-tags-integrity` | `update`, `deletion`, `non_fast_forward`, `tag_name_pattern` | Empty. Any actor listed here may move or delete a published release tag, which is exactly the immutability this ruleset exists to provide. |
+
+For each entry that legitimately appears on `release-tags-create-admin-only`,
+record `actor_type`, `actor_id`, and `bypass_mode`.  `bypass_mode` is what
+decides whether the bypass applies unconditionally, and the `pull_request`
+mode available to branch rulesets does not exist for tags, so an entry that
+looks gated on a branch ruleset is not gated here.
+
+A non-empty `bypass_actors` on `release-tags-integrity` is a break-glass
+exception, not a working configuration.  If one is present, record it as
+weakening tag immutability — with the actor, the reason, and when it will be
+removed — and do not report the "Immutable tag operation" property as held
+while it stands.
 
 Read `environments/pypi` back for the same reason: confirm the deployment
 branch/tag policy actually restricts to `v*` tags and denies branch
@@ -135,9 +162,16 @@ latter additionally enforces the final-release SemVer metadata restriction:
 ```
 
 `release-tags-integrity` must also carry the `update`, `deletion`, and
-`non_fast_forward` rules.  Without them the ruleset constrains only what a
-tag may be *named*, not whether an existing one can be moved or removed, and
-the "Immutable tag operation" property claimed above does not hold.
+`non_fast_forward` rules, with an empty `bypass_actors`.  Without those rules
+the ruleset constrains only what a tag may be *named*, not whether an existing
+one can be moved or removed; with a bypass actor it names the operations but
+still permits them for that actor.  In either case the "Immutable tag
+operation" property claimed above does not hold.
+
+`release-tags-create-admin-only` is the mirror image: its `creation` rule is
+what makes tag creation an enumerated permission, so its `bypass_actors` must
+list every actor allowed to create a release tag.  Leaving it empty locks out
+the release itself.
 
 After creation, record both ruleset IDs and their GET responses in the release
 audit manifest, then replace the placeholders below in a docs-only PR.
