@@ -1,0 +1,186 @@
+name: Publish release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_ref:
+        description: Existing final-release tag or full 40-character candidate SHA
+        required: true
+        type: string
+      expected_tag:
+        description: Final-release tag expected from the checked-out source
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-release-${{ github.event_name == 'workflow_dispatch' && format('dry-run-{0}', inputs.expected_tag) || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' }}
+
+jobs:
+  verify:
+    name: Verify immutable release source
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      source_sha: ${{ steps.validate.outputs.source_sha }}
+      version: ${{ steps.validate.outputs.version }}
+    steps:
+      # Checks out the workflow revision this run was launched from, into a
+      # directory separate from the source under test, so the validator code
+      # and the code it validates cannot be the same working tree.
+      #
+      # On a `workflow_dispatch` run this revision is pinned to `main` by the
+      # "Enforce manual control revision" step below. On a tag push it is the
+      # revision the tag points at -- `github.workflow_sha` identifies the
+      # commit containing the workflow file, NOT an independently protected
+      # `main`. This checkout is therefore NOT a trust boundary against a
+      # modified tag revision: a tag carrying a rewritten workflow would run
+      # its own validator. The controls that actually bound that risk live
+      # outside this file -- see RELEASING.md.
+      - name: Check out workflow revision for validator code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          path: control
+
+      - name: Check out requested source revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ref || github.ref_name }}
+          fetch-depth: 0
+          path: source
+
+      - name: Enforce manual control revision
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          if [[ "${{ github.ref }}" != "refs/heads/main" ]]; then
+            echo "workflow_dispatch must run with --ref main" >&2
+            exit 1
+          fi
+
+      # scripts/validate_release.py imports datetime.UTC, which needs Python
+      # 3.11+. Without this the validator runs on whatever `python` the runner
+      # image happens to ship, so an image update could break release
+      # verification. Pin it to the same version build/smoke use.
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.11"
+
+      - name: Fetch ancestry references
+        run: |
+          git -C source fetch origin +refs/heads/main:refs/remotes/origin/main
+          git -C source fetch origin +refs/heads/maint/0.1:refs/remotes/origin/maint/0.1 || true
+
+      - name: Validate metadata, tag mode, and ancestry
+        id: validate
+        env:
+          RELEASE_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.release_ref || github.ref_name }}
+          EXPECTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_tag || github.ref_name }}
+        run: |
+          result="$(python control/scripts/validate_release.py --repo-root source --release-ref "$RELEASE_REF" --expected-tag "$EXPECTED_TAG")"
+          printf '%s\n' "$result"
+          printf '%s\n' "$result" | awk -F= '/^source_sha=/{print "source_sha=" $2}' >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$result" | awk -F= '/^version=/{print "version=" $2}' >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build and check release artifacts
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out verified source revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.verify.outputs.source_sha }}
+          fetch-depth: 1
+          path: source
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.11"
+
+      - name: Build and validate artifacts
+        working-directory: source
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build --outdir dist
+          python scripts/check_release_artifacts.py dist
+          twine check --strict dist/*
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-artifacts-${{ needs.verify.outputs.source_sha }}
+          path: source/dist
+          if-no-files-found: error
+
+  smoke:
+    name: Smoke-test built wheel
+    needs: [verify, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.11"
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-artifacts-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-artifacts
+
+      - name: Install and import wheel outside the checkout
+        env:
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          smoke_dir="$(mktemp -d)"
+          python -m venv "$smoke_dir/venv"
+          wheel="$(find "${{ runner.temp }}/release-artifacts" -name '*.whl' -print -quit)"
+          test -n "$wheel"
+          "$smoke_dir/venv/bin/python" -m pip install --upgrade pip
+          "$smoke_dir/venv/bin/python" -m pip install "$(realpath "$wheel")"
+          "$smoke_dir/venv/bin/python" - "$EXPECTED_VERSION" <<'PY'
+          from pathlib import Path
+          import sys
+          import gwexpy
+
+          assert gwexpy.__version__ == sys.argv[1]
+          package_path = Path(gwexpy.__file__).resolve()
+          assert package_path.is_relative_to(Path(sys.prefix).resolve())
+          print(package_path)
+          PY
+
+  publish:
+    name: Publish verified artifacts to PyPI
+    needs: [verify, build, smoke]
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: pypi
+      url: https://pypi.org/project/gwexpy/
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-artifacts-${{ needs.verify.outputs.source_sha }}
+          path: ${{ runner.temp }}/release-artifacts
+
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@a892a5a61159132606e93a2fa6f4358831b04d26
+        with:
+          packages-dir: ${{ runner.temp }}/release-artifacts

@@ -22,6 +22,34 @@
   an unrelated error. This completes the external-metadata compatibility work
   in #534/#535 (#541).
 
+### Release tooling
+
+- **ci**: the release publication workflow is now a single fail-closed
+  `publish-release.yml`, replacing `release.yml`. It resolves the release
+  ref to an exact 40-character SHA before `build`, `smoke`, or `publish`
+  consume it, checks the validator code out separately from the revision it
+  validates, pins every action to a full commit SHA, gates PyPI publication
+  behind a tag push and the `pypi` environment, and restricts OIDC
+  `id-token: write` to the publish job alone. Manual dispatches are dry-runs
+  and must be launched with `--ref main`. `scripts/validate_release.py` and
+  `RELEASING.md` are added alongside it. The validator rejects duplicate
+  release metadata -- two `## [version]` CHANGELOG headings, or a repeated
+  top-level `version`/`date-released` in `CITATION.cff` -- rather than
+  reading the first occurrence, matching the release-note generator's
+  fail-closed behaviour. `RELEASING.md` documents where the trust boundary
+  actually is, separating the controls enforced by repository and PyPI
+  configuration from the operational rules that are not mechanically
+  enforced, records the readback fields an auditor must check before a tag
+  push (`enforcement`, `target`, `conditions`, `rules[].type`,
+  `bypass_actors`, and the Trusted Publisher binding, which has no GitHub
+  API readback), and states explicitly that the workflow's dual checkout is
+  *not* itself protection against a modified tag revision. The required
+  `bypass_actors` state is given per ruleset rather than once for both,
+  because a `creation`/`update`/`deletion` rule restricts its operation to
+  the listed actors instead of forbidding it: the tag-creation ruleset must
+  enumerate the permitted creators, while the tag-integrity ruleset must
+  list none (#536).
+
 ## [0.1.11] - 2026-07-25
 
 This is a time/metadata-integrity and statistics-robustness patch release.
