@@ -120,6 +120,16 @@ class TestIdentify:
 
         assert identify_ndscope_hdf5(TimeSeriesDict, str(p), None) is True
 
+    def test_identifies_file_without_sampling_rate_metadata(self, tmp_path):
+        # Identification must not depend on the rate attribute. A file whose
+        # groups all lack one is a malformed NDScope file, not a non-NDScope
+        # file; de-selecting this reader for it would send the read to another
+        # format instead of raising, re-hiding the dropped channel.
+        p = tmp_path / "missing_rate.hdf5"
+        _make_ndscope_with_sampling_attrs(p)
+
+        assert identify_ndscope_hdf5(TimeSeriesDict, str(p), None) is True
+
     def test_rejects_gwpy_hdf5(self, tmp_path):
         p = tmp_path / "gwpy_native.hdf5"
         _make_gwpy_hdf5(p)
@@ -201,6 +211,28 @@ class TestRead:
             read_timeseriesdict_ndscope_hdf5(p)
         assert "rate_hz" in str(excinfo.value)
         assert "sample_rate" in str(excinfo.value)
+
+    @pytest.mark.parametrize("reader", [TimeSeriesDict.read, TimeSeriesMatrix.read])
+    def test_public_auto_read_rejects_missing_sampling_rate(self, tmp_path, reader):
+        # The explicit error must be reachable through the auto-detected
+        # public API, not only through the format-specific reader: that is the
+        # path real callers use, and the one where a silent fall-through to
+        # another format would hide the loss again.
+        p = tmp_path / "missing_rate_auto.hdf5"
+        _make_ndscope_with_sampling_attrs(p)
+
+        with pytest.raises(ValueError, match="K1:TEST-CHANNEL"):
+            reader(p)
+
+    @pytest.mark.parametrize("reader", [TimeSeriesDict.read, TimeSeriesMatrix.read])
+    def test_public_auto_read_rejects_partially_missing_sampling_rate(
+        self, tmp_path, reader
+    ):
+        p = tmp_path / "mixed_rate_auto.hdf5"
+        _make_ndscope_mixed_rate_metadata(p)
+
+        with pytest.raises(ValueError, match="K1:MISSING"):
+            reader(p)
 
     def test_mixed_valid_and_missing_rate_fails_whole_read(self, tmp_path):
         # A group without sampling-rate metadata must not be silently dropped:

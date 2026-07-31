@@ -83,6 +83,12 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
   dropping it would return a `TimeSeriesDict` missing a channel with no
   indication anything went wrong. Groups without `gps_start`, and groups
   carrying no NDScope dataset, are not data-bearing and remain skipped.
+- Format detection: auto-identification keys on `gps_start` plus at least one
+  `raw`/`mean`/`min`/`max` dataset, and deliberately does not require the
+  sampling-rate attribute. A file whose groups all lack it is a malformed
+  NDScope file, not a different format, so the `ValueError` above is reachable
+  through auto-detected `TimeSeriesDict.read()` / `TimeSeriesMatrix.read()`
+  rather than being masked by a fall-through to another reader.
 - Reason: the ndscope schema is collection-oriented, and public docs already
   present it as a `TimeSeriesDict`-first HDF5 family.
 

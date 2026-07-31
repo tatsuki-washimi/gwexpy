@@ -104,9 +104,17 @@ def identify_ndscope_hdf5(
     """Identify an ndscope HDF5 file by its internal structure.
 
     Returns ``True`` when *filepath* points to an HDF5 file whose root
-    contains at least one Group with ``gps_start`` and either ``rate_hz`` or
-    ``sample_rate`` attributes, plus at least one dataset named ``raw``,
-    ``mean``, ``min``, or ``max``.
+    contains at least one Group with a ``gps_start`` attribute plus at least
+    one dataset named ``raw``, ``mean``, ``min``, or ``max``.
+
+    Sampling-rate metadata is deliberately *not* part of this test.  An
+    NDScope file whose groups all lack ``rate_hz``/``sample_rate`` is still an
+    NDScope file -- it is a malformed one.  Requiring the rate here would
+    de-select this reader for exactly those files, so ``TimeSeriesDict.read()``
+    would fall through to another format instead of surfacing the reader's
+    explicit error, silently reintroducing the channel loss this identifier
+    is meant to help catch.  Validity of the rate is the reader's contract;
+    see :func:`_sample_rate_from_attrs`.
     """
     if filepath is None:
         return False
@@ -119,10 +127,7 @@ def identify_ndscope_hdf5(
                 item = f[key]
                 if not isinstance(item, h5py.Group):
                     continue
-                attrs = item.attrs
-                if "gps_start" not in attrs or not any(
-                    key in attrs for key in _NDSCOPE_SAMPLE_RATE_KEYS
-                ):
+                if "gps_start" not in item.attrs:
                     continue
                 if any(ds_name in item for ds_name in _NDSCOPE_DATA_KEYS):
                     return True

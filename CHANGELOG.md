@@ -14,8 +14,13 @@
   of the `raw`/`mean`/`min`/`max` datasets; groups without `gps_start` and
   groups holding no ndscope dataset are not data-bearing and continue to be
   skipped, as before. Channels excluded by an explicit `channels=` argument
-  are never read and so are unaffected. This completes the external-metadata
-  compatibility work in #534/#535 (#541).
+  are never read and so are unaffected. Format auto-detection no longer
+  requires a sampling-rate attribute either, so this error is raised through
+  `TimeSeriesDict.read()`/`TimeSeriesMatrix.read()` without an explicit
+  `format=`; previously a file whose groups all lacked the attribute failed
+  identification and fell through to another reader, hiding the loss behind
+  an unrelated error. This completes the external-metadata compatibility work
+  in #534/#535 (#541).
 
 ## [0.1.11] - 2026-07-25
 
