@@ -144,7 +144,7 @@ GW 系の標準保存・交換・取得経路です。
 |---|:---:|---|---|---|
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | LIGO/KAGRA の標準交換 | 標準形式。gwpy 経由 |
 | **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | 各クラスの `.read(..., format="hdf5")`, `.write(..., format="hdf5")` | 長期保存、メタデータ保持 | `format="hdf5"` の明示を推奨 |
-| **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope 互換 | `TimeSeriesDict` 限定。writer は `rate_hz` を使用し、reader は外部データの `sample_rate` も受理します。旧 alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
+| **hdf.ndscope** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="hdf.ndscope")`, `.write(..., format="hdf.ndscope")` | ndscope 互換 | `TimeSeriesDict` 限定。writer は `rate_hz` を使用し、reader は外部データの `sample_rate` も受理します。データを持つ group にどちらの属性もない場合は、黙って読み飛ばさず group 名を含む `ValueError` を送出します。旧 alias: `ndscope-hdf5`, `ndscope_hdf5`, `ndscopehdf5` |
 | **xml.diaggui** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="xml.diaggui", products="...")` | DiagGUI / DTT 出力 | `products` 必須。旧 alias: `dttxml` |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | 検出器データサーバ取得 | ネットワーク経由 |
 | **GWOSC** | ○ / × | `TimeSeries.fetch_open_data()` | オープンデータ取得 | ネットワーク経由 |

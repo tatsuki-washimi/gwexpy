@@ -76,7 +76,13 @@ These decisions are fixed before expanding P1/P2/P3 coverage:
 - Registry surface: adapters for `TimeSeries` and `TimeSeriesMatrix` may exist.
 - Timing metadata: writers emit canonical `rate_hz` and `gps_start` group
   attributes. Readers also accept external files that use `sample_rate` in
-  place of `rate_hz`; when both are present, their values must agree.
+  place of `rate_hz`; when both are present, their values must agree. A
+  data-bearing group (one carrying `gps_start` and at least one of the
+  `raw`/`mean`/`min`/`max` datasets) that has neither attribute raises
+  `ValueError` naming the group, rather than being skipped: silently
+  dropping it would return a `TimeSeriesDict` missing a channel with no
+  indication anything went wrong. Groups without `gps_start`, and groups
+  carrying no NDScope dataset, are not data-bearing and remain skipped.
 - Reason: the ndscope schema is collection-oriented, and public docs already
   present it as a `TimeSeriesDict`-first HDF5 family.
 

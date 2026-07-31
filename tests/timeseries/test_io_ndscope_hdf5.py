@@ -56,6 +56,18 @@ def _make_ndscope_with_sampling_attrs(path, *, rate_hz=None, sample_rate=None):
         grp.attrs["unit"] = "m"
 
 
+def _make_ndscope_mixed_rate_metadata(path):
+    """Create a two-channel file where only one group carries a rate attribute."""
+    with h5py.File(str(path), "w") as f:
+        for ch_name, rate_hz in (("K1:CH_OK", 256.0), ("K1:MISSING", None)):
+            grp = f.create_group(ch_name)
+            grp.create_dataset("raw", data=np.arange(256, dtype=np.float64))
+            if rate_hz is not None:
+                grp.attrs["rate_hz"] = rate_hz
+            grp.attrs["gps_start"] = 1_000_000_000.0
+            grp.attrs["unit"] = "m"
+
+
 def _make_ndscope_trend(path):
     """Create an ndscope HDF5 file with trend data (mean/min/max)."""
     n = 100
@@ -180,6 +192,55 @@ class TestRead:
 
         with pytest.raises(ValueError, match="positive finite"):
             read_timeseriesdict_ndscope_hdf5(p)
+
+    def test_rejects_missing_sampling_rate_metadata(self, tmp_path):
+        p = tmp_path / "missing_rate.hdf5"
+        _make_ndscope_with_sampling_attrs(p)
+
+        with pytest.raises(ValueError, match="K1:TEST-CHANNEL") as excinfo:
+            read_timeseriesdict_ndscope_hdf5(p)
+        assert "rate_hz" in str(excinfo.value)
+        assert "sample_rate" in str(excinfo.value)
+
+    def test_mixed_valid_and_missing_rate_fails_whole_read(self, tmp_path):
+        # A group without sampling-rate metadata must not be silently dropped:
+        # that would return a partial TimeSeriesDict missing a channel the
+        # caller asked for, with no indication anything went wrong.
+        p = tmp_path / "mixed_rate.hdf5"
+        _make_ndscope_mixed_rate_metadata(p)
+
+        with pytest.raises(ValueError, match="K1:MISSING"):
+            read_timeseriesdict_ndscope_hdf5(p)
+
+    def test_channel_filter_excludes_group_without_sampling_rate(self, tmp_path):
+        # Groups excluded by ``channels=`` are never read, so their missing
+        # metadata is not an error for this call.
+        p = tmp_path / "mixed_rate_filtered.hdf5"
+        _make_ndscope_mixed_rate_metadata(p)
+
+        tsd = read_timeseriesdict_ndscope_hdf5(p, channels=["K1:CH_OK"])
+        assert list(tsd.keys()) == ["K1:CH_OK"]
+
+    def test_skips_groups_that_are_not_ndscope_data(self, tmp_path):
+        # A group with no ``gps_start`` is not an NDScope data group, and a
+        # group with ``gps_start`` but no raw/mean/min/max dataset carries no
+        # data. Neither is data-bearing, so a missing rate attribute on them
+        # must stay a silent skip rather than becoming an error.
+        p = tmp_path / "non_data_groups.hdf5"
+        with h5py.File(str(p), "w") as f:
+            valid = f.create_group("K1:CH_OK")
+            valid.create_dataset("raw", data=np.arange(256, dtype=np.float64))
+            valid.attrs["rate_hz"] = 256.0
+            valid.attrs["gps_start"] = 1_000_000_000.0
+            valid.attrs["unit"] = "m"
+
+            f.create_group("K1:NO_GPS_START")
+
+            empty = f.create_group("K1:EMPTY")
+            empty.attrs["gps_start"] = 1_000_000_000.0
+
+        tsd = read_timeseriesdict_ndscope_hdf5(p)
+        assert list(tsd.keys()) == ["K1:CH_OK"]
 
     def test_read_trend(self, tmp_path):
         p = tmp_path / "trend.hdf5"
