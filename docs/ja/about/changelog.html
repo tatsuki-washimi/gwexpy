@@ -506,6 +506,12 @@ because a <code class="docutils literal notranslate"><span class="pre">creation<
 the listed actors instead of forbidding it: the tag-creation ruleset must
 enumerate the permitted creators, while the tag-integrity ruleset must
 list none (#536).</p></li>
+<li><p><strong>ci</strong>: the <code class="docutils literal notranslate"><span class="pre">pypa/gh-action-pypi-publish</span></code> pin in <code class="docutils literal notranslate"><span class="pre">publish-release.yml</span></code> used
+the annotated tag object SHA for <code class="docutils literal notranslate"><span class="pre">v1.14.2</span></code> instead of the commit SHA it
+points to, so the pinned ref did not resolve to any container image and the
+<code class="docutils literal notranslate"><span class="pre">publish</span></code> job failed before uploading anything. Repinned to the peeled
+commit SHA (<code class="docutils literal notranslate"><span class="pre">dc37677b2e1c63e2034f94d8a5b11f265b73ba33</span></code>). No package was
+published to PyPI by the failed run.</p></li>
 </ul>
 <p><em>Reproducibility note</em>: the <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> entries below change numeric
 output. The affected statistical model was introduced in <code class="docutils literal notranslate"><span class="pre">70bc11f55</span></code>
