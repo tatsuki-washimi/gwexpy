@@ -51,29 +51,51 @@ def _git(repo_root: Path, *args: str, check: bool = True) -> str:
 
 
 def _read_cff_field(repo_root: Path, field: str) -> str:
+    """Return the single top-level CITATION.cff *field* value.
+
+    Duplicates are rejected rather than resolved by first-match: with two
+    ``version:`` lines the release metadata is ambiguous, and reading only the
+    first one lets a stale value ship while validation reports success.
+    """
     path = repo_root / "CITATION.cff"
-    match = re.search(
+    matches = re.findall(
         rf"^{re.escape(field)}\s*:\s*['\"]?([^'\"#\n]+)['\"]?\s*(?:#.*)?$",
         path.read_text(encoding="utf-8"),
         flags=re.MULTILINE,
     )
-    if not match:
+    if not matches:
         raise ReleaseValidationError(f"CITATION.cff has no valid {field!r} field")
-    return match.group(1).strip()
+    if len(matches) > 1:
+        raise ReleaseValidationError(
+            f"CITATION.cff has {len(matches)} top-level {field!r} fields; "
+            "release metadata must be unambiguous"
+        )
+    return matches[0].strip()
 
 
 def _read_changelog_date(repo_root: Path, version: str) -> str:
+    """Return the date of the single CHANGELOG heading for *version*.
+
+    A duplicate heading is an error, not a first-match lookup: the release-note
+    generator rejects it outright, so accepting it here would let the validator
+    pass on a tree whose release notes cannot be generated.
+    """
     content = (repo_root / "CHANGELOG.md").read_text(encoding="utf-8")
-    match = re.search(
+    matches = re.findall(
         rf"^## \[{re.escape(version)}\]\s*-\s*(\d{{4}}-\d{{2}}-\d{{2}})\s*$",
         content,
         flags=re.MULTILINE,
     )
-    if not match:
+    if not matches:
         raise ReleaseValidationError(
             f"CHANGELOG.md has no dated release entry for {version}"
         )
-    return match.group(1)
+    if len(matches) > 1:
+        raise ReleaseValidationError(
+            f"CHANGELOG.md has {len(matches)} release headings for {version}; "
+            "release metadata must be unambiguous"
+        )
+    return matches[0]
 
 
 def _read_metadata(repo_root: Path, version: str) -> str:

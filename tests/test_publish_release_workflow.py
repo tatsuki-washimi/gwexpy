@@ -67,6 +67,27 @@ def test_verify_separates_validator_and_source_trees_and_publish_requires_tag_pu
     assert "sys.prefix" in workflow
 
 
+def test_releasing_doc_separates_enforced_controls_from_operational_rules():
+    """Immutability is a maintainer rule until the ruleset enforces it.
+
+    A security-boundary document that lists an unenforced convention beside
+    configured controls overstates the guarantee, so the two must stay in
+    separate sections and the ruleset rules that would enforce tag
+    immutability must be named explicitly.
+    """
+    # Collapse wrapping so the prose assertions below do not depend on where
+    # the source lines happen to break.
+    releasing = re.sub(
+        r"\s+", " ", (WORKFLOW.parents[2] / "RELEASING.md").read_text(encoding="utf-8")
+    )
+    enforced = releasing.index("### Enforced by configuration")
+    operational = releasing.index("### Operational rules, not enforced")
+    assert enforced < operational
+    for rule in ("`update`", "`deletion`", "`non_fast_forward`"):
+        assert rule in releasing[enforced:operational]
+    assert "not a guarantee the platform provides" in releasing[operational:]
+
+
 def test_verify_pins_python_before_running_the_validator():
     """The validator needs Python 3.11+ (`datetime.UTC`), so verify pins it.
 

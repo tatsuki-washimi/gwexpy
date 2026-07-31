@@ -121,3 +121,51 @@ def test_strict_mode_rejects_tagger_date_mismatch_and_missing_maintenance_branch
     tag_annotated(repo, "v0.1.13")
     with pytest.raises(validator.ReleaseValidationError, match="maint/0.1"):
         validator.validate_release(repo, "v0.1.13", "v0.1.13")
+
+
+def test_duplicate_changelog_release_heading_is_rejected(tmp_path: Path):
+    """Two headings for one version must fail, not resolve to the first.
+
+    ``tools/gen_release_notes.py`` refuses to generate from a duplicated
+    heading. A first-match read here would let the validator pass on a tree
+    whose release notes cannot be produced, splitting the two contracts.
+    """
+    validator = load_validator()
+    repo = make_repo(tmp_path)
+    changelog = repo / "CHANGELOG.md"
+    changelog.write_text(
+        "## [0.1.12] - 2026-07-30\n\nfirst\n\n## [0.1.12] - 2026-07-31\n\nsecond\n",
+        encoding="utf-8",
+    )
+    git(repo, "commit", "-am", "duplicate heading")
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(validator.ReleaseValidationError, match="2 release headings"):
+        validator.validate_release(repo, source_sha, "v0.1.12")
+
+
+@pytest.mark.parametrize(
+    ("field", "duplicate_line"),
+    [("version", "version: 0.1.99"), ("date-released", "date-released: 2026-01-01")],
+)
+def test_duplicate_citation_cff_field_is_rejected(
+    tmp_path: Path, field: str, duplicate_line: str
+):
+    """A duplicated top-level CFF field is ambiguous release metadata.
+
+    Reading only the first occurrence would let a stale second value ship in
+    the published citation record while validation reports success.
+    """
+    validator = load_validator()
+    repo = make_repo(tmp_path / field)
+    citation = repo / "CITATION.cff"
+    citation.write_text(
+        citation.read_text(encoding="utf-8") + f"{duplicate_line}\n", encoding="utf-8"
+    )
+    git(repo, "commit", "-am", f"duplicate {field}")
+    source_sha = git(repo, "rev-parse", "HEAD")
+
+    with pytest.raises(
+        validator.ReleaseValidationError, match=f"2 top-level '{field}' fields"
+    ):
+        validator.validate_release(repo, source_sha, "v0.1.12")
