@@ -37,7 +37,7 @@ def test_all_actions_are_full_sha_pinned_and_publish_job_is_minimal():
     publish_uses = re.findall(r"^\s*uses:\s*([^\s]+)$", publish, flags=re.MULTILINE)
     assert publish_uses == [
         "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
-        "pypa/gh-action-pypi-publish@a892a5a61159132606e93a2fa6f4358831b04d26",
+        "pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33",
     ]
     assert "id-token: write" in publish
     assert workflow.count("id-token: write") == 1
