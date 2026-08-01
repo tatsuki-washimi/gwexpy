@@ -3,7 +3,7 @@
 > Last-updated: 2026-08-01 (rev 2 — 承認ゲート A 通過、GitHub 操作は一括実行で承認)
 > Reviewer Status: **approved**(2026-08-01)
 
-Status: in-progress
+Status: completed (verified: `gh issue list --milestone v0.1.13 --state all --json number` → 18 issues matching the mapping table; `gh api repos/tatsuki-washimi/gwexpy/issues?milestone=3&state=all` → 30 items (29 issues + PR #488) for v0.2.0; `gh api repos/tatsuki-washimi/gwexpy/milestones?state=closed` → v0.1.3, v0.1.6, v0.1.12, v1.0.0 all closed; PR #488 and PR #453 carry roadmap-reorg comments; #507/#509/#510 unassigned with backlog comments; PR #613 merged as f47faa9ca via `gh pr merge 613 --squash --delete-branch`)
 
 ## 1. Goal
 
