@@ -458,7 +458,7 @@
   <section class="tex2jax_ignore mathjax_ignore" id="roadmap">
 <h1>ロードマップ<a class="headerlink" href="#roadmap" title="Link to this heading">#</a></h1>
 <p>このページは、GWexpy のドキュメント整備と機能計画の<strong>公開ロードマップ入口</strong>です。 厳密なリリース契約ではなく、どの方向へ改善を進めているかを共有するための概要として扱ってください。</p>
-<p><em>最終更新: 2026-07-11。</em></p>
+<p><em>最終更新: 2026-08-01。</em></p>
 <section id="how-to-read-this-page">
 <h2>このページの読み方<a class="headerlink" href="#how-to-read-this-page" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -471,6 +471,7 @@
 <section id="near-term-focus">
 <h2>直近の重点項目<a class="headerlink" href="#near-term-focus" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>信頼性の強化: 明示的なエラーの代わりに、誤った値・単位・欠落したメタデータを黙って返しうる既知のケースの解消</p></li>
 <li><p>ナビゲーション、アクセシビリティ、検索性を含むドキュメント品質改善</p></li>
 <li><p>GWpy ユーザー向け移行ガイドの明確化</p></li>
 <li><p>notebook / tutorial の CI 上での安定性向上</p></li>
@@ -480,6 +481,9 @@
 <section id="mid-term-focus">
 <h2>中期の重点項目<a class="headerlink" href="#mid-term-focus" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>フィールドコンテナ(正規格子のスカラー・ベクトル・テンソル場)のファイル直接読み書き。地形(標高)データや GeoTIFF を含め、単位・軸・メタデータを一貫して保持</p></li>
+<li><p>セグメント単位の解析ワークフローの完結: セグメントの読み込み、選択、エラー・欠損の明示的な処理、保存、再開</p></li>
+<li><p>コンテナ演算の明示的な動作契約: 予測可能な単位、メタデータの伝播、暗黙の型降格の代わりの明示的な失敗</p></li>
 <li><p>現在は試作段階に留まる CLI の拡張</p></li>
 <li><p>ノイズ特性評価や時間周波数解析ワークフローの拡充</p></li>
 <li><p>外部の科学計算 Python ライブラリとの相互運用ガイドの拡充。データ準備ツールが書き出した HDF5 プロダクトの読み込みや、干渉計の設計・シミュレーションパッケージの出力の取り込みを含む</p></li>
@@ -490,6 +494,9 @@
 <section id="long-term-directions">
 <h2>長期的な方向性<a class="headerlink" href="#long-term-directions" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>フィールドデータの空間幾何: 座標フレーム、検出器に整合した回転、地形・物理場・サイトマーカーを重ねる地図可視化</p></li>
+<li><p>メッシュ構造を保持するフィールドモデルと、数値ソルバー出力との相互運用</p></li>
+<li><p>行列コンテナ上に構築する予測・推定ユーティリティ(Fisher 解析など)</p></li>
 <li><p>事例とリファレンスを横断して探せるビジュアル・ナビゲーションの強化</p></li>
 <li><p>ドキュメント検証とサンプルコード検証の自動化拡張</p></li>
 <li><p>テーマ、検索品質、インタラクティブ表示の改善</p></li>
@@ -503,6 +510,7 @@
 <li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/SECURITY.md">セキュリティポリシー</a>。脆弱性情報はフォームや public issue には含めないでください。</p></li>
 <li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/releases">GitHub Releases</a></p></li>
 <li><p><a class="reference internal" href="../about/changelog.html"><span class="std std-doc">更新履歴</span></a></p></li>
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/ROADMAP.md">開発者向けロードマップ(<code class="docutils literal notranslate"><span class="pre">ROADMAP.md</span></code>)</a> — リリーステーマと方針の詳細</p></li>
 </ul>
 </section>
 <section id="scope-note">

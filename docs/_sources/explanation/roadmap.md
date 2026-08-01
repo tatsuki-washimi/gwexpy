@@ -3,7 +3,7 @@
 This page provides the public roadmap entry point for GWexpy documentation and feature planning.
 It is intended as a lightweight overview rather than a release contract.
 
-*Last updated: 2026-07-11.*
+*Last updated: 2026-08-01.*
 
 ## How to Read This Page
 
@@ -15,6 +15,8 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Near-Term Focus
 
+- Reliability hardening: eliminating the known cases where data could be returned with
+  silently wrong values, units, or dropped metadata instead of an explicit error
 - Documentation quality improvements across navigation, accessibility, and search
 - Clearer migration guidance for GWpy users
 - Better notebook and tutorial reliability in CI
@@ -22,6 +24,13 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 ## Mid-Term Focus
 
+- Direct file reading and writing for field containers (regular-grid scalar, vector,
+  and tensor fields), including terrain/elevation and GeoTIFF sources, with units,
+  axes, and metadata preserved end to end
+- A complete segment-based analysis workflow: load segments, select, process with
+  explicit error and missing-data handling, persist, and resume
+- An explicit behavioural contract for container arithmetic: predictable units,
+  metadata propagation, and explicit failures instead of silent type downgrades
 - Broader CLI coverage beyond the current prototype-stage interface
 - More analysis workflows for noise characterization and time-frequency studies
 - Expanded interoperability guides for external scientific Python libraries, including reading
@@ -34,6 +43,11 @@ left out of scope, see [Where GWexpy Sits in the GW Python Ecosystem](ecosystem)
 
 ## Long-Term Directions
 
+- Spatial geometry for field data: coordinate frames, detector-aligned rotations, and
+  layered map visualization combining terrain, physical fields, and site markers
+- Mesh-aware field models and interoperability with numerical solver outputs
+- Forecasting and inference utilities built on the matrix containers, such as Fisher
+  analysis
 - Richer visual discovery paths across examples and reference content
 - More automation around documentation verification and sample-code validation
 - Potential improvements to theme, search quality, and interactive visual components
@@ -45,6 +59,7 @@ left out of scope, see [Where GWexpy Sits in the GW Python Ecosystem](ecosystem)
 - [Security policy](https://github.com/tatsuki-washimi/gwexpy/blob/main/SECURITY.md) for vulnerability reports; do not include vulnerability details in the form or public issues.
 - [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)
 - [Changelog](../about/changelog.md)
+- [Developer roadmap (`ROADMAP.md`)](https://github.com/tatsuki-washimi/gwexpy/blob/main/ROADMAP.md) for release themes and policy details
 
 ## Scope Note
 
