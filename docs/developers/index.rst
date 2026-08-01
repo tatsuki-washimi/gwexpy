@@ -34,3 +34,4 @@ Development Guidelines
    guides/coding_standards
    guides/testing
    guides/gui_testing
+   LICENSES_THIRD_PARTY

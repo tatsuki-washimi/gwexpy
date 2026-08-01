@@ -61,6 +61,25 @@ GWexpy is designed to extend GWpy and other core libraries in a way that remains
 - **Hidden Side Effects**: Any behavior that changes the output of external libraries simply by importing `gwexpy` (except for the authorized I/O registry entries).
 - **Incompatible API Shims**: Modifying standard library functions or third-party API signatures without an explicit user opt-in.
 
+## Third-Party Code and Licenses
+
+GWexpy learns from neighbouring projects but does not vendor their code. Before adding a
+dependency on, or an adapter for, an external project, read
+[docs/developers/LICENSES_THIRD_PARTY.md](docs/developers/LICENSES_THIRD_PARTY.md). The rules
+in short:
+
+- **No vendoring.** Do not copy, paste, or transcribe source from another project, regardless
+  of its licence. Reimplement from the published description instead.
+- **Verify licences from the LICENSE file itself**, not from PyPI classifiers, README badges,
+  or a previous document's claim. A project that ships no LICENSE file is all rights reserved,
+  which is stricter than GPL — nothing may be reused from it.
+- **Write "unverified" when you cannot confirm a licence.** Do not guess.
+- **Prefer format compatibility over a package dependency.** Reading another tool's documented
+  on-disk format with an existing base dependency keeps GWexpy's dependency surface small.
+
+`pemcoupling` in particular carries no licence grant. Its domain concepts may be referenced;
+its code, file structure, and implementations may not.
+
 ## Documentation
 
 To build docs locally:
