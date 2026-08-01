@@ -36,8 +36,8 @@ msgstr ""
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:6
 #: 73ec2b34368048d887a8cee1e334b3e8
-msgid "*Last updated: 2026-07-11.*"
-msgstr "*最終更新: 2026-07-11。*"
+msgid "*Last updated: 2026-08-01.*"
+msgstr "*最終更新: 2026-08-01。*"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:8
 #: 313fbf95d79b44b99ea1fd966bcb4836
@@ -76,6 +76,10 @@ msgid "Near-Term Focus"
 msgstr "直近の重点項目"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:18
+msgid "Reliability hardening: eliminating the known cases where data could be returned with silently wrong values, units, or dropped metadata instead of an explicit error"
+msgstr "信頼性の強化: 明示的なエラーの代わりに、誤った値・単位・欠落したメタデータを黙って返しうる既知のケースの解消"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:19
 #: 956ad59a6eea46918ad12eab2fb70994
 msgid ""
 "Documentation quality improvements across navigation, accessibility, and "
@@ -102,7 +106,19 @@ msgstr "チュートリアル、ガイド、API リファレンス間の参照�
 msgid "Mid-Term Focus"
 msgstr "中期の重点項目"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:25
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:26
+msgid "Direct file reading and writing for field containers (regular-grid scalar, vector, and tensor fields), including terrain/elevation and GeoTIFF sources, with units, axes, and metadata preserved end to end"
+msgstr "フィールドコンテナ(正規格子のスカラー・ベクトル・テンソル場)のファイル直接読み書き。地形(標高)データや GeoTIFF を含め、単位・軸・メタデータを一貫して保持"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:29
+msgid "A complete segment-based analysis workflow: load segments, select, process with explicit error and missing-data handling, persist, and resume"
+msgstr "セグメント単位の解析ワークフローの完結: セグメントの読み込み、選択、エラー・欠損の明示的な処理、保存、再開"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:31
+msgid "An explicit behavioural contract for container arithmetic: predictable units, metadata propagation, and explicit failures instead of silent type downgrades"
+msgstr "コンテナ演算の明示的な動作契約: 予測可能な単位、メタデータの伝播、暗黙の型降格の代わりの明示的な失敗"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:33
 #: ed52e8e8d3fe4089a33d45caf029a18a
 msgid "Broader CLI coverage beyond the current prototype-stage interface"
 msgstr "現在は試作段階に留まる CLI の拡張"
@@ -145,7 +161,19 @@ msgstr ""
 msgid "Long-Term Directions"
 msgstr "長期的な方向性"
 
-#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:37
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:44
+msgid "Spatial geometry for field data: coordinate frames, detector-aligned rotations, and layered map visualization combining terrain, physical fields, and site markers"
+msgstr "フィールドデータの空間幾何: 座標フレーム、検出器に整合した回転、地形・物理場・サイトマーカーを重ねる地図可視化"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:46
+msgid "Mesh-aware field models and interoperability with numerical solver outputs"
+msgstr "メッシュ構造を保持するフィールドモデルと、数値ソルバー出力との相互運用"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:47
+msgid "Forecasting and inference utilities built on the matrix containers, such as Fisher analysis"
+msgstr "行列コンテナ上に構築する予測・推定ユーティリティ(Fisher 解析など)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:49
 #: acf9260184024c438adb56a69fc3f808
 msgid "Richer visual discovery paths across examples and reference content"
 msgstr "事例とリファレンスを横断して探せるビジュアル・ナビゲーションの強化"
@@ -201,6 +229,10 @@ msgstr "[GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases)"
 #: a04420d489774c58b199faa0d70b4ae5
 msgid "[Changelog](../about/changelog.md)"
 msgstr "[更新履歴](../about/changelog.md)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:60
+msgid "[Developer roadmap (`ROADMAP.md`)](https://github.com/tatsuki-washimi/gwexpy/blob/main/ROADMAP.md) for release themes and policy details"
+msgstr "[開発者向けロードマップ(`ROADMAP.md`)](https://github.com/tatsuki-washimi/gwexpy/blob/main/ROADMAP.md) — リリーステーマと方針の詳細"
 
 #: ../../home/washimi/work/gwexpy/docs_redesign/explanation/roadmap.md:49
 #: 4bf876c3169545d59fdc16f8c845ac8f
