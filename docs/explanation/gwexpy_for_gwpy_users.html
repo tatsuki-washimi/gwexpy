@@ -54,7 +54,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Roadmap" href="roadmap.html" />
+    <link rel="next" title="Where GWexpy Sits in the GW Python Ecosystem" href="ecosystem.html" />
     <link rel="prev" title="Prerequisites and Conventions" href="prerequisites_and_conventions.html" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -385,6 +385,7 @@
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture and Data Flow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="prerequisites_and_conventions.html">Prerequisites and Conventions</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">GWexpy for GWpy Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecosystem.html">Where GWexpy Sits in the GW Python Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Theory and quality</span></p>
@@ -769,6 +770,18 @@ In GWexpy, <code class="docutils literal notranslate"><span class="pre">to_contr
 </ul>
 </section>
 </section>
+<section id="where-gwexpy-sits-relative-to-other-gwpy-adjacent-packages">
+<h2>Where GWexpy sits relative to other GWpy-adjacent packages<a class="headerlink" href="#where-gwexpy-sits-relative-to-other-gwpy-adjacent-packages" title="Link to this heading">#</a></h2>
+<p>GWexpy is not the only package that extends GWpy, and moving to it does not mean leaving the
+rest of the ecosystem behind. spicypy adds signal-processing and control-systems methods,
+GWDama organises data into HDF5 datasets for later analysis, and the detector-characterization
+tools build operator-facing workflows on top of GWpy. GWexpy occupies the container, I/O, and
+analysis-primitive layer between GWpy and those workflows, so the usual pattern is to combine
+them rather than to choose one.</p>
+<p>For the full comparison, including which projects GWexpy bridges to and which it deliberately
+leaves out of scope, see
+<a class="reference internal" href="ecosystem.html"><span class="doc std std-doc">Where GWexpy Sits in the GW Python Ecosystem</span></a>.</p>
+</section>
 <section id="treat-direct-i-o-and-external-library-conversion-as-separate-guides">
 <h2>Treat direct I/O and external-library conversion as separate guides<a class="headerlink" href="#treat-direct-i-o-and-external-library-conversion-as-separate-guides" title="Link to this heading">#</a></h2>
 <p>This page intentionally does not duplicate the I/O-format list or the external-library conversion list.<br />
@@ -811,11 +824,11 @@ Use the dedicated guides below as the source of truth:</p>
       </div>
     </a>
     <a class="right-next"
-       href="roadmap.html"
+       href="ecosystem.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Roadmap</p>
+        <p class="prev-next-title">Where GWexpy Sits in the GW Python Ecosystem</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -870,6 +883,7 @@ Use the dedicated guides below as the source of truth:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">GWexpy style</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-gwexpy-sits-relative-to-other-gwpy-adjacent-packages">Where GWexpy sits relative to other GWpy-adjacent packages</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#treat-direct-i-o-and-external-library-conversion-as-separate-guides">Treat direct I/O and external-library conversion as separate guides</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
 </ul>

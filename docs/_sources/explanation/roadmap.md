@@ -24,8 +24,13 @@ The roadmap is public, but priorities can change based on research needs, mainte
 
 - Broader CLI coverage beyond the current prototype-stage interface
 - More analysis workflows for noise characterization and time-frequency studies
-- Expanded interoperability guides for external scientific Python libraries
+- Expanded interoperability guides for external scientific Python libraries, including reading
+  HDF5 products written by data-preparation tools and importing outputs from interferometer
+  design and simulation packages
 - More public validation notes for numerical and physics-facing algorithms
+
+For how these bridges relate to the surrounding ecosystem, and which projects are deliberately
+left out of scope, see [Where GWexpy Sits in the GW Python Ecosystem](ecosystem).
 
 ## Long-Term Directions
 

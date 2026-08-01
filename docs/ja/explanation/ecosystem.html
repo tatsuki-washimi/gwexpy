@@ -1,0 +1,829 @@
+
+<!DOCTYPE html>
+
+
+<html lang="ja" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="GWexpy と GWpy・spicypy・GWDama、および重力波 Python エコシステム全体との関係と、GWexpy が意図的に他パッケージへ委ねている領域を説明します。" name="description" translated="True" />
+
+    <title>GW Python エコシステムにおける GWexpy の位置付け &#8212; GWexpy</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=2d0c2261" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=13c98202"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../_static/translations.js?v=4755f45a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'explanation/ecosystem';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="canonical" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/ecosystem.html" />
+    <link rel="icon" href="../_static/favicon.svg"/>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="ロードマップ" href="roadmap.html" />
+    <link rel="prev" title="GWpy ユーザーのための GWexpy" href="gwexpy_for_gwpy_users.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="ja"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  <link rel="alternate" hreflang="en" href="https://tatsuki-washimi.github.io/gwexpy/docs/explanation/ecosystem.html" />
+  <link rel="alternate" hreflang="ja" href="https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/ecosystem.html" />
+  <link rel="alternate" hreflang="x-default" href="https://tatsuki-washimi.github.io/gwexpy/docs/explanation/ecosystem.html" />
+
+  </head>
+  <body data-default-mode="auto">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">本文へスキップ</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>トップに戻る</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="ドキュメントを検索..."
+         aria-label="ドキュメントを検索..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="バージョン警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="サイトナビゲーション">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/logo.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">GWexpy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../reference/index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="アイコンリンク">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/explanation/ecosystem.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="検索" aria-label="検索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="このページでは">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    チュートリアル
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how-to/index.html">
+    ハウツーガイド
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../reference/index.html">
+    リファレンス
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    解説
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    このプロジェクトについて
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="ライト"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="ダーク"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>ライト</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>ダーク</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="アイコンリンク">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/tatsuki-washimi/gwexpy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item"><div class="navbar-item language-switcher">
+    <a class="nav-link" href="https://tatsuki-washimi.github.io/gwexpy/docs/explanation/ecosystem.html" title="English">
+      <i class="fa-solid fa-language"></i> EN</a>
+    <span class="active"> / 日本語</span>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="セクションナビゲーション">
+  <p class="bd-links__title" role="heading" aria-level="1">セクションナビゲーション</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">設計と概念</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">アーキテクチャとデータフロー</a></li>
+<li class="toctree-l1"><a class="reference internal" href="prerequisites_and_conventions.html">前提条件と規約</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwexpy_for_gwpy_users.html">GWpy ユーザーのための GWexpy</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">GW Python エコシステムにおける GWexpy の位置付け</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">理論と品質</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="physics_models.html">物理モデルと解析理論</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l1"><a class="reference internal" href="verification_and_quality.html">検証と品質の見方</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="パンくずリスト" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="ホーム">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">解説</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">GW Python エコシステムにおける GWexpy の位置付け</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="where-gwexpy-sits-in-the-gw-python-ecosystem">
+<h1>GW Python エコシステムにおける GWexpy の位置付け<a class="headerlink" href="#where-gwexpy-sits-in-the-gw-python-ecosystem" title="Link to this heading">#</a></h1>
+<p>GWexpy は <a class="reference external" href="https://gwpy.github.io/">GWpy</a> の上に構築された拡張ライブラリです。GWpy プロジェクトの公式構成要素ではなく、探索・パラメータ推定・検出器運用のパイプラインでもありません。このページでは、GWexpy が重力波 Python スタックのどの層を担い、周辺パッケージとどう関係し、どの領域を意図的に他のツールへ委ねているかを説明します。</p>
+<p>「このオブジェクトを他のライブラリへどう変換するか」が知りたい場合は <a class="reference internal" href="../how-to/interop.html"><span class="doc std std-doc">Interop / 変換ガイド</span></a> を参照してください。「どのファイル形式を読めるか」が知りたい場合は <a class="reference internal" href="../how-to/io_formats.html"><span class="doc std std-doc">ファイル I/O 対応形式ガイド</span></a> を参照してください。このページはスコープと位置付けについてのものであり、API の選択方法ではありません。</p>
+<section id="how-to-read-this-page">
+<h2>このページの読み方<a class="headerlink" href="#how-to-read-this-page" title="Link to this heading">#</a></h2>
+<p>以下の各プロジェクトは 5 つの分類のいずれかに置かれています。分類は GWexpy との<em>関係</em>を表すもので、相手プロジェクトの品質や成熟度を表すものではありません。表内の並び順は主題別であり、利用統計に基づく順位付けではありません。</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>分類</p></th>
+<th class="head"><p>意味</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>基盤</p></td>
+<td><p>GWexpy がその上に構築され、オブジェクトモデルを拡張している</p></td>
+</tr>
+<tr class="row-odd"><td><p>補完</p></td>
+<td><p>隣接する課題を解決しており、GWexpy と重複せずに併用できる</p></td>
+</tr>
+<tr class="row-even"><td><p>参考</p></td>
+<td><p>コードを流用せず、API 設計やデータ意味論を参考にしている</p></td>
+</tr>
+<tr class="row-odd"><td><p>連携候補</p></td>
+<td><p>変換または reader/writer による橋渡しが計画中、あるいは検討に値する</p></td>
+</tr>
+<tr class="row-even"><td><p>対象外</p></td>
+<td><p>そのプロジェクトに意図的に委ねており、GWexpy は置き換えを目指さない</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="layers-of-the-gravitational-wave-python-stack">
+<h2>重力波 Python スタックの層構造<a class="headerlink" href="#layers-of-the-gravitational-wave-python-stack" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>層</p></th>
+<th class="head"><p>主にその層を担うパッケージ</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>標準的な GW データオブジェクトと基盤 API</p></td>
+<td><p>GWpy</p></td>
+</tr>
+<tr class="row-odd"><td><p>行列・マルチチャンネル・実験向けの解析コンテナ</p></td>
+<td><p><strong>GWexpy</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>信号処理と制御系</p></td>
+<td><p>spicypy</p></td>
+</tr>
+<tr class="row-odd"><td><p>HDF5 でのデータ準備・アーカイブ・ML 向けデータセット</p></td>
+<td><p>GWDama</p></td>
+</tr>
+<tr class="row-even"><td><p>detector characterization、サマリーページ、veto ワークフロー</p></td>
+<td><p>gwdetchar, gwsumm, gwvet, hveto</p></td>
+</tr>
+<tr class="row-odd"><td><p>トリガー生成、探索、パラメータ推定</p></td>
+<td><p>pyomicron, PyCBC, bilby, pygwb, pycWB</p></td>
+</tr>
+<tr class="row-even"><td><p>データ探索とアクセス</p></td>
+<td><p>gwosc, gwdatafind</p></td>
+</tr>
+<tr class="row-odd"><td><p>干渉計のシミュレーションと設計</p></td>
+<td><p>Finesse, pygwinc, Differometor</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>GWexpy は GWpy の 1 つ上、ワークフロー・パイプライン系パッケージの 1 つ下の層に位置します。ワークフロー自体を統括するのではなく、それらが利用できるコンテナ・I/O・解析プリミティブを提供します。</p>
+</section>
+<section id="gwpy-gwexpy-spicypy-and-gwdama-compared">
+<h2>GWpy・GWexpy・spicypy・GWDama の比較<a class="headerlink" href="#gwpy-gwexpy-spicypy-and-gwdama-compared" title="Link to this heading">#</a></h2>
+<p>この 4 つを並べて比較するのは、最も混同されやすい組み合わせだからです。4 つとも Python であり、4 つとも重力波の時系列データを扱い、そのうち 3 つが GWpy と関係しています。</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>GWpy</p></th>
+<th class="head"><p>GWexpy</p></th>
+<th class="head"><p>spicypy</p></th>
+<th class="head"><p>GWDama</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>一言でいうと</p></td>
+<td><p>GW 検出器データ解析の基盤ライブラリ</p></td>
+<td><p>実験データ・マルチチャンネル解析向けの GWpy 互換拡張</p></td>
+<td><p>GWpy に信号処理・制御系の手法を加えたもの</p></td>
+<td><p>HDF5 を中心とするデータマネージャ兼データ準備パッケージ</p></td>
+</tr>
+<tr class="row-odd"><td><p>主な層</p></td>
+<td><p>基盤 API と標準コンテナ</p></td>
+<td><p>解析コンテナ、ワークフロープリミティブ、interop</p></td>
+<td><p>信号・スペクトル・制御の手法</p></td>
+<td><p>データ取得・保存・準備</p></td>
+</tr>
+<tr class="row-even"><td><p>中心となるデータ構造</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, segments, <code class="docutils literal notranslate"><span class="pre">EventTable</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code>, <code class="docutils literal notranslate"><span class="pre">SegmentTable</span></code>, <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>、および型付きの結果オブジェクト</p></td>
+<td><p>GWpy の series オブジェクトに信号処理・制御の手法を追加したもの</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GwDataManager</span></code> と h5py 由来の <code class="docutils literal notranslate"><span class="pre">Dataset</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>設計方針</p></td>
+<td><p>GW 検出器データのための標準的な Python インターフェース</p></td>
+<td><p>GWpy のオブジェクトモデルを保ちつつ、行列・バッチ・I/O・実験ワークフローを追加する</p></td>
+<td><p>GWpy オブジェクトと python-control 的ワークフローを橋渡しする</p></td>
+<td><p>raw データと処理済みデータを属性付きの HDF5 グループへ整理する</p></td>
+</tr>
+<tr class="row-even"><td><p>永続化</p></td>
+<td><p>標準的な GW データ形式を読む</p></td>
+<td><p>多形式の I/O と interop。単一の正準バックエンドを持たない</p></td>
+<td><p>I/O は副次的で、信号処理・制御の例が中心</p></td>
+<td><p>HDF5 が正準形式</p></td>
+</tr>
+<tr class="row-odd"><td><p>GWexpy から見た関係</p></td>
+<td><p>基盤</p></td>
+<td><p>—</p></td>
+<td><p>補完的であり、API 設計の参考対象</p></td>
+<td><p>部分的に重複しつつ、参考対象かつ連携候補</p></td>
+</tr>
+<tr class="row-even"><td><p>ライセンス</p></td>
+<td><p>GPL-3.0</p></td>
+<td><p>MIT</p></td>
+<td><p>Apache-2.0</p></td>
+<td><p>MIT</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="how-gwexpy-relates-to-each-project">
+<h2>各プロジェクトとの関係<a class="headerlink" href="#how-gwexpy-relates-to-each-project" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>プロジェクト</p></th>
+<th class="head"><p>分類</p></th>
+<th class="head"><p>理由</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://gwpy.github.io/">GWpy</a></p></td>
+<td><p>基盤</p></td>
+<td><p>GWexpy はそのコンテナを継承・拡張しており、GWpy 自体からも読める状態を保つことを目指している</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://gitlab.com/pyda-group/spicypy">spicypy</a></p></td>
+<td><p>補完、参考</p></td>
+<td><p>同じく GWpy 拡張だが、コンテナや I/O ではなく信号処理と制御系が中心。LPSD、Daniell's method、huddle test の API は設計上の参考になる</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://gwnoisehunt.gitlab.io/gwdama/">GWDama</a></p></td>
+<td><p>参考、連携候補</p></td>
+<td><p>マルチチャンネル I/O と前処理で GWexpy と重なるが、スコープはデータ準備と HDF5 アーカイブ。階層グループと属性の規約は参考になり、その HDF5 プロダクトを読むのは妥当な橋渡しである</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://gwdetchar.readthedocs.io/en/stable/">gwdetchar</a>, <a class="reference external" href="https://gwsumm.readthedocs.io/en/latest/">gwsumm</a>, gwvet, <a class="reference external" href="https://hveto.readthedocs.io/en/stable/">hveto</a></p></td>
+<td><p>対象外</p></td>
+<td><p>運用寄りの detector characterization とレポート生成のワークフロー。GWexpy はこれらが利用できる解析プリミティブを提供するが、オペレータ向けワークフローの再現は目指さない</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://pyomicron.readthedocs.io/en/latest/">pyomicron</a></p></td>
+<td><p>対象外、連携候補</p></td>
+<td><p>トリガー生成と HTCondor による統括は対象外。生成されたトリガーテーブルの読み書きは対象外ではない</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://pycbc.org/">PyCBC</a>, <a class="reference external" href="https://lscsoft.docs.ligo.org/bilby/">bilby</a>, pygwb, pycWB</p></td>
+<td><p>対象外、連携候補</p></td>
+<td><p>探索・推定のパイプライン。GWexpy はこれらが生成・消費するデータプロダクトと接続し、PyCBC および LAL の series 変換は既に提供している</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://gwosc.org/">gwosc</a>, <a class="reference external" href="https://gwdatafind.readthedocs.io/en/stable/">gwdatafind</a></p></td>
+<td><p>補完</p></td>
+<td><p>データ探索とアクセス。GWexpy が包むのではなく、GWpy 経由およびサンプルの中で使う</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://git.ligo.org/pem/pemcoupling">pemcoupling</a></p></td>
+<td><p>参考</p></td>
+<td><p>コマンドライン型の PEM カップリング関数生成ツール。カップリングプロダクトのスキーマと測定ステータスフラグはドメイン上の参考になるが、コードは一切流用しない。下記のライセンス注記を参照</p></td>
+</tr>
+<tr class="row-even"><td><p>Finesse, pygwinc, <a class="reference external" href="https://github.com/artificial-scientist-lab/Differometor">Differometor</a></p></td>
+<td><p>補完、連携候補</p></td>
+<td><p>干渉計のシミュレーション・設計ツール。GWexpy はシミュレータを再実装するのではなく、その周波数領域の出力を自身のコンテナへ変換する</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="what-makes-gwexpy-different">
+<h2>GWexpy の特徴<a class="headerlink" href="#what-makes-gwexpy-different" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>設計上 GWpy 互換</strong>。新しいコンテナは可能な限り GWpy オブジェクトとして読める状態を保つため、書き換えなしに両者の間でコードを移動できます。</p></li>
+<li><p><strong>行列ネイティブな解析</strong>。<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>・<code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>・<code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は、マルチチャンネルデータを辞書に対するループではなく第一級の形状として扱います。</p></li>
+<li><p><strong>型付きの解析結果</strong>。カップリング・応答・フィッティングのワークフローは、素の配列やその場しのぎの辞書ではなく専用の結果オブジェクトを返します。</p></li>
+<li><p><strong>単一の正準バックエンドを持たない広い I/O</strong>。HDF5・NetCDF4・Zarr・GWF・DTT XML・ndscope HDF5、および計測器固有のロガー形式はいずれも対応経路であり、どれか一つを<em>正準の</em>保存形式として特別扱いしません。</p></li>
+<li><p><strong>汎用の source→target カップリング</strong>。カップリングと射影は特定の検出器の命名規約ではなく、source と target という言葉で表現されます。</p></li>
+<li><p><strong>ライブラリ優先かつ Notebook 向き</strong>。公開されるのは Python のオブジェクトと関数であり、コマンドラインインターフェースは主たる成果物ではなく薄い補助層です。</p></li>
+</ul>
+</section>
+<section id="what-gwexpy-deliberately-does-not-do">
+<h2>GWexpy が意図的に行わないこと<a class="headerlink" href="#what-gwexpy-deliberately-does-not-do" title="Link to this heading">#</a></h2>
+<p>これらを core の外に置くことで、コンテナ・I/O・interop の各層を汎用に保てます。GWexpy は次のものを提供することを目指しません。</p>
+<ul class="simple">
+<li><p>検出器やサイトに固有の運用パイプライン</p></li>
+<li><p>オペレータ向けの HTML レポートやサマリーページ</p></li>
+<li><p>HTCondor やサイト全体のジョブ統括</p></li>
+<li><p>veto の生成や探索パイプライン</p></li>
+<li><p>トリガージェネレータ</p></li>
+<li><p>特定の検出器のチャンネル規約を名前に固定した API</p></li>
+</ul>
+<p>これらが必要なワークフローでは、解析プリミティブに GWexpy を使い、その周囲のワークフローには専用ツールを使うのが想定される形です。</p>
+</section>
+<section id="interoperability-status">
+<h2>相互運用の状況<a class="headerlink" href="#interoperability-status" title="Link to this heading">#</a></h2>
+<p>変換 API の正となるカタログは <a class="reference internal" href="../how-to/interop.html"><span class="doc std std-doc">Interop / 変換ガイド</span></a>、読み書き形式の正となる一覧は <a class="reference internal" href="../how-to/io_formats.html"><span class="doc std std-doc">ファイル I/O 対応形式ガイド</span></a> です。以下の表は、エコシステム単位での橋渡しが現時点でどこまで存在するかだけを記録しています。</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>状況</p></th>
+<th class="head"><p>プロジェクト</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>実装済み</p></td>
+<td><p>GWpy, LALSuite, PyCBC, Finesse, pygwinc, PySpice, ObsPy, python-control, SimPEG, MTH5, scikit-rf, ROOT, ndscope HDF5, DTT / DiagGUI XML、および interop ガイドに掲載されたその他の対象</p></td>
+</tr>
+<tr class="row-odd"><td><p>計画中</p></td>
+<td><p>GWDama の HDF5 プロダクト、Differometor の設計・感度出力</p></td>
+</tr>
+<tr class="row-even"><td><p>ドキュメントのみ</p></td>
+<td><p>spicypy, gwdetchar, gwsumm, gwvet, hveto, pyomicron, pemcoupling</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>「ドキュメントのみ」とは、関係をここで説明するだけで変換 API を計画していないという意味です。これらのツールが GWpy オブジェクトを扱う場面では、GWpy が既に共通語であり、アダプタは不要です。</p>
+</section>
+<section id="third-party-code-and-licensing">
+<h2>第三者コードとライセンス<a class="headerlink" href="#third-party-code-and-licensing" title="Link to this heading">#</a></h2>
+<p>GWexpy は上記のいくつかのプロジェクトから設計上のアイデア、プロダクトの意味論、API の規約を取り入れていますが、コードは複製しません。ライセンスはパッケージの classifier や README のバッジではなく、そのプロジェクト自身のリポジトリにある LICENSE ファイルを読んで確認します。LICENSE ファイルを同梱していないプロジェクトは all rights reserved とみなし、一切流用しません。</p>
+<p>プロジェクトごとの方針は、リポジトリ内の <code class="docutils literal notranslate"><span class="pre">docs/developers/LICENSES_THIRD_PARTY.md</span></code> にコントリビュータ向けとして記録されています。</p>
+</section>
+<section id="related-pages">
+<h2>関連ページ<a class="headerlink" href="#related-pages" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="gwexpy_for_gwpy_users.html"><span class="doc std std-doc">GWpy ユーザーのための GWexpy</span></a> — 実務上の移行差分</p></li>
+<li><p><a class="reference internal" href="architecture.html"><span class="doc std std-doc">アーキテクチャとデータフロー</span></a> — 内部の各層の組み合わさり方</p></li>
+<li><p><a class="reference internal" href="../how-to/interop.html"><span class="doc std std-doc">Interop / 変換ガイド</span></a> — 変換 API のカタログ</p></li>
+<li><p><a class="reference internal" href="../how-to/io_formats.html"><span class="doc std std-doc">ファイル I/O 対応形式ガイド</span></a> — 読み書き対応形式</p></li>
+<li><p><a class="reference internal" href="roadmap.html"><span class="doc std std-doc">ロードマップ</span></a> — プロジェクトの方向性</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="gwexpy_for_gwpy_users.html"
+       title="前のページ">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">前へ</p>
+        <p class="prev-next-title">GWpy ユーザーのための GWexpy</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="roadmap.html"
+       title="次ページ">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">次へ</p>
+        <p class="prev-next-title">ロードマップ</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> このページでは
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-read-this-page">このページの読み方</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layers-of-the-gravitational-wave-python-stack">重力波 Python スタックの層構造</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwpy-gwexpy-spicypy-and-gwdama-compared">GWpy・GWexpy・spicypy・GWDama の比較</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-gwexpy-relates-to-each-project">各プロジェクトとの関係</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-makes-gwexpy-different">GWexpy の特徴</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gwexpy-deliberately-does-not-do">GWexpy が意図的に行わないこと</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interoperability-status">相互運用の状況</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#third-party-code-and-licensing">第三者コードとライセンス</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#related-pages">関連ページ</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/explanation/ecosystem.md">
+      <i class="fa-solid fa-file-lines"></i> ソースコードを表示
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, GWexpy Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3 を使用して作成されました。
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0 で構築されています。
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

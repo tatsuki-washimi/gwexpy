@@ -290,6 +290,19 @@ Related pages:
 - [Active Damping Tutorial](../how-to/case-studies/case_active_damping)
 - [Frequency Series Tutorial](../tutorials/intro_frequencyseries)
 
+## Where GWexpy sits relative to other GWpy-adjacent packages
+
+GWexpy is not the only package that extends GWpy, and moving to it does not mean leaving the
+rest of the ecosystem behind. spicypy adds signal-processing and control-systems methods,
+GWDama organises data into HDF5 datasets for later analysis, and the detector-characterization
+tools build operator-facing workflows on top of GWpy. GWexpy occupies the container, I/O, and
+analysis-primitive layer between GWpy and those workflows, so the usual pattern is to combine
+them rather than to choose one.
+
+For the full comparison, including which projects GWexpy bridges to and which it deliberately
+leaves out of scope, see
+[Where GWexpy Sits in the GW Python Ecosystem](ecosystem).
+
 ## Treat direct I/O and external-library conversion as separate guides
 
 This page intentionally does not duplicate the I/O-format list or the external-library conversion list.  

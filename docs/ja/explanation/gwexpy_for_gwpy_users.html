@@ -55,7 +55,7 @@
     <link rel="icon" href="../_static/favicon.svg"/>
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="検索" href="../search.html" />
-    <link rel="next" title="ロードマップ" href="roadmap.html" />
+    <link rel="next" title="GW Python エコシステムにおける GWexpy の位置付け" href="ecosystem.html" />
     <link rel="prev" title="前提条件と規約" href="prerequisites_and_conventions.html" />
   
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -386,6 +386,7 @@
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">アーキテクチャとデータフロー</a></li>
 <li class="toctree-l1"><a class="reference internal" href="prerequisites_and_conventions.html">前提条件と規約</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">GWpy ユーザーのための GWexpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecosystem.html">GW Python エコシステムにおける GWexpy の位置付け</a></li>
 <li class="toctree-l1"><a class="reference internal" href="roadmap.html">ロードマップ</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">理論と品質</span></p>
@@ -757,6 +758,11 @@
 </ul>
 </section>
 </section>
+<section id="where-gwexpy-sits-relative-to-other-gwpy-adjacent-packages">
+<h2>GWpy 周辺の他パッケージとの位置関係<a class="headerlink" href="#where-gwexpy-sits-relative-to-other-gwpy-adjacent-packages" title="Link to this heading">#</a></h2>
+<p>GWpy を拡張するパッケージは GWexpy だけではなく、GWexpy へ移行してもエコシステムの残りを手放すことにはなりません。spicypy は信号処理と制御系の手法を追加し、GWDama は後段の解析のためにデータを HDF5 データセットへ整理し、detector characterization 系のツールは GWpy の上にオペレータ向けワークフローを構築します。GWexpy は GWpy とそれらのワークフローの間にあるコンテナ・I/O・解析プリミティブの層を担うため、どれか一つを選ぶのではなく組み合わせて使うのが通常の形です。</p>
+<p>GWexpy がどのプロジェクトと変換連携し、どれを意図的に対象外としているかを含む完全な比較は<a class="reference internal" href="ecosystem.html"><span class="doc std std-doc">GW Python エコシステムにおける GWexpy の位置付け</span></a>を参照してください。</p>
+</section>
 <section id="treat-direct-i-o-and-external-library-conversion-as-separate-guides">
 <h2>I/O と外部ライブラリ連携は別ページを見る<a class="headerlink" href="#treat-direct-i-o-and-external-library-conversion-as-separate-guides" title="Link to this heading">#</a></h2>
 <p>このページは、I/O フォーマット一覧や外部ライブラリ変換一覧をあえて重複して掲載しません。一次情報源としては以下の専用ガイドを使ってください：</p>
@@ -798,11 +804,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="roadmap.html"
+       href="ecosystem.html"
        title="次ページ">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">次へ</p>
-        <p class="prev-next-title">ロードマップ</p>
+        <p class="prev-next-title">GW Python エコシステムにおける GWexpy の位置付け</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -857,6 +863,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">GWexpy 流</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-gwexpy-sits-relative-to-other-gwpy-adjacent-packages">GWpy 周辺の他パッケージとの位置関係</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#treat-direct-i-o-and-external-library-conversion-as-separate-guides">I/O と外部ライブラリ連携は別ページを見る</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">次のステップ</a></li>
 </ul>
