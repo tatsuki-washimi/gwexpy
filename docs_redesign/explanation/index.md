@@ -29,6 +29,13 @@ The assumptions, naming, and conventions GWexpy relies on.
 How GWexpy relates to, and differs from, GWpy.
 :::
 
+:::{grid-item-card} {octicon}`globe;1.5em;sd-mr-1` Ecosystem positioning
+:link: ecosystem
+:link-type: doc
+
+Where GWexpy sits among GWpy, spicypy, GWDama, and the wider GW Python stack.
+:::
+
 :::{grid-item-card} {octicon}`milestone;1.5em;sd-mr-1` Roadmap
 :link: roadmap
 :link-type: doc
@@ -78,6 +85,7 @@ How GWexpy is tested and kept correct.
 architecture
 prerequisites_and_conventions
 gwexpy_for_gwpy_users
+ecosystem
 roadmap
 ```
 

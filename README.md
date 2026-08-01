@@ -57,6 +57,23 @@ The full documentation is maintained in the docs site and is the source of truth
 - **Practical workflows**: fitting, noise hunting, time-frequency analysis, and interoperability are exposed as user-facing workflows rather than isolated utilities.
 - **Broad interoperability and I/O**: gwexpy bridges scientific Python tools and extends format coverage beyond core GWpy workflows.
 
+## Where gwexpy Fits
+
+gwexpy occupies the layer between GWpy and the workflow packages built on top of it. GWpy
+provides the standard gravitational-wave data objects; gwexpy adds matrix-aware containers,
+typed analysis results, broad I/O, and external-tool conversion; detector-characterization,
+search, and inference pipelines consume those products.
+
+It is complementary to, not a replacement for, packages such as spicypy (signal processing and
+control systems) and GWDama (HDF5-first data preparation). Site-specific operational
+pipelines, operator-facing reports, job orchestration, and trigger generation are deliberately
+out of scope.
+
+For the full comparison, the ecosystem map, and the third-party code policy, see:
+
+- Ecosystem positioning: <https://tatsuki-washimi.github.io/gwexpy/docs/explanation/ecosystem.html>
+- エコシステムにおける位置付け: <https://tatsuki-washimi.github.io/gwexpy/docs/ja/explanation/ecosystem.html>
+
 ## Quick Start
 
 ```python

@@ -1,0 +1,874 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, GWexpy Developers
+# This file is distributed under the same license as the GWexpy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: GWexpy \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-01 15:48+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 7b2f0e09743e48a182f39932ec68f150
+msgid ""
+"How GWexpy relates to GWpy, spicypy, GWDama, and the wider gravitational-"
+"wave Python ecosystem, and which problems it deliberately leaves to other"
+" packages."
+msgstr ""
+"GWexpy と GWpy・spicypy・GWDama、および重力波 Python エコシステム全体との関係と、GWexpy "
+"が意図的に他パッケージへ委ねている領域を説明します。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:7
+#: 566213384e354e36bdf5c08c5f7b38f3
+msgid "Where GWexpy Sits in the GW Python Ecosystem"
+msgstr "GW Python エコシステムにおける GWexpy の位置付け"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:9
+#: c290a9897c664863b171c2ea58f8af17
+msgid ""
+"GWexpy is an extension library built on top of "
+"[GWpy](https://gwpy.github.io/). It is not an official component of the "
+"GWpy project, and it is not a search, parameter-estimation, or detector-"
+"operations pipeline. This page explains which layer of the gravitational-"
+"wave Python stack GWexpy occupies, how it relates to neighbouring "
+"packages, and which problems it leaves to other tools on purpose."
+msgstr ""
+"GWexpy は [GWpy](https://gwpy.github.io/) の上に構築された拡張ライブラリです。GWpy "
+"プロジェクトの公式構成要素ではなく、探索・パラメータ推定・検出器運用のパイプラインでもありません。このページでは、GWexpy が重力波 "
+"Python スタックのどの層を担い、周辺パッケージとどう関係し、どの領域を意図的に他のツールへ委ねているかを説明します。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:15
+#: 739b4c955564497ba45143cb2cdec751
+msgid ""
+"If your question is \"how do I convert this object into another "
+"library?\", see the [Interop / Conversion Guide](../how-to/interop). If "
+"it is \"which file format can I read?\", see the [File I/O Supported "
+"Formats Guide](../how-to/io_formats). This page is about scope and "
+"positioning, not about API selection."
+msgstr ""
+"「このオブジェクトを他のライブラリへどう変換するか」が知りたい場合は [Interop / 変換ガイド](../how-to/interop) "
+"を参照してください。「どのファイル形式を読めるか」が知りたい場合は [ファイル I/O 対応形式ガイド](../how-"
+"to/io_formats) を参照してください。このページはスコープと位置付けについてのものであり、API の選択方法ではありません。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:20
+#: 869c198254f5457182cd19818e217e1b
+msgid "How to Read This Page"
+msgstr "このページの読み方"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:22
+#: 7291bbef03e54e39b97b92068f60592c
+msgid ""
+"Each project below is placed in one of five categories. The categories "
+"describe the *relationship* to GWexpy, not the quality or maturity of the"
+" other project. The order within any table is thematic and is not a "
+"ranking by usage statistics."
+msgstr ""
+"以下の各プロジェクトは 5 つの分類のいずれかに置かれています。分類は GWexpy "
+"との*関係*を表すもので、相手プロジェクトの品質や成熟度を表すものではありません。表内の並び順は主題別であり、利用統計に基づく順位付けではありません。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 54ca99ad08eb45a2be1caef088015bd1 f0b5878520c64584ae2108b6c417603a
+msgid "Category"
+msgstr "分類"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: a953aa60cf5c4c01aa1d34720b27b59a
+msgid "Meaning"
+msgstr "意味"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: a09f1b17993847229f91add4a2c9b83e a7e53e7916934a7f996c9f14ec1458cb
+#: dc936d210bf940ea9c651cbb22b27f37
+msgid "Foundation"
+msgstr "基盤"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 1f0ac80423854af2a0ccd4165507a71b
+msgid "GWexpy is built on it and extends its object model"
+msgstr "GWexpy がその上に構築され、オブジェクトモデルを拡張している"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 803c3dc4dfab41ad88ab68a36878088e 8141ce11504c4ff8b17293c660769ada
+msgid "Complementary"
+msgstr "補完"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 410ab1dc8e844bf086e986a941213088
+msgid "Solves an adjacent problem; useful alongside GWexpy without overlap"
+msgstr "隣接する課題を解決しており、GWexpy と重複せずに併用できる"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 395563b494204629be62102c3e855373 6a902e4c1cf549a1bd0b8b037b18b271
+msgid "Reference"
+msgstr "参考"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 7d36081cc5414c90bac1896e4f61995b
+msgid "GWexpy learns from its API design or data semantics, without reusing code"
+msgstr "コードを流用せず、API 設計やデータ意味論を参考にしている"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 04a2bafafac644c3b1607299a5b390a0
+msgid "Interop candidate"
+msgstr "連携候補"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 5e446bb2695341eda6f6409b3bbd33a9
+msgid "A conversion or reader/writer bridge is planned or worth building"
+msgstr "変換または reader/writer による橋渡しが計画中、あるいは検討に値する"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 58b89d7aefda4b3cb5f7317cbe484a41 6e858d515fca43d4a911ffef32decdef
+msgid "Out of scope"
+msgstr "対象外"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 4de5f5af4da34d0aa4b6101f44e0f7af
+msgid "Deliberately left to that project; GWexpy does not aim to replace it"
+msgstr "そのプロジェクトに意図的に委ねており、GWexpy は置き換えを目指さない"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:34
+#: 3563326ddc504c60a8f89e284ca6aab8
+msgid "Layers of the Gravitational-Wave Python Stack"
+msgstr "重力波 Python スタックの層構造"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: bffa4c80b5db408a85573bd2d6210f45
+msgid "Layer"
+msgstr "層"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: d8b11b61e40e4bb6ad6269128cce39e8
+msgid "Packages that primarily occupy it"
+msgstr "主にその層を担うパッケージ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 0e5aabb7945948819ebc1d968a73d8f7
+msgid "Standard GW data objects and base API"
+msgstr "標準的な GW データオブジェクトと基盤 API"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 13eb2fa40f1046b9b7e2f13e1caadcde c1916baec7164a55bc32bf2731706a97
+msgid "GWpy"
+msgstr "GWpy"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: df95a62974064e7ba8971db728b1b451
+msgid "Matrix, multichannel, and experiment-oriented analysis containers"
+msgstr "行列・マルチチャンネル・実験向けの解析コンテナ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: dfcc2c054cf046a7ae2ac291abe542e1
+msgid "**GWexpy**"
+msgstr "**GWexpy**"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: c0aebb326c3542389fe05a0bf0b58f27
+msgid "Signal processing and control systems"
+msgstr "信号処理と制御系"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 2434da129b954622ad8c168969048e18 452dcdbdeb7a47d9a156ef38a77e2b18
+msgid "spicypy"
+msgstr "spicypy"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 59b48b8409c543248affe775fe5401fa
+msgid "HDF5 data preparation, archiving, and ML-ready datasets"
+msgstr "HDF5 でのデータ準備・アーカイブ・ML 向けデータセット"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 1974783a06bf46d0b0e7913b76844c7c 3c9ba95270644b4ba034216a11ff5db7
+msgid "GWDama"
+msgstr "GWDama"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 643ca0d927084f7187560582357b54de
+msgid "Detector characterization, summary pages, and veto workflows"
+msgstr "detector characterization、サマリーページ、veto ワークフロー"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 1fec57799a7f41f99bcb80ad7c2c66de
+msgid "gwdetchar, gwsumm, gwvet, hveto"
+msgstr "gwdetchar, gwsumm, gwvet, hveto"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 69c67be9bc2a4f7b8303efd2b4f1747e
+msgid "Trigger generation, search, and parameter estimation"
+msgstr "トリガー生成、探索、パラメータ推定"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 64a0cc39be564bdea39bc1c4f9419bec
+msgid "pyomicron, PyCBC, bilby, pygwb, pycWB"
+msgstr "pyomicron, PyCBC, bilby, pygwb, pycWB"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: f75935712f5c46d9980085759383f0c4
+msgid "Data discovery and access"
+msgstr "データ探索とアクセス"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 48ec6055a8304678845fe55a32bc1ba3
+msgid "gwosc, gwdatafind"
+msgstr "gwosc, gwdatafind"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: c6648f97051641bdb6a7502bb7cf3a6f
+msgid "Interferometer simulation and design"
+msgstr "干渉計のシミュレーションと設計"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 3d5043f31a1e4e28bfdca639982bce14
+msgid "Finesse, pygwinc, Differometor"
+msgstr "Finesse, pygwinc, Differometor"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:47
+#: f2bcf75cb8e34371850519dff9c2820c
+msgid ""
+"GWexpy sits one layer above GWpy and one layer below the workflow and "
+"pipeline packages. It supplies containers, I/O, and analysis primitives "
+"that those workflows can consume, rather than orchestrating the workflows"
+" itself."
+msgstr ""
+"GWexpy は GWpy の 1 つ上、ワークフロー・パイプライン系パッケージの 1 "
+"つ下の層に位置します。ワークフロー自体を統括するのではなく、それらが利用できるコンテナ・I/O・解析プリミティブを提供します。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:51
+#: 7756882d9e264f5f90bebcd92e77e96a
+msgid "GWpy, GWexpy, spicypy, and GWDama Compared"
+msgstr "GWpy・GWexpy・spicypy・GWDama の比較"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:53
+#: d648aeb80a0e49d8b6e143223800ce9c
+msgid ""
+"These four packages are compared together because they are the ones most "
+"often mistaken for each other: all four are Python, all four handle "
+"gravitational-wave time-series data, and three of them relate to GWpy."
+msgstr ""
+"この 4 つを並べて比較するのは、最も混同されやすい組み合わせだからです。4 つとも Python であり、4 "
+"つとも重力波の時系列データを扱い、そのうち 3 つが GWpy と関係しています。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: ac9fe79c9ae3482faa9d8864f4699de7
+msgid "GWexpy"
+msgstr "GWexpy"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 8b20575e26d740b486890742d6aeccbe
+msgid "In one line"
+msgstr "一言でいうと"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: ae349b218afc40b8960a8091e70fcf23
+msgid "Base library for GW detector data analysis"
+msgstr "GW 検出器データ解析の基盤ライブラリ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 0fabe1299b6c4bac858bf4d9526e8820
+msgid "GWpy-compatible extension for experimental and multichannel analysis"
+msgstr "実験データ・マルチチャンネル解析向けの GWpy 互換拡張"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: f6c05d7cfac34933a5390f41c8c53db5
+msgid "GWpy plus signal-processing and control-systems methods"
+msgstr "GWpy に信号処理・制御系の手法を加えたもの"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 5e0d5ee9bf36483c92000fede1171dea
+msgid "HDF5-first data manager and data-preparation package"
+msgstr "HDF5 を中心とするデータマネージャ兼データ準備パッケージ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: e18e51cfdae442e092c37a9e8a729df2
+msgid "Primary layer"
+msgstr "主な層"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 6301ec4dcf134b60b67db1bd11153c94
+msgid "Base API and standard containers"
+msgstr "基盤 API と標準コンテナ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 2b26bc7b68ef4c5cb0b38e9ee37e0c18
+msgid "Analysis containers, workflow primitives, interop"
+msgstr "解析コンテナ、ワークフロープリミティブ、interop"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 45b9df10bf804ec4a7ee5d987d88882d
+msgid "Signal, spectral, and control methods"
+msgstr "信号・スペクトル・制御の手法"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 92c9508778ea4429b6ff2adc62977b7d
+msgid "Data acquisition, storage, and preparation"
+msgstr "データ取得・保存・準備"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: c30a6175463d4777900a066500d1c1a4
+msgid "Central data structures"
+msgstr "中心となるデータ構造"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 1240c7009c21418394a2562cffe0a143
+msgid "`TimeSeries`, `FrequencySeries`, `Spectrogram`, segments, `EventTable`"
+msgstr "`TimeSeries`, `FrequencySeries`, `Spectrogram`, segments, `EventTable`"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 5e66b5ba3731476e8cbfb58b0464ed53
+msgid ""
+"`TimeSeriesMatrix`, `FrequencySeriesMatrix`, `SpectrogramMatrix`, "
+"`SegmentTable`, `ScalarField`, typed result objects"
+msgstr ""
+"`TimeSeriesMatrix`, `FrequencySeriesMatrix`, `SpectrogramMatrix`, "
+"`SegmentTable`, `ScalarField`、および型付きの結果オブジェクト"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 36f32a5b9aa04a149a3fc61b23c1fcdf
+msgid "GWpy series objects extended with signal and control methods"
+msgstr "GWpy の series オブジェクトに信号処理・制御の手法を追加したもの"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 7e8ae775fc9c44f397272c90b9893afd
+msgid "`GwDataManager` and an h5py-derived `Dataset`"
+msgstr "`GwDataManager` と h5py 由来の `Dataset`"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 95355a6def7440458cc64bbabdacb65c
+msgid "Design approach"
+msgstr "設計方針"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: bfb12f4d05e94873ac7fd0d9e5ee5cf0
+msgid "A standard Python interface for GW detector data"
+msgstr "GW 検出器データのための標準的な Python インターフェース"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: e218360e98e44e5b8164cf72c8531aa3
+msgid ""
+"Keeps the GWpy object model, adds matrix, batch, I/O, and experiment "
+"workflows"
+msgstr "GWpy のオブジェクトモデルを保ちつつ、行列・バッチ・I/O・実験ワークフローを追加する"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: b6df81f770b140748d770f9a0e75a3d3
+msgid "Bridges GWpy objects and python-control style workflows"
+msgstr "GWpy オブジェクトと python-control 的ワークフローを橋渡しする"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: b8679a70dac64584aa2d853b63d4c88e
+msgid "Organises raw and processed data into HDF5 groups with attributes"
+msgstr "raw データと処理済みデータを属性付きの HDF5 グループへ整理する"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: cead954026fd4fc8a125156a2fd0465f
+msgid "Persistence"
+msgstr "永続化"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: fb622a8c2a284c59ab7ff5c0c5091f67
+msgid "Reads the standard GW data formats"
+msgstr "標準的な GW データ形式を読む"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: a683bbcd3f1d4799b1c2ded77d286d61
+msgid "Broad multi-format I/O and interop; no single canonical backend"
+msgstr "多形式の I/O と interop。単一の正準バックエンドを持たない"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: a08717d49a6e4c3fbd3bfdd93eba85d9
+msgid "I/O is secondary to the signal and control examples"
+msgstr "I/O は副次的で、信号処理・制御の例が中心"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: b7c63a4b229243c9b32c3dc952f73be9
+msgid "HDF5 is the canonical format"
+msgstr "HDF5 が正準形式"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 4d9af55694914010a0f3d1a592eb6824
+msgid "Relationship to GWexpy"
+msgstr "GWexpy から見た関係"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 06e7fc8cfc1b420ba9fa2193455faa05
+msgid "—"
+msgstr "—"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: ee9638cf22c544939447c5bd618de5b9
+msgid "Complementary, and a reference for API design"
+msgstr "補完的であり、API 設計の参考対象"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 1a550b6a1e0b4af49c23a8210e0127f2
+msgid "Partly overlapping; a reference and an interop candidate"
+msgstr "部分的に重複しつつ、参考対象かつ連携候補"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 3b6813a28d744edd85bfc0897172b5b4
+msgid "License"
+msgstr "ライセンス"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 95176df656d749c59e1bd720fa94bf3e
+msgid "GPL-3.0"
+msgstr "GPL-3.0"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 023411788e804387bd48cf67c5bd8601 76990999bfbd49879bbb5c808ae2bb7d
+msgid "MIT"
+msgstr "MIT"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 61838e719e3840db900094c7f4801ec6
+msgid "Apache-2.0"
+msgstr "Apache-2.0"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:67
+#: b7f4d836ce434e99b041e2b626e3f1f8
+msgid "How GWexpy Relates to Each Project"
+msgstr "各プロジェクトとの関係"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 3910d04c51ee4ebc8d05ea0d86401a0f
+msgid "Project"
+msgstr "プロジェクト"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 7539dc200f8c481cbbf69919584af073
+msgid "Why"
+msgstr "理由"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 82cad219e9e14f75a3255c852e2fa327
+msgid "[GWpy](https://gwpy.github.io/)"
+msgstr "[GWpy](https://gwpy.github.io/)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: a4d18362069a4cbbb92e3fec6dbbd19d
+msgid ""
+"GWexpy subclasses and extends its containers, and aims to stay readable "
+"by GWpy itself"
+msgstr "GWexpy はそのコンテナを継承・拡張しており、GWpy 自体からも読める状態を保つことを目指している"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 1dce10d1941c4a3d9b6f5f2763e6583e
+msgid "[spicypy](https://gitlab.com/pyda-group/spicypy)"
+msgstr "[spicypy](https://gitlab.com/pyda-group/spicypy)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: cc9dde70e7f7405ab86e1ad2974c13e1
+msgid "Complementary, Reference"
+msgstr "補完、参考"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: a0c072b7e5c14ac0aeceefdac74c15ef
+msgid ""
+"Also a GWpy extension, but centred on signal processing and control "
+"systems rather than containers and I/O. Its LPSD, Daniell's method, and "
+"huddle-test APIs are useful design references"
+msgstr ""
+"同じく GWpy 拡張だが、コンテナや I/O ではなく信号処理と制御系が中心。LPSD、Daniell's method、huddle test"
+" の API は設計上の参考になる"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: ac92ad4b69b840b686f08ac3f96b6373
+msgid "[GWDama](https://gwnoisehunt.gitlab.io/gwdama/)"
+msgstr "[GWDama](https://gwnoisehunt.gitlab.io/gwdama/)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: f011769b6f0446abbb32a4fcf9b2addb
+msgid "Reference, Interop candidate"
+msgstr "参考、連携候補"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: c6435216d77845d6a9c58bcca3ce5420
+msgid ""
+"Overlaps with GWexpy in multichannel I/O and preprocessing, but its scope"
+" is data preparation and HDF5 archiving. Its hierarchical group and "
+"attribute conventions are a useful reference, and reading its HDF5 "
+"products is a reasonable bridge"
+msgstr ""
+"マルチチャンネル I/O と前処理で GWexpy と重なるが、スコープはデータ準備と HDF5 "
+"アーカイブ。階層グループと属性の規約は参考になり、その HDF5 プロダクトを読むのは妥当な橋渡しである"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 0c864c3a258940928a101d6f409c7210
+#, fuzzy
+msgid ""
+"[gwdetchar](https://gwdetchar.readthedocs.io/en/stable/), "
+"[gwsumm](https://gwsumm.readthedocs.io/en/latest/), gwvet, "
+"[hveto](https://hveto.readthedocs.io/en/stable/)"
+msgstr ""
+"[gwdetchar](https://gwdetchar.readthedocs.io/), "
+"[gwsumm](https://gwsumm.readthedocs.io/), gwvet, "
+"[hveto](https://hveto.readthedocs.io/)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 9e7a0482b6f74250b43f13d6e24ba2a2
+msgid ""
+"Operational detector-characterization and reporting workflows. GWexpy "
+"supplies analysis primitives these tools could use, but does not aim to "
+"reproduce their operator-facing workflows"
+msgstr ""
+"運用寄りの detector characterization とレポート生成のワークフロー。GWexpy "
+"はこれらが利用できる解析プリミティブを提供するが、オペレータ向けワークフローの再現は目指さない"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 8e3ee6c05e214402b854b64ca4bc24cf
+#, fuzzy
+msgid "[pyomicron](https://pyomicron.readthedocs.io/en/latest/)"
+msgstr "[pyomicron](https://pyomicron.readthedocs.io/)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 771cc87d02be4d2ab9b0203a5fb4f736 df704b30639942a5a3f0155af810dadd
+msgid "Out of scope, Interop candidate"
+msgstr "対象外、連携候補"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: de6c206257554172883140ecccf53355
+msgid ""
+"Trigger generation and HTCondor orchestration are out of scope; reading "
+"and writing the resulting trigger tables is not"
+msgstr "トリガー生成と HTCondor による統括は対象外。生成されたトリガーテーブルの読み書きは対象外ではない"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 80b26ca548f4412bbb65a47e1fc8bc73
+msgid ""
+"[PyCBC](https://pycbc.org/), "
+"[bilby](https://lscsoft.docs.ligo.org/bilby/), pygwb, pycWB"
+msgstr ""
+"[PyCBC](https://pycbc.org/), "
+"[bilby](https://lscsoft.docs.ligo.org/bilby/), pygwb, pycWB"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 26ed2ee663f24978b31c161398e1ee23
+msgid ""
+"Search and inference pipelines. GWexpy connects to the data products they"
+" produce and consume, and already provides PyCBC and LAL series "
+"conversion"
+msgstr ""
+"探索・推定のパイプライン。GWexpy はこれらが生成・消費するデータプロダクトと接続し、PyCBC および LAL の series "
+"変換は既に提供している"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 1cd1d275ea8a48b6a7ba222d028593ef
+#, fuzzy
+msgid ""
+"[gwosc](https://gwosc.org/), "
+"[gwdatafind](https://gwdatafind.readthedocs.io/en/stable/)"
+msgstr ""
+"[gwosc](https://gwosc.org/), "
+"[gwdatafind](https://gwdatafind.readthedocs.io/)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 94567888a1f747c080d301618eaf29f0
+msgid ""
+"Data discovery and access. Used through GWpy and in examples rather than "
+"wrapped by GWexpy"
+msgstr "データ探索とアクセス。GWexpy が包むのではなく、GWpy 経由およびサンプルの中で使う"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: b25747ed6b8a418dbb284a7da343b24a
+msgid "[pemcoupling](https://git.ligo.org/pem/pemcoupling)"
+msgstr "[pemcoupling](https://git.ligo.org/pem/pemcoupling)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: bfa33179caea476e824c3d1192aa072f
+msgid ""
+"A command-line PEM coupling-function generator. Its coupling product "
+"schema and measurement status flags are useful domain references, but no "
+"code is reused; see the licensing note below"
+msgstr ""
+"コマンドライン型の PEM "
+"カップリング関数生成ツール。カップリングプロダクトのスキーマと測定ステータスフラグはドメイン上の参考になるが、コードは一切流用しない。下記のライセンス注記を参照"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 2e5e690c932f45d89dd96d724ce8a202
+msgid ""
+"Finesse, pygwinc, [Differometor](https://github.com/artificial-scientist-"
+"lab/Differometor)"
+msgstr ""
+"Finesse, pygwinc, [Differometor](https://github.com/artificial-scientist-"
+"lab/Differometor)"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: a370c2d5bd2348c3ba349b04738a075a
+msgid "Complementary, Interop candidate"
+msgstr "補完、連携候補"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: cd8b53a4f3f741a6a7eeba04d5be3b56
+msgid ""
+"Interferometer simulation and design tools. GWexpy converts their "
+"frequency-domain outputs into its own containers rather than "
+"reimplementing the simulators"
+msgstr "干渉計のシミュレーション・設計ツール。GWexpy はシミュレータを再実装するのではなく、その周波数領域の出力を自身のコンテナへ変換する"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:81
+#: a3d04424702f4f86b9e36653b65299f7
+msgid "What Makes GWexpy Different"
+msgstr "GWexpy の特徴"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:83
+#: 6c08a1510b844bbeb5bf4685b5af9bd2
+msgid ""
+"**GWpy-compatible by construction.** New containers stay readable as GWpy"
+" objects wherever possible, so code can move between the two without a "
+"rewrite."
+msgstr ""
+"**設計上 GWpy 互換**。新しいコンテナは可能な限り GWpy "
+"オブジェクトとして読める状態を保つため、書き換えなしに両者の間でコードを移動できます。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:85
+#: 9ab0f4a9fd4a4bb8b994b0ad7b356ec7
+msgid ""
+"**Matrix-native analysis.** `TimeSeriesMatrix`, `FrequencySeriesMatrix`, "
+"and `SpectrogramMatrix` treat multichannel data as a first-class shape "
+"rather than as a loop over a dictionary."
+msgstr ""
+"**行列ネイティブな解析**。`TimeSeriesMatrix`・`FrequencySeriesMatrix`・`SpectrogramMatrix`"
+" は、マルチチャンネルデータを辞書に対するループではなく第一級の形状として扱います。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:88
+#: a88461f770db469d955c52089f0fde94
+msgid ""
+"**Typed analysis results.** Coupling, response, and fitting workflows "
+"return dedicated result objects instead of bare arrays or ad-hoc "
+"dictionaries."
+msgstr "**型付きの解析結果**。カップリング・応答・フィッティングのワークフローは、素の配列やその場しのぎの辞書ではなく専用の結果オブジェクトを返します。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:90
+#: 921f2ca5f3374e919381c054df57c02b
+msgid ""
+"**Broad I/O without a single canonical backend.** HDF5, NetCDF4, Zarr, "
+"GWF, DTT XML, ndscope HDF5, and instrument-specific logger formats are "
+"all supported paths; none of them is privileged as *the* storage format."
+msgstr ""
+"**単一の正準バックエンドを持たない広い I/O**。HDF5・NetCDF4・Zarr・GWF・DTT XML・ndscope "
+"HDF5、および計測器固有のロガー形式はいずれも対応経路であり、どれか一つを*正準の*保存形式として特別扱いしません。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:93
+#: 801f517704ae4b5a8ddcec388618fde7
+msgid ""
+"**Generic source-to-target coupling.** Coupling and projection are "
+"expressed in terms of a source and a target, not in terms of a specific "
+"detector's naming conventions."
+msgstr ""
+"**汎用の source→target カップリング**。カップリングと射影は特定の検出器の命名規約ではなく、source と target "
+"という言葉で表現されます。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:95
+#: 36b526ef74844e118fb7e0f6d32f85aa
+msgid ""
+"**Library-first and notebook-friendly.** The public surface is Python "
+"objects and functions; the command-line interface is a thin convenience "
+"layer, not the primary product."
+msgstr ""
+"**ライブラリ優先かつ Notebook 向き**。公開されるのは Python "
+"のオブジェクトと関数であり、コマンドラインインターフェースは主たる成果物ではなく薄い補助層です。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:98
+#: d7da1aa80c2d414e9e4010e3085bc384
+msgid "What GWexpy Deliberately Does Not Do"
+msgstr "GWexpy が意図的に行わないこと"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:100
+#: ebc8d738d6f94ea8a81de9c8ebb0f316
+msgid ""
+"Keeping these outside the core is what allows the container, I/O, and "
+"interop layers to stay general. GWexpy does not aim to provide:"
+msgstr ""
+"これらを core の外に置くことで、コンテナ・I/O・interop の各層を汎用に保てます。GWexpy "
+"は次のものを提供することを目指しません。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:103
+#: 30033fe32a094e3fb5fbab445078591d
+msgid "detector- or site-specific operational pipelines"
+msgstr "検出器やサイトに固有の運用パイプライン"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:104
+#: cd55962c280c47ef94ef08d4af2d5c26
+msgid "operator-facing HTML reports and summary pages"
+msgstr "オペレータ向けの HTML レポートやサマリーページ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:105
+#: 9cb1387a25c9436a89648edfd2530b99
+msgid "HTCondor or site-wide job orchestration"
+msgstr "HTCondor やサイト全体のジョブ統括"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:106
+#: cfc98fd3830d40378cb3c11820ff187f
+msgid "veto production or search pipelines"
+msgstr "veto の生成や探索パイプライン"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:107
+#: b23efe7d26714cb88a6b3e9192193fe8
+msgid "trigger generators"
+msgstr "トリガージェネレータ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:108
+#: a60f216aca734f83aa803bb4b163d616
+msgid "APIs whose names hard-code one detector's channel conventions"
+msgstr "特定の検出器のチャンネル規約を名前に固定した API"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:110
+#: 672e3e17f3e84106a11c53d878033be3
+msgid ""
+"Where a workflow needs these, the intended pattern is to use GWexpy for "
+"the analysis primitives and a dedicated tool for the workflow around "
+"them."
+msgstr "これらが必要なワークフローでは、解析プリミティブに GWexpy を使い、その周囲のワークフローには専用ツールを使うのが想定される形です。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:113
+#: 410c3e2eb11f44d6aa86334f5fe8ab22
+msgid "Interoperability Status"
+msgstr "相互運用の状況"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:115
+#: d344ba609a38495a96d0a588e190fb37
+msgid ""
+"The [Interop / Conversion Guide](../how-to/interop) is the authoritative "
+"catalogue of conversion APIs, and the [File I/O Supported Formats Guide"
+"](../how-to/io_formats) is the authoritative list of read and write "
+"formats. The summary below only records which ecosystem-level bridges "
+"exist today."
+msgstr ""
+"変換 API の正となるカタログは [Interop / 変換ガイド](../how-to/interop)、読み書き形式の正となる一覧は "
+"[ファイル I/O 対応形式ガイド](../how-to/io_formats) "
+"です。以下の表は、エコシステム単位での橋渡しが現時点でどこまで存在するかだけを記録しています。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 6508c0f017cb4aa6b1ba5f617e8c5dc5
+msgid "Status"
+msgstr "状況"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: f983af71f3cf471bba5ca903555119aa
+msgid "Projects"
+msgstr "プロジェクト"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 2891d781de2141c49df6c1273eaa2ac5
+msgid "Implemented"
+msgstr "実装済み"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: b2c7cfe7c9874c48a25a648ec52df3e8
+msgid ""
+"GWpy, LALSuite, PyCBC, Finesse, pygwinc, PySpice, ObsPy, python-control, "
+"SimPEG, MTH5, scikit-rf, ROOT, ndscope HDF5, DTT / DiagGUI XML, and the "
+"other targets listed in the interop guide"
+msgstr ""
+"GWpy, LALSuite, PyCBC, Finesse, pygwinc, PySpice, ObsPy, python-control, "
+"SimPEG, MTH5, scikit-rf, ROOT, ndscope HDF5, DTT / DiagGUI XML、および "
+"interop ガイドに掲載されたその他の対象"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 762edea9c63e4f8592cd4f974335233c
+msgid "Planned"
+msgstr "計画中"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: ed4b0f59466f4c378d237832f84e6812
+msgid "GWDama HDF5 products, Differometor design and sensitivity outputs"
+msgstr "GWDama の HDF5 プロダクト、Differometor の設計・感度出力"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 79cb9eff7a8e4c2785b7a969d7441062
+msgid "Documentation only"
+msgstr "ドキュメントのみ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md
+#: 2c5c51e9845f43acae429724eb23634b
+msgid "spicypy, gwdetchar, gwsumm, gwvet, hveto, pyomicron, pemcoupling"
+msgstr "spicypy, gwdetchar, gwsumm, gwvet, hveto, pyomicron, pemcoupling"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:126
+#: f87b353d650d49f5b6c9085320bbccf0
+msgid ""
+"\"Documentation only\" means the relationship is described here and no "
+"conversion API is planned; where those tools speak GWpy objects, GWpy is "
+"already the shared language and no adapter is needed."
+msgstr ""
+"「ドキュメントのみ」とは、関係をここで説明するだけで変換 API を計画していないという意味です。これらのツールが GWpy "
+"オブジェクトを扱う場面では、GWpy が既に共通語であり、アダプタは不要です。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:130
+#: 5b04be383de3459cadc6f358b4e7bc4f
+msgid "Third-Party Code and Licensing"
+msgstr "第三者コードとライセンス"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:132
+#: c3a844e59bf24e549584be94ae6822a8
+msgid ""
+"GWexpy takes design ideas, product semantics, and API conventions from "
+"several of the projects above, but does not copy their code. Licences are"
+" verified by reading the LICENSE file in the project's own repository, "
+"not by trusting package classifiers or README badges. Where a project "
+"ships no LICENSE file, GWexpy treats it as all rights reserved and reuses"
+" nothing from it."
+msgstr ""
+"GWexpy は上記のいくつかのプロジェクトから設計上のアイデア、プロダクトの意味論、API "
+"の規約を取り入れていますが、コードは複製しません。ライセンスはパッケージの classifier や README "
+"のバッジではなく、そのプロジェクト自身のリポジトリにある LICENSE ファイルを読んで確認します。LICENSE "
+"ファイルを同梱していないプロジェクトは all rights reserved とみなし、一切流用しません。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:137
+#: a0ed43c1fbd045e587f810df7c1a3374
+msgid ""
+"The per-project policy is recorded for contributors in "
+"`docs/developers/LICENSES_THIRD_PARTY.md` in the repository."
+msgstr ""
+"プロジェクトごとの方針は、リポジトリ内の `docs/developers/LICENSES_THIRD_PARTY.md` "
+"にコントリビュータ向けとして記録されています。"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:140
+#: 462d14cf23a24e3e88ed2e3a94832069
+msgid "Related Pages"
+msgstr "関連ページ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:142
+#: 0f652bf272ef44b2965d15f4bdbb2425
+msgid ""
+"[GWexpy for GWpy Users](gwexpy_for_gwpy_users) for the practical "
+"migration differences"
+msgstr "[GWpy ユーザーのための GWexpy](gwexpy_for_gwpy_users) — 実務上の移行差分"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:143
+#: 198d56035c8b4f4d99cb2335a8168a39
+msgid ""
+"[Architecture & data flow](architecture) for how the internal layers fit "
+"together"
+msgstr "[アーキテクチャとデータフロー](architecture) — 内部の各層の組み合わさり方"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:144
+#: f54b74fe1f634d4ba6b106627363557c
+msgid ""
+"[Interop / Conversion Guide](../how-to/interop) for the conversion API "
+"catalogue"
+msgstr "[Interop / 変換ガイド](../how-to/interop) — 変換 API のカタログ"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:145
+#: 5b113702080348e8882ad4087cd07b42
+msgid ""
+"[File I/O Supported Formats Guide](../how-to/io_formats) for read and "
+"write formats"
+msgstr "[ファイル I/O 対応形式ガイド](../how-to/io_formats) — 読み書き対応形式"
+
+#: ../../home/washimi/work/gwexpy/docs_redesign/explanation/ecosystem.md:146
+#: a8363ddbf0e64ce7a341d5dd4f917dfd
+msgid "[Roadmap](roadmap) for where the project is heading"
+msgstr "[ロードマップ](roadmap) — プロジェクトの方向性"
+

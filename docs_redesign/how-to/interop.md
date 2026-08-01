@@ -221,6 +221,8 @@ Read the status carefully: some targets are full round-trips, some are mainly im
 - [Interop tutorial](interop/intro_interop)
 - [Interop API reference](../reference/api/interop)
 - [File I/O Supported Formats Guide](io_formats)
+- [Where GWexpy Sits in the GW Python Ecosystem](../explanation/ecosystem) for why a given
+  library is bridged, referenced only, or left out of scope
 
 ## Next to Read
 
