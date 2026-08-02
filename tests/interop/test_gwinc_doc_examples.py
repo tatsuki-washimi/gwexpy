@@ -9,21 +9,31 @@ from types import ModuleType
 from unittest.mock import MagicMock
 
 import numpy as np
+import pytest
 
 from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
 from gwexpy.interop.gwinc_ import from_gwinc_budget
 
 
-class _FakeTrace(dict):
-    """Minimal stand-in for ``gwinc.BudgetTrace``.
+class _FakeTrace:
+    """Minimal stand-in for ``gwinc.trace.BudgetTrace``.
 
-    Real traces expose their PSD as ``.psd`` and their sub-traces through
-    dict-like access, which is all :func:`from_gwinc_budget` relies on.
+    Deliberately *not* a ``dict`` subclass. The real class is a plain object
+    that implements ``keys()`` and ``__getitem__`` itself, so modelling the
+    fake as a dict would let it accept usage the real type rejects and hide a
+    regression behind a green test. ``keys()``, ``__getitem__`` and ``.psd``
+    are the entire surface :func:`from_gwinc_budget` touches.
     """
 
     def __init__(self, psd: np.ndarray, subtraces: dict | None = None) -> None:
-        super().__init__(subtraces or {})
         self.psd = psd
+        self._subtraces = dict(subtraces or {})
+
+    def keys(self):
+        return self._subtraces.keys()
+
+    def __getitem__(self, key):
+        return self._subtraces[key]
 
 
 def test_gwinc_docstring_example_executes_against_mocked_gwinc(monkeypatch) -> None:
@@ -67,11 +77,58 @@ def test_gwinc_docstring_does_not_claim_classmethod_bindings() -> None:
     assert "FrequencySeriesDict.from_gwinc_budget" not in docstring
 
 
-def test_gwinc_docstring_covers_every_documented_return_shape() -> None:
-    """#608 removed three broken examples; keep all three paths demonstrated."""
+def test_fake_trace_matches_the_real_gwinc_trace_surface() -> None:
+    """Keep the mock honest about what a real ``BudgetTrace`` is.
+
+    The mocked doctest above is only meaningful if the fake behaves like the
+    real object. Pin the two properties that matter: the real trace is not a
+    ``dict`` subclass, and the attributes :func:`from_gwinc_budget` uses
+    (``keys``, ``__getitem__``, ``psd``) exist on both.
+    """
+    # gwinc.trace is not re-exported on the package, so import the submodule.
+    trace_module = pytest.importorskip(
+        "gwinc.trace", reason="real GWinc needed to check the mock"
+    )
+
+    real = trace_module.BudgetTrace
+    assert not issubclass(real, dict), (
+        "BudgetTrace became a dict subclass; _FakeTrace can now model it as one"
+    )
+
+    # ``psd`` is a property on the real class but a plain instance attribute on
+    # the fake, so compare against an instance rather than the class.
+    fake = _FakeTrace(np.zeros(3))
+    for attribute in ("keys", "__getitem__", "psd"):
+        assert hasattr(real, attribute), f"BudgetTrace no longer exposes {attribute}"
+        assert hasattr(fake, attribute), f"_FakeTrace no longer exposes {attribute}"
+
+
+def test_gwinc_docstring_documents_every_public_parameter() -> None:
+    """Fail when a new parameter is added without documenting it.
+
+    Each parameter is a lever on what the function returns, so an undocumented
+    one is an undocumented return shape. Deriving the list from
+    :func:`inspect.signature` ties this to the implementation instead of to a
+    hand-maintained list that silently goes stale.
+    """
     docstring = inspect.getdoc(from_gwinc_budget)
     assert docstring is not None
 
+    undocumented = [
+        name
+        for name in inspect.signature(from_gwinc_budget).parameters
+        if f"{name} :" not in docstring
+    ]
+    assert not undocumented, f"undocumented parameters: {undocumented}"
+
+
+def test_gwinc_docstring_keeps_the_three_documented_return_shapes() -> None:
+    """Regression guard for the three examples #608 restored.
+
+    This checks that the specific examples removed by the #608 defect are
+    still present; it does not enumerate the return shapes from the
+    implementation. Parameter-level coverage is asserted by the test above.
+    """
     examples = [
         example.source
         for test in doctest.DocTestFinder().find(from_gwinc_budget)
