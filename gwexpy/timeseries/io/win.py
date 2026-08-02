@@ -18,6 +18,7 @@ edge-cases described in the paper above:
 We also provide regression tests using a sample WIN file under ``tests/sample-data/gui/``.
 
 """
+
 from __future__ import annotations
 
 import struct
@@ -129,7 +130,9 @@ def _read_win_fixed(filename: str | Path, century="20"):
                 chanum = f"{buff[1]:02x}"
                 chanum = f"{flag}{chanum}"
                 datawide = float(buff[2] >> 4)
-                srate = int(buff[3])
+                srate = ((buff[2] & 0x0F) << 8) | buff[3]
+                if srate == 0:
+                    raise ValueError("WIN sample rate must be positive")
                 xlen = (srate - 1) * datawide
                 if datawide == 0:
                     xlen = srate // 2
