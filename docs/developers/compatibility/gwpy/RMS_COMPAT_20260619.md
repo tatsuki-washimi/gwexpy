@@ -28,13 +28,16 @@ GitHub issue [#451] を起点に、`TimeSeries.rms` の `gwpy` 後方互換性�
   - 数値的に `gwpy` と一致（同じ `int()` 切り捨ての `stridesamp`、末尾の不完全窓を破棄、
     窓ごとに `sqrt(mean(|x|**2))`）。ベクトル化 reshape は `gwpy` の Python ループと等価。
     実 `gwpy`（`/tmp/venv`）に対し `np.allclose` で一致確認済み。
-  - 複素データは `np.abs(trimmed)**2`（= `gwpy` の `np.abs(...)**2`）で実数値を返す。
+  - 複素データは `np.abs(trimmed)**2`（= `gwpy` の `np.abs(...)**2`）で実数値を返し、
+    入力が `float32` または `complex64` でも結果 dtype は `float64` とする。これは
+    `gwpy` 4.0.1 が `np.zeros(nsteps)` へ各窓の値を書き込む dtype 契約に合わせたもの。
 - **`gwpy` に対する意図的・文書化済みの改善**（非破壊）:
   1. 入力の物理単位を結果に **保持**（`gwpy` は無次元化する）。
   2. 時間 `Quantity` stride（例 `10*u.s`）を受理（`gwpy` は `TypeError`）。
   3. サブサンプル/ゼロ/負の stride は明示的な `ValueError`（`gwpy` は不透明な
      `ZeroDivisionError`）。不規則サンプリング系列も `ValueError`。
-  4. 無名系列の結果名は `None`（`gwpy` は文字列 `"None 1-second RMS"`）。
+  4. 数値 stride の結果名は `gwpy` と同じ書式（例: `"None 1-second RMS"`）を使う。
+     Quantity stride は gwexpy 拡張のため、秒へ正規化した値を書式化する。
 - **テスト**: `tests/timeseries/test_rms_compat.py`（`gwpy` 参照一致・位置 int 回帰・
   単位保持・Quantity stride・各エッジケース）。`tests/types/test_stats_mixin.py::
   test_rms_with_unit` は実 `TimeSeries` を使う唯一のケースだったため、汎用 mixin を保持する
@@ -50,9 +53,9 @@ GitHub issue [#451] を起点に、`TimeSeries.rms` の `gwpy` 後方互換性�
 - `scripts/dev_tools/make_calibration_tutorial.py`（`ts_raw.rms().value:.2f` ×2）
 - `docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb`（同上）
 - `docs/web/en/user_guide/tutorials/intro_table.ipynb`（行ごとの `row["noise"].rms().value`）
-- `.harness/skills/phase1_scale_invariance/SKILL.md`（`1e-9 * data.rms()` のスカラー ε）
-- `docs_internal/archive/plans/PEMinjection-with-SegmentTable.md`（「rms() はスカラー」と
-  する旧記述を、トレンド API 復活に合わせ更新）
+- `.harness/skills/phase1_scale_invariance/SKILL.md` は scope scrub により差分へ戻していない。
+- `docs_internal/archive/plans/PEMinjection-with-SegmentTable.md` も historical archive の
+  exact restore 対象のため変更していない。
 
 ---
 
@@ -98,5 +101,19 @@ GitHub issue [#451] を起点に、`TimeSeries.rms` の `gwpy` 後方互換性�
 ```
 
 `gwpy` 参照一致は `test_rms_matches_gwpy_reference`（`pytest.importorskip`）で固定。
+
+## 2026-08-02 再監査 (GWpy 4.0.1)
+
+現行の `conda` 環境で `inspect.getsource(gwpy.timeseries.TimeSeries.rms)` を再確認した。
+実装は `int(stride * self.sample_rate.value)` で窓長を切り捨て、完全な窓だけを
+`sqrt(mean(abs(window)**2))` で集約し、`self.__class__`、`t0`、`channel`、生成名、
+`sample_rate=1 / stride` を使って結果を構築する。`np.zeros(nsteps)` により GWpy の
+結果 dtype は常に `float64` であり、gwexpy も入力が `float32`/`complex64` の場合を
+含めて明示的に `float64` を返す。gwexpy の実装はこの変換・窓・型・サンプリング・
+既知メタデータの挙動を維持し、数値 stride の生成名も現行 GWpy に一致させている。
+
+GWpy は結果構築時に `unit` を渡さず無次元単位にするが、gwexpy では物理量の RMS として
+入力単位を保持することを既存の公開契約とする。時間 Quantity stride と不正 stride の
+明示的な `ValueError` も同じく gwexpy の意図的な拡張である。
 
 [#451]: https://github.com/tatsuki-washimi/gwexpy/issues/451

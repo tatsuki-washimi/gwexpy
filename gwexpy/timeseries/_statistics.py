@@ -130,6 +130,8 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
           gwpy raises ``TypeError``.
 
         For complex data the gwpy convention ``sqrt(mean(|x|**2))`` is used.
+        The result dtype is always ``float64``, matching gwpy's ``np.zeros``
+        output allocation for ``float32`` and ``complex64`` inputs.
 
         """
         if getattr(self, "sample_rate", None) is None:
@@ -142,8 +144,15 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         trimmed = np.asarray(self.value)[: nsteps * stridesamp].reshape(
             nsteps, stridesamp
         )
-        data = np.sqrt(np.mean(np.abs(trimmed) ** 2, axis=1))
-        name = f"{self.name} {stride_s}-second RMS" if self.name is not None else None
+        data = np.asarray(
+            np.sqrt(np.mean(np.abs(trimmed) ** 2, axis=1)), dtype=np.float64
+        )
+        # Match GWpy's metadata formatting for numeric strides.  Quantity
+        # strides are a gwexpy extension, so use their normalized seconds.
+        name_stride = (
+            stride if isinstance(stride, (int, float, np.number)) else stride_s
+        )
+        name = f"{self.name} {name_stride}-second RMS"
         return self.__class__(
             data,
             channel=self.channel,

@@ -1,0 +1,300 @@
+manifest_version: 2
+
+audit:
+  issue: 451
+  pull_request: 453
+  lane: A
+  objective: >-
+    Apply the independent Sol specification-review corrections for the
+    GWpy-compatible TimeSeries.rms(stride) contract: preserve input dtypes in
+    fixtures, cover complex values, float64 output dtype, non-default t0, and
+    complete public metadata parity, move the two #451 changelog entries to
+    Unreleased, and keep the uncommitted worktree within the canonical Lane A
+    scope.
+  result: DONE_WITH_CONCERNS
+
+builder:
+  model: GPT-5.6 Luna
+  effort: max
+  thread: 019fc08d-440c-7cd1-975e-e22fd9f94acd
+  role: original Lane A builder
+
+specification_reviewer:
+  model: GPT-5.6 Sol
+  effort: max
+  thread: 019fc09b-ad42-7463-9f07-e33895be80db
+  verdict: changes-required
+
+fix_worker:
+  model: GPT-5.6 Luna
+  effort: max
+  thread: 019fc0ad-3113-7513-b76f-ef7be49f5296
+  note: >-
+    Prior fix worker thread recorded from the supplied fix-thread context.
+
+cleanup_worker:
+  model: GPT-5.6 Luna
+  effort: max
+  thread: 019fc0c0-c243-7ee1-9f79-a5b3002b0a35
+  purpose: >-
+    Remove only unintended whole-file Ruff-format and blank-line churn from
+    scripts/dev_tools/make_calibration_tutorial.py and
+    tests/types/test_stats_mixin.py, preserving the intended RMS example and
+    Series/generic RMS semantics already present in HEAD.
+  result: >-
+    Restored both cleanup targets byte-for-byte to HEAD. Retained the intended
+    origin/main RMS semantics; observed 55 focused passes, an empty two-file
+    HEAD diff, exact 10 tracked plus 1 manifest scope, archive excluded, and
+    harness absent.
+
+coordinator:
+  model: not exposed
+  effort: not exposed
+
+review:
+  initial_specification_status: changes-required
+  post_fix_status: pending
+  post_fix_note: >-
+    Independent Sol re-review remains pending after the float64 dtype decision
+    and the complex, t0, metadata, changelog, and manifest corrections. This
+    worker did not contact GitHub; the initial reviewer session is recorded
+    above and a post-fix reviewer session is pending.
+
+rebase:
+  coordinator_rebase_completed: true
+  worker_rebase_performed: false
+  base_ref: origin/main
+  base_sha: eb62c6a056a7a8992fe1f00e115d6173050c64fc
+  starting_head_sha: bc24c12a76e0bdf014d36b81424e0d386705f038
+  rebased_commit_shas:
+    - 1ac694c3974a87d198969fba73ba05f810cbf00a
+    - bc24c12a76e0bdf014d36b81424e0d386705f038
+  parent_chain:
+    - eb62c6a056a7a8992fe1f00e115d6173050c64fc
+    - 1ac694c3974a87d198969fba73ba05f810cbf00a
+    - bc24c12a76e0bdf014d36b81424e0d386705f038
+
+touched_files:
+  - CHANGELOG.md
+  - docs/developers/compatibility/gwpy/RMS_COMPAT_20260619.md
+  - docs/developers/plans/manifests/audit-manifest-451-rms-gwpy-compat.yaml
+  - docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb
+  - docs/web/en/user_guide/tutorials/intro_table.ipynb
+  - docs_redesign/how-to/case-studies/case_calibration_pipeline.ipynb
+  - docs_redesign/how-to/segments/intro_table.ipynb
+  - gwexpy/timeseries/_statistics.py
+  - scripts/dev_tools/make_calibration_tutorial.py
+  - tests/timeseries/test_rms_compat.py
+  - tests/types/test_stats_mixin.py
+
+scope:
+  allowed_write_scope:
+    - gwexpy/timeseries/_statistics.py
+    - tests/types/test_stats_mixin.py
+    - scripts/dev_tools/make_calibration_tutorial.py
+    - docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb
+    - docs/web/en/user_guide/tutorials/intro_table.ipynb
+    - docs_redesign/how-to/case-studies/case_calibration_pipeline.ipynb
+    - docs_redesign/how-to/segments/intro_table.ipynb
+    - CHANGELOG.md
+    - tests/timeseries/test_rms_compat.py
+    - docs/developers/compatibility/gwpy/RMS_COMPAT_20260619.md
+    - docs/developers/plans/manifests/audit-manifest-451-rms-gwpy-compat.yaml
+  combined_audit:
+    tracked_command: git diff --name-only origin/main --
+    untracked_command: git ls-files --others --exclude-standard
+    assertion_command: >-
+      python -c 'import subprocess; from pathlib import Path; allowed={"CHANGELOG.md","docs/developers/compatibility/gwpy/RMS_COMPAT_20260619.md","docs/developers/plans/manifests/audit-manifest-451-rms-gwpy-compat.yaml","docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb","docs/web/en/user_guide/tutorials/intro_table.ipynb","docs_redesign/how-to/case-studies/case_calibration_pipeline.ipynb","docs_redesign/how-to/segments/intro_table.ipynb","gwexpy/timeseries/_statistics.py","scripts/dev_tools/make_calibration_tutorial.py","tests/timeseries/test_rms_compat.py","tests/types/test_stats_mixin.py"}; tracked=set(subprocess.check_output(["git","diff","--name-only","origin/main","--"], text=True).splitlines()); untracked=set(subprocess.check_output(["git","ls-files","--others","--exclude-standard"], text=True).splitlines()); actual=tracked|untracked; assert actual == allowed, sorted(actual ^ allowed); assert subprocess.run(["git","diff","--quiet","origin/main","--","docs_internal/archive/plans/PEMinjection-with-SegmentTable.md"]).returncode == 0; assert not Path(".harness/skills/phase1_scale_invariance/SKILL.md").exists(); print(f"{len(tracked)} tracked + {len(untracked)} untracked = {len(actual)} allowed paths; archive excluded; harness absent")'
+    exit_code: 0
+    observed: 10 tracked + 1 manifest = exact 11 allowed paths; archive excluded; harness absent
+    outside_scope: []
+  archive_restore:
+    path: docs_internal/archive/plans/PEMinjection-with-SegmentTable.md
+    target: origin/main
+    target_git_blob_sha: fcc68e454c5a686a4b767b49e336099a19fe0d63
+    worktree_git_blob_sha: fcc68e454c5a686a4b767b49e336099a19fe0d63
+    combined_diff_present: false
+    note: >-
+      This archive path is outside Lane A and is intentionally restored byte
+      for byte to origin/main; its worktree status relative to the rebased
+      candidate is not part of the origin/main-to-worktree scope union.
+  harness_skill:
+    path: .harness/skills/phase1_scale_invariance/SKILL.md
+    present_in_head_or_worktree: false
+    recreated: false
+
+deferred_out_of_scope:
+  - path: docs/web/en/reference
+    status: deferred
+    reason: >-
+      Generic collection and SeriesMatrix reference entries, including RMS
+      material, were observed but are outside the Lane A TimeSeries.rms scope;
+      no collection-reference documentation was edited.
+  - path: docs/developers/design/design_data/timeseries_all_defs_classified.updated.csv
+    status: deferred
+    reason: >-
+      The design inventory contains generic statistics and collection rows but
+      is outside the approved RMS compatibility allowlist; no design CSV was
+      edited.
+
+commands:
+  - id: tdd_red_dtype_complex_metadata
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy python -m pytest
+      tests/timeseries/test_rms_compat.py::test_rms_metadata_matches_gwpy_for_numeric_strides
+      tests/timeseries/test_rms_compat.py::test_rms_values_and_dtype_match_gwpy_for_float32_and_complex64
+      -q
+    exit_code: 1
+    observed: 4 cases run; 2 dtype cases failed and 2 metadata cases passed. The failure was float32 output versus expected float64.
+  - id: tdd_green_dtype_complex_metadata
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy python -m pytest
+      tests/timeseries/test_rms_compat.py::test_rms_metadata_matches_gwpy_for_numeric_strides
+      tests/timeseries/test_rms_compat.py::test_rms_values_and_dtype_match_gwpy_for_float32_and_complex64
+      -q
+    exit_code: 0
+    observed: 4 passed
+  - id: focused_final_pytest
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy python -m pytest
+      tests/timeseries/test_rms_compat.py tests/types/test_stats_mixin.py -q
+    exit_code: 0
+    observed: 55 passed
+  - id: docs_notebook_contract_subset
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy python -m pytest
+      tests/docs/test_docs_notebooks.py tests/docs/test_tutorial_notebook_quality.py
+      tests/docs/test_tutorial_case_study_taxonomy.py -q -rs
+    exit_code: 0
+    observed: 51 passed, 4 skipped. The four skips are CI-only notebook execution tests; local execution was not enabled.
+  - id: ruff_check_changed_python
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy ruff check
+      gwexpy/timeseries/_statistics.py scripts/dev_tools/make_calibration_tutorial.py
+      tests/timeseries/test_rms_compat.py tests/types/test_stats_mixin.py
+    exit_code: 0
+    observed: All checks passed
+  - id: cleanup_two_file_head_diff
+    command: >-
+      git diff --exit-code HEAD -- scripts/dev_tools/make_calibration_tutorial.py
+      tests/types/test_stats_mixin.py
+    exit_code: 0
+    observed: >-
+      Both cleanup targets are byte-identical to HEAD after removal of
+      formatting-only churn; no whole-file Ruff-format gate is claimed for
+      this cleanup.
+  - id: mypy_production_file
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy mypy
+      gwexpy/timeseries/_statistics.py
+    exit_code: 0
+    observed: Success; no issues found in 1 source file
+  - id: gwpy_version_probe
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy python -c
+      'import gwpy; print(gwpy.__version__)'
+    exit_code: 0
+    observed: 4.0.1
+  - id: notebook_json_validation
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy python -c
+      'import json; from pathlib import Path; paths=[Path("docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb"), Path("docs/web/en/user_guide/tutorials/intro_table.ipynb"), Path("docs_redesign/how-to/case-studies/case_calibration_pipeline.ipynb"), Path("docs_redesign/how-to/segments/intro_table.ipynb")]; [json.loads(path.read_text()) for path in paths]; print(f"{len(paths)} notebooks parsed")'
+    exit_code: 0
+    observed: 4 notebooks parsed
+  - id: manifest_yaml_validation
+    command: >-
+      MPLCONFIGDIR=/tmp/gwexpy-mplconfig conda run -n gwexpy python -c
+      'import yaml; from pathlib import Path; yaml.safe_load(Path("docs/developers/plans/manifests/audit-manifest-451-rms-gwpy-compat.yaml").read_text()); print("audit manifest parsed")'
+    exit_code: 0
+    observed: audit manifest parsed
+  - id: diff_check
+    command: git diff --check origin/main --
+    exit_code: 0
+    observed: No whitespace errors
+  - id: combined_scope_audit
+    command: >-
+      python -c 'import subprocess; from pathlib import Path; allowed={"CHANGELOG.md","docs/developers/compatibility/gwpy/RMS_COMPAT_20260619.md","docs/developers/plans/manifests/audit-manifest-451-rms-gwpy-compat.yaml","docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb","docs/web/en/user_guide/tutorials/intro_table.ipynb","docs_redesign/how-to/case-studies/case_calibration_pipeline.ipynb","docs_redesign/how-to/segments/intro_table.ipynb","gwexpy/timeseries/_statistics.py","scripts/dev_tools/make_calibration_tutorial.py","tests/timeseries/test_rms_compat.py","tests/types/test_stats_mixin.py"}; tracked=set(subprocess.check_output(["git","diff","--name-only","origin/main","--"], text=True).splitlines()); untracked=set(subprocess.check_output(["git","ls-files","--others","--exclude-standard"], text=True).splitlines()); actual=tracked|untracked; assert actual == allowed, sorted(actual ^ allowed); assert subprocess.run(["git","diff","--quiet","origin/main","--","docs_internal/archive/plans/PEMinjection-with-SegmentTable.md"]).returncode == 0; assert not Path(".harness/skills/phase1_scale_invariance/SKILL.md").exists(); print(f"{len(tracked)} tracked + {len(untracked)} untracked = {len(actual)} allowed paths; archive excluded; harness absent")'
+    exit_code: 0
+    observed: 10 tracked + 1 manifest = exact 11 allowed paths; archive excluded; harness absent
+  - id: origin_main_semantics_retained
+    command: >-
+      git diff origin/main -- scripts/dev_tools/make_calibration_tutorial.py
+      tests/types/test_stats_mixin.py
+    exit_code: 0
+    observed: >-
+      The origin/main diff retains only the intended RMS NumPy reductions in
+      the tutorial script and the Series import/generic RMS test; formatting-
+      only cleanup churn is absent.
+
+final_evidence:
+  focused_rms_and_stats: 55 passed
+  two_file_head_diff: >-
+    exit 0; scripts/dev_tools/make_calibration_tutorial.py and
+    tests/types/test_stats_mixin.py are byte-identical to HEAD
+  retained_origin_main_semantics: >-
+    Intended RMS NumPy reductions and Series/generic RMS test remain in the
+    origin/main diff; only formatting-only cleanup churn was removed
+  docs_notebook_contract_subset: 51 passed, 4 skipped
+  notebook_execution_status: 4 CI-only execution tests skipped locally; JSON validation passed for 4 touched notebooks
+  gwpy_version: 4.0.1
+  ruff_check: exit 0
+  ruff_format_gate: >-
+    Not claimed for this cleanup; the two cleanup targets equal HEAD and no
+    whole-file format gate was run or asserted
+  mypy: exit 0; 1 production file checked
+  yaml_parse: exit 0
+  diff_check: exit 0
+  scope_audit: >-
+    exit 0; exact 10 tracked plus 1 manifest allowed paths; archive excluded;
+    harness absent
+
+compatibility_summary:
+  current_gwpy_source: >-
+    GWpy 4.0.1 uses int(stride * sample_rate.value), drops trailing partial
+    windows, computes sqrt(mean(abs(window)**2)), allocates np.zeros(nsteps),
+    and constructs self.__class__ with sample_rate=1/stride, t0, channel, and
+    a formatted name.
+  gwexpy_matches: >-
+    Numeric stride conversion, floor windowing, sqrt(mean(abs(x)**2)) values,
+    float64 output dtype for float32 and complex64 input, complex values,
+    output class, t0, dt, sample_rate, channel, and integer/float numeric name
+    formatting match GWpy 4.0.1 in committed tests.
+  intentional_gwexpy_extensions: >-
+    Input unit is preserved; time and dimensionless Quantity strides are
+    accepted; irregular, sub-sample, zero, and negative strides raise clear
+    ValueError exceptions.
+  documentation: >-
+    Scalar RMS tutorial call sites remain explicit NumPy reductions, the
+    generic Series/Matrix RMS tests remain separate from TimeSeries.rms, and
+    the compatibility note records the float64 dtype contract.
+
+external_writes:
+  commit: false
+  push: false
+  fetch: false
+  merge: false
+  pull_request_create_or_update: false
+  issue_create_or_update: false
+  git_config_change: false
+  additional_agents_or_background_workers: false
+  tmux_send_keys: false
+
+risks:
+  - >-
+    The documented unit-preserving result intentionally differs from GWpy's
+    dimensionless output; callers requiring exact GWpy units must account for
+    this compatibility extension.
+  - >-
+    Four notebook execution tests are skipped by the local test default and
+    require GWEXPY_RUN_NOTEBOOK_TESTS=1 in CI-style execution.
+  - >-
+    The full repository test suite was not run in this bounded lane; focused
+    RMS/stats and relevant notebook contract suites were executed.
+  - >-
+    Independent post-fix Sol review remains pending, including confirmation of
+    the float64 dtype decision.
+
+unresolved_issues:
+  - >-
+    Post-fix independent Sol review has not yet run; its status remains
+    pending after the required corrections and dtype decision.

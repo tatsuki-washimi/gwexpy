@@ -6,6 +6,7 @@ positional argument and returns a new ``TimeSeries`` holding one RMS value per
 the gwexpy override, plus the documented gwexpy enhancements (time ``Quantity``
 stride and unit preservation).
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -16,12 +17,24 @@ from gwexpy.timeseries import TimeSeries
 
 
 def _series(data, sample_rate=100, **kwargs):
-    return TimeSeries(np.asarray(data, dtype=float), sample_rate=sample_rate, **kwargs)
+    return TimeSeries(np.asarray(data), sample_rate=sample_rate, **kwargs)
+
+
+def _assert_rms_metadata_matches_gwpy(ours, reference, ours_input, reference_input):
+    assert type(ours) is type(ours_input)
+    assert type(reference) is type(reference_input)
+    assert type(ours).__name__ == type(reference).__name__
+    assert ours.t0 == reference.t0
+    assert ours.dt == reference.dt
+    assert ours.sample_rate == reference.sample_rate
+    assert ours.name == reference.name
+    assert str(ours.channel) == str(reference.channel)
 
 
 # ---------------------------------------------------------------------------
 # core gwpy semantics
 # ---------------------------------------------------------------------------
+
 
 def test_rms_stride_returns_trend_timeseries():
     ts = _series(np.arange(1000.0), sample_rate=100)  # 10 s
@@ -47,7 +60,7 @@ def test_rms_values_match_manual_windows():
     ts = _series(arr, sample_rate=100)
     out = ts.rms(2)  # 200 samples per window
     expected = np.array(
-        [np.sqrt(np.mean(np.abs(arr[i * 200:(i + 1) * 200]) ** 2)) for i in range(5)]
+        [np.sqrt(np.mean(np.abs(arr[i * 200 : (i + 1) * 200]) ** 2)) for i in range(5)]
     )
     np.testing.assert_allclose(out.value, expected)
 
@@ -70,9 +83,70 @@ def test_rms_matches_gwpy_reference():
     assert ours.dt.to("s").value == pytest.approx(ref.dt.to("s").value)
 
 
+@pytest.mark.parametrize(
+    "stride, expected_name",
+    [(2, "X1:SIG 2-second RMS"), (2.0, "X1:SIG 2.0-second RMS")],
+)
+def test_rms_metadata_matches_gwpy_for_numeric_strides(stride, expected_name):
+    gwpy_ts = pytest.importorskip("gwpy.timeseries").TimeSeries
+    arr = np.arange(100, dtype=np.float32)
+    ours_input = _series(
+        arr,
+        sample_rate=10,
+        t0=1234567890.25,
+        name="X1:SIG",
+        channel="X1:SIG",
+    )
+    reference_input = gwpy_ts(
+        arr,
+        sample_rate=10,
+        t0=1234567890.25,
+        name="X1:SIG",
+        channel="X1:SIG",
+    )
+
+    ours = ours_input.rms(stride)
+    reference = reference_input.rms(stride)
+
+    np.testing.assert_allclose(ours.value, reference.value)
+    _assert_rms_metadata_matches_gwpy(ours, reference, ours_input, reference_input)
+    assert ours.name == expected_name
+
+
+@pytest.mark.parametrize("dtype", [np.dtype(np.float32), np.dtype(np.complex64)])
+def test_rms_values_and_dtype_match_gwpy_for_float32_and_complex64(dtype):
+    gwpy_ts = pytest.importorskip("gwpy.timeseries").TimeSeries
+    real = np.arange(12, dtype=np.float32)
+    data = real if dtype.kind == "f" else real + 1j * (real + 1)
+    data = np.asarray(data, dtype=dtype)
+    ours_input = _series(
+        data,
+        sample_rate=4,
+        t0=1234567890.25,
+        name="X1:COMPLEX",
+        channel="X1:COMPLEX",
+    )
+    reference_input = gwpy_ts(
+        data,
+        sample_rate=4,
+        t0=1234567890.25,
+        name="X1:COMPLEX",
+        channel="X1:COMPLEX",
+    )
+
+    ours = ours_input.rms(1)
+    reference = reference_input.rms(1)
+
+    np.testing.assert_allclose(ours.value, reference.value)
+    assert ours.dtype == np.dtype(np.float64)
+    assert reference.dtype == np.dtype(np.float64)
+    _assert_rms_metadata_matches_gwpy(ours, reference, ours_input, reference_input)
+
+
 # ---------------------------------------------------------------------------
 # gwexpy enhancements (documented divergences from gwpy)
 # ---------------------------------------------------------------------------
+
 
 def test_rms_accepts_time_quantity_stride():
     ts = _series(np.arange(1000.0), sample_rate=100)
@@ -109,6 +183,7 @@ def test_rms_non_time_quantity_stride_raises():
 # ---------------------------------------------------------------------------
 # edge cases / metadata
 # ---------------------------------------------------------------------------
+
 
 def test_rms_trailing_window_dropped():
     ts = _series(np.arange(100.0), sample_rate=10)  # 10 s
@@ -155,10 +230,10 @@ def test_rms_propagates_nan_per_window():
 def test_rms_name_and_channel_metadata():
     ts = _series(np.arange(100.0), sample_rate=10, name="X1:SIG", channel="X1:SIG")
     out = ts.rms(2)
-    assert out.name is not None and "X1:SIG" in out.name
+    assert out.name == "X1:SIG 2-second RMS"
     assert str(out.channel) == "X1:SIG"
 
 
-def test_rms_unnamed_series_has_none_name():
+def test_rms_unnamed_series_matches_gwpy_name():
     ts = _series(np.arange(100.0), sample_rate=10)
-    assert ts.rms(2).name is None
+    assert ts.rms(2).name == "None 2-second RMS"
