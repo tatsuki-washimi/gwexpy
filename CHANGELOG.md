@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Breaking changes
+
+- `TimeSeries.rms` no longer accepts the `axis` and `ignore_nan` keywords, and
+  no longer returns a scalar. It now resolves to the gwpy-compatible
+  `rms(stride)` (see Bug fixes below) instead of the generic axis-reducing
+  `StatisticalMethodsMixin.rms`, so `ts.rms(axis=0)` and
+  `ts.rms(ignore_nan=True)` raise `TypeError`. NaN handling is inverted as a
+  consequence: the generic method defaulted to `ignore_nan=True` (`nanmean`),
+  while the gwpy-compatible one uses `np.mean`, so a NaN anywhere in a window
+  now makes that window's RMS NaN. Other windows are unaffected. Use
+  `float(ts.rms(ts.duration.value))` for a single number, or call the generic
+  mixin method explicitly. Only `TimeSeries` is affected — matrices, `Array`,
+  and `FrequencySeries` keep the generic `rms` (#451).
+
 ### Bug fixes
 
 - Restored gwpy compatibility for `TimeSeries.rms`: the first positional

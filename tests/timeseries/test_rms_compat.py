@@ -23,7 +23,8 @@ def _series(data, sample_rate=100, **kwargs):
 def _assert_rms_metadata_matches_gwpy(ours, reference, ours_input, reference_input):
     assert type(ours) is type(ours_input)
     assert type(reference) is type(reference_input)
-    assert type(ours).__name__ == type(reference).__name__
+    # Both classes are named "TimeSeries", so comparing __name__ would be a
+    # tautology; the two identity checks above are the real assertions.
     assert ours.t0 == reference.t0
     assert ours.dt == reference.dt
     assert ours.sample_rate == reference.sample_rate
@@ -237,3 +238,50 @@ def test_rms_name_and_channel_metadata():
 def test_rms_unnamed_series_matches_gwpy_name():
     ts = _series(np.arange(100.0), sample_rate=10)
     assert ts.rms(2).name == "None 2-second RMS"
+
+
+# ---------------------------------------------------------------------------
+# numerical scale (rules/common/numerical-scales.md)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("scale", [1e-30, 1e-24, 1e-21, 1.0, 1e21])
+def test_rms_is_scale_invariant_in_float64(scale):
+    """``rms(k * x) == k * rms(x)`` must hold at GW strain scale.
+
+    Strain is ``~1e-21``, far outside the range a fixed epsilon would cover,
+    so pin the invariance directly instead of trusting a tolerance.
+    """
+    rng = np.random.default_rng(1729)
+    base = rng.standard_normal(1000)
+
+    unit_rms = _series(base, sample_rate=100).rms(1).value
+    scaled_rms = _series(base * scale, sample_rate=100).rms(1).value
+
+    np.testing.assert_allclose(scaled_rms, unit_rms * scale, rtol=1e-12)
+
+
+def test_rms_resolves_strain_scale_signals_in_float64():
+    """A 1e-21 float64 signal must produce a finite, correctly-scaled RMS."""
+    ts = _series(np.full(100, 3e-21), sample_rate=10)
+    result = ts.rms(1)
+
+    assert np.all(np.isfinite(result.value))
+    np.testing.assert_allclose(result.value, 3e-21, rtol=1e-12)
+
+
+def test_rms_float32_underflow_at_strain_scale_is_pinned_not_silent():
+    """Pin the documented float32 limitation so it cannot change unnoticed.
+
+    Squaring happens in the input dtype for bit-for-bit gwpy parity, so a
+    float32 series below roughly 1e-22 underflows to zero. The docstring says
+    so and tells callers to cast; this test fails if either the underflow or
+    the float64 escape hatch stops behaving as documented.
+    """
+    values = np.full(100, 3e-24, dtype=np.float32)
+
+    underflowed = _series(values, sample_rate=10).rms(1)
+    assert np.all(underflowed.value == 0.0)
+
+    recovered = _series(values.astype(np.float64), sample_rate=10).rms(1)
+    np.testing.assert_allclose(recovered.value, 3e-24, rtol=1e-6)

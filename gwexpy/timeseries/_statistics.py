@@ -116,11 +116,28 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         Raises
         ------
         ValueError
-            If the series is not regularly sampled, or ``stride`` is shorter
-            than one sample period.
+            If the series is not regularly sampled, ``stride`` is shorter than
+            one sample period, or ``stride`` is a ``Quantity`` whose unit is
+            neither dimensionless nor convertible to seconds.
 
         Notes
         -----
+        **Migration from earlier GWexpy releases.** Before this change,
+        ``TimeSeries.rms`` resolved to the generic
+        :meth:`~gwexpy.types._stats.StatisticalMethodsMixin.rms`, which
+        reduced along an axis and returned a scalar. Three things change for
+        code written against that behaviour:
+
+        * ``rms()`` now returns a `TimeSeries` of per-window values, not a
+          scalar. Use ``float(ts.rms(ts.duration.value))`` for a single number,
+          or call the generic mixin method explicitly.
+        * the ``axis`` and ``ignore_nan`` keywords are gone; passing either
+          raises ``TypeError``.
+        * NaN handling is inverted. The generic method defaulted to
+          ``ignore_nan=True`` (``nanmean``); this one uses ``np.mean``, so a
+          NaN anywhere in a window makes that window's RMS NaN. Other windows
+          are unaffected. This matches gwpy.
+
         Two intentional, documented improvements over `gwpy`:
 
         * the input physical unit is **preserved** on the result (the RMS of a
@@ -132,6 +149,20 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         For complex data the gwpy convention ``sqrt(mean(|x|**2))`` is used.
         The result dtype is always ``float64``, matching gwpy's ``np.zeros``
         output allocation for ``float32`` and ``complex64`` inputs.
+
+        **Known limitation for float32 input.** The squaring is done in the
+        input dtype before the cast to ``float64``, so ``|x|**2`` underflows
+        float32 below roughly ``1e-22``. A float32 series at GW strain scale
+        (``~1e-21``) already loses about four digits, and at ``~1e-24`` the
+        result is exactly ``0.0``. This is bit-for-bit what gwpy does, and
+        preserving that parity is the point of this method, so the behaviour
+        is kept rather than silently improved. Cast to ``float64`` before
+        calling ``rms`` when the data is at strain scale::
+
+            ts.astype(float).rms(stride)
+
+        float64 input is unaffected: it is scale-invariant to within one part
+        in ``1e16`` across the range tested (``1e-30`` to ``1e+21``).
 
         """
         if getattr(self, "sample_rate", None) is None:

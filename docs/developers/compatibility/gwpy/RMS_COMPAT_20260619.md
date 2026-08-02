@@ -53,8 +53,17 @@ GitHub issue [#451] を起点に、`TimeSeries.rms` の `gwpy` 後方互換性�
 - `scripts/dev_tools/make_calibration_tutorial.py`（`ts_raw.rms().value:.2f` ×2）
 - `docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb`（同上）
 - `docs/web/en/user_guide/tutorials/intro_table.ipynb`（行ごとの `row["noise"].rms().value`）
-- `.harness/skills/phase1_scale_invariance/SKILL.md` は scope scrub により差分へ戻していない。
-- `docs_internal/archive/plans/PEMinjection-with-SegmentTable.md` も historical archive の
+- `docs_redesign/how-to/case-studies/case_calibration_pipeline.ipynb`（同上）
+- `docs_redesign/how-to/segments/intro_table.ipynb`（同上）
+
+`docs/web` 版と `docs_redesign` 版はいずれも numpy を使わない `(x**2).mean()**0.5` に統一した。
+`docs_redesign` の notebook は numpy を import していないため、`np.*` を使う書き方にすると
+`nb_execution_raise_on_error = True` の docs ビルドが失敗する。
+
+次の 2 件は意図的に差分へ戻していない:
+
+- maintainer-local harness（このリポジトリには存在しない）配下の skill ファイルは scope 外。
+- `docs_internal/archive/plans/PEMinjection-with-SegmentTable.md` は historical archive の
   exact restore 対象のため変更していない。
 
 ---
@@ -93,10 +102,10 @@ GitHub issue [#451] を起点に、`TimeSeries.rms` の `gwpy` 後方互換性�
 ## 検証
 
 ```bash
-/tmp/venv/bin/python -m pytest \
+conda run -n gwexpy python -m pytest \
     tests/timeseries/test_rms_compat.py \
     tests/types/test_stats_mixin.py -q
-/tmp/venv/bin/python -m ruff check \
+conda run -n gwexpy ruff check \
     gwexpy/timeseries/_statistics.py tests/timeseries/test_rms_compat.py
 ```
 
