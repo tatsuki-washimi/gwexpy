@@ -287,9 +287,9 @@ def test_ffl_entry_shapes_match_the_documented_contract(tmp_path: Path):
     """Pin the accepted entry shapes, and keep the GWpy attribution honest.
 
     The expansion docstring claims the one-field and five-field path-first
-    forms are also accepted by GWpy's cache reader, while the nested
-    three-field form is a GWexpy extension that GWpy rejects. Assert both
-    halves so the claim cannot rot, and pin the LAL-layout fail-closed case.
+    forms are also accepted by GWpy's single-line cache parser, while that
+    same parser rejects the nested three-field form. Assert both halves so the
+    claim cannot rot, and pin the LAL-layout fail-closed case.
     """
     from gwpy.io.cache import read_cache_entry
 
@@ -311,7 +311,8 @@ def test_ffl_entry_shapes_match_the_documented_contract(tmp_path: Path):
     assert read_cache_entry(str(frame)) == str(frame)
     assert read_cache_entry(f"{frame} 0 1 0 0") == str(frame)
 
-    # Nested three-field entries are a GWexpy extension; GWpy rejects them.
+    # Nested three-field entries: accepted here, rejected by the single-line
+    # parser.
     assert expand(f"{child.name} 0 1") == [frame.resolve()]
     with pytest.raises(ValueError):
         read_cache_entry(f"{child} 0 1")
@@ -320,6 +321,52 @@ def test_ffl_entry_shapes_match_the_documented_contract(tmp_path: Path):
     # treating the observatory field as a frame path.
     with pytest.raises(ValueError, match=r"expected a \.gwf path"):
         expand(f"X Y 0 1 {frame}")
+
+
+def test_nested_ffl_resolution_differs_from_gwpys_cwd_relative_traversal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """Pin *why* GWexpy re-implements nested FFL traversal instead of reusing GWpy.
+
+    GWpy's file-level reader does follow three-field nested entries, but it
+    resolves them against the process working directory, so the same file
+    reads differently depending on where Python was started. GWexpy resolves
+    against the containing FFL file. Pin both halves: if GWpy ever adopts
+    file-relative resolution, this test fails and the docstring claim gets
+    revisited rather than silently rotting.
+    """
+    from gwpy.io.cache import read_cache
+
+    from gwexpy.timeseries._gwf_io import _expand_gwf_source
+
+    frames = tmp_path / "frames"
+    lists = tmp_path / "lists"
+    nested = lists / "nested"
+    frames.mkdir()
+    nested.mkdir(parents=True)
+
+    frame = frames / "X-Y-0-1.gwf"
+    frame.touch()
+    (nested / "inner.ffl").write_text(
+        "../../frames/X-Y-0-1.gwf 0 1 0 0\n", encoding="utf-8"
+    )
+    outer = lists / "outer.ffl"
+    outer.write_text("nested/inner.ffl 0 2\n", encoding="utf-8")
+
+    # Run from a directory that is neither the outer nor the nested list's
+    # parent, so cwd-relative and file-relative resolution cannot coincide.
+    monkeypatch.chdir(tmp_path)
+
+    assert _expand_gwf_source(outer) == [frame.resolve()]
+
+    try:
+        gwpy_result = read_cache(str(outer))
+    except (OSError, ValueError, RecursionError):
+        gwpy_result = None
+    assert gwpy_result != [str(frame.resolve())], (
+        "GWpy's read_cache now resolves nested FFL entries relative to the "
+        "containing file; revisit the _expand_gwf_source docstring."
+    )
 
 
 def test_existing_gwf_list_route_remains_available(synthetic_ffl: dict[str, object]):

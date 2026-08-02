@@ -294,11 +294,22 @@ def _expand_gwf_source(source: Any) -> Any:
 
     Three entry shapes are accepted: a GWF path alone, a five-field FFL entry
     with the path first, and a three-field entry whose first field is a nested
-    ``.ffl`` path.  The first two are also accepted by GWpy's cache reader
-    (:func:`gwpy.io.cache.read_cache_entry`); the nested three-field form is a
-    GWexpy extension, which GWpy rejects with ``ValueError``.  A five-field
-    *LAL* cache line, where the path comes last, is deliberately not accepted
-    here: it fails closed rather than being misread as a path in field one.
+    ``.ffl`` path.  The first two are also accepted by GWpy's single-line cache
+    parser (:func:`gwpy.io.cache.read_cache_entry`), which rejects the
+    three-field form with ``ValueError``.
+
+    GWpy is not blind to nested FFL entries, though: its file-level reader
+    :func:`gwpy.io.cache.read_cache` does follow the three-field shape as an
+    include.  That path resolves nested entries against the *process* working
+    directory rather than the containing file, and guards only against a file
+    including itself directly, so a two-hop include cycle exhausts the stack
+    with ``RecursionError``.  This function is therefore not filling an absence
+    but replacing that traversal: entries resolve against the containing FFL
+    file, and the whole include chain is cycle- and depth-checked.
+
+    A five-field *LAL* cache line, where the path comes last, is deliberately
+    not accepted here: it fails closed rather than being misread as a path in
+    field one.
 
     Relative paths are resolved against the containing FFL file.  Existing
     non-FFL GWF source shapes are returned unchanged so their established merge
