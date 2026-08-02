@@ -25,10 +25,10 @@ def _create_minimal_ats(path: Path, n_samples: int = 10):
     """Create a minimal valid ATS file for testing."""
     header = bytearray(1024)
     struct.pack_into("<H", header, 0, 1024)  # header length
-    struct.pack_into("<h", header, 2, 80)    # version
+    struct.pack_into("<h", header, 2, 80)  # version
     struct.pack_into("<I", header, 4, n_samples)  # samples
-    struct.pack_into("<f", header, 8, 1.0)   # sample freq
-    struct.pack_into("<I", header, 12, 0)    # start time (unix epoch)
+    struct.pack_into("<f", header, 8, 1.0)  # sample freq
+    struct.pack_into("<I", header, 12, 0)  # start time (unix epoch)
     struct.pack_into("<d", header, 16, 1.0)  # LSB in mV
     struct.pack_into("<h", header, 0xAA, 0)  # bit_indicator (int32)
 
@@ -124,6 +124,7 @@ def test_provenance_tracking_wav(tmp_path):
 
 def test_register_with_writer(tmp_path):
     """Test registration helper with writer functions."""
+
     # Mock reader and writer
     def mock_reader_dict(source, **kwargs):
         tsd = TimeSeriesDict()
@@ -171,6 +172,7 @@ def test_pathlib_support_multiple_formats(tmp_path):
 
 def test_registration_auto_adapt_disabled():
     """Test registration with auto_adapt=False uses provided functions only."""
+
     def mock_reader_dict(source, **kwargs):
         return TimeSeriesDict({"test": TimeSeries([1, 2], t0=0, dt=1, name="test")})
 
@@ -188,6 +190,7 @@ def test_registration_auto_adapt_disabled():
 
     # Custom reader should be used, not auto-adapted one
     from gwpy.io.registry import default_registry as io_registry
+
     registered_reader = io_registry.get_reader("mock_custom", TimeSeries)
 
     # The registered function should be our custom one
@@ -207,18 +210,36 @@ def test_multiple_format_aliases(tmp_path):
     assert nc_reader is netcdf4_reader
 
 
-def test_wav_scipy_kwargs_filtering(tmp_path):
-    """Test that WAV reader filters out incompatible kwargs for scipy."""
+def test_wav_reader_does_not_leak_gwpy_kwargs_into_scipy(tmp_path):
+    """GWpy-injected kwargs must not reach ``scipy.io.wavfile.read``.
+
+    This used to be asserted with ``start``/``end``, on the grounds that
+    filtering them out was enough.  It was not: filtering them meant the reader
+    returned the whole file for a request that asked for 0.1 s of it (issue
+    #611).  Selector handling is now covered by
+    ``test_reader_start_end_contract.py``; what remains here is the original,
+    still-valid point that a non-selector registry kwarg does not become a
+    scipy ``TypeError``.
+    """
     from scipy.io import wavfile
 
     path = tmp_path / "test.wav"
     wavfile.write(path, 1000, np.zeros(100, dtype=np.int16))
 
-    # These kwargs should be filtered out and not cause TypeError
-    ts = TimeSeries.read(
-        path,
-        format="wav",
-        start=0,  # These are gwpy-specific, not scipy
-        end=0.1,
-    )
+    ts = TimeSeries.read(path, format="wav")
     assert isinstance(ts, TimeSeries)
+    assert len(ts) == 100
+
+
+def test_wav_reader_applies_a_windowed_read(tmp_path):
+    """``start``/``end`` crop the result rather than being silently dropped."""
+    from scipy.io import wavfile
+
+    path = tmp_path / "test.wav"
+    wavfile.write(path, 1000, np.zeros(100, dtype=np.int16))
+
+    ts = TimeSeries.read(path, format="wav", start=0, end=0.1)
+    assert len(ts) == 100  # the whole 0.1 s file happens to be the window
+    windowed = TimeSeries.read(path, format="wav", start=0.02, end=0.05)
+    assert len(windowed) == 30
+    assert windowed.span == (0.02, 0.05)

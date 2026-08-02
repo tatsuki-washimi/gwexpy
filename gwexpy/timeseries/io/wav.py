@@ -8,6 +8,7 @@ import numpy as np
 from astropy import units as u
 from scipy.io import wavfile
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
@@ -31,6 +32,11 @@ def read_timeseriesdict_wav(
     **kwargs,
 ):
     """Read a WAV file into a TimeSeriesDict.
+
+    ``start``/``end`` are honoured by reading the file and cropping the result,
+    matching both ``read(source).crop(start, end)`` and what GWpy's own WAV
+    reader does (issue #611 — this reader previously accepted the bounds and
+    returned the whole file).
 
     Parameters
     ----------
@@ -66,6 +72,7 @@ def read_timeseriesdict_wav(
     # without absolute timestamps, so merging multiple files is not
     # meaningful; fail early with a clear error.
     reject_multi_source(source, "wav")
+    start, end = pop_time_selection(kwargs)
 
     # Filter kwargs for wavfile.read
     scipy_kwargs = {
@@ -130,7 +137,7 @@ def read_timeseriesdict_wav(
 
     set_provenance(tsd, provenance)
 
-    return tsd
+    return apply_time_selection(tsd, start, end)
 
 
 def read_timeseries_wav(source, **kwargs):

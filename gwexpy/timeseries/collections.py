@@ -33,6 +33,7 @@ from gwexpy.io.hdf5_collection import (
     unique_hdf5_key,
     write_hdf5_manifest,
 )
+from gwexpy.io.time_selection import apply_time_selection
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.mixin._collection_mixin import (
     DictMapMixin,
@@ -227,9 +228,23 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 unit = meta.get("unit")
                 v = apply_unit(v, unit) if unit else v
                 out[k] = v
-            return out
+            # The per-file reader above is called without the bounds, so this
+            # branch used to return every sample in the directory for a windowed
+            # request (issue #611).
+            return apply_time_selection(out, kwargs.get("start"), kwargs.get("end"))
         if fmt in ("hdf5", "h5", "hdf"):
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
+
+            # This branch reopens the file and re-reads each dataset itself
+            # instead of going through the registered reader, and used to drop
+            # ``start``/``end`` on the way (issue #611) — so a bounded dict read
+            # silently returned the whole file even though the single-series
+            # path cropped correctly.  Read whole, then crop, which is the
+            # documented oracle.  Read out of ``kwargs`` rather than popped,
+            # because the fall-through below hands the untouched kwargs to the
+            # registry reader, which applies them itself.
+            start = kwargs.get("start")
+            end = kwargs.get("end")
 
             with h5py.File(source, "r") as h5f:
                 layout = detect_hdf5_layout(h5f)
@@ -246,7 +261,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
                         out[orig_key] = ts
-                    return out
+                    return apply_time_selection(out, start, end)
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
                         try:
@@ -260,7 +275,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                                 continue
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = ts
-                    return out
+                    return apply_time_selection(out, start, end)
         return super().read(source, *args, **kwargs)
 
     def __reduce_ex__(self, protocol: SupportsIndex):
@@ -1846,6 +1861,12 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
         """Read a ``TimeSeriesList`` from a supported source."""
         fmt = kwargs.get("format")
+        # Both branches below re-read each entry themselves rather than going
+        # through a registered reader, and neither forwarded the bounds — so a
+        # windowed read returned every sample (issue #611).  A list has no span
+        # of its own, so the window is applied per entry.
+        start = kwargs.get("start")
+        end = kwargs.get("end")
         try:
             p = Path(source)
         except TypeError:
@@ -1865,7 +1886,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             for _, v, meta in items:
                 unit = meta.get("unit")
                 v = apply_unit(v, unit) if unit else v
-                dir_items.append(v)
+                dir_items.append(apply_time_selection(v, start, end))
             return cls(*dir_items)
         if fmt in ("hdf5", "h5", "hdf"):
             TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
@@ -1881,7 +1902,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
-                        out_items.append(ts)
+                        out_items.append(apply_time_selection(ts, start, end))
                     return cls(*out_items)
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
@@ -1894,7 +1915,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
-                        out_items.append(ts)
+                        out_items.append(apply_time_selection(ts, start, end))
                     return cls(*out_items)
         raise TypeError(
             "TimeSeriesList.read currently supports only directory sources for csv/txt"

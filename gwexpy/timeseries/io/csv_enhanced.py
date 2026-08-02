@@ -239,23 +239,33 @@ def read_timeseriesdict_csv(
         Resampling method: ``"interpolate"`` or ``"asfreq"``.
     **kwargs
         Additional keyword arguments reserved for compatibility with I/O dispatch.
+        ``start`` and ``end`` are honoured by cropping the result rather than
+        ignored, matching GWpy's own ASCII reader (issue #611).
 
     """
+    from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
+
     from .. import TimeSeriesDict
     from ._multi import expand_multi_source, read_multi_dict
 
+    start, end = pop_time_selection(kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(
-            read_timeseriesdict_csv,
-            multi,
-            "csv",
-            config=config,
-            channels=channels,
-            timezone=timezone,
-            resample=resample,
-            resample_method=resample_method,
-            **kwargs,
+        return apply_time_selection(
+            read_multi_dict(
+                read_timeseriesdict_csv,
+                multi,
+                "csv",
+                config=config,
+                channels=channels,
+                timezone=timezone,
+                resample=resample,
+                resample_method=resample_method,
+                **kwargs,
+            ),
+            start,
+            end,
         )
 
     # --- Resolve config ---
@@ -405,7 +415,20 @@ def read_timeseriesdict_csv(
         if target_rate:
             dt_val = 1.0 / target_rate
         elif len(ts_times) > 1:
+            # The median of the diffs is robust to a gappy or irregular time
+            # column, but on a uniform decimal grid every diff carries the
+            # ~1-ulp noise of two float parses, and that noise is enough to
+            # make Series.crop's floor((t - t0)/dt) land one sample early —
+            # which gwpy 4's registry coverage check then escalates to a
+            # ValueError on a fully in-span bounded read (issue #611 review).
+            # The end-to-end average spreads the same parse noise over N-1
+            # samples, so when the two estimators agree the grid is uniform
+            # and the average is the more exact dt; when they disagree the
+            # column has gaps and the median remains the safer choice.
             dt_val = float(np.median(np.diff(ts_times)))
+            span_dt = float((ts_times[-1] - ts_times[0]) / (len(ts_times) - 1))
+            if dt_val and abs(span_dt - dt_val) <= 1e-12 * abs(dt_val):
+                dt_val = span_dt
         else:
             dt_val = 1.0
 
@@ -419,7 +442,7 @@ def read_timeseriesdict_csv(
         result[name] = ts
 
     tsd = TimeSeriesDict(filter_by_channels(result, channels))
-    return tsd
+    return apply_time_selection(tsd, start, end)
 
 
 def read_timeseries_csv(
