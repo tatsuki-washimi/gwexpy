@@ -388,22 +388,22 @@ class TestSpectrogramMatrixPerElementUnits:
         with pytest.raises(UnitConversionError):
             _ = matrix_a + matrix_b
 
-    def test_binary_matrix_op_compatible_units_raises_strict_equality(
-        self, times, freqs
-    ):
-        """Binary add/sub requires strict unit equality - compatible but different units fail.
+    def test_binary_matrix_op_converts_compatible_units(self, times, freqs):
+        """Binary add/sub converts the right operand into the left operand's units.
 
-        Following SeriesMatrix check_add_sub_compatibility: V != mV and m != cm
-        should raise UnitConversionError even though they are equivalent.
+        Equivalent-but-unequal units (V/mV, m/cm) are rescaled per element
+        rather than rejected; the result keeps the left operand's unit.  Before
+        gwexpy 0.1.13 this raised ``UnitConversionError`` because the check
+        demanded strict unit equality (issue #576).
         """
         sg1_a = Spectrogram(
-            np.random.rand(10, 5),
+            np.ones((10, 5)),
             times=times,
             frequencies=freqs,
             unit=u.V,
         )
         sg2_a = Spectrogram(
-            np.random.rand(10, 5),
+            np.ones((10, 5)),
             times=times,
             frequencies=freqs,
             unit=u.m,
@@ -411,22 +411,26 @@ class TestSpectrogramMatrixPerElementUnits:
         matrix_a = SpectrogramList([sg1_a, sg2_a]).to_matrix()
 
         sg1_b = Spectrogram(
-            np.random.rand(10, 5),
+            np.ones((10, 5)),
             times=times,
             frequencies=freqs,
-            unit=u.mV,  # Compatible with V but NOT equal
+            unit=u.mV,  # Equivalent to V but not equal
         )
         sg2_b = Spectrogram(
-            np.random.rand(10, 5),
+            np.ones((10, 5)),
             times=times,
             frequencies=freqs,
-            unit=u.cm,  # Compatible with m but NOT equal
+            unit=u.cm,  # Equivalent to m but not equal
         )
         matrix_b = SpectrogramList([sg1_b, sg2_b]).to_matrix()
 
-        # Addition should FAIL because V != mV (strict equality required)
-        with pytest.raises(UnitConversionError):
-            _ = matrix_a + matrix_b
+        result = matrix_a + matrix_b
+
+        assert result.meta[0, 0].unit == u.V
+        assert result.meta[1, 0].unit == u.m
+        # 1 V + 1 mV == 1.001 V, and 1 m + 1 cm == 1.01 m
+        np.testing.assert_allclose(result.value[0], 1.001)
+        np.testing.assert_allclose(result.value[1], 1.01)
 
     def test_binary_mul_updates_per_element_units(self, times, freqs):
         """Multiplication between matrices should update per-element units correctly."""
@@ -550,10 +554,11 @@ class TestSpectrogramMatrixSeriesMatrixRules:
         with pytest.raises(ValueError):
             SpectrogramList([sg1, sg2]).to_matrix()
 
-    def test_add_sub_requires_exact_unit_match_m_vs_cm_raises(self, times_s, freqs):
-        """Addition fails when per-cell units are m vs cm (even though compatible).
+    def test_add_sub_converts_m_vs_cm_per_element(self, times_s, freqs):
+        """Addition rescales cm into m per element instead of rejecting it.
 
-        Following SeriesMatrix check_add_sub_compatibility: u0 != uk raises.
+        The left operand fixes the result unit, so ``m + cm`` stays in metres.
+        Before gwexpy 0.1.13 this raised ``UnitConversionError`` (issue #576).
         """
         sg1 = Spectrogram(
             np.ones((10, 5)),
@@ -573,7 +578,7 @@ class TestSpectrogramMatrixSeriesMatrixRules:
             np.ones((10, 5)),
             times=times_s,
             frequencies=freqs,
-            unit=u.cm,  # Compatible with m, but NOT equal
+            unit=u.cm,  # Equivalent to m, but not equal
         )
         sg4 = Spectrogram(
             np.ones((10, 5)),
@@ -583,9 +588,61 @@ class TestSpectrogramMatrixSeriesMatrixRules:
         )
         matrix_b = SpectrogramList([sg3, sg4]).to_matrix()
 
-        # First element: m vs cm -> NOT equal -> must raise
+        result = matrix_a + matrix_b
+        assert result.meta[0, 0].unit == u.m
+        assert result.meta[1, 0].unit == u.m
+        np.testing.assert_allclose(result.value[0], 1.01)  # 1 m + 1 cm
+        np.testing.assert_allclose(result.value[1], 2.0)  # 1 m + 1 m
+
+    def test_add_sub_incompatible_units_still_raise(self, times_s, freqs):
+        """Relaxing strict equality must not let dimensionally wrong units through."""
+        sg1 = Spectrogram(np.ones((10, 5)), times=times_s, frequencies=freqs, unit=u.m)
+        sg2 = Spectrogram(np.ones((10, 5)), times=times_s, frequencies=freqs, unit=u.m)
+        matrix_a = SpectrogramList([sg1, sg2]).to_matrix()
+
+        sg3 = Spectrogram(np.ones((10, 5)), times=times_s, frequencies=freqs, unit=u.s)
+        sg4 = Spectrogram(np.ones((10, 5)), times=times_s, frequencies=freqs, unit=u.m)
+        matrix_b = SpectrogramList([sg3, sg4]).to_matrix()
+
         with pytest.raises(UnitConversionError):
             _ = matrix_a + matrix_b
+        with pytest.raises(UnitConversionError):
+            _ = matrix_a + 1 * u.s
+
+    @pytest.mark.parametrize(
+        ("matrix_unit", "addend", "expected"),
+        [
+            (u.m, 1 * u.cm, 1.01),  # 1 m + 1 cm  -> 1.01 m
+            (u.cm, 1 * u.m, 101.0),  # 1 cm + 1 m -> 101 cm
+        ],
+    )
+    def test_add_quantity_converts_to_matrix_units(
+        self, times_s, freqs, matrix_unit, addend, expected
+    ):
+        """A Quantity addend is converted into the matrix's unit, not just relabelled.
+
+        This is the acceptance condition of issue #576: before the fix the raw
+        number was added, so ``sgm(unit=m) + 1 * u.cm`` added a whole metre.
+        """
+        sg = Spectrogram(
+            np.ones((10, 5)), times=times_s, frequencies=freqs, unit=matrix_unit
+        )
+        matrix = SpectrogramList([sg]).to_matrix()
+
+        result = matrix + addend
+        assert result.meta[0, 0].unit == matrix_unit
+        np.testing.assert_allclose(result.value, expected)
+
+        # Reflected form: the *left* operand fixes the label, so the unit is
+        # the addend's, but the physical value must agree with the direct form.
+        reflected = addend + matrix
+        assert reflected.meta[0, 0].unit == addend.unit
+        np.testing.assert_allclose(
+            u.Quantity(reflected.value, reflected.meta[0, 0].unit).to_value(
+                matrix_unit
+            ),
+            expected,
+        )
 
     def test_add_sub_exact_unit_match_succeeds(self, times_s, freqs):
         """Addition succeeds when per-cell units are exactly equal."""

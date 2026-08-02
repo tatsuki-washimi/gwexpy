@@ -34,6 +34,7 @@ from .seriesmatrix_validation import (
     build_index_if_needed,
     check_add_sub_compatibility,
     check_shape_xindex_compatibility,
+    convert_add_sub_values,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,9 +49,10 @@ _SERIESMATRIX_PICKLE_METADATA_FIELDS = (
     "attrs",
 )
 
-_ADD_SUB_COMPARISON_UFUNCS = {
-    np.add,
-    np.subtract,
+# Marker meaning "keep each cell's own unit" for :func:`_copy_meta_cells`.
+_UNSET_UNIT_SENTINEL = object()
+
+_COMPARISON_UFUNCS = {
     np.less,
     np.less_equal,
     np.equal,
@@ -58,6 +60,90 @@ _ADD_SUB_COMPARISON_UFUNCS = {
     np.greater,
     np.greater_equal,
 }
+
+_ADD_SUB_COMPARISON_UFUNCS = {np.add, np.subtract} | _COMPARISON_UFUNCS
+
+# Ufuncs whose second operand is a divisor: a zero anywhere in it is reported
+# as ``ZeroDivisionError`` instead of silently producing ``inf``/``nan``.
+_DIVISION_UFUNCS = {
+    np.divide,
+    np.true_divide,
+    np.floor_divide,
+    np.mod,
+    np.remainder,
+    np.fmod,
+    np.divmod,
+}
+
+_LOGICAL_UFUNCS = {
+    np.logical_and,
+    np.logical_or,
+    np.logical_xor,
+    np.logical_not,
+    np.isfinite,
+    np.isinf,
+    np.isnan,
+}
+
+# Ufuncs that carry the first operand's per-cell unit through unchanged.
+_META_PASSTHROUGH_UFUNCS = _LOGICAL_UFUNCS | {
+    np.sign,
+    np.floor,
+    np.ceil,
+    np.trunc,
+    np.rint,
+    np.mod,
+    np.remainder,
+}
+
+
+def _copy_meta_cells(
+    meta_matrix: MetaDataMatrix, unit: Any = _UNSET_UNIT_SENTINEL
+) -> MetaDataMatrix:
+    """Rebuild a metadata matrix with independent per-cell ``MetaData``.
+
+    Every cell keeps its own ``name``/``channel``.  When *unit* is given it
+    replaces each cell's unit (used for comparison results, which are
+    dimensionless); otherwise the original per-cell unit is preserved.
+
+    Rebuilding rather than calling ``MetaDataMatrix.copy()`` matters because
+    ``copy()`` on an object array duplicates only the references, so the copy
+    would keep sharing ``MetaData`` instances with the source (issue #577a).
+    """
+    arr = np.empty(meta_matrix.shape, dtype=object)
+    for idx in np.ndindex(meta_matrix.shape):
+        src = meta_matrix[idx]
+        arr[idx] = MetaData(
+            name=src.name,
+            channel=src.channel,
+            unit=src.unit if unit is _UNSET_UNIT_SENTINEL else unit,
+        )
+    return MetaDataMatrix(arr)
+
+
+def _scalar_power_exponent(operand: Any) -> Any:
+    """Return *operand* as a scalar exponent, or ``None`` if it is not one.
+
+    A dimensionless scalar ``Quantity`` is unwrapped to its numeric value; a
+    ``Quantity`` carrying a real unit raises, since ``unit ** (1 m)`` has no
+    meaning.
+    """
+    if isinstance(operand, u.Quantity):
+        value = np.asarray(operand.value)
+        if value.ndim != 0:
+            return None
+        if not operand.unit.is_equivalent(u.dimensionless_unscaled):
+            raise u.UnitConversionError(
+                f"exponent must be dimensionless, got {operand.unit}"
+            )
+        return operand.to_value(u.dimensionless_unscaled).item()
+    if isinstance(operand, (bool, np.bool_)):
+        return None
+    if isinstance(operand, (int, float, complex, np.number)):
+        return operand
+    if isinstance(operand, np.ndarray) and operand.ndim == 0:
+        return operand.item()
+    return None
 
 
 class _UnsetType:
@@ -138,7 +224,23 @@ class SeriesMatrix(  # type: ignore[misc]
     StatisticalMethodsMixin,
     np.ndarray,
 ):
-    """N-dimensional matrix of aligned series values with per-cell metadata."""
+    """N-dimensional matrix of aligned series values with per-cell metadata.
+
+    Arithmetic contract
+    -------------------
+    ``SeriesMatrix`` sets ``__array_ufunc__ = None``, so NumPy ufuncs never
+    operate on it directly.  Everything users need is exposed through explicit
+    operators (see
+    :class:`~gwexpy.types.series_matrix_math.SeriesMatrixMathMixin`):
+    ``+ - * / // % divmod ** @``, their reflected and in-place forms, the six
+    comparisons and unary ``+ - abs()``.  In exchange, an expression such as
+    ``(2 * u.s) * matrix`` keeps the matrix type, its per-cell units and all
+    axis metadata instead of collapsing to a bare ``Quantity`` (issue #575).
+
+    Applying a ufunc directly -- ``np.sqrt(matrix)``, ``np.add.reduce(matrix)``
+    -- raises ``TypeError`` rather than silently discarding metadata.  Operate
+    on ``matrix.value`` when a raw NumPy result is what you want.
+    """
 
     def __new__(
         cls,
@@ -363,269 +465,253 @@ class SeriesMatrix(  # type: ignore[misc]
         self.__dict__.update(matrix_state)
         self._value = self.view(np.ndarray)
 
-    def __array_ufunc__(
+    # NumPy ufunc opt-out.  ``None`` makes every ufunc refuse SeriesMatrix
+    # operands, which is what forces ``Quantity * matrix`` (and any other
+    # left operand with its own ``__array_ufunc__``) back through Python's
+    # reflected-operator protocol and into the explicit operator suite in
+    # :class:`~gwexpy.types.series_matrix_math.SeriesMatrixMathMixin`.
+    # Without it, ``Quantity.__array_ufunc__`` wins the NEP 13 dispatch,
+    # unwraps the matrix via its public ``.value`` and silently returns a
+    # bare ``Quantity`` with the wrong unit (issue #575).
+    __array_ufunc__ = None  # type: ignore[assignment]
+
+    def _cast_ufunc_operand(self, operand: Any) -> Any:
+        """Broadcast *operand* into a matrix aligned with ``self``.
+
+        Scalars fill every cell; 1-D input broadcasts along the sample axis;
+        2-D input broadcasts along the sample axis after being read as one
+        value per cell; 3-D input must match the full shape.  Returns
+        ``NotImplemented`` for operand types this class cannot interpret.
+        """
+        if isinstance(operand, SeriesMatrix):
+            return operand
+        if isinstance(operand, u.Quantity):
+            values, unit = np.asarray(operand.value), operand.unit
+        elif isinstance(operand, np.ndarray):
+            values, unit = np.asarray(operand), None
+        elif isinstance(operand, (bool, np.bool_, int, float, complex, np.number)):
+            values, unit = np.asarray(operand), u.dimensionless_unscaled
+        else:
+            return NotImplemented
+
+        shape = self._value.shape
+        N, M, K = shape
+        if values.ndim == 0:
+            broadcast = np.full(shape, values)
+        elif values.ndim == 1:
+            if values.shape != (K,):
+                raise ValueError(
+                    f"1D operand must have length N_samples={K}, got {values.shape}"
+                )
+            broadcast = np.broadcast_to(values.reshape(1, 1, K), shape)
+        elif values.ndim == 2:
+            if values.shape != (N, M):
+                raise ValueError(
+                    f"2D operand must have shape (Nrow,Ncol)={(N, M)}, got {values.shape}"
+                )
+            broadcast = np.broadcast_to(values.reshape(N, M, 1), shape)
+        elif values.ndim == 3:
+            if values.shape != shape:
+                raise ValueError(
+                    f"3D operand must have shape {shape}, got {values.shape}"
+                )
+            broadcast = values
+        else:
+            raise ValueError(f"operand with ndim={values.ndim} is not supported")
+
+        # Inherit this matrix's per-cell name/channel.  MetaData's ufunc rules
+        # take the *first* operand's name, so a synthetic placeholder here
+        # would surface as the result's name in every reflected operation
+        # (``quantity * matrix``).
+        if unit is None:
+            unit = u.dimensionless_unscaled
+        meta_array = np.empty((N, M), dtype=object)
+        for i in range(N):
+            for j in range(M):
+                source = self.meta[i, j]
+                meta_array[i, j] = MetaData(
+                    unit=unit, name=source.name, channel=source.channel
+                )
+        return self.__class__(
+            broadcast,
+            xindex=self.xindex,
+            meta=MetaDataMatrix(meta_array),
+            shape=shape,
+        )
+
+    def _ufunc_meta_operands(
+        self, ufunc: Any, casted_inputs: list[Any], inputs: tuple[Any, ...]
+    ) -> list[Any]:
+        """Return the operands used to derive the result's per-cell metadata.
+
+        Normally this is just each operand's ``MetaDataMatrix``.  ``power`` is
+        the exception: the exponent is a *number*, not a unit-carrying
+        quantity, so it is passed through unwrapped.  Broadcasting it into a
+        dimensionless matrix instead -- as every other operand is -- is what
+        made ``matrix ** 2`` fail with ``UnitConversionError`` while
+        ``np.square(matrix)`` succeeded (issue #577e).
+        """
+        meta_matrices = [inp.meta for inp in casted_inputs]
+        if ufunc is not np.power or len(inputs) != 2:
+            return cast(list[Any], meta_matrices)
+
+        exponent = _scalar_power_exponent(inputs[1])
+        if exponent is not None:
+            return [meta_matrices[0], exponent]
+
+        # A non-scalar exponent would give each sample its own unit, which the
+        # per-cell metadata model cannot express.  It is only well defined when
+        # the base is already dimensionless.
+        base_units = meta_matrices[0].units
+        if all(
+            unit is None or unit.is_equivalent(u.dimensionless_unscaled)
+            for unit in base_units.reshape(-1)
+        ):
+            return [_copy_meta_cells(meta_matrices[0], u.dimensionless_unscaled), 1]
+        raise u.UnitConversionError(
+            "power with a non-scalar exponent requires dimensionless base units; "
+            f"got {base_units.reshape(-1)[0]}"
+        )
+
+    def _ufunc_result_meta(
+        self,
+        ufunc: Any,
+        meta_operands: list[Any],
+        *,
+        bool_result: bool,
+        meta_passthrough: bool,
+        ufunc_kwargs: dict[str, Any],
+    ) -> MetaDataMatrix:
+        """Derive the result's metadata matrix for a single ufunc call."""
+        base_meta = meta_operands[0]
+        if ufunc in _COMPARISON_UFUNCS:
+            return _copy_meta_cells(base_meta, u.dimensionless_unscaled)
+        if bool_result or meta_passthrough:
+            return _copy_meta_cells(base_meta)
+        try:
+            return MetaDataMatrix(ufunc(*meta_operands, **ufunc_kwargs))
+        except (AttributeError, RuntimeError, TypeError, ValueError) as e:
+            if isinstance(e, u.UnitConversionError):
+                raise
+            logger.exception("MetaData vectorized ufunc failed; falling back to loop.")
+            warnings.warn(
+                f"MetaData vectorized ufunc failed; falling back to loop. Error: {e}",
+                PerformanceWarning,
+                stacklevel=2,
+            )
+            result_meta = np.empty(base_meta.shape, dtype=object)
+            for idx in np.ndindex(base_meta.shape):
+                meta_args = [
+                    operand[idx] if isinstance(operand, MetaDataMatrix) else operand
+                    for operand in meta_operands
+                ]
+                result_meta[idx] = ufunc(*meta_args, **ufunc_kwargs)
+            return MetaDataMatrix(result_meta)
+
+    def _ufunc_dispatch(
         self, ufunc: Any, method: str, *inputs: Any, **kwargs: Any
     ) -> Any:
+        """Apply *ufunc* to matrix operands, propagating per-cell metadata.
+
+        This is the implementation that used to be exposed as
+        ``__array_ufunc__``.  Since ``__array_ufunc__`` is now ``None`` NumPy
+        never calls it; the explicit operators in
+        :class:`~gwexpy.types.series_matrix_math.SeriesMatrixMathMixin` do.
+
+        Only ``method="__call__"`` is meaningful here.  ``reduce``,
+        ``accumulate``, ``reduceat``, ``outer`` and ``at`` used to be delegated
+        to the bare ndarray, which silently discarded all metadata (issue
+        #577d); they are now rejected outright, and the reduction-shaped public
+        methods (``sum``/``prod``/``cumsum``/``any``/``all``) are provided as
+        documented metadata-free overrides instead.
+
+        ``out=`` and ``where=`` are rejected rather than silently dropped
+        (issue #577c); use an in-place operator such as ``matrix *= other`` to
+        write into an existing matrix.
+        """
         if method != "__call__":
-            base_inputs = [
-                inp.view(np.ndarray) if isinstance(inp, SeriesMatrix) else inp
-                for inp in inputs
-            ]
-            try:
-                method_literal = cast(Any, method)
-                return np.ndarray.__array_ufunc__(
-                    self.view(np.ndarray),
-                    ufunc,
-                    method_literal,
-                    *base_inputs,
-                    **kwargs,
-                )
-            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-                return NotImplemented
+            raise TypeError(
+                f"SeriesMatrix does not support ufunc method {method!r}; "
+                "only '__call__' propagates per-cell metadata"
+            )
+        if kwargs.get("out") is not None:
+            raise TypeError(
+                "SeriesMatrix does not support the 'out' argument; "
+                "use an in-place operator (e.g. 'a *= b') instead"
+            )
+        if kwargs.get("where", True) is not True:
+            raise TypeError("SeriesMatrix does not support the 'where' argument")
+        ufunc_kwargs = {k: v for k, v in kwargs.items() if k not in ("out", "where")}
 
         casted_inputs = []
-        xindex = self.xindex
-        shape = self._value.shape
-        rows = self.rows
-        cols = self.cols
-        epoch = getattr(self, "epoch", 0.0)
-        name = getattr(self, "name", "")
-        # Deep-copy so the ufunc result does not alias the source's attrs
-        # dict (the #442 metadata-sharing defect).
-        attrs = deepcopy(getattr(self, "attrs", {}))
-
         for inp in inputs:
-            if isinstance(inp, SeriesMatrix):
-                casted_inputs.append(inp)
-            elif isinstance(inp, u.Quantity):
-                val = np.asarray(inp.value)
-                N, M, K = shape
-                if val.ndim == 0:
-                    arr = np.full(shape, val)
-                elif val.ndim == 1:
-                    if val.shape != (K,):
-                        raise ValueError(
-                            f"1D Quantity must have length N_samples={K}, got {val.shape}"
-                        )
-                    arr = np.broadcast_to(val.reshape(1, 1, K), shape)
-                elif val.ndim == 2:
-                    if val.shape != (N, M):
-                        raise ValueError(
-                            f"2D Quantity must have shape (Nrow,Ncol)={(N, M)}, got {val.shape}"
-                        )
-                    arr = np.broadcast_to(val.reshape(N, M, 1), shape)
-                elif val.ndim == 3:
-                    if val.shape != shape:
-                        raise ValueError(
-                            f"3D Quantity must have shape {shape}, got {val.shape}"
-                        )
-                    arr = val
-                else:
-                    raise ValueError(
-                        f"Quantity with ndim={val.ndim} is not supported in __array_ufunc__"
-                    )
-                unit = inp.unit
-                meta_array = np.empty(self._value.shape[:2], dtype=object)
-                for i in range(self._value.shape[0]):
-                    for j in range(self._value.shape[1]):
-                        meta_array[i, j] = MetaData(unit=unit, name=f"s{i}{j}")
-                meta_matrix = MetaDataMatrix(meta_array)
-                casted_inputs.append(
-                    self.__class__(
-                        arr, xindex=xindex, meta=meta_matrix, shape=self._value.shape
-                    )
-                )
-            elif isinstance(inp, (float, int, complex)):
-                arr = np.full(self._value.shape, inp)
-                unit = u.dimensionless_unscaled
-                meta_array = np.empty(self._value.shape[:2], dtype=object)
-                for i in range(self._value.shape[0]):
-                    for j in range(self._value.shape[1]):
-                        meta_array[i, j] = MetaData(unit=unit, name=f"s{i}{j}")
-                meta_matrix = MetaDataMatrix(meta_array)
-                casted_inputs.append(
-                    self.__class__(
-                        arr, xindex=xindex, meta=meta_matrix, shape=self._value.shape
-                    )
-                )
-            elif isinstance(inp, np.ndarray):
-                val = np.asarray(inp)
-                N, M, K = shape
-                if val.ndim == 0:
-                    arr = np.full(shape, val)
-                elif val.ndim == 1:
-                    if val.shape != (K,):
-                        raise ValueError(
-                            f"1D ndarray must have length N_samples={K}, got {val.shape}"
-                        )
-                    arr = np.broadcast_to(val.reshape(1, 1, K), shape)
-                elif val.ndim == 2:
-                    if val.shape != (N, M):
-                        raise ValueError(
-                            f"2D ndarray must have shape (Nrow,Ncol)={(N, M)}, got {val.shape}"
-                        )
-                    arr = np.broadcast_to(val.reshape(N, M, 1), shape)
-                elif val.ndim == 3:
-                    if val.shape != shape:
-                        raise ValueError(
-                            f"3D ndarray must have shape {shape}, got {val.shape}"
-                        )
-                    arr = val
-                else:
-                    raise ValueError(
-                        f"ndarray with ndim={val.ndim} is not supported in __array_ufunc__"
-                    )
-
-                casted_inputs.append(
-                    self.__class__(arr, xindex=xindex, shape=self._value.shape)
-                )
-            else:
+            casted = self._cast_ufunc_operand(inp)
+            if casted is NotImplemented:
                 return NotImplemented
+            casted_inputs.append(casted)
 
         check_shape_xindex_compatibility(*casted_inputs)
 
         if ufunc in _ADD_SUB_COMPARISON_UFUNCS:
             check_add_sub_compatibility(*casted_inputs)
+            value_arrays = convert_add_sub_values(casted_inputs)
+        else:
+            value_arrays = [inp.view(np.ndarray) for inp in casted_inputs]
 
-        value_arrays = [inp.view(np.ndarray) for inp in casted_inputs]
-
-        meta_matrices = [inp.meta for inp in casted_inputs]
-
-        ufunc_kwargs = {k: v for k, v in kwargs.items() if k not in ("out", "where")}
-
-        N, M = self._value.shape[:2]
-        logical_ufuncs = {
-            np.logical_and,
-            np.logical_or,
-            np.logical_xor,
-            np.logical_not,
-            np.isfinite,
-            np.isinf,
-            np.isnan,
-            np.isclose,
-        }
-        meta_passthrough_ufuncs = logical_ufuncs | {
-            np.sign,
-            np.floor,
-            np.ceil,
-            np.trunc,
-            np.rint,
-            np.mod,
-            np.remainder,
-            np.clip,
-        }
-        ufunc_name = getattr(ufunc, "__name__", None)
-        meta_passthrough = ufunc in meta_passthrough_ufuncs or ufunc_name in {"clip"}
-        result_dtype = np.dtype(self._value.dtype)
-        try:
-            probe_val_args = [v[0, 0] for v in value_arrays]
-            probe_result = ufunc(*probe_val_args, **ufunc_kwargs)
-            boolean_ufuncs = {
-                np.less,
-                np.less_equal,
-                np.equal,
-                np.not_equal,
-                np.greater,
-                np.greater_equal,
-                np.logical_and,
-                np.logical_or,
-                np.logical_xor,
-                np.logical_not,
-                np.isfinite,
-                np.isinf,
-                np.isnan,
-                np.isclose,
-            }
-            if ufunc in boolean_ufuncs:
-                result_dtype = np.dtype(np.bool_)
-            else:
-                result_dtype = np.asarray(probe_result).dtype
-        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
-            result_dtype = np.dtype(self._value.dtype)
-
-        # Vectorized value calculation
-        try:
-            result_values = ufunc(*value_arrays, **ufunc_kwargs)
-        except (TypeError, ValueError, AttributeError, RuntimeError) as e:
-            # Fallback to loop if vectorized call fails (likely due to custom ufunc or mixed types)
-            warnings.warn(
-                f"ufunc {ufunc.__name__} failed vectorized execution; falling back to loop. Error: {e}",
-                PerformanceWarning,
-            )
-            result_values = np.empty(self._value.shape, dtype=result_dtype)
-            for i in range(N):
-                for j in range(M):
-                    val_args = [v[i, j] for v in value_arrays]
-                    result_values[i, j] = ufunc(*val_args, **ufunc_kwargs)
-
-        result_meta = np.empty(self._value.shape[:2], dtype=object)
-        bool_result = np.issubdtype(result_dtype, np.bool_)
-
-        # Optimize Metadata calculation
-        # If all input matrices have uniform units, we can avoid the loop
-        def _get_uniform_meta(meta_mat):
-            first = meta_mat[0, 0]
-            # Check if all elements are effectively the same in terms of ufunc result
-            # For simplicity, we check if all have the same unit.
-            if np.all(meta_mat.units == first.unit):
-                return first
-            return None
-
-        uniform_metas = [_get_uniform_meta(m) for m in meta_matrices]
-        all_uniform = all(m is not None for m in uniform_metas)
-
-        if all_uniform and not (bool_result or meta_passthrough):
-            try:
-                # Compute resulting meta once
-                res_meta_obj = ufunc(*uniform_metas, **ufunc_kwargs)
-                result_meta = np.full((N, M), res_meta_obj, dtype=object)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
-                # Optimize: vectorized meta-ufunc failed, use fallback
-                logger.exception(
-                    "MetaData ufunc optimization failed; using element-wise calculation."
+        if ufunc in _DIVISION_UFUNCS and len(value_arrays) == 2:
+            if np.any(value_arrays[1] == 0):
+                raise ZeroDivisionError(
+                    f"{ufunc.__name__} by zero in SeriesMatrix operation"
                 )
-                warnings.warn(
-                    f"MetaData ufunc optimization failed: {e}. Using element-wise calculation.",
-                    PerformanceWarning,
-                )
-                all_uniform = False
 
-        if not all_uniform:
-            try:
-                if bool_result or meta_passthrough:
-                    # In these cases, we typically take the first operand's metadata
-                    result_meta = meta_matrices[0].copy()
-                else:
-                    # Leverage MetaDataMatrix's vectorized ufunc support
-                    result_meta = ufunc(*meta_matrices, **ufunc_kwargs)
-            except (AttributeError, RuntimeError, TypeError, ValueError) as e:
-                # Fallback to loop if vectorized meta-ufunc fails
-                logger.exception(
-                    "MetaData vectorized ufunc failed; falling back to loop."
-                )
-                warnings.warn(
-                    f"MetaData vectorized ufunc failed; falling back to loop. Error: {e}",
-                    PerformanceWarning,
-                )
-                result_meta = np.empty((N, M), dtype=object)
-                for i in range(N):
-                    for j in range(M):
-                        meta_args = [m[i, j] for m in meta_matrices]
-                        if bool_result or meta_passthrough:
-                            result_meta[i, j] = meta_args[0]
-                        else:
-                            result_meta[i, j] = ufunc(*meta_args, **ufunc_kwargs)
+        result_values = self._ufunc_values(ufunc, value_arrays, ufunc_kwargs)
+        bool_result = bool(np.issubdtype(result_values.dtype, np.bool_))
+        meta_passthrough = ufunc in _META_PASSTHROUGH_UFUNCS or getattr(
+            ufunc, "__name__", None
+        ) in {"clip"}
 
-        result_meta_matrix = MetaDataMatrix(result_meta)
-        result_units = result_meta_matrix.units
+        result_meta_matrix = self._ufunc_result_meta(
+            ufunc,
+            self._ufunc_meta_operands(ufunc, casted_inputs, inputs),
+            bool_result=bool_result,
+            meta_passthrough=meta_passthrough,
+            ufunc_kwargs=ufunc_kwargs,
+        )
+        rows = self.rows
+        cols = self.cols
         return self.__class__(
             result_values,
             xindex=self.xindex,
             meta=result_meta_matrix,
-            units=result_units,
-            rows=rows,
-            cols=cols,
-            name=name,
-            epoch=epoch,
-            attrs=attrs,
+            units=result_meta_matrix.units,
+            rows=_copy_metadata_dict(rows, "row") if rows else rows,
+            cols=_copy_metadata_dict(cols, "col") if cols else cols,
+            name=getattr(self, "name", ""),
+            epoch=getattr(self, "epoch", 0.0),
+            # Deep-copy so the result does not alias the source's attrs dict
+            # (the #442 metadata-sharing defect).
+            attrs=deepcopy(getattr(self, "attrs", {})),
         )
+
+    def _ufunc_values(
+        self, ufunc: Any, value_arrays: list[np.ndarray], ufunc_kwargs: dict[str, Any]
+    ) -> np.ndarray:
+        """Evaluate *ufunc* on raw value arrays, looping only if forced to."""
+        try:
+            return np.asarray(ufunc(*value_arrays, **ufunc_kwargs))
+        except (TypeError, ValueError, AttributeError, RuntimeError) as e:
+            warnings.warn(
+                f"ufunc {ufunc.__name__} failed vectorized execution; "
+                f"falling back to loop. Error: {e}",
+                PerformanceWarning,
+                stacklevel=2,
+            )
+        N, M = self._value.shape[:2]
+        # Collect first, then let NumPy infer the dtype: pre-allocating with the
+        # input dtype would quietly coerce a boolean comparison result back to
+        # float.
+        cells = [
+            [ufunc(*[v[i, j] for v in value_arrays], **ufunc_kwargs) for j in range(M)]
+            for i in range(N)
+        ]
+        return np.asarray(cells)

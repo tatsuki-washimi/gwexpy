@@ -324,19 +324,30 @@ def test_append_unitless_xindex():
     assert np.array_equal(combined.xindex, np.concatenate([x1, x2]))
 
 
-def test_logical_ufunc_skips_meta():
-    """logical ufunc should not try to combine MetaData (avoid TypeError)."""
+def test_logical_ufunc_rejected_on_matrix():
+    """Direct logical ufuncs are refused; ``.value`` is the escape hatch.
+
+    Since #575 SeriesMatrix sets ``__array_ufunc__ = None``, so NumPy refuses
+    every ufunc applied straight to a matrix instead of silently returning a
+    metadata-free object.
+    """
     sm = SeriesMatrix(np.arange(6).reshape(2, 1, 3), xindex=np.arange(3))
-    out = np.logical_and(sm, sm)
-    assert out.value.dtype == np.bool_
+    with pytest.raises(TypeError):
+        np.logical_and(sm, sm)
+
+    out = np.logical_and(sm.value, sm.value)
+    assert out.dtype == np.bool_
     assert out.shape == sm.shape
 
 
-def test_logical_not_bool_output():
-    """logical_not also returns bool output without touching metadata"""
+def test_logical_not_rejected_on_matrix():
+    """logical_not is refused as well; operate on the raw values instead."""
     sm = SeriesMatrix(np.arange(6).reshape(2, 1, 3), xindex=np.arange(3))
-    out = np.logical_not(sm)
-    assert out.value.dtype == np.bool_
+    with pytest.raises(TypeError):
+        np.logical_not(sm)
+
+    out = np.logical_not(sm.value)
+    assert out.dtype == np.bool_
     assert out.shape == sm.shape
 
 
@@ -551,25 +562,38 @@ def test_is_compatible_raises_on_incompatible_units():
         sm_s.is_compatible(sm_hz)
 
 
-def test_sign_preserves_unit_and_meta():
+def test_sign_rejected_on_matrix():
+    """``np.sign`` has no operator form, so it is refused on a matrix.
+
+    ``sign`` used to pass the per-cell unit straight through.  There is no
+    operator to route it through, so it now raises and callers work on
+    ``.value``.
+    """
     data = np.array([[[-1.0, 2.0]]])
     xindex = np.array([0.0, 1.0])
     sm = SeriesMatrix(data, xindex=xindex, units=[[u.m]])
-    out = np.sign(sm)
-    assert np.array_equal(out.value, [[[-1.0, 1.0]]])
-    assert out.meta[0, 0].unit == u.m
+    with pytest.raises(TypeError):
+        np.sign(sm)
+    assert np.array_equal(np.sign(sm.value), [[[-1.0, 1.0]]])
 
 
 def test_floor_divide_mod_passthrough_meta():
+    """``//`` and ``%`` keep the left operand's per-cell unit."""
     data = np.array([[[5.0, 6.0]]])
     xindex = np.array([0.0, 1.0])
     sm = SeriesMatrix(data, xindex=xindex, units=[[u.s]])
-    out_fd = np.floor_divide(sm, 2)
-    out_mod = np.mod(sm, 2)
+    out_fd = sm // 2
+    out_mod = sm % 2
     assert out_fd.meta[0, 0].unit == u.s
     assert out_mod.meta[0, 0].unit == u.s
     assert np.array_equal(out_fd.value, [[[2.0, 3.0]]])
     assert np.array_equal(out_mod.value, [[[1.0, 0.0]]])
+
+    # The ufuncs themselves are refused when applied directly.
+    with pytest.raises(TypeError):
+        np.floor_divide(sm, 2)
+    with pytest.raises(TypeError):
+        np.mod(sm, 2)
 
 
 def test_clip_passthrough_meta():
@@ -581,12 +605,20 @@ def test_clip_passthrough_meta():
     assert np.array_equal(out.value, [[[0.0, 0.5, 1.0]]])
 
 
-def test_isclose_bool_output():
+def test_isclose_rejected_on_matrix():
+    """``np.isclose`` is built from ufuncs, so it is refused on a matrix.
+
+    It has no operator form and no method equivalent; compare ``.value``
+    instead.
+    """
     a = SeriesMatrix(np.array([[[1.0, 2.0]]]), xindex=np.array([0.0, 1.0]))
     b = SeriesMatrix(np.array([[[1.0, 2.1]]]), xindex=np.array([0.0, 1.0]))
-    out = np.isclose(a, b, atol=0.05)
-    assert out.value.dtype == np.bool_
-    assert np.array_equal(out.value, [[[True, False]]])
+    with pytest.raises(TypeError):
+        np.isclose(a, b, atol=0.05)
+
+    out = np.isclose(a.value, b.value, atol=0.05)
+    assert out.dtype == np.bool_
+    assert np.array_equal(out, [[[True, False]]])
 
 
 def test_is_compatible_gwpy_vs_exact():

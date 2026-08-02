@@ -8,6 +8,7 @@ from astropy import units as u
 from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
+from gwexpy.types.seriesmatrix_base import _copy_metadata_dict, _scalar_power_exponent
 from gwexpy.types.typing import ArrayLike, IndexLike, MetaDataCollectionType, UnitLike
 
 from .collections import SpectrogramDict, SpectrogramList
@@ -218,27 +219,131 @@ class SpectrogramMatrix(  # type: ignore[misc]
         if not hasattr(self, "_value"):
             self._value = self.view(np.ndarray)
 
-    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
-        """Override `SeriesMatrix.__array_ufunc__` to handle `SpectrogramMatrix` structure.
+    def _cell_indices(self):
+        """Yield ``(meta_index, data_index)`` pairs for every spectrogram cell.
 
-        (Batch, Time, Freq) or (Row, Col, Time, Freq).
+        A 3-D matrix is ``(Batch, Time, Freq)`` with ``(N, 1)`` metadata, so
+        batch ``i`` maps to metadata cell ``(i, 0)``.  A 4-D matrix is
+        ``(Row, Col, Time, Freq)`` and the two indices coincide.
+        """
+        if self.meta is None:
+            return
+        if self.ndim == 3:
+            for i in range(self.meta.shape[0]):
+                yield (i, 0), (i,)
+        else:
+            for i in range(self.meta.shape[0]):
+                for j in range(self.meta.shape[1]):
+                    yield (i, j), (i, j)
 
-        Per-element units are preserved in MetaDataMatrix:
-        - Scalar operations: apply ufunc to each element's unit individually
-        - Binary matrix operations: check per-element unit compatibility and raise
-          UnitConversionError if any pair is incompatible
+    def _add_sub_reference_unit(self, inputs, meta_idx):
+        """Return the unit that cell *meta_idx* is expressed in for add/sub.
+
+        The leftmost operand fixes the result unit, matching both astropy and
+        `SeriesMatrix`: ``1 * u.cm + sgm(unit=m)`` comes out in centimetres,
+        ``sgm(unit=m) + 1 * u.cm`` in metres.
+        """
+        first = inputs[0]
+        if isinstance(first, u.Quantity):
+            return first.unit
+        if isinstance(first, u.UnitBase):
+            return first
+        return self.meta[meta_idx].unit or u.dimensionless_unscaled
+
+    def _convert_operand_for_add_sub(self, operand, values, inputs):
+        """Rescale *values* into the leftmost operand's per-cell units.
+
+        Parameters
+        ----------
+        operand : SpectrogramMatrix, Quantity or other
+            The original operand the values came from; it supplies the source
+            unit (per cell for a matrix, globally for a ``Quantity``).
+        values : numpy.ndarray
+            The raw values extracted from *operand*.
+        inputs : tuple
+            The full ufunc operand tuple, used to locate the reference unit.
+
+        Returns
+        -------
+        numpy.ndarray
+            *values* when no cell needs rescaling, otherwise a converted copy.
+
+        Notes
+        -----
+        Before gwexpy 0.1.13 the value was taken straight from
+        ``Quantity.value`` and only the *units* were combined, so
+        ``sgm(unit=m) + 1 * u.cm`` added 1 m instead of 0.01 m (issue #576).
+        Plain numbers stay unconverted: they are treated as already being in
+        the reference unit, which is the long-standing behaviour.
+
+        """
+        if isinstance(operand, SpectrogramMatrix):
+
+            def source_unit_at(idx):
+                return operand.meta[idx].unit
+
+        elif isinstance(operand, u.Quantity):
+
+            def source_unit_at(idx):
+                return operand.unit
+
+        else:
+            return values
+
+        converted = None
+        broadcast = np.shape(values) != np.shape(self)
+        for meta_idx, data_idx in self._cell_indices():
+            target = self._add_sub_reference_unit(inputs, meta_idx)
+            source = source_unit_at(meta_idx) or u.dimensionless_unscaled
+            if source == target:
+                continue
+            if not source.is_equivalent(target):
+                raise u.UnitConversionError(
+                    f"Unit mismatch at element {meta_idx}: {source} vs {target}"
+                )
+            if converted is None:
+                base = np.broadcast_to(values, np.shape(self)) if broadcast else values
+                converted = np.array(
+                    base, dtype=np.result_type(np.asarray(values).dtype, np.float64)
+                )
+            converted[data_idx] = u.Quantity(converted[data_idx], source).to_value(
+                target
+            )
+        return values if converted is None else converted
+
+    def _ufunc_dispatch(self, ufunc, method, *inputs, **kwargs):
+        """Apply *ufunc* to this matrix, propagating per-element units.
+
+        Handles both `SpectrogramMatrix` layouts -- ``(Batch, Time, Freq)`` and
+        ``(Row, Col, Time, Freq)`` -- which is why this overrides the
+        `SeriesMatrix` implementation instead of reusing it.
+
+        Per-element units live in the `MetaDataMatrix`:
+
+        - Scalar operations apply the ufunc to each element's unit.
+        - Binary matrix operations convert the right operand into the left
+          operand's per-element units and raise ``UnitConversionError`` when a
+          pair is dimensionally incompatible.
+
+        Like `SeriesMatrix`, this is reached only through the explicit
+        operators: ``__array_ufunc__`` is ``None``, so NumPy never calls it and
+        ufunc methods other than ``__call__`` are rejected rather than silently
+        dropping metadata.
         """
         from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
         if method != "__call__":
-            # Defer to ndarray (e.g. at, reduce) - might lose metadata but SeriesMatrix does too
-            args = [
-                inp.view(np.ndarray) if isinstance(inp, SpectrogramMatrix) else inp
-                for inp in inputs
-            ]
-            return super(SeriesMatrix, self).__array_ufunc__(
-                ufunc, method, *args, **kwargs
+            raise TypeError(
+                f"SpectrogramMatrix does not support ufunc method {method!r}; "
+                "only '__call__' propagates per-element metadata"
             )
+        if kwargs.get("out") is not None:
+            raise TypeError(
+                "SpectrogramMatrix does not support the 'out' argument; "
+                "use an in-place operator (e.g. 'a *= b') instead"
+            )
+        if kwargs.get("where", True) is not True:
+            raise TypeError("SpectrogramMatrix does not support the 'where' argument")
 
         # Identify ufunc category for unit handling
         _ADD_SUB_UFUNCS = {np.add, np.subtract}
@@ -264,8 +369,10 @@ class SpectrogramMatrix(  # type: ignore[misc]
                 val = getattr(inp, "value", inp)
                 args.append(np.asarray(val))
                 scalar_inputs.append(inp)
-            elif isinstance(inp, u.UnitBase):
-                args.append(1.0)  # Unit acts as multiplier
+            elif isinstance(inp, u.UnitBase) and ufunc in _MUL_DIV_UFUNCS:
+                # A bare Unit carries no values, so it is only meaningful as a
+                # multiplier; ``sgm + u.s`` has no defensible reading.
+                args.append(1.0)
                 scalar_inputs.append(inp)
             else:
                 return NotImplemented
@@ -274,6 +381,20 @@ class SpectrogramMatrix(  # type: ignore[misc]
             return NotImplemented
 
         main = sgm_inputs[0]
+
+        # 1b. Bring every other operand into `main`'s per-element units before
+        #     the values are combined (issue #576).
+        if ufunc in _ADD_SUB_UFUNCS or ufunc in _COMPARISON_UFUNCS:
+            args = [
+                main._convert_operand_for_add_sub(inp, np.asarray(arg), inputs)
+                for inp, arg in zip(inputs, args)
+            ]
+
+        if ufunc in {np.divide, np.true_divide, np.floor_divide, np.mod, np.remainder}:
+            if len(args) == 2 and np.any(np.asarray(args[1]) == 0):
+                raise ZeroDivisionError(
+                    f"{ufunc.__name__} by zero in SpectrogramMatrix operation"
+                )
 
         # 2. Compute Data
         try:
@@ -292,35 +413,26 @@ class SpectrogramMatrix(  # type: ignore[misc]
             new_meta_arr = np.empty(meta_shape, dtype=object)
 
             if is_scalar_op:
-                # Scalar operation: apply ufunc to each element's unit
-                # Get scalar unit(s)
-                scalar_unit = u.dimensionless_unscaled
-                for sc in scalar_inputs:
-                    if isinstance(sc, u.UnitBase):
-                        scalar_unit = sc
-                    elif isinstance(sc, u.Quantity):
-                        scalar_unit = sc.unit
-                    # else: dimensionless
-
+                # Scalar operation: apply the ufunc to each element's unit,
+                # preserving the operand order so that reflected operators
+                # (``2 * u.s / sgm``) compose their units the right way round.
                 for idx in np.ndindex(meta_shape):
                     old_meta = cast(MetaData, main.meta[idx])
                     old_unit = (
                         old_meta.unit if old_meta.unit else u.dimensionless_unscaled
                     )
-
-                    try:
-                        # Apply ufunc to units
-                        q_result = (
-                            ufunc(u.Quantity(1, old_unit), u.Quantity(1, scalar_unit))
-                            if len(inputs) == 2
-                            else ufunc(u.Quantity(1, old_unit))
+                    if ufunc in _COMPARISON_UFUNCS:
+                        new_unit = u.dimensionless_unscaled
+                    elif ufunc in _ADD_SUB_UFUNCS:
+                        # The values were rescaled into this unit above, so the
+                        # result must be labelled with it -- astropy's own
+                        # "left operand wins" rule is already baked into
+                        # ``_add_sub_reference_unit``.
+                        new_unit = main._add_sub_reference_unit(inputs, idx)
+                    else:
+                        new_unit = self._scalar_result_unit(
+                            ufunc, inputs, main, old_unit
                         )
-                        new_unit = (
-                            q_result.unit if hasattr(q_result, "unit") else old_unit
-                        )
-                    except (TypeError, ValueError, u.UnitConversionError):
-                        new_unit = old_unit
-
                     new_meta_arr[idx] = MetaData(
                         name=old_meta.name,
                         channel=old_meta.channel,
@@ -344,11 +456,11 @@ class SpectrogramMatrix(  # type: ignore[misc]
                         u1 = m1.unit if m1.unit else u.dimensionless_unscaled
                         u2 = m2.unit if m2.unit else u.dimensionless_unscaled
 
-                        # Check strict unit equality for add/sub/comparison
-                        # Following SeriesMatrix check_add_sub_compatibility:
-                        # u0 != uk raises UnitConversionError (even for equivalent units like m vs cm)
+                        # Add/sub/comparison only need *equivalent* units: the
+                        # right operand's values were already rescaled into
+                        # `main`'s units above, so `m` and `cm` now agree.
                         if ufunc in _ADD_SUB_UFUNCS or ufunc in _COMPARISON_UFUNCS:
-                            if u1 != u2:
+                            if not u1.is_equivalent(u2):
                                 raise u.UnitConversionError(
                                     f"Unit mismatch at element {idx}: {u1} vs {u2}"
                                 )
@@ -391,14 +503,15 @@ class SpectrogramMatrix(  # type: ignore[misc]
                 return next(iter(meta_units))
             return None
 
-        # Reconstruct SpectrogramMatrix
+        # Reconstruct SpectrogramMatrix.  Row/column metadata is deep-copied so
+        # the result never shares MetaData instances with its operands.
         if result_data.shape == main.shape:
             obj = self.__class__(
                 result_data,
                 times=main.times,
                 frequencies=main.frequencies,
-                rows=main.rows,
-                cols=main.cols,
+                rows=_copy_metadata_dict(main.rows, "row") if main.rows else main.rows,
+                cols=_copy_metadata_dict(main.cols, "col") if main.cols else main.cols,
                 meta=new_meta,
                 name=main.name,
                 unit=_infer_unit(new_meta),
@@ -407,46 +520,38 @@ class SpectrogramMatrix(  # type: ignore[misc]
 
         return result_data
 
-    def __mul__(self, other):
-        """Multiply by scalar, unit, or matrix."""
-        # Explicitly handle u.UnitBase to avoid astropy ufunc precedence issues
-        if isinstance(other, u.UnitBase):
-            return np.multiply(self, u.Quantity(1, other))
-        return np.multiply(self, other)
+    @staticmethod
+    def _unit_probe(operand, matrix, matrix_unit):
+        """Return a unit-carrying stand-in for *operand* in a unit calculation."""
+        if operand is matrix:
+            return u.Quantity(1, matrix_unit)
+        if isinstance(operand, u.UnitBase):
+            return u.Quantity(1, operand)
+        if isinstance(operand, u.Quantity):
+            return u.Quantity(1, operand.unit)
+        return u.Quantity(1, u.dimensionless_unscaled)
 
-    def __rmul__(self, other):
-        """Right multiply by scalar, unit, or matrix."""
-        if isinstance(other, u.UnitBase):
-            return np.multiply(u.Quantity(1, other), self)
-        return np.multiply(other, self)
+    def _scalar_result_unit(self, ufunc, inputs, main, cell_unit):
+        """Compute the result unit of a scalar operation on one element.
 
-    def __truediv__(self, other):
-        """Divide by scalar, unit, or matrix."""
-        if isinstance(other, u.UnitBase):
-            return np.divide(self, u.Quantity(1, other))
-        return np.divide(self, other)
-
-    def __rtruediv__(self, other):
-        """Right divide by scalar, unit, or matrix."""
-        if isinstance(other, u.UnitBase):
-            return np.divide(u.Quantity(1, other), self)
-        return np.divide(other, self)
-
-    def __add__(self, other):
-        """Add scalar/quantity or matrix."""
-        return np.add(self, other)
-
-    def __radd__(self, other):
-        """Right add."""
-        return np.add(other, self)
-
-    def __sub__(self, other):
-        """Subtract scalar/quantity or matrix."""
-        return np.subtract(self, other)
-
-    def __rsub__(self, other):
-        """Right subtract."""
-        return np.subtract(other, self)
+        ``power`` is special-cased because the exponent is a plain number: the
+        generic ``ufunc(Quantity(1, base), Quantity(1, dimensionless))`` probe
+        would return the base unit unchanged instead of ``base ** exponent``.
+        """
+        if ufunc is np.power and len(inputs) == 2:
+            exponent = _scalar_power_exponent(inputs[1])
+            if exponent is None:
+                raise u.UnitConversionError(
+                    "power with a non-scalar exponent is not supported for "
+                    "SpectrogramMatrix"
+                )
+            return cell_unit**exponent
+        probes = [self._unit_probe(inp, main, cell_unit) for inp in inputs]
+        try:
+            q_result = ufunc(*probes)
+        except (TypeError, ValueError, u.UnitConversionError):
+            return cell_unit
+        return getattr(q_result, "unit", cell_unit)
 
     def row_keys(self):
         """Return the row metadata keys."""
