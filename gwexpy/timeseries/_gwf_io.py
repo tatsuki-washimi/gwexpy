@@ -44,6 +44,9 @@ _GWF_ALIAS_TO_CANONICAL = {
     "lalframe": "gwf.lalframe",
 }
 _GWF_REGISTRY_SYNCED = False
+_FFL_SUFFIX = ".ffl"
+_FFL_MAX_DEPTH = 64
+_FFL_MAX_ENTRIES = 100_000
 
 
 def _safe_get_reader(format_name: str, cls: type[Any]) -> Any | None:
@@ -183,7 +186,8 @@ def _resolve_gwf_format(source: Any, fmt: Any) -> str | None:
         if not source:
             return None
         if all(
-            _normalize_path_suffix(value).suffix.lower() == ".gwf" for value in source
+            _normalize_path_suffix(value).suffix.lower() in {".gwf", _FFL_SUFFIX}
+            for value in source
         ):
             return "gwf"
         return None
@@ -193,7 +197,7 @@ def _resolve_gwf_format(source: Any, fmt: Any) -> str | None:
     except TypeError:
         return None
 
-    if path.suffix.lower() == ".gwf":
+    if path.suffix.lower() in {".gwf", _FFL_SUFFIX}:
         return "gwf"
     return None
 
@@ -205,11 +209,135 @@ def _normalize_path_suffix(source: Any) -> Path:
         return Path()
 
 
+def _is_ffl_source(source: Any) -> bool:
+    return _normalize_path_suffix(source).suffix.lower() == _FFL_SUFFIX
+
+
+def _resolve_ffl_entry_path(entry: str, parent: Path) -> Path:
+    """Resolve a local FFL entry relative to its containing list file."""
+    try:
+        path = Path(entry)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid FFL path entry {entry!r}") from exc
+    if not path.is_absolute():
+        path = parent / path
+    try:
+        return path.resolve()
+    except (OSError, RuntimeError) as exc:
+        raise ValueError(f"Cannot resolve FFL path entry {entry!r}") from exc
+
+
+def _append_ffl_paths(
+    ffl_path: Path,
+    output: list[Path],
+    include_stack: list[Path],
+    entry_count: list[int],
+) -> None:
+    """Append GWF paths from one FFL, guarding recursion and input size."""
+    canonical_path = ffl_path.resolve()
+    if canonical_path in include_stack:
+        chain = include_stack + [canonical_path]
+        chain_text = " -> ".join(str(path) for path in chain)
+        raise ValueError(f"FFL include cycle: {chain_text}")
+    if len(include_stack) >= _FFL_MAX_DEPTH:
+        chain_text = " -> ".join(str(path) for path in include_stack)
+        raise ValueError(f"FFL include depth exceeds {_FFL_MAX_DEPTH}: {chain_text}")
+
+    include_stack.append(canonical_path)
+    try:
+        with canonical_path.open(encoding="utf-8") as handle:
+            for line_number, line in enumerate(handle, start=1):
+                parts = line.strip().split()
+                if not parts:
+                    continue
+                entry_count[0] += 1
+                if entry_count[0] > _FFL_MAX_ENTRIES:
+                    raise ValueError(
+                        f"FFL entry count exceeds {_FFL_MAX_ENTRIES}: "
+                        f"{canonical_path}:{line_number}"
+                    )
+
+                if len(parts) == 3:
+                    nested_path = _resolve_ffl_entry_path(
+                        parts[0], canonical_path.parent
+                    )
+                    if nested_path.suffix.lower() != _FFL_SUFFIX:
+                        raise ValueError(
+                            "Unsupported 3-field FFL entry at "
+                            f"{canonical_path}:{line_number}; expected a nested .ffl path"
+                        )
+                    _append_ffl_paths(nested_path, output, include_stack, entry_count)
+                    continue
+
+                if len(parts) == 1 or len(parts) == 5:
+                    frame_path = _resolve_ffl_entry_path(
+                        parts[0], canonical_path.parent
+                    )
+                    if frame_path.suffix.lower() != ".gwf":
+                        raise ValueError(
+                            "Unsupported FFL entry at "
+                            f"{canonical_path}:{line_number}; expected a .gwf path"
+                        )
+                    output.append(frame_path)
+                    continue
+
+                raise ValueError(
+                    f"Unsupported FFL entry at {canonical_path}:{line_number}; "
+                    "expected one, three, or five whitespace-separated fields"
+                )
+    finally:
+        include_stack.pop()
+
+
+def _expand_gwf_source(source: Any) -> Any:
+    """Expand local FFL sources into an ordered list of normalized GWF paths.
+
+    Three entry shapes are accepted: a GWF path alone, a five-field FFL entry
+    with the path first, and a three-field entry whose first field is a nested
+    ``.ffl`` path.  The first two are also accepted by GWpy's cache reader
+    (:func:`gwpy.io.cache.read_cache_entry`); the nested three-field form is a
+    GWexpy extension, which GWpy rejects with ``ValueError``.  A five-field
+    *LAL* cache line, where the path comes last, is deliberately not accepted
+    here: it fails closed rather than being misread as a path in field one.
+
+    Relative paths are resolved against the containing FFL file.  Existing
+    non-FFL GWF source shapes are returned unchanged so their established merge
+    behavior is preserved.
+    """
+    if isinstance(source, (list, tuple)):
+        if not any(_is_ffl_source(item) for item in source):
+            return source
+        sources = list(source)
+    elif _is_ffl_source(source):
+        sources = [source]
+    else:
+        return source
+
+    expanded: list[Any] = []
+    include_stack: list[Path] = []
+    entry_count = [0]
+    for item in sources:
+        if _is_ffl_source(item):
+            _append_ffl_paths(
+                _normalize_path_suffix(item),
+                expanded,
+                include_stack,
+                entry_count,
+            )
+        else:
+            expanded.append(item)
+
+    if not expanded:
+        raise ValueError("FFL source contains no GWF entries")
+    return expanded
+
+
 def _source_for_gwf_channel_listing(source: Any) -> Any:
     """Return a single source suitable for GWF channel-name discovery."""
-    if isinstance(source, (list, tuple)) and source:
-        return source[0]
-    return source
+    expanded = _expand_gwf_source(source)
+    if isinstance(expanded, (list, tuple)) and expanded:
+        return expanded[0]
+    return expanded
 
 
 def _normalize_gwf_read_limit(value: Any | None) -> Any | None:
@@ -258,6 +386,7 @@ def read_gwf_timeseriesdict(
     """Read GWF source(s) into a TimeSeriesDict-like class with GWpy merge semantics."""
     if isinstance(source, (list, tuple)) and not source:
         raise ValueError("GWF source list/tuple must be non-empty")
+    source = _expand_gwf_source(source)
 
     from gwpy.timeseries.io.gwf.core import read_timeseriesdict
 
@@ -270,7 +399,7 @@ def read_gwf_timeseriesdict(
     merge_gap, merge_pad = _normalize_gwf_gap_options(pad, gap)
 
     def read_one(item: Any) -> Any:
-        return dict_class(
+        result = dict_class(
             read_timeseriesdict(
                 item,
                 channels,
@@ -281,6 +410,12 @@ def read_gwf_timeseriesdict(
                 **read_kwargs,
             )
         )
+        for channel, series in result.items():
+            if getattr(series, "channel", None) is None:
+                series.channel = channel
+            if getattr(series, "name", None) is None:
+                series.name = channel
+        return result
 
     if isinstance(source, (list, tuple)):
         sources = list(source)
@@ -411,6 +546,7 @@ __all__ = [
     "_normalize_gwf_channels",
     "_normalize_gwf_format",
     "_resolve_gwf_format",
+    "_expand_gwf_source",
     "_source_for_gwf_channel_listing",
     "_sync_gwf_registry_aliases",
     "_GWF_BACKENDS",

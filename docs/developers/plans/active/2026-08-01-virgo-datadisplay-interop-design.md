@@ -119,7 +119,8 @@ GWexpy には既に GWDama interop（外部 project との thin interop / reader
 
 ## 3. 実測結果
 
-Status: F1〜F3 は completed (verified: `python /tmp/verify_root_dtype.py`)、F4 は planned（未実測）
+Status: F1〜F3 は completed (verified: `python /tmp/verify_root_dtype.py`)、F4 は completed
+（verified: synthetic GWF/FFL fresh-process probe and GWexpy regression tests）
 
 環境: ROOT 6.36.04（system python 3.12）、gwpy 4.0.1、gwexpy `main` @ `7ded3b0f9`。
 検証スクリプトの内容は Appendix B に収録（`/tmp` 上にあるため揮発性。再現時は Appendix B
@@ -191,29 +192,36 @@ TCanvas -> TimeSeries: TypeError: Object Name: c_f3 Title: c_f3 is neither TH1, 
 `"read an individual object from the file first"` / `"convert each TGraph individually"`）。
 `TCanvas` は汎用 TypeError。設計会話で指摘された gap の認識は正しい。
 
-### F4. `.ffl` の直接読み出しは gwpy 側に穴がある可能性が高い
+### F4. `.ffl` の直接読み出しは gwpy の文字列経路を避けて修正
 
-Status: planned（**未実測**。以下は静的コードリーディングのみに基づく）
+Status: completed（synthetic real GWF/FFL fixture、fresh process、conda `gwexpy` で verified）
 
-静的コードリーディングによる根拠:
+実測結果:
 
-- `gwexpy/io/ffldatafind.py` は `gwpy.io.ffldatafind` の re-export のみ。これは
-  **datafind API（`find_urls` 等）であり、`.ffl` パスを `read()` に渡す経路ではない。**
-- gwpy `io/utils.py:258` の `file_list()` は `.cache` / `.lcf` / `.ffl` を認識して
-  `read_cache()` に回す。
-- しかし GWF リーダ本体 `gwpy/timeseries/io/gwf/core.py:144-152` の「read cache file
-  up-front」分岐は **`.lcf` と `.cache` のみ**で `.ffl` を含まない。
-- その後 `is_cache(source)`（`gwpy/io/cache.py:400`）は str パスも受けて中身をパースするため
-  **True を返す** → `find_contiguous("raw.ffl")` → `flatten()`（`gwpy/io/cache.py:562`）が
-  文字列を 1 文字ずつ展開してしまう。
-- gwpy 本体に `.ffl` を `TimeSeries.read` へ渡すテストは存在しない
-  （`gwpy/io/tests/test_cache.py` と `test_ffldatafind.py` のみ）。
+- GWpy-only の fresh process で合成 real `.gwf` 2 本と標準的な 5-field `.ffl` を生成し、
+  `gwpy.timeseries.TimeSeries.read(..., format="gwf")` と
+  `TimeSeriesDict.read(..., format="gwf")` を実行した。両方とも
+  `TypeError: 'str' object cannot be interpreted as an integer` で失敗した。
+  これは GWpy の直接文字列経路の実測結果であり、GWexpy の release blocker とはしない。
+- GWpy source の確認で、5-field の path-first FFL entry と、3-field の nested FFL entry
+  を確認した。後者は GWpy parser が include として扱う一方、相対解決が process cwd 基準で
+  cycle guard もないため、GWexpy 側で安全に展開する corrective path を選択した。
+- GWexpy の focused fresh-process test は 10 passed。`TimeSeries` / `TimeSeriesDict` の
+  explicit `format="gwf"` と format 省略、nested FFL、metadata（values / t0 / span / dt /
+  sample rate / unit / channel / name）、cycle include chain、既存の GWF list route を確認した。
+- 回帰: `rtk conda run -n gwexpy pytest tests/timeseries/test_io_gwf_timeseriesdict.py -q -rA`
+  は 66 passed, 1 skipped（optional `framel` backend case）。
 
-GWexpy の `_gwf_io.read_gwf_timeseriesdict` は gwpy の `read_timeseriesdict` を直接呼ぶため、
-この挙動をそのまま継承する。
+選択した corrective path:
 
-> **注意**: 「GWpy が `.ffl` を読めるので継承クラスでも読める」という前提は、実測で確認する
-> まで docs に書かない。確定は Issue B の責務。
+- `_resolve_gwf_format()` が `.ffl` を explicit / implicit の両方で `gwf` route に入れる。
+- `_expand_gwf_source()` が local FFL を、one-field `.gwf`、5-field path-first FFL、3-field
+  nested `.ffl` のみに bounded parsing し、各 list の containing directory 基準で path を
+  normalize して ordered `.gwf` list に展開する。
+- include cycle は canonical path の deterministic chain を含む `ValueError` とする。
+  展開後は既存の `read_gwf_timeseriesdict()` の time-span sort / gap / overlap merge をそのまま
+  利用する。Virgo private path、native frame decoding、GWpy upstream issue、remote URL、他の
+  cache syntax は追加していない。
 
 ### F5. 既存資産と制約
 
@@ -230,7 +238,7 @@ Status: planned（コード・docs の読み取りに基づく事実整理。動
   ROOT テストは `pytest.importorskip("ROOT")` で skip される。上記実測は system python で
   実施した。
 - `gwexpy/gui/loaders/loaders.py:19` と `gwexpy/gui/README.md:55` は既に `.ffl` を
-  サポート形式として宣言している。F4 が未検証のまま残るとこの記述が誇大表示になる。
+  サポート形式として宣言している。今回の F4 実装・検証結果とこの既存記述の scope は一致する。
 - Virgo / ffl / dataDisplay / TCanvas に関する既存 issue は open / closed とも無し。
 
 ---
@@ -380,7 +388,7 @@ Status: planned
 |---|---|---|---|
 | U | Umbrella | Virgo データ導線の全体管理 | — |
 | A | bug | `from_root` が `TH1F`/`TH2F` を float64 として読む（F1） | **P0** |
-| B | investigate | `.ffl` を `TimeSeries.read` に直接渡せるか実測（F4） | P1 |
+| B | completed | `.ffl` を GWexpy GWF route へ展開して `TimeSeries` / `TimeSeriesDict` で実測（F4） | P1 |
 | C | investigate | dataDisplay 実サンプル `.root` の構造インベントリ | P1 |
 | D | feat | `TH1` → `TimeSeries`/`FrequencySeries` 変換（F2） | P2 |
 | E | feat | `TCanvas`/`TPad` 走査と `TFile` インベントリ（F3） | P2 |
@@ -389,7 +397,7 @@ Status: planned
 ```
 Phase 1（依存なし・並行可）
   A  ← Virgo と独立。単独で実装着手可能
-  B  ← 合成 fixture のみで完結
+  B  ← completed: 合成 fixture のみで完結
   C  ← 実サンプルの持ち込み待ち
 
 Phase 2（Phase 1 の結果待ち）
@@ -404,11 +412,11 @@ Phase 2（Phase 1 の結果待ち）
 `TypeError`。gwexpy 内 round-trip だけでは検出できないため、**非 double 型を明示的に
 生成するテスト**を必須とする。
 
-**B**: 合成 `.gwf` 2 本 + それを指す合成 `.ffl`（ネスト形式を含む）で、gwpy / gwexpy の
-`TimeSeries.read` / `TimeSeriesDict.read` の 4 通り、および `format=` 省略時の挙動を実測。
-動く場合は metadata 保持を確認して docs と回帰テストへ。動かない場合は
-(i) gwexpy 側で `read_cache()` により path list へ展開、(ii) docs で手動展開を案内、
-(iii) upstream gwpy へ issue、の三択を決める。`gwexpy/gui` の `.ffl` 記載の見直しも含む。
+**B**: completed。合成 `.gwf` 2 本 + それを指す合成 `.ffl`（nested 形式を含む）で、
+GWpy-only の direct-string failure と、GWexpy の `TimeSeries.read` /
+`TimeSeriesDict.read` の 4 通り、および `format=` 省略時の挙動を実測した。metadata 保持、
+cycle、path normalization を確認し、docs と回帰テストへ反映した。修正は GWexpy 側の
+bounded expansion であり、手動展開、`gwexpy/gui` の scope 外変更、upstream issue は行わない。
 
 **C**: §4 の「確定に必要な情報」をすべて埋め、対応表を暫定から確定へ更新する。
 fixture は「実サンプルで構造を確認し、テストは同構造の合成ファイルで行う」を原則とし、
@@ -490,8 +498,9 @@ Status: planned
 - **実サンプル未参照**: dataDisplay `.root` の実構造（`TH1F` か `TH1D` か、`TCanvas`
   入れ子か）は未確認。実サンプルは別マシンにあり、本設計時点では参照できていない。
   §4 の対応表は暫定であり、Issue C で確定させる。
-- **`.ffl` の可否は未確定**: 静的コードリーディングでは gwpy 側に穴がある可能性が高いが、
-  実測していない。docs には Issue B の結論が出るまで `.ffl` の使い方を書かない。
+- **`.ffl` の実測範囲**: 合成 real `.gwf` / `.ffl` の local path syntax のみを検証した。
+  Virgo private data、remote URL、コメント付きまたは別の cache syntax は対象外であり、docs
+  でも対応済みとは主張しない。
 - **Issue A は Virgo と独立**: `TH1F` / `TH2F` の破損は既存ユーザーに現時点で影響しうる。
   Virgo 関連 issue の進捗を待たずに実装へ進めてよい。
 - **ROOT テスト環境**: conda `gwexpy` 環境に ROOT が無いため、ROOT 関連の回帰テストは
@@ -523,8 +532,8 @@ Status: planned
 | `TH2D` → Spectrogram | 実装済み | `TH2D` は正常。**`TH2F` は破損（F1）** |
 | `TCanvas` traversal | 未実装 | 未実装（一致） |
 | `TFile` 自動走査 | 未実装 | 未実装（一致） |
-| `.ffl` 専用 parser | 未実装 | 未実装（一致） |
-| GWpy backend 経由の `.ffl` | 未検証 | 未検証。**静的には穴がある可能性が高い（F4）** |
+| `.ffl` 専用 parser | 未実装 | GWexpy の bounded expansion を実装済み（F4） |
+| GWpy backend 経由の `.ffl` | 未検証 | GWpy direct string は `TypeError`、GWexpy expansion route は verified（F4） |
 
 この誤差は、会話が GitHub 上のコード検索と commit summary に基づいており、実際にコードを
 実行していなかったことによる。本文 §3 は実行結果に基づいて訂正済みである。
