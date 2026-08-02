@@ -129,8 +129,19 @@ def _read_win_fixed(filename: str | Path, century="20"):
                 flag = f"{buff[0]:02x}"
                 chanum = f"{buff[1]:02x}"
                 chanum = f"{flag}{chanum}"
+                # Byte 2 packs two fields: the sample-width code in the high
+                # nibble, and the top 4 bits of a 12-bit sample rate in the low
+                # nibble, whose bottom 8 bits are byte 3.  Reading byte 3 alone
+                # truncates the rate modulo 256, so 1000 Hz decoded as 232 Hz.
+                # ObsPy fixed the same defect identically in obspy/io/win/core.py
+                # (upstream obspy#3641), which is the cross-check used here.
                 datawide = float(buff[2] >> 4)
                 srate = ((buff[2] & 0x0F) << 8) | buff[3]
+                # A channel block always carries at least the leading absolute
+                # sample, so rate 0 cannot describe real data; xlen would go
+                # negative below.  Fail loudly rather than mis-slice the packet.
+                # Not a documented sentinel in any spec consulted here: if a
+                # writer is ever found that means "4096" by 0, revisit this.
                 if srate == 0:
                     raise ValueError("WIN sample rate must be positive")
                 xlen = (srate - 1) * datawide
