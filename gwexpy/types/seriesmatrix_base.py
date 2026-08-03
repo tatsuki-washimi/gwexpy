@@ -113,6 +113,15 @@ def _copy_meta_cells(
     arr = np.empty(meta_matrix.shape, dtype=object)
     for idx in np.ndindex(meta_matrix.shape):
         src = meta_matrix[idx]
+        if not isinstance(src, MetaData):
+            # MetaDataMatrix.__new__ guarantees every cell is a MetaData
+            # instance; numpy's object-dtype __getitem__ stubs cannot express
+            # that invariant, so this check both narrows the type for mypy
+            # and guards the invariant at runtime.
+            raise TypeError(
+                f"MetaDataMatrix cell at {idx} is {type(src).__name__}, "
+                "expected MetaData"
+            )
         arr[idx] = MetaData(
             name=src.name,
             channel=src.channel,
