@@ -1177,3 +1177,59 @@ def test_equality_with_unrelated_object_is_false(matrix):
     assert (matrix == "not a matrix") is False
     assert (matrix != "not a matrix") is True
     assert (matrix == None) is False  # noqa: E711
+
+
+# ---------------------------------------------------------------------------
+# NumPy integer/float scalar operands (np.int64 does not subclass Python int,
+# so it needs its own acceptance path wherever plain int/float is accepted).
+# ---------------------------------------------------------------------------
+
+
+NUMPY_SCALAR_CASES = {
+    "np_int64_mul": (lambda m: m * np.int64(2), 2.0),
+    "np_int64_pow": (lambda m: m ** np.int64(2), None),  # unit handled separately
+    "np_uint32_mul": (lambda m: m * np.uint32(3), 3.0),
+    "np_int64_rmul": (lambda m: np.int64(2) * m, 2.0),
+}
+
+
+@pytest.mark.parametrize(
+    ("op", "factor"),
+    list(NUMPY_SCALAR_CASES.values()),
+    ids=list(NUMPY_SCALAR_CASES),
+)
+def test_operators_accept_bare_numpy_integer_scalars(matrix, op, factor):
+    """``matrix * np.int64(n)`` etc. must not raise (previously a regression:
+    the scalar-acceptance checks in both ``SeriesMatrix``'s and
+    ``SpectrogramMatrix``'s own ufunc dispatch listed ``int``/``float`` but
+    not ``np.number``, so a bare NumPy integer scalar was rejected with
+    ``TypeError: operand ... does not support ufuncs``).
+    """
+    result = op(matrix)
+    assert type(result) is type(matrix)
+    if factor is not None:
+        np.testing.assert_allclose(result.value, matrix.value * factor)
+        assert cell_units(result) == cell_units(matrix)
+
+
+def test_power_with_numpy_integer_exponent_matches_python_int(matrix):
+    """``matrix ** np.int64(2)`` must equal ``matrix ** 2`` in value and unit."""
+    via_numpy_int = matrix ** np.int64(2)
+    via_python_int = matrix**2
+    np.testing.assert_allclose(via_numpy_int.value, via_python_int.value)
+    assert cell_units(via_numpy_int) == cell_units(via_python_int)
+
+
+def test_power_with_numpy_integer_exponent_does_not_warn(matrix):
+    """``matrix ** np.int64(n)`` must not fall back to the per-cell metadata
+    loop (previously a regression: ``_scalar_power_exponent`` passed a bare
+    ``np.int64`` through to ``MetaDataMatrix.__array_ufunc__``, whose
+    ``_to_array`` helper only accepts ``int``/``float``/``complex`` -- not
+    ``np.number`` -- so the vectorized path always raised internally, was
+    caught, logged a full traceback, and re-raised as a ``PerformanceWarning``
+    on every single call).
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        result = matrix ** np.int64(2)
+    assert type(result) is type(matrix)

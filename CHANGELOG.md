@@ -57,6 +57,19 @@
   `SpectrogramMatrix`'s `times` axis could alias the source's, so mutating
   one silently corrupted the other. `astype()` now mirrors `copy()`'s
   independence guarantees for all four (#623).
+- **types**: a bare NumPy integer scalar operand (e.g. `np.int64(2)`, as
+  opposed to a Python `int` or `np.float64`, which happens to subclass
+  Python `float`) is now accepted everywhere a plain number is. Previously
+  `spectrogram_matrix * np.int64(2)` and `spectrogram_matrix ** np.int64(2)`
+  raised `TypeError: operand 'SpectrogramMatrix' does not support ufuncs`,
+  because `SpectrogramMatrix`'s own operand-acceptance check listed `int`/
+  `float`/`complex` but not `np.number`. Separately, `matrix ** np.int64(n)`
+  on `TimeSeriesMatrix`/`FrequencySeriesMatrix` always computed the correct
+  result but took a guaranteed exception-and-fallback path on every call —
+  logging a full traceback and raising a `PerformanceWarning` — because the
+  new (#577e) scalar-exponent normalization passed a bare `np.number`
+  through to `MetaDataMatrix`'s per-cell unit computation, which only
+  accepts `int`/`float`/`complex`. Both are now normalized before use (#623).
 
 ### Compatibility
 

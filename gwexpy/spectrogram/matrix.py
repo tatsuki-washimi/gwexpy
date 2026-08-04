@@ -410,7 +410,16 @@ class SpectrogramMatrix(  # type: ignore[misc]
             if isinstance(inp, SpectrogramMatrix):
                 args.append(inp.view(np.ndarray))
                 sgm_inputs.append(inp)
-            elif isinstance(inp, (u.Quantity, np.ndarray, float, int, complex)):
+            elif isinstance(
+                inp, (u.Quantity, np.ndarray, float, int, complex, np.number)
+            ):
+                # np.number (e.g. np.int64) does not subclass Python int, so
+                # it needs its own branch here even though it is already
+                # accepted by ``_scalar_power_exponent`` downstream -- without
+                # this, ``matrix * np.int64(2)`` regressed to a bare
+                # ``TypeError`` from ``__array_ufunc__=None`` on this class
+                # (the sibling ``SeriesMatrix`` implementation in
+                # ``seriesmatrix_base.py`` accepts it via the same check).
                 val = getattr(inp, "value", inp)
                 args.append(np.asarray(val))
                 scalar_inputs.append(inp)

@@ -149,7 +149,16 @@ def _scalar_power_exponent(operand: Any) -> Any:
     if isinstance(operand, (bool, np.bool_)):
         # Python/NumPy semantics: True == 1, False == 0.
         return int(operand)
-    if isinstance(operand, (int, float, complex, np.number)):
+    if isinstance(operand, np.number):
+        # Unwrap to a plain Python scalar: MetaDataMatrix.__array_ufunc__'s
+        # ``_to_array`` helper does not accept ``np.number`` (only
+        # ``int``/``float``/``complex``), so passing a bare ``np.int64``
+        # through unwrapped made every ``matrix ** np.int64(n)`` take the
+        # vectorized-metadata path's exception+fallback branch -- correct
+        # result, but a full traceback log and a ``PerformanceWarning`` on
+        # every call.
+        return operand.item()
+    if isinstance(operand, (int, float, complex)):
         return operand
     if isinstance(operand, np.ndarray) and operand.ndim == 0:
         return operand.item()
