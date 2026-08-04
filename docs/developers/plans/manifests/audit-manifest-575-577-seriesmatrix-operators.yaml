@@ -146,6 +146,17 @@ design_decisions:
     accepted only when every base unit is dimensionless; otherwise it raises
     UnitConversionError, because one unit per cell cannot express a per-sample
     exponent.
+  577e_power_correction_2026_08_04: >-
+    The scalar-exponent classifier (_scalar_power_exponent) excluded
+    bool/np.bool_ (`return None` instead of the integer value), which routed
+    `matrix ** True` and `matrix ** False` into the non-scalar,
+    dimensionless-only branch above and made them raise UnitConversionError
+    for any non-dimensionless matrix -- a regression against Python/NumPy
+    semantics (True == 1, False == 0) introduced by this lane, not a
+    pre-existing defect. Fixed by returning int(operand) for bool/np.bool_,
+    so `matrix ** True` preserves the original value and unit and
+    `matrix ** False` yields value 1 with a dimensionless result, matching
+    `matrix ** 1` / `matrix ** 0`. See merge_blocker_corrections_2026_08_04.
   577f_unary_table: >-
     Extended rather than merely documented.  metadata.py now has three tables:
     _UFUNC_UNIT_PRESERVING (abs, fabs, negative, positive, real, imag,
@@ -257,6 +268,21 @@ contract_results:
     reflected form 1*u.cm + sgm(unit=m) yields 101 cm, i.e. the same physical
     quantity with the left operand's label.  Incompatible units (m vs s) raise
     UnitConversionError.
+  issue_576_acceptance_correction_2026_08_04: >-
+    RETRACTED as an unqualified PASS. The add/sub/comparison behaviour
+    described directly above is still correct and unchanged -- this
+    correction narrows the claim, it does not reverse it. A maintainer-driven
+    merge-blocker audit on 2026-08-04 found that SpectrogramMatrix.clip()
+    carried an unfixed instance of the exact defect #576 targeted ("ignore
+    the unit, operate on the raw value"): a bare-number bound such as
+    `clip(1, 2)` was silently accepted against a unit-bearing matrix while an
+    equivalent-but-differently-scaled Quantity bound (e.g. clip(1*u.cm,
+    2*u.cm) against a metre matrix) was handled incorrectly -- the inverse of
+    the intended contract. #576 is therefore PASS only for the operators
+    covered by issue_576_acceptance above (add, sub, comparison); it was not
+    exhaustively closed across every operation that shares the same defect
+    class. See merge_blocker_corrections_2026_08_04 below for the fix,
+    its tests, and the corrected clip() unit contract.
   issue_577a: "PASS: result metadata cells are distinct objects; mutating one leaves the others and the source unchanged."
   issue_577b: "PASS: per-cell names and channels survive both the uniform and the non-uniform unit case."
   issue_577c: >-
@@ -269,6 +295,20 @@ contract_results:
   in_place_atomicity: "PASS for incompatible unit, zero divisor, bad shape and unsafe dtype; values and units are byte-identical afterwards."
   comparisons: "PASS: same subclass, bool dtype, dimensionless units, deep-copied per-cell metadata."
   zero_division: "PASS for /, //, %, divmod and the reflected form; the operand is left intact."
+  zero_division_correction_2026_08_04: >-
+    The PASS above described that //, %, and divmod raised ZeroDivisionError
+    without corrupting the operand; that remains true for the
+    dimensionless case. It did not disclose that all three also silently
+    ignored units on non-zero divisors (a separate defect from zero
+    division, found in the same 2026-08-04 audit): //  and % copied the
+    left operand's unit onto the result without ever converting the raw
+    values into a common unit first, and divmod (composed from // and %)
+    inherited the same defect. Fixed: divmod is reverted to an explicit
+    TypeError (unsupported, matching its pre-#623 behaviour on main --
+    not a functional regression), and unit-bearing operands to // and %
+    now raise TypeError explicitly instead of computing a silently wrong
+    value. Dimensionless // and % are unaffected and keep working. See
+    merge_blocker_corrections_2026_08_04 below.
   reductions: "PASS: sum, prod, cumsum, cumprod, any, all return plain NumPy values with no warning and match np.asarray(matrix).<op>()."
   quantity_left_equality: >-
     Pinned as astropy behaviour, not as a gwexpy contract: == and != never
@@ -282,6 +322,23 @@ api_reduction_disclosure:
     a public API reduction shipping in a patch release; Lane Z owns the
     CHANGELOG entry.  The table below was produced by /tmp/laned_disclosure.py
     against the modified tree.
+  note_correction_2026_08_04: >-
+    The two rows below for np.floor_divide and np.mod/np.remainder are now
+    only accurate for a dimensionless matrix. As of the 2026-08-04
+    merge-blocker fixes, `m // x` and `m % x` themselves raise TypeError
+    when m is unit-bearing and x is not equivalent-unit-dimensionless
+    (see zero_division_correction_2026_08_04 above) -- there is no operator
+    alternative for a unit-bearing floor-divide/modulo in v0.1.x, only an
+    explicit failure. A correct unit-aware implementation is deferred to the
+    v0.2.0 semantic redesign (#637). np.divmod was never listed here because
+    it has no ufunc form for a subclass with __array_ufunc__ = None; the
+    explicit __divmod__/__rdivmod__ this lane added has since been removed
+    and divmod(m, x) now raises TypeError unconditionally, matching main's
+    pre-#623 behaviour (not a functional regression). For finiteness checks
+    (np.isfinite, listed below with no operator alternative), the officially
+    documented v0.1.13 idiom is `mask = np.isfinite(matrix.value)`; v0.2.0 may
+    add matrix.isfinite()/matrix.isnan() returning shape-preserving boolean
+    matrices, but no new API is added in this patch release.
   with_alternative:
     - {lost: "np.abs / np.absolute", alternative: "abs(m), m.abs()"}
     - {lost: "np.negative", alternative: "-m"}
@@ -291,8 +348,8 @@ api_reduction_disclosure:
     - {lost: "np.square", alternative: "m ** 2"}
     - {lost: "np.add / np.subtract", alternative: "m + x, m - x"}
     - {lost: "np.multiply / np.divide", alternative: "m * x, m / x"}
-    - {lost: "np.floor_divide", alternative: "m // x"}
-    - {lost: "np.mod / np.remainder", alternative: "m % x"}
+    - {lost: "np.floor_divide", alternative: "m // x (dimensionless only as of 2026-08-04; see note_correction_2026_08_04)"}
+    - {lost: "np.mod / np.remainder", alternative: "m % x (dimensionless only as of 2026-08-04; see note_correction_2026_08_04)"}
     - {lost: "np.power", alternative: "m ** x"}
     - {lost: "np.matmul", alternative: "m @ other"}
     - {lost: "np.rint", alternative: "m.round()"}
@@ -309,7 +366,7 @@ api_reduction_disclosure:
     - np.logical_not
     - np.isclose
     - np.allclose
-    - np.isfinite
+    - "np.isfinite (supported alternative: mask = np.isfinite(matrix.value) -- see note_correction_2026_08_04)"
     - np.isnan
     - np.isinf
     - np.maximum
@@ -317,13 +374,15 @@ api_reduction_disclosure:
     - np.floor
     - np.ceil
     - np.trunc
+    - "divmod(m, x) (explicit TypeError as of 2026-08-04; see zero_division_correction_2026_08_04)"
   still_working:
     - {entry: "np.real / np.imag", why: "not ufuncs; they read the .real/.imag attributes"}
-    - {entry: "np.clip and m.clip", why: "explicit clip override added in this lane"}
-    - {entry: "np.round and m.round", why: "explicit round override added in this lane"}
+    - {entry: "np.clip and m.clip", why: "explicit clip override added in this lane; unit-judgement and SpectrogramMatrix frequency-axis-loss defects fixed 2026-08-04, see merge_blocker_corrections_2026_08_04"}
+    - {entry: "np.round and m.round", why: "explicit round override added in this lane; SpectrogramMatrix frequency-axis-loss defect fixed 2026-08-04, see merge_blocker_corrections_2026_08_04"}
     - {entry: "np.array_equal", why: "converts with asarray before comparing"}
     - {entry: "sum, prod, cumsum, cumprod, any, all", why: "explicit metadata-free overrides"}
     - {entry: "mean, std, var, min, max, median", why: "already routed through np.asarray by StatisticalMethodsMixin"}
+    - {entry: "m ** True / m ** False", why: "bool exponent now matches Python/NumPy integer semantics (True==1, False==0), fixed 2026-08-04, see merge_blocker_corrections_2026_08_04"}
 
 review:
   status: pending
@@ -341,3 +400,325 @@ unresolved_risks:
   - "SpectrogramMatrix still leaves plain numbers unconverted in add/sub (they are treated as already being in the reference unit), matching the previous lenient behaviour; only unit-carrying operands are rescaled."
   - "The zero-divisor guard scans the whole divisor array on every division; for very large matrices this is an O(N) cost that did not exist before."
   - "Human review of the two renamed SpectrogramMatrix tests is pending; the coordinator approved the scope amendment but not the final wording."
+
+merge_blocker_corrections_2026_08_04:
+  status: >-
+    An independent adversarial re-review of this lane's implementation, run
+    against the full regression suite rather than only the 328-test contract
+    suite recorded above, surfaced four new silent-corruption defects plus
+    one pre-existing defect this manifest's issue_576_acceptance and
+    zero_division PASS lines did not disclose. The maintainer ruled that
+    "no PR-caused ordinary test failures" is not evidence of correctness --
+    the independent probes found real bugs the ordinary suite did not
+    exercise -- and required all five fixed inside PR #623 before merge,
+    each traceable to already-approved v0.1.13 principles (never silently
+    drop metadata/axes, never ignore a unit and operate on the raw value,
+    prefer NumPy/GWpy-compatible semantics, fail explicitly rather than
+    return a wrong value, leave no silent corruption). No additional human
+    physics sign-off was required for these five fixes specifically; the
+    review section above (physics_review_required: true) still applies to
+    the lane's original design (per-cell unit conversion semantics for
+    add/sub/comparison) and is unaffected by this correction.
+  corrected_completion_statement: >-
+    Addition, subtraction, and comparison are unit-safe. Modulo, floor
+    division, and divmod are not supported for unit-bearing SeriesMatrix
+    objects in v0.1.x. They raise explicitly rather than performing
+    value-only arithmetic.
+  fixes:
+    - id: spectrogram_clip_round_axis_loss
+      severity: highest priority (blocker 1)
+      defect: >-
+        SpectrogramMatrix.clip()/.round() rebuilt results via self.copy(),
+        and the base SeriesMatrix.copy() had no knowledge of
+        SpectrogramMatrix's frequencies/f0/df axis, so every clip()/round()
+        call silently dropped the frequency axis (and SpectrogramMatrix.copy()
+        itself shared the same root cause, independent of clip/round).
+      fix: >-
+        Added SpectrogramMatrix.copy(self, order="C") overriding the base
+        implementation: calls super().copy(order=order) then resupplies
+        new.frequencies (copy(), with a deepcopy fallback). clip()/round()
+        inherit the fix because they rebuild through copy().
+      files: [gwexpy/spectrogram/matrix.py]
+      tests:
+        - test_spectrogram_clip_preserves_frequency_axis
+        - test_spectrogram_round_preserves_frequency_axis
+        - test_clip_and_round_survive_copy_slice_and_pickle_roundtrip
+    - id: clip_unit_judgement_inversion
+      severity: blocker 2
+      defect: >-
+        clip() accepted plain-number bounds against a unit-bearing matrix
+        (silently treating them as already being in the matrix's unit) while
+        mishandling equivalent-but-differently-scaled Quantity bounds -- the
+        inverse of the intended contract, and the same defect class as #576.
+      fix: >-
+        clip(min, max) now: (1) accepts a Quantity bound equivalent to the
+        matrix's unit and converts it (e.g. clip(1*u.cm, 2*u.cm) against a
+        metre matrix converts to metres); (2) raises
+        astropy.units.UnitConversionError for a bare number or a
+        dimensionless Quantity bound against a unit-bearing matrix; (3)
+        raises UnitConversionError for a dimensionally incompatible bound
+        (e.g. seconds against metres); (4) raises UnitConversionError (not
+        TypeError) specifically because NumPy 1.26's np.clip()/_wrapfunc
+        silently swallows a TypeError raised from inside .clip() and falls
+        back to computing on the raw array with aliased metadata --
+        confirmed by direct probe both before and after this fix (see
+        test_np_clip_does_not_swallow_the_rejection). UnitConversionError is
+        a ValueError subclass, not a TypeError, so it is not swallowed.
+      files: [gwexpy/types/series_matrix_math.py]
+      tests:
+        - test_clip_accepts_equivalent_quantity_bounds
+        - test_clip_rejects_dimensionless_bounds_for_unitful_matrix
+        - test_np_clip_does_not_swallow_the_rejection
+    - id: divmod_silent_corruption
+      severity: blocker 3
+      defect: >-
+        __divmod__/__rdivmod__ (added by this lane) composed // and %, which
+        silently ignored units on non-zero divisors -- i.e. divmod produced a
+        wrong-but-plausible result for a unit-bearing matrix rather than
+        failing.
+      fix: >-
+        __divmod__/__rdivmod__ removed entirely. Python's default protocol
+        for a type with no divmod support raises TypeError, matching main's
+        pre-#623 behaviour -- not a functional regression, since
+        divmod(matrix, operand) was already unsupported on main.
+      files: [gwexpy/types/series_matrix_math.py]
+      tests:
+        - test_divmod_is_explicitly_unsupported
+        - test_rdivmod_is_explicitly_unsupported
+        - test_divmod_by_zero_raises_type_error_not_zero_division_error
+    - id: bool_power_exponent_regression
+      severity: blocker 4
+      defect: >-
+        _scalar_power_exponent excluded bool/np.bool_ explicitly
+        (`isinstance(operand, (bool, np.bool_)): return None`), which routed
+        `matrix ** True` / `matrix ** False` into the non-scalar,
+        dimensionless-only exponent branch and made them raise
+        UnitConversionError for any non-dimensionless matrix. This was a
+        regression introduced by this lane against Python/NumPy bool
+        semantics (True == 1, False == 0), not a pre-existing defect.
+      fix: >-
+        _scalar_power_exponent now returns int(operand) for bool/np.bool_,
+        so matrix ** True == matrix ** 1 (original value and unit preserved)
+        and matrix ** False == matrix ** 0 (value 1, dimensionless).
+      files: [gwexpy/types/seriesmatrix_base.py]
+      tests:
+        - test_bool_power_matches_python_integer_semantics
+    - id: modulo_floor_divide_unit_naive
+      severity: pre-existing defect, same class as #576, required by maintainer despite predating PR #623
+      defect: >-
+        _META_PASSTHROUGH_UFUNCS included np.mod/np.remainder (and the
+        floor-divide path shared the same pattern): the left operand's unit
+        was copied onto the result without ever converting the raw values
+        into a common unit first, so `5*u.m % 2*u.s` silently returned "3 m"
+        instead of raising.
+      fix: >-
+        // and % between a unit-bearing SeriesMatrix and any non-dimensionless
+        operand now raise TypeError explicitly via a shared guard
+        (_reject_unit_naive_division). Dimensionless // and % are unaffected.
+        A correct unit-aware floor-division/remainder implementation is
+        explicitly deferred to the v0.2.0 semantic redesign (#637); this
+        patch release only removes the silent corruption.
+      files: [gwexpy/types/series_matrix_math.py]
+      tests:
+        - test_modulo_and_floor_divide_do_not_ignore_units
+        - test_inplace_floordiv_and_mod_reject_unit_bearing_matrix
+        - test_inplace_floordiv_and_mod_work_for_dimensionless
+        - test_zero_divisor_raises_for_dimensionless_floordiv_and_mod
+  finiteness_check_alternative: >-
+    No new API is added in v0.1.13 for finiteness checks (direct ufuncs
+    including np.isfinite remain unsupported per the D-option ruling). The
+    officially documented v0.1.13 idiom is `mask = np.isfinite(matrix.value)`.
+    v0.2.0 may add matrix.isfinite()/matrix.isnan() returning
+    shape/axis-preserving boolean matrices.
+  scope_note: >-
+    These fixes stay within "make existing operations safe" and do not
+    implement the v0.2.0 ufunc-compatibility redesign; direct ufunc
+    application to a matrix remains an explicit TypeError per the D-option
+    ruling recorded in api_reduction_disclosure above.
+  verification:
+    - cmd: "rtk proxy conda run -n gwexpy python -m pytest tests/types/ tests/spectrogram/ -q -p no:cacheprovider"
+      result: "1500 passed, 20 skipped, 2 xfailed"
+    - cmd: "rtk proxy conda run -n gwexpy python -m pytest tests/ -m \"not slow\" -q -p no:cacheprovider"
+      result: >-
+        7564 passed, 262 skipped, 8 xfailed, 5 failed. All 5 failures
+        reproduce identically on the unmodified base tree (git stash):
+        tests/test_geomap.py x3 (pygmt GMTCLibNotFound), tests/test_version.py
+        ::test_package_version_matches_installed_metadata (dev0 editable-install
+        version-metadata mismatch, expected during the dev0 period),
+        tests/timeseries/test_matrix_analysis.py::test_distance_correlation
+        (dcor/numba JIT TypingError, unrelated third-party library issue).
+        Zero regressions attributable to this diff.
+    - cmd: "conda run -n gwexpy ruff check <5 touched files>"
+      result: "All checks passed (exit 0)"
+    - cmd: "conda run -n gwexpy mypy <3 touched python modules>"
+      result: >-
+        7 pre-existing errors in gwexpy/statistics/gauch.py and
+        gwexpy/spectral/estimation.py (neither touched by this diff),
+        identical on the unmodified base tree via git stash/pop. Zero new
+        errors in the changed files.
+  write_scope: >-
+    gwexpy/types/series_matrix_math.py, gwexpy/types/seriesmatrix_base.py,
+    gwexpy/spectrogram/matrix.py, tests/types/, tests/spectrogram/,
+    docs/plans/2026-08-04-v0113-contract-rulings.md (declared per
+    parallel-worktrees.md write-scope rule; worktree /tmp/gwexpy-623)
+
+second_pass_adversarial_review_2026_08_04:
+  status: >-
+    Step 10 of the merge_blocker ruling's implementation order ("re-run the
+    AI technical review and adversarial review against the new head") was
+    executed as two independent passes against the five-fix diff above. The
+    first pass (code-reviewer persona) found one real defect (item 1 below);
+    that fix's own follow-on diff was then reviewed by a second, independent
+    pass (Auditor persona, told the first defect was already fixed and asked
+    to look for anything else) that found three more. All four are
+    orchestrator-confirmed by direct execution before being fixed, per
+    trust-boundary.md Sec.5 (subagent output is advisory, not binding).
+  fixes:
+    - id: spectrogram_frequency_loss_via_astype_path
+      found_by: first-pass code-reviewer
+      defect: >-
+        _rebuild_with_values (used by clip()/round()) falls back to
+        self.astype(values.dtype) instead of self.copy() whenever the
+        operation changes dtype (e.g. clipping an int64 SpectrogramMatrix
+        against float/Quantity bounds, which NumPy upcasts to float64). Only
+        copy() had been given a frequencies-resupplying override (fix #1
+        above); astype() had the identical blind spot, so this dtype-changing
+        path still silently dropped frequencies/f0/df -- the fix for
+        merge-blocker 1 was incomplete for this trigger.
+      fix: >-
+        Added a matching SpectrogramMatrix.astype() override (mirroring
+        copy(), via a shared _resupplied_frequencies staticmethod) that
+        resupplies frequencies after calling super().astype(...).
+      files: [gwexpy/spectrogram/matrix.py]
+      test: test_spectrogram_clip_preserves_axes_across_a_dtype_change
+    - id: clip_round_out_argument_bypasses_wrapfunc_swallow_guard
+      found_by: second-pass Auditor
+      severity: highest priority of the second pass
+      defect: >-
+        clip()'s and round()'s `out is not None` guards still raised a bare
+        TypeError, even though every other rejection path in clip() had
+        already been switched to UnitConversionError specifically because
+        NumPy 1.26's np.clip()/np.round() (_wrapfunc) silently swallows a
+        TypeError from the object's own method and falls back to a raw,
+        unchecked computation with metadata aliased onto the source. Reached
+        via np.clip(matrix, ..., out=dest) (also matrix.clip(..., out=dest)
+        being called through np.clip's dispatch): the unit checks below the
+        out= guard were correctly bypassed, and out was silently written with
+        a wrong, unit-naive result while the aliased return value's .meta was
+        confirmed identical (is) to the source's -- reopening the exact
+        #577a aliasing hole clip()/round() exist to close, and doing so
+        through the one guard the first pass of this exact defect class
+        (merge-blocker 2) had not touched.
+      fix: >-
+        Both out= guards (clip() and round()) now raise NotImplementedError
+        instead of TypeError -- not a ValueError-family type, deliberately,
+        since "out= is unsupported" is not a unit-conversion failure, but
+        equally not swallowed by _wrapfunc's `except TypeError` (confirmed
+        via inspect.getsource(numpy.core.fromnumeric._wrapfunc): it catches
+        only TypeError).
+      files: [gwexpy/types/series_matrix_math.py]
+      tests:
+        - test_clip_out_argument_does_not_bypass_the_unit_check
+        - test_round_out_argument_does_not_bypass_the_wrapfunc_swallow
+    - id: clip_ignores_per_cell_scale_within_equivalent_units
+      found_by: second-pass Auditor
+      defect: >-
+        _all_element_units_equivalent only checks dimensional equivalence
+        (m and cm are both "length"), and clip() used it as the sole gate
+        for accepting a matrix's per-cell units, then converted the *bound*
+        into that shared reference unit and applied it to every cell's raw
+        numeric value directly -- without converting each cell's own value
+        into the reference unit first. A matrix mixing m and cm cells
+        clipped with a 3 m bound therefore clipped the cm cell's raw number
+        to "3" (i.e. 3 cm = 0.03 m) instead of 300 cm -- silently wrong by
+        the unit's scale factor, the same defect class as issue #576 reached
+        through heterogeneous-but-equivalent per-cell units instead of a
+        mismatched bound.
+      fix: >-
+        Added _all_element_units_identical(ref_unit), which additionally
+        requires every cell's unit to equal ref_unit exactly (not merely be
+        dimensionally equivalent to it). clip() now raises
+        UnitConversionError when cells are equivalent-but-not-identical,
+        directing the caller to matrix.value for a heterogeneous matrix --
+        the same escape hatch already documented for the equivalence check.
+        A per-cell value-conversion implementation (rather than rejection)
+        is a scope-widening change deferred alongside the rest of the
+        unit-aware arithmetic redesign (#637).
+      files: [gwexpy/types/series_matrix_math.py]
+      test: test_clip_rejects_equivalent_but_non_identical_per_cell_units
+    - id: astype_path_aliases_xindex_meta_rows_cols_with_source
+      found_by: second-pass Auditor
+      defect: >-
+        SeriesMatrixStructureMixin.astype() (the base method _rebuild_with_
+        values falls back to on a dtype change, and also a public method in
+        its own right) passed xindex, meta, rows and cols to the
+        reconstructed matrix unchanged -- unlike copy(), which independently
+        copies each of them. _rebuild_with_values happens to re-copy
+        meta/rows/cols/attrs itself afterward, which papered over that part
+        for clip()/round(), but never touches xindex. Confirmed by execution:
+        after an int64-to-float64 clip(), result.xindex was the identical
+        object as the source's (np.shares_memory confirmed True for a plain
+        SeriesMatrix; for SpectrogramMatrix, mutating result.times corrupted
+        the source's times in place). A direct matrix.astype(...) call
+        (bypassing clip/round entirely) additionally aliased meta/rows/cols.
+      fix: >-
+        Rewrote astype() to mirror copy()'s independence guarantees:
+        deep-copies meta via MetaDataMatrix(deepcopy(...)), rebuilds rows/
+        cols via the same _copy_meta_dict helper copy() uses, and copies (or
+        deepcopy-falls-back) xindex exactly as copy() does. The `if not copy
+        and new_val is self.value: return self` short-circuit (dtype
+        genuinely unchanged, values not copied) is preserved unmodified --
+        in that case the method correctly returns self itself, so aliasing
+        concerns do not apply.
+      files: [gwexpy/types/series_matrix_structure.py]
+      test: >-
+        test_spectrogram_clip_preserves_axes_across_a_dtype_change
+        (xindex-independence assertions)
+    - id: modulo_dimensionless_fast_path_ignores_scale_and_cell_order
+      found_by: second-pass Auditor
+      defect: >-
+        The %/// unit-bearing rejection guard (merge-blocker/pre-existing-
+        defect fix 5) treated "dimensionless" via
+        _all_element_units_equivalent, which is a dimensional-equivalence
+        check against the [0,0] cell only. u.percent is dimensionally
+        equivalent to u.dimensionless_unscaled but not numerically
+        interchangeable with it (1 == 100%, not 1%). A matrix mixing
+        dimensionless and percent cells was therefore treated as safely
+        "dimensionless" whenever the dimensionless cell happened to occupy
+        [0,0] -- and in that case a percent cell's raw number (e.g. 500 for
+        500%) was modulo'd directly instead of being interpreted as 5.0,
+        silently wrong by the unit's scale factor. Swapping the two cells'
+        order flipped the same matrix from silently-wrong-but-accepted to
+        correctly-rejected -- an order-dependent correctness bug in the fix
+        this same session added for #576-class defects.
+      fix: >-
+        Added _matrix_is_strictly_dimensionless(matrix), which layers
+        _all_element_units_identical(dimensionless_unscaled) on top of the
+        existing equivalence check, and is now used by both
+        _operand_is_dimensionless (for a matrix operand) and
+        _reject_unit_naive_division's own self-check. Also corrected the
+        rejection message, which previously always said "unit-bearing
+        SeriesMatrix" even when it was the operand, not self, that carried
+        the unit.
+      files: [gwexpy/types/series_matrix_math.py]
+      test: test_modulo_rejects_scaled_dimensionless_units_regardless_of_cell_order
+  verification_after_second_pass:
+    - cmd: "rtk proxy conda run -n gwexpy python -m pytest tests/types/ tests/spectrogram/ -q -p no:cacheprovider"
+      result: "1509 passed, 20 skipped, 2 xfailed"
+    - cmd: "rtk proxy conda run -n gwexpy python -m pytest tests/ -m \"not slow\" -q -p no:cacheprovider"
+      result: >-
+        7573 passed, 262 skipped, 8 xfailed, 5 failed. Same 5 pre-existing,
+        unrelated failures as the first-pass verification (pygmt, dev0
+        version-metadata mismatch, dcor/numba). Zero regressions.
+    - cmd: "conda run -n gwexpy ruff check <6 touched files> && conda run -n gwexpy ruff format --check <6 touched files>"
+      result: "All checks passed (exit 0) after one auto-fix (quoted-annotation lint) and one format pass"
+    - cmd: "conda run -n gwexpy mypy <4 touched python modules>"
+      result: "Same 7 pre-existing errors in untouched files (gwexpy/statistics/gauch.py, gwexpy/spectral/estimation.py); zero new errors"
+  scope_note: >-
+    All four second-pass fixes stay within the same "make existing operations
+    safe, do not silently operate on a raw value while ignoring a unit or an
+    axis" principle the five first-pass fixes were justified under; none
+    implement new unit-aware arithmetic (the heterogeneous-per-cell clip case
+    and the pre-existing %//floor-divide/remainder redesign are both still
+    deferred to #637). No additional human physics sign-off was sought for
+    these four fixes for the same reason given for the original five.

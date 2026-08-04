@@ -578,14 +578,29 @@ def test_sign_rejected_on_matrix():
 
 
 def test_floor_divide_mod_passthrough_meta():
-    """``//`` and ``%`` keep the left operand's per-cell unit."""
+    """``//`` and ``%`` keep the left operand's per-cell unit for dimensionless data.
+
+    A unit-bearing matrix (unit ``s`` here) now refuses ``//``/``%`` outright:
+    NumPy's floor-divide/remainder do not convert units, so applying them to
+    raw per-cell values would silently ignore a unit mismatch (see
+    docs/plans/2026-08-04-v0113-contract-rulings.md and issue #637 for the
+    deferred unit-aware redesign).
+    """
     data = np.array([[[5.0, 6.0]]])
     xindex = np.array([0.0, 1.0])
     sm = SeriesMatrix(data, xindex=xindex, units=[[u.s]])
-    out_fd = sm // 2
-    out_mod = sm % 2
-    assert out_fd.meta[0, 0].unit == u.s
-    assert out_mod.meta[0, 0].unit == u.s
+    with pytest.raises(TypeError):
+        sm // 2
+    with pytest.raises(TypeError):
+        sm % 2
+
+    dimensionless = SeriesMatrix(
+        data, xindex=xindex, units=[[u.dimensionless_unscaled]]
+    )
+    out_fd = dimensionless // 2
+    out_mod = dimensionless % 2
+    assert out_fd.meta[0, 0].unit == u.dimensionless_unscaled
+    assert out_mod.meta[0, 0].unit == u.dimensionless_unscaled
     assert np.array_equal(out_fd.value, [[[2.0, 3.0]]])
     assert np.array_equal(out_mod.value, [[[1.0, 0.0]]])
 
@@ -597,10 +612,18 @@ def test_floor_divide_mod_passthrough_meta():
 
 
 def test_clip_passthrough_meta():
+    """``clip`` bounds must be dimensionally compatible with a unit-bearing matrix.
+
+    A plain-number bound used to be accepted silently as "already in the
+    matrix's unit"; it is now refused, matching a Quantity bound in the
+    matrix's own unit through instead.
+    """
     data = np.array([[[-1.0, 0.5, 2.0]]])
     xindex = np.array([0.0, 1.0, 2.0])
     sm = SeriesMatrix(data, xindex=xindex, units=[[u.Hz]])
-    out = np.clip(sm, 0.0, 1.0)
+    with pytest.raises(u.UnitConversionError):
+        np.clip(sm, 0.0, 1.0)
+    out = np.clip(sm, 0.0 * u.Hz, 1.0 * u.Hz)
     assert out.meta[0, 0].unit == u.Hz
     assert np.array_equal(out.value, [[[0.0, 0.5, 1.0]]])
 

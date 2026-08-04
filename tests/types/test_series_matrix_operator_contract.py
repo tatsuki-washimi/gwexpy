@@ -13,6 +13,7 @@ affected the family as a whole, and because `SpectrogramMatrix` carries its own
 ufunc implementation for the 4-D ``(Row, Col, Time, Freq)`` layout.
 """
 
+import pickle
 import warnings
 
 import numpy as np
@@ -204,12 +205,23 @@ BINARY_OPERATORS = {
     "mod": lambda a, b: a % b,
 }
 
+# floordiv/mod are unit-naive (NumPy's remainder/floor-divide do not convert
+# units) and are therefore rejected for a unit-bearing operand -- see
+# test_modulo_and_floor_divide_do_not_ignore_units. Excluded from the
+# "arbitrary matrix operand" sweep below, which uses the default V-unit
+# fixture.
+UNIT_SAFE_BINARY_OPERATORS = {
+    k: v for k, v in BINARY_OPERATORS.items() if k not in ("floordiv", "mod")
+}
 
-@pytest.mark.parametrize("op", list(BINARY_OPERATORS), ids=list(BINARY_OPERATORS))
+
+@pytest.mark.parametrize(
+    "op", list(UNIT_SAFE_BINARY_OPERATORS), ids=list(UNIT_SAFE_BINARY_OPERATORS)
+)
 def test_binary_operators_with_matrix_operand(matrix, factory, op):
     """Every arithmetic operator accepts another matrix and stays in the family."""
     other = factory()
-    result = BINARY_OPERATORS[op](matrix, other)
+    result = UNIT_SAFE_BINARY_OPERATORS[op](matrix, other)
     assert type(result) is type(matrix)
     assert result.shape == matrix.shape
 
@@ -240,21 +252,23 @@ def test_unary_operators(matrix):
     np.testing.assert_allclose(np.asarray(abs(matrix)), np.abs(np.asarray(matrix)))
 
 
-def test_divmod_matches_floordiv_and_mod(matrix):
-    """``divmod`` is exactly the pair of ``//`` and ``%``."""
-    quotient, remainder = divmod(matrix, 3)
-    assert type(quotient) is type(matrix)
-    assert type(remainder) is type(matrix)
-    np.testing.assert_allclose(np.asarray(quotient), np.asarray(matrix // 3))
-    np.testing.assert_allclose(np.asarray(remainder), np.asarray(matrix % 3))
+def test_divmod_is_explicitly_unsupported(matrix):
+    """``divmod()`` always raises, even for dimensionless operands.
+
+    Composing it from ``//``/``%`` would just re-surface their unit-naive
+    result; main never implemented ``__divmod__`` at all, so this restores
+    that explicit failure rather than reintroducing a working-but-wrong pair
+    (docs/plans/2026-08-04-v0113-contract-rulings.md).
+    """
+    with pytest.raises(TypeError):
+        divmod(matrix, 3)
 
 
-def test_rdivmod_matches_reflected_floordiv_and_mod(matrix):
-    """The reflected ``divmod`` agrees with the reflected operators."""
+def test_rdivmod_is_explicitly_unsupported(matrix):
+    """The reflected ``divmod()`` is unsupported too."""
     other = np.full(matrix.shape, 30.0)
-    quotient, remainder = divmod(other, matrix)
-    np.testing.assert_allclose(np.asarray(quotient), np.asarray(other // matrix))
-    np.testing.assert_allclose(np.asarray(remainder), np.asarray(other % matrix))
+    with pytest.raises(TypeError):
+        divmod(other, matrix)
 
 
 def test_matmul_requires_two_matrices(series_factory):
@@ -312,14 +326,16 @@ def test_ndarray_operand_wrong_shape_raises(series_factory):
 
 
 # The additive operators need a unit-carrying operand, the multiplicative ones
-# a plain number; both must land in the existing buffer.
+# a plain number; both must land in the existing buffer. floordiv/mod are
+# excluded here because the default `matrix` fixture carries unit V, and
+# those two now reject unit-bearing operands (see
+# test_inplace_floordiv_and_mod_reject_unit_bearing_matrix below for the
+# dimensionless in-place case).
 INPLACE_CASES = {
     "iadd": ("add", 2 * u.V),
     "isub": ("sub", 2 * u.V),
     "imul": ("mul", 2),
     "itruediv": ("truediv", 2),
-    "ifloordiv": ("floordiv", 2),
-    "imod": ("mod", 2),
 }
 
 
@@ -342,6 +358,28 @@ def test_inplace_operators_write_the_existing_buffer(matrix, op):
     assert id(result) == identity
     np.testing.assert_allclose(alias, expected)
     np.testing.assert_allclose(np.asarray(matrix), expected)
+
+
+def test_inplace_floordiv_and_mod_reject_unit_bearing_matrix(matrix):
+    """``//=``/``%=`` refuse a unit-bearing buffer, mirroring ``//``/``%``."""
+    with pytest.raises(TypeError):
+        matrix.__ifloordiv__(2)
+    with pytest.raises(TypeError):
+        matrix.__imod__(2)
+
+
+def test_inplace_floordiv_and_mod_work_for_dimensionless(factory):
+    """``//=``/``%=`` still mutate the buffer in place for dimensionless operands."""
+    matrix = factory(unit=u.dimensionless_unscaled)
+    alias = np.asarray(matrix)
+    expected_floordiv = np.asarray(matrix).copy() // 3
+    identity = id(matrix)
+
+    result = matrix.__ifloordiv__(3)
+
+    assert result is matrix
+    assert id(result) == identity
+    np.testing.assert_allclose(alias, expected_floordiv)
 
 
 def test_inplace_multiply_updates_units(matrix):
@@ -564,8 +602,8 @@ def test_comparison_result_contract(matrix):
 @pytest.mark.parametrize(
     ("call", "expected"),
     [
-        (lambda m: m.clip(2.0, 5.0), lambda a: np.clip(a, 2.0, 5.0)),
-        (lambda m: np.clip(m, 2.0, 5.0), lambda a: np.clip(a, 2.0, 5.0)),
+        (lambda m: m.clip(2.0 * u.V, 5.0 * u.V), lambda a: np.clip(a, 2.0, 5.0)),
+        (lambda m: np.clip(m, 2.0 * u.V, 5.0 * u.V), lambda a: np.clip(a, 2.0, 5.0)),
         (lambda m: m.round(), lambda a: np.round(a)),
         (lambda m: np.round(m), lambda a: np.round(a)),
     ],
@@ -584,6 +622,196 @@ def test_clip_and_round_keep_units_and_independent_metadata(matrix, call, expect
     assert cell_units(result) == cell_units(matrix)
     assert result.meta is not matrix.meta
     assert result.meta[0, 0] is not matrix.meta[0, 0]
+
+
+def test_clip_and_round_survive_copy_slice_and_pickle_roundtrip(matrix):
+    """``clip``/``round`` results keep their axis metadata through further transforms.
+
+    ``clip``/``round`` rebuild via ``self.copy()`` (see ``_rebuild_with_values``),
+    so a defect in ``copy()`` -- such as ``SpectrogramMatrix`` silently
+    dropping ``frequencies`` -- surfaces here first.
+    """
+    for result in (matrix.clip(2.0 * u.V, 5.0 * u.V), matrix.round()):
+        assert type(result) is type(matrix)
+
+        copied = result.copy()
+        assert type(copied) is type(result)
+        np.testing.assert_allclose(np.asarray(copied), np.asarray(result))
+        assert cell_units(copied) == cell_units(result)
+        if isinstance(result, SpectrogramMatrix):
+            np.testing.assert_allclose(
+                copied.frequencies.to_value(u.Hz), result.frequencies.to_value(u.Hz)
+            )
+            assert copied.f0 == result.f0
+            assert copied.df == result.df
+
+        sliced = result[0]
+        assert sliced is not None
+
+        roundtripped = pickle.loads(pickle.dumps(result))
+        np.testing.assert_allclose(np.asarray(roundtripped), np.asarray(result))
+        assert cell_units(roundtripped) == cell_units(result)
+        if isinstance(result, SpectrogramMatrix):
+            np.testing.assert_allclose(
+                roundtripped.frequencies.to_value(u.Hz),
+                result.frequencies.to_value(u.Hz),
+            )
+            assert roundtripped.f0 == result.f0
+            assert roundtripped.df == result.df
+
+
+def test_spectrogram_clip_preserves_frequency_axis():
+    """``SpectrogramMatrix.clip()`` must not drop ``frequencies``/``f0``/``df``.
+
+    ``clip``/``round`` rebuild via ``self.copy()``; the base ``copy()`` only
+    resupplies row/col/xindex metadata, so a ``SpectrogramMatrix`` without its
+    own ``copy()`` override silently lost its frequency axis here.
+    """
+    matrix = make_spectrogram_matrix(unit=u.V)
+    result = matrix.clip(2.0 * u.V, 5.0 * u.V)
+    assert result.frequencies is not None
+    np.testing.assert_allclose(
+        result.frequencies.to_value(u.Hz), matrix.frequencies.to_value(u.Hz)
+    )
+    assert result.f0 == matrix.f0
+    assert result.df == matrix.df
+
+
+def test_spectrogram_round_preserves_frequency_axis():
+    """``SpectrogramMatrix.round()`` must not drop ``frequencies``/``f0``/``df``."""
+    matrix = make_spectrogram_matrix(unit=u.V)
+    result = matrix.round()
+    assert result.frequencies is not None
+    np.testing.assert_allclose(
+        result.frequencies.to_value(u.Hz), matrix.frequencies.to_value(u.Hz)
+    )
+    assert result.f0 == matrix.f0
+    assert result.df == matrix.df
+
+
+def test_clip_accepts_equivalent_quantity_bounds(matrix):
+    """A ``Quantity`` bound in an equivalent (but different) unit is converted."""
+    result = matrix.clip(200.0 * u.mV, 500.0 * u.mV)
+    np.testing.assert_allclose(
+        np.asarray(result), np.clip(np.asarray(matrix), 0.2, 0.5)
+    )
+    assert cell_units(result) == cell_units(matrix)
+
+
+def test_clip_rejects_dimensionless_bounds_for_unitful_matrix(matrix):
+    """A plain number, or a dimensionless ``Quantity``, is refused against unit V.
+
+    Before this fix, a plain-number bound was silently treated as "already in
+    the matrix's unit" and a dimensionless ``Quantity`` bound was silently
+    accepted as compatible with any unit -- both are issue-#576-class silent
+    corruption. All three rejections raise ``UnitConversionError`` rather
+    than a bare ``TypeError`` (see test_np_clip_does_not_swallow_the_rejection
+    for why).
+    """
+    with pytest.raises(UnitConversionError):
+        matrix.clip(1, 2)
+    with pytest.raises(UnitConversionError):
+        matrix.clip(6 * u.dimensionless_unscaled, None)
+    with pytest.raises(UnitConversionError):
+        matrix.clip(1 * u.s, 2 * u.s)
+
+
+def test_np_clip_does_not_swallow_the_rejection(matrix):
+    """``np.clip(matrix, ...)`` must not silently fall back to an unchecked result.
+
+    ``np.clip`` is implemented via NumPy's ``_wrapfunc``, which calls
+    ``matrix.clip(...)`` and, if that raises a plain ``TypeError``, silently
+    retries through a NumPy-internal path that ignores our unit check
+    entirely and returns a result whose metadata *aliases* the source's
+    (reintroducing the exact aliasing bug issue #577a fixed). Confirm the
+    module-level ``np.clip`` call surfaces the same rejection as the method.
+    """
+    with pytest.raises(UnitConversionError):
+        np.clip(matrix, 1, 2)
+
+
+def test_clip_out_argument_does_not_bypass_the_unit_check(matrix):
+    """``clip(..., out=...)`` must reject rather than silently write ``out``.
+
+    ``np.clip(matrix, ..., out=dest)`` also reaches this class through
+    NumPy's ``_wrapfunc``, exactly like the ``out``-less call above. A bare
+    ``TypeError`` from the ``out`` guard is swallowed the same way a
+    ``TypeError`` from the unit checks would be, and NumPy's fallback then
+    writes `dest` with a raw, unit-naive result and aliases the source's
+    metadata onto the return value -- reopening the exact hole clip()'s
+    unit checks exist to close, just through the ``out`` argument instead
+    of the bounds.
+    """
+    dest = np.empty_like(np.asarray(matrix))
+    with pytest.raises(NotImplementedError):
+        matrix.clip(1, 2, out=dest)
+    with pytest.raises(NotImplementedError):
+        np.clip(matrix, 1, 2, out=dest)
+
+
+def test_round_out_argument_does_not_bypass_the_wrapfunc_swallow(matrix):
+    """``round(..., out=...)`` must reject through ``np.round`` too, not just directly."""
+    dest = np.empty_like(np.asarray(matrix))
+    with pytest.raises(NotImplementedError):
+        matrix.round(out=dest)
+    with pytest.raises(NotImplementedError):
+        np.round(matrix, out=dest)
+
+
+def test_clip_rejects_equivalent_but_non_identical_per_cell_units():
+    """``clip`` refuses a matrix whose cells share a dimension but not a scale.
+
+    ``_all_element_units_equivalent`` only checks dimensional equivalence
+    (m and cm are both "length"), so converting a clip *bound* into that
+    shared reference unit and applying it to every cell's raw value would
+    silently mistreat a cm cell's raw number as if it were already in
+    metres -- the same defect class as issue #576, just reached through
+    heterogeneous-but-equivalent per-cell units instead of a mismatched
+    bound. Until per-cell value conversion is implemented, this must raise
+    rather than silently misinterpret the smaller-unit cell's scale.
+    """
+    meta = MetaDataMatrix(
+        np.array(
+            [[MetaData(unit=u.m, name="a"), MetaData(unit=u.cm, name="b")]],
+            dtype=object,
+        )
+    )
+    matrix = TimeSeriesMatrix(
+        np.array([[[1.0, 2.0], [500.0, 600.0]]]), dt=1.0 * u.s, meta=meta
+    )
+    with pytest.raises(UnitConversionError):
+        matrix.clip(max=3 * u.m)
+
+
+def test_spectrogram_clip_preserves_axes_across_a_dtype_change():
+    """``clip()`` must not drop ``frequencies`` or alias ``times`` when it upcasts dtype.
+
+    ``_rebuild_with_values`` (used by ``clip``/``round``) rebuilds via
+    ``self.astype(values.dtype)`` instead of ``self.copy()`` whenever the
+    operation changes dtype -- e.g. clipping an integer-valued matrix
+    against float/``Quantity`` bounds, which NumPy upcasts to float64. Two
+    independent defects lived on that path: the base ``astype()`` had no
+    ``SpectrogramMatrix``-specific knowledge of ``frequencies`` (the same
+    frequencies-blind-spot ``copy()`` had before its own override), and
+    separately ``astype()`` passed ``xindex`` through unchanged instead of
+    copying it, so the rebuilt result's sample axis aliased the source's --
+    mutating one silently corrupted the other.
+    """
+    values = (np.arange(16).reshape(2, 2, 2, 2) + 1).astype(np.int64)
+    matrix = make_spectrogram_matrix(unit=u.V, values=values)
+    assert np.asarray(matrix).dtype == np.int64
+
+    result = matrix.clip(2.0 * u.V, 5.0 * u.V)
+
+    assert np.asarray(result).dtype != np.int64
+    assert result.frequencies is not None
+    np.testing.assert_allclose(
+        result.frequencies.to_value(u.Hz), matrix.frequencies.to_value(u.Hz)
+    )
+    assert result.f0 == matrix.f0
+    assert result.df == matrix.df
+    assert result.xindex is not matrix.xindex
+    assert not np.shares_memory(np.asarray(result.xindex), np.asarray(matrix.xindex))
 
 
 def test_conjugate_preserves_units(factory):
@@ -639,6 +867,95 @@ def test_power_allows_non_scalar_exponent_on_dimensionless_base(series_factory):
     np.testing.assert_allclose(
         np.asarray(result), np.asarray(matrix) ** np.array([1.0, 2.0, 3.0, 4.0])
     )
+
+
+@pytest.mark.parametrize(
+    ("exponent", "expected_power"), [(True, 1), (False, 0)], ids=["true", "false"]
+)
+def test_bool_power_matches_python_integer_semantics(matrix, exponent, expected_power):
+    """``matrix ** True``/``matrix ** False`` behave as ``** 1``/``** 0``.
+
+    Python and NumPy both treat ``True == 1`` and ``False == 0``; a bare
+    ``bool`` exponent used to be excluded from the "scalar exponent" fast
+    path and fell through to the non-scalar-exponent branch, which rejects a
+    non-dimensionless base -- a regression, not the original #577e fix.
+    """
+    result = matrix**exponent
+    np.testing.assert_allclose(np.asarray(result), np.asarray(matrix) ** expected_power)
+    for row in cell_units(result):
+        for unit in row:
+            assert unit == u.V**expected_power
+
+
+def test_modulo_and_floor_divide_do_not_ignore_units(factory):
+    """``%``/``//`` refuse to combine unit-bearing operands without converting.
+
+    NumPy's ``np.mod``/``np.floor_divide`` do not know about units, so
+    applying them straight to raw per-cell values silently discards a unit
+    mismatch (e.g. ``5000 * u.mm % (2 * u.m)`` naively computing
+    ``mod(5000, 2)`` instead of converting to a common unit first) -- the
+    same class of defect as issue #576. Full unit-aware floor-division and
+    remainder are deferred to the v0.2.0 redesign (issue #637); until then
+    this must raise rather than return a silently wrong value.
+    """
+    unitful = factory(unit=u.m)
+    with pytest.raises(TypeError):
+        unitful % (2 * u.s)
+    with pytest.raises(TypeError):
+        unitful // (2 * u.s)
+    with pytest.raises(TypeError):
+        unitful % 2
+    with pytest.raises(TypeError):
+        unitful // 2
+    with pytest.raises(TypeError):
+        (5000 * u.mm) % unitful
+    with pytest.raises(TypeError):
+        (5000 * u.mm) // unitful
+
+    dimensionless = factory(unit=u.dimensionless_unscaled)
+    np.testing.assert_allclose(
+        np.asarray(dimensionless % 3), np.asarray(dimensionless) % 3
+    )
+    np.testing.assert_allclose(
+        np.asarray(dimensionless // 3), np.asarray(dimensionless) // 3
+    )
+
+
+def test_modulo_rejects_scaled_dimensionless_units_regardless_of_cell_order():
+    """A ``%``-unit (e.g. percent) cell is not safely interchangeable with plain dimensionless.
+
+    ``u.percent`` is *dimensionally* equivalent to ``u.dimensionless_unscaled``
+    (both are "dimensionless") but not numerically interchangeable with it
+    (``1 == 100%``). The dimensionless fast path used to reuse the general
+    equivalence check, which only compares against the first cell's unit, so
+    whether a matrix mixing dimensionless and percent cells was treated as
+    "safe to mod" depended on which cell happened to be first -- and when it
+    was, the percent cell's raw number (e.g. ``500`` for ``500%``) was
+    modulo'd directly instead of being interpreted as ``5.0``, silently
+    wrong by the unit's scale factor. Both cell orderings must now raise.
+    """
+    for units in [
+        (u.dimensionless_unscaled, u.percent),
+        (u.percent, u.dimensionless_unscaled),
+    ]:
+        meta = MetaDataMatrix(
+            np.array(
+                [
+                    [
+                        MetaData(unit=units[0], name="a"),
+                        MetaData(unit=units[1], name="b"),
+                    ]
+                ],
+                dtype=object,
+            )
+        )
+        matrix = TimeSeriesMatrix(
+            np.array([[[5.0, 6.0], [500.0, 600.0]]]), dt=1.0 * u.s, meta=meta
+        )
+        with pytest.raises(TypeError):
+            matrix % 2
+        with pytest.raises(TypeError):
+            matrix // 2
 
 
 # ---------------------------------------------------------------------------
@@ -714,11 +1031,11 @@ def test_unsupported_operators_raise_type_error(matrix, name):
 # ---------------------------------------------------------------------------
 
 
+# floordiv/mod/divmod are exercised separately below: the default `matrix`
+# fixture carries unit V, and those three now reject a unit-bearing operand
+# (a plain `0` included) before ever reaching the zero check.
 ZERO_DIVISION_CASES = {
     "truediv": lambda m, z: m / z,
-    "floordiv": lambda m, z: m // z,
-    "mod": lambda m, z: m % z,
-    "divmod": lambda m, z: divmod(m, z),
 }
 
 
@@ -731,6 +1048,32 @@ def test_zero_divisor_raises_and_leaves_operands_intact(matrix, name):
     with pytest.raises(ZeroDivisionError):
         ZERO_DIVISION_CASES[name](matrix, 0)
     np.testing.assert_array_equal(np.asarray(matrix), before)
+
+
+DIMENSIONLESS_ZERO_DIVISION_CASES = {
+    "floordiv": lambda m, z: m // z,
+    "mod": lambda m, z: m % z,
+}
+
+
+@pytest.mark.parametrize(
+    "name",
+    list(DIMENSIONLESS_ZERO_DIVISION_CASES),
+    ids=list(DIMENSIONLESS_ZERO_DIVISION_CASES),
+)
+def test_zero_divisor_raises_for_dimensionless_floordiv_and_mod(factory, name):
+    """``//``/``%`` by zero raise even in the dimensionless case they support."""
+    matrix = factory(unit=u.dimensionless_unscaled)
+    before = np.asarray(matrix).copy()
+    with pytest.raises(ZeroDivisionError):
+        DIMENSIONLESS_ZERO_DIVISION_CASES[name](matrix, 0)
+    np.testing.assert_array_equal(np.asarray(matrix), before)
+
+
+def test_divmod_by_zero_raises_type_error_not_zero_division_error(matrix):
+    """``divmod()`` is unsupported outright, so a zero divisor still just ``TypeError``s."""
+    with pytest.raises(TypeError):
+        divmod(matrix, 0)
 
 
 def test_reflected_zero_division_raises(factory):

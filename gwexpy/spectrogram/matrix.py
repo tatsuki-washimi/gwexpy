@@ -205,6 +205,51 @@ class SpectrogramMatrix(  # type: ignore[misc]
         obj._value = obj.view(np.ndarray)
         return obj
 
+    @staticmethod
+    def _resupplied_frequencies(frequencies: Any) -> Any:
+        """Return an independent copy of *frequencies* for a rebuilt matrix."""
+        if frequencies is None:
+            return None
+        try:
+            return frequencies.copy()
+        except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+            from copy import deepcopy
+
+            return deepcopy(frequencies)
+
+    def copy(self, order="C"):
+        """Create a deep copy of this matrix, including the frequency axis.
+
+        The inherited `~gwexpy.types.series_matrix_structure.SeriesMatrixStructureMixin.copy`
+        only knows about the row/col/xindex metadata shared by every
+        `~gwexpy.types.seriesmatrix.SeriesMatrix`; it does not resupply
+        `frequencies` -- a `SpectrogramMatrix`-specific axis -- so a bare call
+        silently dropped `frequencies`/`f0`/`df` (and anything derived from
+        them, such as `clip`/`round`, which rebuild via `copy`).
+        """
+        new = super().copy(order=order)
+        new.frequencies = self._resupplied_frequencies(self.frequencies)
+        return new
+
+    def astype(self, dtype, order="K", casting="unsafe", subok=True, copy=True):
+        """Cast matrix data to *dtype*, including the frequency axis.
+
+        `_rebuild_with_values` (used by `clip`/`round`) falls back to `astype`
+        instead of `copy` whenever the operation changes dtype -- e.g.
+        clipping an integer-valued matrix against float or `Quantity` bounds.
+        The inherited
+        `~gwexpy.types.series_matrix_structure.SeriesMatrixStructureMixin.astype`
+        does not resupply `frequencies` either, so that path silently dropped
+        it the same way the un-overridden `copy` used to.
+        """
+        new = super().astype(
+            dtype, order=order, casting=casting, subok=subok, copy=copy
+        )
+        if new is self:
+            return new
+        new.frequencies = self._resupplied_frequencies(self.frequencies)
+        return new
+
     def __array_finalize__(self, obj: Any) -> None:
         if obj is None:
             return

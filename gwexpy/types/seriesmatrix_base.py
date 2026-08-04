@@ -147,7 +147,8 @@ def _scalar_power_exponent(operand: Any) -> Any:
             )
         return operand.to_value(u.dimensionless_unscaled).item()
     if isinstance(operand, (bool, np.bool_)):
-        return None
+        # Python/NumPy semantics: True == 1, False == 0.
+        return int(operand)
     if isinstance(operand, (int, float, complex, np.number)):
         return operand
     if isinstance(operand, np.ndarray) and operand.ndim == 0:
@@ -241,14 +242,24 @@ class SeriesMatrix(  # type: ignore[misc]
     operate on it directly.  Everything users need is exposed through explicit
     operators (see
     :class:`~gwexpy.types.series_matrix_math.SeriesMatrixMathMixin`):
-    ``+ - * / // % divmod ** @``, their reflected and in-place forms, the six
+    ``+ - * / // % ** @``, their reflected and in-place forms, the six
     comparisons and unary ``+ - abs()``.  In exchange, an expression such as
     ``(2 * u.s) * matrix`` keeps the matrix type, its per-cell units and all
     axis metadata instead of collapsing to a bare ``Quantity`` (issue #575).
 
     Applying a ufunc directly -- ``np.sqrt(matrix)``, ``np.add.reduce(matrix)``
     -- raises ``TypeError`` rather than silently discarding metadata.  Operate
-    on ``matrix.value`` when a raw NumPy result is what you want.
+    on ``matrix.value`` when a raw NumPy result is what you want; for example
+    ``np.isfinite(matrix.value)`` is the supported way to get a finiteness
+    mask (as a plain boolean `numpy.ndarray`, without axis metadata).
+
+    ``%``, ``//`` and ``divmod()`` are supported only between dimensionless
+    operands: NumPy's remainder/floor-divide do not convert units, so
+    applying them to a unit-bearing matrix would silently ignore a unit
+    mismatch rather than convert or fail. ``divmod()`` is not implemented at
+    all and always raises ``TypeError``, even for dimensionless operands.
+    Full unit-aware floor-division and remainder are deferred to the v0.2.0
+    semantic-contract redesign (issue #637).
     """
 
     def __new__(

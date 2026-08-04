@@ -64,6 +64,23 @@ class SeriesMatrixMathMixin:
             return True, first
         return False, None
 
+    def _all_element_units_identical(self, ref_unit: u.Unit) -> bool:
+        """Check whether every cell's unit is exactly *ref_unit* (not merely equivalent)."""
+        meta = getattr(self, "meta", None)
+        if meta is None:
+            return True
+        units = meta.units
+        if units.size == 0:
+            return True
+
+        def _identical(u_):
+            if u_ is None:
+                u_ = u.dimensionless_unscaled
+            return u_ == ref_unit
+
+        v_identical = np.vectorize(_identical)
+        return bool(np.all(v_identical(units)))
+
     def _to_common_unit_values(self, ref_unit: u.Unit) -> np.ndarray:
         """Convert all element values to a common reference unit."""
         ref_unit = u.Unit(ref_unit)
@@ -191,6 +208,59 @@ class SeriesMatrixMathMixin:
             return u.Quantity(1, other)
         return other
 
+    @staticmethod
+    def _matrix_is_strictly_dimensionless(matrix: SeriesMatrixMathMixin) -> bool:
+        """Whether every cell's unit is exactly dimensionless-unscaled.
+
+        Deliberately stricter than "equivalent to dimensionless":
+        ``u.percent`` and other scaled dimensionless units (e.g. ``%``) are
+        *dimensionally* equivalent to ``u.dimensionless_unscaled`` but not
+        numerically interchangeable with it (``1 == 100%``, not ``1%``).
+        Treating them as plain dimensionless would let a raw, unconverted
+        ``%``/``//`` silently operate on a percent cell's raw number as if it
+        were already a dimensionless-unscaled value -- the same defect class
+        the caller of this helper exists to reject.
+        """
+        equivalent, ref_unit = matrix._all_element_units_equivalent()
+        if not equivalent:
+            return False
+        if not (ref_unit is None or ref_unit == u.dimensionless_unscaled):
+            return False
+        return matrix._all_element_units_identical(ref_unit or u.dimensionless_unscaled)
+
+    @staticmethod
+    def _operand_is_dimensionless(other: Any) -> bool:
+        """Return whether *other* carries no unit, or an explicitly dimensionless one."""
+        if isinstance(other, SeriesMatrixMathMixin):
+            return SeriesMatrixMathMixin._matrix_is_strictly_dimensionless(other)
+        if isinstance(other, u.UnitBase):
+            return other == u.dimensionless_unscaled
+        unit = getattr(other, "unit", None)
+        return unit is None or unit == u.dimensionless_unscaled
+
+    def _reject_unit_naive_division(self, op_name: str, other: Any) -> None:
+        """Reject ``%``/``//`` between operands that carry a physical unit.
+
+        ``np.mod``/``np.floor_divide`` operate on raw numbers with no unit
+        conversion, so ``(5000 * u.mm) % matrix_in_m`` would silently compute
+        ``mod(5000, 2)`` instead of converting to a common unit first -- the
+        same class of defect as issue #576. Dimensionless operands need no
+        conversion and remain supported. Full unit-aware floor-division and
+        remainder are deferred to the v0.2.0 SeriesMatrix semantic-contract
+        redesign (issue #637).
+        """
+        if self._matrix_is_strictly_dimensionless(
+            self
+        ) and self._operand_is_dimensionless(other):
+            return
+        raise TypeError(
+            f"{op_name} is not supported when either side carries a physical "
+            "unit (matrix or operand): NumPy's floor-divide/remainder do not "
+            "convert units, so the result would be silently wrong. Convert "
+            "to a common unit and operate on `matrix.value`, or see issue "
+            "#637 for the unit-aware redesign."
+        )
+
     def _binary_op(self, ufunc: Any, other: Any, *, reflected: bool = False) -> Any:
         """Run a binary *ufunc* through the metadata-aware dispatcher."""
         operands = (other, self) if reflected else (self, other)
@@ -284,42 +354,39 @@ class SeriesMatrixMathMixin:
         return self._inplace_op(np.divide, self._as_operand(other))
 
     def __floordiv__(self, other):
-        """Floor-divide elementwise."""
+        """Floor-divide elementwise (dimensionless operands only, see #637)."""
+        self._reject_unit_naive_division("//", other)
         return self._binary_op(np.floor_divide, self._as_operand(other))
 
     def __rfloordiv__(self, other):
-        """Floor-divide *other* by this matrix (reflected ``//``)."""
+        """Floor-divide *other* by this matrix (reflected ``//``, dimensionless only)."""
+        self._reject_unit_naive_division("//", other)
         return self._binary_op(np.floor_divide, self._as_operand(other), reflected=True)
 
     def __ifloordiv__(self, other):
-        """Floor-divide by *other* in place."""
+        """Floor-divide by *other* in place (dimensionless operands only)."""
+        self._reject_unit_naive_division("//", other)
         return self._inplace_op(np.floor_divide, self._as_operand(other))
 
     def __mod__(self, other):
-        """Take the elementwise remainder."""
+        """Take the elementwise remainder (dimensionless operands only, see #637)."""
+        self._reject_unit_naive_division("%", other)
         return self._binary_op(np.mod, other)
 
     def __rmod__(self, other):
-        """Take the remainder of *other* by this matrix (reflected ``%``)."""
+        """Take the remainder of *other* by this matrix (reflected ``%``, dimensionless only)."""
+        self._reject_unit_naive_division("%", other)
         return self._binary_op(np.mod, other, reflected=True)
 
     def __imod__(self, other):
-        """Take the remainder by *other* in place."""
+        """Take the remainder by *other* in place (dimensionless operands only)."""
+        self._reject_unit_naive_division("%", other)
         return self._inplace_op(np.mod, other)
 
-    def __divmod__(self, other):
-        """Return ``(self // other, self % other)``."""
-        quotient = self.__floordiv__(other)
-        if quotient is NotImplemented:
-            return NotImplemented
-        return quotient, self.__mod__(other)
-
-    def __rdivmod__(self, other):
-        """Return ``(other // self, other % self)``."""
-        quotient = self.__rfloordiv__(other)
-        if quotient is NotImplemented:
-            return NotImplemented
-        return quotient, self.__rmod__(other)
+    # ``__divmod__``/``__rdivmod__`` are deliberately not implemented.  Python's
+    # default protocol then raises ``TypeError`` for ``divmod(matrix, other)``,
+    # matching the pre-#623 behaviour; composing it from ``//``/``%`` would
+    # only re-surface the same unit-naive result those two now reject.
 
     def __pow__(self, other, modulo=None):
         """Raise each element to the power *other*.
@@ -510,16 +577,116 @@ class SeriesMatrixMathMixin:
         result.attrs = deepcopy(getattr(self, "attrs", {}))
         return result
 
+    def _resolve_clip_bound(
+        self, bound: Any, ref_unit: u.Unit, *, is_dimensionless: bool, label: str
+    ) -> Any:
+        """Convert a ``clip`` bound into a plain number expressed in *ref_unit*.
+
+        A `~astropy.units.Quantity` bound is converted (raising
+        ``UnitConversionError`` if it is not dimensionally compatible). A bare
+        number is only accepted when this matrix is dimensionless -- treating
+        a plain number as "already in the matrix's unit" for a unit-bearing
+        matrix was issue-#576-class silent corruption (a dimensionless bound
+        such as ``6 * u.dimensionless_unscaled`` was being accepted against a
+        matrix in metres).
+
+        Every rejection here raises ``UnitConversionError`` (an astropy
+        ``ValueError`` subclass), never a bare ``TypeError``: NumPy's
+        ``np.clip(matrix, ...)`` reaches this method through ``_wrapfunc``,
+        which silently swallows a ``TypeError`` from the object's own
+        ``clip()`` and falls back to a NumPy-only path that ignores this
+        unit check entirely and returns a result aliasing the source's
+        metadata -- reintroducing the exact silent-corruption class this
+        method exists to close.
+        """
+        if bound is None:
+            return None
+        if isinstance(bound, u.Quantity):
+            return bound.to_value(ref_unit)
+        if isinstance(bound, u.UnitBase):
+            raise u.UnitConversionError(
+                f"{label} bound must be a number or Quantity, not a bare "
+                f"Unit ({bound!r})"
+            )
+        if not is_dimensionless:
+            raise u.UnitConversionError(
+                f"{label} bound must be a Quantity in units compatible with "
+                f"{ref_unit} for this unit-bearing SeriesMatrix; got a plain "
+                f"number {bound!r}. Pass `{label}=... * {ref_unit}`, or clip "
+                "`matrix.value` for a unit-agnostic result."
+            )
+        return bound
+
     def clip(self, min: Any = None, max: Any = None, out: Any = None, **kwargs: Any):
-        """Clip the values elementwise, preserving per-cell units."""
+        """Clip the values elementwise, preserving per-cell units.
+
+        *min* and *max* must be dimensionally compatible with this matrix's
+        unit -- a `~astropy.units.Quantity` bound is converted, a plain number
+        is only accepted when every cell is dimensionless. All cells must
+        share an equivalent unit; clip on `matrix.value` for a heterogeneous
+        matrix.
+        """
         if out is not None:
-            raise TypeError("SeriesMatrix.clip does not support the 'out' argument")
-        return self._rebuild_with_values(np.clip(np.asarray(self), min, max, **kwargs))
+            # NotImplementedError, not TypeError: np.clip(matrix, ..., out=...)
+            # reaches this method through NumPy's _wrapfunc, which silently
+            # swallows a TypeError from clip() and falls back to a NumPy-only
+            # path that ignores this rejection entirely and writes `out` with
+            # an unchecked, unit-naive result -- see _resolve_clip_bound's
+            # docstring for the same hazard on the unit-rejection paths below.
+            raise NotImplementedError(
+                "SeriesMatrix.clip does not support the 'out' argument"
+            )
+        equivalent, ref_unit = self._all_element_units_equivalent()
+        if not equivalent:
+            # See _resolve_clip_bound's docstring: UnitConversionError, not
+            # TypeError, so np.clip(matrix, ...) cannot swallow this into a
+            # metadata-aliased NumPy fallback.
+            raise u.UnitConversionError(
+                "SeriesMatrix.clip requires all cells to share an equivalent "
+                "unit; this matrix has heterogeneous per-cell units. Clip "
+                "`matrix.value` for a unit-agnostic result."
+            )
+        if ref_unit is None:
+            ref_unit = u.dimensionless_unscaled
+        elif not self._all_element_units_identical(ref_unit):
+            # _all_element_units_equivalent only checks dimensional
+            # equivalence (e.g. m and cm both pass). clip() then converts
+            # *bounds* into ref_unit and applies them to every cell's raw
+            # numeric value directly, without converting each cell's own
+            # value into ref_unit first -- so a cm cell would be clipped as
+            # if its raw number were already in ref_unit, silently
+            # corrupting it by the unit's scale factor. Rather than build a
+            # per-cell value-conversion path (a scope-widening change for a
+            # patch release), require identical per-cell units and let
+            # `matrix.value` remain the escape hatch for a heterogeneous
+            # matrix, same as the equivalence check above.
+            raise u.UnitConversionError(
+                "SeriesMatrix.clip requires all cells to share the identical "
+                "unit (not merely an equivalent one, e.g. m and cm); this "
+                "matrix has equivalent but differently-scaled per-cell "
+                "units. Clip `matrix.value` for a unit-agnostic result."
+            )
+        is_dimensionless = ref_unit == u.dimensionless_unscaled
+        min_value = self._resolve_clip_bound(
+            min, ref_unit, is_dimensionless=is_dimensionless, label="min"
+        )
+        max_value = self._resolve_clip_bound(
+            max, ref_unit, is_dimensionless=is_dimensionless, label="max"
+        )
+        return self._rebuild_with_values(
+            np.clip(np.asarray(self), min_value, max_value, **kwargs)
+        )
 
     def round(self, decimals: int = 0, out: Any = None):
         """Round the values elementwise, preserving per-cell units."""
         if out is not None:
-            raise TypeError("SeriesMatrix.round does not support the 'out' argument")
+            # NotImplementedError, not TypeError: see the matching guard in
+            # clip() above -- np.round(matrix, ..., out=...) reaches this
+            # method through NumPy's _wrapfunc, which silently swallows a
+            # TypeError and writes `out` with an unchecked, aliased result.
+            raise NotImplementedError(
+                "SeriesMatrix.round does not support the 'out' argument"
+            )
         return self._rebuild_with_values(np.round(np.asarray(self), decimals))
 
     def conjugate(self):
