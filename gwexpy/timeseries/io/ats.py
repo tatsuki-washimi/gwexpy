@@ -13,6 +13,11 @@ from astropy import units as u
 from gwpy.io.registry import default_registry as io_registry
 from gwpy.time import to_gps
 
+from gwexpy.io.time_selection import (
+    apply_time_selection,
+    pop_time_selection,
+    reject_time_selection,
+)
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
@@ -160,12 +165,21 @@ def read_timeseriesdict_ats(source, **kwargs):
     Each ATS file holds a single channel; a list of paths therefore
     yields one entry per distinct channel, with files for the same
     channel concatenated along the time axis.
+
+    ``start``/``end`` are honoured by cropping the result rather than ignored
+    (issue #611).
     """
+    start, end = pop_time_selection(kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(read_timeseriesdict_ats, multi, "ats", **kwargs)
+        return apply_time_selection(
+            read_multi_dict(read_timeseriesdict_ats, multi, "ats", **kwargs),
+            start,
+            end,
+        )
     ts = read_timeseries_ats(source, **kwargs)
-    return TimeSeriesDict({ts.name: ts})
+    return apply_time_selection(TimeSeriesDict({ts.name: ts}), start, end)
 
 
 def read_timeseries_ats(
@@ -188,21 +202,26 @@ def read_timeseries_ats(
         Override the start time (GPS seconds or datetime).
         If not provided, uses the timestamp from the ATS header.
     **kwargs
-        Additional keyword arguments.
+        Additional keyword arguments.  ``start`` and ``end`` are honoured by
+        cropping the result rather than ignored (issue #611).
 
     """
+    start, end = pop_time_selection(kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
         tsd = read_timeseriesdict_ats(multi, unit=unit, epoch=epoch, **kwargs)
         if not tsd:
             raise ValueError("No data found in ATS files")
-        return tsd[next(iter(tsd.keys()))]
+        return apply_time_selection(tsd[next(iter(tsd.keys()))], start, end)
 
     if hasattr(source, "read"):
-        return _read_timeseries_ats_file(source, unit=unit, epoch=epoch, **kwargs)
+        series = _read_timeseries_ats_file(source, unit=unit, epoch=epoch, **kwargs)
+        return apply_time_selection(series, start, end)
 
     with open(source, mode="rb") as f:
-        return _read_timeseries_ats_file(f, unit=unit, epoch=epoch, **kwargs)
+        series = _read_timeseries_ats_file(f, unit=unit, epoch=epoch, **kwargs)
+    return apply_time_selection(series, start, end)
 
 
 def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
@@ -302,7 +321,11 @@ def read_timeseries_ats_mth5(source, **kwargs):
     Note that mth5 enforces strict filename conventions (e.g. extension .atss, specific underscores)
     to parse metadata. If your file does not adhere to these conventions, use the default
     `read_timeseries_ats` which parses the binary header directly.
+
+    ``start``/``end`` are rejected rather than ignored (issue #611).
     """
+    reject_time_selection("ats.mth5", kwargs)
+
     try:
         mth5 = ensure_dependency("mth5")
     except ImportError as exc:

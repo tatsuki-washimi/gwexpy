@@ -11,6 +11,7 @@ from collections import OrderedDict
 
 import numpy as np
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
@@ -153,20 +154,32 @@ def read_timeseriesdict_netcdf4(
         Physical unit override applied to every channel.
     time_coord : str, optional
         Name of the time coordinate.  Auto-detected if *None*.
+    start, end : float, optional
+        GPS bounds.  The file is read in full and the result is cropped, so
+        this returns exactly ``read(source).crop(start, end)``.
     **kwargs
         Additional keyword arguments forwarded to ``xarray.open_dataset``.
 
     """
+    # Taken out before the multi-source dispatch so the crop happens once, on
+    # the merged result, rather than per file — the two agree for disjoint
+    # files but only the former is the documented oracle.
+    start, end = pop_time_selection(kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(
-            read_timeseriesdict_netcdf4,
-            multi,
-            "nc",
-            channels=channels,
-            unit=unit,
-            time_coord=time_coord,
-            **kwargs,
+        return apply_time_selection(
+            read_multi_dict(
+                read_timeseriesdict_netcdf4,
+                multi,
+                "nc",
+                channels=channels,
+                unit=unit,
+                time_coord=time_coord,
+                **kwargs,
+            ),
+            start,
+            end,
         )
 
     xr = _import_xarray()
@@ -280,7 +293,7 @@ def read_timeseriesdict_netcdf4(
                 "unit_source": "override" if unit else "file",
             },
         )
-        return tsd
+        return apply_time_selection(tsd, start, end)
     finally:
         ds.close()
 
@@ -294,7 +307,13 @@ def read_timeseries_netcdf4(source, **kwargs) -> TimeSeries:
 
 
 def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
-    """Read a NetCDF4 file and convert its channels to a matrix."""
+    """Read a NetCDF4 file and convert its channels to a matrix.
+
+    ``start``/``end`` are honoured by cropping the assembled matrix, matching
+    ``read(source).crop(start, end)``.
+    """
+    start, end = pop_time_selection(kwargs)
+
     if isinstance(source, (list, tuple)):
         sources = list(source)
         if not sources:
@@ -303,7 +322,7 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
         merged = matrices[0]
         for mat in matrices[1:]:
             merged = merged.append(mat, inplace=False, gap="pad", pad=np.nan)
-        return merged
+        return apply_time_selection(merged, start, end)
 
     xr = _import_xarray()
 
@@ -337,7 +356,7 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
 
         if not matrix_vars:
             tsd = read_timeseriesdict_netcdf4(source, **kwargs)
-            return tsd.to_matrix()
+            return apply_time_selection(tsd.to_matrix(), start, end)
 
         row_keys = list(OrderedDict.fromkeys(row for row, _, _ in matrix_vars))
         col_keys = list(OrderedDict.fromkeys(col for _, col, _ in matrix_vars))
@@ -390,7 +409,7 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
                 expected_size=len(col_keys),
                 key_prefix="col",
             )
-        return matrix
+        return apply_time_selection(matrix, start, end)
     finally:
         ds.close()
 

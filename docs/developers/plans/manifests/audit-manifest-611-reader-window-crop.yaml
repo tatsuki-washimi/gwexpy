@@ -1,0 +1,295 @@
+manifest_version: 1
+issue: 611
+lane: "H+N"
+project: GWexpy
+release: v0.1.13
+date: "2026-08-02"
+model:
+  family: Claude
+  lane: Opus 5
+  reasoning: high
+base_sha: eb62c6a056a7a8992fe1f00e115d6173050c64fc
+status: completed
+stopped: false
+
+# Recorded as a repo-relative marker on purpose: this file is published, and an
+# absolute worktree path leaks a local username and does not reproduce.
+worktree: "<local worktree for branch codex/v0113-lane-h>"
+
+contract:
+  summary: >-
+    Every TimeSeries reader either applies start/end (result equals
+    full_read.crop(start, end)) or raises IoNotImplementedError. Accepting and
+    ignoring them is the defect; warning and returning the full span is not an
+    acceptable substitute.
+  applies:
+    [nc, netcdf4, zarr, "generic hdf5 (TimeSeries and TimeSeriesDict)", hdf.ndscope,
+     wav, audio, ats, csv, gbd, tdms, sdb, mseed, sac, gse2, knet,
+     "collection directory (TimeSeriesDict and TimeSeriesList)",
+     "TimeSeriesList from hdf5"]
+  rejects: [ats.mth5, xml.diaggui]
+  unchanged: [gwf, win, "stub formats"]
+  rejects_rationale: >-
+    Only these two lack any in-repo fixture (ats.mth5 needs an mth5-conformant
+    filename, xml.diaggui a real DiagGUI product file), so a windowed result
+    could not be verified before shipping. Every other backend reads whole files
+    already, making the crop the same two lines used everywhere else.
+
+# Every row of the contract table was executed against a fixture, not inferred
+# from source. The first pass of this audit classified from source alone and got
+# three rows wrong; see the report appendix.
+method: executed_against_fixtures
+fixture: "10 samples @ 10 Hz, span [0.0, 1.0); bounds (0.2, 0.5); oracle = 3 samples"
+inferred_not_executed:
+  - ats.mth5   # no usable fixture in-repo
+  - dttxml     # checked-in xml is a stub; fails before selectors are examined
+
+lane_n_scope_correction:
+  planned_files: [gwexpy/timeseries/io/hdf5.py, gwexpy/timeseries/io/__init__.py]
+  actual_file: gwexpy/timeseries/collections.py
+  reason: >-
+    gwpy's read_hdf5_dict forwards kwargs correctly; the bounds were dropped by
+    GWexpy's own TimeSeriesDict.read override, whose hdf5 branch reopens the file
+    and re-reads each dataset without them. gwexpy/timeseries/io/hdf5.py is a
+    45-line re-export shim and contains no defect.
+
+breaking_changes: []
+breaking_changes_note: >-
+  An earlier revision made nine backends refuse start/end, which would have been
+  a breaking change for gbd and sdb (their docstrings advertised the selectors as
+  "accepted and ignored") and a gwpy-compatibility regression for wav and csv,
+  whose gwpy counterparts crop. Those backends now crop instead, so no public
+  behaviour is removed: arguments that were silently dropped now work.
+
+second_review_round:
+  # Three read-only reviewers (physics, python-quality, gwpy-compatibility)
+  # over the frozen first commit; every finding re-measured in-session before
+  # being acted on. 19 regression tests added; 10 fail against the first fix.
+  - id: clamp-synthesised-bounds-lose-the-final-sample
+    severity: CRITICAL
+    measured: >-
+      GWexpy's crop wrapper round-trips bounds through to_gps (integer ns); a
+      synthesised span edge like 64/30 s rounds down, so a start-only read
+      returned 47 samples where full_read.crop(start) returns 48 (hdf5, zarr,
+      csv, wav). Same mechanism re-created the negative-index wrap at a
+      non-ns t0 (nine samples for a window before the data) and a spurious
+      "crop given end larger" warning.
+    action: >-
+      _crop_to_span never synthesises a bound: missing/out-of-span sides are
+      forwarded as None, empty intersections are built by direct slicing
+      (matrix: its own searchsorted crop). Pinned by TestNonNanosecondGrids.
+  - id: fast-paths-crash-on-documented-bound-types
+    severity: HIGH
+    measured: >-
+      TimeSeriesDict.read(..., start=0.2*u.s) raised TypeError and a date
+      string raised ValueError on the bypass branches, while the registry
+      path (which runs to_gps first) handled both.
+    action: >-
+      apply_time_selection normalises bounds once at its entry (numeric input
+      passes through float() untouched). Pinned by TestBoundTypes.
+  - id: headerless-csv-in-span-read-raises
+    severity: HIGH
+    measured: >-
+      TimeSeriesDict.read(csv, start=0.5, end=1.5) on a headerless 2-column
+      file raised ValueError from gwpy 4's registry coverage check: the
+      median-of-diffs dt carries ~1 ulp of decimal-parse noise, enough for
+      crop to land one sample early. gwpy's own ascii reader succeeds.
+    action: >-
+      csv dt reconstruction prefers the end-to-end average when it agrees
+      with the median (uniform grid); median kept for gappy columns. Also
+      removes the 1-sample offset vs gwpy on the bypass single-series path.
+      Pinned by TestHeaderlessCsv.
+  - id: minor
+    detail: >-
+      provenance dict now copied instead of aliased (TestProvenanceCopy);
+      docstring exception corrected (TypeError, not UnitConversionError);
+      hasattr(data, "items") replaced by isinstance(data, MutableMapping);
+      report over-generalisation about crop dt perturbation corrected.
+  - id: verified-clean
+    detail: >-
+      IoNotImplementedError propagation through the astropy/gwpy registry
+      (no swallow-and-fallback path, verified against source and by
+      execution); wav bit-parity with gwpy including out-of-span
+      warning/pad behaviour; no new nproc/gwpy.io.mp/gprint usage.
+
+review_driven_corrections:
+  - id: fail-closed-was-wrong-for-most-backends
+    measured: >-
+      gwpy.timeseries.io.wav.read(path, start=0.2, end=0.5) on a 1000-sample file
+      returns 300 samples spanning [0.2, 0.5). GWexpy shadows the wav format, so
+      refusing would return an error where the base library returns correct data.
+    action: nine backends moved from reject to apply
+  - id: crop-negative-index-wraparound
+    measured: >-
+      A series spanning [10, 20) cropped to (0.2, 0.5) returns 5 samples covering
+      [10.0, 10.5). gwpy's Series.crop computes floor((end - x0)/dx) with no guard
+      for end < x0; the negative index wraps from the end of the array.
+    action: >-
+      apply_time_selection clamps each series to its own span before cropping,
+      mirroring gwpy's own read_hdf5_timeseries. Pinned by
+      TestChannelsThatDoNotCoverTheWindow.
+  - id: remaining-silent-ignore-holes
+    measured: >-
+      TimeSeriesDict.read(collection_dir, start=, end=) and
+      TimeSeriesList.read(hdf5, start=, end=) both returned all 10 samples.
+    action: both branches now crop; TimeSeriesList coverage added to the tests
+  - id: provenance-dropped-on-windowed-read
+    measured: "_gwexpy_io present on a full read, absent on a bounded read"
+    action: apply_time_selection carries provenance across explicitly
+
+out_of_scope_findings:
+  - id: zarr-first-channel-nondeterministic
+    detail: >-
+      zarr open_group().keys() is not order-stable, so read_timeseries_zarr
+      ("return the first channel") returns a different channel on repeated reads
+      of the same store, and read_timeseriesdict_zarr key order varies.
+    measured_at_base: true
+    introduced_by_this_change: false
+    action: needs its own issue
+  - id: gap-pad-divergence-on-early-return-paths
+    detail: >-
+      zarr and generic hdf5 bypass the gwpy registry via early-return branches in
+      TimeSeriesDict.read, so they do not get gwpy's gap="raise" coverage check
+      and do not honour pad/gap. nc and hdf.ndscope do.
+    action: pinned by tests; unify in v0.2.0 reader-contract work
+  - id: backend-pushdown
+    detail: >-
+      read-whole-then-crop is intentional for a bug-fix release; slice pushdown is
+      a v0.2.0 performance change. ObsPy's read() natively accepts
+      starttime/endtime, so seismic is the easiest candidate.
+  - id: crop-perturbs-dt-by-one-ulp
+    detail: >-
+      A series with dt=0.1 cropped anywhere returns dt=0.10000000000000003; crop
+      re-derives dx from the sliced index. Breaks the project's
+      assert result.dt == input.dt metadata rule.
+    measured_at_base: true
+    introduced_by_this_change: false
+  - id: timeseriesdict-crop-drops-provenance
+    detail: >-
+      TimeSeriesDict.crop builds a fresh instance and never copies _gwexpy_io.
+      Worked around inside apply_time_selection; direct callers of crop still
+      lose it.
+    measured_at_base: true
+    introduced_by_this_change: false
+  - id: netcdf4-lossy-t0-and-dt-roundtrip
+    detail: >-
+      The writer quantises dt to integer nanoseconds, so 1/16384 s becomes
+      61035 ns (-2.6e-6 relative), accumulating to ~172 samples of offset over
+      4096 s; a separate defect shifts t0=10.0 to 9.0 on write/read. Writer-side
+      and pre-existing, but these now decide which samples a windowed read
+      returns rather than only the reported axis.
+    measured_at_base: true
+    introduced_by_this_change: false
+  - id: reject-message-names-canonical-format-not-alias
+    detail: >-
+      format="miniseed" reported 'mseed', sqlite3 reported 'sdb', dttxml reported
+      'xml.diaggui'. Cosmetic, and now affects only the two refusing backends.
+  - id: ats-mth5-routing
+    detail: >-
+      collections.py direct_readers maps format="ats.mth5" to
+      read_timeseriesdict_ats (the native header parser), so the mth5-specific
+      reader is never reached through TimeSeriesDict.read. Pre-existing routing
+      bug, unrelated to selectors, found while tracing them.
+
+exact_write_scope:
+  - gwexpy/io/time_selection.py
+  - gwexpy/timeseries/collections.py
+  - gwexpy/timeseries/io/netcdf4_.py
+  - gwexpy/timeseries/io/zarr_.py
+  - gwexpy/timeseries/io/wav.py
+  - gwexpy/timeseries/io/audio.py
+  - gwexpy/timeseries/io/ats.py
+  - gwexpy/timeseries/io/csv_enhanced.py
+  - gwexpy/timeseries/io/gbd.py
+  - gwexpy/timeseries/io/tdms.py
+  - gwexpy/timeseries/io/sdb.py
+  - gwexpy/timeseries/io/dttxml.py
+  - gwexpy/timeseries/io/seismic.py
+  - tests/io/test_reader_start_end_contract.py
+  - tests/io/test_io_improvements_extended.py
+  - docs/developers/reports/2026-08-02-v0.1.13-reader-start-end-audit.md
+  - docs/developers/plans/manifests/audit-manifest-611-reader-window-crop.yaml
+
+scope_amendments:
+  - file: tests/io/test_io_improvements_extended.py
+    reason: >-
+      test_wav_scipy_kwargs_filtering asserted the superseded contract (passing
+      start/end to the wav reader should be silently filtered and succeed).
+      Rewritten rather than deleted: one test keeps the still-valid point that
+      non-selector kwargs do not become a scipy TypeError, a second asserts that
+      the window is now applied. Verified unclaimed by every lane and unmodified
+      in all v0113-lane-* worktrees before editing.
+  - file: gwexpy/timeseries/io/win.py
+    reason: >-
+      NOT edited. Already fails closed with TypeError, and the file is Lane C's
+      write scope (local commit d9504dd8d). A stray ruff reformat of it was
+      reverted.
+
+excluded_paths:
+  - gwexpy/timeseries/io/win.py
+  - gwexpy/timeseries/io/__init__.py
+  - gwexpy/timeseries/io/csv_config.py
+  - gwexpy/timeseries/io/stubs.py
+
+commands:
+  - command: >-
+      conda run -n gwexpy python -m pytest tests/io/test_reader_start_end_contract.py
+      tests/io/test_io_improvements_extended.py -q
+    result: "118 passed (99 before the second review round)"
+  - command: "conda run -n gwexpy python -m pytest tests/io/ -q"
+    result: "734 passed, 27 skipped"
+  - command: >-
+      conda run -n gwexpy python -m pytest tests/io/ tests/timeseries/
+      tests/spectrogram/ tests/docs/ -q
+      --ignore=tests/timeseries/test_matrix_analysis.py
+    result: "2488 passed, 100 skipped, 6 xfailed"
+    failure_note: >-
+      tests/timeseries/test_matrix_analysis.py::test_distance_correlation is a
+      numba/dcor TypingError that reproduces unchanged on the base tree and is
+      excluded here.
+  - command: "conda run -n gwexpy ruff check <changed files>"
+    result: "All checks passed"
+  - command: >-
+      conda run -n gwexpy mypy gwexpy/io/time_selection.py
+      gwexpy/timeseries/io/netcdf4_.py gwexpy/timeseries/io/zarr_.py
+      gwexpy/timeseries/collections.py gwexpy/timeseries/io/wav.py
+      gwexpy/timeseries/io/seismic.py
+    result: "0 errors in changed modules; 7 pre-existing in gwexpy/spectral/estimation.py and gwexpy/statistics/gauch.py"
+
+tests_fail_on_base: 49
+tests_fail_on_base_note: >-
+  Reproducing this needs care: pyproject.toml sets pythonpath = ["."] under
+  [tool.pytest.ini_options], which pytest places at sys.path[0] and which
+  silently defeats a PYTHONPATH= override whenever the test file lives under the
+  worktree. Copy the test file to a directory with no pytest config to make the
+  base comparison real.
+second_round_tests_fail_on_first_fix: 10
+second_round_tests_note: >-
+  Of the 19 regression tests the second review round added, 10 fail with the
+  first fix's gwexpy/io/time_selection.py and csv_enhanced.py restored; the 9
+  that pass are parametrisations whose synthesised bound happened to be
+  nanosecond-representable — which is exactly why the first test round missed
+  the defect.
+network_gates: not_run
+
+red_green:
+  netcdf4: "RED (10 samples) -> GREEN (3 samples)"
+  zarr: "RED (TypeError from zarr.open_group) -> GREEN (3 samples)"
+  generic_hdf5_dict: "RED (10 samples) -> GREEN (3 samples)"
+  wav: "RED (10 samples) -> GREEN (IoNotImplementedError)"
+  csv: "RED (10 samples) -> GREEN (IoNotImplementedError)"
+  sdb: "RED (10 samples) -> GREEN (IoNotImplementedError)"
+  tdms: "RED (100 samples) -> GREEN (IoNotImplementedError)"
+  gbd: "RED (100 samples) -> GREEN (IoNotImplementedError)"
+  ats: "RED (80 samples) -> GREEN (IoNotImplementedError)"
+  audio: "RED (1000 samples) -> GREEN (IoNotImplementedError)"
+  seismic: "RED (100 samples) -> GREEN (IoNotImplementedError)"
+  hdf_ndscope: "GREEN before and after (regression-pinned)"
+
+reviewer: >-
+  Round 1: two read-only subagents against a moving tree (process error,
+  recorded in the report). Round 2: three read-only subagents
+  (physics-reviewer, python-reviewer, gwexpy-compatibility-checker) against
+  the frozen first commit; verdicts FAIL / Block / PASS-with-findings, all
+  findings re-measured in-session and resolved as second_review_round above.
+  Human review still pending.
