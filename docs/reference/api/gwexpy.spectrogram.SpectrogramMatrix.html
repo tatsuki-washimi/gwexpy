@@ -638,14 +638,14 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">abs</span></code>()</p></td>
 <td><p>Return the absolute value of the matrix element-wise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code>([axis, out, keepdims, where])</p></td>
-<td><p>Returns True if all elements evaluate to True.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code>(*args, **kwargs)</p></td>
+<td><p>Return whether all raw values are truthy, as a plain NumPy value.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">angle</span></code>([unwrap, deg])</p></td>
 <td><p>Alias for <cite>phase(unwrap=unwrap, deg=deg)</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code>([axis, out, keepdims, where])</p></td>
-<td><p>Returns True if any of the elements of <cite>a</cite> evaluate to True.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code>(*args, **kwargs)</p></td>
+<td><p>Return whether any raw value is truthy, as a plain NumPy value.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code>(other[, inplace, pad, gap, resize])</p></td>
 <td><p>Append another matrix along the sample axis.</p></td>
@@ -665,8 +665,8 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argsort</span></code>([axis, kind, order, stable])</p></td>
 <td><p>Returns the indices that would sort this array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">astype</span></code>(dtype[, order, casting, subok, copy])</p></td>
-<td><p>Cast matrix data to a specified type.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.astype" title="gwexpy.spectrogram.SpectrogramMatrix.astype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">astype</span></code></a>(dtype[, order, casting, subok, copy])</p></td>
+<td><p>Cast matrix data to <em>dtype</em>, including the frequency axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">byteswap</span></code>([inplace])</p></td>
 <td><p>Swap the bytes of the array elements</p></td>
@@ -675,7 +675,7 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <td><p>Use an index array to construct a new array from a set of choices.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clip</span></code>([min, max, out])</p></td>
-<td><p>Return an array whose values are limited to <code class="docutils literal notranslate"><span class="pre">[min,</span> <span class="pre">max]</span></code>.</p></td>
+<td><p>Clip the values elementwise, preserving per-cell units.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.col_index" title="gwexpy.spectrogram.SpectrogramMatrix.col_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">col_index</span></code></a>(key)</p></td>
 <td><p>Return the integer index for a column key.</p></td>
@@ -687,22 +687,22 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <td><p>Return selected slices of this array along given axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">conj</span></code>()</p></td>
-<td><p>Complex conjugate of the matrix.</p></td>
+<td><p>Alias for <code class="xref py py-meth docutils literal notranslate"><span class="pre">conjugate()</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">conjugate</span></code>()</p></td>
-<td><p>Return the complex conjugate, element-wise.</p></td>
+<td><p>Return the elementwise complex conjugate, preserving per-cell units.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code>([order])</p></td>
-<td><p>Create a deep copy of this matrix.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.copy" title="gwexpy.spectrogram.SpectrogramMatrix.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>([order])</p></td>
+<td><p>Create a deep copy of this matrix, including the frequency axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">crop</span></code>([start, end, copy])</p></td>
 <td><p>Crop the matrix to a specified range along the sample axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumprod</span></code>([axis, dtype, out])</p></td>
-<td><p>Return the cumulative product of the elements along the given axis.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumprod</span></code>(*args, **kwargs)</p></td>
+<td><p>Return the cumulative product of the raw values as a plain NumPy array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code>([axis, dtype, out])</p></td>
-<td><p>Return the cumulative sum of the elements along the given axis.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code>(*args, **kwargs)</p></td>
+<td><p>Return the cumulative sum of the raw values as a plain NumPy array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree</span></code>([unwrap])</p></td>
 <td><p>Calculate the phase of the matrix in degrees.</p></td>
@@ -800,8 +800,8 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepend_exact</span></code>(other[, inplace, pad, gap, tol])</p></td>
 <td><p>Prepend another matrix with strict contiguity checking.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code>([axis, dtype, out, keepdims, initial, ...])</p></td>
-<td><p>Return the product of the array elements over the given axis</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code>(*args, **kwargs)</p></td>
+<td><p>Multiply the raw values together, returning a plain NumPy value.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">put</span></code>(indices, values[, mode])</p></td>
 <td><p>Set <code class="docutils literal notranslate"><span class="pre">a.flat[n]</span> <span class="pre">=</span> <span class="pre">values[n]</span></code> for all <code class="docutils literal notranslate"><span class="pre">n</span></code> in indices.</p></td>
@@ -828,7 +828,7 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <td><p>Compute the Root Mean Square (RMS) value.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code>([decimals, out])</p></td>
-<td><p>Return <cite>a</cite> with each element rounded to the given number of decimals.</p></td>
+<td><p>Round the values elementwise, preserving per-cell units.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.spectrogram.SpectrogramMatrix.row_index" title="gwexpy.spectrogram.SpectrogramMatrix.row_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">row_index</span></code></a>(key)</p></td>
 <td><p>Return the integer index for a row key.</p></td>
@@ -869,8 +869,8 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">submatrix</span></code>(row_keys, col_keys)</p></td>
 <td><p>Extract a submatrix by selecting specific rows and columns.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code>([axis, dtype, out, keepdims, initial, where])</p></td>
-<td><p>Return the sum of the array elements over the given axis.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code>(*args, **kwargs)</p></td>
+<td><p>Sum the raw values.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">swapaxes</span></code>(axis1, axis2, /)</p></td>
 <td><p>Return a view of the array with <cite>axis1</cite> and <cite>axis2</cite> interchanged.</p></td>
@@ -1098,6 +1098,31 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.copy" title="Link to this definition">#</a></dt>
+<dd><p>Create a deep copy of this matrix, including the frequency axis.</p>
+<p>The inherited <cite>~gwexpy.types.series_matrix_structure.SeriesMatrixStructureMixin.copy</cite>
+only knows about the row/col/xindex metadata shared by every
+<cite>~gwexpy.types.seriesmatrix.SeriesMatrix</cite>; it does not resupply
+<cite>frequencies</cite> – a <cite>SpectrogramMatrix</cite>-specific axis – so a bare call
+silently dropped <cite>frequencies</cite>/<cite>f0</cite>/<cite>df</cite> (and anything derived from
+them, such as <cite>clip</cite>/<cite>round</cite>, which rebuild via <cite>copy</cite>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.astype">
+<span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.astype" title="Link to this definition">#</a></dt>
+<dd><p>Cast matrix data to <em>dtype</em>, including the frequency axis.</p>
+<p><cite>_rebuild_with_values</cite> (used by <cite>clip</cite>/<cite>round</cite>) falls back to <cite>astype</cite>
+instead of <cite>copy</cite> whenever the operation changes dtype – e.g.
+clipping an integer-valued matrix against float or <cite>Quantity</cite> bounds.
+The inherited
+<cite>~gwexpy.types.series_matrix_structure.SeriesMatrixStructureMixin.astype</cite>
+does not resupply <cite>frequencies</cite> either, so that path silently dropped
+it the same way the un-overridden <cite>copy</cite> used to.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.spectrogram.SpectrogramMatrix.row_keys">
 <span class="sig-name descname"><span class="pre">row_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwexpy.spectrogram.SpectrogramMatrix.row_keys" title="Link to this definition">#</a></dt>
 <dd><p>Return the row metadata keys.</p>
@@ -1221,6 +1246,8 @@ mismatch between data shape (Time axis) and metadata shape (Batch/Col).</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.series_class"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.series_class</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.dict_class"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.dict_class</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.list_class"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.list_class</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.copy"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.astype"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.astype()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.row_keys"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.row_keys()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.col_keys"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.col_keys()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwexpy.spectrogram.SpectrogramMatrix.is_compatible"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.is_compatible()</span></code></a></li>

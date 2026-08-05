@@ -650,14 +650,14 @@ relationship is best represented as a grid.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">abs</span></code>()</p></td>
 <td><p>Return the absolute value of the matrix element-wise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code>([axis, out, keepdims, where])</p></td>
-<td><p>Returns True if all elements evaluate to True.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code>(*args, **kwargs)</p></td>
+<td><p>Return whether all raw values are truthy, as a plain NumPy value.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">angle</span></code>([unwrap, deg])</p></td>
 <td><p>Alias for <cite>phase(unwrap=unwrap, deg=deg)</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code>([axis, out, keepdims, where])</p></td>
-<td><p>Returns True if any of the elements of <cite>a</cite> evaluate to True.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code>(*args, **kwargs)</p></td>
+<td><p>Return whether any raw value is truthy, as a plain NumPy value.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code>(other[, inplace, pad, gap, resize])</p></td>
 <td><p>Append another matrix along the sample axis.</p></td>
@@ -696,7 +696,7 @@ relationship is best represented as a grid.</p>
 <td><p>Use an index array to construct a new array from a set of choices.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clip</span></code>([min, max, out])</p></td>
-<td><p>Return an array whose values are limited to <code class="docutils literal notranslate"><span class="pre">[min,</span> <span class="pre">max]</span></code>.</p></td>
+<td><p>Clip the values elementwise, preserving per-cell units.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeriesMatrix.coherence" title="gwexpy.timeseries.TimeSeriesMatrix.coherence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coherence</span></code></a>(other, *args, **kwargs)</p></td>
 <td><p>Apply <cite>TimeSeries.coherence</cite> element-wise with another <cite>TimeSeries</cite> object.</p></td>
@@ -714,10 +714,10 @@ relationship is best represented as a grid.</p>
 <td><p>Return selected slices of this array along given axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">conj</span></code>()</p></td>
-<td><p>Complex conjugate of the matrix.</p></td>
+<td><p>Alias for <code class="xref py py-meth docutils literal notranslate"><span class="pre">conjugate()</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">conjugate</span></code>()</p></td>
-<td><p>Return the complex conjugate, element-wise.</p></td>
+<td><p>Return the elementwise complex conjugate, preserving per-cell units.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code>([order])</p></td>
 <td><p>Create a deep copy of this matrix.</p></td>
@@ -734,11 +734,11 @@ relationship is best represented as a grid.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwexpy.timeseries.TimeSeriesMatrix.csd" title="gwexpy.timeseries.TimeSeriesMatrix.csd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">csd</span></code></a>(other, *args, **kwargs)</p></td>
 <td><p>Apply <cite>TimeSeries.csd</cite> element-wise with another <cite>TimeSeries</cite> object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumprod</span></code>([axis, dtype, out])</p></td>
-<td><p>Return the cumulative product of the elements along the given axis.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumprod</span></code>(*args, **kwargs)</p></td>
+<td><p>Return the cumulative product of the raw values as a plain NumPy array.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code>([axis, dtype, out])</p></td>
-<td><p>Return the cumulative sum of the elements along the given axis.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code>(*args, **kwargs)</p></td>
+<td><p>Return the cumulative sum of the raw values as a plain NumPy array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree</span></code>([unwrap])</p></td>
 <td><p>Calculate the phase angle of the matrix in degrees.</p></td>
@@ -902,8 +902,8 @@ relationship is best represented as a grid.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepend_exact</span></code>(other[, inplace, pad, gap, tol])</p></td>
 <td><p>Prepend another matrix with strict contiguity checking.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code>([axis, dtype, out, keepdims, initial, ...])</p></td>
-<td><p>Return the product of the array elements over the given axis</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code>(*args, **kwargs)</p></td>
+<td><p>Multiply the raw values together, returning a plain NumPy value.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">psd</span></code>(**kwargs)</p></td>
 <td><p>Compute the PSD of each element.</p></td>
@@ -954,7 +954,7 @@ relationship is best represented as a grid.</p>
 <td><p>Compute a rolling standard deviation along the time axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code>([decimals, out])</p></td>
-<td><p>Return <cite>a</cite> with each element rounded to the given number of decimals.</p></td>
+<td><p>Round the values elementwise, preserving per-cell units.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">row_index</span></code>(key)</p></td>
 <td><p>Get the integer index for a row key.</p></td>
@@ -1004,8 +1004,8 @@ relationship is best represented as a grid.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">submatrix</span></code>(row_keys, col_keys)</p></td>
 <td><p>Extract a submatrix by selecting specific rows and columns.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code>([axis, dtype, out, keepdims, initial, where])</p></td>
-<td><p>Return the sum of the array elements over the given axis.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code>(*args, **kwargs)</p></td>
+<td><p>Sum the raw values.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">swapaxes</span></code>(axis1, axis2, /)</p></td>
 <td><p>Return a view of the array with <cite>axis1</cite> and <cite>axis2</cite> interchanged.</p></td>

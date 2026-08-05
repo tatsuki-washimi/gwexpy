@@ -1273,6 +1273,31 @@ preserved per-element in the <cite>meta</cite> attribute.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Create a deep copy of this matrix, including the frequency axis.</p>
+<p>The inherited <cite>~gwexpy.types.series_matrix_structure.SeriesMatrixStructureMixin.copy</cite>
+only knows about the row/col/xindex metadata shared by every
+<cite>~gwexpy.types.seriesmatrix.SeriesMatrix</cite>; it does not resupply
+<cite>frequencies</cite> – a <cite>SpectrogramMatrix</cite>-specific axis – so a bare call
+silently dropped <cite>frequencies</cite>/<cite>f0</cite>/<cite>df</cite> (and anything derived from
+them, such as <cite>clip</cite>/<cite>round</cite>, which rebuild via <cite>copy</cite>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Cast matrix data to <em>dtype</em>, including the frequency axis.</p>
+<p><cite>_rebuild_with_values</cite> (used by <cite>clip</cite>/<cite>round</cite>) falls back to <cite>astype</cite>
+instead of <cite>copy</cite> whenever the operation changes dtype – e.g.
+clipping an integer-valued matrix against float or <cite>Quantity</cite> bounds.
+The inherited
+<cite>~gwexpy.types.series_matrix_structure.SeriesMatrixStructureMixin.astype</cite>
+does not resupply <cite>frequencies</cite> either, so that path silently dropped
+it the same way the un-overridden <cite>copy</cite> used to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">row_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Return the row metadata keys.</p>
 </dd></dl>

@@ -892,10 +892,11 @@ padded &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&g
 </div>
 </div>
 </section>
-<section id="operations-ufunc-apply-response">
-<h2>Operations (ufunc / apply_response)<a class="headerlink" href="#operations-ufunc-apply-response" title="Link to this heading">#</a></h2>
+<section id="operations-operators-apply-response">
+<h2>Operations (operators / apply_response)<a class="headerlink" href="#operations-operators-apply-response" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Ufunc operations such as scalar multiplication preserve units</p></li>
+<li><p>Arithmetic operators such as scalar multiplication preserve per-element units, from either side (<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">fsm</span></code> and <code class="docutils literal notranslate"><span class="pre">fsm</span> <span class="pre">*</span> <span class="pre">2</span></code> behave identically)</p></li>
+<li><p>NumPy ufuncs are <strong>not</strong> applied directly to a matrix: <code class="docutils literal notranslate"><span class="pre">np.sqrt(fsm)</span></code> raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>. Use <code class="docutils literal notranslate"><span class="pre">np.sqrt(fsm.value)</span></code> when a raw NumPy result is wanted</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">apply_response</span></code> is an extended method to apply complex/real frequency responses (dimensionless)</p></li>
 </ul>
 <div class="cell docutils container">
@@ -1205,7 +1206,7 @@ c1   col1
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#various-input-patterns-constructor-examples">Various Input Patterns (Constructor Examples)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#indexing-and-slicing">Indexing and Slicing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-axis-editing-frequency-axis">Sample Axis Editing (frequency axis)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operations-ufunc-apply-response">Operations (ufunc / apply_response)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operations-operators-apply-response">Operations (operators / apply_response)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filter-magnitude-only">filter (magnitude-only)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ifft-fft-to-time-domain">ifft (FFT to Time Domain)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#display-methods-repr-plot-step">Display Methods: repr / plot / step</a></li>
