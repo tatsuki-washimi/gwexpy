@@ -12,6 +12,8 @@ import os
 import platform
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
+from collections.abc import Iterable
 from pathlib import Path
 
 
@@ -22,6 +24,61 @@ def run_cmd(cmd: list[str], *, cwd: Path | None = None) -> None:
     completed = subprocess.run(cmd, check=False, cwd=cwd)
     if completed.returncode:
         raise SystemExit(completed.returncode)
+
+
+def _aggregate_junit_counts(paths: Iterable[Path]) -> dict[str, int]:
+    """Aggregate counters from leaf ``testsuite`` elements in JUnit reports."""
+    totals = {name: 0 for name in ("tests", "skipped", "errors", "failures")}
+    report_count = 0
+
+    for path in paths:
+        report_count += 1
+        try:
+            root = ET.parse(path).getroot()
+        except (OSError, ET.ParseError, UnicodeError) as exc:
+            raise ValueError(f"JUnit report {path} could not be parsed: {exc}") from exc
+
+        if root.tag == "testsuite":
+            top_level_suites = [root]
+        elif root.tag == "testsuites":
+            top_level_suites = [child for child in root if child.tag == "testsuite"]
+        else:
+            raise ValueError(
+                f"JUnit report {path} has unsupported root element {root.tag!r}"
+            )
+
+        leaves: list[ET.Element] = []
+
+        def collect_leaves(suite: ET.Element) -> None:
+            children = [child for child in suite if child.tag == "testsuite"]
+            if children:
+                for child in children:
+                    collect_leaves(child)
+            else:
+                leaves.append(suite)
+
+        for suite in top_level_suites:
+            collect_leaves(suite)
+
+        if not leaves:
+            raise ValueError(f"JUnit report {path} contains no leaf testsuite elements")
+
+        for suite in leaves:
+            for name in totals:
+                raw_value = suite.attrib.get(name, "0")
+                try:
+                    value = int(raw_value)
+                except (TypeError, ValueError) as exc:
+                    raise ValueError(
+                        f"JUnit report {path} has non-integer {name}={raw_value!r}"
+                    ) from exc
+                if value < 0:
+                    raise ValueError(f"JUnit report {path} has negative {name}={value}")
+                totals[name] += value
+
+    if report_count == 0:
+        raise ValueError("no JUnit reports were provided")
+    return totals
 
 
 def run_gate(gate: str, with_fixtures: bool) -> None:
@@ -183,10 +240,6 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
         # failing. Assert on the JUnit skipped count so that regression does
         # NOT go unnoticed (#493: this gate exists specifically to keep mne
         # coverage off the "runs locally only" list).
-        #
-        # Known gap (#511): this only checks skipped/errors == 0, not
-        # tests > 0, so a JUnit report with zero <testcase> elements (e.g.
-        # pytest collecting nothing at all) would still pass silently.
         junit_path = Path("interop-mne-results.xml")
         run_cmd(
             [
@@ -197,16 +250,22 @@ def run_gate(gate: str, with_fixtures: bool) -> None:
             ]
         )
 
-        import xml.etree.ElementTree as ET
+        try:
+            counts = _aggregate_junit_counts([junit_path])
+        except ValueError as exc:
+            raise SystemExit(f"interop-mne gate: invalid JUnit report: {exc}") from exc
 
-        root = ET.parse(junit_path).getroot()
-        suite = root if root.tag == "testsuite" else root.find("testsuite")
-        skipped = int(suite.attrib.get("skipped", 0))
-        errors = int(suite.attrib.get("errors", 0))
-        if skipped or errors:
+        if (
+            counts["tests"] == 0
+            or counts["skipped"]
+            or counts["errors"]
+            or counts["failures"]
+        ):
             raise SystemExit(
-                f"interop-mne gate: skipped={skipped} errors={errors} -- "
-                "expected 0 of each (mne may have failed to import)"
+                f"interop-mne gate: tests={counts['tests']} "
+                f"skipped={counts['skipped']} errors={counts['errors']} "
+                f"failures={counts['failures']} -- expected tests>0 and "
+                "skipped=errors=failures=0"
             )
         return
 
