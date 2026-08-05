@@ -2084,10 +2084,35 @@ Keys: <code class="docutils literal notranslate"><span class="pre">&quot;Total&q
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesDict</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">asd</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_gwinc_budget</span><span class="p">(</span><span class="s2">&quot;aLIGO&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">noise_budget</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="o">.</span><span class="n">from_gwinc_budget</span><span class="p">(</span><span class="s2">&quot;aLIGO&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">quantum</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_gwinc_budget</span><span class="p">(</span><span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">trace_name</span><span class="o">=</span><span class="s2">&quot;Quantum&quot;</span><span class="p">)</span>
+<p>Load a GWinc budget and convert its total noise PSD to an amplitude
+spectral density.  GWinc’s <code class="docutils literal notranslate"><span class="pre">load_budget</span></code> accepts a frequency array,
+and the module-level converter accepts the GWexpy target class explicitly:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">gwinc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_gwinc_budget</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">budget</span> <span class="o">=</span> <span class="n">gwinc</span><span class="o">.</span><span class="n">load_budget</span><span class="p">(</span><span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">total_asd</span> <span class="o">=</span> <span class="n">from_gwinc_budget</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">budget</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;asd&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">total_asd</span></code> is the total aLIGO detector-noise ASD in 1 / sqrt(Hz) at
+the requested frequencies.</p>
+<p>Passing <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code> instead returns the total together with
+every sub-trace, keyed by <code class="docutils literal notranslate"><span class="pre">&quot;Total&quot;</span></code> and the gwinc trace names:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise_budget</span> <span class="o">=</span> <span class="n">from_gwinc_budget</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">budget</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">trace_name</span></code> to pull a single sub-trace out as one
+<cite>~gwexpy.frequencyseries.FrequencySeries</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">quantum</span> <span class="o">=</span> <span class="n">from_gwinc_budget</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">budget</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">trace_name</span><span class="o">=</span><span class="s2">&quot;Quantum&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

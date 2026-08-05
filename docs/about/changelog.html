@@ -516,6 +516,20 @@ logging a full traceback and raising a <code class="docutils literal notranslate
 new (#577e) scalar-exponent normalization passed a bare <code class="docutils literal notranslate"><span class="pre">np.number</span></code>
 through to <code class="docutils literal notranslate"><span class="pre">MetaDataMatrix</span></code>’s per-cell unit computation, which only
 accepts <code class="docutils literal notranslate"><span class="pre">int</span></code>/<code class="docutils literal notranslate"><span class="pre">float</span></code>/<code class="docutils literal notranslate"><span class="pre">complex</span></code>. Both are now normalized before use (#623).</p></li>
+<li><p><strong>io (WIN)</strong>: the WIN reader decoded the per-channel sampling rate from
+byte 3 alone, but the rate is a 12-bit field whose top 4 bits live in the
+low nibble of byte 2. Every rate at or above 256 Hz was therefore truncated
+modulo 256 — 1000 Hz was read as 232 Hz. Because the reader also derives
+the packet payload length from that rate
+(<code class="docutils literal notranslate"><span class="pre">xlen</span> <span class="pre">=</span> <span class="pre">(srate</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">datawide</span></code>), the byte stream was misaligned and the
+decoded <em>samples themselves</em> were garbage, not merely the time axis. No
+exception was raised: the reader returned a plausible-looking
+<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>. The full 12-bit rate is now decoded, matching ObsPy’s
+reader (<code class="docutils literal notranslate"><span class="pre">obspy/io/win/core.py</span></code>, upstream obspy#3641). Rates at or below
+255 Hz are unaffected. An encoded rate of zero, which cannot describe a
+channel block carrying a leading absolute sample, now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+instead of mis-slicing the packet; no spec consulted here documents zero as
+a sentinel for 4096 Hz (#610).</p></li>
 </ul>
 </section>
 <section id="compatibility">
