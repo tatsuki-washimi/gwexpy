@@ -61,6 +61,45 @@ GWexpy is designed to extend GWpy and other core libraries in a way that remains
 - **Hidden Side Effects**: Any behavior that changes the output of external libraries simply by importing `gwexpy` (except for the authorized I/O registry entries).
 - **Incompatible API Shims**: Modifying standard library functions or third-party API signatures without an explicit user opt-in.
 
+### GWpy API Compatibility Principle
+
+The patterns above govern *how* GWexpy extends GWpy. This governs *what* an
+override is allowed to change when GWpy already provides the method.
+
+Classify every such override into exactly one of three cases, and state which
+one in the pull request:
+
+1. **GWpy's behavior is reasonable** — match it. Do not diverge, even
+   cosmetically.
+
+2. **GWpy's behavior is unreasonable or inconvenient, but it returns a usable
+   value** — add an option that selects the improved behavior, and **default
+   that option to GWpy's behavior**. The improvement is opt-in. Silently
+   changing a result that existing GWpy code already consumes is exactly what
+   this rule exists to prevent.
+
+3. **GWpy raises, or returns only `nan`, and a more appropriate result is
+   constructible** — improve it **by default**. Nobody can depend on a value
+   they never received, so there is nothing to break. The canonical example is
+   computing a statistic over data containing `nan` by ignoring the `nan`
+   (`nanmean`-style) rather than propagating it into a useless all-`nan`
+   result. Offering GWpy's behavior behind an option as well is fine.
+
+The line between (2) and (3) is whether GWpy's return value is usable. A
+suboptimal-but-usable value is case (2), and its improvement must be opt-in;
+an exception or an all-`nan` result is case (3), and its improvement is the
+default.
+
+This principle takes precedence when it conflicts with a general preference
+for "more correct" behavior — including unit preservation. Dropping a physical
+unit is undesirable, but if GWpy drops it and still returns a usable series,
+that is case (2): preserve the unit behind an option, and default to GWpy.
+
+`TimeSeries.rms` is the worked example. GWpy returns a dimensionless series
+(case 2 → `unit=False` by default, `unit=True` opts into preservation) and
+returns `nan` for any window containing a single `nan` (case 3 →
+`ignore_nan=True` by default, `ignore_nan=False` restores GWpy's propagation).
+
 ## Third-Party Code and Licenses
 
 GWexpy learns from neighbouring projects but does not vendor their code. Before adding a

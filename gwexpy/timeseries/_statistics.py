@@ -90,7 +90,13 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     # Root-mean-square (gwpy-compatible)
     # ===============================
 
-    def rms(self, stride: Any = 1, *, unit: bool = True) -> Any:  # type: ignore[override]
+    def rms(
+        self,
+        stride: Any = 1,
+        *,
+        unit: bool = False,
+        ignore_nan: bool = True,
+    ) -> Any:  # type: ignore[override]
         """Calculate the root-mean-square value once per ``stride`` seconds.
 
         gwpy-compatible: returns a new `TimeSeries` holding one RMS value per
@@ -100,6 +106,12 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         reduces along ``axis``) so that existing gwpy code such as
         ``data.rms(10)`` keeps working.
 
+        Both keyword options follow the project's GWpy API compatibility
+        principle (see ``CONTRIBUTING.md``): ``unit`` improves on a
+        suboptimal-but-usable gwpy result, so it is **opt-in**; ``ignore_nan``
+        replaces a gwpy result that is only ``nan``, so it is **on by
+        default**.
+
         Parameters
         ----------
         stride : `float` or `~astropy.units.Quantity`, optional
@@ -107,12 +119,19 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             (seconds) or a time ``Quantity`` such as ``10 * u.s``. Defaults to
             ``1`` second.
         unit : `bool`, optional
-            If `True` (default), preserve the input's physical unit on the
-            result. If `False`, match gwpy's own `rms` exactly, which never
-            passes ``unit=`` to the `TimeSeries` constructor and so returns a
-            dimensionless series regardless of the input's unit. Use
-            ``unit=False`` when bit-for-bit parity with plain gwpy is
-            required; the numeric values are identical either way.
+            If `False` (default), match gwpy's own `rms`, which never passes
+            ``unit=`` to the `TimeSeries` constructor and so returns a
+            dimensionless series regardless of the input's unit. If `True`,
+            preserve the input's physical unit on the result (the RMS of a
+            signal in metres is in metres). The numeric values are identical
+            either way.
+        ignore_nan : `bool`, optional
+            If `True` (default), compute each window's mean square with
+            `numpy.nanmean`, so a window's RMS reflects its finite samples
+            and only an all-``nan`` window yields ``nan``. If `False`, use
+            `numpy.mean`, matching gwpy, where a single ``nan`` anywhere in a
+            window makes that whole window's RMS ``nan``. Windows are
+            independent under both settings.
 
         Returns
         -------
@@ -138,19 +157,21 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         * ``rms()`` now returns a `TimeSeries` of per-window values, not a
           scalar. Use ``float(ts.rms(ts.duration.value))`` for a single number,
           or call the generic mixin method explicitly.
-        * the ``axis`` and ``ignore_nan`` keywords are gone; passing either
-          raises ``TypeError``.
-        * NaN handling is inverted. The generic method defaulted to
-          ``ignore_nan=True`` (``nanmean``); this one uses ``np.mean``, so a
-          NaN anywhere in a window makes that window's RMS NaN. Other windows
-          are unaffected. This matches gwpy.
+        * the ``axis`` keyword is gone; passing it raises ``TypeError``.
+        * ``ignore_nan`` survives with the same default (`True`) and the same
+          meaning, but now applies per window rather than to a whole-array
+          reduction.
 
-        Two intentional, documented improvements over `gwpy`:
+        Divergences from `gwpy`, per the project's GWpy API compatibility
+        principle (``CONTRIBUTING.md``):
 
-        * the input physical unit is **preserved** on the result by default
-          (the RMS of a signal in metres is in metres), whereas gwpy always
-          returns a dimensionless series; pass ``unit=False`` to match gwpy
-          exactly;
+        * ``ignore_nan=True`` (default) — gwpy returns ``nan`` for any window
+          containing a single ``nan``, which is a result nothing can consume;
+          this computes the RMS of the window's finite samples instead. Pass
+          ``ignore_nan=False`` for gwpy's propagating behaviour;
+        * ``unit=False`` (default) — matches gwpy, which returns a
+          dimensionless series. Pass ``unit=True`` to preserve the input's
+          physical unit;
         * a time ``Quantity`` stride (e.g. ``10 * u.s``) is accepted, whereas
           gwpy raises ``TypeError``.
 
@@ -184,9 +205,15 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         trimmed = np.asarray(self.value)[: nsteps * stridesamp].reshape(
             nsteps, stridesamp
         )
-        data = np.asarray(
-            np.sqrt(np.mean(np.abs(trimmed) ** 2, axis=1)), dtype=np.float64
-        )
+        # nanmean warns and yields nan for an all-nan window; that nan is the
+        # correct answer there (no finite sample to average), so silence only
+        # the warning, not the result.
+        mean_func = np.nanmean if ignore_nan else np.mean
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", "Mean of empty slice", RuntimeWarning)
+            data = np.asarray(
+                np.sqrt(mean_func(np.abs(trimmed) ** 2, axis=1)), dtype=np.float64
+            )
         # Match GWpy's metadata formatting for numeric strides.  Quantity
         # strides are a gwexpy extension, so use their normalized seconds.
         name_stride = (

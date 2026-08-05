@@ -12,15 +12,19 @@
   `StatisticalMethodsMixin`) shadowed it, so `data.rms(10)` raised
   `AxisError` and `data.rms(10 * u.s)` raised `TypeError` — both calls work
   under plain gwpy. The override lives on the `TimeSeries`-only mixin, so
-  matrices, `Array`, and `FrequencySeries` keep the generic `rms`. A new
-  `unit` keyword (default `True`) controls two further, gwexpy-only
-  behaviors gwpy does not offer: `unit=True` preserves the input's physical
-  unit on the result (gwpy's own `rms()` never passes `unit=` to its
-  constructor, so it silently returns a dimensionless series); pass
-  `unit=False` for gwpy's exact dimensionless output when bit-for-bit parity
-  with gwpy is required. Either way, a time `Quantity` stride (e.g.
-  `10 * u.s`) is now accepted, and an irregular, sub-sample, or zero stride
-  raises a clear `ValueError` (#451).
+  matrices, `Array`, and `FrequencySeries` keep the generic `rms`. Called
+  with no keyword arguments, `rms(stride)` is now identical to gwpy's —
+  values, unit, `dt`, name and channel — for any input without `nan`
+  (verified against gwpy 4.0.1 for float64, float32, and unit-bearing
+  input). Two keywords follow the GWpy API compatibility principle newly
+  documented in `CONTRIBUTING.md`: `unit` (default `False`, matching gwpy's
+  dimensionless output) preserves the input's physical unit when set to
+  `True`, and `ignore_nan` (default `True`) computes each window's RMS from
+  its finite samples instead of returning gwpy's `nan` for any window
+  containing one — pass `ignore_nan=False` for gwpy's propagating behavior.
+  An all-`nan` window still yields `nan` under either setting. A time
+  `Quantity` stride (e.g. `10 * u.s`) is now accepted, and an irregular,
+  sub-sample, or zero stride raises a clear `ValueError` (#451).
 
 - **types**: arithmetic between an `astropy` `Quantity` and a `SeriesMatrix`
   (`TimeSeriesMatrix`, `FrequencySeriesMatrix`, `SpectrogramMatrix`) now
@@ -164,16 +168,15 @@
   raises `TypeError` (see the ufunc-narrowing entry above). No new API is
   added in this patch release (#623).
 - **timeseries (API narrowing, patch release)**: `TimeSeries.rms` no longer
-  accepts the `axis` and `ignore_nan` keywords, and no longer returns a
-  scalar — `ts.rms(axis=0)` and `ts.rms(ignore_nan=True)` now raise
-  `TypeError`. It resolves to the gwpy-compatible `rms(stride)` above instead
-  of the generic axis-reducing `StatisticalMethodsMixin.rms`. NaN handling is
-  inverted as a consequence: the generic method defaulted to
-  `ignore_nan=True` (`nanmean`); the gwpy-compatible one uses `np.mean`, so a
-  NaN anywhere in a window makes that window's RMS NaN (other windows are
-  unaffected). Use `float(ts.rms(ts.duration.value))` for a single number, or
-  call the generic mixin method explicitly. Only `TimeSeries` is affected —
-  matrices, `Array`, and `FrequencySeries` keep the generic `rms` (#451).
+  accepts the `axis` keyword and no longer returns a scalar —
+  `ts.rms(axis=0)` now raises `TypeError`. It resolves to the
+  gwpy-compatible `rms(stride)` above instead of the generic axis-reducing
+  `StatisticalMethodsMixin.rms`. Use `float(ts.rms(ts.duration.value))` for a
+  single number, or call the generic mixin method explicitly. `ignore_nan`
+  survives with its previous default (`True`) and meaning, but now applies
+  per `stride`-second window rather than to a whole-array reduction. Only
+  `TimeSeries` is affected — matrices, `Array`, and `FrequencySeries` keep
+  the generic `rms` (#451).
 
 ### Known limitations
 
@@ -191,9 +194,9 @@
   already loses about four digits of precision, and at `~1e-24` the result
   is exactly `0.0`. This matches plain gwpy bit-for-bit (confirmed: gwpy's
   loop-based `numpy.abs(stepseries.value)**2` squares in the same input
-  dtype per window), for both `unit=True` and `unit=False`. Cast to
-  `float64` first (`ts.astype(float).rms(stride)`) at strain scale if this
-  matters; `float64` input is unaffected.
+  dtype per window), under every combination of `unit` and `ignore_nan`.
+  Cast to `float64` first (`ts.astype(float).rms(stride)`) at strain scale
+  if this matters; `float64` input is unaffected.
 
 ## [0.1.12] - 2026-07-31
 

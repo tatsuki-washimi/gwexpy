@@ -9,6 +9,8 @@ stride and unit preservation).
 
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 import pytest
 from astropy import units as u
@@ -156,25 +158,25 @@ def test_rms_accepts_time_quantity_stride():
     np.testing.assert_allclose(ts.rms(2).value, ts.rms(2000 * u.ms).value)
 
 
-def test_rms_preserves_unit():
+def test_rms_unit_true_preserves_unit():
+    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m)
+    assert ts.rms(2, unit=True).unit == u.m
+
+
+def test_rms_unit_true_preserves_derived_unit():
+    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m / u.s)
+    assert ts.rms(2, unit=True).unit == u.m / u.s
+
+
+def test_rms_unit_defaults_to_gwpy_dimensionless():
+    # CONTRIBUTING.md case (2): gwpy returns a usable-but-dimensionless
+    # series, so unit preservation is opt-in and the default matches gwpy.
+    gwpy_ts = pytest.importorskip("gwpy.timeseries").TimeSeries
     ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m)
     out = ts.rms(2)
-    assert out.unit == u.m
-
-
-def test_rms_preserves_derived_unit():
-    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m / u.s)
-    assert ts.rms(2).unit == u.m / u.s
-
-
-def test_rms_unit_false_matches_gwpy_dimensionless():
-    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m)
-    out = ts.rms(2, unit=False)
     assert out.unit == u.dimensionless_unscaled
-    from gwpy.timeseries import TimeSeries as GwpyTimeSeries
-
-    gts = GwpyTimeSeries(ts.value, t0=ts.t0, sample_rate=ts.sample_rate, name=ts.name)
-    assert out.unit == gts.rms(2).unit
+    reference = gwpy_ts(ts.value, t0=ts.t0, sample_rate=ts.sample_rate).rms(2)
+    assert out.unit == reference.unit
 
 
 def test_rms_unit_true_and_false_share_numeric_values():
@@ -184,9 +186,60 @@ def test_rms_unit_true_and_false_share_numeric_values():
     )
 
 
-def test_rms_unit_default_is_true():
-    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m)
-    assert ts.rms(2).unit == ts.rms(2, unit=True).unit == u.m
+# ---------------------------------------------------------------------------
+# NaN handling: CONTRIBUTING.md case (3) -- gwpy yields only nan, so the
+# improved behaviour is the default.
+# ---------------------------------------------------------------------------
+
+
+def _nan_series():
+    # 4 s at 10 Hz -> 4 windows of 10 samples; one nan in the second window.
+    arr = np.arange(40.0)
+    arr[15] = np.nan
+    return _series(arr, sample_rate=10)
+
+
+def test_rms_ignores_nan_by_default():
+    out = _nan_series().rms(1)
+    assert np.all(np.isfinite(out.value)), out.value
+    window = np.arange(10.0, 20.0)
+    window[5] = np.nan  # index 15 of the full series
+    expected = np.sqrt(np.nanmean(np.abs(window) ** 2))
+    assert out.value[1] == pytest.approx(expected)
+
+
+def test_rms_ignore_nan_false_matches_gwpy_propagation():
+    gwpy_ts = pytest.importorskip("gwpy.timeseries").TimeSeries
+    ts = _nan_series()
+    out = ts.rms(1, ignore_nan=False)
+    assert np.isnan(out.value[1])
+    # the other windows are untouched
+    assert np.all(np.isfinite(np.delete(out.value, 1)))
+    reference = gwpy_ts(ts.value, t0=ts.t0, sample_rate=ts.sample_rate).rms(1)
+    np.testing.assert_array_equal(out.value, reference.value)
+
+
+def test_rms_all_nan_window_is_nan_even_when_ignoring():
+    arr = np.arange(40.0)
+    arr[10:20] = np.nan
+    out = _series(arr, sample_rate=10).rms(1)
+    assert np.isnan(out.value[1])
+    assert np.all(np.isfinite(np.delete(out.value, 1)))
+
+
+def test_rms_all_nan_window_does_not_warn():
+    arr = np.arange(40.0)
+    arr[10:20] = np.nan
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        _series(arr, sample_rate=10).rms(1)
+
+
+def test_rms_without_nan_is_identical_under_both_settings():
+    ts = _series(np.arange(1000.0), sample_rate=100)
+    np.testing.assert_array_equal(
+        ts.rms(2, ignore_nan=True).value, ts.rms(2, ignore_nan=False).value
+    )
 
 
 def test_rms_accepts_dimensionless_quantity_stride():
@@ -241,11 +294,12 @@ def test_rms_irregular_series_raises():
         ts.rms(1)
 
 
-def test_rms_propagates_nan_per_window():
-    # gwpy uses plain mean (no nan-ignore): a NaN taints only its own window.
+def test_rms_propagates_nan_per_window_when_requested():
+    # ignore_nan=False selects gwpy's plain mean: a NaN taints only its own
+    # window, not the whole series.
     data = np.array([1.0, 2.0, np.nan, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
     ts = _series(data, sample_rate=5)  # 2 s -> two 1 s windows
-    out = ts.rms(1)
+    out = ts.rms(1, ignore_nan=False)
     assert np.isnan(out.value[0])
     assert np.isfinite(out.value[1])
 
