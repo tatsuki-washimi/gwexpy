@@ -12,6 +12,7 @@ from datetime import datetime
 import numpy as np
 from astropy import units as u
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
@@ -87,6 +88,7 @@ def read_timeseriesdict_audio(
     # without absolute timestamps, so merging multiple files is not
     # meaningful; fail early with a clear error.
     reject_multi_source(source, format_hint or "audio")
+    start, end = pop_time_selection(kwargs)
 
     AudioSegment = _import_pydub()
 
@@ -161,7 +163,7 @@ def read_timeseriesdict_audio(
             provenance.update(metadata)
 
     set_provenance(tsd, provenance)
-    return tsd
+    return apply_time_selection(tsd, start, end)
 
 
 def read_timeseries_audio(source, **kwargs) -> TimeSeries:

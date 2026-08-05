@@ -1,0 +1,108 @@
+---
+# Audit manifest for issue #608 GWinc-facing docstring correction.
+# Builder: GPT-5.6 Luna; effort: high.
+
+issue: 608
+date: 2026-08-02
+branch: "lane worktree; branch name not required for this audit"
+agent_role: implementation_builder
+builder_model: "GPT-5.6 Luna"
+effort: high
+thread_id: "not discoverable in this execution environment"
+
+scope:
+  classification: documentation_and_regression_test_only
+  runtime_code_changed: false
+  public_api_changed: false
+  physics_behavior_changed: false
+  network_access_required_by_tests: false
+  optional_dependency_behavior: "Existing ImportError handling was exercised; no dependency was installed or changed."
+  notes:
+    - "The public example now uses verified gwinc.load_budget and the module-level from_gwinc_budget converter."
+    - "The example describes total aLIGO ASD; the doctest contract supplies a deterministic mock PSD and does not run a live detector model."
+
+skills_used:
+  - using-superpowers
+  - test-driven-development
+  - verification-before-completion
+  - executing-plans
+
+commands_executed:
+  - cmd: "rtk sed -n '1,300p' .agent/AGENTS.md"
+    result: "Reviewed project instructions; required exact scope, optional-dependency discipline, registry bootstrap, audit manifest, and QA checks."
+  - cmd: "rtk sed -n '1,294p' /home/washimi/work/gwexpy/docs/plans/2026-08-02-v0.1.13-implementation-order.md"
+    result: "Reviewed the complete implementation-order plan; Lane L requires the four-path scope and a mocked executable example."
+  - cmd: "rtk gh issue view 608 --repo tatsuki-washimi/gwexpy --json number,title,body,labels,assignees,milestone,comments"
+    result: "Read issue #608; it documents the nonexistent classmethods and selects the module-level converter as the corrective option."
+  - cmd: "rtk sed -n '1,240p' gwexpy/interop/gwinc_.py"
+    result: "Reviewed the complete current GWinc interop module and confirmed from_gwinc_budget(cls, budget_or_model, ...) is module-level."
+  - cmd: "rtk sed -n '1,340p' tests/interop/test_interop_gwinc.py"
+    result: "Reviewed the complete existing GWinc interop tests, including mocked conversion paths and missing-gwinc ImportError coverage."
+  - cmd: "rtk conda run -n gwexpy python -c 'import inspect, gwinc; print(inspect.signature(gwinc.load_budget)); print(inspect.getsource(gwinc.load_budget))'"
+    result: "Verified installed GWinc load_budget(name_or_path, freq=None, bname=None) and its documented built-in model loading behavior."
+  - cmd: "rtk conda run -n gwexpy python -c 'import inspect; from gwinc.nb import Budget, BudgetTrace; print(inspect.signature(Budget.run)); print(inspect.getsource(Budget.run)); print(inspect.getsource(BudgetTrace))'"
+    result: "Verified installed GWinc Budget.run(**kwargs), BudgetTrace.psd, and BudgetTrace dict-like trace hierarchy."
+  - cmd: >-
+      rtk conda run -n gwexpy python -c 'import gwexpy; from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict; from gwexpy.interop import from_gwinc_budget; print(hasattr(FrequencySeries, "from_gwinc_budget")); print(hasattr(FrequencySeriesDict, "from_gwinc_budget")); print(from_gwinc_budget)'
+    result: "Verified both nonexistent classmethod attributes are absent and the public module-level converter is importable."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/interop/test_gwinc_doc_examples.py"
+    result: "TDD RED: 2 failed; doctest failures were the three old nonexistent classmethod calls, and the negative assertions found the stale claims."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/interop/test_gwinc_doc_examples.py"
+    result: "First post-docstring run reached doctest success but exposed a NumPy-array Mock assertion issue in the new test; no production failure."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/interop/test_gwinc_doc_examples.py"
+    result: "TDD GREEN: 2 passed after replacing array-sensitive Mock equality with explicit NumPy array assertions."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/interop/test_gwinc_doc_examples.py tests/interop/test_interop_gwinc.py"
+    result: "Final combined focused and existing GWinc interop run: 23 passed."
+  - cmd: "rtk conda run -n gwexpy ruff check gwexpy/interop/gwinc_.py tests/interop/test_interop_gwinc.py tests/interop/test_gwinc_doc_examples.py"
+    result: "All checks passed."
+  - cmd: "rtk conda run -n gwexpy ruff format --check gwexpy/interop/gwinc_.py tests/interop/test_gwinc_doc_examples.py"
+    result: "2 files already formatted; the existing unmodified interop test was not reformatted to avoid unrelated diff churn."
+  - cmd: "rtk conda run -n gwexpy mypy gwexpy/interop/gwinc_.py"
+    result: "Success: no issues found in 1 source file."
+  - cmd: "rtk conda run -n gwexpy python -c 'import yaml; yaml.safe_load(open(\"docs/developers/plans/manifests/audit-manifest-608-gwinc-docstring.yaml\", encoding=\"utf-8\")); print(\"yaml safe_load: ok\")'"
+    result: "Manifest parsed successfully with yaml.safe_load."
+  - cmd: "rtk git status --short"
+    result: "Final scope audit recorded only the permitted source, new test, and manifest paths; tests/interop/test_interop_gwinc.py remained unmodified."
+  - cmd: "rtk git diff --check"
+    result: "Clean."
+
+tdd:
+  red:
+    command: "rtk conda run -n gwexpy pytest -q tests/interop/test_gwinc_doc_examples.py"
+    result: "2 failed as expected on the current false docstring examples."
+  green:
+    command: "rtk conda run -n gwexpy pytest -q tests/interop/test_gwinc_doc_examples.py"
+    result: "2 passed after the minimal docstring correction and deterministic test-harness assertion fix."
+
+verification:
+  focused_pytest: "2 passed; included in the final combined run of 23 passed."
+  existing_gwinc_interop_pytest: "21 passed; included in the final combined run of 23 passed."
+  ruff_check: "All checks passed on the source and both interop test files."
+  ruff_format_check: "2 changed Python files already formatted."
+  ruff_format_existing_test: "Not clean in the untouched baseline file; intentionally not reformatted because that would add unrelated changes."
+  mypy: "Success: no issues found in gwexpy/interop/gwinc_.py."
+  yaml_safe_load: "Manifest parsed successfully."
+  exact_four_path_scope: "Clean; only 3 of the 4 permitted paths changed, with the existing interop test intentionally untouched."
+  git_diff_check: "Clean."
+  live_gwinc_aLIGO_simulation: "Not run; the contract is deliberately mock-bounded and network-free."
+  external_scientific_api_review: pending_fresh_GPT_5.6_Sol_session
+
+allowed_write_scope:
+  - gwexpy/interop/gwinc_.py
+  - tests/interop/test_interop_gwinc.py
+  - tests/interop/test_gwinc_doc_examples.py
+  - docs/developers/plans/manifests/audit-manifest-608-gwinc-docstring.yaml
+
+files_changed:
+  - path: gwexpy/interop/gwinc_.py
+    change: "Corrected only the public Examples section to use the verified module-level converter and a total aLIGO ASD workflow."
+  - path: tests/interop/test_gwinc_doc_examples.py
+    change: "Added a doctest-backed mocked GWinc example contract and negative assertions for both nonexistent classmethod claims."
+  - path: docs/developers/plans/manifests/audit-manifest-608-gwinc-docstring.yaml
+    change: "Recorded the verified API basis, TDD evidence, model/effort, limitations, and final verification slots."
+
+remote_actions:
+  commit: false
+  push: false
+  github_issue_or_pr_write: false
+  dependency_install: false

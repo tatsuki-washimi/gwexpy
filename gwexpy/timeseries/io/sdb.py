@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 from astropy.time import Time
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
+
 from .. import TimeSeries, TimeSeriesDict
 from ._multi import expand_multi_source, read_multi_dict
 from ._registration import register_timeseries_format
@@ -56,18 +58,27 @@ def read_timeseriesdict_sdb(
     columns : list, optional
         List of column names to read. If None, reads all columns found in UNIT_CONVERSION + dateTime.
     **kwargs
-        Additional compatibility arguments accepted and ignored.
+        Additional compatibility arguments accepted and ignored.  ``start`` and
+        ``end`` are the exception: they used to be ignored here too, so a
+        bounded read quietly returned every row in the table (issue #611).  They
+        are now honoured by cropping the assembled result.
 
     """
+    start, end = pop_time_selection(kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(
-            read_timeseriesdict_sdb,
-            multi,
-            "sdb",
-            table=table,
-            columns=columns,
-            **kwargs,
+        return apply_time_selection(
+            read_multi_dict(
+                read_timeseriesdict_sdb,
+                multi,
+                "sdb",
+                table=table,
+                columns=columns,
+                **kwargs,
+            ),
+            start,
+            end,
         )
 
     # gwpy's registry may pass an already-open file object for explicit
@@ -177,7 +188,7 @@ def read_timeseriesdict_sdb(
         ts = TimeSeries(data, t0=t0_gps, sample_rate=sample_rate, name=col, unit=unit)
         tsd[col] = ts
 
-    return tsd
+    return apply_time_selection(tsd, start, end)
 
 
 def read_timeseries_sdb(source, **kwargs):

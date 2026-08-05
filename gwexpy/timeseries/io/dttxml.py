@@ -13,6 +13,7 @@ import numpy as np
 from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.dttxml_common import SUPPORTED_TS, load_dttxml_products
+from gwexpy.io.time_selection import reject_time_selection
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
@@ -64,7 +65,11 @@ def read_timeseriesdict_dttxml(
     A list of paths is also accepted; channels found in several files
     are concatenated along the time axis (gaps padded with ``pad``) and
     channels unique to one file are merged in.
+
+    ``start``/``end`` are rejected rather than ignored (issue #611).
     """
+    reject_time_selection("xml.diaggui", kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
         return read_multi_dict(

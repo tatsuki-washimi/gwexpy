@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 from astropy import units as u
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     datetime_to_gps,
     ensure_datetime,
@@ -116,22 +117,31 @@ def read_timeseriesdict_gbd(
     pad : float, optional
         Padding value (unused, accepted for API symmetry).
     **kwargs
-        Additional compatibility arguments accepted and ignored.
+        Additional compatibility arguments accepted and ignored.  ``start`` and
+        ``end`` are the exception: they used to be ignored here too, so a
+        bounded read quietly returned the whole recording (issue #611).  They
+        are now honoured by cropping the assembled result.
 
     """
+    start, end = pop_time_selection(kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(
-            read_timeseriesdict_gbd,
-            multi,
-            "gbd",
-            pad=pad,
-            timezone=timezone,
-            channels=channels,
-            digital_channels=digital_channels,
-            unit=unit,
-            epoch=epoch,
-            **kwargs,
+        return apply_time_selection(
+            read_multi_dict(
+                read_timeseriesdict_gbd,
+                multi,
+                "gbd",
+                pad=pad,
+                timezone=timezone,
+                channels=channels,
+                digital_channels=digital_channels,
+                unit=unit,
+                epoch=epoch,
+                **kwargs,
+            ),
+            start,
+            end,
         )
 
     if timezone is None:
@@ -195,7 +205,7 @@ def read_timeseriesdict_gbd(
             "digital_mode": "binarize" if digital_set else "none",
         },
     )
-    return tsd
+    return apply_time_selection(tsd, start, end)
 
 
 def read_timeseries_gbd(*args, channels=None, **kwargs) -> TimeSeries:

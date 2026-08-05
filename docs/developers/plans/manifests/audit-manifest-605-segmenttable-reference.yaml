@@ -1,0 +1,74 @@
+issue: 605
+title: Correct SegmentTable reference documentation
+date: 2026-08-02
+lane: K
+builder:
+  model: GPT-5.6 Luna
+  effort: medium
+  thread: 019fc0c3-3e64-7202-b26e-08ae7cd8437d
+worktree: /home/washimi/.config/superpowers/worktrees/gwexpy/v0113-lane-k-correct
+docs_and_tests_only: true
+production_modules_changed: false
+remote_writes: false
+review:
+  status: pending
+  reviewer: pending
+  physics_review_required: false
+  rationale: >-
+    This change corrects reference prose and adds API/documentation contract
+    tests. It does not change numerical behavior, units, axes, storage, or
+    production code.
+scope:
+  exact_files:
+    - docs/web/en/reference/SegmentTable.md
+    - docs/web/ja/reference/SegmentTable.md
+    - tests/docs/test_segment_table_reference_contract.py
+    - docs/developers/plans/manifests/audit-manifest-605-segmenttable-reference.yaml
+  excluded:
+    - docs_redesign
+    - all production modules
+    - commits, pushes, GitHub updates, and remote writes
+observed_contracts:
+  - SegmentTable is not a pandas.DataFrame or gwpy.table.Table subclass.
+  - SegmentTable.read and SegmentTable.read_csv are the same static descriptor and have equal signatures.
+  - SegmentTable.read_csv exposes span_cols and **kwargs, and no write method exists.
+  - Constructor, from_segments, and from_table require gwpy.segments.Segment span values.
+  - read_csv constructs spans from numeric start/end columns and parses (start, end), Segment(start, end), and [start ... end) strings.
+  - Public plotting methods are plot, scatter, hist, segments, overlay, and overlay_spectra; step and bar are absent.
+commands_executed:
+  - cmd: "rtk conda run -n gwexpy python -c \"import inspect; from gwexpy.table import SegmentTable; print([(n, getattr(SegmentTable,n,None), inspect.signature(getattr(SegmentTable,n)) if callable(getattr(SegmentTable,n,None)) else None) for n in ('plot','step','bar','scatter','hist','overlay','segments','overlay_spectra')])\""
+    result: "Observed exact signatures for plot, scatter, hist, segments, overlay, and overlay_spectra; step and bar are absent."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/docs/test_segment_table_reference_contract.py -p no:cacheprovider"
+    result: "RED phase after strengthening the test: 2 failed, 7 passed."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/docs/test_segment_table_reference_contract.py -p no:cacheprovider"
+    result: "9 passed after documentation and test corrections."
+  - cmd: "rtk conda run -n gwexpy ruff check tests/docs/test_segment_table_reference_contract.py"
+    result: "All checks passed."
+  - cmd: "rtk conda run -n gwexpy ruff format --check tests/docs/test_segment_table_reference_contract.py"
+    result: "1 file already formatted."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/table/test_segment_table.py tests/table/test_segment_table_new.py tests/table/test_segment_table_contracts.py -p no:cacheprovider"
+    result: "77 passed in 0.93s."
+  - cmd: "rtk conda run -n gwexpy python -c \"import yaml; from pathlib import Path; yaml.safe_load(Path('docs/developers/plans/manifests/audit-manifest-605-segmenttable-reference.yaml').read_text()); print('YAML safe_load: OK')\""
+    result: "YAML safe_load: OK."
+  - cmd: "rtk git status --short --untracked-files=all"
+    result: " A docs/developers/plans/manifests/audit-manifest-605-segmenttable-reference.yaml;  M docs/web/en/reference/SegmentTable.md;  M docs/web/ja/reference/SegmentTable.md;  A tests/docs/test_segment_table_reference_contract.py"
+  - cmd: "rtk git diff --check"
+    result: "No whitespace errors."
+files_changed:
+  - path: docs/web/en/reference/SegmentTable.md
+    change: "Replaced inheritance/write claims with the standalone-container contract, exact signatures, span forms, and plot helper behavior."
+  - path: docs/web/ja/reference/SegmentTable.md
+    change: "Added equivalent Japanese API, span, alias, no-write, standalone-container, and plotting claims without unexplained composition jargon."
+  - path: tests/docs/test_segment_table_reference_contract.py
+    change: "Added exact structured signatures, descriptor, non-subclass, semantic parity, AST example execution, contradiction, and executable-block requirements."
+  - path: docs/developers/plans/manifests/audit-manifest-605-segmenttable-reference.yaml
+    change: "Recorded the original builder metadata, exact rerun evidence, and no-whitespace-error diff evidence."
+verification:
+  focused_contract_test: "9 passed"
+  existing_table_tests: "77 passed (test_segment_table.py, test_segment_table_new.py, test_segment_table_contracts.py)"
+  executable_python_blocks: "English and Japanese each have at least one block; all discovered blocks executed"
+  ruff_check: "All checks passed"
+  ruff_format_check: "1 file already formatted"
+  yaml_safe_load: "YAML safe_load: OK"
+  exact_four_file_scope: "git status showed exactly the four requested paths"
+  git_diff_check: "No whitespace errors"

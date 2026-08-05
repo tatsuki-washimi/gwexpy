@@ -21,6 +21,7 @@ from collections import OrderedDict
 
 import numpy as np
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     apply_unit,
     ensure_dependency,
@@ -230,22 +231,34 @@ def read_timeseriesdict_zarr(
         Explicit GPS epoch (seconds) for legacy stores that lack a per-array
         ``t0`` attribute. When omitted and ``t0`` is absent, a ``UserWarning``
         is emitted and ``t0=0.0`` is assumed.
+    start, end : float, optional
+        GPS bounds.  The store is read in full and the result is cropped, so
+        this returns exactly ``read(source).crop(start, end)``.
     **kwargs
         Additional keyword arguments forwarded to ``zarr.open_group``.
 
     """
+    # Removed before anything else: these used to reach ``zarr.open_group``,
+    # which rejects them with a TypeError naming a function the caller never
+    # invoked.  Cropping happens once, on the merged result.
+    start, end = pop_time_selection(kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(
-            read_timeseriesdict_zarr,
-            multi,
-            "zarr",
-            channels=channels,
-            unit=unit,
-            sample_rate_override=sample_rate_override,
-            dt_override=dt_override,
-            t0_override=t0_override,
-            **kwargs,
+        return apply_time_selection(
+            read_multi_dict(
+                read_timeseriesdict_zarr,
+                multi,
+                "zarr",
+                channels=channels,
+                unit=unit,
+                sample_rate_override=sample_rate_override,
+                dt_override=dt_override,
+                t0_override=t0_override,
+                **kwargs,
+            ),
+            start,
+            end,
         )
 
     zarr = _import_zarr()
@@ -289,7 +302,7 @@ def read_timeseriesdict_zarr(
             "unit_source": "override" if unit else "file",
         },
     )
-    return tsd
+    return apply_time_selection(tsd, start, end)
 
 
 def read_timeseries_zarr(source, **kwargs) -> TimeSeries:
@@ -310,7 +323,13 @@ def read_timeseriesmatrix_zarr(
     t0_override=None,
     **kwargs,
 ) -> TimeSeriesMatrix:
-    """Read a Zarr store and convert its channels to a matrix."""
+    """Read a Zarr store and convert its channels to a matrix.
+
+    ``start``/``end`` are honoured by cropping the assembled matrix, matching
+    ``read(source).crop(start, end)``.
+    """
+    start, end = pop_time_selection(kwargs)
+
     if isinstance(source, (list, tuple)):
         sources = list(source)
         if not sources:
@@ -330,7 +349,7 @@ def read_timeseriesmatrix_zarr(
         merged = matrices[0]
         for mat in matrices[1:]:
             merged = merged.append(mat, inplace=False, gap="pad", pad=np.nan)
-        return merged
+        return apply_time_selection(merged, start, end)
 
     zarr = _import_zarr()
 
@@ -409,7 +428,7 @@ def read_timeseriesmatrix_zarr(
             t0_override=t0_override,
             **kwargs,
         )
-        return tsd.to_matrix()
+        return apply_time_selection(tsd.to_matrix(), start, end)
 
     seen_cells = set()
     row_positions: dict[object, int] = {}
@@ -503,7 +522,7 @@ def read_timeseriesmatrix_zarr(
             expected_size=len(col_keys),
             key_prefix="col",
         )
-    return matrix
+    return apply_time_selection(matrix, start, end)
 
 
 # -- Writer --------------------------------------------------------------------

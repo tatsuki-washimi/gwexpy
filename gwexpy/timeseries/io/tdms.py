@@ -7,6 +7,7 @@ from collections.abc import Iterable
 import numpy as np
 from astropy import units as u
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
@@ -54,19 +55,27 @@ def read_timeseriesdict_tdms(
         Override the start time (GPS seconds or datetime).
         If not provided, uses the timestamp from the TDMS file properties.
     **kwargs
-        Additional keyword arguments forwarded to the TDMS reader.
+        Additional keyword arguments forwarded to the TDMS reader.  ``start``
+        and ``end`` are honoured by cropping the result rather than ignored
+        (issue #611).
 
     """
+    start, end = pop_time_selection(kwargs)
+
     multi = expand_multi_source(source)
     if multi is not None:
-        return read_multi_dict(
-            read_timeseriesdict_tdms,
-            multi,
-            "tdms",
-            channels=channels,
-            unit=unit,
-            epoch=epoch,
-            **kwargs,
+        return apply_time_selection(
+            read_multi_dict(
+                read_timeseriesdict_tdms,
+                multi,
+                "tdms",
+                channels=channels,
+                unit=unit,
+                epoch=epoch,
+                **kwargs,
+            ),
+            start,
+            end,
         )
 
     TdmsFile = _import_nptdms()
@@ -147,7 +156,7 @@ def read_timeseriesdict_tdms(
             "unit_source": "override" if unit else "tdms",
         },
     )
-    return tsd
+    return apply_time_selection(tsd, start, end)
 
 
 def read_timeseries_tdms(*args, channels=None, **kwargs) -> TimeSeries:
