@@ -87,7 +87,28 @@ def build_index_if_needed(xindex, dx, x0, xunit, length):
 
 
 def check_add_sub_compatibility(*seriesmatrices):
-    """Validate unit equality across SeriesMatrix (or MetaDataMatrix) operands."""
+    """Validate per-cell unit *convertibility* across SeriesMatrix operands.
+
+    Addition, subtraction and comparison require that every cell of every
+    operand can be converted into the corresponding cell unit of the first
+    operand.  Units only need to be *equivalent* (``m`` and ``cm``), not
+    identical; :func:`convert_add_sub_values` performs the actual numeric
+    conversion.
+
+    Raises
+    ------
+    astropy.units.UnitConversionError
+        If any cell pair has dimensionally incompatible units.
+    ValueError
+        If the operand shapes differ.
+
+    Notes
+    -----
+    Before gwexpy 0.1.13 this helper required *identical* units, so ``m + cm``
+    raised even though the operation is well defined.  The check was relaxed to
+    equivalence when per-cell value conversion was introduced (issue #576).
+
+    """
     n_matrices = len(seriesmatrices)
     shape = seriesmatrices[0].shape
     for sm in seriesmatrices:
@@ -95,14 +116,66 @@ def check_add_sub_compatibility(*seriesmatrices):
             raise ValueError(f"Shape mismatch: {shape} vs {sm.shape}")
     for i in range(shape[0]):
         for j in range(shape[1]):
-            u0 = seriesmatrices[0].meta[i, j].unit
+            u0 = _cell_unit(seriesmatrices[0], i, j)
             for k in range(1, n_matrices):
-                uk = seriesmatrices[k].meta[i, j].unit
-                if u0 != uk:
+                uk = _cell_unit(seriesmatrices[k], i, j)
+                if not u0.is_equivalent(uk):
                     raise u.UnitConversionError(
                         f"Unit mismatch at cell ({i},{j}): {u0} vs {uk}"
                     )
     return True
+
+
+def _cell_unit(seriesmatrix, i, j):
+    """Return the unit of cell ``(i, j)``, treating ``None`` as dimensionless."""
+    unit = seriesmatrix.meta[i, j].unit
+    return u.dimensionless_unscaled if unit is None else unit
+
+
+def convert_add_sub_values(seriesmatrices):
+    """Convert operand values cell-by-cell into the first operand's units.
+
+    Parameters
+    ----------
+    seriesmatrices : sequence of SeriesMatrix
+        Operands of an ``add``/``subtract``/comparison ufunc.  The first
+        operand defines the reference unit of every cell.
+
+    Returns
+    -------
+    list of numpy.ndarray
+        One value array per operand.  The first entry is the first operand's
+        own values; every other entry has been rescaled so that cell
+        ``(i, j)`` is expressed in ``seriesmatrices[0].meta[i, j].unit``.
+
+    Notes
+    -----
+    Cells whose units already match are passed through untouched, so the
+    common case costs one unit comparison per cell and no data copy.
+
+    """
+    value_arrays = [np.asarray(sm.view(np.ndarray)) for sm in seriesmatrices]
+    if len(value_arrays) < 2:
+        return value_arrays
+
+    shape = seriesmatrices[0].shape
+    converted = [value_arrays[0]]
+    for k in range(1, len(seriesmatrices)):
+        source = value_arrays[k]
+        target: np.ndarray | None = None
+        for i in range(shape[0]):
+            for j in range(shape[1]):
+                u0 = _cell_unit(seriesmatrices[0], i, j)
+                uk = _cell_unit(seriesmatrices[k], i, j)
+                if u0 == uk:
+                    continue
+                if target is None:
+                    target = np.array(
+                        source, dtype=np.result_type(source.dtype, np.float64)
+                    )
+                target[i, j] = u.Quantity(source[i, j], uk).to_value(u0)
+        converted.append(source if target is None else target)
+    return converted
 
 
 def check_shape_xindex_compatibility(*seriesmatrices):

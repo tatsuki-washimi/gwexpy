@@ -90,7 +90,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     # Root-mean-square (gwpy-compatible)
     # ===============================
 
-    def rms(self, stride: Any = 1) -> Any:  # type: ignore[override]
+    def rms(self, stride: Any = 1, *, unit: bool = True) -> Any:  # type: ignore[override]
         """Calculate the root-mean-square value once per ``stride`` seconds.
 
         gwpy-compatible: returns a new `TimeSeries` holding one RMS value per
@@ -106,6 +106,13 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             Stride (seconds) between RMS calculations. Accepts a plain number
             (seconds) or a time ``Quantity`` such as ``10 * u.s``. Defaults to
             ``1`` second.
+        unit : `bool`, optional
+            If `True` (default), preserve the input's physical unit on the
+            result. If `False`, match gwpy's own `rms` exactly, which never
+            passes ``unit=`` to the `TimeSeries` constructor and so returns a
+            dimensionless series regardless of the input's unit. Use
+            ``unit=False`` when bit-for-bit parity with plain gwpy is
+            required; the numeric values are identical either way.
 
         Returns
         -------
@@ -140,9 +147,10 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         Two intentional, documented improvements over `gwpy`:
 
-        * the input physical unit is **preserved** on the result (the RMS of a
-          signal in metres is in metres), whereas gwpy returns a dimensionless
-          series;
+        * the input physical unit is **preserved** on the result by default
+          (the RMS of a signal in metres is in metres), whereas gwpy always
+          returns a dimensionless series; pass ``unit=False`` to match gwpy
+          exactly;
         * a time ``Quantity`` stride (e.g. ``10 * u.s``) is accepted, whereas
           gwpy raises ``TypeError``.
 
@@ -154,10 +162,11 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         input dtype before the cast to ``float64``, so ``|x|**2`` underflows
         float32 below roughly ``1e-22``. A float32 series at GW strain scale
         (``~1e-21``) already loses about four digits, and at ``~1e-24`` the
-        result is exactly ``0.0``. This is bit-for-bit what gwpy does, and
-        preserving that parity is the point of this method, so the behaviour
-        is kept rather than silently improved. Cast to ``float64`` before
-        calling ``rms`` when the data is at strain scale::
+        result is exactly ``0.0``. Measured: plain gwpy's loop-based
+        ``numpy.abs(stepseries.value)**2`` squares in the same per-window
+        input dtype, so it underflows identically; this holds for both
+        ``unit=True`` and ``unit=False``. Cast to ``float64`` before calling
+        ``rms`` when the data is at strain scale::
 
             ts.astype(float).rms(stride)
 
@@ -190,7 +199,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             t0=self.t0,
             name=name,
             sample_rate=1.0 / stride_s,
-            unit=self.unit,
+            unit=self.unit if unit else None,
         )
 
     # ===============================

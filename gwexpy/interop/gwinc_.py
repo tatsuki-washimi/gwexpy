@@ -13,6 +13,7 @@ The simpler ``gwexpy.noise.gwinc_.from_pygwinc`` helper (strain/DARM only) is
 preserved unchanged. This module adds the richer trace-expansion API.
 
 """
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -117,10 +118,37 @@ def from_gwinc_budget(
 
     Examples
     --------
-    >>> from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
-    >>> asd = FrequencySeries.from_gwinc_budget("aLIGO")
-    >>> noise_budget = FrequencySeriesDict.from_gwinc_budget("aLIGO")
-    >>> quantum = FrequencySeries.from_gwinc_budget("aLIGO", trace_name="Quantum")
+    Load a GWinc budget and convert its total noise PSD to an amplitude
+    spectral density.  GWinc's ``load_budget`` accepts a frequency array,
+    and the module-level converter accepts the GWexpy target class explicitly:
+
+    >>> import gwinc
+    >>> import numpy as np
+    >>> from gwexpy.frequencyseries import FrequencySeries
+    >>> from gwexpy.interop import from_gwinc_budget
+    >>> frequencies = np.array([10.0, 100.0, 1000.0])
+    >>> budget = gwinc.load_budget("aLIGO", freq=frequencies)
+    >>> total_asd = from_gwinc_budget(
+    ...     FrequencySeries, budget, frequencies=frequencies, quantity="asd"
+    ... )
+
+    ``total_asd`` is the total aLIGO detector-noise ASD in 1 / sqrt(Hz) at
+    the requested frequencies.
+
+    Passing ``FrequencySeriesDict`` instead returns the total together with
+    every sub-trace, keyed by ``"Total"`` and the gwinc trace names:
+
+    >>> from gwexpy.frequencyseries import FrequencySeriesDict
+    >>> noise_budget = from_gwinc_budget(
+    ...     FrequencySeriesDict, budget, frequencies=frequencies
+    ... )
+
+    Use ``trace_name`` to pull a single sub-trace out as one
+    `~gwexpy.frequencyseries.FrequencySeries`:
+
+    >>> quantum = from_gwinc_budget(
+    ...     FrequencySeries, budget, frequencies=frequencies, trace_name="Quantum"
+    ... )
 
     """
     gwinc = require_optional("gwinc")
@@ -174,8 +202,7 @@ def from_gwinc_budget(
         if trace_name not in subtrace_map:
             available = ["Total"] + sorted(subtrace_map.keys())
             raise ValueError(
-                f"Trace '{trace_name}' not found. "
-                f"Available traces: {available}"
+                f"Trace '{trace_name}' not found. Available traces: {available}"
             )
         return _make_fs(_to_value(subtrace_map[trace_name]), trace_name)
 

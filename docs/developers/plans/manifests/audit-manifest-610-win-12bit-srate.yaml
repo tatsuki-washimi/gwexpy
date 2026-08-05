@@ -1,0 +1,152 @@
+issue: 610
+title: "WIN reader 12-bit sampling-rate and payload-alignment contract"
+date: 2026-08-02
+branch: codex/v0113-lane-c
+worktree: /home/washimi/.config/superpowers/worktrees/gwexpy/v0113-lane-c
+agent_role: "Implementation builder"
+agent_model: "GPT-5.6 Luna"
+agent_reasoning_effort: high
+builder:
+  model: "GPT-5.6 Luna"
+  reasoning_effort: high
+  thread: "019fc09e-7ca3-7011-848a-64823c82d5ff"
+  workspace: "workspace-write"
+  approval: never
+base_sha: eb62c6a056a7a8992fe1f00e115d6173050c64fc
+final_state: "Uncommitted by instruction; no push or GitHub contact"
+
+skills_used:
+  - using-superpowers
+  - brainstorming
+  - writing-plans
+  - test-driven-development
+  - verification-before-completion
+
+scope:
+  included:
+    - "Decode WIN per-channel sample rate as ((buff[2] & 0x0F) << 8) | buff[3]."
+    - "Preserve existing behavior for nonzero rates <=255 while deriving payload length from the full rate and width code."
+    - "Fail closed with ValueError for an encoded zero sampling rate; do not interpret zero as 4096 Hz."
+    - "Add independent golden-byte contract tests for rates 255, 256, 1000, and 4095, width codes 0 and 1, multiple channels, and consecutive packets."
+  excluded:
+    - "Native WIN writer."
+    - "Sample-width code 5 support."
+    - "New dependencies and unrelated refactors."
+    - "Commits, pushes, GitHub contact, and git configuration changes."
+  exact_files:
+    - gwexpy/timeseries/io/win.py
+    - tests/io/test_win_12bit_rate_contract.py
+    - docs/developers/plans/manifests/audit-manifest-610-win-12bit-srate.yaml
+
+evidence:
+  - path: docs/developers/plans/active/2026-08-01-roadmap-reorganization-plan.md
+    finding: "The issue text identifies the WIN rate as a 12-bit field and requires the low nibble of buff[2] to supply bits 11..8; it explicitly excludes the native writer and width code 5."
+  - path: /home/washimi/miniforge3/envs/gwexpy/lib/python3.11/site-packages/obspy/io/win/core.py
+    finding: "The installed ObsPy 1.5.0 reader independently uses the same 12-bit rate formula; it does not document zero as 4096 Hz."
+  - path: gwexpy/timeseries/io/win.py
+    finding: "The prior reader used only buff[3] for srate and computed xlen from that truncated value."
+  - path: tests/io/test_win_12bit_rate_contract.py
+    finding: "The fixture bytes are built directly from WIN channel headers, big-endian absolute samples, packed nibbles, and signed byte deltas; no production writer is used."
+
+commands_executed:
+  - cmd: "rtk git rev-parse HEAD"
+    result: "eb62c6a056a7a8992fe1f00e115d6173050c64fc"
+  - cmd: "rtk git status --short"
+    result: "Clean before edits."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/io/test_win_reader.py"
+    result: "2 passed in 0.82s"
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/io/test_win_12bit_rate_contract.py tests/io/test_win_reader.py"
+    phase: RED
+    result: "2 failed, 2 passed. The 12-bit alignment test failed with the expected low-byte truncation/OverflowError; the zero-rate test failed because the old reader attempted to unpack a missing absolute sample instead of failing closed."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/io/test_win_12bit_rate_contract.py tests/io/test_win_reader.py"
+    phase: GREEN
+    result: "4 passed in 0.88s after the minimal production change and bounded independent test oracle."
+  - cmd: "rtk conda run -n gwexpy ruff check gwexpy/timeseries/io/win.py tests/io/test_win_12bit_rate_contract.py"
+    result: "All checks passed."
+  - cmd: "rtk conda run -n gwexpy ruff format --check gwexpy/timeseries/io/win.py tests/io/test_win_12bit_rate_contract.py"
+    result: "Initial check reported 2 files would be reformatted."
+  - cmd: "rtk conda run -n gwexpy ruff format gwexpy/timeseries/io/win.py tests/io/test_win_12bit_rate_contract.py"
+    result: "2 files reformatted."
+  - cmd: "rtk conda run -n gwexpy ruff format --check gwexpy/timeseries/io/win.py tests/io/test_win_12bit_rate_contract.py"
+    result: "2 files already formatted."
+  - cmd: "rtk conda run -n gwexpy mypy gwexpy/timeseries/io/win.py"
+    result: "Success: no issues found in 1 source file"
+  - cmd: "rtk git diff --check"
+    result: "Passed with no whitespace errors."
+  - cmd: >-
+      rtk conda run -n gwexpy python -c 'import pathlib, yaml;
+      yaml.safe_load(pathlib.Path("docs/developers/plans/manifests/audit-manifest-610-win-12bit-srate.yaml").read_text());
+      print("YAML parse: passed")'
+    result: "YAML parse: passed."
+  - cmd: >-
+      rtk conda run -n gwexpy python -c 'import subprocess;
+      allowed={"gwexpy/timeseries/io/win.py", "tests/io/test_win_12bit_rate_contract.py",
+      "docs/developers/plans/manifests/audit-manifest-610-win-12bit-srate.yaml"};
+      tracked=set(subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines());
+      untracked=set(subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], text=True).splitlines());
+      actual=tracked | untracked; print("tracked:", sorted(tracked)); print("untracked:", sorted(untracked));
+      print("scope:", "PASS" if actual == allowed else "FAIL"); assert actual == allowed'
+    result: "Scope: PASS. Tracked: gwexpy/timeseries/io/win.py. Untracked: the new contract test and this manifest; actual set equals the three allowed paths."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/io/test_win_12bit_rate_contract.py tests/io/test_win_reader.py"
+    result: "Final focused regression: 4 passed in 0.82s."
+  - cmd: "rtk conda run -n gwexpy pytest -q tests/io/test_win_12bit_rate_contract.py tests/io/test_win_reader.py"
+    result: "Post-manifest final focused regression: 4 passed in 0.85s."
+
+contract_results:
+  twelve_bit_rates: "PASS: 255, 256, 1000, and 4095 decode with full rate values."
+  width_codes: "PASS: packed 4-bit width code 0 and one-byte width code 1 are exercised."
+  payload_alignment: "PASS: four channels are present in each of two consecutive packets; all 2*rate sample arrays match the independent oracle."
+  metadata: "PASS: channel identity, sample count, and sampling_rate are asserted for every channel."
+  low_rate_compatibility: "PASS: the existing WIN reader baseline remains 2 passed, and the new fixture includes rate 255."
+  zero_rate: "PASS: encoded zero raises ValueError with a positive-rate message before consuming sample bytes; no 4096-Hz interpretation is introduced."
+  optional_obspy: "Available in conda env gwexpy as ObsPy 1.5.0; end-to-end byte-reader tests ran rather than being skipped."
+
+files_changed:
+  - path: gwexpy/timeseries/io/win.py
+    change: "Decode the full 12-bit sample rate and reject encoded zero before payload parsing."
+  - path: tests/io/test_win_12bit_rate_contract.py
+    change: "Add independent golden-byte tests for rate decoding, packed/nonpacked payload sizing, metadata, packet/channel alignment, and zero-rate fail-closed behavior."
+  - path: docs/developers/plans/manifests/audit-manifest-610-win-12bit-srate.yaml
+    change: "Record issue scope, evidence, exact commands/results, verification, review state, and unresolved risks."
+
+review:
+  status: approved
+  reviewer:
+    model: "GPT-5.6 Sol"
+    reasoning_effort: high
+    thread: "019fc0a9-2bed-7fd1-ade9-7d7827ca01bf"
+    workspace: "read-only"
+    approval: never
+  result: APPROVED
+  findings:
+    critical: []
+    important: []
+    minor: []
+  required_implementation_fixes: []
+  required_test_fixes: []
+  independently_confirmed:
+    - "The exact 12-bit sampling-rate formula is ((buff[2] & 0x0F) << 8) | buff[3]."
+    - "Width-code 0 and width-code 1 payload identities are correct."
+    - "An encoded zero rate raises ValueError before absolute-sample consumption, including the expected byte offset and read sizes."
+    - "All four rates (255, 256, 1000, and 4095), two channels, and two consecutive packets are covered and aligned."
+    - "The golden-byte fixture is independent of the production writer and preserves low-rate compatibility."
+    - "The exact requested scope and static/YAML checks are satisfied."
+  validation:
+    ordinary_pytest:
+      status: blocked
+      result: "Blocked in the review sandbox because no writable temporary directory or Matplotlib cache was available."
+    exact_parser_and_tests:
+      status: passed
+      result: "The reviewer executed the exact parser and exact focused tests with memory-backed temporary and cache paths."
+    parent_unrestricted_focused_suite:
+      status: passed
+      result: "The parent independently ran the normal focused suite: 4 passed. Ruff, format, mypy, and git diff --check also passed."
+  physics_review_required: true
+  physics_review_status: pending
+  reason: "The Sol approval is an independent review only. Human physics sign-off was not supplied and is not claimed."
+
+unresolved_risks:
+  - "Human physics sign-off remains pending; the independent Sol approval does not constitute human/physics sign-off."
+  - "The existing one-byte delta path uses NumPy int8 scalar arithmetic; the independent 1000/4095-Hz fixture keeps absolute values bounded to avoid expanding this issue into an unrelated NumPy-promotion refactor."
+  - "Malformed/truncated WIN records outside the requested zero-rate case retain existing handling and are not broadened here."
+  - "Sample-width code 5 remains unsupported and raises NotImplementedError as before."

@@ -167,6 +167,28 @@ def test_rms_preserves_derived_unit():
     assert ts.rms(2).unit == u.m / u.s
 
 
+def test_rms_unit_false_matches_gwpy_dimensionless():
+    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m)
+    out = ts.rms(2, unit=False)
+    assert out.unit == u.dimensionless_unscaled
+    from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+
+    gts = GwpyTimeSeries(ts.value, t0=ts.t0, sample_rate=ts.sample_rate, name=ts.name)
+    assert out.unit == gts.rms(2).unit
+
+
+def test_rms_unit_true_and_false_share_numeric_values():
+    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m)
+    np.testing.assert_array_equal(
+        ts.rms(2, unit=True).value, ts.rms(2, unit=False).value
+    )
+
+
+def test_rms_unit_default_is_true():
+    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m)
+    assert ts.rms(2).unit == ts.rms(2, unit=True).unit == u.m
+
+
 def test_rms_accepts_dimensionless_quantity_stride():
     # a dimensionless Quantity is read as a number of seconds (gwpy parity)
     ts = _series(np.arange(1000.0), sample_rate=100)

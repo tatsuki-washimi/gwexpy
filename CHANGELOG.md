@@ -2,41 +2,198 @@
 
 ## Unreleased
 
-### Breaking changes
+### Behaviour-visible bug fixes
 
-- `TimeSeries.rms` no longer accepts the `axis` and `ignore_nan` keywords, and
-  no longer returns a scalar. It now resolves to the gwpy-compatible
-  `rms(stride)` (see Bug fixes below) instead of the generic axis-reducing
-  `StatisticalMethodsMixin.rms`, so `ts.rms(axis=0)` and
-  `ts.rms(ignore_nan=True)` raise `TypeError`. NaN handling is inverted as a
-  consequence: the generic method defaulted to `ignore_nan=True` (`nanmean`),
-  while the gwpy-compatible one uses `np.mean`, so a NaN anywhere in a window
-  now makes that window's RMS NaN. Other windows are unaffected. Use
-  `float(ts.rms(ts.duration.value))` for a single number, or call the generic
-  mixin method explicitly. Only `TimeSeries` is affected — matrices, `Array`,
-  and `FrequencySeries` keep the generic `rms` (#451).
+- `TimeSeries.rms` is restored to gwpy-compatible semantics: the first
+  positional argument is again `stride` (seconds), and the method returns a
+  new `TimeSeries` holding one RMS value per `stride`-second window
+  (`dt = stride`), matching `gwpy.timeseries.TimeSeries.rms`. Previously the
+  generic numpy-style `rms` (axis reduction, inherited from
+  `StatisticalMethodsMixin`) shadowed it, so `data.rms(10)` raised
+  `AxisError` and `data.rms(10 * u.s)` raised `TypeError` — both calls work
+  under plain gwpy. The override lives on the `TimeSeries`-only mixin, so
+  matrices, `Array`, and `FrequencySeries` keep the generic `rms`. A new
+  `unit` keyword (default `True`) controls two further, gwexpy-only
+  behaviors gwpy does not offer: `unit=True` preserves the input's physical
+  unit on the result (gwpy's own `rms()` never passes `unit=` to its
+  constructor, so it silently returns a dimensionless series); pass
+  `unit=False` for gwpy's exact dimensionless output when bit-for-bit parity
+  with gwpy is required. Either way, a time `Quantity` stride (e.g.
+  `10 * u.s`) is now accepted, and an irregular, sub-sample, or zero stride
+  raises a clear `ValueError` (#451).
 
-### Bug fixes
+- **types**: arithmetic between an `astropy` `Quantity` and a `SeriesMatrix`
+  (`TimeSeriesMatrix`, `FrequencySeriesMatrix`, `SpectrogramMatrix`) now
+  preserves the matrix type, its per-cell units and all axis metadata when the
+  `Quantity` is on the left. Previously `(2 * u.s) * matrix` returned a bare
+  `Quantity` whose value was the raw matrix data with every per-cell unit, row
+  and column key, and time/frequency axis silently discarded: for a matrix of
+  cells in `m`, `(2 * u.s) * matrix` returned a `Quantity` in `s` rather than
+  `m s`, so every cell was off by the matrix's own unit with no error or
+  warning. The same expression with the matrix on the left
+  (`matrix * (2 * u.s)`) was already correct, so the two orderings disagreed
+  (#575).
+- **types**: comparison operators on `SeriesMatrix` are elementwise and return
+  a boolean matrix container that preserves shape, rows, columns and axes,
+  with dimensionless cell units. Operands are unit-converted before
+  comparison, so `matrix_m < quantity_cm` compares physical values rather than
+  raw numbers, and comparing incompatible units raises `UnitConversionError`
+  instead of returning a silently wrong answer (#576).
+- **types**: the guard defect on the fast arithmetic path reported in #577 has
+  been removed, and in-place operators are now atomic — a failure part-way
+  through leaves the operand unmodified instead of half-updated.
+- **types**: `SpectrogramMatrix.clip()` / `.round()` (and `.copy()`, which
+  they build on) previously discarded the frequency axis (`frequencies`,
+  `f0`, `df`) silently whenever the operation changed dtype. They now
+  preserve it, along with the time axis, row/column labels and cell metadata
+  (#623).
+- **types**: `SeriesMatrix.clip(min, max)` unit handling was inverted — a
+  plain number or dimensionless bound against a unit-bearing matrix was
+  silently accepted, while an equivalent-but-differently-scaled `Quantity`
+  bound was mishandled. `clip()` now accepts a `Quantity` bound equivalent to
+  the matrix's unit (converting it, e.g. `clip(1*u.cm, 2*u.cm)` against a
+  metre matrix), and raises `UnitConversionError` for a bare number,
+  dimensionless bound, or dimensionally incompatible bound against a
+  unit-bearing matrix. `clip()` further requires every cell in the matrix to
+  share the *identical* unit (not merely a dimensionally equivalent one, e.g.
+  `m` and `cm` mixed in one matrix) before applying a unit-bearing bound, and
+  raises `UnitConversionError` otherwise — clip `matrix.value` directly for a
+  heterogeneous-unit matrix. This also closes a related hazard where
+  `np.clip(matrix, ...)` (as opposed to `matrix.clip(...)`) silently fell
+  back to a wrong, aliased-metadata result under NumPy's `_wrapfunc`, because
+  a plain `TypeError` from `.clip()`/`.round()` — including from their `out=`
+  guard — is swallowed by that fallback path; both now raise
+  `NotImplementedError`, which is not swallowed (#623).
+- **types**: `matrix ** True` / `matrix ** False` now match Python/NumPy
+  integer semantics (`True == 1`, `False == 0`): `matrix ** True` preserves
+  the original value and unit, `matrix ** False` gives value `1` with a
+  dimensionless result (#623).
+- **types**: `SeriesMatrix.astype()` (used internally by `clip()`/`round()`
+  whenever an operation changes dtype, e.g. clipping an integer matrix
+  against float/`Quantity` bounds) passed `xindex`, `meta`, `rows` and `cols`
+  through unchanged instead of copying them, unlike `copy()`. A clipped
+  `SpectrogramMatrix`'s `times` axis could alias the source's, so mutating
+  one silently corrupted the other. `astype()` now mirrors `copy()`'s
+  independence guarantees for all four (#623).
+- **types**: a bare NumPy integer scalar operand (e.g. `np.int64(2)`, as
+  opposed to a Python `int` or `np.float64`, which happens to subclass
+  Python `float`) is now accepted everywhere a plain number is. Previously
+  `spectrogram_matrix * np.int64(2)` and `spectrogram_matrix ** np.int64(2)`
+  raised `TypeError: operand 'SpectrogramMatrix' does not support ufuncs`,
+  because `SpectrogramMatrix`'s own operand-acceptance check listed `int`/
+  `float`/`complex` but not `np.number`. Separately, `matrix ** np.int64(n)`
+  on `TimeSeriesMatrix`/`FrequencySeriesMatrix` always computed the correct
+  result but took a guaranteed exception-and-fallback path on every call —
+  logging a full traceback and raising a `PerformanceWarning` — because the
+  new (#577e) scalar-exponent normalization passed a bare `np.number`
+  through to `MetaDataMatrix`'s per-cell unit computation, which only
+  accepts `int`/`float`/`complex`. Both are now normalized before use (#623).
+- **io (WIN)**: the WIN reader decoded the per-channel sampling rate from
+  byte 3 alone, but the rate is a 12-bit field whose top 4 bits live in the
+  low nibble of byte 2. Every rate at or above 256 Hz was therefore truncated
+  modulo 256 — 1000 Hz was read as 232 Hz. Because the reader also derives
+  the packet payload length from that rate
+  (`xlen = (srate - 1) * datawide`), the byte stream was misaligned and the
+  decoded *samples themselves* were garbage, not merely the time axis. No
+  exception was raised: the reader returned a plausible-looking
+  `TimeSeriesDict`. The full 12-bit rate is now decoded, matching ObsPy's
+  reader (`obspy/io/win/core.py`, upstream obspy#3641). Rates at or below
+  255 Hz are unaffected. An encoded rate of zero, which cannot describe a
+  channel block carrying a leading absolute sample, now raises `ValueError`
+  instead of mis-slicing the packet; no spec consulted here documents zero as
+  a sentinel for 4096 Hz (#610).
 
-- Restored gwpy compatibility for `TimeSeries.rms`: the first positional
-  argument is again `stride` (seconds) and the method returns a new
-  `TimeSeries` holding one RMS value per `stride`-second window (`dt =
-  stride`), matching `gwpy.timeseries.TimeSeries.rms`. The generic numpy-style
-  `rms` (axis reduction) had shadowed it, so `data.rms(10)` raised an
-  `AxisError`. The override lives on the TimeSeries-only mixin, so matrices,
-  `Array`, and `FrequencySeries` keep the generic `rms`. gwexpy additionally
-  preserves the input unit on the result and accepts a time `Quantity` stride
-  (e.g. `10 * u.s`); irregular/sub-sample/zero strides raise a clear
-  `ValueError` (#451).
+### Compatibility
 
-### Tests
+- **types (API narrowing, patch release)**: applying a NumPy ufunc directly to
+  a `SeriesMatrix` — `np.sqrt(matrix)`, `np.negative(matrix)`,
+  `np.add(a, b)`, `np.add(a, b, out=target)`, `np.add.reduce(matrix)`,
+  `np.add.accumulate(matrix)`, `np.multiply.outer(a, b)` — now raises
 
-- Added `tests/timeseries/test_rms_compat.py` pinning gwpy-compatible
-  `TimeSeries.rms(stride)` behaviour (gwpy reference parity, positional-int
-  regression for #451, trailing-window drop, NaN-per-window propagation) and
-  the gwexpy enhancements (time/dimensionless `Quantity` stride, unit
-  preservation, and `ValueError` for sub-sample/zero/negative/irregular
-  strides). Re-pointed `test_stats_mixin.py::test_rms_with_unit` onto `Series`.
+      TypeError: operand 'TimeSeriesMatrix' does not support ufuncs (__array_ufunc__=None)
+
+  Previously these calls either executed silently with undefined results or
+  discarded metadata without warning. This narrows the public surface in a
+  patch release, which the project's release policy permits when it corrects
+  a contract violation: the same mechanism that stops a left-hand `Quantity`
+  from swallowing per-cell units (`__array_ufunc__ = None`, which routes
+  `quantity * matrix` back through the reflected operator) also makes NumPy
+  refuse direct ufunc dispatch. Silently returning a wrong-unit result is
+  treated as worse than an explicit failure.
+
+  Every operation remains available through the explicit operator suite —
+  `+ - * / // % divmod ** @`, their reflected and in-place forms, the six
+  comparisons and unary `+ - abs()` — which preserve type, per-cell units and
+  metadata. For a raw NumPy result, operate on `matrix.value`; note that this
+  drops units and metadata by design.
+
+  Full NumPy/GWpy ufunc compatibility is **deferred to v0.2.0** (#637), where
+  it is a release blocker for the `SeriesMatrix` semantic-contract redesign.
+  Restoring it under the current `ndarray`-subclass data model was measured to
+  require changing either `.unit` or `.value` public semantics, which is out
+  of scope for a patch release (#575, #576, #577, #623).
+- **types**: `matrix_m + matrix_cm` now converts the right operand to the left
+  operand's per-cell units and succeeds, where it previously raised
+  `UnitConversionError`. Results that used to fail now return a value;
+  results that used to succeed are unchanged (#575).
+- **types (API narrowing, patch release)**: `divmod(matrix, operand)` is
+  explicitly unsupported and raises `TypeError`. An earlier draft of this fix
+  had added a working `__divmod__`/`__rdivmod__` that silently ignored units
+  on non-zero divisors; rather than ship a unit-aware `divmod`, this keeps the
+  explicit failure `divmod` already had on `main` before this change — not a
+  functional regression (#623).
+- **types (API narrowing, patch release)**: `%` and `//` between a
+  unit-bearing `SeriesMatrix` and any non-dimensionless operand now raise
+  `TypeError` explicitly, instead of silently copying the left operand's unit
+  onto a value computed without unit conversion (the same defect class as the
+  #576 fix above, found separately in `%`/`//`). The dimensionless check
+  requires an exact — not merely dimensionally equivalent — unit on every
+  cell, so a matrix mixing `u.dimensionless_unscaled` and `u.percent` cells is
+  rejected regardless of which cell comes first (previously the check
+  compared only against the first cell, so `500%` could be silently treated
+  as `500` depending on cell order). Dimensionless `%` and `//` are
+  unaffected. Addition, subtraction, and comparison are unit-safe. Modulo,
+  floor division, and `divmod` are not supported for unit-bearing
+  `SeriesMatrix` objects in v0.1.x — they raise explicitly rather than
+  performing value-only arithmetic. A correct unit-aware
+  floor-division/remainder implementation is deferred to the v0.2.0 semantic
+  redesign (#637) (#623).
+- **types**: for finiteness checks on a matrix, use
+  `mask = np.isfinite(matrix.value)`; this is the documented v0.1.13
+  alternative now that direct ufunc application (including `np.isfinite`)
+  raises `TypeError` (see the ufunc-narrowing entry above). No new API is
+  added in this patch release (#623).
+- **timeseries (API narrowing, patch release)**: `TimeSeries.rms` no longer
+  accepts the `axis` and `ignore_nan` keywords, and no longer returns a
+  scalar — `ts.rms(axis=0)` and `ts.rms(ignore_nan=True)` now raise
+  `TypeError`. It resolves to the gwpy-compatible `rms(stride)` above instead
+  of the generic axis-reducing `StatisticalMethodsMixin.rms`. NaN handling is
+  inverted as a consequence: the generic method defaulted to
+  `ignore_nan=True` (`nanmean`); the gwpy-compatible one uses `np.mean`, so a
+  NaN anywhere in a window makes that window's RMS NaN (other windows are
+  unaffected). Use `float(ts.rms(ts.duration.value))` for a single number, or
+  call the generic mixin method explicitly. Only `TimeSeries` is affected —
+  matrices, `Array`, and `FrequencySeries` keep the generic `rms` (#451).
+
+### Known limitations
+
+- `#577c` (in-place `out=` update) is not achievable under this approach and
+  remains an explicit `TypeError` rather than a working in-place update.
+- The originally reported symptoms of `#577a`/`#577b` did not reproduce
+  against this change's base (dead code path); this release does **not**
+  claim to have fixed them as originally described.
+- `Quantity == SeriesMatrix` returns a scalar `False` while
+  `SeriesMatrix == Quantity` returns a boolean matrix. This asymmetry
+  originates in `astropy` and is not corrected here.
+- `TimeSeries.rms` squares each window in the input dtype before casting to
+  `float64`, so a `float32` series underflows `|x|**2` below roughly
+  `1e-22` — measured: a `float32` series at GW strain scale (`~1e-21`)
+  already loses about four digits of precision, and at `~1e-24` the result
+  is exactly `0.0`. This matches plain gwpy bit-for-bit (confirmed: gwpy's
+  loop-based `numpy.abs(stepseries.value)**2` squares in the same input
+  dtype per window), for both `unit=True` and `unit=False`. Cast to
+  `float64` first (`ts.astype(float).rms(stride)`) at strain scale if this
+  matters; `float64` input is unaffected.
 
 ## [0.1.12] - 2026-07-31
 

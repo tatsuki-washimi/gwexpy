@@ -1,0 +1,180 @@
+---
+issue: 511
+pull_request: null
+branch: codex/v0113-lane-b1
+base_sha: eb62c6a056a7a8992fe1f00e115d6173050c64fc
+approval:
+  status: approved
+  directive: "go"
+  date: "2026-08-02"
+agent_context:
+  builder:
+    thread: "019fc087-18de-79c3-8f02-7226721143ae"
+    model: "GPT-5.6 Luna"
+    effort: max
+    workspace: workspace-write
+    approval: never
+  spec_reviewer:
+    thread: "019fc092-bb49-7492-8596-294ed1edbb32"
+    model: "GPT-5.6 Sol"
+    effort: max
+    workspace: read-only
+    result: approved
+  quality_reviewer:
+    thread: "019fc09b-ad20-7e91-90dd-dc062e50dbc8"
+    model: "GPT-5.6 Sol"
+    effort: max
+    workspace: read-only
+    result: changes-required before this fix
+  quality_reviewer_rereview:
+    reviewer: "GPT-5.6 Sol"
+    thread: "019fc0ae-bdca-7520-8ac1-3fe1bf36c1ad"
+    effort: max
+    workspace: read-only
+    approval: never
+    verdict: APPROVED
+    findings:
+      critical: none
+      important: none
+      minor: none
+    fixes_remaining: none
+    evidence:
+      - "Independently inspected recursive leaf aggregation and fail-closed behavior."
+      - "Independently inspected path wiring; .github/workflows/pr-fast.yml is unchanged."
+      - "Ruff and format checks passed."
+      - "Targeted mypy passed."
+      - "YAML parsing, CLI, syntax, and in-memory behavioral harness checks passed."
+      - "The exact worktree scope is the three paths listed under scope.allowed_files."
+    pytest_execution:
+      read_only_sandbox: "Could not rerun writable-temp pytest from the read-only sandbox."
+      parent_unrestricted_verification: "Freshly ran 29 passed (17 JUnit contract + 12 import-order)."
+    mne_limitation: "The actual MNE optional dependency is absent; its real test produced 1 skipped, exit 5. This is an explicit limitation and never gates success."
+    production_or_test_fixes_remaining: none
+  coordinator_root:
+    model_effort: "not exposed to the lane"
+scope:
+  summary: "Fail-closed JUnit XML aggregation for the interop-mne CI gate."
+  allowed_files:
+    - scripts/ci/run_gate.py
+    - tests/test_run_gate_junit_contract.py
+    - docs/developers/plans/manifests/audit-manifest-511-ci-junit-zero-test.yaml
+  excluded_callers:
+    - .github/workflows/pr-fast.yml
+  touched_files:
+    - scripts/ci/run_gate.py
+    - tests/test_run_gate_junit_contract.py
+    - docs/developers/plans/manifests/audit-manifest-511-ci-junit-zero-test.yaml
+implementation:
+  helper: "_aggregate_junit_counts"
+  behavior:
+    - "Accept single testsuite and testsuites report roots."
+    - "Aggregate only recursive leaf testsuite nodes across multiple report paths."
+    - "Sum tests, skipped, errors, and failures counters."
+    - "Reject missing, malformed, unsupported, empty, non-integer, and negative reports."
+    - "Fail the interop-mne gate when tests=0 or any skipped/errors/failures are nonzero."
+  ci_caller_audit: "pr-fast.yml invokes python scripts/ci/run_gate.py interop-mne; parser accepts interop-mne; caller was not edited."
+tdd:
+  red:
+    command: "rtk conda run -n gwexpy pytest -q tests/test_run_gate_junit_contract.py"
+    exit_code: 1
+    evidence: >-
+      The baseline run exited 1 for the original nine-case contract suite.
+      Before the fail-closed implementation, the old gate accepted zero-test
+      and failure-only reports. Malformed and missing report cases raised raw
+      xml.etree.ElementTree.ParseError and FileNotFoundError rather than the
+      gate's SystemExit contract, and aggregation cases had no helper to call.
+  green:
+    - command: "rtk conda run -n gwexpy pytest -q tests/test_run_gate_junit_contract.py"
+      exit_code: 0
+      evidence: "17 passed after adding the required edge-case, valid-gate, rejection, and path-wiring contracts."
+verification:
+  focused_and_baseline:
+    command: "rtk conda run -n gwexpy pytest -q tests/test_run_gate_junit_contract.py tests/test_import_order.py"
+    exit_code: 0
+    evidence: "29 passed: 17 JUnit contract tests and 12 import-order tests."
+  import_order_baseline:
+    command: "rtk conda run -n gwexpy pytest -q tests/test_import_order.py"
+    exit_code: 0
+    evidence: "12 passed"
+  ruff:
+    command: "rtk conda run -n gwexpy ruff check scripts/ci/run_gate.py tests/test_run_gate_junit_contract.py"
+    exit_code: 0
+    evidence: "All checks passed!"
+  ruff_format:
+    command: "rtk conda run -n gwexpy ruff format --check scripts/ci/run_gate.py tests/test_run_gate_junit_contract.py"
+    exit_code: 0
+    evidence: "2 files already formatted"
+  mypy_targeted:
+    command: "rtk conda run -n gwexpy mypy --explicit-package-bases --follow-imports=skip scripts/ci/run_gate.py tests/test_run_gate_junit_contract.py"
+    exit_code: 0
+    evidence: "Success: no issues found in 2 source files"
+  yaml_parse:
+    command: "rtk conda run -n gwexpy python -c 'import yaml; from pathlib import Path; yaml.safe_load(Path(\"docs/developers/plans/manifests/audit-manifest-511-ci-junit-zero-test.yaml\").read_text())'"
+    exit_code: 0
+    evidence: "Manifest parsed successfully."
+  cli_help:
+    command: "rtk conda run -n gwexpy python scripts/ci/run_gate.py --help"
+    exit_code: 0
+    evidence: "interop-mne is listed as an accepted gate argument"
+  diff_check:
+    command: "rtk git diff --check"
+    exit_code: 0
+    evidence: "No whitespace errors"
+  scope_audit:
+    command: "rtk conda run -n gwexpy python -c 'import subprocess; expected={\"scripts/ci/run_gate.py\", \"tests/test_run_gate_junit_contract.py\", \"docs/developers/plans/manifests/audit-manifest-511-ci-junit-zero-test.yaml\"}; actual={line[3:] for line in subprocess.check_output([\"git\", \"status\", \"--short\", \"--untracked-files=all\"], text=True).splitlines() if line}; assert actual == expected, (actual, expected); print(\"scope ok: \" + \", \".join(sorted(actual)))'"
+    exit_code: 0
+    evidence: "scope ok: the tracked and untracked status set contains exactly the three authorized paths."
+diagnostic_commands:
+  - command: "rtk conda run -n gwexpy ruff format --check scripts/ci/run_gate.py tests/test_run_gate_junit_contract.py"
+    exit_code: 1
+    evidence: "Initial final-check run requested reformatting scripts/ci/run_gate.py; the reported one-line change was applied, then the final check exited 0."
+  - command: "rtk conda run -n gwexpy mypy scripts/ci/run_gate.py tests/test_run_gate_junit_contract.py"
+    exit_code: 2
+    evidence: "Mypy reported duplicate module names (run_gate and scripts.ci.run_gate) under the repository namespace layout."
+  - command: "rtk conda run -n gwexpy mypy --explicit-package-bases scripts/ci/run_gate.py"
+    exit_code: 1
+    evidence: "Mypy reached two pre-existing errors in tests/io_conformance/contract.py (contract.py:274 and contract.py:296), outside this lane's write scope."
+  - command: "rtk conda run -n gwexpy pytest -q -rs tests/interop/test_interop_mne.py"
+    exit_code: 5
+    evidence: "1 skipped because optional mne could not be imported: No module named mne."
+evidence_limitations:
+  - "The actual MNE optional dependency is absent; its real test produced 1 skipped, exit 5. This is an explicit limitation and never gates success; the gate's skip/fail-closed contract is covered with synthetic XML."
+  - "The repository-default mypy invocation is not clean because of two unrelated existing errors in tests/io_conformance/contract.py; the changed gate and contract-test files pass targeted mypy."
+review:
+  physics_review: not_required
+  spec:
+    thread: "019fc092-bb49-7492-8596-294ed1edbb32"
+    model: "GPT-5.6 Sol"
+    effort: max
+    workspace: read-only
+    result: approved
+  quality:
+    thread: "019fc09b-ad20-7e91-90dd-dc062e50dbc8"
+    model: "GPT-5.6 Sol"
+    effort: max
+    workspace: read-only
+    result: changes-required before this fix
+    disposition: "Required test and evidence corrections are applied; no production-logic change was required."
+  quality_rereview:
+    reviewer: "GPT-5.6 Sol"
+    thread: "019fc0ae-bdca-7520-8ac1-3fe1bf36c1ad"
+    effort: max
+    workspace: read-only
+    approval: never
+    verdict: APPROVED
+    findings:
+      critical: none
+      important: none
+      minor: none
+    disposition: "No production or test fixes remain."
+    independent_evidence:
+      - "Recursive leaf aggregation and fail-closed behavior inspected."
+      - "Path wiring inspected; pr-fast.yml unchanged."
+      - "Ruff/format, targeted mypy, YAML, CLI, syntax, and in-memory behavioral harness passed."
+      - "Exact scope is scripts/ci/run_gate.py, tests/test_run_gate_junit_contract.py, and this manifest."
+      - "The read-only sandbox could not rerun writable-temp pytest; parent unrestricted verification freshly ran 29 passed (17 JUnit contract + 12 import-order)."
+      - "The actual MNE optional dependency is absent; its real test produced 1 skipped, exit 5. This explicit limitation never gates success."
+  commits_or_remote_actions: none
+final_state:
+  worktree: uncommitted
+  remote_actions: none

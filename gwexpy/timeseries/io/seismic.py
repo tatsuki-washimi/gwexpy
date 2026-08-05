@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from gwexpy.io.time_selection import apply_time_selection, pop_time_selection
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
@@ -136,6 +137,14 @@ def _read_timeseriesdict(
     gap="pad",
     **kwargs,
 ):
+    # ObsPy's own readers take starttime/endtime, not start/end, so the
+    # selectors GWpy injects reached obspy.read as unrecognised kwargs and were
+    # dropped there — the full stream came back looking like a successful
+    # windowed read (issue #611).  Translating them to UTCDateTime and pushing
+    # them down into obspy.read would also avoid loading the whole file; that is
+    # a performance change, so v0.1.13 crops instead.
+    start, end = pop_time_selection(kwargs)
+
     stream = _read_obspy_stream(format_name, source, pad=pad, gap=gap, **kwargs)
     tsd = _build_dict(
         stream, channels=channels, unit=unit, timezone=timezone, epoch=epoch
@@ -158,7 +167,7 @@ def _read_timeseriesdict(
             "channels": list(channels) if channels else [tr.id for tr in stream],
         },
     )
-    return tsd
+    return apply_time_selection(tsd, start, end)
 
 
 # -- Specific Readers

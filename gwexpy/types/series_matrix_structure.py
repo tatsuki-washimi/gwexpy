@@ -76,7 +76,25 @@ class SeriesMatrixStructureMixin:
         subok=True,
         copy=True,
     ):
-        """Cast matrix data to a specified type."""
+        """Cast matrix data to a specified type.
+
+        Independent of the source: unlike a naive reconstruction, this does
+        not alias ``xindex``, ``meta``, ``rows`` or ``cols`` with the source
+        object. A prior version passed them through unchanged, so a result
+        produced via the dtype-changing branch of ``_rebuild_with_values``
+        (used by ``clip``/``round`` whenever the operation upcasts dtype,
+        e.g. clipping an integer matrix against float/``Quantity`` bounds)
+        shared its sample axis with the source: mutating the result's
+        ``xindex`` silently corrupted the source's. Mirrors the independence
+        `copy` above already provides.
+        """
+
+        def _copy_meta_dict(md: MetaDataDict, prefix: str):
+            items = OrderedDict()
+            for k, v in md.items():
+                items[k] = MetaData(**dict(v))
+            return MetaDataDict(items, expected_size=len(md), key_prefix=prefix)
+
         new_val = self.value.astype(  # type: ignore[arg-type]
             dtype,
             order=order,
@@ -86,13 +104,24 @@ class SeriesMatrixStructureMixin:
         )
         if not copy and new_val is self.value:
             return self
+        new_meta = MetaDataMatrix(deepcopy(np.asarray(self.meta)))
+        new_rows = _copy_meta_dict(self.rows, "row")
+        new_cols = _copy_meta_dict(self.cols, "col")
+        xindex = self.xindex
+        if xindex is None:
+            new_xindex = None
+        else:
+            try:
+                new_xindex = xindex.copy()
+            except (IndexError, KeyError, TypeError, ValueError, AttributeError):
+                new_xindex = deepcopy(xindex)
         matrix_cls = cast(type[Any], self.__class__)
         return matrix_cls(
             new_val,
-            xindex=self.xindex,
-            rows=self.rows,
-            cols=self.cols,
-            meta=self.meta,
+            xindex=new_xindex,
+            rows=new_rows,
+            cols=new_cols,
+            meta=new_meta,
             name=self.name,
             epoch=self.epoch,
             attrs=deepcopy(self.attrs),
