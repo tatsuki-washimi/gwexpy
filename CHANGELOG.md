@@ -70,6 +70,20 @@
   new (#577e) scalar-exponent normalization passed a bare `np.number`
   through to `MetaDataMatrix`'s per-cell unit computation, which only
   accepts `int`/`float`/`complex`. Both are now normalized before use (#623).
+- **io (WIN)**: the WIN reader decoded the per-channel sampling rate from
+  byte 3 alone, but the rate is a 12-bit field whose top 4 bits live in the
+  low nibble of byte 2. Every rate at or above 256 Hz was therefore truncated
+  modulo 256 — 1000 Hz was read as 232 Hz. Because the reader also derives
+  the packet payload length from that rate
+  (`xlen = (srate - 1) * datawide`), the byte stream was misaligned and the
+  decoded *samples themselves* were garbage, not merely the time axis. No
+  exception was raised: the reader returned a plausible-looking
+  `TimeSeriesDict`. The full 12-bit rate is now decoded, matching ObsPy's
+  reader (`obspy/io/win/core.py`, upstream obspy#3641). Rates at or below
+  255 Hz are unaffected. An encoded rate of zero, which cannot describe a
+  channel block carrying a leading absolute sample, now raises `ValueError`
+  instead of mis-slicing the packet; no spec consulted here documents zero as
+  a sentinel for 4096 Hz (#610).
 
 ### Compatibility
 
