@@ -125,13 +125,26 @@ msgstr "`diff` / `pad` は `FrequencySeriesMatrix` を返す"
 
 #: ../../how-to/containers/matrix_frequencyseries.ipynb:110002
 #: 83f4f3e89bc248038a8494c6424204ad
-msgid "Operations (ufunc / apply_response)"
-msgstr "演算（ufunc / apply_response）"
+msgid "Operations (operators / apply_response)"
+msgstr "演算（演算子 / apply_response）"
 
 #: ../../how-to/containers/matrix_frequencyseries.ipynb:110003
 #: 02a0541d33c9462a90bc3b0f5ffb2293
-msgid "Ufunc operations such as scalar multiplication preserve units"
-msgstr "係数倍などの ufunc では unit が保たれる"
+msgid ""
+"Arithmetic operators such as scalar multiplication preserve per-element "
+"units, from either side (`2 * fsm` and `fsm * 2` behave identically)"
+msgstr ""
+"係数倍などの演算子では要素ごとの unit が保たれる（`2 * fsm` と `fsm * 2` は同じ結果）"
+
+#: ../../how-to/containers/matrix_frequencyseries.ipynb:110004
+#: 02a0541d33c9462a90bc3b0f5ffb2294
+msgid ""
+"NumPy ufuncs are **not** applied directly to a matrix: `np.sqrt(fsm)` "
+"raises `TypeError`. Use `np.sqrt(fsm.value)` when a raw NumPy result is "
+"wanted"
+msgstr ""
+"NumPy ufunc を行列に直接適用することはできない: `np.sqrt(fsm)` は `TypeError` "
+"になる。生の NumPy 結果が欲しい場合は `np.sqrt(fsm.value)` を使う"
 
 #: ../../how-to/containers/matrix_frequencyseries.ipynb:110004
 #: 56de1de1152e4122ae8550b42e36ae42

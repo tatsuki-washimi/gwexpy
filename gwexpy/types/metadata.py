@@ -23,9 +23,55 @@ from gwpy.types.series import Series
 if TYPE_CHECKING:
     pass
 
+# Unary ufuncs that leave the physical unit unchanged.
+_UFUNC_UNIT_PRESERVING = {
+    np.abs,
+    np.fabs,
+    np.negative,
+    np.positive,
+    np.real,
+    np.imag,
+    np.conjugate,
+    np.conj,
+    np.floor,
+    np.ceil,
+    np.trunc,
+    np.rint,
+}
+# Retained aliases for readability; both groups preserve the unit.
 _UFUNC_ABS_REAL = {np.abs, np.negative, np.positive, np.real, np.imag}
 _UFUNC_CONJ = {np.conjugate, np.conj}
-_UFUNC_TRANSCENDENTAL = {np.exp, np.sin, np.cos, np.log}
+# Unary ufuncs that require a dimensionless input and return a dimensionless
+# result.  Anything whose Taylor series mixes powers of the argument belongs
+# here: the argument must be a pure number for the series to be meaningful.
+_UFUNC_TRANSCENDENTAL = {
+    np.exp,
+    np.exp2,
+    np.expm1,
+    np.log,
+    np.log2,
+    np.log10,
+    np.log1p,
+    np.sin,
+    np.cos,
+    np.tan,
+    np.arcsin,
+    np.arccos,
+    np.arctan,
+    np.sinh,
+    np.cosh,
+    np.tanh,
+    np.arcsinh,
+    np.arccosh,
+    np.arctanh,
+}
+# Unary ufuncs equivalent to raising the unit to a fixed rational power.
+_UFUNC_UNARY_POWERS = {
+    np.sqrt: 0.5,
+    np.square: 2,
+    np.cbrt: 1.0 / 3.0,
+    np.reciprocal: -1,
+}
 _UFUNC_ADD_SUB = {np.add, np.subtract}
 _UFUNC_COMPARISON = {
     np.less,
@@ -202,10 +248,19 @@ class MetaData(dict):
             ``floor_divide`` carries the same dimensional result as ``divide``;
             the integer truncation applies only to the numeric value, not the
             unit.
-          - ``sqrt``, ``square``: result unit is ``lhs_unit ** 0.5`` or
-            ``lhs_unit ** 2``.
-          - Unary ``abs``, ``negative``, ``positive``, ``real``, ``imag``,
-            ``conjugate``: unit is preserved unchanged.
+          - ``sqrt``, ``square``, ``cbrt``, ``reciprocal``: result unit is
+            ``lhs_unit`` raised to ``0.5``, ``2``, ``1/3`` and ``-1``
+            respectively (see ``_UFUNC_UNARY_POWERS``).
+          - Unit-preserving unary ufuncs (``_UFUNC_UNIT_PRESERVING``):
+            ``abs``, ``fabs``, ``negative``, ``positive``, ``real``, ``imag``,
+            ``conjugate``, ``floor``, ``ceil``, ``trunc``, ``rint``.
+
+        Unary ufuncs outside those three tables return ``NotImplemented``,
+        which NumPy converts into a ``TypeError``.  ``sign`` is deliberately
+        absent: :class:`~gwexpy.types.seriesmatrix.SeriesMatrix` treats it as a
+        unit-preserving pass-through before the metadata layer is reached, and
+        duplicating it here with a different (dimensionless) convention would
+        make the two layers disagree.
         """
         if method != "__call__":
             return NotImplemented
@@ -213,14 +268,13 @@ class MetaData(dict):
         # unary operations
         if len(inputs) == 1:
             lhs = self
-            if ufunc in _UFUNC_ABS_REAL:
+            if ufunc in _UFUNC_UNIT_PRESERVING:
                 return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit)
-            if ufunc in _UFUNC_CONJ:
-                return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit)
-            if ufunc == np.sqrt:
-                return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit**0.5)
-            if ufunc == np.square:
-                return MetaData(name=lhs.name, channel=lhs.channel, unit=lhs.unit**2)
+            unary_power = _UFUNC_UNARY_POWERS.get(ufunc)
+            if unary_power is not None:
+                return MetaData(
+                    name=lhs.name, channel=lhs.channel, unit=lhs.unit**unary_power
+                )
             if ufunc in _UFUNC_TRANSCENDENTAL:
                 if not lhs.unit.is_equivalent(1):
                     raise UnitConversionError(
@@ -450,7 +504,10 @@ class MetaDataDict(OrderedDict[str, MetaData]):
         if pd is None:
             raise ImportError("pandas is required for to_dataframe()")
         data = [
-            {**{k: (str(v) if k == "unit" else v) for k, v in entry.items()}, "key": key}
+            {
+                **{k: (str(v) if k == "unit" else v) for k, v in entry.items()},
+                "key": key,
+            }
             for key, entry in self.items()
         ]
         df = pd.DataFrame(data).set_index("key")
