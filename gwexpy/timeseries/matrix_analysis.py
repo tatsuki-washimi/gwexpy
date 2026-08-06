@@ -576,29 +576,27 @@ class TimeSeriesMatrixAnalysisMixin:
 
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
-        from gwexpy.time import to_gps
+        from gwexpy.timeseries._core import _crop_bound_to_float, _regular_crop_slice
 
-        def _to_float(val):
-            if val is None:
-                return None
-            gps = to_gps(val)
-            # LIGOTimeGPS has .gpsSeconds and .gpsNanoSeconds, or can be cast to float
-            if hasattr(gps, "gpsSeconds"):
-                return float(gps)
-            return float(gps)
-
-        start_float = _to_float(start)
-        end_float = _to_float(end)
-        parent = cast(
-            TimeSeriesMatrixAnalysisMixin._ResampleCropCapable,
-            super(),
+        start_float = _crop_bound_to_float(start)
+        end_float = _crop_bound_to_float(end)
+        dt = self.dt
+        t0 = self.t0
+        sample_slice = _regular_crop_slice(
+            start_float,
+            end_float,
+            t0=float(t0.value),
+            dt=float(dt.value),
+            size=self.shape[-1],
         )
-        result = parent.crop(start=start_float, end=end_float, copy=copy)
-        # ``SeriesMatrixAnalysisMixin.crop`` rebuilds its regular index from
-        # the selected coordinates.  Preserve the original binary64 spacing:
-        # crop is a selection operation and must not perturb sampling metadata
-        # (#617).
-        result._dx = self._dx.copy()
+        result = self[..., sample_slice]
+        if copy:
+            result = result.copy()
+        # Slicing clears cached regular-axis metadata.  Restore it from the
+        # source and derive t0 from integer sample arithmetic, never from the
+        # materialized large-GPS index.
+        result._dx = dt.copy()
+        result._x0 = t0 + sample_slice.start * dt
         return result
 
     def pca_fit(self, **kwargs: Any) -> Any:

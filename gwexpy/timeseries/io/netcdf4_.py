@@ -169,6 +169,19 @@ def _read_v2_timing(ds) -> tuple[float, float]:
     return t0, dt
 
 
+def _validate_v2_sample_coordinate(ds) -> None:
+    """Reject a v2 file whose sample coordinate contradicts its axis schema."""
+    if "sample" not in ds.coords:
+        raise ValueError("NetCDF v2 file is missing int64 sample coordinate")
+    sample = ds["sample"]
+    if sample.dtype != np.dtype("int64"):
+        raise ValueError("NetCDF v2 sample coordinate must be int64")
+    values = np.asarray(sample.values)
+    expected = np.arange(values.size, dtype=np.int64)
+    if not np.array_equal(values, expected):
+        raise ValueError("NetCDF v2 sample coordinate must be exactly 0..N-1")
+
+
 def _validate_v2_series(tsd) -> tuple[int, float, float]:
     """Reject unsupported values and heterogeneous axes before opening target."""
     if not tsd:
@@ -330,10 +343,7 @@ def read_timeseriesdict_netcdf4(
         is_v2 = schema_version == _NETCDF_SCHEMA_VERSION
         if is_v2:
             tc = "sample"
-            if tc not in ds.coords:
-                raise ValueError("NetCDF v2 file is missing int64 sample coordinate")
-            if ds[tc].dtype != np.dtype("int64"):
-                raise ValueError("NetCDF v2 sample coordinate must be int64")
+            _validate_v2_sample_coordinate(ds)
             t0, dt = _read_v2_timing(ds)
         else:
             warnings.warn(
@@ -446,8 +456,7 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
         is_v2 = schema_version == _NETCDF_SCHEMA_VERSION
         if is_v2:
             tc = "sample"
-            if tc not in ds.coords or ds[tc].dtype != np.dtype("int64"):
-                raise ValueError("NetCDF v2 file is missing int64 sample coordinate")
+            _validate_v2_sample_coordinate(ds)
             t0, dt = _read_v2_timing(ds)
         else:
             warnings.warn(

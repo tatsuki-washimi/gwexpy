@@ -124,6 +124,22 @@ class TestNetCDF4Roundtrip:
         assert loaded["integer"].dtype == values.dtype
         np.testing.assert_array_equal(loaded["integer"].value, values)
 
+    @pytest.mark.parametrize("reader", (TimeSeriesDict, TimeSeriesMatrix))
+    def test_v2_reader_rejects_noncontiguous_sample_coordinate(self, tmp_path, reader):
+        """Schema v2 accepts only the exact ``0..N-1`` int64 sample axis."""
+        path = tmp_path / "noncontiguous-sample.nc"
+        source = TimeSeries(np.arange(3), t0=1234567890.0, dt=0.1, name="x")
+        TimeSeriesDict({"x": source}).write(path, format="nc")
+
+        with xr.open_dataset(path, decode_times=False) as original:
+            tampered = original.load().assign_coords(
+                sample=np.array([0, 2, 3], dtype=np.int64)
+            )
+        tampered.to_netcdf(path, mode="w")
+
+        with pytest.raises(ValueError, match=r"0\.\.N-1"):
+            reader.read(path, format="nc")
+
     def test_v2_channel_selection_is_ordered_and_fail_closed(self, tmp_path):
         """Selection validates names before values are materialized."""
         path = tmp_path / "channels.nc"
