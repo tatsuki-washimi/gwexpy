@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -48,6 +49,73 @@ def _run_interop_mne_gate(
     monkeypatch.setattr(run_gate, "_aggregate_junit_counts", recording_aggregate)
     run_gate.run_gate("interop-mne", with_fixtures=False)
     return commands, aggregate_paths
+
+
+@pytest.mark.parametrize(
+    ("gate", "junit_path", "selected_tests", "required_environment"),
+    [
+        (
+            "io-gwf",
+            "junit/io-gwf.xml",
+            {
+                "tests/timeseries/test_gwf_parallel_contract.py",
+                "tests/timeseries/test_io_gwf_framel.py",
+            },
+            None,
+        ),
+        (
+            "io-netcdf",
+            "junit/io-netcdf.xml",
+            {
+                "tests/io/test_netcdf4_reader.py",
+                "tests/timeseries/test_crop_timing_contract.py",
+            },
+            None,
+        ),
+        (
+            "interop-root",
+            "junit/interop-root.xml",
+            {
+                "tests/histogram/test_root_interop.py",
+                "tests/histogram/test_root_interop_contracts.py",
+            },
+            "GWEXPY_RUN_ROOT",
+        ),
+    ],
+)
+def test_dedicated_gate_writes_a_strict_junit_report(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    gate: str,
+    junit_path: str,
+    selected_tests: set[str],
+    required_environment: str | None,
+) -> None:
+    """Every dedicated release gate pins its selector and rejects skipped runs."""
+    monkeypatch.chdir(tmp_path)
+    if required_environment is not None:
+        monkeypatch.setenv(required_environment, "0")
+    commands: list[list[str]] = []
+
+    def fake_run_cmd(cmd: list[str], *, cwd: Path | None = None) -> None:
+        del cwd
+        commands.append(cmd)
+        report = next(arg for arg in cmd if arg.startswith("--junit-xml="))
+        path = Path(report.split("=", 1)[1])
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            '<testsuite name="dedicated" tests="2" skipped="0" errors="0" failures="0" />',
+            encoding="utf-8",
+        )
+
+    monkeypatch.setattr(run_gate, "run_cmd", fake_run_cmd)
+    run_gate.run_gate(gate, with_fixtures=False)
+
+    assert len(commands) == 1
+    assert f"--junit-xml={junit_path}" in commands[0]
+    assert selected_tests.issubset(commands[0])
+    if required_environment is not None:
+        assert os.environ[required_environment] == "1"
 
 
 def test_aggregate_junit_counts_accepts_single_testsuite_root(tmp_path: Path) -> None:
