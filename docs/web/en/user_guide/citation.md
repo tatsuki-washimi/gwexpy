@@ -9,11 +9,10 @@ For reproducibility of analysis results and continued maintenance of the softwar
 ```bibtex
 @software{gwexpy2026,
   author = {Washimi, Tatsuki},
-  title = {GWexpy: Extended Analysis Utilities for Gravitational Wave Data},
+  title = {GWexpy: Extending GWpy with metadata-preserving multidimensional abstractions for detector commissioning},
   year = {2026},
   url = {https://github.com/tatsuki-washimi/gwexpy},
-  doi = {10.5281/zenodo.1234567},
-  version = {0.1.1}
+  version = {see CITATION.cff}
 }
 ```
 

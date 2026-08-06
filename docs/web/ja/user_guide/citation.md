@@ -12,8 +12,7 @@ GWexpy を研究や論文等で使用した場合は、以下の形式で引用�
   title = {GWexpy: Extended Analysis Utilities for Gravitational Wave Data},
   year = {2026},
   url = {https://github.com/tatsuki-washimi/gwexpy},
-  doi = {10.5281/zenodo.1234567},
-  version = {0.1.1}
+  version = {CITATION.cff を参照}
 }
 ```
 
