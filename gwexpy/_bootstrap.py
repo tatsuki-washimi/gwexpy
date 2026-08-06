@@ -18,6 +18,7 @@ Examples
 >>> import gwexpy  # register_all() is called automatically
 
 """
+
 from __future__ import annotations
 
 _bootstrapped = False

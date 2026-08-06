@@ -124,7 +124,11 @@ class TestFromXarrayField4D:
     def test_spatial_coords_preserved(self):
         da = _make_4d_da()
         sf = from_xarray_field(ScalarField, da)
-        ax1 = np.asarray(sf._axis1_index.value if hasattr(sf._axis1_index, "value") else sf._axis1_index)
+        ax1 = np.asarray(
+            sf._axis1_index.value
+            if hasattr(sf._axis1_index, "value")
+            else sf._axis1_index
+        )
         np.testing.assert_allclose(ax1, da.coords["x"].values)
 
     def test_roundtrip(self):
@@ -188,7 +192,11 @@ class TestCFConventionDetection:
     def test_cf_axis_x_detected(self):
         da = _make_cf_convention_da()
         sf = from_xarray_field(ScalarField, da)
-        ax1 = np.asarray(sf._axis1_index.value if hasattr(sf._axis1_index, "value") else sf._axis1_index)
+        ax1 = np.asarray(
+            sf._axis1_index.value
+            if hasattr(sf._axis1_index, "value")
+            else sf._axis1_index
+        )
         np.testing.assert_allclose(ax1, da.coords["xi"].values)
 
 
@@ -206,7 +214,11 @@ class TestMetpyAxisDetection:
     def test_metpy_x_detected(self):
         da = _make_metpy_da()
         sf = from_xarray_field(ScalarField, da)
-        ax1 = np.asarray(sf._axis1_index.value if hasattr(sf._axis1_index, "value") else sf._axis1_index)
+        ax1 = np.asarray(
+            sf._axis1_index.value
+            if hasattr(sf._axis1_index, "value")
+            else sf._axis1_index
+        )
         np.testing.assert_allclose(ax1, da.coords["myX"].values)
 
 
@@ -304,11 +316,14 @@ class TestToXarrayField:
 
 class TestUnitParsing:
     def test_unknown_unit_warns(self):
-        da = xr.DataArray(np.ones((3, 4)), dims=("time", "x"), attrs={"units": "gizmo_unit_xyz"})
+        da = xr.DataArray(
+            np.ones((3, 4)), dims=("time", "x"), attrs={"units": "gizmo_unit_xyz"}
+        )
         with pytest.warns(UserWarning):
             sf = from_xarray_field(ScalarField, da)
         # unit=None passed to ScalarField → defaults to dimensionless
         from astropy import units as u
+
         assert sf.unit is None or sf.unit == u.dimensionless_unscaled
 
     def test_no_units_attr(self):
@@ -316,4 +331,5 @@ class TestUnitParsing:
         sf = from_xarray_field(ScalarField, da)
         # ScalarField defaults to dimensionless when unit=None
         from astropy import units as u
+
         assert sf.unit is None or sf.unit == u.dimensionless_unscaled

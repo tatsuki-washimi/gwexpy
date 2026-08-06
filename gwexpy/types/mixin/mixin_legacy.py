@@ -1,4 +1,5 @@
 """Common legacy mixins for gwexpy types."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -15,11 +16,11 @@ class RegularityMixin:
         # 1. Check for 'dt' attribute (standard for regular TimeSeries/FrequencySeries)
         dt = getattr(self, "dt", None)
         if dt is not None:
-             try:
-                 # If dt is a Quantity with value > 0, it's regular by definition in GWpy
-                 return float(dt) > 0
-             except (TypeError, ValueError):
-                 pass
+            try:
+                # If dt is a Quantity with value > 0, it's regular by definition in GWpy
+                return float(dt) > 0
+            except (TypeError, ValueError):
+                pass
 
         # 2. Check underlying index accurately
         try:

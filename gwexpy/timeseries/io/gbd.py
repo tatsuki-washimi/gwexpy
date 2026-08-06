@@ -3,6 +3,7 @@
 This is a cleaned-up port of the legacy `gbd2gwf.py` workflow, adapted for
 gwexpy TimeSeries/TimeSeriesDict readers.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -76,8 +77,8 @@ def identify_gbd(origin, filepath, fileobj, *args, **kwargs):
     if filepath is None:
         return False
     try:
-        with open(filepath, 'rb') as f:
-            probe = f.read(4096).decode('ascii', errors='ignore')
+        with open(filepath, "rb") as f:
+            probe = f.read(4096).decode("ascii", errors="ignore")
             return HEADER_SIZE_PATTERN.search(probe) is not None
     except OSError:
         return False
@@ -232,7 +233,9 @@ def read_timeseries_gbd(*args, channels=None, **kwargs) -> TimeSeries:
     if not tsd:
         raise ValueError("No channels found in GBD file")
     if len(tsd) != 1:
-        raise ValueError("GBD single-series reader requires exactly one selected channel")
+        raise ValueError(
+            "GBD single-series reader requires exactly one selected channel"
+        )
     return tsd[next(iter(tsd.keys()))]
 
 

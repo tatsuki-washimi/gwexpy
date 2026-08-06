@@ -1,4 +1,5 @@
 """Whitening algorithms for signal processing."""
+
 from __future__ import annotations
 
 import warnings

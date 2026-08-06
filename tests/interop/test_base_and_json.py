@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/base.py and gwexpy/interop/json_.py."""
+
 from __future__ import annotations
 
 import json
@@ -69,6 +70,7 @@ class TestFromPlainArray:
 
     def test_with_numpy_like_get(self):
         """Objects with .get() method (cupy-like) are supported."""
+
         class FakeArray:
             def get(self):
                 return np.array([1.0, 2.0])
@@ -78,6 +80,7 @@ class TestFromPlainArray:
 
     def test_with_numpy_like_numpy(self):
         """Objects with .numpy() method (torch-like) are supported."""
+
         class FakeArray:
             def numpy(self):
                 return np.array([3.0, 4.0])

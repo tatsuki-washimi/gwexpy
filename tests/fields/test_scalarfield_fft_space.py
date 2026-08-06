@@ -306,7 +306,7 @@ class TestScalarFieldFftIfftSpaceReversibility:
 
         # Check units
         assert partial_real._axis1_index.unit == u.m
-        assert partial_real._axis2_index.unit == 1/u.m
+        assert partial_real._axis2_index.unit == 1 / u.m
         assert partial_real._axis3_index.unit == u.m
 
         # Check values of untransformed ky axis matches k_space

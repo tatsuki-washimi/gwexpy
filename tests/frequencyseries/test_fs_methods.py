@@ -1,4 +1,5 @@
 """Tests for gwexpy/frequencyseries/frequencyseries.py core methods."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -12,7 +13,9 @@ def _make_fs(n=64, df=1.0, name="test", complex_=False):
     """Create a test FrequencySeries."""
     freqs = np.arange(n) * df
     if complex_:
-        data = np.exp(1j * np.linspace(0, 2 * np.pi, n)) * np.arange(1, n + 1, dtype=float)
+        data = np.exp(1j * np.linspace(0, 2 * np.pi, n)) * np.arange(
+            1, n + 1, dtype=float
+        )
     else:
         data = np.arange(1, n + 1, dtype=float)
     return FrequencySeries(data, frequencies=freqs * u.Hz, unit=u.m, name=name)
@@ -424,6 +427,7 @@ class TestIdct:
     def test_basic(self):
         # Lines 599-674
         from scipy.fft import dct
+
         data = np.arange(1, 33, dtype=float)
         coeffs = dct(data, type=2, norm="ortho")
         freqs = np.arange(32) * u.Hz
@@ -434,6 +438,7 @@ class TestIdct:
     def test_idct_with_n(self):
         # Line 640 — n parameter specified
         from scipy.fft import dct
+
         data = np.arange(1, 33, dtype=float)
         coeffs = dct(data, type=2, norm="ortho")
         freqs = np.arange(32) * u.Hz
@@ -444,6 +449,7 @@ class TestIdct:
     def test_idct_df_zero_fallback(self):
         # Lines 660-661 — df <= 0 → dt = 1.0 s
         from scipy.fft import dct
+
         data = np.arange(1, 33, dtype=float)
         coeffs = dct(data, type=2, norm="ortho")
         # Use frequencies starting at 0 with df=0 effectively
@@ -457,6 +463,7 @@ class TestIdct:
     def test_idct_no_df(self):
         # Lines 662-663 — df is None → dt=1.0 s
         from scipy.fft import dct
+
         data = np.arange(1, 33, dtype=float)
         coeffs = dct(data, type=2, norm="ortho")
         freqs = np.arange(32) * u.Hz

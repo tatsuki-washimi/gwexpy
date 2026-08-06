@@ -38,7 +38,11 @@ def _joined_text(nb: dict) -> str:
 def test_case_violin_mode_notebook_uses_physical_limits_and_resolution_checks():
     for locale in ("en", "ja"):
         nb = _read_notebook(
-            TUTORIAL_ROOT / locale / "user_guide" / "tutorials" / "case_violin_mode.ipynb"
+            TUTORIAL_ROOT
+            / locale
+            / "user_guide"
+            / "tutorials"
+            / "case_violin_mode.ipynb"
         )
         joined = _joined_code(nb)
 
@@ -47,10 +51,15 @@ def test_case_violin_mode_notebook_uses_physical_limits_and_resolution_checks():
         assert '"x0": (169.8, 170.2)' in joined
         assert '"Q": (1e3, 5e4)' in joined
         assert "background_1st = np.median" in joined
-        assert "line_only_1st = np.clip(asd_1st.value - background_1st, 0, None)" in joined
+        assert (
+            "line_only_1st = np.clip(asd_1st.value - background_1st, 0, None)" in joined
+        )
         assert "fftlength = 16.0" in joined
         assert "TRACK_BAND = (169.9, 170.2)" in joined
-        assert "relative_error = abs(recovered_drift_hz - injected_drift_hz) / injected_drift_hz" in joined
+        assert (
+            "relative_error = abs(recovered_drift_hz - injected_drift_hz) / injected_drift_hz"
+            in joined
+        )
         assert "if relative_error <= 0.2:" in joined
         assert "Tracking acceptance: PASS (within ±20% of injected drift)" in joined
 
@@ -58,7 +67,11 @@ def test_case_violin_mode_notebook_uses_physical_limits_and_resolution_checks():
 def test_case_bootstrap_gls_fitting_notebook_uses_psd_consistent_peak_model():
     for locale in ("en", "ja"):
         nb = _read_notebook(
-            TUTORIAL_ROOT / locale / "user_guide" / "tutorials" / "case_bootstrap_gls_fitting.ipynb"
+            TUTORIAL_ROOT
+            / locale
+            / "user_guide"
+            / "tutorials"
+            / "case_bootstrap_gls_fitting.ipynb"
         )
         joined = _joined_code(nb)
         notebook_text = _joined_text(nb)

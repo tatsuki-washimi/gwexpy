@@ -16,6 +16,7 @@ Examples
 >>> noise = from_asd(asd, duration=128, sample_rate=2048, t0=0)
 
 """
+
 from __future__ import annotations
 
 # Import submodules for direct access

@@ -371,7 +371,7 @@ def to_xarray_field(
     elif hasattr(field, "axis_names") and field.axis_names is not None:
         names = tuple(field.axis_names)
         if len(names) < 4:
-            names = names + default_names[len(names):]
+            names = names + default_names[len(names) :]
     else:
         names = default_names
 
@@ -400,7 +400,7 @@ def to_xarray_field(
 
     return xr.DataArray(
         data,
-        dims=names[:data.ndim],
+        dims=names[: data.ndim],
         coords=coords,
         attrs=attrs,
     )

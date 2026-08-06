@@ -9,6 +9,7 @@ Covers:
 - SignalField.compute_xcorr (normalize=False, window)
 - SignalField.time_delay_map (plane="xz", "yz")
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -36,7 +37,9 @@ def test_field_4d():
     for i in range(2):
         for j in range(2):
             for k in range(2):
-                data[:, i, j, k] = i + j + k + np.sin(2 * np.pi * 5 * times.to_value(u.s))
+                data[:, i, j, k] = (
+                    i + j + k + np.sin(2 * np.pi * 5 * times.to_value(u.s))
+                )
 
     return ScalarField(
         data,
@@ -71,7 +74,7 @@ class TestScalarFieldFilter:
 
     def test_filter_ba_path(self, test_field_4d):
         # b/a path
-        b, a = scipy_signal.butter(4, 0.2) # lowpass
+        b, a = scipy_signal.butter(4, 0.2)  # lowpass
 
         # filtfilt=False (lfilter path)
         f_ba = test_field_4d.filter((b, a), filtfilt=False)
@@ -87,7 +90,9 @@ class TestScalarFieldExtractNearest:
         assert_allclose(ts_list[0].value, test_field_4d.value[:, 0, 0, 0])
 
     def test_extract_points_invalid_interp(self, test_field_4d):
-        with pytest.raises(ValueError, match="Unsupported interpolation method 'invalid'"):
+        with pytest.raises(
+            ValueError, match="Unsupported interpolation method 'invalid'"
+        ):
             test_field_4d.extract_points([(0, 0, 0) * u.m], interp="invalid")
 
     def test_extract_profile_nearest(self, test_field_4d):
@@ -96,7 +101,7 @@ class TestScalarFieldExtractNearest:
         ax_idx, values = test_field_4d.extract_profile(
             axis="x",
             at={"t": 0 * u.s, "y": 1.0 * u.m, "z": 1.0 * u.m},
-            interp="nearest"
+            interp="nearest",
         )
         # Should pick y=1, z=1 -> values[i] = i + 1 + 1 + sin(0) = i + 2
         assert_allclose(ax_idx.value, test_field_4d._axis1_index.value)
@@ -139,7 +144,9 @@ class TestResampleQuantityRate:
         new_rate = 50 * u.Hz
         resampled = test_field_4d.resample(rate=new_rate)
         assert len(resampled._axis0_index) == 50
-        assert_allclose(resampled._axis0_index[1] - resampled._axis0_index[0], 0.02 * u.s)
+        assert_allclose(
+            resampled._axis0_index[1] - resampled._axis0_index[0], 0.02 * u.s
+        )
 
 
 class TestSignalXcorrOps:
@@ -147,8 +154,9 @@ class TestSignalXcorrOps:
         # Correlation between (0,0,0) and (0,0,0) with window
         p = (0 * u.m, 0 * u.m, 0 * u.m)
         from gwexpy.fields.signal import compute_xcorr
+
         xcorr = compute_xcorr(test_field_4d, p, p, normalize=False, window="hann")
-        assert xcorr.unit == test_field_4d.unit ** 2
+        assert xcorr.unit == test_field_4d.unit**2
         # Max should be at lag 0
         assert np.argmax(xcorr.value) == len(xcorr.value) // 2
 
@@ -156,6 +164,7 @@ class TestSignalXcorrOps:
 class TestTimeDelayMapPlanes:
     def test_time_delay_map_xz_yz(self, test_field_4d):
         from gwexpy.fields.signal import time_delay_map
+
         ref = (0, 0, 0) * u.m
 
         # plane='xz' -> scan x, z; fix y
@@ -171,9 +180,9 @@ class TestTimeDelayMapPlanes:
 
         # plane='yz' -> scan y, z; fix x
         map_yz = time_delay_map(test_field_4d, ref, plane="yz", at={"x": 0 * u.m})
-        assert map_yz._axis1_name == "x" # Original name preserved at index 1
+        assert map_yz._axis1_name == "x"  # Original name preserved at index 1
         assert map_yz._axis2_name == "y"
         assert map_yz._axis3_name == "z"
-        assert map_yz.shape[1] == 1 # Fixed x
+        assert map_yz.shape[1] == 1  # Fixed x
         assert map_yz.shape[2] == len(test_field_4d._axis2_index)
         assert map_yz.shape[3] == len(test_field_4d._axis3_index)

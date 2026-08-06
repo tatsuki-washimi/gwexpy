@@ -1,6 +1,7 @@
 """
 Extended tests for gwexpy/interop/polars_.py using mock Polars.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -18,6 +19,7 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 def _fake_pl():
     """Return a more capable fake polars module."""
+
     class FakeSeries:
         def __init__(self, values, name=None):
             self.name = name
@@ -46,7 +48,8 @@ def _fake_pl():
             return FakeSeries(self._data[key], name=key)
 
         def __len__(self):
-            if not self._data: return 0
+            if not self._data:
+                return 0
             return len(next(iter(self._data.values())))
 
     return SimpleNamespace(
@@ -63,6 +66,7 @@ class TestToPolarsExtended:
             import importlib
 
             import gwexpy.interop.polars_ as polars_mod
+
             importlib.reload(polars_mod)
             self.polars_mod = polars_mod
             yield
@@ -118,6 +122,7 @@ class TestFromPolarsExtended:
             import importlib
 
             import gwexpy.interop.polars_ as polars_mod
+
             importlib.reload(polars_mod)
             self.polars_mod = polars_mod
             self.pl = pl
@@ -153,7 +158,9 @@ class TestFromPolarsExtended:
         data = {"time": [0, 1], "A": [10, 20], "B": [30, 40]}
         df = self.pl.DataFrame(data)
 
-        tsd = self.polars_mod.from_polars_dict(TimeSeriesDict, df, unit_map={"A": "m", "B": "s"})
+        tsd = self.polars_mod.from_polars_dict(
+            TimeSeriesDict, df, unit_map={"A": "m", "B": "s"}
+        )
         assert isinstance(tsd, TimeSeriesDict)
         assert tsd["A"].unit == u.m
         assert tsd["B"].unit == u.s

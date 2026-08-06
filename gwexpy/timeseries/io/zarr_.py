@@ -11,6 +11,7 @@ clear error instead of silently assuming 1 Hz.
 Directory stores, zip stores, and any other backend supported by the
 ``zarr`` library can be used as *source* / *target*.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -448,7 +449,9 @@ def read_timeseriesmatrix_zarr(
             raise ValueError(f"Conflicting row index for Zarr matrix key {row_key!r}.")
         existing_col_index = col_positions.setdefault(col_key, col_index)
         if existing_col_index != col_index:
-            raise ValueError(f"Conflicting column index for Zarr matrix key {col_key!r}.")
+            raise ValueError(
+                f"Conflicting column index for Zarr matrix key {col_key!r}."
+            )
 
     row_index_values = sorted(row_positions.values())
     col_index_values = sorted(col_positions.values())
@@ -604,7 +607,9 @@ def write_timeseriesmatrix_zarr(tsm, target, **kwargs):
         for j, col_key in enumerate(col_keys):
             ts = tsm[i, j]
             if len(ts) != n_samples:
-                raise ValueError("Zarr matrix channels must have matching sample counts")
+                raise ValueError(
+                    "Zarr matrix channels must have matching sample counts"
+                )
             if not np.isclose(float(ts.t0.value), first_t0, rtol=1e-12, atol=1e-12):
                 raise ValueError("Zarr matrix channels must have matching t0 values")
             if not np.isclose(

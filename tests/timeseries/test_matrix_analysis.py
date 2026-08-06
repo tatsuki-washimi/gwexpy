@@ -154,9 +154,7 @@ def test_resample_time_quantity():
 
 
 def test_resample_time_bin_forwards_closed_right_and_preserves_element_metadata():
-    meta = MetaDataMatrix(
-        [[MetaData(unit=u.m, name="signal", channel="H1:TEST")]]
-    )
+    meta = MetaDataMatrix([[MetaData(unit=u.m, name="signal", channel="H1:TEST")]])
     tsm = TimeSeriesMatrix(
         np.array([[[1.0, 3.0, 5.0, 7.0]]]),
         dt=1.0 * u.s,

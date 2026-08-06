@@ -68,10 +68,12 @@ class TestZarrRoundtrip:
 
     def test_multi_channel_roundtrip(self, tmp_path):
         path = tmp_path / "multi.zarr"
-        tsd_out = TimeSeriesDict({
-            "a": TimeSeries(np.ones(50), t0=0, sample_rate=10, name="a"),
-            "b": TimeSeries(np.zeros(50), t0=0, sample_rate=10, name="b"),
-        })
+        tsd_out = TimeSeriesDict(
+            {
+                "a": TimeSeries(np.ones(50), t0=0, sample_rate=10, name="a"),
+                "b": TimeSeries(np.zeros(50), t0=0, sample_rate=10, name="b"),
+            }
+        )
         tsd_out.write(str(path), format="zarr")
 
         tsd_in = TimeSeriesDict.read(str(path), format="zarr")
@@ -89,9 +91,7 @@ class TestZarrRoundtrip:
         ).write(str(path), format="zarr")
 
         assert list(TimeSeriesDict.read(str(path), format="zarr")) == ["a", "z"]
-        explicit = TimeSeriesDict.read(
-            str(path), format="zarr", channels=["z", "a"]
-        )
+        explicit = TimeSeriesDict.read(str(path), format="zarr", channels=["z", "a"])
         assert list(explicit) == ["z", "a"]
         with pytest.raises(ValueError, match="duplicate"):
             TimeSeriesDict.read(str(path), format="zarr", channels=["a", "a"])

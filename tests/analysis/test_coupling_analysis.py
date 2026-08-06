@@ -14,7 +14,7 @@ def test_compute_with_percentile_threshold():
     # Setup data
     fs = 100.0
     duration = 5.0
-    t = np.arange(0, duration, 1/fs)
+    t = np.arange(0, duration, 1 / fs)
 
     # Witness (High injection, low background)
     wit_inj = TimeSeries(np.random.normal(0, 10, len(t)), sample_rate=fs, name="WIT")
@@ -31,41 +31,59 @@ def test_compute_with_percentile_threshold():
     # Use PercentileThreshold for witness
     # This should trigger _build_bkg_segment_table internally
     res = analysis.compute(
-        data_inj, data_bkg, fftlength=1.0,
+        data_inj,
+        data_bkg,
+        fftlength=1.0,
         threshold_witness=PercentileThreshold(percentile=50, factor=1.0),
-        n_jobs=1
+        n_jobs=1,
     )
 
     # Should return a single CouplingResult if only one target
     from gwexpy.analysis.coupling import CouplingResult
+
     assert isinstance(res, CouplingResult)
     assert res.target_name == "TGT"
     assert len(res.cf.value) > 0
+
 
 def test_compute_parallel():
     # Ensure st.materialize() works for Parallel joblib calls
     pytest.importorskip("joblib")
     fs = 100.0
     duration = 5.0
-    t = np.arange(0, duration, 1/fs)
+    t = np.arange(0, duration, 1 / fs)
 
-    data_inj = TimeSeriesDict({
-        "WIT": TimeSeries(np.random.normal(0, 10, len(t)), sample_rate=fs, name="WIT"),
-        "T1": TimeSeries(np.random.normal(0, 10, len(t)), sample_rate=fs, name="T1"),
-        "T2": TimeSeries(np.random.normal(0, 10, len(t)), sample_rate=fs, name="T2"),
-    })
-    data_bkg = TimeSeriesDict({
-        "WIT": TimeSeries(np.random.normal(0, 1, len(t)), sample_rate=fs, name="WIT"),
-        "T1": TimeSeries(np.random.normal(0, 1, len(t)), sample_rate=fs, name="T1"),
-        "T2": TimeSeries(np.random.normal(0, 1, len(t)), sample_rate=fs, name="T2"),
-    })
+    data_inj = TimeSeriesDict(
+        {
+            "WIT": TimeSeries(
+                np.random.normal(0, 10, len(t)), sample_rate=fs, name="WIT"
+            ),
+            "T1": TimeSeries(
+                np.random.normal(0, 10, len(t)), sample_rate=fs, name="T1"
+            ),
+            "T2": TimeSeries(
+                np.random.normal(0, 10, len(t)), sample_rate=fs, name="T2"
+            ),
+        }
+    )
+    data_bkg = TimeSeriesDict(
+        {
+            "WIT": TimeSeries(
+                np.random.normal(0, 1, len(t)), sample_rate=fs, name="WIT"
+            ),
+            "T1": TimeSeries(np.random.normal(0, 1, len(t)), sample_rate=fs, name="T1"),
+            "T2": TimeSeries(np.random.normal(0, 1, len(t)), sample_rate=fs, name="T2"),
+        }
+    )
 
     analysis = CouplingFunctionAnalysis()
     # Explicitly use PercentileThreshold to trigger the materialize path
     res = analysis.compute(
-        data_inj, data_bkg, fftlength=1.0,
+        data_inj,
+        data_bkg,
+        fftlength=1.0,
         threshold_witness=PercentileThreshold(),
-        n_jobs=2
+        n_jobs=2,
     )
     assert isinstance(res, dict)
     assert len(res) == 2

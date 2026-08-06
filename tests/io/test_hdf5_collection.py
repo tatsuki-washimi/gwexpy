@@ -1,4 +1,5 @@
 """Tests for gwexpy/io/hdf5_collection.py."""
+
 from __future__ import annotations
 
 import json
@@ -117,7 +118,13 @@ class TestWriteReadManifest:
         fp = tmp_path / "test.h5"
         keymap = {"H1:A": "H1_A", "H1:B": "H1_B"}
         with h5py.File(fp, "w") as h5f:
-            write_hdf5_manifest(h5f, kind="Test", layout=LAYOUT_DATASET, keymap=keymap, order=["H1:A", "H1:B"])
+            write_hdf5_manifest(
+                h5f,
+                kind="Test",
+                layout=LAYOUT_DATASET,
+                keymap=keymap,
+                order=["H1:A", "H1:B"],
+            )
             result = read_hdf5_keymap(h5f)
         assert result == keymap
 
@@ -125,7 +132,9 @@ class TestWriteReadManifest:
         fp = tmp_path / "test.h5"
         order = ["H1:B", "H1:A"]
         with h5py.File(fp, "w") as h5f:
-            write_hdf5_manifest(h5f, kind="Test", layout=LAYOUT_DATASET, keymap={}, order=order)
+            write_hdf5_manifest(
+                h5f, kind="Test", layout=LAYOUT_DATASET, keymap={}, order=order
+            )
             result = read_hdf5_order(h5f)
         assert result == order
 

@@ -3,6 +3,7 @@
 Creates temporary text files to simulate OpenSeesPy recorder output.
 Does NOT require OpenSeesPy to be installed.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -47,18 +48,14 @@ class TestFromOpenseesMatrix:
         nodes = [1, 2, 3]
         dofs = [1, 2]
         fpath = _write_recorder_file(tmp_path, nodes, dofs)
-        result = from_opensees_recorder(
-            TimeSeriesMatrix, fpath, nodes=nodes, dofs=dofs
-        )
+        result = from_opensees_recorder(TimeSeriesMatrix, fpath, nodes=nodes, dofs=dofs)
         assert isinstance(result, TimeSeriesMatrix)
 
     def test_shape(self, tmp_path):
         nodes = [10, 20]
         dofs = [1, 2, 3]
         fpath = _write_recorder_file(tmp_path, nodes, dofs)
-        result = from_opensees_recorder(
-            TimeSeriesMatrix, fpath, nodes=nodes, dofs=dofs
-        )
+        result = from_opensees_recorder(TimeSeriesMatrix, fpath, nodes=nodes, dofs=dofs)
         # 2 nodes × 3 dofs = 6 channels
         assert result.shape[0] == 6
 
@@ -109,9 +106,7 @@ class TestFromOpenseesDict:
         nodes = [1, 2]
         dofs = [1, 2]
         fpath = _write_recorder_file(tmp_path, nodes, dofs)
-        result = from_opensees_recorder(
-            TimeSeriesDict, fpath, nodes=nodes, dofs=dofs
-        )
+        result = from_opensees_recorder(TimeSeriesDict, fpath, nodes=nodes, dofs=dofs)
         assert isinstance(result, TimeSeriesDict)
         assert len(result) == 4  # 2 nodes × 2 dofs
 
@@ -119,9 +114,7 @@ class TestFromOpenseesDict:
         nodes = [5]
         dofs = [1, 2, 3]
         fpath = _write_recorder_file(tmp_path, nodes, dofs)
-        result = from_opensees_recorder(
-            TimeSeriesDict, fpath, nodes=nodes, dofs=dofs
-        )
+        result = from_opensees_recorder(TimeSeriesDict, fpath, nodes=nodes, dofs=dofs)
         assert "N5_X" in result
         assert "N5_Y" in result
         assert "N5_Z" in result

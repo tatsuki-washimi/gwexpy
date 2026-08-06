@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/control_.py."""
+
 from __future__ import annotations
 
 import sys
@@ -23,6 +24,7 @@ def _make_fs(n=8, f0=1.0, df=1.0):
 
 def _make_fake_ctl():
     """Return a fake `control` module with frd() support."""
+
     class FakeFRD:
         def __init__(self, data, omega):
             self.frdata = np.array(data)[np.newaxis, np.newaxis, :]
@@ -72,6 +74,7 @@ class TestToControlFrd:
 
         fake_ctl = SimpleNamespace(frd=lambda d, o: FakeFRDWithSysname(d, o))
         from gwexpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(4, dtype=complex), f0=1.0, df=1.0, name="myfs")
         with patch.dict(sys.modules, {"control": fake_ctl}):
             frd = to_control_frd(fs)
@@ -198,6 +201,7 @@ class TestFromControlResponse:
 
     def test_mimo_returns_dict(self):
         from gwexpy.timeseries import TimeSeriesDict
+
         resp = self._make_mimo_response(nout=3, n=6)
         tsd = from_control_response(TimeSeries, resp)
         assert isinstance(tsd, TimeSeriesDict)
@@ -207,6 +211,7 @@ class TestFromControlResponse:
 
     def test_mimo_no_labels(self):
         from gwexpy.timeseries import TimeSeriesDict
+
         resp = SimpleNamespace(
             time=np.arange(5) * 0.1,
             outputs=np.ones((2, 5)),

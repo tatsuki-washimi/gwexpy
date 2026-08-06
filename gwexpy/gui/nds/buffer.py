@@ -1,4 +1,5 @@
 """Manage NDS data buffers adapted from ndscope."""
+
 from __future__ import annotations
 
 import numpy as np

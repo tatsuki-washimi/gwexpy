@@ -1,4 +1,5 @@
 """Geographic map plotting using PyGMT backend with Cartopy-like interface."""
+
 from __future__ import annotations
 
 import os

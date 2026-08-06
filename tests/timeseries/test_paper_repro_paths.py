@@ -1,4 +1,5 @@
 """Smoke tests for manuscript-facing reproduction paths."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -15,8 +16,12 @@ def test_timeserieslist_to_matrix_and_coherence_ranking_smoke() -> None:
     t = np.arange(n) / sr
 
     common = np.sin(2 * np.pi * 50 * t)
-    target = TimeSeries(common + 0.05 * rng.standard_normal(n), t0=0, sample_rate=sr, name="target")
-    corr = TimeSeries(common + 0.15 * rng.standard_normal(n), t0=0, sample_rate=sr, name="corr")
+    target = TimeSeries(
+        common + 0.05 * rng.standard_normal(n), t0=0, sample_rate=sr, name="target"
+    )
+    corr = TimeSeries(
+        common + 0.15 * rng.standard_normal(n), t0=0, sample_rate=sr, name="corr"
+    )
     noise = TimeSeries(rng.standard_normal(n), t0=0, sample_rate=sr, name="noise")
 
     matrix = TimeSeriesList([target, corr, noise]).to_matrix()

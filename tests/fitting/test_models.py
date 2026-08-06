@@ -8,6 +8,7 @@ Targets the uncovered lines reported at 60% coverage:
   L144-146 - get_model with non-string, non-callable argument
   L153-157 - get_model with polN (N>=10) and unknown name
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -373,8 +374,16 @@ class TestGetModel:
     # --- MODELS dictionary sanity ---
 
     def test_models_dict_contains_expected_keys(self):
-        expected = {"gaus", "gaussian", "exp", "expo", "exponential", "landau",
-                    "power_law", "damped_oscillation"}
+        expected = {
+            "gaus",
+            "gaussian",
+            "exp",
+            "expo",
+            "exponential",
+            "landau",
+            "power_law",
+            "damped_oscillation",
+        }
         assert expected.issubset(set(MODELS.keys()))
 
     def test_models_dict_contains_pol0_to_pol9(self):
@@ -474,6 +483,7 @@ class TestVoigt:
         sigma = 1.0
         v = voigt(x, 1.0, 0.0, sigma, gamma_small)
         from gwexpy.fitting.models import gaussian as gaus
+
         g = gaus(x, 1.0, 0.0, sigma)
         np.testing.assert_allclose(v, g, atol=1e-6)
 

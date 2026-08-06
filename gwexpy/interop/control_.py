@@ -1,4 +1,5 @@
 """Provide interoperability with the ``python-control`` library."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal, TypeVar, Union
@@ -143,14 +144,18 @@ def from_control_frd(
         f0 = float(freqs[0]) if len(freqs) > 0 else 0.0
 
         if is_matrix:
-            FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+            FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+                "FrequencySeriesMatrix"
+            )
 
             return FrequencySeriesMatrix(data, df=df, f0=f0)
         return cls(np.asarray(data).flatten(), df=df, f0=f0)
 
     # Irregular frequencies
     if is_matrix:
-        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor(
+            "FrequencySeriesMatrix"
+        )
 
         return FrequencySeriesMatrix(data, frequencies=freqs)
     return cls(np.asarray(data).flatten(), frequencies=freqs)

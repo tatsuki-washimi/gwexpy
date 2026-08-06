@@ -1,4 +1,5 @@
 """Tests for gwexpy/timeseries/_core.py — TimeSeriesCore."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -16,6 +17,7 @@ def _make_ts(n=100, sample_rate=100.0, t0=0.0):
 # ---------------------------------------------------------------------------
 # tail
 # ---------------------------------------------------------------------------
+
 
 class TestTail:
     def test_tail_default(self):
@@ -55,6 +57,7 @@ class TestTail:
 # crop
 # ---------------------------------------------------------------------------
 
+
 class TestCrop:
     def test_crop_basic(self):
         ts = _make_ts(n=100, sample_rate=100.0, t0=0.0)
@@ -88,6 +91,7 @@ class TestCrop:
 # append
 # ---------------------------------------------------------------------------
 
+
 class TestAppend:
     def test_append_inplace_true(self):
         # Line 94-95 — inplace=True returns self
@@ -107,6 +111,7 @@ class TestAppend:
 # ---------------------------------------------------------------------------
 # find_peaks
 # ---------------------------------------------------------------------------
+
 
 class TestFindPeaks:
     def test_find_peaks_basic(self):
@@ -130,8 +135,12 @@ class TestFindPeaks:
 
     def test_find_peaks_with_quantity_height(self):
         # Line 135-138 — height as Quantity with .value
-        ts = TimeSeries(np.sin(2*np.pi*5*np.arange(200)/100.0),
-                       sample_rate=100.0, t0=0.0, unit=u.V)
+        ts = TimeSeries(
+            np.sin(2 * np.pi * 5 * np.arange(200) / 100.0),
+            sample_rate=100.0,
+            t0=0.0,
+            unit=u.V,
+        )
         peaks, props = ts.find_peaks(height=0.5 * u.V)
         assert isinstance(peaks, TimeSeries)
 
@@ -173,8 +182,12 @@ class TestFindPeaks:
 
     def test_find_peaks_name_set(self):
         # Line 201 — peaks have name set
-        ts = TimeSeries(np.sin(2*np.pi*5*np.arange(200)/100.0),
-                       sample_rate=100.0, t0=0.0, name="myts")
+        ts = TimeSeries(
+            np.sin(2 * np.pi * 5 * np.arange(200) / 100.0),
+            sample_rate=100.0,
+            t0=0.0,
+            name="myts",
+        )
         peaks, props = ts.find_peaks(height=0.5)
         if len(peaks) > 0:
             assert "peaks" in peaks.name

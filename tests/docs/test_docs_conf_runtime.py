@@ -8,7 +8,9 @@ CONF_PATH = ROOT / "docs" / "conf.py"
 REDESIGN_CONF_PATH = ROOT / "docs_redesign" / "conf.py"
 DOCS_PR_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pr.yml"
 DOCS_PAGES_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-pages.yml"
-DOCS_PREVIEW_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "docs-redesign-preview.yml"
+DOCS_PREVIEW_WORKFLOW_PATH = (
+    ROOT / ".github" / "workflows" / "docs-redesign-preview.yml"
+)
 
 
 def _load_conf_module(name: str):
@@ -35,7 +37,9 @@ def test_local_build_defaults_disable_notebook_execution_and_exclude_ipynb(
 
 def test_docs_redesign_executes_clean_notebooks_in_an_untracked_cache(monkeypatch):
     monkeypatch.delenv("GWEXPY_NB_EXECUTION_MODE", raising=False)
-    spec = importlib.util.spec_from_file_location("gwexpy_docs_redesign_conf", REDESIGN_CONF_PATH)
+    spec = importlib.util.spec_from_file_location(
+        "gwexpy_docs_redesign_conf", REDESIGN_CONF_PATH
+    )
     conf = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(conf)
@@ -49,7 +53,9 @@ def test_docs_redesign_executes_clean_notebooks_in_an_untracked_cache(monkeypatc
 
 def test_explicit_notebook_build_keeps_nbsphinx_when_pandoc_exists(monkeypatch):
     monkeypatch.setenv("NBS_EXECUTE", "always")
-    monkeypatch.setattr("shutil.which", lambda name: "/usr/bin/pandoc" if name == "pandoc" else None)
+    monkeypatch.setattr(
+        "shutil.which", lambda name: "/usr/bin/pandoc" if name == "pandoc" else None
+    )
 
     conf = _load_conf_module("gwexpy_docs_conf_with_pandoc")
 
@@ -62,7 +68,9 @@ def test_github_actions_defaults_to_failing_on_notebook_errors(monkeypatch):
     monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.delenv("NBS_EXECUTE", raising=False)
     monkeypatch.delenv("NBS_ALLOW_ERRORS", raising=False)
-    monkeypatch.setattr("shutil.which", lambda name: "/usr/bin/pandoc" if name == "pandoc" else None)
+    monkeypatch.setattr(
+        "shutil.which", lambda name: "/usr/bin/pandoc" if name == "pandoc" else None
+    )
 
     conf = _load_conf_module("gwexpy_docs_conf_github_actions")
 
@@ -72,7 +80,9 @@ def test_github_actions_defaults_to_failing_on_notebook_errors(monkeypatch):
 def test_matplotlib_fonts_prefer_japanese_capable_sans_serif_stack(monkeypatch):
     monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
     monkeypatch.delenv("NBS_ALLOW_ERRORS", raising=False)
-    monkeypatch.setattr("shutil.which", lambda name: "/usr/bin/pandoc" if name == "pandoc" else None)
+    monkeypatch.setattr(
+        "shutil.which", lambda name: "/usr/bin/pandoc" if name == "pandoc" else None
+    )
 
     conf = _load_conf_module("gwexpy_docs_conf_fonts")
 
@@ -84,7 +94,10 @@ def test_matplotlib_fonts_prefer_japanese_capable_sans_serif_stack(monkeypatch):
     matplotlibrc = Path(conf.os.environ["MPLCONFIGDIR"]) / "matplotlibrc"
     content = matplotlibrc.read_text(encoding="utf-8")
     assert "backend: Agg" in content
-    assert "font.sans-serif: Noto Sans CJK JP, IPAexGothic, IPAGothic, DejaVu Sans" in content
+    assert (
+        "font.sans-serif: Noto Sans CJK JP, IPAexGothic, IPAGothic, DejaVu Sans"
+        in content
+    )
     assert "axes.unicode_minus: False" in content
 
 
@@ -143,7 +156,7 @@ def test_docs_pages_workflow_builds_docs_redesign_with_executed_notebook_outputs
     en_build = steps_by_name["Build EN HTML"]
     ja_build = steps_by_name["Build JA HTML"]
 
-    assert "rsync -a --delete --exclude \"_build/\" docs_redesign/" in prepare["run"]
+    assert 'rsync -a --delete --exclude "_build/" docs_redesign/' in prepare["run"]
     assert 'mkdir -p "${docs_root}"' in prepare["run"]
     assert 'cp CHANGELOG.md "${docs_root}/CHANGELOG.md"' in prepare["run"]
     assert 'python -m pip install -e ".[all]"' in provision["run"]

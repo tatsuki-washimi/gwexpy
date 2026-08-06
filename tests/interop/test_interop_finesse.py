@@ -3,6 +3,7 @@
 These tests use mock objects that mimic the Finesse 3 Solution API,
 so they run without requiring Finesse 3 to be installed.
 """
+
 from __future__ import annotations
 
 from types import SimpleNamespace

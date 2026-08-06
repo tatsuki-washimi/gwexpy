@@ -43,9 +43,7 @@ def test_interop_page_does_not_claim_an_unmeasured_priority_ranking() -> None:
 def test_interop_signal_processing_heading_preserves_legacy_anchor() -> None:
     """Keep the clarified category title without breaking the published anchor."""
     page = _read("how-to/interop.md")
-    new_heading = (
-        "C. Scientific Computing, Signal Processing, Machine Learning, and Array Backends"
-    )
+    new_heading = "C. Scientific Computing, Signal Processing, Machine Learning, and Array Backends"
     old_heading = "C. Scientific Computing, Machine Learning, and Array Backends"
     catalog_path = DOCS / "locales/ja/LC_MESSAGES/how-to/interop.po"
 
@@ -60,7 +58,10 @@ def test_interop_signal_processing_heading_preserves_legacy_anchor() -> None:
     assert translated.string == "C. 科学計算、信号処理、機械学習、配列バックエンド"
     jump_link = catalog.get(f"[{new_heading}](#interop-en-ml-conversion)")
     assert jump_link is not None
-    assert jump_link.string == "[C. 科学計算、信号処理、機械学習、配列バックエンド](#interop-en-ml-conversion)"
+    assert (
+        jump_link.string
+        == "[C. 科学計算、信号処理、機械学習、配列バックエンド](#interop-en-ml-conversion)"
+    )
 
 
 def test_validation_and_stability_claims_are_scoped_to_implemented_evidence() -> None:

@@ -144,6 +144,7 @@ class TestGeneralizedLeastSquaresInit:
 
     def test_errordef(self):
         from iminuit import Minuit
+
         assert GeneralizedLeastSquares.errordef == Minuit.LEAST_SQUARES
 
 

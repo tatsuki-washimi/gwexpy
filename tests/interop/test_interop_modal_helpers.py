@@ -2,6 +2,7 @@
 
 Does NOT require any external modal analysis library.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -85,9 +86,7 @@ class TestBuildModeDataframeShapes:
         zeta = np.array([0.01, 0.02])
         shapes = np.random.default_rng(0).random((6, 2))  # 2 nodes × 3 DOFs
         nodes = np.array([1, 2])
-        df = build_mode_dataframe(
-            freqs, zeta, mode_shapes=shapes, node_ids=nodes
-        )
+        df = build_mode_dataframe(freqs, zeta, mode_shapes=shapes, node_ids=nodes)
         assert "mode_1" in df.columns
         assert "mode_2" in df.columns
         assert len(df) == 6  # 2 nodes × 3 DOFs
@@ -97,9 +96,7 @@ class TestBuildModeDataframeShapes:
         zeta = np.array([0.01])
         shapes = np.random.default_rng(1).random((3, 1))
         labels = np.array(["1:+X", "1:+Y", "1:+Z"])
-        df = build_mode_dataframe(
-            freqs, zeta, mode_shapes=shapes, dof_labels=labels
-        )
+        df = build_mode_dataframe(freqs, zeta, mode_shapes=shapes, dof_labels=labels)
         assert "dof" in df.columns
         assert list(df["dof"]) == ["1:+X", "1:+Y", "1:+Z"]
 
@@ -133,9 +130,9 @@ class TestBuildModeDataframeShapes:
 class TestBuildFrfMatrix:
     def test_basic_shape(self):
         freqs = np.linspace(0, 100, 256)
-        frf = np.random.default_rng(0).random((3, 2, 256)) + 1j * np.random.default_rng(1).random(
-            (3, 2, 256)
-        )
+        frf = np.random.default_rng(0).random((3, 2, 256)) + 1j * np.random.default_rng(
+            1
+        ).random((3, 2, 256))
         result = build_frf_matrix(FrequencySeriesMatrix, freqs, frf)
         assert isinstance(result, FrequencySeriesMatrix)
 

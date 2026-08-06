@@ -155,9 +155,9 @@ def from_pandas_series(
                             "Consider providing dt explicitly if this is unexpected.",
                             UserWarning,
                         )
-        elif isinstance(index, (pd.Index, pd.RangeIndex)) and pd.api.types.is_numeric_dtype(
-            index
-        ):
+        elif isinstance(
+            index, (pd.Index, pd.RangeIndex)
+        ) and pd.api.types.is_numeric_dtype(index):
             inferred_t0 = float(index[0])
             if len(index) > 1:
                 diffs = np.diff(index[:1000].to_numpy())

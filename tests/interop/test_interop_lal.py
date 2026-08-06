@@ -3,6 +3,7 @@
 These tests inject a mock ``gwexpy.utils.lal`` into ``sys.modules`` so they
 run without requiring LALSuite to be installed.
 """
+
 from __future__ import annotations
 
 import sys
@@ -22,7 +23,10 @@ def _make_lal_utils_mock(unit=u.m):
     """Return a fake gwexpy.utils.lal module."""
     mod = MagicMock(spec=ModuleType)
     mod.from_lal_unit = MagicMock(return_value=unit)
-    mod.LAL_TYPE_FROM_NUMPY = {np.dtype("float64").type: "REAL8", np.dtype("complex128").type: "COMPLEX16"}
+    mod.LAL_TYPE_FROM_NUMPY = {
+        np.dtype("float64").type: "REAL8",
+        np.dtype("complex128").type: "COMPLEX16",
+    }
 
     def _create_ts(name, epoch, f0_unused, dt, unit, n):
         lalts = MagicMock()
@@ -63,7 +67,9 @@ def _make_lal_timeseries(data, epoch=1e9, dt=1 / 1024.0, name="test", unit_str="
     return lalts
 
 
-def _make_lal_frequencyseries(data, epoch=1e9, f0=0.0, df=1.0, name="test", unit_str="1/sqrt(Hz)"):
+def _make_lal_frequencyseries(
+    data, epoch=1e9, f0=0.0, df=1.0, name="test", unit_str="1/sqrt(Hz)"
+):
     lalfs = SimpleNamespace()
     lalfs.data = SimpleNamespace(data=np.asarray(data))
     lalfs.epoch = epoch

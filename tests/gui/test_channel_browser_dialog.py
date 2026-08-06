@@ -107,7 +107,9 @@ def test_channel_browser_worker_error_updates_status(qtbot):
 
     qtbot.addWidget(dialog)
 
-    with patch("gwexpy.gui.ui.channel_browser.QtWidgets.QMessageBox.critical") as critical:
+    with patch(
+        "gwexpy.gui.ui.channel_browser.QtWidgets.QMessageBox.critical"
+    ) as critical:
         dialog.on_worker_finished([], "fetch failed")
 
     critical.assert_called_once()

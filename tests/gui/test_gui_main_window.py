@@ -86,9 +86,7 @@ def test_open_file_xml_populates_channels(qtbot):
 
     xml_path = _data_path("diaggui.xml")
     if not xml_path.exists():
-        pytest.skip(
-            "sample GUI XML is missing: tests/fixtures/data/diaggui.xml"
-        )
+        pytest.skip("sample GUI XML is missing: tests/fixtures/data/diaggui.xml")
     window.open_file(str(xml_path))
     qtbot.wait(50)
 

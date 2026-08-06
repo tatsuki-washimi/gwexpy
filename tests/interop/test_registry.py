@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/_registry.py."""
+
 from __future__ import annotations
 
 import pytest
@@ -36,6 +37,7 @@ class TestRegisterGetConstructor:
         ConverterRegistry.register_constructor("MyClass", list)
         # Re-registering with the same class should not warn
         import warnings
+
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             ConverterRegistry.register_constructor("MyClass", list)

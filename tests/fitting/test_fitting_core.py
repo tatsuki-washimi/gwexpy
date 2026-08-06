@@ -270,7 +270,9 @@ class TestFitSeriesFrequencySeries:
         """With well-estimated sigma, reduced chi2 should be near 1."""
         y = np.asarray(fs.value)
         sigma = np.full(len(y), 0.02)
-        result = fit_series(fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}, sigma=sigma)
+        result = fit_series(
+            fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}, sigma=sigma
+        )
         # broad check — reduced chi2 should be reasonable
         assert result.reduced_chi2 > 0
 
@@ -331,7 +333,9 @@ class TestFitSeriesSigma:
     def test_array_sigma_wrong_length_raises(self, fs):
         sigma = np.ones(5)  # wrong length
         with pytest.raises((ValueError, Exception)):
-            fit_series(fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}, sigma=sigma)
+            fit_series(
+                fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}, sigma=sigma
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -428,9 +432,7 @@ class TestFitSeriesLimitsFixed:
         assert result.params["sigma"] == pytest.approx(1.0, abs=1e-10)
 
     def test_fixed_parameter_ndof(self, fs):
-        result_free = fit_series(
-            fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}
-        )
+        result_free = fit_series(fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0})
         result_fixed = fit_series(
             fs,
             gaussian,
@@ -491,7 +493,9 @@ class TestFitSeriesGLS:
         # Wrong shape: (n-1, n-1)
         cov_bad = np.eye(n - 1) * 0.05**2
         with pytest.raises((ValueError, Exception)):
-            fit_series(fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}, cov=cov_bad)
+            fit_series(
+                fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}, cov=cov_bad
+            )
 
     def test_cov_not_2d_raises(self):
         fs = _make_gaussian_fs(n=10)
@@ -952,7 +956,9 @@ class TestFitSeriesSigmaShortArray:
         fs = FrequencySeries(y, frequencies=x)
         # Provide sigma matching fit data length exactly (no x_range, so it equals series)
         sigma = np.full(n, 0.05)
-        result = fit_series(fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}, sigma=sigma)
+        result = fit_series(
+            fs, gaussian, p0={"A": 3.0, "mu": 5.0, "sigma": 1.0}, sigma=sigma
+        )
         assert isinstance(result, FitResult)
 
 
@@ -969,6 +975,7 @@ class TestFitResultPlotReal:
 
     def test_plot_returns_figure(self, result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -978,6 +985,7 @@ class TestFitResultPlotReal:
 
     def test_plot_with_existing_ax(self, result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -988,6 +996,7 @@ class TestFitResultPlotReal:
 
     def test_plot_with_errorbars_from_sigma(self):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1002,6 +1011,7 @@ class TestFitResultPlotReal:
 
     def test_plot_with_show_errorbar_false(self, result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1011,6 +1021,7 @@ class TestFitResultPlotReal:
 
     def test_plot_with_x_range(self, result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1020,6 +1031,7 @@ class TestFitResultPlotReal:
 
     def test_plot_with_xscale(self, result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1030,6 +1042,7 @@ class TestFitResultPlotReal:
     def test_plot_no_sigma_show_errorbar(self, result):
         """show_errorbar=True but dy_data is None → falls back to fit-range dy."""
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1042,6 +1055,7 @@ class TestFitResultPlotReal:
     def test_plot_timeseries_x_kind(self):
         """TimeSeries result should attempt GPS x scale."""
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1076,6 +1090,7 @@ class TestFitResultPlotComplex:
 
     def test_plot_complex_delegates_to_bode(self, complex_result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1087,6 +1102,7 @@ class TestFitResultPlotComplex:
 
     def test_bode_plot_returns_axes_tuple(self, complex_result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1096,6 +1112,7 @@ class TestFitResultPlotComplex:
 
     def test_bode_plot_with_provided_axes(self, complex_result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1106,6 +1123,7 @@ class TestFitResultPlotComplex:
 
     def test_bode_plot_invalid_ax_raises(self, complex_result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1116,6 +1134,7 @@ class TestFitResultPlotComplex:
 
     def test_bode_plot_with_x_range(self, complex_result):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -1125,6 +1144,7 @@ class TestFitResultPlotComplex:
 
     def test_bode_plot_with_show_errorbar(self):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 

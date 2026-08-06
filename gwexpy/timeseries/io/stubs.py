@@ -1,4 +1,5 @@
 """Provide placeholder readers for unsupported time-series formats."""
+
 from __future__ import annotations
 
 from gwpy.io.registry import default_registry as io_registry

@@ -241,11 +241,7 @@ class TestReadersApplyTheWindow:
 
         full = next(iter(TimeSeriesDict.read(source, format=fmt).values()))
         got = next(
-            iter(
-                TimeSeriesDict.read(
-                    source, format=fmt, start=start, end=end
-                ).values()
-            )
+            iter(TimeSeriesDict.read(source, format=fmt, start=start, end=end).values())
         )
         assert got.name == full.name
         assert got.unit == full.unit
@@ -284,9 +280,9 @@ class TestOracleEquality:
         dict_of_series.write(str(path), format="hdf5")
 
         single = TimeSeries.read(str(path), "A", format="hdf5", start=0.2, end=0.5)
-        from_dict = TimeSeriesDict.read(
-            str(path), format="hdf5", start=0.2, end=0.5
-        )["A"]
+        from_dict = TimeSeriesDict.read(str(path), format="hdf5", start=0.2, end=0.5)[
+            "A"
+        ]
         _assert_matches_oracle(from_dict, single)
 
     def test_wav_matches_what_gwpys_own_reader_returns(self, tmp_path, series):
@@ -497,9 +493,7 @@ class TestUnverifiableReadersFailClosed:
         dummy = tmp_path / "d.xml"
         dummy.write_text("<?xml version='1.0'?><root/>")
         with pytest.raises(ValueError, match="products must be specified"):
-            TimeSeriesDict.read(
-                str(dummy), format="xml.diaggui", start=None, end=None
-            )
+            TimeSeriesDict.read(str(dummy), format="xml.diaggui", start=None, end=None)
 
     def test_message_names_the_format_and_the_remedy(self, tmp_path):
         """A traceback alone should be enough to know what to do instead."""

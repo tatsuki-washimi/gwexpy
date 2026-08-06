@@ -1,4 +1,5 @@
 """Tests for gwexpy/plot/defaults.py."""
+
 from __future__ import annotations
 
 import matplotlib
@@ -27,6 +28,7 @@ from gwexpy.plot.defaults import (
 # calculate_default_figsize
 # ---------------------------------------------------------------------------
 
+
 class TestCalculateDefaultFigsize:
     def test_geometry_overrides_nrow_ncol(self):
         w, h = calculate_default_figsize((2, 3), nrow=1, ncol=1)
@@ -51,6 +53,7 @@ class TestCalculateDefaultFigsize:
 # ---------------------------------------------------------------------------
 # _is_linear_unit_or_name
 # ---------------------------------------------------------------------------
+
 
 class TestIsLinearUnitOrName:
     def test_deg_unit(self):
@@ -82,6 +85,7 @@ class TestIsLinearUnitOrName:
 # _format_unit_label
 # ---------------------------------------------------------------------------
 
+
 class TestFormatUnitLabel:
     def test_none_returns_none(self):
         assert _format_unit_label(None) is None
@@ -103,6 +107,7 @@ class TestFormatUnitLabel:
 # determine_xscale
 # ---------------------------------------------------------------------------
 
+
 class TestDetermineXscale:
     def test_current_value_respected(self):
         assert determine_xscale([], current_value="log") == "log"
@@ -112,18 +117,21 @@ class TestDetermineXscale:
 
     def test_frequency_series_large(self):
         from gwpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(512), df=1.0)
         result = determine_xscale([fs])
         assert result == "log"
 
     def test_frequency_series_small(self):
         from gwpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(10), df=1.0)
         result = determine_xscale([fs])
         assert result is None
 
     def test_spectrogram_returns_auto_gps(self):
         from gwpy.spectrogram import Spectrogram
+
         data = np.ones((10, 5))
         sg = Spectrogram(data, t0=0, dt=1, f0=0, df=1)
         result = determine_xscale([sg])
@@ -134,6 +142,7 @@ class TestDetermineXscale:
 # determine_yscale
 # ---------------------------------------------------------------------------
 
+
 class TestDetermineYscale:
     def test_current_value_respected(self):
         assert determine_yscale([], current_value="linear") == "linear"
@@ -143,6 +152,7 @@ class TestDetermineYscale:
 
     def test_spectrogram_returns_log(self):
         from gwpy.spectrogram import Spectrogram
+
         data = np.ones((10, 5))
         sg = Spectrogram(data, t0=0, dt=1, f0=0, df=1)
         result = determine_yscale([sg])
@@ -150,12 +160,14 @@ class TestDetermineYscale:
 
     def test_frequency_series_non_linear_unit(self):
         from gwpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(10), df=1.0, unit="m")
         result = determine_yscale([fs])
         assert result == "log"
 
     def test_frequency_series_linear_unit(self):
         from gwpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(10), df=1.0, unit="deg")
         result = determine_yscale([fs])
         assert result is None
@@ -164,6 +176,7 @@ class TestDetermineYscale:
 # ---------------------------------------------------------------------------
 # determine_norm
 # ---------------------------------------------------------------------------
+
 
 class TestDetermineNorm:
     def test_current_value_respected(self):
@@ -174,6 +187,7 @@ class TestDetermineNorm:
 
     def test_spectrogram_returns_log(self):
         from gwpy.spectrogram import Spectrogram
+
         data = np.ones((10, 5))
         sg = Spectrogram(data, t0=0, dt=1, f0=0, df=1)
         result = determine_norm([sg])
@@ -181,6 +195,7 @@ class TestDetermineNorm:
 
     def test_non_spectrogram_returns_none(self):
         from gwpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(10), df=1.0)
         assert determine_norm([fs]) is None
 
@@ -188,6 +203,7 @@ class TestDetermineNorm:
 # ---------------------------------------------------------------------------
 # determine_geometry_and_separate
 # ---------------------------------------------------------------------------
+
 
 class TestDetermineGeometryAndSeparate:
     def test_empty_list_unchanged(self):
@@ -197,6 +213,7 @@ class TestDetermineGeometryAndSeparate:
 
     def test_spectrogram_sets_separate_true(self):
         from gwpy.spectrogram import Spectrogram
+
         data = np.ones((10, 5))
         sg = Spectrogram(data, t0=0, dt=1, f0=0, df=1)
         sep, geom = determine_geometry_and_separate([sg])
@@ -204,6 +221,7 @@ class TestDetermineGeometryAndSeparate:
 
     def test_current_geometry_not_overridden(self):
         from gwpy.spectrogram import Spectrogram
+
         data = np.ones((10, 5))
         sg = Spectrogram(data, t0=0, dt=1, f0=0, df=1)
         sep, geom = determine_geometry_and_separate([sg], geometry=(2, 2))
@@ -432,6 +450,7 @@ class TestDetermineGeometryAndSeparate:
 # determine_xlabel
 # ---------------------------------------------------------------------------
 
+
 class TestDetermineXlabel:
     def test_current_value_respected(self):
         assert determine_xlabel([], current_value="Time [s]") == "Time [s]"
@@ -441,6 +460,7 @@ class TestDetermineXlabel:
 
     def test_frequency_series_returns_frequency_label(self):
         from gwpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(10), df=1.0)
         label = determine_xlabel([fs])
         assert label is not None
@@ -451,6 +471,7 @@ class TestDetermineXlabel:
 # determine_ylabel
 # ---------------------------------------------------------------------------
 
+
 class TestDetermineYlabel:
     def test_current_value_respected(self):
         assert determine_ylabel([], current_value="Amplitude") == "Amplitude"
@@ -460,6 +481,7 @@ class TestDetermineYlabel:
 
     def test_frequency_series_with_unit(self):
         from gwpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(10), df=1.0, unit="m")
         label = determine_ylabel([fs])
         assert label is not None
@@ -467,6 +489,7 @@ class TestDetermineYlabel:
 
     def test_spectrogram_ylabel(self):
         from gwpy.spectrogram import Spectrogram
+
         data = np.ones((10, 5))
         sg = Spectrogram(data, t0=0, dt=1, f0=0, df=1)
         label = determine_ylabel([sg])
@@ -477,6 +500,7 @@ class TestDetermineYlabel:
 # determine_clabel
 # ---------------------------------------------------------------------------
 
+
 class TestDetermineClabel:
     def test_current_value_respected(self):
         assert determine_clabel([], current_value="Power") == "Power"
@@ -486,6 +510,7 @@ class TestDetermineClabel:
 
     def test_spectrogram_returns_unit_label(self):
         from gwpy.spectrogram import Spectrogram
+
         data = np.ones((10, 5))
         sg = Spectrogram(data, t0=0, dt=1, f0=0, df=1, unit="m")
         label = determine_clabel([sg])
@@ -494,5 +519,6 @@ class TestDetermineClabel:
 
     def test_non_spectrogram_returns_none(self):
         from gwpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(10), df=1.0)
         assert determine_clabel([fs]) is None

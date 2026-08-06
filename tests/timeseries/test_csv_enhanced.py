@@ -1,4 +1,5 @@
 """Tests for the enhanced CSV reader (csv_enhanced.py / csv_config.py)."""
+
 from __future__ import annotations
 
 import textwrap
@@ -56,8 +57,12 @@ class TestCSVFormatConfig:
     def test_from_dict_time_component(self):
         d = {
             "columns": [
-                {"name": "year", "index": 0, "role": "time_component",
-                 "time_component": "year"},
+                {
+                    "name": "year",
+                    "index": 0,
+                    "role": "time_component",
+                    "time_component": "year",
+                },
                 {"name": "val", "index": 1, "role": "data"},
             ]
         }
@@ -68,6 +73,7 @@ class TestCSVFormatConfig:
 
     def test_from_json(self, tmp_path):
         import json
+
         d = {"format": {"delimiter": ";"}, "columns": []}
         p = tmp_path / "config.json"
         p.write_text(json.dumps(d))
@@ -142,8 +148,9 @@ class TestResampleUniform:
 
     def test_unknown_method_raises(self):
         with pytest.raises(ValueError, match="Unknown resample method"):
-            _resample_uniform(np.array([0.0, 1.0]), np.array([0.0, 1.0]),
-                              1.0, method="bad")
+            _resample_uniform(
+                np.array([0.0, 1.0]), np.array([0.0, 1.0]), 1.0, method="bad"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -155,21 +162,27 @@ class TestReadCSVAutoDetect:
     """Tests with auto-detection (no config)."""
 
     def test_simple_two_column(self, tmp_path):
-        p = write_csv(tmp_path, """\
+        p = write_csv(
+            tmp_path,
+            """\
             0.0,1.0
             1.0,2.0
             2.0,3.0
-        """)
+        """,
+        )
         tsd = read_timeseriesdict_csv(p)
         assert "ch1" in tsd
         np.testing.assert_allclose(tsd["ch1"].value, [1.0, 2.0, 3.0])
 
     def test_multiple_data_columns(self, tmp_path):
-        p = write_csv(tmp_path, """\
+        p = write_csv(
+            tmp_path,
+            """\
             0.0,1.0,10.0
             1.0,2.0,20.0
             2.0,3.0,30.0
-        """)
+        """,
+        )
         tsd = read_timeseriesdict_csv(p)
         assert "ch1" in tsd
         assert "ch2" in tsd
@@ -180,11 +193,14 @@ class TestReadCSVAutoDetect:
         assert len(tsd) == 0
 
     def test_comment_lines_skipped(self, tmp_path):
-        p = write_csv(tmp_path, """\
+        p = write_csv(
+            tmp_path,
+            """\
             # header comment
             0.0,1.0
             1.0,2.0
-        """)
+        """,
+        )
         tsd = read_timeseriesdict_csv(p)
         assert "ch1" in tsd
         assert len(tsd["ch1"]) == 2
@@ -266,6 +282,7 @@ class TestReadCSVWithConfig:
 
     def test_config_from_yaml(self, tmp_path):
         import textwrap
+
         yaml_content = textwrap.dedent("""\
             columns:
               - name: time
@@ -303,24 +320,51 @@ class TestReadCSVTimestampReconstruction:
 
     def test_year_month_day_columns(self, tmp_path):
         # Columns: year, month, day, hour, minute, second, value
-        p = write_csv(tmp_path, """\
+        p = write_csv(
+            tmp_path,
+            """\
             2021,1,15,12,0,0.0,1.5
             2021,1,15,12,0,1.0,2.5
-        """)
+        """,
+        )
         cfg = CSVFormatConfig(
             columns=[
-                ColumnSpec(name="year", column_index=0, role="time_component",
-                           time_component="year"),
-                ColumnSpec(name="month", column_index=1, role="time_component",
-                           time_component="month"),
-                ColumnSpec(name="day", column_index=2, role="time_component",
-                           time_component="day"),
-                ColumnSpec(name="hour", column_index=3, role="time_component",
-                           time_component="hour"),
-                ColumnSpec(name="minute", column_index=4, role="time_component",
-                           time_component="minute"),
-                ColumnSpec(name="second", column_index=5, role="time_component",
-                           time_component="second"),
+                ColumnSpec(
+                    name="year",
+                    column_index=0,
+                    role="time_component",
+                    time_component="year",
+                ),
+                ColumnSpec(
+                    name="month",
+                    column_index=1,
+                    role="time_component",
+                    time_component="month",
+                ),
+                ColumnSpec(
+                    name="day",
+                    column_index=2,
+                    role="time_component",
+                    time_component="day",
+                ),
+                ColumnSpec(
+                    name="hour",
+                    column_index=3,
+                    role="time_component",
+                    time_component="hour",
+                ),
+                ColumnSpec(
+                    name="minute",
+                    column_index=4,
+                    role="time_component",
+                    time_component="minute",
+                ),
+                ColumnSpec(
+                    name="second",
+                    column_index=5,
+                    role="time_component",
+                    time_component="second",
+                ),
                 ColumnSpec(name="val", column_index=6, role="data"),
             ],
             timezone="UTC",
@@ -334,12 +378,24 @@ class TestReadCSVTimestampReconstruction:
         p = write_csv(tmp_path, "2021,1,15,1.0\n")
         cfg = CSVFormatConfig(
             columns=[
-                ColumnSpec(name="year", column_index=0, role="time_component",
-                           time_component="year"),
-                ColumnSpec(name="month", column_index=1, role="time_component",
-                           time_component="month"),
-                ColumnSpec(name="day", column_index=2, role="time_component",
-                           time_component="day"),
+                ColumnSpec(
+                    name="year",
+                    column_index=0,
+                    role="time_component",
+                    time_component="year",
+                ),
+                ColumnSpec(
+                    name="month",
+                    column_index=1,
+                    role="time_component",
+                    time_component="month",
+                ),
+                ColumnSpec(
+                    name="day",
+                    column_index=2,
+                    role="time_component",
+                    time_component="day",
+                ),
                 ColumnSpec(name="val", column_index=3, role="data"),
             ],
             timezone=None,

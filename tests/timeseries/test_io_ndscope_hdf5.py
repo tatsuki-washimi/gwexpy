@@ -15,7 +15,9 @@ from gwexpy.timeseries.io.ndscope_hdf5 import (
 )
 
 
-def test_ndscope_writer_rejects_dataset_options_before_opening_target(monkeypatch, tmp_path):
+def test_ndscope_writer_rejects_dataset_options_before_opening_target(
+    monkeypatch, tmp_path
+):
     """Unsupported kwargs must not be accepted-and-ignored (#590)."""
     import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
 
@@ -30,6 +32,7 @@ def test_ndscope_writer_rejects_dataset_options_before_opening_target(monkeypatc
         ndscope.write_timeseriesdict_ndscope_hdf5(
             source, tmp_path / "out.hdf5", z=True, a=False
         )
+
 
 SAMPLE_HDF5 = Path(__file__).parent.parent / "fixtures" / "data" / "ndscope.h5"
 LOCAL_NDSCOPE_HDF5 = (

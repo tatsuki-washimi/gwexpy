@@ -908,7 +908,9 @@ class ScalarField(FieldBase):
                 i3 = nearest_index(self._axis3_index, z_val)
 
                 # Extract the time series at this point
-                sliced = self[:, slice_from_index(i1), slice_from_index(i2), slice_from_index(i3)]
+                sliced = self[
+                    :, slice_from_index(i1), slice_from_index(i2), slice_from_index(i3)
+                ]
                 ts_data = sliced.value.squeeze()
 
                 # Label for the series

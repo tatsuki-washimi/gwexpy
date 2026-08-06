@@ -8,12 +8,7 @@ from gwpy.time import to_gps
 
 from gwexpy.timeseries import TimeSeries
 
-_SAMPLE_ATS = (
-    Path(__file__).resolve().parents[1]
-    / "fixtures"
-    / "data"
-    / "test.ats"
-)
+_SAMPLE_ATS = Path(__file__).resolve().parents[1] / "fixtures" / "data" / "test.ats"
 
 
 def _read_ats_header_fields(path: Path) -> tuple[int, int, int, float, int, float, int]:

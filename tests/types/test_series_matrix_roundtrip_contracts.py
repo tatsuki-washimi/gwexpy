@@ -1,4 +1,5 @@
 """Round-trip metadata contracts for SeriesMatrix-family containers."""
+
 from __future__ import annotations
 
 import pickle
@@ -204,9 +205,7 @@ def test_pickle_warns_once_listing_all_dropped_attrs_keys(matrix_cls):
     with pytest.warns(UserWarning) as record:
         restored = pickle.loads(pickle.dumps(matrix))
 
-    dropped_warnings = [
-        w for w in record if "cannot be pickled" in str(w.message)
-    ]
+    dropped_warnings = [w for w in record if "cannot be pickled" in str(w.message)]
     assert len(dropped_warnings) == 1
     message = str(dropped_warnings[0].message)
     assert "bad_one" in message
@@ -343,7 +342,9 @@ def test_to_pandas_is_a_value_export_not_metadata_roundtrip(matrix_cls, format_n
         assert len(df) == matrix.size
         assert set(df["row"]) == {"rowA", "rowB"}
         assert set(df["col"]) == {"colX", "colY"}
-        expected_long_index = np.tile(expected_xindex, matrix.shape[0] * matrix.shape[1])
+        expected_long_index = np.tile(
+            expected_xindex, matrix.shape[0] * matrix.shape[1]
+        )
         np.testing.assert_array_equal(df["index"].to_numpy(), expected_long_index)
         assert not isinstance(df["index"].to_numpy(), u.Quantity)
         np.testing.assert_array_equal(df["value"].to_numpy(), matrix.value.reshape(-1))

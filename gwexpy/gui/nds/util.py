@@ -1,4 +1,5 @@
 """Provide small helpers for NDS connectivity."""
+
 from __future__ import annotations
 
 import logging

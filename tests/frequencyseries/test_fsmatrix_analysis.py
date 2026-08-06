@@ -1,4 +1,5 @@
 """Tests for FrequencySeriesMatrix.__new__ and analysis methods."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -16,6 +17,7 @@ def _make_fsm(n_rows=2, n_cols=2, n_freq=64, df=1.0, f0=0.0):
 # ---------------------------------------------------------------------------
 # FrequencySeriesMatrix.__new__ — constructor branches
 # ---------------------------------------------------------------------------
+
 
 def test_basic_construction():
     fsm = _make_fsm()
@@ -80,8 +82,10 @@ def test_constructor_with_xunit():
 # FrequencySeriesMatrixAnalysisMixin — ifft
 # ---------------------------------------------------------------------------
 
+
 def test_ifft_returns_timeseries_matrix():
     from gwexpy.timeseries import TimeSeriesMatrix
+
     fsm = _make_fsm(n_freq=65, df=1.0)
     result = fsm.ifft()
     assert isinstance(result, TimeSeriesMatrix)
@@ -102,6 +106,7 @@ def test_ifft_with_float_df():
 # ---------------------------------------------------------------------------
 # FrequencySeriesMatrixAnalysisMixin — apply_response
 # ---------------------------------------------------------------------------
+
 
 def test_apply_response_with_ndarray():
     fsm = _make_fsm(n_freq=16)
@@ -129,6 +134,7 @@ def test_apply_response_inplace():
 # FrequencySeriesMatrixAnalysisMixin — smooth
 # ---------------------------------------------------------------------------
 
+
 def test_smooth_amplitude():
     fsm = _make_fsm(n_freq=32)
     result = fsm.smooth(5, method="amplitude")
@@ -150,8 +156,9 @@ def test_smooth_db():
 
 
 def test_smooth_complex():
-    data = (np.random.default_rng(0).normal(size=(1, 1, 32))
-            + 1j * np.random.default_rng(1).normal(size=(1, 1, 32)))
+    data = np.random.default_rng(0).normal(
+        size=(1, 1, 32)
+    ) + 1j * np.random.default_rng(1).normal(size=(1, 1, 32))
     data = data.astype(complex)
     fsm = FrequencySeriesMatrix(data, df=1.0 * u.Hz, f0=0.0 * u.Hz)
     result = fsm.smooth(5, method="complex")

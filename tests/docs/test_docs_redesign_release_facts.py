@@ -10,12 +10,16 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_redesign_changelog_includes_the_canonical_release_history() -> None:
-    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(encoding="utf-8")
+    source = (REPO_ROOT / "docs_redesign/about/changelog.md").read_text(
+        encoding="utf-8"
+    )
     canonical = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 
-    assert ':::{include} ../../CHANGELOG.md' in source
+    assert ":::{include} ../../CHANGELOG.md" in source
     assert ':start-after: "# Changelog"' in source
-    canonical_releases = re.findall(r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE)
+    canonical_releases = re.findall(
+        r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
+    )
     assert canonical_releases == [
         "[0.1.12] - 2026-07-31",
         "[0.1.11] - 2026-07-25",
@@ -36,8 +40,12 @@ def test_redesign_changelog_includes_the_canonical_release_history() -> None:
     assert not re.search(r"^## \[0\.1", source, re.MULTILINE)
 
 
-def test_redesign_changelog_japanese_catalogue_translates_every_source_message() -> None:
-    catalogue_path = REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+def test_redesign_changelog_japanese_catalogue_translates_every_source_message() -> (
+    None
+):
+    catalogue_path = (
+        REPO_ROOT / "docs_redesign/locales/ja/LC_MESSAGES/about/changelog.po"
+    )
     with catalogue_path.open(encoding="utf-8") as stream:
         catalogue = pofile.read_po(stream, locale="ja")
 

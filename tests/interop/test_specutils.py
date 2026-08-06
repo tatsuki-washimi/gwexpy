@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/specutils_.py."""
+
 from __future__ import annotations
 
 import sys
@@ -19,6 +20,7 @@ def _make_fs(n=8, f0=1.0, df=1.0, unit="m"):
 
 def _fake_specutils_and_units():
     """Fake specutils + astropy.units for mocking."""
+
     class FakeSpectrum1D:
         def __init__(self, flux, spectral_axis, **kwargs):
             self.flux = flux
@@ -32,6 +34,7 @@ class TestToSpecutilsRequiresPackage:
     def test_raises_import_error_without_specutils(self):
         with patch.dict(sys.modules, {"specutils": None}):
             from gwexpy.interop.specutils_ import to_specutils
+
             with pytest.raises(ImportError):
                 to_specutils(_make_fs())
 
@@ -43,6 +46,7 @@ class TestToSpecutilsWithMock:
             import importlib
 
             from gwexpy.interop import specutils_
+
             importlib.reload(specutils_)
             fs = _make_fs(n=5)
             result = specutils_.to_specutils(fs)
@@ -55,6 +59,7 @@ class TestToSpecutilsWithMock:
             import importlib
 
             from gwexpy.interop import specutils_
+
             importlib.reload(specutils_)
             with pytest.raises(ValueError, match="frequencies"):
                 specutils_.to_specutils(obj)
@@ -63,9 +68,14 @@ class TestToSpecutilsWithMock:
         fake_spec = _fake_specutils_and_units()
 
         class BadUnit:
-            def __str__(self): return "bad"
-            def __mul__(self, other): raise TypeError("can't multiply")
-            def __rmul__(self, other): raise TypeError("can't multiply")
+            def __str__(self):
+                return "bad"
+
+            def __mul__(self, other):
+                raise TypeError("can't multiply")
+
+            def __rmul__(self, other):
+                raise TypeError("can't multiply")
 
         fs = _make_fs(n=4)
         fs_mock = SimpleNamespace(
@@ -77,6 +87,7 @@ class TestToSpecutilsWithMock:
             import importlib
 
             from gwexpy.interop import specutils_
+
             importlib.reload(specutils_)
             result = specutils_.to_specutils(fs_mock)
         assert result is not None
@@ -93,6 +104,7 @@ class TestToSpecutilsWithMock:
             import importlib
 
             from gwexpy.interop import specutils_
+
             importlib.reload(specutils_)
             result = specutils_.to_specutils(fs_mock)
         assert result is not None
@@ -110,6 +122,7 @@ class TestToSpecutilsWithMock:
             import importlib
 
             from gwexpy.interop import specutils_
+
             importlib.reload(specutils_)
             result = specutils_.to_specutils(fs_mock)
         assert result is not None
@@ -118,6 +131,7 @@ class TestToSpecutilsWithMock:
 class TestFromSpecutils:
     def test_basic_conversion(self):
         from gwexpy.interop.specutils_ import from_specutils
+
         flux = np.ones(5) * u.m
         freqs = np.arange(1, 6) * u.Hz
         fake_spectrum = SimpleNamespace(flux=flux, spectral_axis=freqs)
@@ -127,6 +141,7 @@ class TestFromSpecutils:
 
     def test_passes_kwargs(self):
         from gwexpy.interop.specutils_ import from_specutils
+
         flux = np.ones(3)
         freqs = np.array([1.0, 2.0, 3.0]) * u.Hz
         fake_spectrum = SimpleNamespace(flux=flux, spectral_axis=freqs)

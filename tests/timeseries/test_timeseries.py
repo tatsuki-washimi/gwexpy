@@ -105,7 +105,9 @@ class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
     def test_write_gwf_type(self, *args, **kwargs):
         pass
 
-    @pytest.mark.skip(reason="Segfaults due to GWF frame library dependency issues in CI")
+    @pytest.mark.skip(
+        reason="Segfaults due to GWF frame library dependency issues in CI"
+    )
     def test_fetch_open_data(self, *args, **kwargs):
         pass
 

@@ -1,4 +1,5 @@
 """Placeholder readers for unsupported frequency-domain formats."""
+
 from __future__ import annotations
 
 from gwpy.io.registry import default_registry as io_registry

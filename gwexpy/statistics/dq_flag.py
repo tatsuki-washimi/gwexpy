@@ -1,4 +1,5 @@
 """gwexpy.statistics.dq_flag - DataQualityFlag generation from statistical results."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -70,24 +71,24 @@ def to_segments(
     for i, bad in enumerate(is_bad):
         if bad:
             if active_seg_start is None:
-                active_seg_start = times[i] - dt/2.0
+                active_seg_start = times[i] - dt / 2.0
         else:
             if active_seg_start is not None:
-                seg_end = times[i] - dt/2.0
+                seg_end = times[i] - dt / 2.0
                 if seg_end - active_seg_start >= min_duration:
                     segments.append(Segment(active_seg_start, seg_end))
                 active_seg_start = None
 
     # Close last segment if active
     if active_seg_start is not None:
-        seg_end = times[-1] + dt/2.0
+        seg_end = times[-1] + dt / 2.0
         if seg_end - active_seg_start >= min_duration:
             segments.append(Segment(active_seg_start, seg_end))
 
     flag = DataQualityFlag(
         name=name,
         active=segments,
-        known=SegmentList([Segment(times[0]-dt/2.0, times[-1]+dt/2.0)])
+        known=SegmentList([Segment(times[0] - dt / 2.0, times[-1] + dt / 2.0)]),
     )
 
     return flag

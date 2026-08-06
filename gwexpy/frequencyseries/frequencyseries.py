@@ -216,13 +216,10 @@ class FrequencySeries(
             if not fsd:
                 raise ValueError("No channels found in xml.diaggui")
             return fsd[next(iter(fsd.keys()))]
-        csv_source = (
-            fmt == "csv"
-            or (
-                fmt is None
-                and source_path is not None
-                and source_path.suffix.lower() == ".csv"
-            )
+        csv_source = fmt == "csv" or (
+            fmt is None
+            and source_path is not None
+            and source_path.suffix.lower() == ".csv"
         )
         if csv_source and not args:
             csv_kwargs = dict(kwargs)

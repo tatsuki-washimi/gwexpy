@@ -1,4 +1,5 @@
 """Tests for gwexpy/interop/polars_.py."""
+
 from __future__ import annotations
 
 import sys
@@ -13,6 +14,7 @@ from gwexpy.timeseries import TimeSeries
 
 def _fake_pl():
     """Return a minimal fake polars module."""
+
     class FakeSeries:
         def __init__(self, *, name="", values=None):
             self.name = name
@@ -33,7 +35,9 @@ def _fake_pl():
 
     class _FakeColumn:
         def __init__(self, values):
-            self._values = list(values) if not isinstance(values, np.ndarray) else values
+            self._values = (
+                list(values) if not isinstance(values, np.ndarray) else values
+            )
 
         def __len__(self):
             return len(self._values)
@@ -65,6 +69,7 @@ class TestToPolarsSeriesRaisesWithoutPolars:
     def test_raises_import_error(self):
         with patch.dict(sys.modules, {"polars": None}):
             from gwexpy.interop.polars_ import to_polars_series
+
             with pytest.raises(ImportError):
                 to_polars_series(_make_ts())
 
@@ -76,6 +81,7 @@ class TestToPolarsSeriesWithMock:
             import importlib
 
             import gwexpy.interop.polars_ as polars_mod
+
             importlib.reload(polars_mod)
             ts = _make_ts(n=5, name="test")
             s = polars_mod.to_polars_series(ts)
@@ -88,6 +94,7 @@ class TestToPolarsSeriesWithMock:
             import importlib
 
             import gwexpy.interop.polars_ as polars_mod
+
             importlib.reload(polars_mod)
             ts = _make_ts(n=3)
             s = polars_mod.to_polars_series(ts, name="custom")
@@ -97,6 +104,7 @@ class TestToPolarsSeriesWithMock:
 class TestFromPolarsSeriesNoImport:
     def test_basic_conversion(self):
         from gwexpy.interop.polars_ import from_polars_series
+
         fake_series = SimpleNamespace(to_numpy=lambda: np.arange(5.0))
         ts = from_polars_series(TimeSeries, fake_series, unit="m", t0=0.0, dt=1.0)
         assert isinstance(ts, TimeSeries)
@@ -104,6 +112,7 @@ class TestFromPolarsSeriesNoImport:
 
     def test_t0_and_dt_passed(self):
         from gwexpy.interop.polars_ import from_polars_series
+
         fake_series = SimpleNamespace(to_numpy=lambda: np.ones(4))
         ts = from_polars_series(TimeSeries, fake_series, t0=100.0, dt=0.5)
         assert ts.t0.value == pytest.approx(100.0)
@@ -111,6 +120,7 @@ class TestFromPolarsSeriesNoImport:
 
     def test_unit_preserved(self):
         from gwexpy.interop.polars_ import from_polars_series
+
         fake_series = SimpleNamespace(to_numpy=lambda: np.ones(3))
         # No t0/dt supplied -> the missing timing now warns (not silent).
         with pytest.warns(UserWarning, match="timing metadata"):
@@ -119,6 +129,7 @@ class TestFromPolarsSeriesNoImport:
 
     def test_missing_timing_warns(self):
         from gwexpy.interop.polars_ import from_polars_series
+
         fake_series = SimpleNamespace(to_numpy=lambda: np.ones(3))
         with pytest.warns(UserWarning, match="timing metadata"):
             from_polars_series(TimeSeries, fake_series)
@@ -127,6 +138,7 @@ class TestFromPolarsSeriesNoImport:
         import warnings
 
         from gwexpy.interop.polars_ import from_polars_series
+
         fake_series = SimpleNamespace(to_numpy=lambda: np.ones(3))
         with warnings.catch_warnings():
             warnings.simplefilter("error")
@@ -136,6 +148,7 @@ class TestFromPolarsSeriesNoImport:
 
     def test_user_channel(self):
         from gwexpy.interop.polars_ import from_polars_series
+
         fake_series = SimpleNamespace(to_numpy=lambda: np.ones(3))
         ts = from_polars_series(
             TimeSeries, fake_series, t0=0.0, dt=1.0, channel="X1:POL"
@@ -146,9 +159,11 @@ class TestFromPolarsSeriesNoImport:
 class TestToPolarsFrequencyseriesRaisesWithoutPolars:
     def test_raises_import_error(self):
         from gwexpy.frequencyseries import FrequencySeries
+
         fs = FrequencySeries(np.ones(5), df=1.0)
         with patch.dict(sys.modules, {"polars": None}):
             from gwexpy.interop.polars_ import to_polars_frequencyseries
+
             with pytest.raises(ImportError):
                 to_polars_frequencyseries(fs)
 
@@ -157,15 +172,19 @@ class TestToPolarsDataframeRaisesWithoutPolars:
     def test_raises_import_error(self):
         with patch.dict(sys.modules, {"polars": None}):
             from gwexpy.interop.polars_ import to_polars_dataframe
+
             with pytest.raises(ImportError):
                 to_polars_dataframe(_make_ts())
 
 
 class TestFromPolarsDataframeRaisesWithoutPolars:
     def test_raises_import_error(self):
-        fake_df = SimpleNamespace(columns=["time", "ch"], **{"__getitem__": lambda s, k: None})
+        fake_df = SimpleNamespace(
+            columns=["time", "ch"], **{"__getitem__": lambda s, k: None}
+        )
         with patch.dict(sys.modules, {"polars": None}):
             from gwexpy.interop.polars_ import from_polars_dataframe
+
             with pytest.raises(ImportError):
                 from_polars_dataframe(TimeSeries, fake_df)
 
@@ -202,6 +221,7 @@ class TestFromPolarsDataframeWithMock:
             import importlib
 
             import gwexpy.interop.polars_ as polars_mod
+
             importlib.reload(polars_mod)
             ts = polars_mod.from_polars_dataframe(TimeSeries, MockDF())
         assert isinstance(ts, TimeSeries)
@@ -220,6 +240,7 @@ class TestFromPolarsDataframeWithMock:
             import importlib
 
             import gwexpy.interop.polars_ as polars_mod
+
             importlib.reload(polars_mod)
             with pytest.raises(ValueError, match="data column"):
                 polars_mod.from_polars_dataframe(TimeSeries, MockDF())

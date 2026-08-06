@@ -1,4 +1,5 @@
 """Tests for gwexpy/time/core.py"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -18,6 +19,7 @@ from gwexpy.time.core import (
 # ---------------------------------------------------------------------------
 # _is_array
 # ---------------------------------------------------------------------------
+
 
 def test_is_array_string_is_false():
     assert _is_array("2020-01-01") is False
@@ -51,6 +53,7 @@ def test_is_array_int():
 # _is_numeric_array
 # ---------------------------------------------------------------------------
 
+
 def test_is_numeric_array_float():
     assert _is_numeric_array(np.array([1.0, 2.0])) is True
 
@@ -66,6 +69,7 @@ def test_is_numeric_array_datetime():
 # ---------------------------------------------------------------------------
 # _normalize_time_input
 # ---------------------------------------------------------------------------
+
 
 def test_normalize_time_input_passthrough():
     assert _normalize_time_input(1234567890.0) == 1234567890.0
@@ -84,6 +88,7 @@ def test_normalize_time_input_empty_list():
 # ---------------------------------------------------------------------------
 # to_gps
 # ---------------------------------------------------------------------------
+
 
 def test_to_gps_scalar_float():
     result = to_gps(1234567890.0)
@@ -198,6 +203,7 @@ def test_to_gps_numpy_datetime64():
 # from_gps
 # ---------------------------------------------------------------------------
 
+
 def test_from_gps_scalar():
     result = from_gps(1000000000)
     assert result is not None
@@ -218,6 +224,7 @@ def test_from_gps_astropy_time():
 # ---------------------------------------------------------------------------
 # tconvert
 # ---------------------------------------------------------------------------
+
 
 def test_tconvert_scalar_gps():
     result = tconvert(1000000000)

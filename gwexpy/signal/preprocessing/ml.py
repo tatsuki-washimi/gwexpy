@@ -7,6 +7,7 @@ This module provides preprocessing utilities (data splitting, band-pass
 filtering, standardization) used in noise removal tasks like DeepClean,
 implemented as a generic scikit-learn-style Transformer API.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional
@@ -318,6 +319,7 @@ class MLPreprocessor:
             return X_proc, y_proc
 
         return X_proc
+
     def _get_sample_rate_hz(self, data: Any = None) -> float:
         """Extract sample rate in Hz from input data or self."""
         if data is not None and hasattr(data, "sample_rate"):

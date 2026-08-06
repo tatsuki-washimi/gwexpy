@@ -22,22 +22,24 @@ class TestSpectrogramHdf5:
         assert str(sg2.unit) == "m"
 
     def test_dict_roundtrip(self, tmp_path):
-        sgd = SpectrogramDict({
-            "H1:SPEC": Spectrogram(
-                np.ones((2, 3)),
-                times=np.arange(2.0),
-                frequencies=np.arange(3.0),
-                unit="m",
-                name="H1:SPEC",
-            ),
-            "L1:SPEC": Spectrogram(
-                np.zeros((2, 3)),
-                times=np.arange(2.0),
-                frequencies=np.arange(3.0),
-                unit="m",
-                name="L1:SPEC",
-            ),
-        })
+        sgd = SpectrogramDict(
+            {
+                "H1:SPEC": Spectrogram(
+                    np.ones((2, 3)),
+                    times=np.arange(2.0),
+                    frequencies=np.arange(3.0),
+                    unit="m",
+                    name="H1:SPEC",
+                ),
+                "L1:SPEC": Spectrogram(
+                    np.zeros((2, 3)),
+                    times=np.arange(2.0),
+                    frequencies=np.arange(3.0),
+                    unit="m",
+                    name="L1:SPEC",
+                ),
+            }
+        )
         path = tmp_path / "sgd.hdf5"
         sgd.write(str(path), format="hdf5")
         sgd2 = SpectrogramDict().read(str(path), format="hdf5")
@@ -45,15 +47,17 @@ class TestSpectrogramHdf5:
         np.testing.assert_allclose(sgd2["H1:SPEC"].value, np.ones((2, 3)))
 
     def test_list_roundtrip(self, tmp_path):
-        sgl = SpectrogramList([
-            Spectrogram(
-                np.arange(6.0).reshape(2, 3),
-                times=np.arange(2.0),
-                frequencies=np.arange(3.0),
-                unit="m",
-                name="sg_0",
-            ),
-        ])
+        sgl = SpectrogramList(
+            [
+                Spectrogram(
+                    np.arange(6.0).reshape(2, 3),
+                    times=np.arange(2.0),
+                    frequencies=np.arange(3.0),
+                    unit="m",
+                    name="sg_0",
+                ),
+            ]
+        )
         path = tmp_path / "sgl.hdf5"
         sgl.write(str(path), format="hdf5")
         sgl2 = SpectrogramList().read(str(path), format="hdf5")

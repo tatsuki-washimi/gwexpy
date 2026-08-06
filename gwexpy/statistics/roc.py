@@ -62,13 +62,9 @@ def calculate_roc(
             "ROC undefined: y_true/y_score must contain at least one sample"
         )
     if n_points < 2:
-        raise ValueError(
-            f"ROC undefined: n_points must be >= 2 (got {n_points})"
-        )
+        raise ValueError(f"ROC undefined: n_points must be >= 2 (got {n_points})")
     if not np.all(np.isfinite(y_score)):
-        raise ValueError(
-            "ROC undefined: y_score contains non-finite values (NaN/Inf)"
-        )
+        raise ValueError("ROC undefined: y_score contains non-finite values (NaN/Inf)")
 
     s_min = float(np.min(y_score))
     s_max = float(np.max(y_score))

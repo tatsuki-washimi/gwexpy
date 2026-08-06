@@ -415,9 +415,7 @@ class FitResult:
             x_plot = np.linspace(min(x0, x1), max(x0, x1), num_points)
         else:
             if len(self.x) == 0:
-                raise ValueError(
-                    "FitResult.x is empty; cannot produce plot x range."
-                )
+                raise ValueError("FitResult.x is empty; cannot produce plot x range.")
             x_plot = np.linspace(min(self.x), max(self.x), num_points)
         y_plot = self.model(x_plot, **self.params)
         ax.plot(x_plot, y_plot, label=kwargs.pop("label", "Fit"), **kwargs)
@@ -960,9 +958,7 @@ class FitResult:
 
         # Generate x values for plotting
         if len(self.x) == 0:
-            raise ValueError(
-                "FitResult.x is empty; cannot produce plot x range."
-            )
+            raise ValueError("FitResult.x is empty; cannot produce plot x range.")
         x_plot = np.linspace(np.min(self.x), np.max(self.x), num_points)
 
         # Get random subset of samples

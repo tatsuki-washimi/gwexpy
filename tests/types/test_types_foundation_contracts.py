@@ -49,9 +49,7 @@ def test_metadata_dict_and_matrix_deepcopy_isolates_entries():
     metadata = MetaDataDict(
         {"h1": MetaData(name="strain", channel="H1:STRAIN", unit=u.m)}
     )
-    matrix = MetaDataMatrix(
-        [[MetaData(name="strain", channel="H1:STRAIN", unit=u.m)]]
-    )
+    matrix = MetaDataMatrix([[MetaData(name="strain", channel="H1:STRAIN", unit=u.m)]])
 
     metadata_copy = copy.deepcopy(metadata)
     matrix_copy = copy.deepcopy(matrix)

@@ -327,14 +327,17 @@ class TestScalarFieldPlotProfile:
         z = np.arange(nz) * u.m
 
         # Grid values (indexing='ij' for 4D)
-        T, X, Y, Z = np.meshgrid(t.value, x.value, y.value, z.value, indexing='ij')
+        T, X, Y, Z = np.meshgrid(t.value, x.value, y.value, z.value, indexing="ij")
         data = T + X + Y + Z
 
         field = ScalarField(
             data,
             unit=u.dimensionless_unscaled,
-            axis0=t, axis1=x, axis2=y, axis3=z,
-            axis_names=["t", "x", "y", "z"]
+            axis0=t,
+            axis1=x,
+            axis2=y,
+            axis3=z,
+            axis_names=["t", "x", "y", "z"],
         )
 
         # Extract profile along x-axis at non-grid coordinates for t, y, z
@@ -343,7 +346,7 @@ class TestScalarFieldPlotProfile:
         z_val = 0.5 * u.m
 
         x_axis, values = field.extract_profile(
-            'x', at={'t': t_val, 'y': y_val, 'z': z_val}
+            "x", at={"t": t_val, "y": y_val, "z": z_val}
         )
 
         # Analytical solution: f = t + x + y + z
@@ -541,9 +544,7 @@ class TestScalarFieldTimeStatMap:
 
         # This should fail if line 1658 returns early
         result = sample_field.time_stat_map(
-            stat="mean",
-            plane="xy",
-            at={"t": t_mean, "z": z0}
+            stat="mean", plane="xy", at={"t": t_mean, "z": z0}
         )
 
         # Expected shape: (t=1, x=4, y=4, z=1)

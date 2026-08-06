@@ -182,6 +182,7 @@ def from_hdf5_frequencyseries(cls: type[T], group: h5py.Group, path: str) -> T:
         freqs = np.array(freqs) * 1.0
         try:
             import astropy.units as u
+
             freqs = freqs * u.Unit(freq_unit) if freq_unit else freqs
         except (ImportError, ValueError):
             pass

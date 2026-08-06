@@ -85,8 +85,14 @@ def test_docs_mark_frequency_dttxml_as_implementation_only():
     ja = _read(JA_GUIDE)
 
     assert contract["xml.diaggui"]["public_api"]["read"] == ["TimeSeriesDict"]
-    assert "Frequency-domain DTTXML direct shims and registry adapters are implementation-only" in en
-    assert "周波数領域の DTTXML direct shim と registry adapter は implementation-only" in ja
+    assert (
+        "Frequency-domain DTTXML direct shims and registry adapters are implementation-only"
+        in en
+    )
+    assert (
+        "周波数領域の DTTXML direct shim と registry adapter は implementation-only"
+        in ja
+    )
 
 
 def test_optional_dependency_matrix_matches_contract():
@@ -117,6 +123,8 @@ def test_optional_dependency_matrix_matches_contract():
     wav = contract["wav"]
     assert wav["unavailable_behavior"]["read"] == "warns_and_skips_optional_metadata"
     assert "`.read(..., extract_metadata=True)` warns and skips metadata" in en
-    assert "`.read(..., extract_metadata=True)` は警告を出し、metadata を省略します" in ja
+    assert (
+        "`.read(..., extract_metadata=True)` は警告を出し、metadata を省略します" in ja
+    )
     assert "install with the `audio` or `all` extra" in en
     assert "`audio` または `all` extra で追加してください" in ja

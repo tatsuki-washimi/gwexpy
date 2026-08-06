@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/series_matrix_io.py."""
+
 from __future__ import annotations
 
 import json
@@ -19,6 +20,7 @@ def _make_tsm(n_rows=2, n_cols=2, n_t=10):
 # ---------------------------------------------------------------------------
 # to_pandas
 # ---------------------------------------------------------------------------
+
 
 class TestToPandas:
     def test_wide_format(self):
@@ -44,6 +46,7 @@ class TestToPandas:
     def test_wide_with_quantity_xindex(self):
         # Lines 70-72 — xindex is Quantity
         from astropy import units as u
+
         tsm = _make_tsm()
         # xindex should be Quantity since dt=1.0*u.s internally
         df = tsm.to_pandas(format="wide")
@@ -73,6 +76,7 @@ class TestToPandas:
 # ---------------------------------------------------------------------------
 # write
 # ---------------------------------------------------------------------------
+
 
 class TestWrite:
     def test_write_hdf5_by_extension(self):
@@ -123,6 +127,7 @@ class TestWrite:
 # to_hdf5
 # ---------------------------------------------------------------------------
 
+
 class TestToHdf5:
     def test_roundtrip_basic(self):
         # Lines 146-211
@@ -134,6 +139,7 @@ class TestToHdf5:
             assert Path(path).exists()
             # Verify structure
             import h5py
+
             with h5py.File(path, "r") as hf:
                 assert "data" in hf
                 assert "xindex" in hf
@@ -148,6 +154,7 @@ class TestToHdf5:
         tsm = _make_tsm()
         import h5py
         from astropy import units as u
+
         # Verify xindex is stored correctly
         with tempfile.NamedTemporaryFile(suffix=".h5", delete=False) as f:
             path = f.name
@@ -167,6 +174,7 @@ class TestToHdf5:
         try:
             tsm.to_hdf5(path)
             import h5py
+
             with h5py.File(path, "r") as hf:
                 assert "attrs_json" in hf.attrs
         finally:
@@ -176,6 +184,7 @@ class TestToHdf5:
 # ---------------------------------------------------------------------------
 # __repr__ / __str__ / _repr_html_
 # ---------------------------------------------------------------------------
+
 
 class TestRepr:
     def test_repr(self):
@@ -217,6 +226,7 @@ class TestRepr:
 # ---------------------------------------------------------------------------
 # read (HDF5 roundtrip)
 # ---------------------------------------------------------------------------
+
 
 class TestRead:
     def test_read_hdf5_roundtrip(self):

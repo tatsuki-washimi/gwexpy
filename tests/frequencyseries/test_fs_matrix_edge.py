@@ -6,6 +6,7 @@ Covers:
 - Empty data initialization and its frequencies/shape
 - Conversion methods (to_list, to_dict) return types, element types, and key shapes.
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
@@ -26,10 +27,7 @@ class TestFSMatrixFreqParamPriority:
         data = np.random.rand(1, 1, 3)
         freqs = [10, 20, 30] * u.Hz
         fsm = FrequencySeriesMatrix(
-            data,
-            frequencies=freqs,
-            df=50.0 * u.Hz,
-            f0=100.0 * u.Hz
+            data, frequencies=freqs, df=50.0 * u.Hz, f0=100.0 * u.Hz
         )
 
         # Verify result is based on freqs
@@ -58,10 +56,7 @@ class TestFSMatrixConversionMethods:
         data = np.random.rand(2, 2, 3)
         freqs = [0, 10, 20] * u.Hz
         return FrequencySeriesMatrix(
-            data,
-            frequencies=freqs,
-            rows=["R1", "R2"],
-            cols=["C1", "C2"]
+            data, frequencies=freqs, rows=["R1", "R2"], cols=["C1", "C2"]
         )
 
     def test_to_list_type_and_element(self, fsm_2x2):
@@ -86,10 +81,7 @@ class TestFSMatrixConversionMethods:
         assert len(fs_dict) == 4
 
         # Multi-column key check: (row, col) key format for SeriesMatrixBase
-        expected_keys = [
-            ("R1", "C1"), ("R1", "C2"),
-            ("R2", "C1"), ("R2", "C2")
-        ]
+        expected_keys = [("R1", "C1"), ("R1", "C2"), ("R2", "C1"), ("R2", "C2")]
         assert list(fs_dict.keys()) == expected_keys
 
         # Check first element

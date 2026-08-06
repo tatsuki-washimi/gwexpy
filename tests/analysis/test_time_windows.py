@@ -8,6 +8,7 @@ Phase 1 時間ウィンドウ API テスト
 - test_estimate_coupling_bkg_window
 - test_response_bkg_window
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -40,16 +41,20 @@ def _make_full_data(rng: np.random.Generator) -> TimeSeriesDict:
     n_bkg = int(DURATION_BKG * FS)
     n_gap = int(2.0 * FS)
     n_inj = int(DURATION_INJ * FS)
-    wit_data = np.concatenate([
-        rng.normal(0, 1, n_bkg),
-        rng.normal(0, 1, n_gap),
-        rng.normal(0, 10, n_inj),  # 注入区間: 10x 振幅
-    ])
-    tgt_data = np.concatenate([
-        rng.normal(0, 1, n_bkg),
-        rng.normal(0, 1, n_gap),
-        rng.normal(0, 5, n_inj),   # 注入区間: 5x 振幅
-    ])
+    wit_data = np.concatenate(
+        [
+            rng.normal(0, 1, n_bkg),
+            rng.normal(0, 1, n_gap),
+            rng.normal(0, 10, n_inj),  # 注入区間: 10x 振幅
+        ]
+    )
+    tgt_data = np.concatenate(
+        [
+            rng.normal(0, 1, n_bkg),
+            rng.normal(0, 1, n_gap),
+            rng.normal(0, 5, n_inj),  # 注入区間: 5x 振幅
+        ]
+    )
 
     t0 = T_BKG_START
     wit = TimeSeries(wit_data, sample_rate=FS, t0=t0, name="WIT")
@@ -57,13 +62,23 @@ def _make_full_data(rng: np.random.Generator) -> TimeSeriesDict:
     return TimeSeriesDict({"WIT": wit, "TGT": tgt})
 
 
-def _make_split_dicts(rng: np.random.Generator) -> tuple[TimeSeriesDict, TimeSeriesDict]:
+def _make_split_dicts(
+    rng: np.random.Generator,
+) -> tuple[TimeSeriesDict, TimeSeriesDict]:
     """背景・注入をそれぞれ別の TimeSeriesDict として作成する。"""
     n = int(DURATION_INJ * FS)  # 同一長で比較
-    wit_bkg = TimeSeries(rng.normal(0, 1, n), sample_rate=FS, t0=T_BKG_START, name="WIT")
-    tgt_bkg = TimeSeries(rng.normal(0, 1, n), sample_rate=FS, t0=T_BKG_START, name="TGT")
-    wit_inj = TimeSeries(rng.normal(0, 10, n), sample_rate=FS, t0=T_INJ_START, name="WIT")
-    tgt_inj = TimeSeries(rng.normal(0, 5, n), sample_rate=FS, t0=T_INJ_START, name="TGT")
+    wit_bkg = TimeSeries(
+        rng.normal(0, 1, n), sample_rate=FS, t0=T_BKG_START, name="WIT"
+    )
+    tgt_bkg = TimeSeries(
+        rng.normal(0, 1, n), sample_rate=FS, t0=T_BKG_START, name="TGT"
+    )
+    wit_inj = TimeSeries(
+        rng.normal(0, 10, n), sample_rate=FS, t0=T_INJ_START, name="WIT"
+    )
+    tgt_inj = TimeSeries(
+        rng.normal(0, 5, n), sample_rate=FS, t0=T_INJ_START, name="TGT"
+    )
     data_bkg = TimeSeriesDict({"WIT": wit_bkg, "TGT": tgt_bkg})
     data_inj = TimeSeriesDict({"WIT": wit_inj, "TGT": tgt_inj})
     return data_inj, data_bkg
@@ -86,7 +101,9 @@ def test_from_time_windows_basic():
         fftlength=1.0,
     )
 
-    assert isinstance(result, CouplingResult), f"Expected CouplingResult, got {type(result)}"
+    assert isinstance(result, CouplingResult), (
+        f"Expected CouplingResult, got {type(result)}"
+    )
     assert result.witness_name == "WIT"
     assert result.target_name == "TGT"
     assert len(result.cf.value) > 0
@@ -151,15 +168,18 @@ def test_window_vs_auto_detection_comparison():
 
     # 方法 A: from_time_windows (全データを一つの TimeSeriesDict に結合)
     from gwexpy.timeseries import TimeSeries, TimeSeriesDict
-    combined = TimeSeriesDict({
-        k: TimeSeries(
-            np.concatenate([data_bkg[k].value, data_inj[k].value]),
-            sample_rate=FS,
-            t0=T_BKG_START,
-            name=k,
-        )
-        for k in data_inj
-    })
+
+    combined = TimeSeriesDict(
+        {
+            k: TimeSeries(
+                np.concatenate([data_bkg[k].value, data_inj[k].value]),
+                sample_rate=FS,
+                t0=T_BKG_START,
+                name=k,
+            )
+            for k in data_inj
+        }
+    )
     bkg_end = T_BKG_START + DURATION_INJ
     inj_start = bkg_end
     inj_end = inj_start + DURATION_INJ
@@ -317,7 +337,9 @@ def test_estimate_coupling_forwards_time_window_parameters(
 # ---------------------------------------------------------------------------
 
 
-def _make_sine_ts(freq: float, duration: float, t0: float = 0.0, fs: float = 256.0) -> TimeSeries:
+def _make_sine_ts(
+    freq: float, duration: float, t0: float = 0.0, fs: float = 256.0
+) -> TimeSeries:
     """単一正弦波の TimeSeries を作成する。"""
     n = int(duration * fs)
     t = np.arange(n) / fs
@@ -351,11 +373,15 @@ def test_response_bkg_window():
 
     wit_full = TimeSeries(
         np.concatenate([bkg_data, np.zeros(int(fs)), inj_data]),
-        sample_rate=fs, t0=t0_bkg, name="WIT",
+        sample_rate=fs,
+        t0=t0_bkg,
+        name="WIT",
     )
     tgt_full = TimeSeries(
         np.concatenate([bkg_data * 0.5, np.zeros(int(fs)), inj_data * 0.5]),
-        sample_rate=fs, t0=t0_bkg, name="TGT",
+        sample_rate=fs,
+        t0=t0_bkg,
+        name="TGT",
     )
 
     # A: bkg_window 指定
@@ -383,8 +409,10 @@ def test_response_bkg_window():
 
     # 結合係数の差が十分小さいこと
     np.testing.assert_allclose(
-        res_a.coupling_factors, res_b.coupling_factors,
-        rtol=1e-10, atol=1e-10,
+        res_a.coupling_factors,
+        res_b.coupling_factors,
+        rtol=1e-10,
+        atol=1e-10,
         err_msg="bkg_window result should match explicit witness_bkg/target_bkg result.",
     )
 
@@ -398,7 +426,8 @@ def test_response_bkg_window_invalid_raises():
     analysis = ResponseFunctionAnalysis()
     with pytest.raises(ValueError, match="bkg_window end"):
         analysis.compute(
-            ts, ts,
+            ts,
+            ts,
             segments=[(5.0, 9.0, 10.0)],
             fftlength=1.0,
             bkg_window=(5.0, 1.0),  # 逆順

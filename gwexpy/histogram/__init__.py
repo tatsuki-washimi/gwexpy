@@ -9,10 +9,12 @@ __all__ = [
     "HistogramList",
 ]
 
+
 # Register to ConverterRegistry
 def _register() -> None:
     from gwexpy.interop._registry import ConverterRegistry
 
     ConverterRegistry.register_constructor("Histogram", Histogram)
+
 
 _register()

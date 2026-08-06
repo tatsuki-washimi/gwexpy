@@ -53,6 +53,7 @@ def test_timeseriesdict_to_matrix_shape_and_key_order_contract():
 
 # --- TimeSeriesDict: statistical methods via to_matrix ---
 
+
 def _make_dict():
     ts1 = _make_series([1.0, 2.0, 3.0, 4.0, 5.0])
     ts2 = _make_series([2.0, 4.0, 6.0, 8.0, 10.0])
@@ -97,6 +98,7 @@ def test_timeseriesdict_rms():
 
 # --- TimeSeriesDict: crop ---
 
+
 def test_timeseriesdict_crop():
     ts1 = _make_series(np.arange(10.0), t0=0, dt=1)
     ts2 = _make_series(np.arange(10.0) * 2, t0=0, dt=1)
@@ -110,6 +112,7 @@ def test_timeseriesdict_crop():
 
 
 # --- TimeSeriesDict: rolling operations ---
+
 
 def test_timeseriesdict_rolling_mean():
     ts1 = _make_series([1.0, 2.0, 3.0, 4.0, 5.0])
@@ -145,6 +148,7 @@ def test_timeseriesdict_rolling_min_max():
 
 # --- TimeSeriesDict: resample (time-bin path) ---
 
+
 def test_timeseriesdict_resample_signal():
     ts1 = _make_series(np.random.default_rng(0).random(100), dt=1 / 100)
     ts2 = _make_series(np.random.default_rng(1).random(100), dt=1 / 100)
@@ -171,6 +175,7 @@ def test_timeseriesdict_resample_time_bin_forwards_closed_right_in_place():
 
 # --- TimeSeriesList: to_matrix ---
 
+
 def test_timeserieslist_to_matrix_shape():
     ts1 = _make_series([1.0, 2.0, 3.0])
     ts2 = _make_series([4.0, 5.0, 6.0])
@@ -184,11 +189,14 @@ def test_timeserieslist_to_matrix_shape():
 
 # --- TimeSeriesList: crop ---
 
+
 def test_timeserieslist_crop():
-    tl = TimeSeriesList([
-        _make_series(np.arange(10.0), t0=0, dt=1),
-        _make_series(np.arange(10.0) * 2, t0=0, dt=1),
-    ])
+    tl = TimeSeriesList(
+        [
+            _make_series(np.arange(10.0), t0=0, dt=1),
+            _make_series(np.arange(10.0) * 2, t0=0, dt=1),
+        ]
+    )
     cropped = tl.crop(start=3, end=7)
     assert cropped is not tl
     assert cropped[0].shape[0] == 4
@@ -197,11 +205,14 @@ def test_timeserieslist_crop():
 
 # --- TimeSeriesList: rolling operations ---
 
+
 def test_timeserieslist_rolling_mean():
-    tl = TimeSeriesList([
-        _make_series([1.0, 2.0, 3.0, 4.0, 5.0]),
-        _make_series([5.0, 4.0, 3.0, 2.0, 1.0]),
-    ])
+    tl = TimeSeriesList(
+        [
+            _make_series([1.0, 2.0, 3.0, 4.0, 5.0]),
+            _make_series([5.0, 4.0, 3.0, 2.0, 1.0]),
+        ]
+    )
     result = tl.rolling_mean(3)
     assert isinstance(result, TimeSeriesList)
     assert len(result) == 2

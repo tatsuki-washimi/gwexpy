@@ -58,14 +58,18 @@ def test_pyautogui_start_stop(qtbot, log_gui_action):
             )
             if abs(cursor.x - center.x()) > 4 or abs(cursor.y - center.y()) > 4:
                 if os.environ.get("WAYLAND_DISPLAY") and os.path.exists("/mnt/wslg"):
-                    pytest.skip("PyAutoGUI pointer injection unavailable on WSLg/XWayland")
+                    pytest.skip(
+                        "PyAutoGUI pointer injection unavailable on WSLg/XWayland"
+                    )
             pyautogui.click(center.x(), center.y(), button="left")
             try:
                 qtbot.waitUntil(condition, timeout=timeout)
                 return
             except Exception:
                 if attempt == 1:
-                    if os.environ.get("WAYLAND_DISPLAY") and os.path.exists("/mnt/wslg"):
+                    if os.environ.get("WAYLAND_DISPLAY") and os.path.exists(
+                        "/mnt/wslg"
+                    ):
                         pytest.skip(
                             "PyAutoGUI click injection did not reach the Qt window on WSLg/XWayland"
                         )

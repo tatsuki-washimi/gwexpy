@@ -1,4 +1,5 @@
 """Capture PC audio with a Qt worker thread."""
+
 from __future__ import annotations
 
 import logging

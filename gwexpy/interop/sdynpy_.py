@@ -1,4 +1,5 @@
 """Interoperability with SDynPy (Structural Dynamics in Python)."""
+
 from __future__ import annotations
 
 from typing import Any, cast
@@ -202,9 +203,7 @@ def from_sdynpy_timehistory(
                 coords = np.atleast_1d(tha.coordinate)
                 if i < len(coords):
                     name = str(coords[i])
-            result[name] = TimeSeries(
-                ordinate[i], dt=dt, t0=t0, unit=unit, name=name
-            )
+            result[name] = TimeSeries(ordinate[i], dt=dt, t0=t0, unit=unit, name=name)
         return result
 
     # TimeSeriesMatrix mode

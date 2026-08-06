@@ -25,7 +25,7 @@ def sgm_4d():
         rows=["R1", "R2"],
         cols=["C1", "C2", "C3"],
         name="Matrix4D",
-        unit=u.V
+        unit=u.V,
     )
 
 
@@ -36,7 +36,7 @@ def test_sgm_attribute_propagation(sgm_4d):
     sub = sgm_4d[0]
     assert sub._gwex_custom == "test_value"
     assert sub.ndim == 3
-    assert sub.shape == (3, 10, 5) # (Col, Time, Freq)
+    assert sub.shape == (3, 10, 5)  # (Col, Time, Freq)
 
     # Sourced View
     view = sgm_4d.view(SpectrogramMatrix)
@@ -63,7 +63,7 @@ def test_sgm_conversion_methods(sgm_4d):
     # to_list
     sgl = sgm_4d.to_list()
     assert isinstance(sgl, SpectrogramList)
-    assert len(sgl) == 2 * 3 # N * M
+    assert len(sgl) == 2 * 3  # N * M
     assert isinstance(sgl[0], Spectrogram)
 
     # to_dict
@@ -75,8 +75,8 @@ def test_sgm_conversion_methods(sgm_4d):
 
     # to_series_2Dlist
     list2d = sgm_4d.to_series_2Dlist()
-    assert len(list2d) == 2 # Rows
-    assert len(list2d[0]) == 3 # Cols
+    assert len(list2d) == 2  # Rows
+    assert len(list2d[0]) == 3  # Cols
     assert isinstance(list2d[0][0], Spectrogram)
 
 

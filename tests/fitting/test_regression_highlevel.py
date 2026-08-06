@@ -58,7 +58,9 @@ def test_fit_bootstrap_spectrum_stride_removal():
         return a * f
 
     # Should work without stride
-    results = fit_bootstrap_spectrum(series, model_fn=dummy_model, fftlength=1, overlap=0.5, plot=False)
+    results = fit_bootstrap_spectrum(
+        series, model_fn=dummy_model, fftlength=1, overlap=0.5, plot=False
+    )
     assert hasattr(results, "psd")
 
     # Should raise TypeError if stride is passed (as it was causing internal errors)
@@ -67,4 +69,6 @@ def test_fit_bootstrap_spectrum_stride_removal():
     # For now, let's just confirm it doesn't fail with an internal TypeError if it's there but ignored,
     # OR we fix the code to raise it.
     with pytest.raises(TypeError):
-        fit_bootstrap_spectrum(series, model_fn=dummy_model, fftlength=1, overlap=0.5, stride=1, plot=False)
+        fit_bootstrap_spectrum(
+            series, model_fn=dummy_model, fftlength=1, overlap=0.5, stride=1, plot=False
+        )

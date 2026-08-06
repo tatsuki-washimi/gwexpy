@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from ._optional import require_optional
 
 if TYPE_CHECKING:
-
     from gwexpy.timeseries import TimeSeries
 
 T = TypeVar("T", bound="TimeSeries")

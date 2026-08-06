@@ -1,4 +1,5 @@
 """Tests for gwexpy/timeseries/decomposition.py."""
+
 from __future__ import annotations
 
 import warnings
@@ -178,6 +179,7 @@ class TestHandleNanPolicy:
 
             def copy(self):
                 import copy
+
                 return FakeMatrix(copy.deepcopy(self._arr))
 
         # 2D array where column 1 is all NaN
@@ -378,6 +380,7 @@ class TestPcaInverseTransform:
         tsm = _make_tsm()
         res = dec.pca_fit(tsm)
         scores_tsm = dec.pca_transform(res, tsm)
+
         # Wrap in a mock object that has no .value but has required attrs
         class FakeScores:
             def __init__(self, v, t0, dt, cls):
@@ -508,7 +511,11 @@ class TestIcaInverseTransform:
         res = dec.ica_fit(tsm, n_components=2, max_iter=500)
         sources = dec.ica_transform(res, tsm)
         # Manually set original_shape to cause mismatch
-        res.input_meta["original_shape"] = (4, 2, tsm.shape[-1])  # 4*2=8 features expected
+        res.input_meta["original_shape"] = (
+            4,
+            2,
+            tsm.shape[-1],
+        )  # 4*2=8 features expected
         with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
             try:

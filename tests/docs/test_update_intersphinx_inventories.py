@@ -17,8 +17,14 @@ def _load_module(name: str):
 def test_refresh_inventories_writes_inventory_files_and_sources_manifest(tmp_path):
     module = _load_module("gwexpy_update_inventories_write")
     sources = {
-        "python": ("https://docs.python.org/3", "https://docs.python.org/3/objects.inv"),
-        "gwpy": ("https://gwpy.readthedocs.io/en/stable/", "https://gwpy.readthedocs.io/en/stable/objects.inv"),
+        "python": (
+            "https://docs.python.org/3",
+            "https://docs.python.org/3/objects.inv",
+        ),
+        "gwpy": (
+            "https://gwpy.readthedocs.io/en/stable/",
+            "https://gwpy.readthedocs.io/en/stable/objects.inv",
+        ),
     }
 
     def fake_fetch(name, inventory_url):
@@ -31,8 +37,12 @@ def test_refresh_inventories_writes_inventory_files_and_sources_manifest(tmp_pat
         check_only=False,
     )
 
-    assert (tmp_path / "python.inv").read_bytes() == b"python:https://docs.python.org/3/objects.inv"
-    assert (tmp_path / "gwpy.inv").read_bytes() == b"gwpy:https://gwpy.readthedocs.io/en/stable/objects.inv"
+    assert (
+        tmp_path / "python.inv"
+    ).read_bytes() == b"python:https://docs.python.org/3/objects.inv"
+    assert (
+        tmp_path / "gwpy.inv"
+    ).read_bytes() == b"gwpy:https://gwpy.readthedocs.io/en/stable/objects.inv"
     assert manifest["python"]["base_url"] == "https://docs.python.org/3"
     assert json.loads((tmp_path / "sources.json").read_text()) == manifest
 
@@ -48,7 +58,10 @@ def test_refresh_inventories_check_only_does_not_write_files(tmp_path):
     module.refresh_inventories(
         destination_dir=tmp_path,
         sources={
-            "numpy": ("https://numpy.org/doc/stable", "https://numpy.org/doc/stable/objects.inv"),
+            "numpy": (
+                "https://numpy.org/doc/stable",
+                "https://numpy.org/doc/stable/objects.inv",
+            ),
         },
         fetch_inventory=fake_fetch,
         check_only=True,

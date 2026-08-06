@@ -4,6 +4,7 @@ Canonical direct-I/O names include ``"mseed"``, ``"nc"``,
 ``"hdf.ndscope"``, and ``"xml.diaggui"``. Legacy aliases remain registered
 for backward compatibility.
 """
+
 from __future__ import annotations
 
 # Readers are registered on import

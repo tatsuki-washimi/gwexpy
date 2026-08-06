@@ -3,6 +3,7 @@
 This module provides deterministic ScalarField generators with known waveforms
 for testing, documentation, and reproducible examples.
 """
+
 from __future__ import annotations
 
 from typing import Literal

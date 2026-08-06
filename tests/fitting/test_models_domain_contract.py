@@ -4,6 +4,7 @@ All eight findings in #455 (P2×4 degenerate scale + P3×4) plus the G7 suppleme
 finding (power_law x<=0 domain): degenerate parameters must raise ValueError/TypeError
 immediately rather than silently propagating NaN/Inf through the model evaluation.
 """
+
 from __future__ import annotations
 
 import numpy as np

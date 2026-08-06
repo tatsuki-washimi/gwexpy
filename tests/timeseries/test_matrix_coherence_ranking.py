@@ -1,4 +1,5 @@
 """Tests for TimeSeriesMatrix.coherence_ranking()."""
+
 from __future__ import annotations
 
 import matplotlib

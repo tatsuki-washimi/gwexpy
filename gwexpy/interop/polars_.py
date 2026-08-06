@@ -53,7 +53,9 @@ def to_polars_dataframe(ts, index_column="time", time_unit="datetime"):
     return pl.DataFrame({index_column: t_vals, ts.name or "value": data})
 
 
-def from_polars_series(cls, series, unit=None, t0=None, dt=None, channel=None, name=None):
+def from_polars_series(
+    cls, series, unit=None, t0=None, dt=None, channel=None, name=None
+):
     """Create TimeSeries or FrequencySeries from polars.Series.
 
     A plain polars Series carries no timing or channel metadata. Missing

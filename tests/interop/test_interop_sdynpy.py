@@ -3,6 +3,7 @@
 Uses mock objects to simulate SDynPy data structures.
 Does NOT require SDynPy to be installed.
 """
+
 from __future__ import annotations
 
 from types import SimpleNamespace
@@ -141,9 +142,7 @@ class TestFromSdynpyFrf:
 
     def test_unit_from_response_type(self):
         tfa = _make_tfa()
-        result = from_sdynpy_frf(
-            FrequencySeriesMatrix, tfa, response_type="accel"
-        )
+        result = from_sdynpy_frf(FrequencySeriesMatrix, tfa, response_type="accel")
         # FrequencySeriesMatrix exposes .units (plural)
         assert result.units is not None
 
@@ -167,9 +166,7 @@ class TestFromSdynpyTimehistory:
 
     def test_unit_from_response_type(self):
         tha = _make_tha()
-        result = from_sdynpy_timehistory(
-            TimeSeriesMatrix, tha, response_type="disp"
-        )
+        result = from_sdynpy_timehistory(TimeSeriesMatrix, tha, response_type="disp")
         assert result.units is not None
 
     def test_channel_names_in_dict(self):

@@ -17,6 +17,7 @@ References
 https://github.com/nschloe/meshio
 
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -32,12 +33,24 @@ __all__ = ["from_meshio", "from_fenics_xdmf", "from_fenics_vtk"]
 
 # Known vector-component naming patterns
 _VECTOR_PATTERNS: dict[str, str] = {
-    "ex": "x", "ey": "y", "ez": "z",
-    "ux": "x", "uy": "y", "uz": "z",
-    "vx": "x", "vy": "y", "vz": "z",
-    "fx": "x", "fy": "y", "fz": "z",
-    "displacement_x": "x", "displacement_y": "y", "displacement_z": "z",
-    "velocity_x": "x", "velocity_y": "y", "velocity_z": "z",
+    "ex": "x",
+    "ey": "y",
+    "ez": "z",
+    "ux": "x",
+    "uy": "y",
+    "uz": "z",
+    "vx": "x",
+    "vy": "y",
+    "vz": "z",
+    "fx": "x",
+    "fy": "y",
+    "fz": "z",
+    "displacement_x": "x",
+    "displacement_y": "y",
+    "displacement_z": "z",
+    "velocity_x": "x",
+    "velocity_y": "y",
+    "velocity_z": "z",
 }
 
 
@@ -46,7 +59,9 @@ _VECTOR_PATTERNS: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 
-def _detect_vector_components(data_dict: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
+def _detect_vector_components(
+    data_dict: dict[str, np.ndarray],
+) -> dict[str, np.ndarray]:
     """Detect vector components from field data key names.
 
     Returns a mapping ``{"x": array, "y": array, ...}`` if vector components
@@ -150,8 +165,7 @@ def _get_field_data(
     if field_name is not None:
         if field_name not in data_dict:
             raise ValueError(
-                f"Field {field_name!r} not found. "
-                f"Available: {list(data_dict.keys())}"
+                f"Field {field_name!r} not found. Available: {list(data_dict.keys())}"
             )
         values = np.asarray(data_dict[field_name], dtype=np.float64)
     else:
@@ -227,13 +241,17 @@ def from_meshio(
     ndim = points.shape[1]  # 2 or 3
 
     # Check for vector components
-    vec_comps = _detect_vector_components(data_dict) if issubclass(cls, VectorField) else {}
+    vec_comps = (
+        _detect_vector_components(data_dict) if issubclass(cls, VectorField) else {}
+    )
 
     if vec_comps and issubclass(cls, VectorField):
         # Build VectorField from detected components
         scalar_fields: dict[str, ScalarField] = {}
         for comp_label, comp_values in sorted(vec_comps.items()):
-            data, axes = _build_regular_grid(points, comp_values, grid_resolution, method)
+            data, axes = _build_regular_grid(
+                points, comp_values, grid_resolution, method
+            )
             sf = _pack_as_scalar_field(data, axes, ndim, axis0, axis0_domain, unit)
             scalar_fields[comp_label] = sf
         return VectorField(scalar_fields)
@@ -241,10 +259,12 @@ def from_meshio(
     # Scalar field path
     # Handle multi-component values (e.g., displacement [N, 3])
     if values.ndim == 2 and values.shape[1] in (2, 3) and issubclass(cls, VectorField):
-        labels = ["x", "y", "z"][:values.shape[1]]
+        labels = ["x", "y", "z"][: values.shape[1]]
         scalar_fields = {}
         for i, label in enumerate(labels):
-            data, axes = _build_regular_grid(points, values[:, i], grid_resolution, method)
+            data, axes = _build_regular_grid(
+                points, values[:, i], grid_resolution, method
+            )
             sf = _pack_as_scalar_field(data, axes, ndim, axis0, axis0_domain, unit)
             scalar_fields[label] = sf
         return VectorField(scalar_fields)
@@ -325,8 +345,12 @@ def from_fenics_xdmf(
     meshio = require_optional("meshio")
     mesh = meshio.read(str(filepath))
     return from_meshio(
-        cls, mesh, field_name=field_name, grid_resolution=grid_resolution,
-        method=method, unit=unit,
+        cls,
+        mesh,
+        field_name=field_name,
+        grid_resolution=grid_resolution,
+        method=method,
+        unit=unit,
     )
 
 
@@ -364,6 +388,10 @@ def from_fenics_vtk(
     meshio = require_optional("meshio")
     mesh = meshio.read(str(filepath))
     return from_meshio(
-        cls, mesh, field_name=field_name, grid_resolution=grid_resolution,
-        method=method, unit=unit,
+        cls,
+        mesh,
+        field_name=field_name,
+        grid_resolution=grid_resolution,
+        method=method,
+        unit=unit,
     )

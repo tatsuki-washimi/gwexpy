@@ -4,6 +4,7 @@ from __future__ import annotations
 # Since it is an internal module, we only import if it exists.
 try:
     from gwpy.io import _framecpp
+
     __all__ = [name for name in dir(_framecpp) if not name.startswith("_")]
     # Note: we are not using wildcard imports here to satisfy audit requirements.
     for name in __all__:

@@ -17,7 +17,7 @@ def test_full_chain_numerical_consistency():
     """
     fs = 1000.0
     duration = 10.0
-    t = np.arange(0, duration, 1/fs)
+    t = np.arange(0, duration, 1 / fs)
 
     # Baseline noise (White noise)
     rng = np.random.default_rng(42)
@@ -34,14 +34,18 @@ def test_full_chain_numerical_consistency():
     tgt_inj_data += 0.5 * inj_sine
 
     # TimeSeries
-    data_inj = TimeSeriesDict({
-        "WIT": TimeSeries(wit_inj_data, sample_rate=fs, t0=0, name="WIT", unit="V"),
-        "TGT": TimeSeries(tgt_inj_data, sample_rate=fs, t0=0, name="TGT", unit="m"),
-    })
-    data_bkg = TimeSeriesDict({
-        "WIT": TimeSeries(wit_bkg_data, sample_rate=fs, t0=0, name="WIT", unit="V"),
-        "TGT": TimeSeries(tgt_bkg_data, sample_rate=fs, t0=0, name="TGT", unit="m"),
-    })
+    data_inj = TimeSeriesDict(
+        {
+            "WIT": TimeSeries(wit_inj_data, sample_rate=fs, t0=0, name="WIT", unit="V"),
+            "TGT": TimeSeries(tgt_inj_data, sample_rate=fs, t0=0, name="TGT", unit="m"),
+        }
+    )
+    data_bkg = TimeSeriesDict(
+        {
+            "WIT": TimeSeries(wit_bkg_data, sample_rate=fs, t0=0, name="WIT", unit="V"),
+            "TGT": TimeSeries(tgt_bkg_data, sample_rate=fs, t0=0, name="TGT", unit="m"),
+        }
+    )
 
     analysis = CouplingFunctionAnalysis()
     fftlength = 1.0
@@ -49,10 +53,11 @@ def test_full_chain_numerical_consistency():
 
     # Run Analysis
     res = analysis.compute(
-        data_inj, data_bkg,
+        data_inj,
+        data_bkg,
         fftlength=fftlength,
         overlap=overlap,
-        threshold_witness=RatioThreshold(10.0), # Strong injection
+        threshold_witness=RatioThreshold(10.0),  # Strong injection
         threshold_target=RatioThreshold(2.0),
     )
 
@@ -69,11 +74,12 @@ def test_full_chain_numerical_consistency():
     assert rel_diff < 1e-2, f"CF recovery failed: {cf_val} vs 0.5 (rel_diff={rel_diff})"
     # Note: 1e-3 might be optimistic for short white noise simulation, 1e-2 is safe.
 
+
 def test_memory_limit_trigger():
     """Verify that memory_limit raises ValueError."""
     fs = 1000.0
     duration = 100.0
-    t = np.arange(0, duration, 1/fs)
+    t = np.arange(0, duration, 1 / fs)
     ts = TimeSeries(t, sample_rate=fs)
 
     from gwexpy.analysis.coupling import _build_bkg_segment_table
@@ -84,7 +90,8 @@ def test_memory_limit_trigger():
     # mem: 100 * 501 * 8 = 400,800 bytes (~0.4 MB)
 
     with pytest.raises(ValueError, match="memory estimate .* exceeds limit"):
-        _build_bkg_segment_table(ts, fftlength=1.0, memory_limit=1000) # Only 1KB limit
+        _build_bkg_segment_table(ts, fftlength=1.0, memory_limit=1000)  # Only 1KB limit
+
 
 if __name__ == "__main__":
     test_full_chain_numerical_consistency()

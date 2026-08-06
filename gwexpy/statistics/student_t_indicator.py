@@ -1,4 +1,5 @@
 """gwexpy.statistics.student_t_indicator - Student-t indicator for non-Gaussianity."""
+
 from __future__ import annotations
 
 import warnings
@@ -153,6 +154,7 @@ def compute_student_t_nu(
     # Simple STFT to get complex values
     # shape (n_freqs, n_times)
     from scipy.signal import stft
+
     f, t, Zxx = stft(
         ts.value,
         fs=fs,

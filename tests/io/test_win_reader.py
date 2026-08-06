@@ -6,12 +6,7 @@ import pytest
 from gwexpy.timeseries import TimeSeriesDict
 from gwexpy.timeseries.io.win import _apply_4bit_deltas
 
-_SAMPLE_WIN = (
-    Path(__file__).resolve().parents[1]
-    / "fixtures"
-    / "data"
-    / "dummy.win"
-)
+_SAMPLE_WIN = Path(__file__).resolve().parents[1] / "fixtures" / "data" / "dummy.win"
 
 
 def _skip_if_obspy_sqlalchemy_incompatible() -> None:
@@ -60,9 +55,10 @@ def test_win_reader_matches_obspy_for_sample(monkeypatch):
     dummy_win = Path("tests/fixtures/data/dummy.win")
 
     # Mock both the internal _read_win_fixed and obspy.read
-    with patch("gwexpy.timeseries.io.win._read_win_fixed", return_value=mock_stream), \
-         patch("obspy.read", return_value=mock_stream):
-
+    with (
+        patch("gwexpy.timeseries.io.win._read_win_fixed", return_value=mock_stream),
+        patch("obspy.read", return_value=mock_stream),
+    ):
         tsd = TimeSeriesDict.read(dummy_win, format="win")
         st = obspy.read(str(dummy_win))
 

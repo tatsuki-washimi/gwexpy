@@ -1,4 +1,5 @@
 """Tests for SegmentTable (core + display + plot)."""
+
 from __future__ import annotations
 
 from unittest.mock import patch
@@ -355,8 +356,12 @@ class TestSegmentTableConversion:
         st2 = st.copy(deep=False)
         assert len(st2) == len(st)
         # Same cell object references
-        assert st2._payload["raw"][0] is not st._payload["raw"][0]  # new SegmentCell wrapper
-        assert st2._payload["raw"][0].value is st._payload["raw"][0].value  # same value ref
+        assert (
+            st2._payload["raw"][0] is not st._payload["raw"][0]
+        )  # new SegmentCell wrapper
+        assert (
+            st2._payload["raw"][0].value is st._payload["raw"][0].value
+        )  # same value ref
 
     def test_copy_deep(self):
         st = _make_simple_st(2)
@@ -454,6 +459,7 @@ class TestSegmentTablePlot:
     @pytest.fixture(autouse=True)
     def matplotlib_backend(self):
         import matplotlib
+
         matplotlib.use("Agg")
 
     def _make_st_with_fs(self, n: int = 3) -> SegmentTable:

@@ -1,4 +1,5 @@
 """SpectralStats: Spectral statistics container (mean, sigma, n_avg)."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

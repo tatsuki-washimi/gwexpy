@@ -44,20 +44,26 @@ def test_complex_valid_dy_constructs_and_evaluates():
 # --- zero / negative dy -> ValueError ---------------------------------------
 
 
-@pytest.mark.parametrize("cls,model,y", [
-    (RealLeastSquares, _real_model, np.array([1.0, 2.0, 3.0])),
-    (ComplexLeastSquares, _complex_model, np.array([1.0 + 0j, 2.0 + 0j, 3.0 + 0j])),
-])
+@pytest.mark.parametrize(
+    "cls,model,y",
+    [
+        (RealLeastSquares, _real_model, np.array([1.0, 2.0, 3.0])),
+        (ComplexLeastSquares, _complex_model, np.array([1.0 + 0j, 2.0 + 0j, 3.0 + 0j])),
+    ],
+)
 def test_zero_dy_rejected(cls, model, y):
     x = np.array([1.0, 2.0, 3.0])
     with pytest.raises(ValueError, match="strictly positive"):
         cls(x, y, np.array([1.0, 0.0, 1.0]), model)
 
 
-@pytest.mark.parametrize("cls,model,y", [
-    (RealLeastSquares, _real_model, np.array([1.0, 2.0, 3.0])),
-    (ComplexLeastSquares, _complex_model, np.array([1.0 + 0j, 2.0 + 0j, 3.0 + 0j])),
-])
+@pytest.mark.parametrize(
+    "cls,model,y",
+    [
+        (RealLeastSquares, _real_model, np.array([1.0, 2.0, 3.0])),
+        (ComplexLeastSquares, _complex_model, np.array([1.0 + 0j, 2.0 + 0j, 3.0 + 0j])),
+    ],
+)
 def test_negative_dy_rejected(cls, model, y):
     x = np.array([1.0, 2.0, 3.0])
     with pytest.raises(ValueError, match="strictly positive"):

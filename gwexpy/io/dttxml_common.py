@@ -1,4 +1,5 @@
 """Shared utilities for parsing DTT XML (Diag GUI XML) files."""
+
 from __future__ import annotations
 
 import gzip

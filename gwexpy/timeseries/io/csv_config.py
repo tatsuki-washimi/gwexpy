@@ -1,4 +1,5 @@
 """Configuration schema for the enhanced CSV reader."""
+
 from __future__ import annotations
 
 import json

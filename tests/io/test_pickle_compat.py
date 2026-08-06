@@ -186,11 +186,16 @@ def test_shelve_roundtrip_to_gwpy(tmp_path):
 def test_timeseries_reduce_args_fallback_t0_dt():
     """timeseries_reduce_args falls back to t0/dt when times is None."""
     from gwexpy.io.pickle_compat import timeseries_reduce_args
+
     # Create mock with no times attribute but t0/dt
     obj = SimpleNamespace(
         value=np.ones(3),
-        unit=None, name=None, channel=None, epoch=None,
-        t0=0.0, dt=1.0,
+        unit=None,
+        name=None,
+        channel=None,
+        epoch=None,
+        t0=0.0,
+        dt=1.0,
         # no times attribute
     )
     fn, (data, kwargs) = timeseries_reduce_args(obj)
@@ -202,10 +207,15 @@ def test_timeseries_reduce_args_fallback_t0_dt():
 def test_frequencyseries_reduce_args_fallback_f0_df():
     """frequencyseries_reduce_args falls back to f0/df when frequencies is None."""
     from gwexpy.io.pickle_compat import frequencyseries_reduce_args
+
     obj = SimpleNamespace(
         value=np.ones(3),
-        unit=None, name=None, channel=None, epoch=None,
-        f0=0.0, df=1.0,
+        unit=None,
+        name=None,
+        channel=None,
+        epoch=None,
+        f0=0.0,
+        df=1.0,
         # no frequencies attribute
     )
     fn, (data, kwargs) = frequencyseries_reduce_args(obj)

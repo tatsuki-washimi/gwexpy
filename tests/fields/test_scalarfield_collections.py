@@ -312,6 +312,7 @@ class TestFieldDictValidation:
 # FieldList — validate error paths and batch methods
 # ---------------------------------------------------------------------------
 
+
 class TestFieldListValidation:
     def _make_field(self, unit=u.V, axis0_domain="time"):
         return ScalarField(
@@ -418,9 +419,12 @@ class TestFieldListValidation:
 # FieldDict — arithmetic and validate error paths
 # ---------------------------------------------------------------------------
 
+
 class TestFieldDictExtra:
     def _make_fd(self):
-        f = ScalarField(np.ones((8, 2, 2, 2)), unit=u.dimensionless_unscaled, axis0_domain="time")
+        f = ScalarField(
+            np.ones((8, 2, 2, 2)), unit=u.dimensionless_unscaled, axis0_domain="time"
+        )
         return FieldDict({"a": f, "b": f.copy()})
 
     def test_mul_scalar(self):
@@ -502,10 +506,12 @@ class TestFieldDictExtra:
             FieldDict({"a": f1, "b": f2}, validate=True)
 
     def test_validate_axis_coordinate_mismatch_raises(self):
-        f1 = ScalarField(np.ones((8, 2, 2, 2)), unit=u.V,
-                         axis0=np.arange(8) * 0.01 * u.s)
-        f2 = ScalarField(np.ones((8, 2, 2, 2)), unit=u.V,
-                         axis0=np.arange(8) * 0.02 * u.s)
+        f1 = ScalarField(
+            np.ones((8, 2, 2, 2)), unit=u.V, axis0=np.arange(8) * 0.01 * u.s
+        )
+        f2 = ScalarField(
+            np.ones((8, 2, 2, 2)), unit=u.V, axis0=np.arange(8) * 0.02 * u.s
+        )
         with pytest.raises(ValueError, match="coordinate mismatch"):
             FieldDict({"a": f1, "b": f2}, validate=True)
 

@@ -155,7 +155,7 @@ def test_public_doc_internal_artifact_scan_reads_link_targets():
         (
             "[markdown](../../docs_internal/report.md)",
             "`rst link <../../docs/developers/plan.md>`_",
-            ':download:`agent notes <../../.agent/notes.md>`',
+            ":download:`agent notes <../../.agent/notes.md>`",
             "{doc}`harness docs <../../.harness/README.md>`",
             "{doc}`../../docs/superpowers/index.md`",
         )
@@ -177,7 +177,9 @@ def test_public_docs_do_not_reference_internal_api_mapping():
         if "API_MAPPING.md" in text
     ]
 
-    assert not offenders, "Internal API_MAPPING.md references found:\n" + "\n".join(offenders)
+    assert not offenders, "Internal API_MAPPING.md references found:\n" + "\n".join(
+        offenders
+    )
 
 
 def test_public_docs_relative_markdown_links_exist():
@@ -210,11 +212,18 @@ def test_io_format_guides_do_not_start_sections_with_transition():
 
 
 def test_time_frequency_comparison_notebook_has_no_transition_only_markdown_cells():
-    nb = _read_notebook("docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb")
+    nb = _read_notebook(
+        "docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb"
+    )
     markdown_cells = [
-        _cell_source(cell) for cell in nb["cells"] if cell.get("cell_type") == "markdown"
+        _cell_source(cell)
+        for cell in nb["cells"]
+        if cell.get("cell_type") == "markdown"
     ]
-    assert all(text.strip() != "---" and not text.strip().startswith("---\n") for text in markdown_cells)
+    assert all(
+        text.strip() != "---" and not text.strip().startswith("---\n")
+        for text in markdown_cells
+    )
 
 
 def test_segment_tutorial_setup_cells_define_segment_table_at_top_level():
@@ -228,7 +237,8 @@ def test_segment_tutorial_setup_cells_define_segment_table_at_top_level():
         setup_cells = [
             _cell_source(cell)
             for cell in nb["cells"]
-            if cell.get("cell_type") == "code" and "SegmentTable.from_segments(" in _cell_source(cell)
+            if cell.get("cell_type") == "code"
+            and "SegmentTable.from_segments(" in _cell_source(cell)
         ]
         assert len(setup_cells) == 1
         source = setup_cells[0]

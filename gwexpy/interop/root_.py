@@ -320,24 +320,34 @@ def from_root(
     if not is_hist and not is_graph and not is_hist2d:
         raise TypeError(f"Object {obj} is neither TH1, TH2 nor TGraph")
 
-    is_histogram_cls = (cls.__name__ == "Histogram") if hasattr(cls, "__name__") else False
+    is_histogram_cls = (
+        (cls.__name__ == "Histogram") if hasattr(cls, "__name__") else False
+    )
 
     if is_hist2d:
         if is_histogram_cls:
-            raise TypeError("Histogram class does not support 2D ROOT objects yet. Use Spectrogram.")
+            raise TypeError(
+                "Histogram class does not support 2D ROOT objects yet. Use Spectrogram."
+            )
         nx = obj.GetNbinsX()
         ny = obj.GetNbinsY()
         x = np.array([obj.GetXaxis().GetBinCenter(i + 1) for i in range(nx)])
         y = np.array([obj.GetYaxis().GetBinCenter(j + 1) for j in range(ny)])
         value_dtype = _root_histogram_dtype(class_name) or np.dtype("float64")
         z = np.asarray(
-            [[obj.GetBinContent(ix + 1, iy + 1) for iy in range(ny)] for ix in range(nx)],
+            [
+                [obj.GetBinContent(ix + 1, iy + 1) for iy in range(ny)]
+                for ix in range(nx)
+            ],
             dtype=value_dtype,
         )
 
         if return_error:
             ez = np.asarray(
-                [[obj.GetBinError(ix + 1, iy + 1) for iy in range(ny)] for ix in range(nx)],
+                [
+                    [obj.GetBinError(ix + 1, iy + 1) for iy in range(ny)]
+                    for ix in range(nx)
+                ],
                 dtype=np.float64,
             )
 
@@ -356,7 +366,10 @@ def from_root(
         res = cls(z, times=x, frequencies=y, unit=unit, name=name)
         if return_error:
             from typing import cast
-            err_res = cls(cast(Any, ez), times=x, frequencies=y, unit=unit, name=f"{name}_error")
+
+            err_res = cls(
+                cast(Any, ez), times=x, frequencies=y, unit=unit, name=f"{name}_error"
+            )
             return res, err_res
         return res
 
@@ -469,9 +482,12 @@ def from_root(
 
         if return_error:
             from typing import cast
+
             # Create a matching series for error
             if "Frequency" in cls.__name__:
-                err_res = cls(cast(Any, ey), frequencies=x, unit=unit, name=f"{name}_error")
+                err_res = cls(
+                    cast(Any, ey), frequencies=x, unit=unit, name=f"{name}_error"
+                )
             else:
                 err_res = cls(cast(Any, ey), times=x, unit=unit, name=f"{name}_error")
             return res, err_res
@@ -480,7 +496,9 @@ def from_root(
         # is_hist: Already returned above for Histogram class,
         # but for other classes we need a fallback or error.
         # Currently the logic was mixed. Let's make it consistent.
-        raise NotImplementedError("TH1 to non-Histogram class conversion not fully implemented yet.")
+        raise NotImplementedError(
+            "TH1 to non-Histogram class conversion not fully implemented yet."
+        )
 
 
 def to_tmultigraph(collection, name: Optional[str] = None) -> Any:

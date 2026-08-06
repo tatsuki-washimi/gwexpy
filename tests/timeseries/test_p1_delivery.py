@@ -87,7 +87,9 @@ def test_stlt_basic():
     # assert spec.shape == (6, 26) # Sliced
 
 
-def _manual_stlt_first_chunk(ts, window_dur_s, frequencies, sigma=0.0, time_ref="start"):
+def _manual_stlt_first_chunk(
+    ts, window_dur_s, frequencies, sigma=0.0, time_ref="start"
+):
     import scipy.signal
 
     dt_s = ts.dt.to("s").value

@@ -1,4 +1,5 @@
 """Interoperability with ``wrf.getvar()`` output from wrf-python."""
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -121,9 +122,7 @@ def from_wrf_variable(
 
     # Re-wrap with updated coords for 1D lat/lon
     # Only update if we actually changed something
-    da_clean = da.assign_coords(
-        {k: v for k, v in new_coords.items() if k in da.dims}
-    )
+    da_clean = da.assign_coords({k: v for k, v in new_coords.items() if k in da.dims})
 
     # Parse unit from WRF attrs
     unit_str = da.attrs.get("units")

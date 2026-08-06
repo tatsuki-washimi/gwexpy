@@ -5,6 +5,7 @@ Phase 4 統合テスト。
 - Time-window API と collection 集約
 - Wrapper parameter forwarding
 """
+
 from __future__ import annotations
 
 import csv
@@ -187,7 +188,9 @@ class TestCouplingE2E:
 
         np.testing.assert_allclose(restored.cf.value, result.cf.value)
 
-    def test_estimate_with_percentile_threshold_keeps_timeseries_for_plots(self) -> None:
+    def test_estimate_with_percentile_threshold_keeps_timeseries_for_plots(
+        self,
+    ) -> None:
         """PercentileThreshold 経路でも plot_asdgram / plot_snrgram まで流せる。"""
         rng = np.random.default_rng(12)
         data_inj, data_bkg = _make_split_dicts(rng)
@@ -453,7 +456,9 @@ class TestWrapperForwarding:
             captured.update(kwargs)
             return "ok"
 
-        with patch("gwexpy.analysis.response.ResponseFunctionAnalysis.compute", fake_compute):
+        with patch(
+            "gwexpy.analysis.response.ResponseFunctionAnalysis.compute", fake_compute
+        ):
             result = estimate_response_function(
                 witness=witness,
                 target=target,

@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/series_matrix_structure.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -9,16 +10,20 @@ from gwexpy.timeseries import TimeSeriesMatrix
 
 def _make_tsm(n_rows=2, n_cols=3, n_t=8, complex_=False):
     if complex_:
-        data = (np.random.default_rng(0).normal(size=(n_rows, n_cols, n_t))
-                + 1j * np.random.default_rng(1).normal(size=(n_rows, n_cols, n_t)))
+        data = np.random.default_rng(0).normal(
+            size=(n_rows, n_cols, n_t)
+        ) + 1j * np.random.default_rng(1).normal(size=(n_rows, n_cols, n_t))
     else:
-        data = np.arange(n_rows * n_cols * n_t, dtype=float).reshape(n_rows, n_cols, n_t)
+        data = np.arange(n_rows * n_cols * n_t, dtype=float).reshape(
+            n_rows, n_cols, n_t
+        )
     return TimeSeriesMatrix(data, t0=0.0, dt=0.01)
 
 
 # ---------------------------------------------------------------------------
 # copy
 # ---------------------------------------------------------------------------
+
 
 class TestCopy:
     def test_copy_basic(self):
@@ -44,10 +49,13 @@ class TestCopy:
         # Line 56-57 — xindex.copy() raises AttributeError → deepcopy fallback
         # This is triggered when copy() throws; we simulate via patching
         from unittest.mock import patch
+
         tsm = _make_tsm()
         original_xindex = tsm.xindex
         # Make xindex.copy raise TypeError
-        with patch.object(type(original_xindex), 'copy', side_effect=TypeError("no copy")):
+        with patch.object(
+            type(original_xindex), "copy", side_effect=TypeError("no copy")
+        ):
             try:
                 c = tsm.copy()
                 assert c is not None
@@ -58,6 +66,7 @@ class TestCopy:
 # ---------------------------------------------------------------------------
 # astype
 # ---------------------------------------------------------------------------
+
 
 class TestAstype:
     def test_astype_float32(self):
@@ -91,6 +100,7 @@ class TestAstype:
 # ---------------------------------------------------------------------------
 # real / imag properties
 # ---------------------------------------------------------------------------
+
 
 class TestRealImag:
     def test_real_property(self):
@@ -144,6 +154,7 @@ class TestRealImag:
 # conj
 # ---------------------------------------------------------------------------
 
+
 class TestConj:
     def test_conj_complex(self):
         # Lines 139-151
@@ -151,8 +162,7 @@ class TestConj:
         result = tsm.conj()
         assert result.shape == tsm.shape
         np.testing.assert_array_almost_equal(
-            result.view(np.ndarray),
-            np.conjugate(tsm.view(np.ndarray))
+            result.view(np.ndarray), np.conjugate(tsm.view(np.ndarray))
         )
 
     def test_conj_no_name(self):
@@ -173,6 +183,7 @@ class TestConj:
 # ---------------------------------------------------------------------------
 # transpose / T
 # ---------------------------------------------------------------------------
+
 
 class TestTranspose:
     def test_T_property(self):
@@ -204,6 +215,7 @@ class TestTranspose:
 # ---------------------------------------------------------------------------
 # reshape
 # ---------------------------------------------------------------------------
+
 
 class TestReshape:
     def test_reshape_2d_target(self):

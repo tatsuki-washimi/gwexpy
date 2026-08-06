@@ -6,6 +6,7 @@ This module provides interoperability with other libraries as a mixin class:
 - Domain Specific: obspy, astropy, mne, pydub, librosa
 - Computational: torch, tensorflow, jax, cupy, dask
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal, cast
@@ -300,9 +301,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_xarray
 
-        return from_xarray(
-            cast(Any, cls), da, unit=unit, channel=channel, name=name
-        )
+        return from_xarray(cast(Any, cls), da, unit=unit, channel=channel, name=name)
 
     # ===============================
     # HDF5
@@ -486,7 +485,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import to_sqlite
 
-        return to_sqlite(cast(Any, self), conn, series_id=series_id, overwrite=overwrite)
+        return to_sqlite(
+            cast(Any, self), conn, series_id=series_id, overwrite=overwrite
+        )
 
     @classmethod
     def from_sqlite(cls, conn: Any, series_id: Any) -> Any:
@@ -1120,7 +1121,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_pyspice_transient
 
-        return from_pyspice_transient(cls, analysis, node=node, branch=branch, unit=unit)
+        return from_pyspice_transient(
+            cls, analysis, node=node, branch=branch, unit=unit
+        )
 
     # ===============================
     # scikit-rf

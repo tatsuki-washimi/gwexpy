@@ -1,4 +1,5 @@
 """TDMS reader for National Instruments files."""
+
 from __future__ import annotations
 
 import datetime
@@ -118,7 +119,9 @@ def read_timeseriesdict_tdms(
                 elif isinstance(epoch, datetime.datetime):
                     t0 = datetime_to_gps(epoch)
                 else:
-                    raise TypeError(f"epoch must be float or datetime, got {type(epoch)}")
+                    raise TypeError(
+                        f"epoch must be float or datetime, got {type(epoch)}"
+                    )
             # Convert numpy.datetime64 or datetime.datetime to GPS
             elif isinstance(t0, (np.datetime64, datetime.datetime)):
                 if isinstance(t0, np.datetime64):

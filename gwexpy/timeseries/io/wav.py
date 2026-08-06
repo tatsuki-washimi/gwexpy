@@ -1,4 +1,5 @@
 """Read WAV files through ``scipy.io.wavfile`` for gwexpy."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable

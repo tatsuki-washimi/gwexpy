@@ -1,4 +1,5 @@
 """Tests for gwexpy/timeseries/matrix_spectral.py"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -17,6 +18,7 @@ def _make_tsm(n_time: int = 1024, n_rows: int = 2, n_cols: int = 1) -> TimeSerie
 # ---------------------------------------------------------------------------
 # psd / fft / asd — via _run_spectral_method
 # ---------------------------------------------------------------------------
+
 
 def test_psd_shape():
     tsm = _make_tsm()
@@ -49,6 +51,7 @@ def test_psd_multi_element():
 # ---------------------------------------------------------------------------
 # _vectorized_fft / _vectorized_psd / _vectorized_asd / _vectorized_csd / _vectorized_coherence
 # ---------------------------------------------------------------------------
+
 
 def test_vectorized_fft():
     tsm = _make_tsm(n_time=128)
@@ -86,6 +89,7 @@ def test_vectorized_coherence():
 # ---------------------------------------------------------------------------
 # lock_in
 # ---------------------------------------------------------------------------
+
 
 def _make_sine_tsm(f0: float = 10.0, n_time: int = 10000) -> TimeSeriesMatrix:
     t = np.linspace(0, n_time / 1000, n_time, endpoint=False)

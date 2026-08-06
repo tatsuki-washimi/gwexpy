@@ -6,6 +6,7 @@ This module provides excess-detection strategies used by CouplingFunctionAnalysi
 - SigmaThreshold: Gaussian significance test
 - PercentileThreshold: Empirical percentile (Appendix B)
 """
+
 from __future__ import annotations
 
 import logging
@@ -75,9 +76,7 @@ def _align_psd_values_to_reference(
         df = np.median(np.diff(freqs)) if len(freqs) > 1 else 0
         if df > 0:
             n_common = min(len(freqs), len(ref_freqs))
-            max_shift = (
-                np.max(np.abs(freqs[:n_common] - ref_freqs[:n_common])) / df
-            )
+            max_shift = np.max(np.abs(freqs[:n_common] - ref_freqs[:n_common])) / df
             if max_shift > 1.0:
                 return None
 
@@ -332,7 +331,9 @@ class PercentileThreshold(ThresholdStrategy):
         if bkg_table is not None:
             # --- SegmentTable Mode ---
             if "psd" not in bkg_table.columns:
-                raise ValueError("SegmentTable provided to PercentileThreshold has no 'psd' column.")
+                raise ValueError(
+                    "SegmentTable provided to PercentileThreshold has no 'psd' column."
+                )
 
             # Extract PSDs (handles both meta values and lazy payload cells)
             psds = [bkg_table.row(i)["psd"] for i in range(len(bkg_table))]
@@ -365,6 +366,7 @@ class PercentileThreshold(ThresholdStrategy):
                     try:
                         # Convert units if needed (Quantity support)
                         from astropy.units import Quantity
+
                         p_q = Quantity(p_val, p.unit)
                         p_val = p_q.to(target_unit).value
                     except Exception:

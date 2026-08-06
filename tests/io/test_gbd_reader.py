@@ -11,6 +11,7 @@ from gwexpy.timeseries.io.gbd import read_timeseriesdict_gbd
 
 FIXTURE_DATA = Path(__file__).parent.parent / "fixtures" / "data" / "test.gbd"
 
+
 @pytest.mark.skipif(not FIXTURE_DATA.exists(), reason="test.gbd fixture not found")
 def test_read_gbd_dict():
     # GBD requires a timezone
@@ -35,6 +36,7 @@ def test_read_gbd_dict():
     # Just check it's not all zeros or NaNs
     assert not np.all(ts.value == 0)
     assert not np.any(np.isnan(ts.value))
+
 
 def test_read_gbd_single():
     # Read single channel
@@ -63,6 +65,7 @@ def test_gbd_channel_selection_is_ordered_and_fail_closed():
         )
     with pytest.raises(ValueError, match="exactly one"):
         TimeSeries.read(FIXTURE_DATA, format="gbd", timezone="UTC")
+
 
 def test_gbd_digital_channels():
     # Alarm/AlarmOut should be binarized (0 or 1)

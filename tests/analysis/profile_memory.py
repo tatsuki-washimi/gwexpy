@@ -12,10 +12,11 @@ def get_rss():
     process = psutil.Process(os.getpid())
     return process.memory_info().rss / 1024**2  # MB
 
+
 def profile_bkg_memory():
     fs = 16384.0
     duration = 100.0  # 100s of high-rate data
-    t = np.arange(0, duration, 1/fs)
+    t = np.arange(0, duration, 1 / fs)
 
     print(f"Initial RSS: {get_rss():.2f} MB")
 
@@ -40,8 +41,10 @@ def profile_bkg_memory():
         TimeSeriesDict({"W": ts, "T": ts}),
         fftlength=1.0,
         threshold_target=PercentileThreshold(),
-        memory_limit=1 * 1024**3, # 1MB limit (Wait, 1024**3 is 1GB, 1024**2 is 1MB. Input is in bytes)
-        bkg_stride=1.0
+        memory_limit=1
+        * 1024
+        ** 3,  # 1MB limit (Wait, 1024**3 is 1GB, 1024**2 is 1MB. Input is in bytes)
+        bkg_stride=1.0,
     )
     print(f"RSS after 1MB limit run: {get_rss():.2f} MB")
 
@@ -52,10 +55,11 @@ def profile_bkg_memory():
         TimeSeriesDict({"W": ts, "T": ts}),
         fftlength=1.0,
         threshold_target=PercentileThreshold(),
-        memory_limit=1024, # 1KB
-        bkg_stride=1.0
+        memory_limit=1024,  # 1KB
+        bkg_stride=1.0,
     )
     print(f"RSS after 1KB limit run: {get_rss():.2f} MB")
+
 
 if __name__ == "__main__":
     profile_bkg_memory()

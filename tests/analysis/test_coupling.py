@@ -144,7 +144,7 @@ class TestPercentileThreshold:
         # Note: units must match in PercentileThreshold
         st = SegmentTable.from_segments(
             [Segment(0, 1), Segment(1, 2), Segment(2, 3)],
-            psd=[sample_psd_bkg, sample_psd_bkg, sample_psd_bkg]
+            psd=[sample_psd_bkg, sample_psd_bkg, sample_psd_bkg],
         )
 
         # Default factor 2.6
@@ -198,6 +198,7 @@ class TestIndexValues:
     def test_with_value_attr(self):
         class Obj:
             value = np.array([1.0, 2.0, 3.0])
+
         result = _index_values(Obj())
         np.testing.assert_array_equal(result, [1.0, 2.0, 3.0])
 
@@ -218,7 +219,9 @@ class TestAlignPsdValuesToReference:
         values = np.array([1.0, 2.0, 3.0, 4.0])
         freqs = np.array([10.0, 11.0, 12.0, 13.0])
         ref = np.array([10.25, 11.25, 12.25])
-        aligned = _align_psd_values_to_reference(values, freqs, ref, method="interpolate")
+        aligned = _align_psd_values_to_reference(
+            values, freqs, ref, method="interpolate"
+        )
         assert aligned is not None
         np.testing.assert_allclose(aligned, np.array([1.25, 2.25, 3.25]))
 
@@ -226,7 +229,10 @@ class TestAlignPsdValuesToReference:
         values = np.array([1.0, 2.0, 3.0, 4.0])
         freqs = np.array([10.0, 11.0, 12.0, 13.0])
         ref = np.array([11.5, 12.5])
-        assert _align_psd_values_to_reference(values, freqs, ref, method="interpolate") is None
+        assert (
+            _align_psd_values_to_reference(values, freqs, ref, method="interpolate")
+            is None
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -240,7 +246,9 @@ class TestSigmaThresholdExtra:
         mask = strategy.check(sample_psd_inj, sample_psd_bkg, n_avg=0)
         assert np.all(mask)
 
-    def test_check_n_avg_negative_returns_all_true(self, sample_psd_inj, sample_psd_bkg):
+    def test_check_n_avg_negative_returns_all_true(
+        self, sample_psd_inj, sample_psd_bkg
+    ):
         strategy = SigmaThreshold(sigma=3.0)
         mask = strategy.check(sample_psd_inj, sample_psd_bkg, n_avg=-1)
         assert np.all(mask)
@@ -263,6 +271,7 @@ class TestSigmaThresholdExtra:
     def test_check_high_n_avg_no_warning(self, sample_psd_inj, sample_psd_bkg):
         strategy = SigmaThreshold(sigma=3.0)
         import warnings as _warnings
+
         with _warnings.catch_warnings(record=True) as w:
             _warnings.simplefilter("always")
             strategy.check(sample_psd_inj, sample_psd_bkg, n_avg=100.0)
@@ -278,23 +287,32 @@ class TestPercentileThresholdExtra:
     def test_check_requires_fftlength(self, sample_psd_inj, sample_psd_bkg):
         strategy = PercentileThreshold(percentile=95)
         from gwexpy.timeseries import TimeSeries
+
         ts = TimeSeries(np.ones(100), t0=0, dt=0.01)
         with pytest.raises(ValueError, match="requires"):
             strategy.check(sample_psd_inj, sample_psd_bkg, raw_bkg=ts)
 
-    def test_threshold_non_numeric_fftlength_raises(self, sample_psd_inj, sample_psd_bkg):
+    def test_threshold_non_numeric_fftlength_raises(
+        self, sample_psd_inj, sample_psd_bkg
+    ):
         strategy = PercentileThreshold(percentile=95)
         from gwexpy.timeseries import TimeSeries
+
         ts = TimeSeries(np.ones(100), t0=0, dt=0.01)
         with pytest.raises(TypeError):
-            strategy.threshold(sample_psd_inj, sample_psd_bkg, raw_bkg=ts, fftlength="a")
+            strategy.threshold(
+                sample_psd_inj, sample_psd_bkg, raw_bkg=ts, fftlength="a"
+            )
 
     def test_threshold_non_numeric_overlap_raises(self, sample_psd_inj, sample_psd_bkg):
         strategy = PercentileThreshold(percentile=95)
         from gwexpy.timeseries import TimeSeries
+
         ts = TimeSeries(np.ones(1000), t0=0, dt=0.01)
         with pytest.raises(TypeError):
-            strategy.threshold(sample_psd_inj, sample_psd_bkg, raw_bkg=ts, fftlength=1.0, overlap="x")
+            strategy.threshold(
+                sample_psd_inj, sample_psd_bkg, raw_bkg=ts, fftlength=1.0, overlap="x"
+            )
 
     def test_threshold_skips_non_overlapping_segment_table_rows(
         self, sample_psd_inj, sample_psd_bkg
@@ -303,7 +321,7 @@ class TestPercentileThresholdExtra:
 
         from gwexpy.table.segment_table import SegmentTable
 
-        shifted_freqs = (np.linspace(200, 300, 100) * u.Hz)
+        shifted_freqs = np.linspace(200, 300, 100) * u.Hz
         shifted_psd = FrequencySeries(
             np.full(100, 10.0), frequencies=shifted_freqs, unit=u.Unit("1/Hz")
         )
@@ -376,6 +394,7 @@ class TestCouplingResult:
 
     def test_plot_cf_returns_plot(self):
         import matplotlib.pyplot as plt
+
         result = self._make_result()
         p = result.plot_cf()
         assert p is not None
@@ -383,6 +402,7 @@ class TestCouplingResult:
 
     def test_plot_cf_with_cf_ul(self):
         import matplotlib.pyplot as plt
+
         fs = _make_fs()
         result = self._make_result(cf_ul=fs)
         p = result.plot_cf()
@@ -391,6 +411,7 @@ class TestCouplingResult:
 
     def test_plot_cf_with_xlim(self):
         import matplotlib.pyplot as plt
+
         result = self._make_result()
         p = result.plot_cf(xlim=(10.0, 80.0))
         assert p is not None
@@ -398,6 +419,7 @@ class TestCouplingResult:
 
     def test_plot_returns_plot(self):
         import matplotlib.pyplot as plt
+
         result = self._make_result()
         p = result.plot()
         assert p is not None
@@ -405,6 +427,7 @@ class TestCouplingResult:
 
     def test_plot_with_xlim(self):
         import matplotlib.pyplot as plt
+
         result = self._make_result()
         p = result.plot(xlim=(10.0, 80.0))
         assert p is not None
@@ -412,6 +435,7 @@ class TestCouplingResult:
 
     def test_plot_with_cf_ul(self):
         import matplotlib.pyplot as plt
+
         fs = _make_fs()
         result = self._make_result(cf_ul=fs)
         p = result.plot()

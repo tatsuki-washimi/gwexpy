@@ -1,4 +1,5 @@
 """Tests for gwexpy/io/dttxml_common.py."""
+
 from __future__ import annotations
 
 import base64
@@ -191,7 +192,7 @@ class TestDecodeDttStream:
         np.testing.assert_allclose(result, values)
 
     def test_complex64(self):
-        values = [1+2j, 3+4j]
+        values = [1 + 2j, 3 + 4j]
         encoded = _base64_complex64(values)
         result = _decode_dtt_stream(encoded, "LittleEndian,base64", "floatComplex")
         assert result.dtype == np.dtype("<c8")
@@ -199,7 +200,7 @@ class TestDecodeDttStream:
         np.testing.assert_allclose(result.imag, [2.0, 4.0], rtol=1e-5)
 
     def test_complex128(self):
-        values = [1+2j, 3+4j]
+        values = [1 + 2j, 3 + 4j]
         encoded = _base64_complex128(values)
         result = _decode_dtt_stream(encoded, "LittleEndian,base64", "doubleComplex")
         assert result.dtype == np.dtype("<c16")
@@ -241,7 +242,7 @@ def _make_xml_with_string_typed_spectrum_params(tmp_path) -> str:
         for key, value in attrs.items():
             lines.append(f'    <Param Name="{key}" Type="string">{value}</Param>')
         lines += [
-            "    <Time Name=\"t0\">1300000000</Time>",
+            '    <Time Name="t0">1300000000</Time>',
             f'    <Array Type="{dtype}">',
             f"      <Dim>{n_points}</Dim>",
             f'      <Stream Encoding="LittleEndian,base64">{data_b64}</Stream>',
@@ -298,9 +299,7 @@ class TestLoadDttxmlProducts:
         assert psd["frequencies"].dtype.kind == "f"
         np.testing.assert_allclose(psd["frequencies"], np.arange(4, dtype=float))
 
-        tf = products["TF"][
-            ("K1:SUS-ITMX_DISPLACEMENT", "K1:SUS-ITMX_EXCITATION")
-        ]
+        tf = products["TF"][("K1:SUS-ITMX_DISPLACEMENT", "K1:SUS-ITMX_EXCITATION")]
         assert tf["frequencies"].dtype.kind == "f"
         assert tf["data"].dtype.kind == "c"
 

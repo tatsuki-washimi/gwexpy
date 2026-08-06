@@ -1,4 +1,5 @@
 """Missing value imputation algorithms for signal processing."""
+
 from __future__ import annotations
 
 from typing import Any

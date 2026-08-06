@@ -12,6 +12,7 @@ References
 https://github.com/dagghe/pyOMA
 
 """
+
 from __future__ import annotations
 
 from typing import Any

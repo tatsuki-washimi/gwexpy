@@ -6,6 +6,7 @@ positional argument and returns a new ``TimeSeries`` holding one RMS value per
 ``ignore_nan`` control but otherwise keeps the public surface deliberately
 narrow: numeric seconds only and a dimensionless result.
 """
+
 from __future__ import annotations
 
 import inspect
@@ -24,6 +25,7 @@ def _series(data, sample_rate=100, **kwargs):
 # ---------------------------------------------------------------------------
 # core gwpy semantics
 # ---------------------------------------------------------------------------
+
 
 def test_rms_stride_returns_trend_timeseries():
     ts = _series(np.arange(1000.0), sample_rate=100)  # 10 s
@@ -49,7 +51,7 @@ def test_rms_values_match_manual_windows():
     ts = _series(arr, sample_rate=100)
     out = ts.rms(2)  # 200 samples per window
     expected = np.array(
-        [np.sqrt(np.mean(np.abs(arr[i * 200:(i + 1) * 200]) ** 2)) for i in range(5)]
+        [np.sqrt(np.mean(np.abs(arr[i * 200 : (i + 1) * 200]) ** 2)) for i in range(5)]
     )
     np.testing.assert_allclose(out.value, expected)
 
@@ -76,10 +78,13 @@ def test_rms_matches_gwpy_reference():
 # v0.1.13 public contract
 # ---------------------------------------------------------------------------
 
+
 def test_rms_signature_is_narrow_and_keyword_only_for_ignore_nan():
     signature = inspect.signature(TimeSeries.rms)
     assert list(signature.parameters) == ["self", "stride", "ignore_nan"]
-    assert signature.parameters["stride"].kind is inspect.Parameter.POSITIONAL_OR_KEYWORD
+    assert (
+        signature.parameters["stride"].kind is inspect.Parameter.POSITIONAL_OR_KEYWORD
+    )
     assert signature.parameters["ignore_nan"].kind is inspect.Parameter.KEYWORD_ONLY
 
 
@@ -105,6 +110,7 @@ def test_rms_rejects_out_of_contract_keywords(keyword):
 # ---------------------------------------------------------------------------
 # edge cases / metadata
 # ---------------------------------------------------------------------------
+
 
 def test_rms_trailing_window_dropped():
     ts = _series(np.arange(100.0), sample_rate=10)  # 10 s

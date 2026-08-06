@@ -74,9 +74,7 @@ class TestMLPreprocessorSplit:
             dt=1 / sample_rate,
             unit="",
         )
-        y = TimeSeries(
-            np.random.randn(n_samples), t0=t0, dt=1 / sample_rate, unit=""
-        )
+        y = TimeSeries(np.random.randn(n_samples), t0=t0, dt=1 / sample_rate, unit="")
 
         preprocessor = MLPreprocessor(sample_rate=sample_rate, valid_frac=0.2)
         X_train, y_train, X_valid, y_valid = preprocessor.split(X, y)
@@ -212,13 +210,14 @@ class TestMLPreprocessorFitTransform:
 
     def test_transform_before_fit_raises_error(self):
         """fit()前にtransform()を呼ぶとエラーが発生することを確認."""
-        X = TimeSeriesMatrix(
-            np.random.randn(2, 1000), t0=0, dt=0.001, unit=""
-        )
+        X = TimeSeriesMatrix(np.random.randn(2, 1000), t0=0, dt=0.001, unit="")
 
         preprocessor = MLPreprocessor(sample_rate=1000)
 
-        with pytest.raises(RuntimeError, match="(fit\\(\\)を先に呼び出してください|fit\\(\\) must be called first|Call fit\\(\\) first)"):
+        with pytest.raises(
+            RuntimeError,
+            match="(fit\\(\\)を先に呼び出してください|fit\\(\\) must be called first|Call fit\\(\\) first)",
+        ):
             preprocessor.transform(X)
 
     def test_output_is_standardized(self):
@@ -240,9 +239,7 @@ class TestMLPreprocessorFitTransform:
         X_proc, y_proc = preprocessor.transform(X, y)
 
         # 標準化されているか確認（平均0、std1に近い）
-        np.testing.assert_allclose(
-            np.mean(X_proc.value, axis=-1), 0.0, atol=1e-10
-        )
+        np.testing.assert_allclose(np.mean(X_proc.value, axis=-1), 0.0, atol=1e-10)
         np.testing.assert_allclose(
             np.std(X_proc.value, axis=-1, ddof=0), 1.0, atol=1e-10
         )
@@ -303,7 +300,13 @@ class TestMLPreprocessorDeepCleanCompatibility:
         # DeepClean参考実装のフィルタリング（filt.py:126-130）
         coeffs_deepclean = []
         for f_low, f_high in zip(freq_low, freq_high):
-            sos = butter(filt_order, [f_low, f_high], btype="bandpass", fs=sample_rate, output="sos")
+            sos = butter(
+                filt_order,
+                [f_low, f_high],
+                btype="bandpass",
+                fs=sample_rate,
+                output="sos",
+            )
             coeffs_deepclean.append(sos)
         y_filt_deepclean = np.zeros_like(y_data)
         for coeff in coeffs_deepclean:
@@ -317,7 +320,9 @@ class TestMLPreprocessorDeepCleanCompatibility:
             filt_order=filt_order,
         )
         # ダミーデータでfit（フィルタ係数を設計）
-        X_dummy = TimeSeriesMatrix(np.random.randn(2, n_samples), t0=0, dt=1 / sample_rate, unit="")
+        X_dummy = TimeSeriesMatrix(
+            np.random.randn(2, n_samples), t0=0, dt=1 / sample_rate, unit=""
+        )
         preprocessor.fit(X_dummy, y)
         y_filt_mlprep = preprocessor._apply_bandpass(y)
 
@@ -342,7 +347,9 @@ class TestMLPreprocessorDeepCleanCompatibility:
         X = TimeSeriesMatrix(X_data, t0=0, dt=1 / sample_rate, unit="")
 
         # MLPreprocessorの標準化
-        preprocessor = MLPreprocessor(sample_rate=sample_rate, standardization_method="zscore")
+        preprocessor = MLPreprocessor(
+            sample_rate=sample_rate, standardization_method="zscore"
+        )
         preprocessor.fit(X, y=None)
         X_proc = preprocessor.transform(X, y=None)
 
@@ -355,7 +362,9 @@ class TestMLPreprocessorDeepCleanCompatibility:
             else:
                 # 通常チャンネルは平均0、std1に標準化される
                 np.testing.assert_allclose(np.mean(X_proc.value[i]), 0.0, atol=1e-10)
-                np.testing.assert_allclose(np.std(X_proc.value[i], ddof=0), 1.0, atol=1e-10)
+                np.testing.assert_allclose(
+                    np.std(X_proc.value[i], ddof=0), 1.0, atol=1e-10
+                )
 
 
 class TestMLPreprocessorEdgeCases:
@@ -503,5 +512,8 @@ class TestMLPreprocessorEdgeCases:
         preprocessor.fit(X, y=None)
 
         # transform時にyを指定するとエラー
-        with pytest.raises(RuntimeError, match="(yが指定されましたが、fit\\(\\)でyを使用していません|y was specified, but fit\\(\\) did not use y)"):
+        with pytest.raises(
+            RuntimeError,
+            match="(yが指定されましたが、fit\\(\\)でyを使用していません|y was specified, but fit\\(\\) did not use y)",
+        ):
             preprocessor.transform(X, y)

@@ -8,6 +8,7 @@ Covers:
 - Pickle support (__reduce_ex__)
 - API Shortcuts (SimPEG, Control, ARIMA) delegation and kwargs transparency
 """
+
 from __future__ import annotations
 
 import sys
@@ -23,6 +24,7 @@ from gwexpy.timeseries._core import TimeSeriesCore
 # ---------------------------------------------------------------------------
 # TimeSeries.__new__ Coercion Fallbacks
 # ---------------------------------------------------------------------------
+
 
 class TestTimeSeriesNewFallbacks:
     def test_invalid_xunit_disables_coercion(self):
@@ -66,7 +68,7 @@ class TestTimeSeriesNewFallbacks:
             with patch("gwexpy.timeseries.utils._coerce_t0_gps") as mock_coerce:
                 mock_coerce.return_value = 10.0 * u.m  # non-convertible to 's'
                 # Pass dt='s' to set target_unit='s'
-                TimeSeries([1, 2, 3], t0=1234.5, dt=1.0*u.s)
+                TimeSeries([1, 2, 3], t0=1234.5, dt=1.0 * u.s)
 
                 # Check what was passed to super().__new__
                 args, kwargs = mock_super_new.call_args
@@ -99,6 +101,7 @@ class TestTimeSeriesNewFallbacks:
     def test_pickle_reduce(self):
         # Triggers line 164-166 in timeseries.py
         import pickle
+
         ts = TimeSeries([1, 2, 3], name="pickle_test")
         pickled = pickle.dumps(ts)
         unpickled = pickle.loads(pickled)
@@ -109,6 +112,7 @@ class TestTimeSeriesNewFallbacks:
 # ---------------------------------------------------------------------------
 # TimeSeriesCore.append Fallback
 # ---------------------------------------------------------------------------
+
 
 class TestTimeSeriesCoreAppendFallback:
     def test_append_gwpy_object_fallback(self):
@@ -137,13 +141,18 @@ class TestTimeSeriesCoreAppendFallback:
 # API Shortcuts (Delegation & Spies)
 # ---------------------------------------------------------------------------
 
+
 class TestTimeSeriesAPIShortcuts:
     def test_to_simpeg_delegation(self):
         with patch("gwexpy.interop.to_simpeg") as mock_to:
             ts = TimeSeries([1, 2, 3])
             ts.to_simpeg(location=[1, 2, 3], rx_type="TestRx", extra_param="val")
             mock_to.assert_called_once_with(
-                ts, location=[1, 2, 3], rx_type="TestRx", orientation="x", extra_param="val"
+                ts,
+                location=[1, 2, 3],
+                rx_type="TestRx",
+                orientation="x",
+                extra_param="val",
             )
 
     def test_from_simpeg_delegation(self):
@@ -169,12 +178,18 @@ class TestTimeSeriesAPIShortcuts:
         with patch("gwexpy.timeseries.arima.fit_arima") as mock_fit:
             # AR(2)
             ts.ar(p=2, trend="c")
-            mock_fit.assert_called_with(ts, order=(2, 0, 0), seasonal_order=None, auto=False, trend="c")
+            mock_fit.assert_called_with(
+                ts, order=(2, 0, 0), seasonal_order=None, auto=False, trend="c"
+            )
 
             # MA(3)
             ts.ma(q=3, method="mle")
-            mock_fit.assert_called_with(ts, order=(0, 0, 3), seasonal_order=None, auto=False, method="mle")
+            mock_fit.assert_called_with(
+                ts, order=(0, 0, 3), seasonal_order=None, auto=False, method="mle"
+            )
 
             # ARMA(1, 2)
             ts.arma(p=1, q=2, solver="newton")
-            mock_fit.assert_called_with(ts, order=(1, 0, 2), seasonal_order=None, auto=False, solver="newton")
+            mock_fit.assert_called_with(
+                ts, order=(1, 0, 2), seasonal_order=None, auto=False, solver="newton"
+            )

@@ -12,6 +12,7 @@ Key features:
 All functions preserve axis metadata and units, returning gwexpy-compatible
 data containers (FrequencySeries, TimeSeries, ScalarField).
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal
@@ -1484,9 +1485,15 @@ def coherence_map(
             coh_4d,
             unit=u.dimensionless_unscaled,
             axis0=np.array([0.0]) * u.s,
-            axis1=ax1_index_out if ax1_int == 1 else (ax2_index_out if ax2_int == 1 else fix_index_out),
-            axis2=ax1_index_out if ax1_int == 2 else (ax2_index_out if ax2_int == 2 else fix_index_out),
-            axis3=ax1_index_out if ax1_int == 3 else (ax2_index_out if ax2_int == 3 else fix_index_out),
+            axis1=ax1_index_out
+            if ax1_int == 1
+            else (ax2_index_out if ax2_int == 1 else fix_index_out),
+            axis2=ax1_index_out
+            if ax1_int == 2
+            else (ax2_index_out if ax2_int == 2 else fix_index_out),
+            axis3=ax1_index_out
+            if ax1_int == 3
+            else (ax2_index_out if ax2_int == 3 else fix_index_out),
             axis_names=["t", ax1_name, ax2_name, fix_name],
             axis0_domain="time",
             space_domain=field._space_domains,
@@ -1506,9 +1513,15 @@ def coherence_map(
             coh_3d_4d,
             unit=u.dimensionless_unscaled,
             axis0=freq_axis,
-            axis1=ax1_index_out if ax1_int == 1 else (ax2_index_out if ax2_int == 1 else fix_index_out),
-            axis2=ax1_index_out if ax1_int == 2 else (ax2_index_out if ax2_int == 2 else fix_index_out),
-            axis3=ax1_index_out if ax1_int == 3 else (ax2_index_out if ax2_int == 3 else fix_index_out),
+            axis1=ax1_index_out
+            if ax1_int == 1
+            else (ax2_index_out if ax2_int == 1 else fix_index_out),
+            axis2=ax1_index_out
+            if ax1_int == 2
+            else (ax2_index_out if ax2_int == 2 else fix_index_out),
+            axis3=ax1_index_out
+            if ax1_int == 3
+            else (ax2_index_out if ax2_int == 3 else fix_index_out),
             axis_names=["f", ax1_name, ax2_name, fix_name],
             axis0_domain="frequency",
             space_domain=field._space_domains,

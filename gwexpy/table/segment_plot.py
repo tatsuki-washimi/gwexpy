@@ -4,6 +4,7 @@ All public functions accept a :class:`~gwexpy.table.segment_table.SegmentTable`
 as their first argument and return a :class:`gwpy.plot.Plot`.
 None of the functions call :meth:`matplotlib.figure.Figure.show` internally.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional
@@ -97,7 +98,12 @@ def plot_segment_table(
 
     _require_column(st, column)
     kind = st.schema[column]
-    if kind not in ("timeseries", "timeseriesdict", "frequencyseries", "frequencyseriesdict"):
+    if kind not in (
+        "timeseries",
+        "timeseriesdict",
+        "frequencyseries",
+        "frequencyseriesdict",
+    ):
         raise ValueError(
             f"plot() can only delegate to GWpy objects, "
             f"but column {column!r} has kind {kind!r}."
@@ -147,7 +153,6 @@ def scatter_segment_table(
     df = st.to_pandas(meta_only=True)
     if selection is not None:
         df = df[list(selection)]
-
 
     plot = _get_plot()
     ax = plot.add_subplot(111)
@@ -268,7 +273,9 @@ def segments_segment_table(
         import matplotlib as _mpl
 
         cmap = _mpl.colormaps.get_cmap("tab10").resampled(len(unique_vals))
-        val_to_color = {v: cmap(i / max(len(unique_vals) - 1, 1)) for i, v in enumerate(unique_vals)}
+        val_to_color = {
+            v: cmap(i / max(len(unique_vals) - 1, 1)) for i, v in enumerate(unique_vals)
+        }
         colors = [val_to_color[v] for v in df[color].tolist()]
     else:
         colors = ["steelblue"] * len(df)
@@ -277,7 +284,9 @@ def segments_segment_table(
         start, end = float(span[0]), float(span[1])
         bar_kwargs = {k: v for k, v in kwargs.items() if k != "ax"}
         bar_kwargs.setdefault("edgecolor", "none")
-        _ax.broken_barh([(start, end - start)], (float(yv) - 0.4, 0.8), facecolors=[c], **bar_kwargs)
+        _ax.broken_barh(
+            [(start, end - start)], (float(yv) - 0.4, 0.8), facecolors=[c], **bar_kwargs
+        )
 
     _ax.set_xlabel("time")
     _ax.set_ylabel(y if y else "row index")
@@ -461,7 +470,11 @@ def overlay_spectra_segment_table(
 
     # Resolve color_by / sort_by
     _color_by = color_by
-    _sort_by = sort_by if sort_by is not None else (_color_by if _color_by is not None else "t0")
+    _sort_by = (
+        sort_by
+        if sort_by is not None
+        else (_color_by if _color_by is not None else "t0")
+    )
 
     # Build ordering values
     def _get_scalar(col_id: str, idx: int) -> float:
@@ -497,6 +510,7 @@ def overlay_spectra_segment_table(
     else:
         norm = _mcolors.Normalize(vmin=vmin, vmax=vmax)
     import matplotlib as _mpl
+
     cmap_obj = _mpl.colormaps.get_cmap(cmap)
 
     # Set up axes

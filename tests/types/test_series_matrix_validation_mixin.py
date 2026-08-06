@@ -1,4 +1,5 @@
 """Tests for gwexpy/types/series_matrix_validation_mixin.py."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -16,6 +17,7 @@ def _make_tsm(n_rows=2, n_cols=2, n_t=10, t0=0.0, dt=0.01):
 # ---------------------------------------------------------------------------
 # is_contiguous
 # ---------------------------------------------------------------------------
+
 
 class TestIsContiguous:
     def test_contiguous_forward(self):
@@ -37,6 +39,7 @@ class TestIsContiguous:
 # ---------------------------------------------------------------------------
 # is_contiguous_exact
 # ---------------------------------------------------------------------------
+
 
 class TestIsContiguousExact:
     def test_contiguous_exact_forward(self):
@@ -66,6 +69,7 @@ class TestIsContiguousExact:
 # is_compatible_exact
 # ---------------------------------------------------------------------------
 
+
 class TestIsCompatibleExact:
     def test_compatible_exact_same(self):
         tsm1 = _make_tsm()
@@ -94,6 +98,7 @@ class TestIsCompatibleExact:
         import collections
 
         from gwexpy.types.metadata import MetaData, MetaDataDict
+
         old_items = list(tsm2.rows.items())
         new_dict = collections.OrderedDict()
         new_dict["newrow0"] = old_items[0][1]
@@ -106,6 +111,7 @@ class TestIsCompatibleExact:
 # ---------------------------------------------------------------------------
 # is_compatible
 # ---------------------------------------------------------------------------
+
 
 class TestIsCompatible:
     def test_compatible_with_ndarray(self):

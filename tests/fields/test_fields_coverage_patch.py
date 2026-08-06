@@ -122,7 +122,7 @@ def test_signal_spectral_density_params(base_field):
         method="welch",
         nfft=32,
         noverlap=8,  # samples
-        window="hamming"
+        window="hamming",
     )
     assert res_welch.axis0_domain == "frequency"
     assert res_welch.shape[0] == 17  # (32/2 + 1)
@@ -139,11 +139,11 @@ def test_signal_coherence_map_resolved(base_field):
     # Frequency-resolved coherence map
     coh_map = coherence_map(
         base_field,
-        ref_point=(0*u.m, 0*u.m, 0*u.m),
+        ref_point=(0 * u.m, 0 * u.m, 0 * u.m),
         plane="xy",
         at={"z": 0 * u.m},
         band=None,  # Do not average over frequency
-        nfft=32
+        nfft=32,
     )
 
     assert coh_map.axis0_domain == "frequency"

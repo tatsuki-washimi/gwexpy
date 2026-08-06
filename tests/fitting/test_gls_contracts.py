@@ -7,6 +7,7 @@ Covers 5 confirmed findings:
   G6  F1  — GLS: underdetermined/rank-deficient design → ValueError
   G6  F2  — GeneralizedLeastSquares: non-PSD cov_inv → RuntimeWarning
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -34,7 +35,7 @@ def test_gls_init_xy_length_mismatch_raises():
 def test_gls_init_underdetermined_raises():
     """n_samples < n_params → underdetermined system."""
     X = np.array([[1.0, 2.0, 3.0]])  # shape (1, 3)
-    y = np.array([1.0])              # n_samples=1 < n_params=3
+    y = np.array([1.0])  # n_samples=1 < n_params=3
     with pytest.raises(ValueError, match="Underdetermined"):
         GLS(X, y)
 
@@ -142,9 +143,7 @@ def test_gls_cost_asymmetric_cov_inv_with_psd_symmetric_part_accepted():
     x = np.array([1.0, 2.0, 3.0])
     y = np.array([1.0, 2.0, 3.0])
     # Upper-triangular form: sym part is 0.5*(A+A^T), which is PD
-    cov_inv = np.array([[2.0, 1.0, 0.0],
-                        [0.0, 2.0, 1.0],
-                        [0.0, 0.0, 2.0]])
+    cov_inv = np.array([[2.0, 1.0, 0.0], [0.0, 2.0, 1.0], [0.0, 0.0, 2.0]])
     gls = GeneralizedLeastSquares(x, y, cov_inv, linear)
     assert gls.ndata == 3
 

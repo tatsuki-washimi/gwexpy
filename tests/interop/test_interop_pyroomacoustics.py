@@ -3,6 +3,7 @@
 These tests use mock objects that mimic the pyroomacoustics API,
 so they run without requiring pyroomacoustics to be installed.
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock
@@ -57,7 +58,7 @@ def _mock_room(
         for i, sig in enumerate(source_signals):
             src = MagicMock()
             src.signal = sig
-            src.delay = (source_delays[i] if source_delays else 0.0)
+            src.delay = source_delays[i] if source_delays else 0.0
             sources.append(src)
     room.sources = sources
 
@@ -121,9 +122,9 @@ class TestFromPyroomacousticsRir:
         """source=0 with multiple mics returns TimeSeriesDict."""
         # Real layout: rir[mic][source] → 3 mics, 1 source each
         rir_data = [
-            [np.ones(100)],            # mic 0, source 0
-            [np.ones(100) * 0.5],      # mic 1, source 0
-            [np.ones(100) * 0.3],      # mic 2, source 0
+            [np.ones(100)],  # mic 0, source 0
+            [np.ones(100) * 0.5],  # mic 1, source 0
+            [np.ones(100) * 0.3],  # mic 2, source 0
         ]
         room = _mock_room(fs=16000, rir=rir_data)
 
@@ -139,8 +140,8 @@ class TestFromPyroomacousticsRir:
         """No selection with 2 mics × 2 sources returns TimeSeriesDict."""
         # Real layout: rir[mic][source] → 2 mics, 2 sources each
         rir_data = [
-            [np.ones(50), np.ones(60)],   # mic 0: source 0, source 1
-            [np.ones(55), np.ones(45)],   # mic 1: source 0, source 1
+            [np.ones(50), np.ones(60)],  # mic 0: source 0, source 1
+            [np.ones(55), np.ones(45)],  # mic 1: source 0, source 1
         ]
         room = _mock_room(fs=44100, rir=rir_data)
 
@@ -457,7 +458,9 @@ class TestFromPyroomacousticsField:
 
         rir_list = [np.ones(nt) * (i + 1) for i in range(n_mics)]
         room = _mock_room(fs=16000)
-        room.rir = [[r] for r in rir_list]  # rir[mic][source]: n_mics outer, 1 source each
+        room.rir = [
+            [r] for r in rir_list
+        ]  # rir[mic][source]: n_mics outer, 1 source each
         room.mic_array.R = R
 
         field = from_pyroomacoustics_field(
@@ -493,12 +496,12 @@ class TestFromPyroomacousticsField:
 
         rir_list = [np.ones(nt) for _ in range(n_mics)]
         room = _mock_room(fs=16000)
-        room.rir = [[r] for r in rir_list]  # rir[mic][source]: n_mics outer, 1 source each
+        room.rir = [
+            [r] for r in rir_list
+        ]  # rir[mic][source]: n_mics outer, 1 source each
         room.mic_array.R = R
 
-        field = from_pyroomacoustics_field(
-            ScalarField, room, grid_shape=(nx, ny, nz)
-        )
+        field = from_pyroomacoustics_field(ScalarField, room, grid_shape=(nx, ny, nz))
 
         np.testing.assert_allclose(field._axis1_index.value, xs)
         np.testing.assert_allclose(field._axis2_index.value, ys)
@@ -514,12 +517,12 @@ class TestFromPyroomacousticsField:
         R = np.zeros((3, n_mics))
         rir_list = [np.ones(nt) for _ in range(n_mics)]
         room = _mock_room(fs=fs)
-        room.rir = [[r] for r in rir_list]  # rir[mic][source]: n_mics outer, 1 source each
+        room.rir = [
+            [r] for r in rir_list
+        ]  # rir[mic][source]: n_mics outer, 1 source each
         room.mic_array.R = R
 
-        field = from_pyroomacoustics_field(
-            ScalarField, room, grid_shape=(nx, ny, nz)
-        )
+        field = from_pyroomacoustics_field(ScalarField, room, grid_shape=(nx, ny, nz))
 
         expected_times = np.arange(nt) / fs
         np.testing.assert_allclose(field._axis0_index.to("s").value, expected_times)
@@ -625,12 +628,12 @@ class TestConvenienceMethods:
 
         rir_list = [np.ones(nt) for _ in range(n_mics)]
         room = _mock_room(fs=16000)
-        room.rir = [[r] for r in rir_list]  # rir[mic][source]: n_mics outer, 1 source each
+        room.rir = [
+            [r] for r in rir_list
+        ]  # rir[mic][source]: n_mics outer, 1 source each
         room.mic_array.R = R
 
-        field = ScalarField.from_pyroomacoustics_field(
-            room, grid_shape=(nx, ny, nz)
-        )
+        field = ScalarField.from_pyroomacoustics_field(room, grid_shape=(nx, ny, nz))
 
         assert isinstance(field, ScalarField)
         assert field.shape == (nt, nx, ny, nz)

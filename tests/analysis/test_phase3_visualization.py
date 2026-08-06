@@ -7,6 +7,7 @@ Phase 3 可視化拡張テスト。
 - ResponseFunctionResult.plot_projection_summary()
 - ResponseFunctionResult.plot_response_matrix()
 """
+
 from __future__ import annotations
 
 import matplotlib
@@ -227,10 +228,13 @@ def test_coupling_result_plot_asdgram_layout_and_percentile_overlays():
     main_axes = [
         ax
         for ax in fig.axes
-        if ax.get_xlabel() == "Time [s]" and ax.get_title() in {"Injection: WIT", "Background: WIT"}
+        if ax.get_xlabel() == "Time [s]"
+        and ax.get_title() in {"Injection: WIT", "Background: WIT"}
     ]
     twin_axes = [
-        ax for ax in fig.axes if ax.get_xlabel().startswith("ASD [") and len(ax.get_lines()) == 3
+        ax
+        for ax in fig.axes
+        if ax.get_xlabel().startswith("ASD [") and len(ax.get_lines()) == 3
     ]
     assert len(main_axes) == 2
     assert len(twin_axes) == 2
@@ -339,7 +343,11 @@ def test_response_function_plot_response_matrix_has_expected_layout():
 
     assert len(fig.axes) == 4
     ax_main = fig.axes[0]
-    meshes = [collection for collection in ax_main.collections if isinstance(collection, QuadMesh)]
+    meshes = [
+        collection
+        for collection in ax_main.collections
+        if isinstance(collection, QuadMesh)
+    ]
     assert len(meshes) == 1
 
     mesh_array = np.asarray(meshes[0].get_array()).reshape(-1)

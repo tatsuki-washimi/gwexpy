@@ -64,4 +64,3 @@ def test_sdb_matrix_reader_remains_available_as_implementation_surface(tmp_path)
 
     matrix = TimeSeriesMatrix.read(path, format="sdb")
     assert matrix.shape == (3, 1, 3)
-
