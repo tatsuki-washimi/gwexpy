@@ -15,6 +15,13 @@ inputs:
       specific gate (e.g. "zarr" or "freezegun xarray netCDF4").
     required: false
     default: ""
+  conda-packages:
+    description: >-
+      Optional conda package constraints for one job, for example
+      "root_base=6.36.*". Keep heavyweight interoperability runtimes out of
+      unrelated jobs.
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -26,6 +33,7 @@ runs:
         environment-name: gwexpy
         create-args: >-
           python=${{ inputs.python-version }}
+          ${{ inputs.conda-packages }}
         init-shell: bash
         cache-environment: true
         cache-downloads: true

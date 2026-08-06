@@ -123,6 +123,71 @@ jobs:
       - name: Run optional dependency tests
         run: python scripts/ci/run_gate.py io-optional
 
+  io-gwf-gate:
+    name: GWF I/O release gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        timeout-minutes: 5
+        uses: actions/checkout@v7
+
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
+
+      - name: Run GWF I/O release gate
+        run: python scripts/ci/run_gate.py io-gwf
+
+  io-netcdf-gate:
+    name: NetCDF I/O release gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        timeout-minutes: 5
+        uses: actions/checkout@v7
+
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
+        with:
+          extras: "xarray netCDF4"
+
+      - name: Run NetCDF I/O release gate
+        run: python scripts/ci/run_gate.py io-netcdf
+
+  interop-root-gate:
+    name: ROOT interoperability release gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+      GWEXPY_RUN_ROOT: "1"
+    steps:
+      - name: Checkout repository
+        timeout-minutes: 5
+        uses: actions/checkout@v7
+
+      - name: Set up gwexpy environment
+        uses: ./.github/actions/setup-gwexpy
+        with:
+          conda-packages: "root_base=6.36.*"
+
+      - name: Run ROOT interoperability release gate
+        run: python scripts/ci/run_gate.py interop-root
+
   interop-contract-gate:
     name: Interop contract gate
     runs-on: ubuntu-latest
