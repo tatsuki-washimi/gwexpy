@@ -390,18 +390,24 @@ class TestWindowsTheFileDoesNotCover:
             made[fmt] = str(path)
         return made
 
-    @pytest.mark.parametrize("fmt", ["nc", "hdf.ndscope"])
+    @pytest.mark.parametrize("fmt", ["hdf.ndscope"])
     def test_registry_formats_raise_rather_than_silently_truncate(self, sources, fmt):
         with pytest.raises(ValueError):
             TimeSeriesDict.read(sources[fmt], format=fmt, start=-5.0, end=5.0)
 
-    @pytest.mark.parametrize("fmt", ["nc", "hdf.ndscope"])
+    @pytest.mark.parametrize("fmt", ["hdf.ndscope"])
     def test_registry_formats_pad_when_asked(self, sources, fmt):
         got = TimeSeriesDict.read(
             sources[fmt], format=fmt, start=-0.5, end=1.5, pad=0.0
         )
         assert len(got["A"]) == 20
         assert got["A"].span == (-0.5, 1.5)
+
+    def test_netcdf_clamps_outside_bounds_without_registry_padding(self, sources):
+        """NetCDF v2 uses the public exact-crop contract before registry logic."""
+        got = TimeSeriesDict.read(sources["nc"], format="nc", start=-0.5, end=1.5)
+        assert len(got["A"]) == 10
+        assert got["A"].span == (0.0, 1.0)
 
     def test_early_return_formats_return_the_empty_crop_instead(self, sources):
         got = TimeSeriesDict.read(sources["hdf5"], format="hdf5", start=5.0, end=9.0)

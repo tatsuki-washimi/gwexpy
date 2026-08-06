@@ -155,10 +155,8 @@ class TestIsCompatible:
         with pytest.raises(ValueError):
             tsm1.is_compatible(tsm2)
 
-    def test_compatible_xindex_fallback_mismatch_raises(self):
-        # Lines 174-178 — xindex fallback when dx comparison fails
+    def test_compatible_xindex_fallback_accepts_a_different_epoch(self):
+        # Compatibility concerns sampling, units, shape and keys; epoch differs.
         tsm1 = _make_tsm()
         tsm2 = _make_tsm(t0=1.0)
-        # Both have same dt so dx check will fail on value
-        with pytest.raises(ValueError):
-            tsm1.is_compatible(tsm2)
+        assert tsm1.is_compatible(tsm2)

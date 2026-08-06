@@ -367,7 +367,10 @@ def test_mic():
 
 
 def test_distance_correlation():
-    pytest.importorskip("dcor")
+    try:
+        __import__("dcor")
+    except Exception as exc:
+        pytest.skip(f"dcor runtime not available ({exc})")
     tsm = _make_tsm(n_time=200)
     target = TimeSeries(
         np.random.default_rng(3).normal(size=200), dt=0.01 * u.s, t0=0.0 * u.s

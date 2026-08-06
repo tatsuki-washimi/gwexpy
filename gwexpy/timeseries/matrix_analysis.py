@@ -576,6 +576,8 @@ class TimeSeriesMatrixAnalysisMixin:
 
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
+        from copy import deepcopy
+
         from gwexpy.timeseries._core import _crop_bound_to_float, _regular_crop_slice
 
         start_float = _crop_bound_to_float(start)
@@ -597,6 +599,7 @@ class TimeSeriesMatrixAnalysisMixin:
         # materialized large-GPS index.
         result._dx = dt.copy()
         result._x0 = t0 + sample_slice.start * dt
+        result.attrs = deepcopy(getattr(self, "attrs", {}))
         return result
 
     def pca_fit(self, **kwargs: Any) -> Any:
