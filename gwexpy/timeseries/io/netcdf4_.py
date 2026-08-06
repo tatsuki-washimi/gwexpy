@@ -514,6 +514,21 @@ def read_timeseriesmatrix_netcdf4(
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", RuntimeWarning)
                 tsd = read_timeseriesdict_netcdf4(source, **kwargs)
+            if is_v2:
+                # A v2 dictionary has one exact, validated regular axis.  Do
+                # not round-trip that axis through ``TimeSeriesDict.to_matrix``:
+                # its general-purpose alignment constructs float timestamps,
+                # which loses a non-binary dt at large GPS epochs.
+                values = np.stack(
+                    [np.asarray(series.value) for series in tsd.values()]
+                )[:, np.newaxis, :]
+                matrix = TimeSeriesMatrix(
+                    values,
+                    t0=t0,
+                    dt=dt,
+                    channel_names=list(tsd),
+                )
+                return apply_time_selection(matrix, start, end)
             return apply_time_selection(tsd.to_matrix(), start, end)
 
         if is_v2:

@@ -197,6 +197,27 @@ class TestNetCDF4Roundtrip:
             values = loaded.value[0, 0]
         np.testing.assert_array_equal(values, source.value[100:600])
 
+    def test_matrix_reader_preserves_a_v2_dict_axis_during_bounded_read(self, tmp_path):
+        """A dict-shaped v2 file must not be realigned through float timestamps."""
+        path = tmp_path / "bounded-dict-as-matrix.nc"
+        t0 = 1_234_567_890.1234567
+        dt = 1.0 / 30.0
+        source = TimeSeries(np.arange(768), t0=t0, dt=dt, name="x")
+        TimeSeriesDict({"x": source}).write(path, format="nc")
+
+        loaded = TimeSeriesMatrix.read(
+            path,
+            format="nc",
+            start=t0 + 100 * dt,
+            end=t0 + 600 * dt,
+        )
+        expected = source[100:600]
+
+        assert loaded.shape == (1, 1, 500)
+        np.testing.assert_array_equal(loaded.value[0, 0], expected.value)
+        assert float(loaded.t0.value).hex() == float(expected.t0.value).hex()
+        assert float(loaded.dt.value).hex() == float(expected.dt.value).hex()
+
     def test_v2_writer_rejects_unsupported_dtype_before_creating_target(self, tmp_path):
         path = tmp_path / "unsupported.nc"
         invalid = TimeSeries(np.array([True, False]), t0=0, dt=1, name="flag")
