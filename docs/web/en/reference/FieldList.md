@@ -52,6 +52,15 @@ Provides validation of unit/axis/domain consistency and convenience batch wrappe
 - **Batch Selection**: `sel_all()`, `isel_all()`
 - **Validation**: Ensures all members in the list share the same axis metadata.
 
+## List operator compatibility
+
+`FieldList` is a `list` subclass.
+`[] + fields` therefore follows Python's left-hand `list` implementation and returns a built-in `list`; a subclass cannot intercept that expression.
+`fields + []` is rejected so that it cannot silently discard the field-container contract.
+Use `list(fields)` when conversion to a plain list is intentional.
+
+Field arithmetic with a scalar, scalar `Quantity`, or `Unit` is explicit and preserves field metadata.
+
 ## Example
 
 ```python

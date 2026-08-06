@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import copy
+import operator
+
 import numpy as np
 from astropy import units as u
 
@@ -11,7 +14,153 @@ from .scalar import ScalarField
 __all__ = ["FieldList", "FieldDict"]
 
 
-class FieldList(list):
+class _FieldCollectionArithmetic:
+    """Fail-closed scalar, Quantity, and Unit arithmetic for collections."""
+
+    # Make reflected Python operators win over Astropy Quantity's ndarray
+    # dispatch. Collection-level ufuncs have no metadata-preserving contract.
+    __array_priority__ = 10_001
+    __array_ufunc__ = None
+
+    def _new_from_components(self, components):
+        raise NotImplementedError
+
+    def _replace_components(self, components) -> None:
+        raise NotImplementedError
+
+    def _component_items(self):
+        raise NotImplementedError
+
+    @staticmethod
+    def _is_numeric_scalar(value) -> bool:
+        return np.isscalar(value) and not isinstance(value, (str, bytes))
+
+    @staticmethod
+    def _is_scalar_quantity(value) -> bool:
+        return isinstance(value, u.Quantity) and value.isscalar
+
+    @staticmethod
+    def _is_unit(value) -> bool:
+        return isinstance(value, u.UnitBase)
+
+    def _require_operand(self, other, *, additive: bool) -> bool:
+        is_scalar = self._is_numeric_scalar(other)
+        is_quantity = self._is_scalar_quantity(other)
+        is_unit = self._is_unit(other)
+        if not (is_scalar or is_quantity or (is_unit and not additive)):
+            return False
+        if additive and is_scalar:
+            for _, field in self._component_items():
+                unit = field.unit or u.dimensionless_unscaled
+                if not unit.is_equivalent(u.dimensionless_unscaled):
+                    raise TypeError(
+                        "bare scalar addition and subtraction require "
+                        "dimensionless Field components"
+                    )
+        if additive and is_quantity:
+            for _, field in self._component_items():
+                unit = field.unit or u.dimensionless_unscaled
+                if not unit.is_equivalent(other.unit):
+                    raise u.UnitConversionError(
+                        f"cannot add or subtract {other.unit} and {unit}"
+                    )
+        return True
+
+    def _binary_operation(self, other, operation, *, reflected: bool, additive: bool):
+        if not self._require_operand(other, additive=additive):
+            return NotImplemented
+        components = []
+        for key, field in self._component_items():
+            value = operation(other, field) if reflected else operation(field, other)
+            self._detach_component_metadata(field, value)
+            components.append((key, value))
+        return self._new_from_components(components)
+
+    @staticmethod
+    def _detach_component_metadata(source, result) -> None:
+        """Make operation-result metadata independent of its source component."""
+        for axis in range(4):
+            attribute = f"_axis{axis}_index"
+            setattr(result, attribute, getattr(source, attribute).copy())
+        result._axis_names = list(source.axis_names)
+        result._axis0_domain = source.axis0_domain
+        result._space_domains = dict(source.space_domains)
+        result._axis0_offset = copy.deepcopy(source._axis0_offset)
+        for attribute in ("name", "epoch", "channel"):
+            if hasattr(source, attribute):
+                setattr(result, attribute, copy.deepcopy(getattr(source, attribute)))
+        for attribute, value in source.__dict__.items():
+            if attribute.startswith("_gwex_"):
+                setattr(result, attribute, copy.deepcopy(value))
+
+    def _inplace_operation(self, other, operation, *, additive: bool):
+        # Compute every component first.  A unit/domain error therefore leaves
+        # the original collection and every component untouched.
+        if not self._require_operand(other, additive=additive):
+            raise TypeError(
+                f"unsupported operand type for in-place operation: "
+                f"{type(other).__name__}"
+            )
+        updated = self._binary_operation(
+            other, operation, reflected=False, additive=additive
+        )
+        self._replace_components(updated._component_items())
+        return self
+
+    def __mul__(self, other):
+        return self._binary_operation(
+            other, operator.mul, reflected=False, additive=False
+        )
+
+    def __rmul__(self, other):
+        return self._binary_operation(
+            other, operator.mul, reflected=True, additive=False
+        )
+
+    def __truediv__(self, other):
+        return self._binary_operation(
+            other, operator.truediv, reflected=False, additive=False
+        )
+
+    def __rtruediv__(self, other):
+        return self._binary_operation(
+            other, operator.truediv, reflected=True, additive=False
+        )
+
+    def __add__(self, other):
+        return self._binary_operation(
+            other, operator.add, reflected=False, additive=True
+        )
+
+    def __radd__(self, other):
+        return self._binary_operation(
+            other, operator.add, reflected=True, additive=True
+        )
+
+    def __sub__(self, other):
+        return self._binary_operation(
+            other, operator.sub, reflected=False, additive=True
+        )
+
+    def __rsub__(self, other):
+        return self._binary_operation(
+            other, operator.sub, reflected=True, additive=True
+        )
+
+    def __imul__(self, other):
+        return self._inplace_operation(other, operator.mul, additive=False)
+
+    def __itruediv__(self, other):
+        return self._inplace_operation(other, operator.truediv, additive=False)
+
+    def __iadd__(self, other):
+        return self._inplace_operation(other, operator.add, additive=True)
+
+    def __isub__(self, other):
+        return self._inplace_operation(other, operator.sub, additive=True)
+
+
+class FieldList(_FieldCollectionArithmetic, list):
     """A list of ScalarField objects with batch operations.
 
     `FieldList` provides a container for multiple fields, supporting
@@ -42,6 +191,15 @@ class FieldList(list):
         super().__init__(items)
         if validate:
             self._validate()
+
+    def _component_items(self):
+        return enumerate(self)
+
+    def _new_from_components(self, components):
+        return self.__class__([value for _, value in components], validate=False)
+
+    def _replace_components(self, components) -> None:
+        self[:] = [value for _, value in components]
 
     def _validate(self):
         """Validate that all items are ScalarField with compatible metadata."""
@@ -140,7 +298,7 @@ class FieldList(list):
         return self.__class__([f.isel(**kwargs) for f in self])
 
 
-class FieldDict(dict):
+class FieldDict(_FieldCollectionArithmetic, dict):
     """A dictionary of ScalarField objects with batch operations.
 
     `FieldDict` provides a labeled container for multiple fields,
@@ -176,33 +334,19 @@ class FieldDict(dict):
         """Return a copy of this FieldDict."""
         return self.__class__({k: v.copy() for k, v in self.items()})
 
-    def __mul__(self, other):
-        if np.isscalar(other):
-            return self.__class__({k: v * other for k, v in self.items()})
-        return NotImplemented
+    def _component_items(self):
+        return self.items()
 
-    def __rmul__(self, other):
-        return self.__mul__(other)
+    def _new_from_components(self, components) -> FieldDict:
+        """Return this collection's subclass with replacement components."""
+        result = self.copy()
+        result.clear()
+        result.update(components)
+        return result
 
-    def __add__(self, other):
-        if np.isscalar(other):
-            return self.__class__({k: v + other for k, v in self.items()})
-        # Note: If other is FieldDict, we might want to Zip add?
-        # But for now, stick to scalar as per plan Phase 2.
-        return NotImplemented
-
-    def __radd__(self, other):
-        return self.__add__(other)
-
-    def __sub__(self, other):
-        if np.isscalar(other):
-            return self.__class__({k: v - other for k, v in self.items()})
-        return NotImplemented
-
-    def __rsub__(self, other):
-        if np.isscalar(other):
-            return self.__class__({k: other - v for k, v in self.items()})
-        return NotImplemented
+    def _replace_components(self, components) -> None:
+        self.clear()
+        self.update(components)
 
     def _validate(self):
         """Validate that all values are ScalarField with compatible metadata."""

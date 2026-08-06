@@ -58,6 +58,12 @@ Use `SpectrogramList` for several time-frequency maps that should stay separate 
 - each item can have different provenance even when you batch-plot them
 - the container does not enforce matching color semantics, normalization, or binning
 
+## List operator compatibility
+
+To match `TimeSeriesList` and `FrequencySeriesList`, binary `+` and `*` use Python list semantics and return a built-in `list`.
+They concatenate or repeat entries; they do not perform per-spectrogram arithmetic.
+Use the batch methods when an operation must preserve the `SpectrogramList` container.
+
 ## Common Misreadings
 
 1. comparing brightness across items without matching scaling and units
