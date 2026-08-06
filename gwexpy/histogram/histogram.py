@@ -80,40 +80,40 @@ class Histogram(
         )
 
     def __add__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __radd__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __sub__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __rsub__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __mul__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __rmul__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __truediv__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __rtruediv__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __iadd__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __isub__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __imul__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __itruediv__(self, other: Any) -> NoReturn:
-        return self._reject_arithmetic()
+        self._reject_arithmetic()
 
     def __init__(
         self,

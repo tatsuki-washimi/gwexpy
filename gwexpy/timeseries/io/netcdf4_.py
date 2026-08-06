@@ -538,7 +538,7 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
             row_indices.setdefault(key[0], len(row_indices))
             col_indices.setdefault(key[1], len(col_indices))
     for key, ts in tsd.items():
-        attrs = {}
+        attrs: dict[str, object] = {}
         if ts.unit is not None:
             attrs["units"] = str(ts.unit)
         var_name = _encode_netcdf_var_name(key)

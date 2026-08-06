@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
 import numpy as np
 
@@ -31,7 +31,7 @@ def _root_histogram_dtype(class_name: str) -> np.dtype | None:
     match = class_name.rsplit("TH", 1)[-1]
     if not match:
         return None
-    return _ROOT_HISTOGRAM_DTYPES.get(match[-1])
+    return cast(np.dtype | None, _ROOT_HISTOGRAM_DTYPES.get(match[-1]))
 
 
 def _unsupported_root_histogram(class_name: str) -> bool:

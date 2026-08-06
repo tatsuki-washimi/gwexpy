@@ -139,7 +139,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             mean = np.nanmean if ignore_nan else np.mean
             data = np.sqrt(mean(np.abs(trimmed) ** 2, axis=1))
         name = f"{self.name} {stride_s}-second RMS" if self.name is not None else None
-        return self.__class__(
+        return self.__class__(  # type: ignore[return-value]
             data,
             channel=self.channel,
             t0=self.t0,
