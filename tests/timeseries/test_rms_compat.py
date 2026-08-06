@@ -155,6 +155,15 @@ def test_rms_can_propagate_nan_per_window():
     assert np.isfinite(out.value[1])
 
 
+def test_rms_float32_small_amplitude_does_not_underflow():
+    """Promote float32 before squaring so physically small signals survive."""
+    ts = TimeSeries(np.full(16, 1e-23, dtype=np.float32), dt=0.25)
+
+    out = ts.rms(1)
+
+    np.testing.assert_allclose(out.value, [1e-23] * 4, rtol=1e-6, atol=0.0)
+
+
 def test_rms_name_and_channel_metadata():
     ts = _series(np.arange(100.0), sample_rate=10, name="X1:SIG", channel="X1:SIG")
     out = ts.rms(2)

@@ -127,7 +127,11 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         if stridesamp < 1:
             raise ValueError("stride is shorter than one sample period")
         nsteps = int(self.size // stridesamp)
-        trimmed = np.asarray(self.value)[: nsteps * stridesamp].reshape(
+        values = np.asarray(self.value)
+        # Square in at least double precision.  In particular, float32 values
+        # around 1e-23 underflow to zero when squared before the mean.
+        calc_dtype = np.complex128 if np.iscomplexobj(values) else np.float64
+        trimmed = values.astype(calc_dtype, copy=False)[: nsteps * stridesamp].reshape(
             nsteps, stridesamp
         )
         with warnings.catch_warnings():

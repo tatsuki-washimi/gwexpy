@@ -99,6 +99,81 @@ class TestNetCDF4Roundtrip:
         ts_in = read_timeseries_netcdf4(str(path))
         assert len(ts_in) == 20
 
+    def test_v2_roundtrip_preserves_dtype_and_exact_timing(self, tmp_path):
+        """The v2 schema stores the timing contract without datetime rounding."""
+        path = tmp_path / "v2_exact.nc"
+        t0 = 1234567890.0 + 1.0 / 3.0
+        dt = 0.1
+        values = np.array([2**53 + 1, 2**53 + 3, 2**53 + 5], dtype=np.int64)
+        source = TimeSeries(values, t0=t0, dt=dt, name="integer")
+
+        TimeSeriesDict({"integer": source}).write(str(path), format="nc")
+
+        with xr.open_dataset(path, decode_times=False) as ds:
+            assert ds.attrs["gwexpy_netcdf_schema_version"] == 2
+            assert ds.attrs["gwexpy_t0_float_hex"] == float(t0).hex()
+            assert ds.attrs["gwexpy_dt_numerator"] == str(dt.as_integer_ratio()[0])
+            assert ds.attrs["gwexpy_dt_denominator"] == str(dt.as_integer_ratio()[1])
+            assert ds.attrs["gwexpy_axis_encoding"] == "t(i)=t0+i*dt"
+            assert ds["sample"].dtype == np.dtype("int64")
+            assert ds["integer"].dtype == np.dtype("int64")
+
+        loaded = TimeSeriesDict.read(str(path), format="nc")
+        assert float(loaded["integer"].t0.value).hex() == float(t0).hex()
+        assert float(loaded["integer"].dt.value).hex() == dt.hex()
+        assert loaded["integer"].dtype == values.dtype
+        np.testing.assert_array_equal(loaded["integer"].value, values)
+
+    def test_v2_channel_selection_is_ordered_and_fail_closed(self, tmp_path):
+        """Selection validates names before values are materialized."""
+        path = tmp_path / "channels.nc"
+        tsd = TimeSeriesDict({
+            "z": TimeSeries(np.arange(3), t0=0, dt=1),
+            "a": TimeSeries(np.arange(3), t0=0, dt=1),
+        })
+        tsd.write(path, format="nc")
+
+        default = TimeSeriesDict.read(path, format="nc")
+        assert list(default) == ["a", "z"]
+        requested = TimeSeriesDict.read(path, format="nc", channels=["z", "a"])
+        assert list(requested) == ["z", "a"]
+        with pytest.raises(ValueError, match="duplicate"):
+            TimeSeriesDict.read(path, format="nc", channels=["a", "a"])
+        with pytest.raises(ValueError, match="not found"):
+            TimeSeriesDict.read(path, format="nc", channels=["missing"])
+        with pytest.raises(ValueError, match="exactly one"):
+            TimeSeries.read(path, format="nc")
+
+    def test_v2_writer_rejects_unsupported_dtype_before_creating_target(self, tmp_path):
+        path = tmp_path / "unsupported.nc"
+        invalid = TimeSeries(np.array([True, False]), t0=0, dt=1, name="flag")
+
+        with pytest.raises(TypeError, match="unsupported dtype"):
+            TimeSeriesDict({"flag": invalid}).write(path, format="nc")
+        assert not path.exists()
+
+    def test_v2_writer_rejects_heterogeneous_axes_before_creating_target(self, tmp_path):
+        path = tmp_path / "heterogeneous.nc"
+        tsd = TimeSeriesDict({
+            "a": TimeSeries(np.arange(3), t0=0, dt=0.1),
+            "b": TimeSeries(np.arange(3), t0=0, dt=0.2),
+        })
+
+        with pytest.raises(ValueError, match="identical t0 and dt"):
+            tsd.write(path, format="nc")
+        assert not path.exists()
+
+    def test_legacy_netcdf_warns_once(self, tmp_path):
+        path = tmp_path / "legacy.nc"
+        xr.Dataset(
+            {"x": xr.DataArray(np.arange(3), dims=["time"])},
+            coords={"time": np.arange(3, dtype=float)},
+        ).to_netcdf(path)
+
+        with pytest.warns(RuntimeWarning, match="unversioned legacy") as recorded:
+            TimeSeriesDict.read(path, format="nc")
+        assert len(recorded) == 1
+
     def test_bundled_fixture_has_time_coordinate(self):
         with xr.open_dataset(FIXTURE_NETCDF) as ds:
             assert "time" in ds.coords
