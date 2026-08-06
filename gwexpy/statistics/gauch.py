@@ -1,4 +1,5 @@
 """gwexpy.statistics.gauch - GauCh (Modified Kolmogorov-Smirnov test)."""
+
 from __future__ import annotations
 
 import threading
@@ -102,7 +103,7 @@ def compute_gauch(
     statistic_map = np.zeros((n_out, n_freqs))
 
     for i in range(n_out):
-        window_asds = asds[i : i + window, :] # (window, n_freqs)
+        window_asds = asds[i : i + window, :]  # (window, n_freqs)
 
         # Vectorized sigma2 estimation across frequencies
         sigma2 = np.mean(window_asds**2, axis=0) / 2.0
@@ -114,7 +115,7 @@ def compute_gauch(
         sigma2 = np.where(sigma2 > 0, sigma2, np.nan)
 
         # Sort along the temporal axis for each frequency bin
-        sorted_window = np.sort(window_asds, axis=0) # (window, n_freqs)
+        sorted_window = np.sort(window_asds, axis=0)  # (window, n_freqs)
 
         # Vectorized ECDF and TCDF calculation
         # ecdf is (window, 1) broadcasted to (window, n_freqs)
@@ -126,7 +127,7 @@ def compute_gauch(
             tcdf = 1.0 - np.exp(-(sorted_window**2) / (2.0 * sigma2))
 
         # statistic is max|ecdf - tcdf| along temporal axis
-        dn = np.max(np.abs(ecdf - tcdf), axis=0) # (n_freqs,)
+        dn = np.max(np.abs(ecdf - tcdf), axis=0)  # (n_freqs,)
         statistic_map[i, :] = dn
 
     # 3. Vectorized p-value calculation
@@ -267,4 +268,5 @@ def _get_rayleigh_lilliefors_pvalue(
     """Get the p-value using the (possibly cached) Lilliefors null distribution."""
     dist = _get_lilliefors_null_distribution(n, n_trials, rng=rng, seed=seed)
     # Floor at 1/len(dist): a Monte-Carlo p-value of exactly 0 is invalid.
-    return float(max(np.sum(dist >= dn) / len(dist), 1.0 / len(dist)))
+    exceedance = float(np.sum(dist >= dn)) / len(dist)
+    return max(exceedance, 1.0 / len(dist))
