@@ -4,6 +4,11 @@
 
 ### Behaviour-visible bug fixes
 
+- **timeseries**: `TimeSeries.rms(stride=1, *, ignore_nan=True)` again accepts
+  a positional numeric stride in seconds and returns a dimensionless trend
+  series. Quantity strides and generic reduction keywords are rejected, so the
+  public GWpy-compatible API has one unambiguous meaning (#451).
+
 - **types**: arithmetic between an `astropy` `Quantity` and a `SeriesMatrix`
   (`TimeSeriesMatrix`, `FrequencySeriesMatrix`, `SpectrogramMatrix`) now
   preserves the matrix type, its per-cell units and all axis metadata when the
@@ -665,16 +670,6 @@ FrequencySeries collection registry audit tests (#438).
 
 ### Bug fixes
 
-- Restored gwpy compatibility for `TimeSeries.rms`: the first positional
-  argument is again `stride` (seconds) and the method returns a new
-  `TimeSeries` holding one RMS value per `stride`-second window (`dt =
-  stride`), matching `gwpy.timeseries.TimeSeries.rms`. The generic numpy-style
-  `rms` (axis reduction) had shadowed it, so `data.rms(10)` raised an
-  `AxisError`. The override lives on the TimeSeries-only mixin, so matrices,
-  `Array`, and `FrequencySeries` keep the generic `rms`. gwexpy additionally
-  preserves the input unit on the result and accepts a time `Quantity` stride
-  (e.g. `10 * u.s`); irregular/sub-sample/zero strides raise a clear
-  `ValueError` (#451).
 - Fixed subplot geometry calculation in `Plot` so the expansion count always
   matches `_expand_args`: all arguments are now counted regardless of order
   (a leading Spectrogram or matrix no longer hides later containers), the

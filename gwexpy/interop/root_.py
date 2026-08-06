@@ -329,38 +329,17 @@ def from_root(
         ny = obj.GetNbinsY()
         x = np.array([obj.GetXaxis().GetBinCenter(i + 1) for i in range(nx)])
         y = np.array([obj.GetYaxis().GetBinCenter(j + 1) for j in range(ny)])
-        z = np.zeros((nx, ny))
-        ez = np.zeros((nx, ny)) if return_error else None
-
-        # Optimize reading using GetArray (returns pointer to linearized array)
-        # Array size is (nx+2)*(ny+2)
-        total_size = (nx + 2) * (ny + 2)
-        buff_ptr = obj.GetArray()
-        # Copy to numpy
-        arr_flat = np.frombuffer(buff_ptr, dtype=np.float64, count=total_size)
-
-        # Reshape to (ny+2, nx+2) to match ROOT layout [y][x]
-        arr_2d = arr_flat.reshape((ny + 2, nx + 2))
-
-        # Extract central part and transpose to getting (nx, ny) -> (Time, Freq)
-        z = arr_2d[1:-1, 1:-1].T.copy()
+        value_dtype = _root_histogram_dtype(class_name) or np.dtype("float64")
+        z = np.asarray(
+            [[obj.GetBinContent(ix + 1, iy + 1) for iy in range(ny)] for ix in range(nx)],
+            dtype=value_dtype,
+        )
 
         if return_error:
-            # GetSumw2() usually stores errors squared? No GetBinError uses fSumw2 if present.
-            # But direct access to errors might be tricky if fSumw2 is not just an array.
-            # TH2::GetBinError(bin) = sqrt(fSumw2[bin])
-            # Getting fSumw2 array directly: obj.GetSumw2().GetArray()
-            # If default errors (sqrt(N)), GetSumw2 might be empty.
-            if obj.GetSumw2N() > 0:
-                err_ptr = obj.GetSumw2().GetArray()
-                err_flat = np.frombuffer(err_ptr, dtype=np.float64, count=total_size)
-                err_2d = err_flat.reshape((ny + 2, nx + 2))
-                # sqrt needed? fSumw2 stores variance (sigma^2).
-                # GetBinError returns sqrt(content) if Sumw2 not set, or sqrt(Sumw2) if set.
-                ez = np.sqrt(err_2d[1:-1, 1:-1].T).copy()
-            else:
-                # Default Poisson errors
-                ez = np.sqrt(z)
+            ez = np.asarray(
+                [[obj.GetBinError(ix + 1, iy + 1) for iy in range(ny)] for ix in range(nx)],
+                dtype=np.float64,
+            )
 
         # In GWpy Spectrogram, typically shape is (Time, Freq)
         name = obj.GetName()

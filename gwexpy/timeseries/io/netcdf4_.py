@@ -10,6 +10,7 @@ import logging
 import math
 import warnings
 from collections import OrderedDict
+from fractions import Fraction
 
 import numpy as np
 
@@ -162,7 +163,8 @@ def _read_v2_timing(ds) -> tuple[float, float]:
     gps_nanoseconds = int(attrs["gwexpy_t0_gps_nanoseconds"])
     if not 0 <= gps_nanoseconds < 1_000_000_000:
         raise ValueError("NetCDF v2 GPS nanoseconds must be normalized")
-    if abs((gps_seconds + gps_nanoseconds / 1_000_000_000) - t0) > 0.5e-9:
+    gps_time = Fraction(gps_seconds) + Fraction(gps_nanoseconds, 1_000_000_000)
+    if abs(gps_time - Fraction.from_float(t0)) > Fraction(1, 2_000_000_000):
         raise ValueError("NetCDF v2 GPS timing disagrees with t0 float metadata")
     return t0, dt
 
@@ -322,7 +324,10 @@ def read_timeseriesdict_netcdf4(
     xr_kwargs = {k: v for k, v in kwargs.items() if k not in _gwpy_keys}
     ds = xr.open_dataset(str(source), **xr_kwargs)
     try:
-        is_v2 = ds.attrs.get("gwexpy_netcdf_schema_version") == _NETCDF_SCHEMA_VERSION
+        schema_version = ds.attrs.get("gwexpy_netcdf_schema_version")
+        if schema_version is not None and schema_version != _NETCDF_SCHEMA_VERSION:
+            raise ValueError(f"unsupported NetCDF schema version: {schema_version}")
+        is_v2 = schema_version == _NETCDF_SCHEMA_VERSION
         if is_v2:
             tc = "sample"
             if tc not in ds.coords:
@@ -435,7 +440,10 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
     xr_kwargs = {k: v for k, v in kwargs.items() if k not in _gwpy_keys}
     ds = xr.open_dataset(str(source), **xr_kwargs)
     try:
-        is_v2 = ds.attrs.get("gwexpy_netcdf_schema_version") == _NETCDF_SCHEMA_VERSION
+        schema_version = ds.attrs.get("gwexpy_netcdf_schema_version")
+        if schema_version is not None and schema_version != _NETCDF_SCHEMA_VERSION:
+            raise ValueError(f"unsupported NetCDF schema version: {schema_version}")
+        is_v2 = schema_version == _NETCDF_SCHEMA_VERSION
         if is_v2:
             tc = "sample"
             if tc not in ds.coords or ds[tc].dtype != np.dtype("int64"):
@@ -472,7 +480,9 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
             matrix_vars.append((row_key, col_key, row_index, col_index, da))
 
         if not matrix_vars:
-            tsd = read_timeseriesdict_netcdf4(source, **kwargs)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
+                tsd = read_timeseriesdict_netcdf4(source, **kwargs)
             return apply_time_selection(tsd.to_matrix(), start, end)
 
         if is_v2:
