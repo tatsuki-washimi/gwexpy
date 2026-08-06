@@ -5,6 +5,7 @@ This module contains the base TimeSeries class with essential functionality:
 - Regularity checking (is_regular, _check_regular)
 - Peak finding
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Union
@@ -51,13 +52,14 @@ def _regular_crop_slice(
             return default
         position = (bound - t0) / dt
         nearest = round(position)
-        cancellation = (
-            4 * np.spacing(max(1.0, abs(t0), abs(bound))) / abs(dt)
-        )
-        index = nearest if abs(position - nearest) <= cancellation else np.floor(position)
+        # Only a bit-exact reconstruction is on-grid.  A tolerance based on
+        # the large epoch can incorrectly promote a lower off-grid bound to
+        # the next sample, violating GWpy's documented floor behaviour.
+        index = nearest if bound == t0 + nearest * dt else np.floor(position)
         return int(np.clip(index, 0, size))
 
     return slice(_index(start, 0), _index(end, size))
+
 
 if TYPE_CHECKING:
     from gwexpy.timeseries.timeseries import TimeSeries
@@ -101,9 +103,7 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
             t0_quantity = self.t0
             dt = float(dt_quantity.value)
             t0 = float(t0_quantity.value)
-            sample_slice = _regular_crop_slice(
-                start, end, t0=t0, dt=dt, size=len(self)
-            )
+            sample_slice = _regular_crop_slice(start, end, t0=t0, dt=dt, size=len(self))
             result = self[sample_slice]
         except (AttributeError, TypeError, u.UnitConversionError):
             # Preserve GWpy's irregular-axis behavior; the positional contract

@@ -10,6 +10,7 @@ The implementation is modularized across several files:
 
 This module integrates all Mixins into a single TimeSeries class.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -44,7 +45,6 @@ from ._statistics import StatisticsMixin
 # Import legacy for remaining methods
 
 if TYPE_CHECKING:
-
     from gwexpy.timeseries import TimeSeriesDict
 
 
@@ -150,7 +150,17 @@ class TimeSeries(
         """
         fmt = kwargs.get("format")
         source_path = Path(source) if isinstance(source, (str, Path)) else None
-        if fmt == "csv" or (fmt is None and source_path is not None and source_path.suffix.lower() == ".csv"):
+        if fmt in {"nc", "netcdf4"}:
+            from .io.netcdf4_ import read_timeseries_netcdf4
+
+            reader_kwargs = dict(kwargs)
+            reader_kwargs.pop("format", None)
+            return cls(read_timeseries_netcdf4(source, **reader_kwargs))
+        if fmt == "csv" or (
+            fmt is None
+            and source_path is not None
+            and source_path.suffix.lower() == ".csv"
+        ):
             from .io.csv_enhanced import read_timeseries_csv
 
             return read_timeseries_csv(source, **kwargs)
@@ -200,7 +210,11 @@ class TimeSeries(
         """
         fmt = kwargs.get("format")
         target_path = Path(target) if isinstance(target, (str, Path)) else None
-        if fmt == "csv" or (fmt is None and target_path is not None and target_path.suffix.lower() == ".csv"):
+        if fmt == "csv" or (
+            fmt is None
+            and target_path is not None
+            and target_path.suffix.lower() == ".csv"
+        ):
             from .io.csv_enhanced import write_timeseries_csv
 
             write_kwargs = dict(kwargs)
@@ -291,7 +305,6 @@ class TimeSeries(
         from gwexpy.io.pickle_compat import timeseries_reduce_args
 
         return timeseries_reduce_args(self)
-
 
     # Basic operations (tail, crop, append, find_peaks) are inherited from TimeSeriesCore
 

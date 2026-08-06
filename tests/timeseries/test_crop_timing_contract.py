@@ -64,7 +64,9 @@ def test_crop_large_gps_exact_grid_matches_positional_slice(
 
     np.testing.assert_array_equal(cropped.value, expected)
     assert _float64_bits(float(cropped.t0.value)) == _float64_bits(start)
-    assert _float64_bits(float(cropped.dt.value)) == _float64_bits(float(source.dt.value))
+    assert _float64_bits(float(cropped.dt.value)) == _float64_bits(
+        float(source.dt.value)
+    )
 
 
 @pytest.mark.parametrize("kind", ["series", "matrix"])
@@ -92,3 +94,43 @@ def test_crop_floor_rule_clamps_off_grid_and_outside_bounds(kind: str) -> None:
 
     after = source.crop(t0 + 200 * dt, t0 + 220 * dt)
     assert after.shape[-1] == 0
+
+
+@pytest.mark.parametrize("kind", ("series", "matrix"))
+def test_crop_one_ulp_below_an_exact_boundary_uses_floor(kind: str) -> None:
+    """Only the exact floating grid point may snap to its sample index."""
+    t0 = 1_234_567_890.1234567
+    dt = 1.0 / 30.0
+    values = np.arange(256, dtype=np.float64)
+    source = (
+        TimeSeries(values, t0=t0, dt=dt)
+        if kind == "series"
+        else TimeSeriesMatrix(values.reshape(1, 1, -1), t0=t0, dt=dt)
+    )
+    exact = t0 + 100 * dt
+    below = np.nextafter(exact, -np.inf)
+
+    cropped = source.crop(below, exact + dt)
+
+    np.testing.assert_array_equal(cropped.value, source.value[..., 99:101])
+
+
+def test_crop_psd_matches_the_positional_slice_at_a_large_gps_epoch() -> None:
+    """The timing selection must not perturb the Welch input samples (#617)."""
+    rng = np.random.default_rng(617)
+    t0 = 1_234_567_890.1234567
+    dt = 1.0 / 30.0
+    source = TimeSeries(rng.standard_normal(768), t0=t0, dt=dt)
+    start = t0 + 100 * dt
+    end = t0 + 600 * dt
+
+    cropped = source.crop(start, end)
+    positional = source[100:600]
+    cropped_psd = cropped.psd(fftlength=3.0, overlap=1.0, window="hann")
+    positional_psd = positional.psd(fftlength=3.0, overlap=1.0, window="hann")
+
+    np.testing.assert_array_equal(cropped.value, positional.value)
+    np.testing.assert_array_equal(
+        cropped_psd.frequencies.value, positional_psd.frequencies.value
+    )
+    np.testing.assert_allclose(cropped_psd.value, positional_psd.value, rtol=0, atol=0)

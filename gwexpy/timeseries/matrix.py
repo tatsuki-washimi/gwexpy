@@ -172,6 +172,11 @@ class TimeSeriesMatrix(  # type: ignore[misc]
                 raise ValueError(f"No data found in {gwf_format} source: {source}")
             return tsd.to_matrix()
 
+        if normalized_format in {"nc", "netcdf4"}:
+            from .io.netcdf4_ import read_timeseriesmatrix_netcdf4
+
+            return read_timeseriesmatrix_netcdf4(source, **read_kwargs)
+
         if (
             normalized_format is None
             and not read_args

@@ -171,6 +171,32 @@ class TestNetCDF4Roundtrip:
         with pytest.raises(ValueError, match="exactly one"):
             TimeSeries.read(path, format="nc")
 
+    @pytest.mark.parametrize("reader", (TimeSeries, TimeSeriesDict, TimeSeriesMatrix))
+    def test_bounded_v2_read_matches_the_exact_positional_crop(self, tmp_path, reader):
+        """Reader bounds use the same large-GPS crop contract as direct reads."""
+        path = tmp_path / "bounded.nc"
+        t0 = 1_234_567_890.1234567
+        dt = 1.0 / 30.0
+        source = TimeSeries(np.arange(768), t0=t0, dt=dt, name="x")
+        if reader is TimeSeriesMatrix:
+            TimeSeriesMatrix(source.value.reshape(1, 1, -1), t0=t0, dt=dt).write(
+                path, format="nc"
+            )
+        else:
+            TimeSeriesDict({"x": source}).write(path, format="nc")
+        start = t0 + 100 * dt
+        end = t0 + 600 * dt
+
+        loaded = reader.read(path, format="nc", start=start, end=end)
+
+        if reader is TimeSeries:
+            values = loaded.value
+        elif reader is TimeSeriesDict:
+            values = loaded["x"].value
+        else:
+            values = loaded.value[0, 0]
+        np.testing.assert_array_equal(values, source.value[100:600])
+
     def test_v2_writer_rejects_unsupported_dtype_before_creating_target(self, tmp_path):
         path = tmp_path / "unsupported.nc"
         invalid = TimeSeries(np.array([True, False]), t0=0, dt=1, name="flag")
@@ -217,6 +243,31 @@ class TestNetCDF4Roundtrip:
 
         assert isinstance(loaded, reader)
         assert len(recorded) == 1
+
+    @pytest.mark.parametrize("reader", (TimeSeries, TimeSeriesDict, TimeSeriesMatrix))
+    def test_multi_source_legacy_netcdf_warns_once_per_top_level_read(
+        self, tmp_path, reader
+    ):
+        """One public read of several legacy files must emit one warning."""
+        first = tmp_path / "legacy-first.nc"
+        second = tmp_path / "legacy-second.nc"
+        for path, samples in ((first, np.arange(2.0)), (second, np.arange(2.0, 4.0))):
+            xr.Dataset(
+                {"x": xr.DataArray(samples, dims=["time"])},
+                coords={"time": samples},
+            ).to_netcdf(path)
+
+        with pytest.warns(RuntimeWarning, match="unversioned legacy") as recorded:
+            loaded = reader.read([str(first), str(second)], format="nc")
+
+        assert isinstance(loaded, reader)
+        legacy_warnings = [
+            warning
+            for warning in recorded
+            if str(warning.message)
+            == "Reading unversioned legacy NetCDF; timing precision is limited."
+        ]
+        assert len(legacy_warnings) == 1
 
     def test_bundled_fixture_has_time_coordinate(self):
         with xr.open_dataset(FIXTURE_NETCDF) as ds:

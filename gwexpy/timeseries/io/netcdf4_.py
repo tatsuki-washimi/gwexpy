@@ -3,6 +3,7 @@
 Reads variables that have a ``time`` dimension and converts them to
 :class:`~gwexpy.timeseries.TimeSeries`.
 """
+
 from __future__ import annotations
 
 import json
@@ -11,6 +12,8 @@ import math
 import warnings
 from collections import OrderedDict
 from fractions import Fraction
+from functools import partial
+from os import PathLike
 
 import numpy as np
 
@@ -30,6 +33,15 @@ logger = logging.getLogger(__name__)
 _MATRIX_VAR_PREFIX = "__gwexpy_matrix__"
 _NETCDF_SCHEMA_VERSION = 2
 _NETCDF_AXIS_ENCODING = "t(i)=t0+i*dt"
+_LEGACY_WARNING = "Reading unversioned legacy NetCDF; timing precision is limited."
+
+
+def _record_or_warn_legacy_read(marker: list[bool] | None) -> None:
+    """Emit a legacy warning once, or mark it for a multi-source parent."""
+    if marker is not None:
+        marker[0] = True
+        return
+    warnings.warn(_LEGACY_WARNING, RuntimeWarning, stacklevel=3)
 
 
 def _to_json_native(val):
@@ -263,7 +275,9 @@ def _legacy_timing(ds, tc) -> tuple[float, float]:
         t0_datetime = _dt.datetime.fromtimestamp(t0_unix_ns / 1e9, tz=_dt.UTC)
         t0 = datetime_to_gps(t0_datetime)
         dt = (
-            float(np.median(np.diff(time_vals.astype("datetime64[ns]").astype(np.int64))))
+            float(
+                np.median(np.diff(time_vals.astype("datetime64[ns]").astype(np.int64)))
+            )
             / 1e9
             if len(time_vals) > 1
             else 1.0
@@ -281,6 +295,7 @@ def read_timeseriesdict_netcdf4(
     channels=None,
     unit=None,
     time_coord=None,
+    _legacy_warning_marker: list[bool] | None = None,
     **kwargs,
 ) -> TimeSeriesDict:
     """Read a NetCDF4 file into a TimeSeriesDict.
@@ -312,24 +327,27 @@ def read_timeseriesdict_netcdf4(
 
     multi = expand_multi_source(source)
     if multi is not None:
-        return apply_time_selection(
-            read_multi_dict(
+        legacy_warning_marker = [False]
+        result = read_multi_dict(
+            partial(
                 read_timeseriesdict_netcdf4,
-                multi,
-                "nc",
-                channels=channels,
-                unit=unit,
-                time_coord=time_coord,
-                **kwargs,
+                _legacy_warning_marker=legacy_warning_marker,
             ),
-            start,
-            end,
+            multi,
+            "nc",
+            channels=channels,
+            unit=unit,
+            time_coord=time_coord,
+            **kwargs,
         )
+        if legacy_warning_marker[0]:
+            _record_or_warn_legacy_read(_legacy_warning_marker)
+        return apply_time_selection(result, start, end)
 
     xr = _import_xarray()
 
     # gwpy's registry may pass a file-like object; extract the path.
-    if hasattr(source, "name"):
+    if hasattr(source, "name") and not isinstance(source, (str, PathLike)):
         source = source.name
 
     # Strip gwpy-injected kwargs that xarray.open_dataset does not accept.
@@ -346,11 +364,7 @@ def read_timeseriesdict_netcdf4(
             _validate_v2_sample_coordinate(ds)
             t0, dt = _read_v2_timing(ds)
         else:
-            warnings.warn(
-                "Reading unversioned legacy NetCDF; timing precision is limited.",
-                RuntimeWarning,
-                stacklevel=2,
-            )
+            _record_or_warn_legacy_read(_legacy_warning_marker)
             tc = time_coord or _time_coord_name(ds)
             if tc is None:
                 raise ValueError(
@@ -423,7 +437,9 @@ def read_timeseries_netcdf4(source, **kwargs) -> TimeSeries:
     return tsd[next(iter(tsd.keys()))]
 
 
-def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
+def read_timeseriesmatrix_netcdf4(
+    source, *, _legacy_warning_marker: list[bool] | None = None, **kwargs
+) -> TimeSeriesMatrix:
     """Read a NetCDF4 file and convert its channels to a matrix.
 
     ``start``/``end`` are honoured by cropping the assembled matrix, matching
@@ -435,15 +451,25 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
         sources = list(source)
         if not sources:
             raise ValueError("no NetCDF4 files provided")
-        matrices = [read_timeseriesmatrix_netcdf4(s, **kwargs) for s in sources]
+        legacy_warning_marker = [False]
+        matrices = [
+            read_timeseriesmatrix_netcdf4(
+                source_item,
+                _legacy_warning_marker=legacy_warning_marker,
+                **kwargs,
+            )
+            for source_item in sources
+        ]
         merged = matrices[0]
         for mat in matrices[1:]:
             merged = merged.append(mat, inplace=False, gap="pad", pad=np.nan)
+        if legacy_warning_marker[0]:
+            _record_or_warn_legacy_read(_legacy_warning_marker)
         return apply_time_selection(merged, start, end)
 
     xr = _import_xarray()
 
-    if hasattr(source, "name"):
+    if hasattr(source, "name") and not isinstance(source, (str, PathLike)):
         source = source.name
 
     _gwpy_keys = {"start", "end", "pad", "gap", "nproc", "scaled"}
@@ -459,11 +485,7 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
             _validate_v2_sample_coordinate(ds)
             t0, dt = _read_v2_timing(ds)
         else:
-            warnings.warn(
-                "Reading unversioned legacy NetCDF; timing precision is limited.",
-                RuntimeWarning,
-                stacklevel=2,
-            )
+            _record_or_warn_legacy_read(_legacy_warning_marker)
             tc = kwargs.get("time_coord") or _time_coord_name(ds)
             if tc is None:
                 raise ValueError(
@@ -495,7 +517,10 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
             return apply_time_selection(tsd.to_matrix(), start, end)
 
         if is_v2:
-            if any(row_index is None or col_index is None for _, _, row_index, col_index, _ in matrix_vars):
+            if any(
+                row_index is None or col_index is None
+                for _, _, row_index, col_index, _ in matrix_vars
+            ):
                 raise ValueError("NetCDF v2 matrix cell is missing row/column index")
             matrix_vars.sort(key=lambda item: (int(item[2]), int(item[3])))
         row_keys = list(OrderedDict.fromkeys(row for row, _, _, _, _ in matrix_vars))
@@ -505,7 +530,8 @@ def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
         unit = first.attrs.get("units") or first.attrs.get("unit")
         n_samples = len(ds[tc])
         data = np.empty(
-            (len(row_keys), len(col_keys), n_samples), dtype=np.asarray(first.values).dtype
+            (len(row_keys), len(col_keys), n_samples),
+            dtype=np.asarray(first.values).dtype,
         )
         for row_key, col_key, _, _, da in matrix_vars:
             i = row_keys.index(row_key)
