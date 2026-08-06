@@ -422,6 +422,22 @@ class HistogramList(ListMapMixin, HistogramBaseList[Histogram]):
 
     EntryClass = Histogram
 
+    @staticmethod
+    def _reject_multiplication() -> None:
+        raise TypeError(
+            "HistogramList multiplication is not supported; list repetition "
+            "would duplicate measurements."
+        )
+
+    def __mul__(self, other):
+        self._reject_multiplication()
+
+    def __rmul__(self, other):
+        self._reject_multiplication()
+
+    def __imul__(self, other):
+        self._reject_multiplication()
+
     rebin = _make_list_map_method("rebin", doc="Rebin each Histogram in the list. Returns a HistogramList.")
     fill = _make_list_map_method("fill", doc="Fill each Histogram in the list with new data.")
     to_density = _make_list_plain_method(

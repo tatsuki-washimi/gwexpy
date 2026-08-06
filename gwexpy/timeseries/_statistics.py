@@ -7,7 +7,7 @@ and classic correlations (Pearson, Kendall, MIC).
 from __future__ import annotations
 
 import warnings
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -18,25 +18,17 @@ from gwexpy.types._stats import StatisticalMethodsMixin
 
 from ._typing import TimeSeriesAttrs
 
+if TYPE_CHECKING:
+    from .timeseries import TimeSeries
 
-def _stride_to_seconds(stride: Any) -> float:
-    """Coerce an RMS ``stride`` to a float number of seconds.
 
-    Accepts a plain number (interpreted as seconds), a dimensionless
-    `~astropy.units.Quantity` (seconds), or a time ``Quantity`` such as
-    ``10 * u.s``.
-    """
-    if isinstance(stride, (int, float, np.number)):
-        return float(stride)
-    q = u.Quantity(stride)
-    if q.unit == u.dimensionless_unscaled:
-        return float(q.value)
-    try:
-        return float(q.to("s").value)
-    except u.UnitConversionError as exc:
-        raise ValueError(
-            "stride must be given in seconds or as a time Quantity"
-        ) from exc
+def _stride_to_seconds(stride: float) -> float:
+    """Validate a numeric RMS stride expressed in seconds."""
+    if isinstance(stride, u.Quantity) or not isinstance(
+        stride, (int, float, np.integer, np.floating)
+    ):
+        raise TypeError("stride must be numeric seconds, not a Quantity or container")
+    return float(stride)
 
 
 class GrangerResult(float):
@@ -90,7 +82,9 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     # Root-mean-square (gwpy-compatible)
     # ===============================
 
-    def rms(self, stride: Any = 1) -> Any:
+    def rms(  # type: ignore[override]
+        self, stride: float = 1, *, ignore_nan: bool = True
+    ) -> TimeSeries:
         """Calculate the root-mean-square value once per ``stride`` seconds.
 
         gwpy-compatible: returns a new `TimeSeries` holding one RMS value per
@@ -102,10 +96,11 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         Parameters
         ----------
-        stride : `float` or `~astropy.units.Quantity`, optional
-            Stride (seconds) between RMS calculations. Accepts a plain number
-            (seconds) or a time ``Quantity`` such as ``10 * u.s``. Defaults to
-            ``1`` second.
+        stride : `float`, optional
+            Stride in seconds between RMS calculations.  Quantity-like values
+            are intentionally rejected to keep the public API narrow.
+        ignore_nan : `bool`, optional
+            If true (the default), calculate each window from finite samples.
 
         Returns
         -------
@@ -121,15 +116,8 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         Notes
         -----
-        Two intentional, documented improvements over `gwpy`:
-
-        * the input physical unit is **preserved** on the result (the RMS of a
-          signal in metres is in metres), whereas gwpy returns a dimensionless
-          series;
-        * a time ``Quantity`` stride (e.g. ``10 * u.s``) is accepted, whereas
-          gwpy raises ``TypeError``.
-
-        For complex data the gwpy convention ``sqrt(mean(|x|**2))`` is used.
+        The result is dimensionless, matching GWpy.  For complex data the GWpy
+        convention ``sqrt(mean(|x|**2))`` is used.
 
         """
         if getattr(self, "sample_rate", None) is None:
@@ -142,7 +130,10 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         trimmed = np.asarray(self.value)[: nsteps * stridesamp].reshape(
             nsteps, stridesamp
         )
-        data = np.sqrt(np.mean(np.abs(trimmed) ** 2, axis=1))
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", "Mean of empty slice", RuntimeWarning)
+            mean = np.nanmean if ignore_nan else np.mean
+            data = np.sqrt(mean(np.abs(trimmed) ** 2, axis=1))
         name = f"{self.name} {stride_s}-second RMS" if self.name is not None else None
         return self.__class__(
             data,
@@ -150,7 +141,6 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             t0=self.t0,
             name=name,
             sample_rate=1.0 / stride_s,
-            unit=self.unit,
         )
 
     # ===============================

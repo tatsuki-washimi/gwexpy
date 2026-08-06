@@ -178,7 +178,8 @@ def read_timeseriesdict_ndscope_hdf5(
     end : float, optional
         GPS end time for cropping.
     **kwargs
-        Additional keyword arguments reserved for compatibility with I/O dispatch.
+        No dataset creation options are supported in v0.1.13.  Unknown
+        keywords raise before the target is opened.
 
     Returns
     -------
@@ -286,6 +287,10 @@ def write_timeseriesdict_ndscope_hdf5(
         Additional keyword arguments reserved for compatibility with I/O dispatch.
 
     """
+    if kwargs:
+        names = ", ".join(sorted(kwargs))
+        raise TypeError(f"Unsupported NDScope writer keyword arguments: {names}")
+
     mode = "w" if overwrite else "w-"
     # group_meta tracks the first-seen metadata for each group so that
     # subsequent series in the same group can be validated for consistency.

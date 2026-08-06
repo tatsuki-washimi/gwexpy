@@ -2,11 +2,13 @@
 
 gwpy's ``TimeSeries.rms(stride)`` takes ``stride`` (seconds) as the first
 positional argument and returns a new ``TimeSeries`` holding one RMS value per
-``stride``-second window (``dt = stride``).  These tests pin that behaviour for
-the gwexpy override, plus the documented gwexpy enhancements (time ``Quantity``
-stride and unit preservation).
+``stride``-second window (``dt = stride``).  GWexpy retains its existing
+``ignore_nan`` control but otherwise keeps the public surface deliberately
+narrow: numeric seconds only and a dimensionless result.
 """
 from __future__ import annotations
+
+import inspect
 
 import numpy as np
 import pytest
@@ -71,39 +73,33 @@ def test_rms_matches_gwpy_reference():
 
 
 # ---------------------------------------------------------------------------
-# gwexpy enhancements (documented divergences from gwpy)
+# v0.1.13 public contract
 # ---------------------------------------------------------------------------
 
-def test_rms_accepts_time_quantity_stride():
+def test_rms_signature_is_narrow_and_keyword_only_for_ignore_nan():
+    signature = inspect.signature(TimeSeries.rms)
+    assert list(signature.parameters) == ["self", "stride", "ignore_nan"]
+    assert signature.parameters["stride"].kind is inspect.Parameter.POSITIONAL_OR_KEYWORD
+    assert signature.parameters["ignore_nan"].kind is inspect.Parameter.KEYWORD_ONLY
+
+
+def test_rms_rejects_quantity_stride():
     ts = _series(np.arange(1000.0), sample_rate=100)
-    np.testing.assert_allclose(ts.rms(2).value, ts.rms(2 * u.s).value)
-    # other time units convert too
-    np.testing.assert_allclose(ts.rms(2).value, ts.rms(2000 * u.ms).value)
+    with pytest.raises(TypeError, match="numeric seconds"):
+        ts.rms(2 * u.s)
 
 
-def test_rms_preserves_unit():
+def test_rms_is_dimensionless_for_unit_bearing_input():
     ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m)
     out = ts.rms(2)
-    assert out.unit == u.m
+    assert out.unit == u.dimensionless_unscaled
 
 
-def test_rms_preserves_derived_unit():
-    ts = _series(np.arange(1000.0), sample_rate=100, unit=u.m / u.s)
-    assert ts.rms(2).unit == u.m / u.s
-
-
-def test_rms_accepts_dimensionless_quantity_stride():
-    # a dimensionless Quantity is read as a number of seconds (gwpy parity)
+@pytest.mark.parametrize("keyword", ["axis", "keepdims", "unit"])
+def test_rms_rejects_out_of_contract_keywords(keyword):
     ts = _series(np.arange(1000.0), sample_rate=100)
-    np.testing.assert_allclose(
-        ts.rms(2).value, ts.rms(2 * u.dimensionless_unscaled).value
-    )
-
-
-def test_rms_non_time_quantity_stride_raises():
-    ts = _series(np.arange(100.0), sample_rate=10)
-    with pytest.raises(ValueError):
-        ts.rms(2 * u.Hz)
+    with pytest.raises(TypeError):
+        ts.rms(**{keyword: 1})
 
 
 # ---------------------------------------------------------------------------
@@ -143,11 +139,18 @@ def test_rms_irregular_series_raises():
         ts.rms(1)
 
 
-def test_rms_propagates_nan_per_window():
-    # gwpy uses plain mean (no nan-ignore): a NaN taints only its own window.
+def test_rms_ignores_nan_per_window_by_default():
     data = np.array([1.0, 2.0, np.nan, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
     ts = _series(data, sample_rate=5)  # 2 s -> two 1 s windows
     out = ts.rms(1)
+    assert np.isfinite(out.value[0])
+    assert np.isfinite(out.value[1])
+
+
+def test_rms_can_propagate_nan_per_window():
+    data = np.array([1.0, 2.0, np.nan, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
+    ts = _series(data, sample_rate=5)
+    out = ts.rms(1, ignore_nan=False)
     assert np.isnan(out.value[0])
     assert np.isfinite(out.value[1])
 

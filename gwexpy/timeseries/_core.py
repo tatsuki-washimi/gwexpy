@@ -72,7 +72,14 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
                 end = end[0]
             end = float(end)
 
-        return super().crop(start=start, end=end, copy=copy)
+        result = super().crop(start=start, end=end, copy=copy)
+        # GWpy reconstructs ``_dx`` from the cropped materialized index.  For
+        # decimal binary64 spacings such as 0.1 that reconstruction can change
+        # the bit pattern even though crop only selects existing samples.  A
+        # changed spacing changes sample_rate and can alter FFT binning, so keep
+        # the source spacing rather than deriving a new one from coordinates.
+        result._dx = self._dx.copy()
+        return result
 
     def append(
         self,

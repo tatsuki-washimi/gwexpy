@@ -29,14 +29,14 @@ GitHub issue [#451] を起点に、`TimeSeries.rms` の `gwpy` 後方互換性�
     窓ごとに `sqrt(mean(|x|**2))`）。ベクトル化 reshape は `gwpy` の Python ループと等価。
     実 `gwpy`（`/tmp/venv`）に対し `np.allclose` で一致確認済み。
   - 複素データは `np.abs(trimmed)**2`（= `gwpy` の `np.abs(...)**2`）で実数値を返す。
-- **`gwpy` に対する意図的・文書化済みの改善**（非破壊）:
-  1. 入力の物理単位を結果に **保持**（`gwpy` は無次元化する）。
-  2. 時間 `Quantity` stride（例 `10*u.s`）を受理（`gwpy` は `TypeError`）。
-  3. サブサンプル/ゼロ/負の stride は明示的な `ValueError`（`gwpy` は不透明な
-     `ZeroDivisionError`）。不規則サンプリング系列も `ValueError`。
-  4. 無名系列の結果名は `None`（`gwpy` は文字列 `"None 1-second RMS"`）。
+- **v0.1.13 の意図的な API 縮小**:
+  1. 結果は常に無次元で、GWpy の既定と一致する。
+  2. stride は数値の秒だけを受理し、`Quantity` は `TypeError` とする。
+  3. サブサンプル/ゼロ/負の stride は明示的な `ValueError`。不規則サンプリング系列も
+     `ValueError`。
+  4. `ignore_nan=True` を keyword-only で維持し、`axis`、`keepdims`、`unit` は受理しない。
 - **テスト**: `tests/timeseries/test_rms_compat.py`（`gwpy` 参照一致・位置 int 回帰・
-  単位保持・Quantity stride・各エッジケース）。`tests/types/test_stats_mixin.py::
+  無次元出力・Quantity 拒否・各エッジケース）。`tests/types/test_stats_mixin.py::
   test_rms_with_unit` は実 `TimeSeries` を使う唯一のケースだったため、汎用 mixin を保持する
   `Series` に付け替え（`TimeSeries` の挙動は `test_rms_compat.py` が担当）。
 

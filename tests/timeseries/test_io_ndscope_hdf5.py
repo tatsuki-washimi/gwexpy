@@ -14,6 +14,23 @@ from gwexpy.timeseries.io.ndscope_hdf5 import (
     read_timeseriesdict_ndscope_hdf5,
 )
 
+
+def test_ndscope_writer_rejects_dataset_options_before_opening_target(monkeypatch, tmp_path):
+    """Unsupported kwargs must not be accepted-and-ignored (#590)."""
+    import gwexpy.timeseries.io.ndscope_hdf5 as ndscope
+
+    series = TimeSeries([1.0, 2.0], sample_rate=1.0, t0=0.0)
+    source = TimeSeriesDict({"H1:TEST": series})
+
+    def fail_if_opened(*args, **kwargs):
+        raise AssertionError("target must not be opened for invalid options")
+
+    monkeypatch.setattr(ndscope.h5py, "File", fail_if_opened)
+    with pytest.raises(TypeError, match="a, z"):
+        ndscope.write_timeseriesdict_ndscope_hdf5(
+            source, tmp_path / "out.hdf5", z=True, a=False
+        )
+
 SAMPLE_HDF5 = Path(__file__).parent.parent / "fixtures" / "data" / "ndscope.h5"
 LOCAL_NDSCOPE_HDF5 = (
     Path(__file__).parent.parent / "fixtures" / "data" / "test_seis_ndscope.h5"

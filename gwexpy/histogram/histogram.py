@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, NoReturn, cast
 
 import numpy as np
 from astropy import units as u
@@ -64,6 +64,56 @@ class Histogram(
     <Histogram (nbins=2, unit=)>
 
     """
+
+    # Make Quantity-left operations fail through NumPy dispatch as well as the
+    # explicit Python operators below.  Without this, Astropy inspects the
+    # histogram's ``unit``/``value`` attributes and raises a conversion error
+    # after partially treating it as an array-like operand.
+    __array_ufunc__ = None
+
+    @staticmethod
+    def _reject_arithmetic() -> NoReturn:
+        """Reject unfinished arithmetic before an operand can coerce us."""
+        raise TypeError(
+            "Histogram arithmetic is not supported; transform values explicitly "
+            "until uncertainty propagation is defined."
+        )
+
+    def __add__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __radd__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __sub__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __rsub__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __mul__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __rmul__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __truediv__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __rtruediv__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __iadd__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __isub__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __imul__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
+
+    def __itruediv__(self, other: Any) -> NoReturn:
+        return self._reject_arithmetic()
 
     def __init__(
         self,

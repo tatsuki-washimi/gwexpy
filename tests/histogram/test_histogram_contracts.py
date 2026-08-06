@@ -7,6 +7,40 @@ import gwexpy.segments as gwexpy_segments
 from gwexpy.histogram import Histogram, HistogramDict, HistogramList
 
 
+@pytest.mark.parametrize("operand", [2, 2.0, 2 * u.s, u.s])
+def test_histogram_numeric_arithmetic_is_fail_closed(operand):
+    """v0.1.13 does not expose unfinished Histogram arithmetic (#579)."""
+    histogram = Histogram([1.0, 2.0], [0.0, 1.0, 2.0])
+    for operation in (
+        lambda: histogram + operand,
+        lambda: operand + histogram,
+        lambda: histogram - operand,
+        lambda: operand - histogram,
+        lambda: histogram * operand,
+        lambda: operand * histogram,
+        lambda: histogram / operand,
+        lambda: operand / histogram,
+    ):
+        with pytest.raises(TypeError):
+            operation()
+
+
+def test_histogram_list_multiplication_cannot_repeat_entries():
+    """List's inherited repetition would silently duplicate measurements."""
+    histogram = Histogram([1.0, 2.0], [0.0, 1.0, 2.0])
+    items = HistogramList([histogram])
+
+    with pytest.raises(TypeError):
+        items * 2
+    with pytest.raises(TypeError):
+        2 * items
+    with pytest.raises(TypeError):
+        items *= 2
+
+    assert len(items) == 1
+    assert items[0] is histogram
+
+
 def test_quantity_aliases_bin_geometry_and_passive_metadata_contract():
     channel = object()
     hist = Histogram(

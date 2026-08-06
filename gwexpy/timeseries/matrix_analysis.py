@@ -593,7 +593,13 @@ class TimeSeriesMatrixAnalysisMixin:
             TimeSeriesMatrixAnalysisMixin._ResampleCropCapable,
             super(),
         )
-        return parent.crop(start=start_float, end=end_float, copy=copy)
+        result = parent.crop(start=start_float, end=end_float, copy=copy)
+        # ``SeriesMatrixAnalysisMixin.crop`` rebuilds its regular index from
+        # the selected coordinates.  Preserve the original binary64 spacing:
+        # crop is a selection operation and must not perturb sampling metadata
+        # (#617).
+        result._dx = self._dx.copy()
+        return result
 
     def pca_fit(self, **kwargs: Any) -> Any:
         """Fit PCA."""
