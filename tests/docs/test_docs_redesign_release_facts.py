@@ -21,6 +21,7 @@ def test_redesign_changelog_includes_the_canonical_release_history() -> None:
         r"^## (\[[^\]]+\] - \d{4}-\d{2}-\d{2})$", canonical, re.MULTILINE
     )
     assert canonical_releases == [
+        "[0.1.13] - 2026-08-06",
         "[0.1.12] - 2026-07-31",
         "[0.1.11] - 2026-07-25",
         "[0.1.10] - 2026-07-18",
